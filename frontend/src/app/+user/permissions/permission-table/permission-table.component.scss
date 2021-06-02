@@ -1,0 +1,68 @@
+@import "src/variables";
+
+:host {
+  padding-bottom: 20px;
+}
+
+table {
+  background: $ige-background;
+}
+
+.selected {
+  background: $ige-mark-color;
+}
+
+
+.thin-column {
+  width: 1px;
+}
+
+td {
+  font-weight: 500;
+}
+
+.td-subtitle {
+  font-weight: normal;
+  color: $ige-hint-color;
+}
+
+mat-button {
+  cursor: pointer;
+  user-select: none;
+  margin: 1px;
+  padding: 6px;
+  color: $ige-hint-color;
+  background: $ige-background-bar;
+  vertical-align: middle;
+
+  &.active {
+    color: white;
+    background: $ige-check-color;
+  }
+
+  .mat-icon {
+    vertical-align: middle;
+    margin-bottom: 2px;
+  }
+
+  &.left-button {
+    border-radius: 5px 0 0 5px;
+  }
+
+  &.right-button {
+    border-radius: 0 5px 5px 0;
+  }
+}
+
+ige-add-button {
+  display: block;
+  padding-top: 10px;
+  padding-left: 20px;
+}
+
+.table-title {
+  font-weight: 500;
+  padding: 10px 5px;
+}
+
+

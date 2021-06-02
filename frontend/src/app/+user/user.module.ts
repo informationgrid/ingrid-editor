@@ -27,6 +27,9 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSortModule} from "@angular/material/sort";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {GroupsTableComponent} from "./group/groups-table/groups-table.component";
+import {GroupHeaderMoreComponent} from "./group/group-header-more/group-header-more.component";
+import {PermissionTableComponent} from "./permissions/permission-table/permission-table.component";
 
 @NgModule({
   imports: [
@@ -52,7 +55,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   ],
   declarations: [
     UserComponent, GroupComponent, UserManagementComponent, PermissionsDialogComponent, PermissionsComponent,
-    PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, HeaderMoreComponent, UserTableComponent]
+    PermissionsShowComponent, TreePermissionComponent, NewUserDialogComponent, GroupHeaderMoreComponent, UserTableComponent, GroupsTableComponent, GroupHeaderMoreComponent, HeaderMoreComponent, PermissionTableComponent]
 })
 export class UserModule {
 

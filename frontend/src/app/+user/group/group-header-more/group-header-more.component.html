@@ -1,0 +1,20 @@
+<div *ngIf="showMore" [@slideDown] class="more-info">
+    <div fxLayout="row">
+        <div>Erstellt von</div>
+        <div>Vorname Name, Bezeichnung Organisation</div>
+    </div>
+    <div fxLayout="row">
+        <div>Erstellt am</div>
+<!--        <div *ngIf="group.creationDate"><span [title]="group.creationDate | date:'long'">{{group.creationDate | date:'dd.MM.yyyy'}}</span></div>-->
+        <div>01.01.1970</div>
+    </div>
+    <div fxLayout="row">
+        <div>Geändert am</div>
+<!--        <div *ngIf="group.modificationDate"><span [title]="group.modificationDate | date:'long'">{{group.modificationDate | date:'dd.MM.yyyy'}}</span></div>-->
+        <div>01.01.1970</div>
+    </div>
+    <div fxLayout="row">
+        <div>ID</div>
+        <div>{{group?.id}}</div>
+    </div>
+</div>
