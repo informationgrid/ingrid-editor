@@ -206,7 +206,7 @@ class KeycloakService : UserManagementService {
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
             usersResource.get(userId).apply {
-                roles().realmLevel().add(getRoleRepresentation(it.realm(), user))
+                roles().realmLevel().add(listOf( it.realm().roles().get("ige-user").toRepresentation()))
                 
                 // send an email to the user to set a password
                 try {
@@ -294,15 +294,6 @@ class KeycloakService : UserManagementService {
 
         return (client as KeycloakCloseableClient).realm().roles().list()
             .filter { roles.contains(it.name) }
-
-    }
-
-    private fun getRoleRepresentation(realmResource: RealmResource, user: User): List<RoleRepresentation> {
-
-        val role = realmResource.roles()
-            .get(user.role).toRepresentation()
-
-        return listOf(role)
 
     }
 

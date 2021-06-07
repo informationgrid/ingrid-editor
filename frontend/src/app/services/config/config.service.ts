@@ -90,6 +90,15 @@ export class ConfigService {
 
     hasPermission(neededPermission: string | string[]): boolean {
         const user = this.$userInfo.getValue();
+        const hasExplicitPermission = this.hasExplicitPermission(neededPermission, user)
+        if (!hasExplicitPermission && this.isAdministrator){
+            console.warn("Superadmin does not explicitly have all requested permissions: ", neededPermission)
+            return true;
+          }
+        return hasExplicitPermission
+    }
+
+    hasExplicitPermission(neededPermission: string | string[], user: UserInfo): boolean {
         if (neededPermission instanceof Array) {
             return user.permissions.filter(value => neededPermission.indexOf(value) !== -1).length > 0;
         } else {
