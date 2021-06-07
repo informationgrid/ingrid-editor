@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {GroupHeaderMoreComponent} from "./group-header-more.component";
 
-import { GroupHeaderMoreComponent } from './header-more.component';
 
 describe('HeaderMoreComponent', () => {
   let component: GroupHeaderMoreComponent;
