@@ -64,8 +64,11 @@ describe('Behaviours', () => {
 
     it('should change the template for the address generation', () => {
       const firstName = 'Thomason';
+      const firstName2 = 'Nosamoht';
       const lastName = 'Schoofin';
+      const lastName2 = 'Nifoohcs';
       const organizationName = 'Sportclub';
+      const organizationName2 = 'Bulctrops';
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
       AddressPage.createAddress(new Address(firstName, lastName, organizationName));
@@ -75,8 +78,8 @@ describe('Behaviours', () => {
       BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels','firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      cy.get('ige-sidebar').contains(firstName).click();
-      cy.get(DocumentPage.title).should('have.text', firstName).should('not.contain', organizationName + ', ' + lastName);
+      AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
+      cy.get(DocumentPage.title).should('have.text', firstName2).should('not.contain', organizationName2 + ', ' + lastName2);
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten)
       BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);

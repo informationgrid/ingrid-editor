@@ -3,6 +3,8 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { xit } from 'mocha';
+import {AddressPage} from "../../pages/address.page";
+import Doc = Mocha.reporters.Doc;
 
 describe('Tree', () => {
   beforeEach(() => {
@@ -29,7 +31,7 @@ describe('Tree', () => {
 
     DocumentPage.refreshDashboard();
     // when 'Ordner 2. Ebene is visible, the other folders are expanded
-    Tree.containsNodeWithTitle('Ordner 2. Ebene');
+    Tree.containsNodeWithFolderTitle('Ordner 2. Ebene');
   });
 
   it('should show search results in tree search', () => {
@@ -465,9 +467,9 @@ describe('Tree', () => {
       DocumentPage.checkOnlyActiveToolbarButtons(['Copy', 'Delete']);
     });
 
-    xit('should automatically select all child nodes if an expanded folder was selected', () => {});
+    xit('should only select the expanded folder when it was selected', () => {});
 
-    xit('should automatically select all child nodes if an collapsed folder was selected', () => {});
+    xit('should only select the collapsed folder when it was selected', () => {});
 
     it('should copy multiple selected nodes from different hierarchies into a folder', () => {
       const title = 'copy-multi-select-diff-hier-1';
@@ -482,8 +484,13 @@ describe('Tree', () => {
       DocumentPage.multiSelectObject('mat-tree',[title2]);
       CopyCutUtils.copyObject(["Drag'n'Drop"]);
 
-      Tree.selectNodeAndCheckPath(title, ['Daten', "Drag'n'Drop"])
-      Tree.selectNodeAndCheckPath(title2, ['Daten', "Drag'n'Drop"])
+      cy.get('[data-mat-icon-name="Entfernen"]').click({ multiple: true });
+
+      // check folder Drag'n'Drop is expanded
+      cy.get('mat-tree mat-tree-node').contains("Drag'n'Drop").parent().parent().parent().should('have.class', 'expanded');
+
+      Tree.containsNodeWithObjectTitle(title, 2);
+      Tree.containsNodeWithObjectTitle(title2, 2);
     });
 
     it('should move multiple selected nodes', () => {
