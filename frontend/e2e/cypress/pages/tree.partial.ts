@@ -1,4 +1,4 @@
-import { DocumentPage, SEPARATOR } from './document.page';
+import {DocumentPage, SEPARATOR} from './document.page';
 
 export class Tree {
   static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
@@ -8,33 +8,25 @@ export class Tree {
   }
 
   static containsNodeWithTitle(text: string, level?: number) {
-    return this.checkNodeWithTitle(text, level);
-  }
-
-  static containsNotNodeWithTitle(text: string, level?: number) {
-    return this.checkNodeWithTitle(text, level, true);
-  }
-
-  private static checkNodeWithTitle(text: string, level?: number, invert?: boolean) {
     const exactText = new RegExp('^' + text + '$');
-    if (invert) {
-      if (level) {
-        cy.contains('mat-tree mat-tree-node .label span', exactText)
-          .parent()
-          .parent()
-          .should('not.have.attr', 'aria-level', level.toString());
-      } else {
-        cy.contains('mat-tree mat-tree-node .label span', exactText).should('not.exist');
-      }
-      return true;
-    }
-
     const label = cy.contains('mat-tree mat-tree-node .label', exactText);
 
     if (level !== undefined) {
       return label.parent().parent().should('have.attr', 'aria-level', level.toString());
     } else {
       return label;
+    }
+  }
+
+  static containsNotNodeWithTitle(text: string, level?: number) {
+    const exactText = new RegExp('^' + text + '$');
+    if (level) {
+      cy.contains('mat-tree mat-tree-node .label span', exactText)
+        .parent()
+        .parent()
+        .should('not.have.attr', 'aria-level', level.toString());
+    } else {
+      cy.contains('mat-tree mat-tree-node .label span', exactText).should('not.exist');
     }
   }
 
