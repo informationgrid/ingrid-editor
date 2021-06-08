@@ -1,11 +1,13 @@
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
@@ -14,11 +16,7 @@ import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.acls.domain.*
-import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.model.AclService
-import org.springframework.security.acls.model.MutableAcl
-import org.springframework.security.acls.model.Permission
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -99,14 +97,18 @@ class CatalogService @Autowired constructor(
         return roles?.contains("admin") ?: false
     }
 
-    fun getAvailableCatalogs(): List<CatalogProfile> {
+    fun getAvailableCatalogProfiles(): List<CatalogProfile> {
         return catalogProfiles
+    }
+    
+    fun getCatalogProfile(id: String): CatalogProfile {
+        return this.catalogProfiles
+            .find { it.identifier == id }!!
     }
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
-        this.catalogProfiles
-            .find { it.identifier == type }
-            ?.initCatalogCodelists(catalogId, codelistId)
+        this.getCatalogProfile(type)
+            .initCatalogCodelists(catalogId, codelistId)
     }
 
     fun getCatalogs(): List<Catalog> {

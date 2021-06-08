@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.api.messaging.IndexMessage
@@ -11,6 +9,7 @@ import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
@@ -34,14 +33,14 @@ import kotlin.concurrent.schedule
 @Profile("elasticsearch")
 class IndexingTask @Autowired constructor(
     private val indexService: IndexService,
+    private val catalogService: CatalogService,
     private val notify: IndexingNotifier,
-    private val esIndexManager: IndexManager,
+    private val indexManager: IndexManager,
     private val catalogRepo: CatalogRepository,
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
     val executor = Executors.newSingleThreadScheduledExecutor()
-    private val indexManager: IIndexManager = getIndexManager()
     private val scheduler: TaskScheduler = initScheduler()
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
 
@@ -51,17 +50,13 @@ class IndexingTask @Autowired constructor(
     @Value("\${app.uuid}")
     private lateinit var uuid: String
 
-
-    private fun getIndexManager(): IIndexManager {
-        return esIndexManager
-    }
-
     /**
      * Indexing of all published documents into an Elasticsearch index.
      */
     fun startIndexing(catalogId: String, format: String) {
         log.debug("Starting Indexing - Task for $catalogId")
 
+        val catalog = catalogRepo.findByIdentifier(catalogId)
         val message = IndexMessage()
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
@@ -73,7 +68,7 @@ class IndexingTask @Autowired constructor(
             //   indexName
 
             // pre phase
-            val info = indexPrePhase(elasticsearchAlias)
+            val info = indexPrePhase(elasticsearchAlias, catalog.type, format)
 
             // iterate over all documents
             // TODO: dynamically get target to send exported documents
@@ -99,7 +94,8 @@ class IndexingTask @Autowired constructor(
             docsToPublish.content
                 .onEachIndexed { index, _ ->
                     log.info("start $index")
-                    Thread.sleep(1000);
+                    // TODO: remove dummy wait
+                    Thread.sleep(1000)
                     if (category == DocumentCategory.DATA) {
                         notify.sendMessage(message.apply { this.progressDocuments = index + 1 })
                     } else {
@@ -129,7 +125,6 @@ class IndexingTask @Autowired constructor(
         })
 
         // save last indexing information to database for this catalog to get this in frontend
-        val catalog = catalogRepo.findByIdentifier(catalogId)
         if (catalog.settings == null) {
             catalog.settings = CatalogSettings(lastLogSummary = message)
         } else {
@@ -149,16 +144,18 @@ class IndexingTask @Autowired constructor(
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
 
         return jacksonObjectMapper()
-            .enable(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS)
+//            .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature())
             .readValue(doc as String, ElasticDocument::class.java)
 
     }
 
 
-    private fun indexPrePhase(alias: String): Pair<String, String> {
+    private fun indexPrePhase(alias: String, catalogType: String, format: String): Pair<String, String> {
+        val catalogProfile = catalogService.getCatalogProfile(catalogType)
+        
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, uuid)
         val newIndex = IndexManager.getNextIndexName(alias, uuid, "ige-ng-test")
-        indexManager.createIndex(newIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
+        indexManager.createIndex(newIndex, "base", catalogProfile.getElasticsearchMapping(format), catalogProfile.getElasticsearchSetting(format))
         return Pair(oldIndex, newIndex)
     }
 

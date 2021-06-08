@@ -130,6 +130,14 @@ class MCloudProfile : CatalogProfile {
         }
     }
 
+    override fun getElasticsearchMapping(format: String): String {
+        return {}.javaClass.getResource("/mcloud/default-mapping.json")?.readText() ?: ""
+    }
+
+    override fun getElasticsearchSetting(format: String): String {
+        return {}.javaClass.getResource("/mcloud/default-settings.json")?.readText() ?: ""
+    }
+
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
 
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
