@@ -27,6 +27,8 @@ class AuthenticationProviderMock : AuthenticationProvider {
     override fun authenticate(authentication: Authentication?): Authentication {
 
         val userId = config.logins?.get(config.currentUser)
+        val isSuperAdmin = config.isSuperAdmin?.get(config.currentUser) ?: false
+        
         if (userId == null) {
             throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
         }
@@ -44,7 +46,8 @@ class AuthenticationProviderMock : AuthenticationProvider {
                 listOf(SimpleGrantedAuthority(role))
             }
         }
-        return UsernamePasswordAuthenticationToken(user, "", groups + roles)
+        val superAdminRole = if (isSuperAdmin) listOf(SimpleGrantedAuthority("ige-super-admin")) else emptyList()
+        return UsernamePasswordAuthenticationToken(user, "", groups + roles + superAdminRole)
     }
 
     override fun supports(authentication: Class<*>?): Boolean {
