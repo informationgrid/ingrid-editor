@@ -95,15 +95,15 @@ describe('General create addresses/folders', () => {
     it('should generate a title from create parameters', () => {
       // only first name and last name
       AddressPage.createAddress(new Address('Anton', 'Riese'));
-      Tree.containsNodeWithTitle('Riese, Anton');
+      Tree.containsNodeWithFolderTitle('Riese, Anton');
 
       // only organization
       AddressPage.createAddress(new Address('', '', 'Meine Organisation'));
-      Tree.containsNodeWithTitle('Meine Organisation');
+      Tree.containsNodeWithFolderTitle('Meine Organisation');
 
       // all
       AddressPage.createAddress(new Address('Anton', 'Riese', 'Meine Organisation'));
-      Tree.containsNodeWithTitle('Meine Organisation, Riese, Anton');
+      Tree.containsNodeWithFolderTitle('Meine Organisation, Riese, Anton');
     });
 
     xit('should apply initially selected item when switching location for a new folder', () => {

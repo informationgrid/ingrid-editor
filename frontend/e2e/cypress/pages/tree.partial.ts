@@ -7,12 +7,22 @@ export class Tree {
     cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
   }
 
-  static containsNodeWithTitle(text: string, level?: number) {
+  static containsNodeWithFolderTitle(text: string, level?: number) {
     const exactText = new RegExp('^' + text + '$');
     const label = cy.contains('mat-tree mat-tree-node .label', exactText);
 
     if (level !== undefined) {
       return label.parent().parent().should('have.attr', 'aria-level', level.toString());
+    } else {
+      return label;
+    }
+  }
+
+  static containsNodeWithObjectTitle(text: string, level?: number) {
+    const label = cy.contains('mat-tree mat-tree-node .label', text);
+
+    if (level !== undefined) {
+      return label.parent().should('have.attr', 'aria-level', level.toString());
     } else {
       return label;
     }

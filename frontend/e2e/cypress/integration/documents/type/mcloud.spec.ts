@@ -90,7 +90,7 @@ describe('mCLOUD documents', function () {
 
       cy.visit('/address');
       DocumentPage.checkURL('/address');
-      Tree.containsNodeWithTitle('APICallPublishedAdr');
+      Tree.containsNodeWithObjectTitle('APICallPublishedAdr');
     });
   });
 });
