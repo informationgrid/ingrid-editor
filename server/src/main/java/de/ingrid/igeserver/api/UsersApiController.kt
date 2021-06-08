@@ -187,12 +187,6 @@ class UsersApiController : UsersApi {
                     }
                 }
                 var user = userRepo.findByUserId(userIdent)
-                if (user == null && catalogService.isSuperAdmin(roles)) {
-                    user = UserInfo().apply {
-                        userId = userIdent
-                        data = UserInfoData()
-                    }
-                }
                 if (user != null) {
                     catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
                 }

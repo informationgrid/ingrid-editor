@@ -27,8 +27,7 @@ class AuthenticationProviderMock : AuthenticationProvider {
     override fun authenticate(authentication: Authentication?): Authentication {
 
         val userId = config.logins?.get(config.currentUser)
-        val isSuperAdmin = config.isSuperAdmin?.get(config.currentUser) ?: false
-        
+
         if (userId == null) {
             throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
         }
@@ -40,14 +39,13 @@ class AuthenticationProviderMock : AuthenticationProvider {
             emptyList()
         } else {
             // add special role for administrators to allow group acl management
-            if (role == "cat-admin" || role == "md-admin") {
+            if (role == "cat-admin" || role == "md-admin" || role == "ige-super-admin") {
                 listOf(SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_GROUP_MANAGER")) 
             } else {
                 listOf(SimpleGrantedAuthority(role))
             }
         }
-        val superAdminRole = if (isSuperAdmin) listOf(SimpleGrantedAuthority("ige-super-admin")) else emptyList()
-        return UsernamePasswordAuthenticationToken(user, "", groups + roles + superAdminRole)
+        return UsernamePasswordAuthenticationToken(user, "", groups + roles )
     }
 
     override fun supports(authentication: Class<*>?): Boolean {

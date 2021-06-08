@@ -30,9 +30,10 @@ class M027_AddRoleTable : MigrationBase("0.27") {
             permissions jsonb
         );
         
-        insert into role (id, name, permissions) values (1, 'cat-admin', null);
-        insert into role (id, name, permissions) values (2, 'md-admin', null);
-        insert into role (id, name, permissions) values (3, 'author', null);
+        insert into role (id, name, permissions) values (1, 'ige-super-admin', null);
+        insert into role (id, name, permissions) values (2, 'cat-admin', null);
+        insert into role (id, name, permissions) values (3, 'md-admin', null);
+        insert into role (id, name, permissions) values (4, 'author', null);
 
 
         alter table user_info

@@ -28,7 +28,7 @@ class SetupDevelopUsers @Autowired constructor(
                 return@schedule
             }
 
-            createUser("userCat", "cat-admin")
+            createUser("userCat", "ige-super-admin")
             createUser("userMD", "md-admin")
             createUser("userAuthor", "author")
         }

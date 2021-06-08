@@ -93,14 +93,10 @@ class CatalogService @Autowired constructor(
         userRepo.save(user)
     }
 
-    fun isSuperAdmin(roles: Set<String>?): Boolean {
-        return roles?.contains("admin") ?: false
-    }
-
     fun getAvailableCatalogProfiles(): List<CatalogProfile> {
         return catalogProfiles
     }
-    
+
     fun getCatalogProfile(id: String): CatalogProfile {
         return this.catalogProfiles
             .find { it.identifier == id }!!
@@ -161,6 +157,7 @@ class CatalogService @Autowired constructor(
         user.id = userFromDB?.id
         user.data?.creationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
         user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
         userRepo.save(user)
 
     }

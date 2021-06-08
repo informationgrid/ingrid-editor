@@ -14,5 +14,4 @@ data class DevelopmentProperties(
     val firstName: List<String>?,
     val lastName: List<String>?,
     val currentUser: Int = 0,
-    val isSuperAdmin: List<Boolean>?
 )
