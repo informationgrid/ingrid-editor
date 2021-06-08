@@ -591,11 +591,41 @@ ige-side-menu {
 
 
 /* Material Tabs */
+.page-tabs-routing {
+  &.mat-tab-nav-bar {
+    border-bottom: none;
+  }
+
+  .mat-tab-links {
+    background-color: $ige-secondary-dark;
+  }
+
+  .mat-tab-link {
+    //background-color: #161234;
+    border-bottom: none;
+    height: 56px;
+
+    color: #FFFFFF;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+    opacity: 0.75;
+
+    &.active-link {
+      color: #4BA7D0;
+    }
+  }
+
+  .mat-ink-bar {
+    background-color: $ige-background !important;
+    height: 6px;
+  }
+}
+
 .page-tabs {
   height: 100%;
 
   & > .mat-tab-header {
-    background-color: #161234;
+    background-color: $ige-secondary-dark;
     border-bottom: none;
     height: 56px;
 

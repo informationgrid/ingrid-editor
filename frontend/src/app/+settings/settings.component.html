@@ -1,17 +1,15 @@
-<mat-tab-group animationDuration="0" class="page-tabs"
-               [selectedIndex]="tabIndex"
-               (selectedIndexChange)="updateRoute($event)">
-    <mat-tab label="Allgemein">
-        <page-template label="Allgemein">
-            <general-settings main-header fxFlex></general-settings>
-        </page-template>
-    </mat-tab>
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a mat-tab-link routerLink="general" routerLinkActive="active-link" (click)="activeLink = 'general'" [active]="activeLink == 'general'">
+        Allgemein
+    </a>
 
-    <mat-tab label="Codelist Repository">
-        <ige-codelists></ige-codelists>
-    </mat-tab>
+    <a mat-tab-link routerLink="codelist" routerLinkActive="active-link" (click)="activeLink = 'codelist'" [active]="activeLink == 'codelist'">
+        Codelist Repository
+    </a>
 
-    <mat-tab label="Katalogverwaltung">
-        <ige-catalog-management></ige-catalog-management>
-    </mat-tab>
-</mat-tab-group>
+    <a mat-tab-link routerLink="catalog" routerLinkActive="active-link" (click)="activeLink = 'catalog'" [active]="activeLink == 'catalog'">
+        Katalogverwaltung
+    </a>
+</nav>
+
+<router-outlet></router-outlet>
