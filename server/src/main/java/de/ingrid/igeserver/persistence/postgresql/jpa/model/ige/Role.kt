@@ -24,6 +24,6 @@ class Role {
     var data: PermissionsData? = null
 
     @OneToMany(mappedBy = "role")
-    var users: Set<UserInfo> = HashSet()
+    var users: MutableSet<UserInfo> = HashSet()
 
 }

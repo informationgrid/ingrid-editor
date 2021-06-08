@@ -35,6 +35,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.hibernate.orm'
 apply plugin: 'kotlin-noarg'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-allopen'
 
 repositories {
     maven {
@@ -141,6 +142,10 @@ sourceCompatibility = '11.0'
 
 springBoot {
     buildInfo()
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

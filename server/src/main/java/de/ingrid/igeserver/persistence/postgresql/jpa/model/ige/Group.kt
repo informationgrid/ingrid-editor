@@ -9,7 +9,6 @@ import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import javax.persistence.*
 
-@NoArgs
 @Entity
 @Table(name="permission_group")
 class Group {
@@ -27,7 +26,7 @@ class Group {
     @ManyToMany(mappedBy = "groups", fetch=FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    var user: Set<UserInfo> = HashSet()
+    var user: MutableSet<UserInfo> = HashSet()
 
     @Column(nullable=false)
     var name: String? = null

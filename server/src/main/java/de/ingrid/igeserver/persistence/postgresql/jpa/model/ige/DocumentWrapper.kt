@@ -48,7 +48,7 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains a document wrapper uuid ('parent') only, we need
      * to map it manually to the document wrapper instance for persistence
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonAlias("_parent") // hint for model registry
