@@ -120,8 +120,42 @@ export class Tree {
     cy.get('ige-header-title-row').contains(nodeTitle);
   }
 
-  static checkSelectedNodeHasChildren() {
-    cy.get('mat-tree-node.active button.toggle').should('exist');
+  static checkSelectedNodeHasChildren(nodeTitle: string) {
+    const exactText = this.getRegExp(nodeTitle)
+    cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').should('exist');
+  }
+
+  static activateCheckboxLayoutMode(){
+    cy.get('[data-mat-icon-name=edit_mode]').click();
+    cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
+  }
+
+  static expandNode(nodeTitle: string){
+    const exactText = this.getRegExp(nodeTitle)
+    cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').click();
+  }
+
+  static checkNextNodeIsAChildNode(nodeTitle: string, level: number){
+    const exactText = this.getRegExp(nodeTitle)
+    cy.get('mat-tree-node').contains(exactText).parent().parent().parent().next().should('have.attr', 'aria-level', level);
+  }
+
+  static checkNodeIsNotSelected(nodeTitle: string,){
+    const exactText = this.getRegExp(nodeTitle)
+    cy.get('mat-tree-node').contains(exactText).parent().parent().parent().next().should('not.have.class', 'mat-checkbox-checked');
+  }
+
+  static isSelectedNodeExpanded(nodeTitle: string, expanded: boolean){
+    const exactText = this.getRegExp(nodeTitle)
+    if (expanded){
+      cy.get('mat-tree mat-tree-node').contains(exactText).parent().parent().parent().should('have.class', 'expanded');
+    } else if (!expanded){
+      cy.get('mat-tree mat-tree-node').contains(exactText).parent().parent().parent().should('not.have.class', 'expanded');
+    }
+  }
+  static checkboxSelected(nodeTitle: string){
+    const exactText = this.getRegExp(nodeTitle)
+    cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(exactText);
   }
 
   static checkSelectedNodeHasNoChildren() {

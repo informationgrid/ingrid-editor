@@ -271,7 +271,7 @@ describe('Tree', () => {
       Tree.openNode(['Testdokumente', testFolder]);
 
       // check if sub-tree was also copied
-      Tree.checkSelectedNodeHasChildren();
+      Tree.checkSelectedNodeHasChildren(testFolder);
       Tree.openNode(['Testdokumente', testFolder, docName]);
     });
 
@@ -467,9 +467,36 @@ describe('Tree', () => {
       DocumentPage.checkOnlyActiveToolbarButtons(['Copy', 'Delete']);
     });
 
-    xit('should only select the expanded folder when it was selected', () => {});
+    it('should only select the expanded folder when it was selected', () => {
+      const exactText = new RegExp('^' + 'Testdokumente' + '$');
+      const node = 'Testdokumente';
 
-    xit('should only select the collapsed folder when it was selected', () => {});
+      Tree.openNode(['Testdokumente']);
+      Tree.isSelectedNodeExpanded(node, true);
+
+      Tree.activateCheckboxLayoutMode();
+      Tree.checkboxSelected(node);
+
+      Tree.checkSelectedNodeHasChildren(node);
+      Tree.checkNextNodeIsAChildNode(node, 2);
+      Tree.checkNodeIsNotSelected(node);
+    });
+
+    it('should only select the collapsed folder when it was selected', () => {
+      const exactText = new RegExp('^' + 'Testdokumente' + '$');
+      const node = 'Testdokumente';
+
+      Tree.activateCheckboxLayoutMode();
+
+      Tree.clickOnNodeWithTitle(node);
+      Tree.checkboxSelected(node);
+      Tree.isSelectedNodeExpanded(node, false);
+
+      Tree.checkSelectedNodeHasChildren(node);
+      Tree.expandNode(node);
+      Tree.checkNextNodeIsAChildNode(node, 2);
+      Tree.checkNodeIsNotSelected(node);
+    });
 
     it('should copy multiple selected nodes from different hierarchies into a folder', () => {
       const title = 'copy-multi-select-diff-hier-1';
