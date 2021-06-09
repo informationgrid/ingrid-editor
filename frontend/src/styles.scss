@@ -654,7 +654,9 @@ ige-side-menu {
   & > .mat-tab-body-wrapper {
     flex: 1;
   }
+}
 
+.page-tabs, .page-tabs-routing ~ * {
   .status {
     padding: 30px;
     background-color: rgb(223, 223, 223);

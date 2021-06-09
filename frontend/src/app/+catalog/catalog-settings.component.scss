@@ -2,13 +2,6 @@
 
 :host {
   height: 100%;
-
-  .header {
-    padding: 12px 24px;
-    border-bottom: 1px solid $ige-background-bar;
-
-    button {
-      margin-left: 24px;
-    }
-  }
+  display: flex;
+  flex-direction: column;
 }

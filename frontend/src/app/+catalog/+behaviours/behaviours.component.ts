@@ -6,43 +6,35 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Plugin} from './plugin';
 import {FormlyFormBuilder} from '@ngx-formly/core';
 import {FormPluginToken} from '../../tokens/plugin.token';
+import {ActivatedRoute, ParamMap} from "@angular/router";
 
 @UntilDestroy()
 @Component({
   selector: 'ige-behaviours',
   templateUrl: './behaviours.component.html',
-  styleUrls: ['./behaviours.component.scss']/*,
-  animations: [
-    trigger('openClose', [
-      state('collapsed, void', style({height: '0px', 'padding-top': 0, 'padding-bottom': 0, overflow: 'hidden'})),
-      state('expanded', style({height: '*'})),
-      transition('collapsed => expanded', animate('200ms ease-in')),
-      transition('expanded => collapsed', animate('300ms ease-out'))
-    ])
-  ]*/
+  styleUrls: ['./behaviours.component.scss']
 })
 export class BehavioursComponent implements OnInit {
 
-  @Input() type: 'form' | 'catalog' = 'form';
+  type: string;
 
   plugins: any;
   // plugins: { [x: string]: Plugin[] };
 
-  behaviourTab: string;
   expanded: any = {};
 
   fields: any = {};
   title: string;
 
-
   constructor(private formBuilder: FormBuilder,
               private builder: FormlyFormBuilder,
               @Inject(FormPluginToken) private formPlugins: Plugin[],
+              private route: ActivatedRoute,
               private behaviourService: BehaviourService) {
   }
 
   ngOnInit() {
-    this.behaviourTab = 'SYSTEM';
+    this.type = this.route.snapshot.paramMap.get('type');
 
     if (this.type === 'form') {
       this.title = 'Formularkonfiguration';
