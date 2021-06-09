@@ -130,6 +130,11 @@ export class Tree {
     cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
   }
 
+  static deactivateCheckboxLayout(){
+    cy.get('[data-mat-icon-name=Entfernen]').click({ multiple: true });
+    cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
+  }
+
   static expandNode(nodeTitle: string){
     const exactText = this.getRegExp(nodeTitle)
     cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').click();
