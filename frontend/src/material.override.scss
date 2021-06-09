@@ -7,12 +7,14 @@
       flex-direction: column;
       flex: 1;
     }
+
     mat-dialog-content,
     div[mat-dialog-content] {
       flex-grow: 1;
       //max-height: unset;
       line-height: 1.35;
     }
+
     mat-dialog-content p,
     div[mat-dialog-content] p {
       white-space: pre;
@@ -38,9 +40,13 @@
 
 // all buttons shall be uppercase
 // align text in buttons centered with icon
-.mat-button-wrapper {
+button:not(.default-button) .mat-button-wrapper {
   text-transform: uppercase;
   letter-spacing: 1.25px;
+}
+
+button .mat-button-wrapper {
+  letter-spacing: 0.4px;
 
   mat-icon + span {
     display: inline-block;

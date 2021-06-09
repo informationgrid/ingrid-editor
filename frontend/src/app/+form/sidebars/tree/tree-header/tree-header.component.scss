@@ -9,12 +9,19 @@
   padding: 10px 12px 0 12px;
 
   .options {
-    padding-bottom: 20px;
+    padding-bottom: 10px;
+
+    .multi-select {
+      flex: 2;
+      button {
+        padding: 0 8px;
+      }
+    }
 
     .show-all {
       font-size: 14px;
       height: 40px;
-      flex: 2;
+      //flex: 2;
     }
 
     .reload-button {

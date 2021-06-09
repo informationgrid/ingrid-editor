@@ -1,5 +1,14 @@
 <div class="header" fxLayout="column">
     <div *ngIf="showOptions" class="options" fxLayout="row" fxLayoutAlign="space-between">
+        <div class="multi-select">
+            <button *ngIf="showMultiSelectButton" mat-button data-cy="edit-button" class="default-button"
+                    matTooltip="Mehrfachauswahl"
+                    (click)="edit.next()">
+                <mat-icon>crop_square</mat-icon>
+                <span>Auswahl</span>
+            </button>
+        </div>
+
         <mat-slide-toggle class="show-all" checked disabled>Alle anzeigen</mat-slide-toggle>
 
         <button *ngIf="showReloadButton" mat-icon-button data-cy="reload-button" class="reload-button"
@@ -8,15 +17,10 @@
             <mat-icon>refresh</mat-icon>
         </button>
 
-        <button *ngIf="showMultiSelectButton" mat-icon-button data-cy="edit-button"
-                matTooltip="Mehrfachauswahl"
-                (click)="edit.next()">
-            <mat-icon svgIcon="edit_mode"></mat-icon>
-        </button>
     </div>
 
     <mat-form-field class="search" appearance="outline" data-cy="tree-search-field">
-        <mat-icon *ngIf="query.value?.length === 0" class="passive" matPrefix>search</mat-icon>
+        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix>search</mat-icon>
         <input matInput placeholder="Suchen" aria-label="Search"
                [formControl]="query"
                [matAutocomplete]="searchAuto">
