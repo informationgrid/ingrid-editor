@@ -442,16 +442,14 @@ describe('Tree', () => {
   describe('Multi-Selection', () => {
     it('should show a checkbox for each node when edit mode is enabled and hide them if disabled', () => {
       cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
-      cy.get('[data-mat-icon-name=edit_mode]').click();
-      cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
-      cy.get('[data-mat-icon-name=Entfernen]').click();
-      cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
+      Tree.activateCheckboxLayoutMode();
+      Tree.deactivateCheckboxLayout();
     });
 
     it('should preselect the opened document', () => {
       Tree.selectNodeAndCheckPath('Neue Testdokumente', ['Daten']);
-      cy.get('[data-mat-icon-name=edit_mode]').click();
-      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains('Neue Testdokumente');
+      Tree.activateCheckboxLayoutMode();
+      Tree.checkboxSelected('Neue Testdokumente');
     });
 
     it('should only allow options to cut, copy and delete nodes in multi select mode', () => {
@@ -501,6 +499,7 @@ describe('Tree', () => {
     it('should copy multiple selected nodes from different hierarchies into a folder', () => {
       const title = 'copy-multi-select-diff-hier-1';
       const title2 = 'copy-multi-select-diff-hier-2';
+      const node = "Drag'n'Drop";
 
       // parent node is 'Neue Testdokumente'
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
@@ -509,12 +508,11 @@ describe('Tree', () => {
 
       Tree.openNode(['Neue Testdokumente', title])
       DocumentPage.multiSelectObject('mat-tree',[title2]);
-      CopyCutUtils.copyObject(["Drag'n'Drop"]);
+      CopyCutUtils.copyObject([node]);
 
-      cy.get('[data-mat-icon-name="Entfernen"]').click({ multiple: true });
+      Tree.deactivateCheckboxLayout();
 
-      // check folder Drag'n'Drop is expanded
-      cy.get('mat-tree mat-tree-node').contains("Drag'n'Drop").parent().parent().parent().should('have.class', 'expanded');
+      Tree.isSelectedNodeExpanded(node, true);
 
       Tree.containsNodeWithObjectTitle(title, 2);
       Tree.containsNodeWithObjectTitle(title2, 2);
