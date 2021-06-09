@@ -271,7 +271,7 @@ describe('Tree', () => {
       Tree.openNode(['Testdokumente', testFolder]);
 
       // check if sub-tree was also copied
-      Tree.checkSelectedNodeHasChildren(testFolder);
+      Tree.checkNodeHasChildren(testFolder);
       Tree.openNode(['Testdokumente', testFolder, docName]);
     });
 
@@ -442,13 +442,16 @@ describe('Tree', () => {
   describe('Multi-Selection', () => {
     it('should show a checkbox for each node when edit mode is enabled and hide them if disabled', () => {
       cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
-      Tree.activateCheckboxLayoutMode();
-      Tree.deactivateCheckboxLayout();
+      Tree.activateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxIsVisible();
+      Tree.deactivateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxNotExist();
     });
 
     it('should preselect the opened document', () => {
       Tree.selectNodeAndCheckPath('Neue Testdokumente', ['Daten']);
-      Tree.activateCheckboxLayoutMode();
+      Tree.activateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxIsVisible();
       Tree.checkboxSelected('Neue Testdokumente');
     });
 
@@ -472,10 +475,11 @@ describe('Tree', () => {
       Tree.openNode(['Testdokumente']);
       Tree.isSelectedNodeExpanded(node, true);
 
-      Tree.activateCheckboxLayoutMode();
+      Tree.activateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxIsVisible();
       Tree.checkboxSelected(node);
 
-      Tree.checkSelectedNodeHasChildren(node);
+      Tree.checkNodeHasChildren(node);
       Tree.checkNextNodeIsAChildNode(node, 2);
       Tree.checkNodeIsNotSelected(node);
     });
@@ -484,13 +488,14 @@ describe('Tree', () => {
       const exactText = new RegExp('^' + 'Testdokumente' + '$');
       const node = 'Testdokumente';
 
-      Tree.activateCheckboxLayoutMode();
+      Tree.activateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxIsVisible();
 
       Tree.clickOnNodeWithTitle(node);
       Tree.checkboxSelected(node);
       Tree.isSelectedNodeExpanded(node, false);
 
-      Tree.checkSelectedNodeHasChildren(node);
+      Tree.checkNodeHasChildren(node);
       Tree.expandNode(node);
       Tree.checkNextNodeIsAChildNode(node, 2);
       Tree.checkNodeIsNotSelected(node);
@@ -510,7 +515,8 @@ describe('Tree', () => {
       DocumentPage.multiSelectObject('mat-tree',[title2]);
       CopyCutUtils.copyObject([node]);
 
-      Tree.deactivateCheckboxLayout();
+      Tree.deactivateMultiSelectMode();
+      Tree.checkMultiSelectCheckboxNotExist();
 
       Tree.isSelectedNodeExpanded(node, true);
 
