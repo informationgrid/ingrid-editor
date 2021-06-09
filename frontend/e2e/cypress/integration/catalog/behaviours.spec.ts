@@ -105,34 +105,106 @@ describe('Behaviours', () => {
       cy.get('as-split-area'[2]).should('not.exist');
     });
 
-    xit('should show and hide the publish button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the publish button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_publish_now]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Publish Plugin',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_publish_now]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Publish Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_publish_now]').should('exist');
     });
 
-    xit('should show and hide the new document button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the new document button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_NEW_DOC]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Neues Dokument Plugin',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_NEW_DOC]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Neues Dokument Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_NEW_DOC]').should('exist');
     });
 
-    xit('should show and hide the save button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the save button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SAVE]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Save Plugin',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SAVE]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Save Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_SAVE]').should('exist');
     });
 
-    xit('should show and hide the create folder button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the create folder button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Folder Plugin',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Folder Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('exist');
     });
 
-    xit('should show and hide the copy/cut button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the copy/cut button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_COPY]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Copy Cut Paste',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_COPY]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Copy Cut Paste', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_COPY]').should('exist');
     });
 
-    xit('should show and hide the delete doc/folder button', () => {
-      // behaviour is already tested in other tests
-      // so only test toolbar button appearance
+    it('should show and hide the delete doc/folder button', () => {
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_DELETE]').should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Delete Docs Plugin',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_DELETE]').should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Delete Docs Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get('[data-cy=toolbar_DELETE]').should('exist');
     });
 
     xit('should jump back to a previously opened document via history buttons', () => {
@@ -145,6 +217,28 @@ describe('Behaviours', () => {
       // go forward -> forward button is disabled and backward button enabled and doc 3 is opened
     });
 
-    xit('should be only possible to delete non empty folders if behaviour is switched off', () => {});
+    it('should be only possible to delete non empty folders if behaviour is switched off', () => {
+      const node = 'Testdokumente';
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Tree.openNode([node]);
+      Tree.checkNodeHasChildren(node);
+      cy.get(DocumentPage.Toolbar['Delete']).click();
+      cy.get('[data-cy=error-dialog-content]').contains('Um Ordner zu löschen, müssen diese leer sein')
+      cy.get('[data-cy=error-dialog-close]').click();
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen',false);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Tree.openNode([node]);
+      Tree.checkNodeHasChildren(node);
+      cy.get(DocumentPage.Toolbar['Delete']).click();
+      cy.get('[data-cy=error-dialog-content]').should('not.exist')
+      cy.get('[data-cy=confirm-dialog-cancel]').click();
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen',true);
+    });
   });
 });
