@@ -684,8 +684,8 @@ export class TreeComponent implements OnInit, OnDestroy {
     return this.selectionModel.isSelected(node);
   }
 
-  toggleSelectionMode() {
-    this.multiSelectionModeEnabled = !this.multiSelectionModeEnabled;
+  toggleSelectionMode(isEditMode: boolean) {
+    this.multiSelectionModeEnabled = isEditMode;
     if (!this.multiSelectionModeEnabled) {
       this.selectionModel.clear();
       if (this.activeNode) {

@@ -19,12 +19,17 @@ export class TreeHeaderComponent implements OnInit {
   @Input() showOnlyFolders = false;
   @Input() showMultiSelectButton = true;
 
+  @Input() checkToggleAll = false;
+  @Input() indeterminateToggleAll = false;
+
   @Output() reload = new EventEmitter();
   @Output() open = new EventEmitter();
-  @Output() edit = new EventEmitter();
+  @Output() edit = new EventEmitter<boolean>();
+  @Output() toggleAllSelection = new EventEmitter<boolean>();
 
   searchResult = new Subject<TreeNode[]>();
   query = new FormControl('');
+  multiSelectionModeEnabled = false;
 
   constructor(private db: DynamicDatabase) {
   }
@@ -67,5 +72,15 @@ export class TreeHeaderComponent implements OnInit {
     return this.showOnlyFolders
       ? result.filter(node => node.type === 'FOLDER')
       : result;
+  }
+
+  activateMultiSelection() {
+    this.multiSelectionModeEnabled = true;
+    this.edit.next(true);
+  }
+
+  deactivateMultiSelection() {
+    this.multiSelectionModeEnabled = false;
+    this.edit.next(false);
   }
 }

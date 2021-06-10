@@ -8,7 +8,10 @@
                          [showOptions]="showHeaderOptions"
                          [showOnlyFolders]="showOnlyFolders"
                          [showMultiSelectButton]="showMultiSelectButton"
-                         (edit)="toggleSelectionMode()"
+                         [checkToggleAll]="allNodesSelected()"
+                         [indeterminateToggleAll]="atLeastOneButNotAllNodesSelected()"
+                         (toggleAllSelection)="toggleAllSelection($event)"
+                         (edit)="toggleSelectionMode($event)"
                          (open)="handleSelection($event)"></ige-tree-header>
 
         <div *ngIf="isDragging" class="drop-root"
@@ -19,17 +22,6 @@
                 <span>Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
                     {{forAddresses ? "Adressen": "Daten"}}</span>
             </div>
-        </div>
-
-        <div *ngIf="multiSelectionModeEnabled" class="multi-select-area" fxLayoutAlign="space-between center">
-            <mat-checkbox data-cy="toggle-all-selection"
-                          matTooltip="Alle Aus-/Abwählen"
-                          [checked]="allNodesSelected()"
-                          [indeterminate]="atLeastOneButNotAllNodesSelected()"
-                          (change)="toggleAllSelection($event.checked)">Alle</mat-checkbox>
-            <button mat-icon-button matSuffix class="close" (click)="toggleSelectionMode()"  data-cy="exit-multi-select-mode">
-                <mat-icon svgIcon="Entfernen"></mat-icon>
-            </button>
         </div>
     </div>
 
