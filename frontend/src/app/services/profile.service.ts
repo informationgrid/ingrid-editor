@@ -24,7 +24,7 @@ export class ProfileService {
               errorService: ModalService) {
 
     configService.$userInfo.subscribe(info => {
-      if (info.assignedCatalogs.length > 0) {
+      if (info.assignedCatalogs.length > 0 && info.currentCatalog?.type) {
 
         const profile = info.currentCatalog.type;
 

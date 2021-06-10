@@ -73,9 +73,13 @@ export class CatalogManagementComponent implements OnInit {
         if (catalog) {
           this.showSpinner = true;
           this.catalogService.createCatalog(catalog).subscribe((catResponse: Catalog) => {
+              this.configService.getCurrentUserInfo().then(info => {
+                if (!info.currentCatalog?.id){
+                  this.chooseCatalog(catResponse.id)
+                }
+              });
             this.catalogService.setCatalogAdmin(catResponse.id, [this.currentUserID])
               .subscribe(() => {
-                this.configService.getCurrentUserInfo().then(info => info.currentCatalog = info.currentCatalog ?? catResponse);
                 this.showSpinner = false;
               });
           });
