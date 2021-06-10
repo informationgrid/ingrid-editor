@@ -3,8 +3,6 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { xit } from 'mocha';
-import {AddressPage} from "../../pages/address.page";
-import Doc = Mocha.reporters.Doc;
 
 describe('Tree', () => {
   beforeEach(() => {
@@ -462,14 +460,13 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
-      Tree.openNode(['Neue Testdokumente'])
-      DocumentPage.multiSelectObject('mat-tree',[title, title2]);
+      Tree.openNode(['Neue Testdokumente']);
+      DocumentPage.multiSelectObject('mat-tree', [title, title2]);
 
       DocumentPage.checkOnlyActiveToolbarButtons(['Copy', 'Delete']);
     });
 
     it('should only select the expanded folder when it was selected', () => {
-      const exactText = new RegExp('^' + 'Testdokumente' + '$');
       const node = 'Testdokumente';
 
       Tree.openNode(['Testdokumente']);
@@ -485,7 +482,6 @@ describe('Tree', () => {
     });
 
     it('should only select the collapsed folder when it was selected', () => {
-      const exactText = new RegExp('^' + 'Testdokumente' + '$');
       const node = 'Testdokumente';
 
       Tree.activateMultiSelectMode();
@@ -509,10 +505,10 @@ describe('Tree', () => {
       // parent node is 'Neue Testdokumente'
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
       // parent node is 'Daten'
-      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false, null);
+      DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false, undefined);
 
-      Tree.openNode(['Neue Testdokumente', title])
-      DocumentPage.multiSelectObject('mat-tree',[title2]);
+      Tree.openNode(['Neue Testdokumente', title]);
+      DocumentPage.multiSelectObject('mat-tree', [title2]);
       CopyCutUtils.copyObject([node]);
 
       Tree.deactivateMultiSelectMode();
@@ -531,8 +527,8 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
-      Tree.openNode(['Neue Testdokumente'])
-      DocumentPage.multiSelectObject('mat-tree',[title, title2]);
+      Tree.openNode(['Neue Testdokumente']);
+      DocumentPage.multiSelectObject('mat-tree', [title, title2]);
     });
 
     it('should delete multiple selected nodes', () => {
@@ -542,8 +538,8 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
-      Tree.openNode(['Neue Testdokumente', title])
-      DocumentPage.multiSelectObject('mat-tree',[title2]);
+      Tree.openNode(['Neue Testdokumente', title]);
+      DocumentPage.multiSelectObject('mat-tree', [title2]);
 
       DocumentPage.deleteLoadedNode();
       // check if multiple selected Docs were deleted

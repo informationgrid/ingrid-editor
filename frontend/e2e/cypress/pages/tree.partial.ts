@@ -1,4 +1,4 @@
-import {DocumentPage, SEPARATOR} from './document.page';
+import { DocumentPage, SEPARATOR } from './document.page';
 
 export class Tree {
   static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
@@ -121,51 +121,68 @@ export class Tree {
   }
 
   static checkNodeHasChildren(nodeTitle: string) {
-    const exactText = this.getRegExp(nodeTitle)
+    const exactText = this.getRegExp(nodeTitle);
     cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').should('exist');
   }
 
-  static activateMultiSelectMode(){
-    cy.get('[data-mat-icon-name=edit_mode]').click();
+  static activateMultiSelectMode() {
+    cy.get('[data-cy=edit-button]').click();
   }
 
-  static deactivateMultiSelectMode(){
+  static deactivateMultiSelectMode() {
     cy.get('[data-mat-icon-name=Entfernen]').click({ multiple: true });
   }
 
-  static checkMultiSelectCheckboxIsVisible(){
+  static checkMultiSelectCheckboxIsVisible() {
     cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
   }
 
-  static checkMultiSelectCheckboxNotExist(){
+  static checkMultiSelectCheckboxNotExist() {
     cy.get('mat-tree-node .mat-checkbox-layout').should('not.exist');
   }
 
-  static expandNode(nodeTitle: string){
-    const exactText = this.getRegExp(nodeTitle)
+  static expandNode(nodeTitle: string) {
+    const exactText = this.getRegExp(nodeTitle);
     cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').click();
   }
 
-  static checkNextNodeIsAChildNode(nodeTitle: string, level: number){
-    const exactText = this.getRegExp(nodeTitle)
-    cy.get('mat-tree-node').contains(exactText).parent().parent().parent().next().should('have.attr', 'aria-level', level);
+  static checkNextNodeIsAChildNode(nodeTitle: string, level: number) {
+    const exactText = this.getRegExp(nodeTitle);
+    cy.get('mat-tree-node')
+      .contains(exactText)
+      .parent()
+      .parent()
+      .parent()
+      .next()
+      .should('have.attr', 'aria-level', level);
   }
 
-  static checkNodeIsNotSelected(nodeTitle: string,){
-    const exactText = this.getRegExp(nodeTitle)
-    cy.get('mat-tree-node').contains(exactText).parent().parent().parent().next().should('not.have.class', 'mat-checkbox-checked');
+  static checkNodeIsNotSelected(nodeTitle: string) {
+    const exactText = this.getRegExp(nodeTitle);
+    cy.get('mat-tree-node')
+      .contains(exactText)
+      .parent()
+      .parent()
+      .parent()
+      .next()
+      .should('not.have.class', 'mat-checkbox-checked');
   }
 
-  static isSelectedNodeExpanded(nodeTitle: string, expanded: boolean){
-    const exactText = this.getRegExp(nodeTitle)
-    if (expanded){
+  static isSelectedNodeExpanded(nodeTitle: string, expanded: boolean) {
+    const exactText = this.getRegExp(nodeTitle);
+    if (expanded) {
       cy.get('mat-tree mat-tree-node').contains(exactText).parent().parent().parent().should('have.class', 'expanded');
-    } else if (!expanded){
-      cy.get('mat-tree mat-tree-node').contains(exactText).parent().parent().parent().should('not.have.class', 'expanded');
+    } else if (!expanded) {
+      cy.get('mat-tree mat-tree-node')
+        .contains(exactText)
+        .parent()
+        .parent()
+        .parent()
+        .should('not.have.class', 'expanded');
     }
   }
-  static checkboxSelected(nodeTitle: string){
-    const exactText = this.getRegExp(nodeTitle)
+  static checkboxSelected(nodeTitle: string) {
+    const exactText = this.getRegExp(nodeTitle);
     cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(exactText);
   }
 

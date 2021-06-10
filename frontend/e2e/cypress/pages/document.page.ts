@@ -102,7 +102,11 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean, parentNode = 'a0df9837-512a-4594-b2ef-2814f7c55c81') {
+  static CreateFullMcloudDocumentWithAPI(
+    title: string,
+    published?: boolean,
+    parentNode = 'a0df9837-512a-4594-b2ef-2814f7c55c81'
+  ) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
@@ -148,6 +152,13 @@ export class DocumentPage extends BasePage {
       periodicity: '8'
     };
 
+    // for local tests
+    /*cy.request({
+      method: 'GET',
+      url: 'http://localhost:8550/login',
+      failOnStatusCode: false
+    });
+    cy.request('POST', `http://localhost:8550/api/datasets?address=false&publish=${published}`, json);*/
     cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
   }
 
@@ -159,57 +170,64 @@ export class DocumentPage extends BasePage {
       title: title,
       _state: 'W',
       _version: 1,
-      text: "Textfeld",
+      text: 'Textfeld',
       description: 'Beschreibung',
-      select: "5",
+      select: '5',
       checkbox: true,
       addresses: [
         {
-          type: "7",
+          type: '7',
           ref: {
-            title: "Published Testorganization",
-            _id: "214ca5bf-da1b-4003-b7b6-e73a2ef0ec10",
-            _type: "AddressDoc",
+            title: 'Published Testorganization',
+            _id: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
+            _type: 'AddressDoc',
             _version: 2,
-            _created: "2020-11-05T11:12:57.000248Z",
-            _modified: "2020-11-05T11:13:19.075264Z",
-            _state: "P",
+            _created: '2020-11-05T11:12:57.000248Z',
+            _modified: '2020-11-05T11:13:19.075264Z',
+            _state: 'P',
             contact: [
               {
-                type: "1",
-                connection: "03351464321653"
+                type: '1',
+                connection: '03351464321653'
               }
             ]
-          },
+          }
         }
       ],
-      multiChips: "84",
+      multiChips: '84',
       multiInputs: [
         {
-          "date": "2021-05-02T22:00:00.000Z",
-          "text": "typ"
+          date: '2021-05-02T22:00:00.000Z',
+          text: 'typ'
         }
       ],
-      multiChipsSimple: "RETURN",
+      multiChipsSimple: 'RETURN',
       repeatDetailListLink: [
         {
-          type: "link",
-          _type: "external",
-          title: "link",
-          description: "link.link"
+          type: 'link',
+          _type: 'external',
+          title: 'link',
+          description: 'link.link'
         }
       ],
       repeatDetailListImage: [
         {
-          type: "png",
-          title: "Image List",
+          type: 'png',
+          title: 'Image List',
           description: null
         }
       ]
     };
 
+    // for local tests
+    /*cy.request({
+      method: 'GET',
+      url: 'http://localhost:8550/login',
+      failOnStatusCode: false
+    });
+    cy.request('POST', `http://localhost:8550/api/datasets?address=false&publish=${published}`, json);*/
     cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
-  };
+  }
 
   static CreateSpatialBboxWithAPI(title: string, published?: boolean) {
     const json = {
@@ -400,12 +418,13 @@ export class DocumentPage extends BasePage {
     cy.url().should('include', text);
   }
 
-  static multiSelectObject(cssItem:string, nodelist: string[]){
-    cy.get('[data-mat-icon-name=edit_mode]').click();
+  // TODO: belongs to tree.partial.ts
+  static multiSelectObject(cssItem: string, nodelist: string[]) {
+    cy.get('[data-cy=edit-button]').click();
     cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
 
-    nodelist.forEach((node) => {
-      cy.get(cssItem).contains(node).click()
+    nodelist.forEach(node => {
+      cy.get(cssItem).contains(node).click();
       cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(node);
     });
   }
