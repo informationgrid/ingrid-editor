@@ -3,13 +3,13 @@
     "enabled": true
   },
   "properties": {
+    "priority": {
+      "type": "short"
+    },
     "title": {
       "type": "text",
-      "analyzer": "decomp",
+      "store": true,
       "fields": {
-        "raw": {
-          "type": "keyword"
-        },
         "decomp_german": {
           "type": "text",
           "analyzer": "decomp_german",
@@ -22,6 +22,10 @@
         "suggest_shingles": {
           "type": "text",
           "analyzer": "suggest_shingles"
+        },
+        "raw": {
+          "type": "keyword",
+          "store": true
         }
       }
     },
@@ -82,7 +86,7 @@
         }
       }
     },
-    "contactPoint": {
+    "contact_point": {
       "properties": {
         "hasUID": {
           "type": "keyword"
@@ -136,10 +140,10 @@
     "modified": {
       "type": "date"
     },
-    "accrualPeriodicity": {
-      "type": "text"
+    "accrual_periodicity": {
+      "type": "keyword"
     },
-    "accessRights": {
+    "access_rights": {
       "type": "text"
     },
     "distribution": {
@@ -188,17 +192,19 @@
             "source": {
               "properties": {
                 "raw_data_source": {
-                  "type": "text"
+                  "type": "text",
+                  "index": false
                 },
                 "portal_link": {
-                  "type": "text"
+                  "type": "text",
+                  "index": false
                 },
                 "attribution": {
                   "type": "keyword"
                 }
               }
             },
-            "isValid": {
+            "is_valid": {
               "type": "boolean",
               "null_value": true
             },
@@ -210,7 +216,7 @@
         "generated_id": {
           "type": "keyword"
         },
-        "displayContact": {
+        "display_contact": {
           "properties": {
             "name": {
               "type": "text",
@@ -251,7 +257,7 @@
         "spatial": {
           "type": "geo_shape"
         },
-        "spatialText": {
+        "spatial_text": {
           "type": "text"
         },
         "temporal": {
@@ -264,7 +270,8 @@
           "type": "keyword"
         },
         "harvested_data": {
-          "type": "text"
+          "type": "text",
+          "index": false
         },
         "mfund_fkz": {
           "type": "keyword"

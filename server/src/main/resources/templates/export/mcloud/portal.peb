@@ -3,28 +3,34 @@
 {
     "uuid": "{{ model.uuid }}",
     "title": "{{ model.title }}",
-    "description": "{{ model.description }}",
+    "description": "{{ model.data.description }}",
     "theme": [
       "{{ model.getThemes() | join('","') | raw }}"
     ],
     "issued": "{{ model.created }}",
     "modified": "{{ model.modified }}",
-    "accrualPeriodicity": null,
-    "contactPoint": null,
+    {% if model.periodicity %}
+        "accrual_periodicity": "{{ model.periodicity }}",
+    {% endif %}
+    "contact_point": null,
     "keywords": null,
     "creator": null,
-    "originator": [
-        {
-            "organization": "{{ model.origin }}"
-        }
-    ],
+    {% if model.data.origin %}
+        "originator": [
+            {
+                "organization": "{{ model.data.origin }}"
+            }
+        ],
+    {% endif %}
     "publisher": {
         "organization": "{{ model.getPublisher().organization }}",
         "homepage": "{{ model.getPublisher().getHomepage() }}"
     },
-    "accessRights": ["{{ model.usage }}"],
+    {% if model.data.usage %}
+        "access_rights": ["{{ model.data.usage }}"],
+    {% endif %}
     "distribution": [
-    {% for download in model.downloads %}
+    {% for download in model.data.downloads %}
         {
             "format": ["{{ download.type }}"],
             "accessURL": "{{ download.link }}",
@@ -34,24 +40,25 @@
     {% endfor %}
     ],
     "extras": {
+        "all": null,
         "metadata": {
             "source": {
                 "attribution": "mCLOUD IGE"
             },
-            "issued": null,
+            "issued": "{{ model.created }}",
             "modified": "{{ model.modified }}",
             "harvested": null,
             "harvesting_errors": null,
-            "isValid": {{ model.isValid }}
+            "is_valid": {{ model.isValid }}
         },
         "generated_id": "{{ model.uuid }}",
         "subgroups": [
-            "{{ model.mCloudCategories | join('","') | raw }}"
+            "{{ model.data.mCloudCategories | join('","') | raw }}"
         ],
         "license": {
-            "id": "{{ model.license }}",
-            "title": "{{ model.license }}",
-            "url": "{{ model.license }}"
+            "id": "{{ model.getLicenseData().id }}",
+            "title": "{{ model.getLicenseData().name }}",
+            "url": "{{ model.getLicenseData().url }}"
         },
         "harvested_data": null,
         "subsection": null,
@@ -72,16 +79,27 @@
             }
             {% endif %}
         ,
-        "spatialText": "{{ model.spatialTitels | join(',') }}",
-        "temporal": null,
-        "groups": null,
-        "displayContact": [{
-            "name": "???",
-            "homepage": "???"
+        "spatial_text": "{{ model.spatialTitels | join(',') }}",
+        "temporal": [{
+         {% if model.data.timeSpan.start %}
+            "gte": "{{model.data.timeSpan.start}}"{% if model.data.timeSpan.end %},{% endif %}
+         {% endif %}
+         {% if model.data.timeSpan.end %}
+            "lte": "{{model.data.timeSpan.end}}"
+         {% endif %}
         }],
-        "realtime": {{ model.periodicity == "1" }},
-        "citation": null,
-        "mfund_fkz": "{{ model.mfundFKZ }}",
-        "mfund_project_title": "{{ model.mfundProject }}"
+        "groups": null,
+        "display_contact": [{
+            "name": "{{ model.getPublisher().organization }}",
+            "homepage": "{{ model.getPublisher().getHomepage() }}"
+        }],
+        "realtime": {{ model.data.periodicity == "1" }},
+        {% if  model.data.mfundFKZ %}
+            "mfund_fkz": "{{ model.data.mfundFKZ }}",
+         {% endif %}
+        {% if  model.data.mfundProject %}
+            "mfund_project_title": "{{ model.data.mfundProject }}",
+         {% endif %}
+        "citation": null
     }
 }

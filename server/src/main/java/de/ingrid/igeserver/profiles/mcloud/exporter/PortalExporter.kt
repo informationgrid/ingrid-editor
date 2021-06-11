@@ -32,7 +32,8 @@ class PortalExporter : IgeExporter {
 
     override fun run(jsonData: Document): Any {
         val engine = PebbleEngine.Builder()
-            .newLineTrimming(false)
+            .defaultEscapingStrategy("json")
+            //.newLineTrimming(false)
             .build()
 
         // TODO: should we handle export of addresses here too, instead of having another class
@@ -42,7 +43,7 @@ class PortalExporter : IgeExporter {
         val writer: Writer = StringWriter()
         val map = getMapFromObject(jsonData)
         compiledTemplate.evaluate(writer, map)
-        return writer.toString().replace("\\s+\n".toRegex(), "\n")
+        return writer.toString()
     }
 
     override fun toString(exportedObject: Any): String {
