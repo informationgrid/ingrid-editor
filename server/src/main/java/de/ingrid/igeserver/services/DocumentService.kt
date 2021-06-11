@@ -210,7 +210,7 @@ class DocumentService @Autowired constructor(
     }
 
     private fun removeInternalFields(node: ObjectNode): ObjectNode {
-        listOf(FIELD_VERSION, FIELD_CREATED, FIELD_MODIFIED, FIELD_ID, FIELD_DOCUMENT_TYPE, "title")
+        listOf(FIELD_VERSION, FIELD_CREATED, FIELD_MODIFIED, FIELD_ID, FIELD_DOCUMENT_TYPE, "title", "hasWritePermission")
             .forEach { node.remove(it) }
         return node
     }
