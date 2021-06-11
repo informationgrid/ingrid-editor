@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.RoleRepository
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.*
+import java.util.Optional.empty
 import javax.annotation.PostConstruct
 import kotlin.concurrent.schedule
 
@@ -18,7 +20,7 @@ class SetupDevelopUsers @Autowired constructor(
     val catalogRepo: CatalogRepository,
     val roleRepo: RoleRepository,
 ) {
-    
+
     @PostConstruct
     fun init() {
         // delay initialization after all migrations
@@ -28,12 +30,22 @@ class SetupDevelopUsers @Autowired constructor(
                 return@schedule
             }
 
+            if (catalogRepo.count() < 1) {
+                val catalog = Catalog().apply {
+                    this.id = 1
+                    this.name = "Testkatalog"
+                    this.identifier = "testkatalog"
+                    this.type = "mcloud"
+                }
+                catalogRepo.save(catalog)
+            }
+
             createUser("userCat", "ige-super-admin")
             createUser("userMD", "md-admin")
             createUser("userAuthor", "author")
         }
-    } 
-    
+    }
+
     private fun createUser(login: String, role: String) {
         val user = UserInfo().apply {
             this.userId = login
@@ -41,7 +53,9 @@ class SetupDevelopUsers @Autowired constructor(
         }
 
         val persistedUser = userRepo.save(user)
-        persistedUser.catalogs = mutableSetOf(catalogRepo.findById(1).get())
+        val kat1 = catalogRepo.findById(1).get()
+        persistedUser.catalogs = mutableSetOf(kat1)
+        persistedUser.curCatalog = kat1;
         userRepo.save(persistedUser)
     }
 }
