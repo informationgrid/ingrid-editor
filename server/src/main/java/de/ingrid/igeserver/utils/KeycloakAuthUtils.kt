@@ -1,10 +1,9 @@
 package de.ingrid.igeserver.utils
 
-import de.ingrid.igeserver.ClientException
 import org.keycloak.KeycloakPrincipal
-import org.keycloak.adapters.springsecurity.account.KeycloakRole
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import java.security.Principal
 
@@ -22,6 +21,7 @@ class KeycloakAuthUtils : AuthUtils {
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
-        return (principal as KeycloakAuthenticationToken).authorities.contains(KeycloakRole("ROLE_$role"))
+        principal as KeycloakAuthenticationToken
+        return principal.authorities.contains(SimpleGrantedAuthority(role))
     }
 }
