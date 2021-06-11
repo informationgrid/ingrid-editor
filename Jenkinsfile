@@ -55,10 +55,6 @@ pipeline {
                         script {
                             try {
                                 sh './gradlew :frontend:test'
-                            } catch(error) {}
-                        },
-                        script {
-                            try {
                                 sh './gradlew :frontend:testFormatting'
                             } catch(error) {}
                         }
