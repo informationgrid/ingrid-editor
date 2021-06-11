@@ -33,6 +33,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     fun countByParent_Id(parent_uuid: String): Long
 
+    @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteById(uuid: String)
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
