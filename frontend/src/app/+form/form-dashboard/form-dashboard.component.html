@@ -2,11 +2,17 @@
 
 <div class="text-center shortcut">
     <button mat-button (click)="createNewFolder()">
-        <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="outline-create_new_folder-24px"
+        ></mat-icon>
         <span>Neuer Ordner</span>
     </button>
     <button mat-button (click)="createNewDataset()">
-        <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="Neuer-Datensatz"
+        ></mat-icon>
         <span>Neuer Datensatz</span>
     </button>
     <button mat-button (click)="importDataset()" disabled>
@@ -17,9 +23,11 @@
 
 <div *ngIf="(childDocs$ | async)?.length">
     <ige-card-box fxFlex label="Zuletzt bearbeitet" data-cy="card-latest-docs">
-        <ige-document-list-item [docs]="childDocs$"
-                                [hideDate]="false"
-                                (select)="openDocument($event.id)"></ige-document-list-item>
+        <ige-document-list-item
+            [docs]="childDocs$"
+            [hideDate]="false"
+            (select)="openDocument($event.id)"
+        ></ige-document-list-item>
     </ige-card-box>
 </div>
 
@@ -28,6 +36,12 @@
         <mat-icon svgIcon="image-banner-dataset"></mat-icon>
     </div>
     <h2>Kein Ordner oder Datensatz vorhanden</h2>
-    <p>Legen Sie einen neuen Ordner oder Datensatz an oder importieren Sie Datensätze.</p>
-    <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
+    <p>
+        Legen Sie einen neuen Ordner oder Datensatz an oder importieren Sie
+        Datensätze.
+    </p>
+    <p>
+        Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
+        der Werkzeugleiste.
+    </p>
 </div>

@@ -1,20 +1,20 @@
-import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
-import {ModalService} from '../../../services/modal/modal.service';
-import {DocumentService} from '../../../services/document/document.service';
-import {Plugin} from '../../../+catalog/+behaviours/plugin';
-import {FormGroup} from '@angular/forms';
-import {FormularService} from '../../formular.service';
+import { Injectable } from "@angular/core";
+import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { ModalService } from "../../../services/modal/modal.service";
+import { DocumentService } from "../../../services/document/document.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { FormGroup } from "@angular/forms";
+import { FormularService } from "../../formular.service";
 
 @Injectable()
 export class UndoPlugin extends Plugin {
-  id = 'plugin.undo';
-  _name = 'Undo Plugin';
-  group = 'Toolbar';
+  id = "plugin.undo";
+  _name = "Undo Plugin";
+  group = "Toolbar";
   defaultActive = true;
 
-  eventUndoId = 'UNDO';
-  eventRedoId = 'REDO';
+  eventUndoId = "UNDO";
+  eventRedoId = "REDO";
 
   form: FormGroup;
   private history: any[] = [];
@@ -25,66 +25,76 @@ export class UndoPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(private formToolbarService: FormToolbarService,
-              private formService: FormularService,
-              private modalService: ModalService,
-              private storageService: DocumentService) {
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private formService: FormularService,
+    private modalService: ModalService,
+    private storageService: DocumentService
+  ) {
     super();
   }
 
   register() {
     super.register();
 
-    this.formToolbarService.addButton({id: 'toolBtnUndoSeparator', isSeparator: true, pos: 140});
-
-    // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnUndo',
-      tooltip: 'Undo',
-      matIconVariable: 'undo',
-      eventId: this.eventUndoId,
-      pos: 150,
-      active: false
+      id: "toolBtnUndoSeparator",
+      isSeparator: true,
+      pos: 140,
     });
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
-      id: 'toolBtnRedo',
-      tooltip: 'Redo',
-      matIconVariable: 'redo',
+      id: "toolBtnUndo",
+      tooltip: "Undo",
+      matIconVariable: "undo",
+      eventId: this.eventUndoId,
+      pos: 150,
+      active: false,
+    });
+
+    // add button to toolbar for revert action
+    this.formToolbarService.addButton({
+      id: "toolBtnRedo",
+      tooltip: "Redo",
+      matIconVariable: "redo",
       eventId: this.eventRedoId,
       pos: 160,
-      active: false
+      active: false,
     });
 
     // add event handler for revert
-    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === this.eventUndoId) {
-        this.undo();
-      } else if (eventId === this.eventRedoId) {
-        this.redo();
-      }
-    });
+    const toolbarEventSubscription =
+      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
+        if (eventId === this.eventUndoId) {
+          this.undo();
+        } else if (eventId === this.eventRedoId) {
+          this.redo();
+        }
+      });
 
-    const afterLoadSubscription = this.storageService.afterLoadAndSet$.subscribe((data) => {
-      if (data) {
-        this.history = [];
-        this.redoHistory = [];
-        // this.actionTriggered = true;
+    const afterLoadSubscription =
+      this.storageService.afterLoadAndSet$.subscribe((data) => {
+        if (data) {
+          this.history = [];
+          this.redoHistory = [];
+          // this.actionTriggered = true;
 
-        this.formToolbarService.setButtonState('toolBtnUndo', false);
+          this.formToolbarService.setButtonState("toolBtnUndo", false);
 
-        // add behaviour to set active states for toolbar buttons
-        // need to add behaviour after each load since form-object changes!
+          // add behaviour to set active states for toolbar buttons
+          // need to add behaviour after each load since form-object changes!
 
-        // FIXME: form is not available when opening a document, going to dashboard and back to form again
-        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
-        this.addBehaviour();
+          // FIXME: form is not available when opening a document, going to dashboard and back to form again
+          //        seems to be, because when clicking on form, the last opened document is being reloaded!?
+          this.addBehaviour();
 
-        this.subscriptions.push(toolbarEventSubscription, afterLoadSubscription);
-      }
-    });
-
+          this.subscriptions.push(
+            toolbarEventSubscription,
+            afterLoadSubscription
+          );
+        }
+      });
   }
 
   private undo() {
@@ -100,12 +110,11 @@ export class UndoPlugin extends Plugin {
 
     // deactivate undo button if history only contains the initial document
     if (this.history.length < 2) {
-      this.formToolbarService.setButtonState('toolBtnUndo', false);
+      this.formToolbarService.setButtonState("toolBtnUndo", false);
     }
 
     // enable redo button
-    this.formToolbarService.setButtonState('toolBtnRedo', true);
-
+    this.formToolbarService.setButtonState("toolBtnRedo", true);
   }
 
   private redo() {
@@ -116,7 +125,7 @@ export class UndoPlugin extends Plugin {
     this.form.setValue(updatedValue);
 
     if (this.redoHistory.length === 0) {
-      this.formToolbarService.setButtonState('toolBtnRedo', false);
+      this.formToolbarService.setButtonState("toolBtnRedo", false);
     }
 
     // FIXME: problem when undo/redo is happening too fast since debounce time will register change less often
@@ -125,9 +134,9 @@ export class UndoPlugin extends Plugin {
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton('toolBtnUndoSeparator');
-    this.formToolbarService.removeButton('toolBtnUndo');
-    this.formToolbarService.removeButton('toolBtnRedo');
+    this.formToolbarService.removeButton("toolBtnUndoSeparator");
+    this.formToolbarService.removeButton("toolBtnUndo");
+    this.formToolbarService.removeButton("toolBtnRedo");
   }
 
   /**

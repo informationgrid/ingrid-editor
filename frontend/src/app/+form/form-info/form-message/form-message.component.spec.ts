@@ -1,57 +1,59 @@
-import {FormMessageComponent, FormMessageType} from './form-message.component';
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {MatIconModule} from '@angular/material/icon';
-import {fakeAsync, tick} from '@angular/core/testing';
-import {MessageService} from '../../../services/message.service';
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {MatButtonModule} from '@angular/material/button';
+import {
+  FormMessageComponent,
+  FormMessageType,
+} from "./form-message.component";
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { MatIconModule } from "@angular/material/icon";
+import { fakeAsync, tick } from "@angular/core/testing";
+import { MessageService } from "../../../services/message.service";
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatButtonModule } from "@angular/material/button";
 
-describe('FormMessageComponent', () => {
-
+describe("FormMessageComponent", () => {
   const INFO_MESSAGE: FormMessageType = {
-    severity: 'info',
-    message: 'Dies ist eine Infonachricht'
+    severity: "info",
+    message: "Dies ist eine Infonachricht",
   };
 
   const ERROR_MESSAGE: FormMessageType = {
-    severity: 'error',
-    message: 'Dies ist eine Fehlernachricht'
+    severity: "error",
+    message: "Dies ist eine Fehlernachricht",
   };
 
   let spectator: Spectator<FormMessageComponent>;
   // const db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: FormMessageComponent,
-    imports: [MatIconModule, MatButtonModule, FlexLayoutModule]
+    imports: [MatIconModule, MatButtonModule, FlexLayoutModule],
   });
 
   beforeEach(() => {
     spectator = createHost();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(spectator.component).toBeTruthy();
   });
 
-  it('should be hidden if no message was received', () => {
+  it("should be hidden if no message was received", () => {
     spectator.detectChanges();
-    const wrapper = spectator.query('.wrapper');
+    const wrapper = spectator.query(".wrapper");
     expect(wrapper).not.toExist();
   });
 
-  it('should show info message', () => {
+  it("should show info message", () => {
     const service = spectator.inject(MessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
 
-    const wrapper = spectator.query('.wrapper');
+    const wrapper = spectator.query(".wrapper");
     expect(wrapper).toExist();
-    expect(wrapper).toContainText('Dies ist eine Infonachricht');
-    expect(wrapper).toHaveClass('info');
+    expect(wrapper).toContainText("Dies ist eine Infonachricht");
+    expect(wrapper).toHaveClass("info");
   });
 
-  it('should hide an info message after 3s', fakeAsync(() => {
+  it("should hide an info message after 3s", fakeAsync(() => {
     const service = spectator.inject(MessageService);
     service.message$.next(INFO_MESSAGE);
 
@@ -59,23 +61,23 @@ describe('FormMessageComponent', () => {
     tick(3000);
     spectator.detectChanges();
 
-    const wrapper = spectator.query('.wrapper');
+    const wrapper = spectator.query(".wrapper");
     expect(wrapper).not.toExist();
   }));
 
-  it('should show an error message', () => {
+  it("should show an error message", () => {
     const service = spectator.inject(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();
 
-    const wrapper = spectator.query('.wrapper');
+    const wrapper = spectator.query(".wrapper");
     expect(wrapper).toExist();
-    expect(wrapper).toContainText('Dies ist eine Fehlernachricht');
-    expect(wrapper).toHaveClass('error');
+    expect(wrapper).toContainText("Dies ist eine Fehlernachricht");
+    expect(wrapper).toHaveClass("error");
   });
 
-  it('should not hide an error message after 3s', fakeAsync(() => {
+  it("should not hide an error message after 3s", fakeAsync(() => {
     const service = spectator.inject(MessageService);
     service.message$.next(ERROR_MESSAGE);
 
@@ -83,15 +85,11 @@ describe('FormMessageComponent', () => {
     tick(3000);
     spectator.detectChanges();
 
-    const wrapper = spectator.query('.wrapper');
+    const wrapper = spectator.query(".wrapper");
     expect(wrapper).toExist();
   }));
 
-  xit('should jump to next and previous error', () => {
+  xit("should jump to next and previous error", () => {});
 
-  });
-
-  xit('should explicitly close an error message', () => {
-
-  });
+  xit("should explicitly close an error message", () => {});
 });

@@ -1,23 +1,18 @@
-import {TreeNode} from '../../../store/tree/tree-node.model';
-import {TreeControl} from '@angular/cdk/tree';
+import { TreeNode } from "../../../store/tree/tree-node.model";
+import { TreeControl } from "@angular/cdk/tree";
 
 export interface DropInfo {
   allow: boolean;
-  srcNode?: TreeNode
+  srcNode?: TreeNode;
 }
 
 export class DragNDropUtils {
-
-
   dragNodeExpandOverNode: TreeNode;
   private dragNodeExpandOverTime: number;
   private dragNodeExpandOverWaitTimeMs = 1000;
   private dragNode: TreeNode;
 
-
-  constructor(private treeControl: TreeControl<any>) {
-
-  }
+  constructor(private treeControl: TreeControl<any>) {}
 
   /**
    * See here for example: https://stackblitz.com/edit/angular-draggable-mat-tree
@@ -28,18 +23,18 @@ export class DragNDropUtils {
     if (droppedNode !== this.dragNode) {
       return {
         allow: true,
-        srcNode: this.dragNode
-      }
+        srcNode: this.dragNode,
+      };
     } else {
       return {
-        allow: false
-      }
+        allow: false,
+      };
     }
   }
 
   handleDragStart(event, node) {
     // Required by Firefox (https://stackoverflow.com/questions/19055264/why-doesnt-html5-drag-and-drop-work-in-firefox)
-    event.dataTransfer.setData('foo', 'bar');
+    event.dataTransfer.setData("foo", "bar");
     // event.dataTransfer.setDragImage(this.emptyItem.nativeElement, 0, 0);
     this.dragNode = node;
     this.treeControl.collapse(node);
@@ -47,13 +42,16 @@ export class DragNDropUtils {
 
   handleDragOver(event, node) {
     // for now only moving objects is allowed
-    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.effectAllowed = "move";
     event.preventDefault();
 
     // Handle node expand
     if (node === this.dragNodeExpandOverNode) {
       if (this.dragNode !== node && !this.treeControl.isExpanded(node)) {
-        if ((new Date().getTime() - this.dragNodeExpandOverTime) > this.dragNodeExpandOverWaitTimeMs) {
+        if (
+          new Date().getTime() - this.dragNodeExpandOverTime >
+          this.dragNodeExpandOverWaitTimeMs
+        ) {
           this.treeControl.expand(node);
         }
       }
@@ -79,5 +77,4 @@ export class DragNDropUtils {
     this.dragNodeExpandOverNode = undefined;
     this.dragNodeExpandOverTime = 0;
   }
-
 }

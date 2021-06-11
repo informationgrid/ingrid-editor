@@ -1,14 +1,20 @@
 <page-template [label]="title">
     <ng-container left-side>
-        Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese Änderungen sind nur in diesem Katalog
-        sichtbar. Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden sollen, dann muss
-        dies im Codelist-Repository geschehen.
+        Sie haben hier die Möglichkeit bestehende Codelisten anzupassen. Diese
+        Änderungen sind nur in diesem Katalog sichtbar. Wenn diese Änderungen
+        auch in anderen Katalogen oder im Portal verwendet werden sollen, dann
+        muss dies im Codelist-Repository geschehen.
     </ng-container>
 
     <div main-header fxLayout="column" fxFlex fxLayoutAlign="center start">
         <div>
-            <button mat-flat-button color="primary" (click)="save()"
-                    [disabled]="hasInvalidForm()">Speichern
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="save()"
+                [disabled]="hasInvalidForm()"
+            >
+                Speichern
             </button>
         </div>
     </div>
@@ -16,12 +22,13 @@
     <div main-content fxFlex>
         <div class="scrollable">
             <div *ngFor="let item of plugins | keyvalue" class="section">
-                <div class="section-title">{{item.key}}</div>
-                <ige-behaviour-item *ngFor="let plugin of item.value"
-                                    [title]="plugin.name"
-                                    [description]="plugin.description"
-                                    [control]="fields[plugin.id]"></ige-behaviour-item>
-
+                <div class="section-title">{{ item.key }}</div>
+                <ige-behaviour-item
+                    *ngFor="let plugin of item.value"
+                    [title]="plugin.name"
+                    [description]="plugin.description"
+                    [control]="fields[plugin.id]"
+                ></ige-behaviour-item>
             </div>
         </div>
     </div>

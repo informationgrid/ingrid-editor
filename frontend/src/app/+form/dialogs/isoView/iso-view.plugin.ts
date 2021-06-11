@@ -1,17 +1,19 @@
-import {Injectable} from '@angular/core';
-import {Plugin} from '../../../+catalog/+behaviours/plugin';
-import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
-import {IsoViewComponent} from './iso-view.component';
-import {MatDialog} from '@angular/material/dialog';
+import { Injectable } from "@angular/core";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { IsoViewComponent } from "./iso-view.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Injectable()
 export class IsoViewPlugin extends Plugin {
-  id = 'plugin.isoView';
-  _name = 'Iso View Plugin';
+  id = "plugin.isoView";
+  _name = "Iso View Plugin";
   defaultActive = true;
 
-  constructor(private formToolbarService: FormToolbarService,
-              private dialog: MatDialog) {
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private dialog: MatDialog
+  ) {
     super();
   }
 
@@ -24,17 +26,23 @@ export class IsoViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
-      id: 'toolBtnIso', tooltip: 'ISO Ansicht', matIconVariable: 'remove_red_eye', eventId: 'ISO', pos: 80, active: false
+      id: "toolBtnIso",
+      tooltip: "ISO Ansicht",
+      matIconVariable: "remove_red_eye",
+      eventId: "ISO",
+      pos: 80,
+      active: false,
     });
 
     // react on event when button is clicked
-    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === 'ISO') {
-        this.showISODialog();
-      }
-    });
+    const toolbarEventSubscription =
+      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
+        if (eventId === "ISO") {
+          this.showISODialog();
+        }
+      });
 
-/*
+    /*
     this.formService.selectedDocuments$.subscribe( data => {
       this.formToolbarService.setButtonState(
         'toolBtnIso',
@@ -43,7 +51,7 @@ export class IsoViewPlugin extends Plugin {
 */
 
     this.subscriptions.push(toolbarEventSubscription);
-  };
+  }
 
   private showISODialog() {
     // show dialog where to copy the dataset(s)
@@ -53,6 +61,6 @@ export class IsoViewPlugin extends Plugin {
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton('toolBtnIso');
+    this.formToolbarService.removeButton("toolBtnIso");
   }
 }

@@ -1,25 +1,24 @@
-import {Component, forwardRef, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Subject} from 'rxjs';
-import {MatListOption, MatSelectionListChange} from '@angular/material/list';
-import {TreeNode} from '../../../store/tree/tree-node.model';
-import {TreeQuery} from '../../../store/tree/tree.query';
-import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
+import { Component, forwardRef, Input } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Subject } from "rxjs";
+import { MatListOption, MatSelectionListChange } from "@angular/material/list";
+import { TreeNode } from "../../../store/tree/tree-node.model";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 
 @Component({
-  selector: 'ige-tree-permission',
-  templateUrl: './tree-permission.component.html',
-  styleUrls: ['./tree-permission.component.scss'],
+  selector: "ige-tree-permission",
+  templateUrl: "./tree-permission.component.html",
+  styleUrls: ["./tree-permission.component.scss"],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => TreePermissionComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class TreePermissionComponent implements ControlValueAccessor {
-
   @Input() address = false;
 
   val = [];
@@ -31,11 +30,10 @@ export class TreePermissionComponent implements ControlValueAccessor {
   groups: any[];
 
   disableTreeNodes = (node: TreeNode) => {
-    return this.val.some(v => v.uuid === node._id);
+    return this.val.some((v) => v.uuid === node._id);
   };
 
   set value(val) {
-
     // TODO: fetch titles from tree nodes
     this.val = val ?? [];
     if (this.onChange) {
@@ -46,8 +44,10 @@ export class TreePermissionComponent implements ControlValueAccessor {
     }
   }
 
-  constructor(private treeQuery: TreeQuery, private addressTreeQuery: AddressTreeQuery) {
-  }
+  constructor(
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery
+  ) {}
 
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -65,7 +65,10 @@ export class TreePermissionComponent implements ControlValueAccessor {
     const query = this.address ? this.addressTreeQuery : this.treeQuery;
     const entity = query.getEntity(this.selection[0]);
 
-    this.value = [...this.val, {uuid: this.selection[0], title: entity.title, permission: option}];
+    this.value = [
+      ...this.val,
+      { uuid: this.selection[0], title: entity.title, permission: option },
+    ];
     this.activeNodeSetter.next(null);
   }
 
@@ -74,11 +77,14 @@ export class TreePermissionComponent implements ControlValueAccessor {
   }
 
   shouldDisableAddButton() {
-    return this.selection.length === 0 || this.val.some(item => item.uuid === this.selection[0]);
+    return (
+      this.selection.length === 0 ||
+      this.val.some((item) => item.uuid === this.selection[0])
+    );
   }
 
   removePermission(item: MatListOption) {
-    this.value = this.val.filter(entry => item.value !== entry.uuid);
+    this.value = this.val.filter((entry) => item.value !== entry.uuid);
     this.activeNodeSetter.next(null);
   }
 }

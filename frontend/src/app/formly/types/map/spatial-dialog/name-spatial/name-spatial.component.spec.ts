@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { NameSpatialComponent } from './name-spatial.component';
+import { NameSpatialComponent } from "./name-spatial.component";
 
-describe('NameSpatialComponent', () => {
+describe("NameSpatialComponent", () => {
   let component: NameSpatialComponent;
   let fixture: ComponentFixture<NameSpatialComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ NameSpatialComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [NameSpatialComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NameSpatialComponent);
@@ -19,7 +20,7 @@ describe('NameSpatialComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

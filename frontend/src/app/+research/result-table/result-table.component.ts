@@ -1,10 +1,18 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {ResearchResponse} from '../research.service';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
-import {MatPaginator} from '@angular/material/paginator';
-import {SelectOption} from '../../services/codelist/codelist.service';
-import {ProfileService} from '../../services/profile.service';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
+import { ResearchResponse } from "../research.service";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatSort } from "@angular/material/sort";
+import { MatPaginator } from "@angular/material/paginator";
+import { SelectOption } from "../../services/codelist/codelist.service";
+import { ProfileService } from "../../services/profile.service";
 
 export interface ShortResultInfo {
   uuid: string;
@@ -12,20 +20,23 @@ export interface ShortResultInfo {
 }
 
 @Component({
-  selector: 'ige-result-table',
-  templateUrl: './result-table.component.html',
-  styleUrls: ['./result-table.component.scss']
+  selector: "ige-result-table",
+  templateUrl: "./result-table.component.html",
+  styleUrls: ["./result-table.component.scss"],
 })
 export class ResultTableComponent implements OnInit, AfterViewInit {
-
   @Input()
   set result(val: ResearchResponse) {
     this.dataSource.data = val?.hits || [];
     this.totalHits = val?.totalHits || 0;
     if (this.displayedColumns.length === 0) {
-      setTimeout(() => this.displayedColumns = ['_type', 'title', '_modified', 'settings'], 300);
+      setTimeout(
+        () =>
+          (this.displayedColumns = ["_type", "title", "_modified", "settings"]),
+        300
+      );
     }
-  };
+  }
 
   @Output() save = new EventEmitter<void>();
   @Output() open = new EventEmitter<ShortResultInfo>();
@@ -42,8 +53,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   totalHits = 0;
   profileIconsMap: {};
 
-  constructor(private profileService: ProfileService) {
-  }
+  constructor(private profileService: ProfileService) {}
 
   ngOnInit(): void {
     let profiles = this.profileService.getProfiles();
@@ -62,7 +72,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   openDataset(element) {
     this.open.emit({
       uuid: element.uuid,
-      isAddress: element._category === "address"
+      isAddress: element._category === "address",
     });
   }
 }

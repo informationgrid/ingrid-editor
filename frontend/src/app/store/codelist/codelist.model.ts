@@ -18,7 +18,7 @@ export interface CodelistBackend {
   name: string;
   description?: string;
   defaultEntry?: string;
-  entries: CodelistEntryBackend[],
+  entries: CodelistEntryBackend[];
   lastModified?: number;
 }
 

@@ -1,24 +1,23 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {IndexService, LogResult} from './index.service';
-import cronstrue from 'cronstrue/i18n';
-import {FormControl} from '@angular/forms';
-import {ConfigService} from '../../services/config/config.service';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {RxStompService} from '@stomp/ng2-stompjs';
-import {Clipboard} from '@angular/cdk/clipboard';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {map} from 'rxjs/operators';
-import {merge, Observable} from 'rxjs';
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { IndexService, LogResult } from "./index.service";
+import cronstrue from "cronstrue/i18n";
+import { FormControl } from "@angular/forms";
+import { ConfigService } from "../../services/config/config.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { RxStompService } from "@stomp/ng2-stompjs";
+import { Clipboard } from "@angular/cdk/clipboard";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { map } from "rxjs/operators";
+import { merge, Observable } from "rxjs";
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-indexing',
-  templateUrl: './indexing.component.html',
-  styleUrls: ['./indexing.component.scss']
+  selector: "ige-indexing",
+  templateUrl: "./indexing.component.html",
+  styleUrls: ["./indexing.component.scss"],
 })
 export class IndexingComponent implements OnInit {
-
-  @ViewChild('indexContent') indexContent: ElementRef<HTMLElement>;
+  @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
 
   cronField = new FormControl();
 
@@ -29,17 +28,18 @@ export class IndexingComponent implements OnInit {
 
   liveImportMessage: Observable<LogResult> = merge(
     this.indexService.lastLog$,
-    this.rxStompService.watch('/topic/indexStatus')
-      .pipe(
-        map(msg => JSON.parse(msg.body))
-      )
+    this.rxStompService
+      .watch("/topic/indexStatus")
+      .pipe(map((msg) => JSON.parse(msg.body)))
   );
 
-  constructor(private indexService: IndexService,
-              private configService: ConfigService,
-              private clipboard: Clipboard,
-              private snackBar: MatSnackBar,
-              private rxStompService: RxStompService) {
+  constructor(
+    private indexService: IndexService,
+    private configService: ConfigService,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private rxStompService: RxStompService
+  ) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
   }
 
@@ -48,14 +48,15 @@ export class IndexingComponent implements OnInit {
       return;
     }
 
-    this.indexService.getCronPattern()
-      .subscribe(config => this.cronField.setValue(config.cronPattern));
+    this.indexService
+      .getCronPattern()
+      .subscribe((config) => this.cronField.setValue(config.cronPattern));
 
     this.indexService.fetchLastLog();
 
     this.cronField.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe(value => {
+      .subscribe((value) => {
         let expression = this.translateCronExpression(value);
         this.hint = expression.message;
         this.valid = expression.valid;
@@ -70,23 +71,24 @@ export class IndexingComponent implements OnInit {
     this.indexService.setCronPattern(value).subscribe();
   }
 
-  translateCronExpression(value: string): { valid: boolean, message: string } {
-    if (!value || value.trim().split(' ').length !== 6) {
+  translateCronExpression(value: string): { valid: boolean; message: string } {
+    if (!value || value.trim().split(" ").length !== 6) {
       return {
         valid: true,
-        message: 'Ein gültige Cron Ausdruck sieht folgendermaßen aus: 0 */10 * * * *'
+        message:
+          "Ein gültige Cron Ausdruck sieht folgendermaßen aus: 0 */10 * * * *",
       };
     }
 
     try {
       return {
         valid: true,
-        message: cronstrue.toString(value, {locale: 'de'})
+        message: cronstrue.toString(value, { locale: "de" }),
       };
     } catch (e) {
       return {
         valid: false,
-        message: 'Ungültiger Ausdruck'
+        message: "Ungültiger Ausdruck",
       };
     }
   }
@@ -95,11 +97,11 @@ export class IndexingComponent implements OnInit {
     event.preventDefault();
 
     this.clipboard.copy(this.indexContent.nativeElement.innerText);
-    this.snackBar.open('Log in Zwischenablage kopiert');
+    this.snackBar.open("Log in Zwischenablage kopiert");
   }
 
   deactivateIndexing() {
-    this.updatePattern('');
-    this.cronField.setValue('');
+    this.updatePattern("");
+    this.cronField.setValue("");
   }
 }

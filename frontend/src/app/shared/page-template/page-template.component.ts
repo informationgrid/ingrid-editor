@@ -1,17 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'page-template',
-  templateUrl: './page-template.component.html',
-  styleUrls: ['./page-template.component.scss']
+  selector: "page-template",
+  templateUrl: "./page-template.component.html",
+  styleUrls: ["./page-template.component.scss"],
 })
 export class PageTemplateComponent implements OnInit {
+  @Input() label = "";
 
-  @Input() label = '';
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

@@ -1,62 +1,64 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>IGE-NG</title>
-    <base href="/">
+    <head>
+        <meta charset="utf-8" />
+        <title>IGE-NG</title>
+        <base href="/" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
-    <link rel="apple-touch-icon" href="assets/icons/IGE-NG_apple-touch-icon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico" />
+        <link
+            rel="apple-touch-icon"
+            href="assets/icons/IGE-NG_apple-touch-icon.png"
+        />
 
-
-    <style type="text/css">
-        .app-loading {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .app-loading h1 {
-            color: #28225B;
-        }
-
-        .lds-dual-ring {
-            display: inline-block;
-            width: 64px;
-            height: 64px;
-        }
-        .lds-dual-ring:after {
-            content: " ";
-            display: block;
-            width: 46px;
-            height: 46px;
-            margin: 1px;
-            border-radius: 50%;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #28225B transparent #28225B transparent;
-            animation: lds-dual-ring 1.2s linear infinite;
-        }
-        @keyframes lds-dual-ring {
-            0% {
-                transform: rotate(0deg);
+        <style type="text/css">
+            .app-loading {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
             }
-            100% {
-                transform: rotate(360deg);
+
+            .app-loading h1 {
+                color: #28225b;
             }
-        }
-    </style>
-</head>
-<body>
-<ige-root>
-    <div class="app-loading">
-        <h1>Lade IGE-NG</h1>
-        <div class="lds-dual-ring"></div>
-    </div>
-</ige-root>
-</body>
+
+            .lds-dual-ring {
+                display: inline-block;
+                width: 64px;
+                height: 64px;
+            }
+            .lds-dual-ring:after {
+                content: " ";
+                display: block;
+                width: 46px;
+                height: 46px;
+                margin: 1px;
+                border-radius: 50%;
+                border-width: 5px;
+                border-style: solid;
+                border-color: #28225b transparent #28225b transparent;
+                animation: lds-dual-ring 1.2s linear infinite;
+            }
+            @keyframes lds-dual-ring {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <ige-root>
+            <div class="app-loading">
+                <h1>Lade IGE-NG</h1>
+                <div class="lds-dual-ring"></div>
+            </div>
+        </ige-root>
+    </body>
 </html>

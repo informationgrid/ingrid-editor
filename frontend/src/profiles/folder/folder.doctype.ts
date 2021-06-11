@@ -1,19 +1,17 @@
-import {BaseDoctype} from '../base.doctype';
-import {Injectable} from '@angular/core';
-import {FormlyFieldConfig} from '@ngx-formly/core';
+import { BaseDoctype } from "../base.doctype";
+import { Injectable } from "@angular/core";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class FolderDoctype extends BaseDoctype {
+  id = "FOLDER";
 
-  id = 'FOLDER';
+  label = "Ordner";
 
-  label = 'Ordner';
-
-  iconClass = 'Ordner';
+  iconClass = "Ordner";
 
   // no extra fields
   documentFields = () => <FormlyFieldConfig[]>[];
-
 }

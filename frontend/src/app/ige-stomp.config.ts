@@ -1,5 +1,5 @@
-import {InjectableRxStompConfig} from '@stomp/ng2-stompjs';
-import {ConfigService} from './services/config/config.service';
+import { InjectableRxStompConfig } from "@stomp/ng2-stompjs";
+import { ConfigService } from "./services/config/config.service";
 
 export class IgeStompConfig extends InjectableRxStompConfig {
   constructor(private config: ConfigService) {
@@ -9,7 +9,10 @@ export class IgeStompConfig extends InjectableRxStompConfig {
     this.brokerURL = this.config.getConfiguration().brokerUrl;
 
     if (!this.brokerURL) {
-      this.brokerURL = ((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/ws';
+      this.brokerURL =
+        (window.location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        "/ws";
     }
 
     // Headers

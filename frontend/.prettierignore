@@ -1,0 +1,6 @@
+target
+build
+coverage
+node_modules
+.gradle
+e2e

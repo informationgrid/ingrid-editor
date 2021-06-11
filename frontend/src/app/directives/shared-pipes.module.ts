@@ -1,10 +1,9 @@
-import {NgModule} from '@angular/core';
-import {DateAgoPipe} from './date-ago.pipe';
+import { NgModule } from "@angular/core";
+import { DateAgoPipe } from "./date-ago.pipe";
 
 @NgModule({
   declarations: [DateAgoPipe],
   imports: [],
-  exports: [DateAgoPipe]
+  exports: [DateAgoPipe],
 })
-export class SharedPipesModule {
-}
+export class SharedPipesModule {}

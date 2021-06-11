@@ -2,11 +2,17 @@
 
 <div class="text-center shortcut">
     <button mat-button (click)="createNewFolder()">
-        <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="outline-create_new_folder-24px"
+        ></mat-icon>
         <span>Neuer Ordner</span>
     </button>
     <button mat-button (click)="createNewAddress()">
-        <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="Neuer-Datensatz"
+        ></mat-icon>
         <span>Neue Adresse</span>
     </button>
     <button mat-button disabled>
@@ -17,9 +23,11 @@
 
 <div *ngIf="(childDocs$ | async)?.length">
     <ige-card-box fxFlex label="Zuletzt bearbeit" data-cy="card-latest-docs">
-        <ige-document-list-item [docs]="childDocs$"
-                                [hideDate]="false"
-                                (select)="openDocument($event.id)"></ige-document-list-item>
+        <ige-document-list-item
+            [docs]="childDocs$"
+            [hideDate]="false"
+            (select)="openDocument($event.id)"
+        ></ige-document-list-item>
     </ige-card-box>
 </div>
 
@@ -28,6 +36,12 @@
         <mat-icon svgIcon="image-banner-address"></mat-icon>
     </div>
     <h2>Kein Ordner oder Adresse vorhanden</h2>
-    <p>Legen Sie einen neuen Ordner oder Adresse an oder importieren Sie Adressen.</p>
-    <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
+    <p>
+        Legen Sie einen neuen Ordner oder Adresse an oder importieren Sie
+        Adressen.
+    </p>
+    <p>
+        Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
+        der Werkzeugleiste.
+    </p>
 </div>

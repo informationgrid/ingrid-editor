@@ -1,14 +1,14 @@
-import {Inject, Injectable} from '@angular/core';
-import {DocumentService} from '../../../../services/document/document.service';
-import {Plugin} from '../../plugin';
-import {Subscription} from 'rxjs';
+import { Inject, Injectable } from "@angular/core";
+import { DocumentService } from "../../../../services/document/document.service";
+import { Plugin } from "../../plugin";
+import { Subscription } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class CreateDocRulesPlugin extends Plugin {
-  id = 'plugin.create.doc';
-  _name = 'Regeln für neues Dokument';
+  id = "plugin.create.doc";
+  _name = "Regeln für neues Dokument";
   defaultActive = true;
 
   description = `
@@ -21,14 +21,16 @@ export class CreateDocRulesPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(@Inject( DocumentService ) private storageService: DocumentService) {
+  constructor(
+    @Inject(DocumentService) private storageService: DocumentService
+  ) {
     super();
   }
 
   register() {
     super.register();
 
-/*    this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
+    /*    this.subscription = this.formService.newDocumentSubject$.subscribe( data => {
       console.log( 'handle new documents', data );
 
       // if no document was selected then everything is allowed
@@ -55,7 +57,7 @@ export class CreateDocRulesPlugin extends Plugin {
 
       }
       console.log( 'handle new documents (after)', data );
-    } )*/;
+    } )*/
   }
 
   unregister() {

@@ -1,4 +1,4 @@
-export type DocumentState = 'P' | 'W' | 'PW';
+export type DocumentState = "P" | "W" | "PW";
 
 export class IgeDocument {
   // the ID of the document, which can be undefined for new documents

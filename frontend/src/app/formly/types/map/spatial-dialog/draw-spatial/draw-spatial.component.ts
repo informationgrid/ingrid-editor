@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'ige-draw-spatial',
-  templateUrl: './draw-spatial.component.html',
-  styleUrls: ['./draw-spatial.component.scss']
+  selector: "ige-draw-spatial",
+  templateUrl: "./draw-spatial.component.html",
+  styleUrls: ["./draw-spatial.component.scss"],
 })
 export class DrawSpatialComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

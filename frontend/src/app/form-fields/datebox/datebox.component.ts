@@ -1,22 +1,19 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, forwardRef, OnInit } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => DateboxComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-  selector: 'ige-datebox',
-  templateUrl: './datebox.component.html',
-  styleUrls: ['./datebox.component.css'],
-  providers: [
-    DATEBOX_CONTROL_VALUE_ACCESSOR
-  ]
+  selector: "ige-datebox",
+  templateUrl: "./datebox.component.html",
+  styleUrls: ["./datebox.component.css"],
+  providers: [DATEBOX_CONTROL_VALUE_ACCESSOR],
 })
 export class DateboxComponent implements ControlValueAccessor, OnInit {
-
   // The internal data model
   private _value: Date;
 
@@ -25,11 +22,9 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   get value() {
     return this._value;
@@ -40,15 +35,15 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(val: any): void {
-    this.value = val === '' ? null : new Date(val);
+    this.value = val === "" ? null : new Date(val);
   }
 
   handleChange(event) {
-    this._onChangeCallback( event );
+    this._onChangeCallback(event);
   }
 
   handleBlur() {
-    this._onChangeCallback( this.value );
+    this._onChangeCallback(this.value);
   }
 
   registerOnChange(fn: any): void {
@@ -58,5 +53,4 @@ export class DateboxComponent implements ControlValueAccessor, OnInit {
   registerOnTouched(fn: any): void {
     this._onTouchedCallback = fn;
   }
-
 }

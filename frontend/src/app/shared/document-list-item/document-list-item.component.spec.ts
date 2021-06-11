@@ -1,12 +1,12 @@
-import { Spectator, createComponentFactory } from '@ngneat/spectator';
+import { Spectator, createComponentFactory } from "@ngneat/spectator";
 
-import { DocumentListItemComponent } from './document-list-item.component';
+import { DocumentListItemComponent } from "./document-list-item.component";
 
-describe('DocumentListItemComponent', () => {
+describe("DocumentListItemComponent", () => {
   let spectator: Spectator<DocumentListItemComponent>;
   const createComponent = createComponentFactory(DocumentListItemComponent);
 
-  it('should create', () => {
+  it("should create", () => {
     spectator = createComponent();
 
     expect(spectator.component).toBeTruthy();

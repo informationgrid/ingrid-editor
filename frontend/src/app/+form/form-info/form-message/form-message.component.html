@@ -1,7 +1,13 @@
-<div class="wrapper" *ngIf="type" [ngClass]="type.severity" [@slideDown] data-cy="form-message">
+<div
+    class="wrapper"
+    *ngIf="type"
+    [ngClass]="type.severity"
+    [@slideDown]
+    data-cy="form-message"
+>
     <span>
-        <mat-icon>{{getIconClass(type.severity)}}</mat-icon>
-        {{type.message}}
+        <mat-icon>{{ getIconClass(type.severity) }}</mat-icon>
+        {{ type.message }}
     </span>
     <ng-container *ngIf="type.severity === 'error'">
         <div fxFlex></div>

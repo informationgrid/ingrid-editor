@@ -1,11 +1,33 @@
-<div *ngIf="dataSource?.data?.length > 0" class="table-header" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required" fxLayout data-cy="{{ to.externalLabel }}-header">
-    <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
+<div
+    *ngIf="dataSource?.data?.length > 0"
+    class="table-header"
+    [class.hasContextHelp]="to.hasContextHelp"
+    [class.required]="to.required"
+    fxLayout
+    data-cy="{{ to.externalLabel }}-header"
+>
+    <ige-form-label
+        [hasContextHelp]="to.hasContextHelp"
+        (contextHelp)="showContextHelp($event)"
+    >
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>
     </ige-form-label>
     <ng-container *ngIf="formControl.enabled">
         <div fxFlex></div>
-        <button type="button" *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
-        <button type="button" *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
+        <button
+            type="button"
+            *ngIf="!batchMode"
+            mat-button
+            (click)="toggleBatchMode()"
+        >
+            Bearbeiten
+        </button>
+        <button
+            type="button"
+            *ngIf="batchMode"
+            mat-button
+            (click)="toggleBatchMode()"
+        >
             <mat-icon>done</mat-icon>
             Fertig
         </button>
@@ -14,36 +36,56 @@
 
 <div fxLayout="column">
     <div *ngIf="batchMode" class="table-batch-edit-row">
-        <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+        <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
         </mat-checkbox>
 
-        <button type="button" mat-button (click)="removeSelectedRows()" [disabled]="selection.isEmpty()">
+        <button
+            type="button"
+            mat-button
+            (click)="removeSelectedRows()"
+            [disabled]="selection.isEmpty()"
+        >
             <mat-icon svgIcon="outline-delete-24px"></mat-icon>
             Löschen
         </button>
         <button type="button" mat-button disabled>Mehr</button>
-
     </div>
 
     <ige-form-error
-        *ngIf="formFieldControl.errorState && !formControl.errors?.required">{{formControl.errors}}</ige-form-error>
+        *ngIf="formFieldControl.errorState && !formControl.errors?.required"
+        >{{ formControl.errors }}</ige-form-error
+    >
 
-    <mat-table *ngIf="dataSource?.data?.length > 0" fxLayout="column" [dataSource]="dataSource"
-               [class.edit-mode]="batchMode" [attr.data-cy]="to.externalLabel+'-table'"
-               cdkDropList (cdkDropListDropped)="drop($event)">
-
-        <ng-container *ngFor="let column of displayedColumns; let i = index" [matColumnDef]="column"
-                      [ngSwitch]="column">
-
+    <mat-table
+        *ngIf="dataSource?.data?.length > 0"
+        fxLayout="column"
+        [dataSource]="dataSource"
+        [class.edit-mode]="batchMode"
+        [attr.data-cy]="to.externalLabel + '-table'"
+        cdkDropList
+        (cdkDropListDropped)="drop($event)"
+    >
+        <ng-container
+            *ngFor="let column of displayedColumns; let i = index"
+            [matColumnDef]="column"
+            [ngSwitch]="column"
+        >
             <!-- Select Column -->
             <ng-container *ngSwitchCase="'_select_'">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let element; let rowIndex = index" class="select-controls">
-                    <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="$event ? selection.toggle(element) : null"
-                                  [checked]="selection.isSelected(element)">
+                <mat-cell
+                    *matCellDef="let element; let rowIndex = index"
+                    class="select-controls"
+                >
+                    <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(element) : null"
+                        [checked]="selection.isSelected(element)"
+                    >
                         <!--[aria-label]="checkboxLabel(row)"-->
                     </mat-checkbox>
                     <mat-icon
@@ -51,8 +93,10 @@
                         (touchstart)="dragDisabled = false"
                         (touchend)="dragDisabled = true"
                         (mousedown)="dragDisabled = false"
-                        (mouseup)="dragDisabled = true">
-                    drag_indicator</mat-icon>
+                        (mouseup)="dragDisabled = true"
+                    >
+                        drag_indicator</mat-icon
+                    >
                 </mat-cell>
             </ng-container>
 
@@ -60,22 +104,54 @@
             <ng-container *ngSwitchCase="'_actions_'">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element; let rowIndex = index">
-                    <button type="button" mat-icon-button class="menu-button" [matMenuTriggerFor]="tableRowAction">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        class="menu-button"
+                        [matMenuTriggerFor]="tableRowAction"
+                    >
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #tableRowAction="matMenu">
-                        <button type="button" mat-menu-item (click)="editRow(rowIndex)">Bearbeiten</button>
-                        <button type="button" mat-menu-item (click)="removeRow(rowIndex)">Löschen</button>
+                        <button
+                            type="button"
+                            mat-menu-item
+                            (click)="editRow(rowIndex)"
+                        >
+                            Bearbeiten
+                        </button>
+                        <button
+                            type="button"
+                            mat-menu-item
+                            (click)="removeRow(rowIndex)"
+                        >
+                            Löschen
+                        </button>
                     </mat-menu>
                 </mat-cell>
             </ng-container>
 
             <!-- Normal column-->
             <ng-container *ngSwitchDefault>
-                <mat-header-cell *matHeaderCellDef [class]="to.columns[batchMode ? i - 1 : i].class"> {{to.columns[batchMode ? i - 1 : i].label}} </mat-header-cell>
-                <mat-cell *matCellDef="let element" [class]="to.columns[batchMode ? i - 1 : i].class">
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [class]="to.columns[batchMode ? i - 1 : i].class"
+                >
+                    {{ to.columns[batchMode ? i - 1 : i].label }}
+                </mat-header-cell>
+                <mat-cell
+                    *matCellDef="let element"
+                    [class]="to.columns[batchMode ? i - 1 : i].class"
+                >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
-                    <span [innerHTML]="formatCell(to.columns[batchMode ? i - 1 : i], element[column])"></span>
+                    <span
+                        [innerHTML]="
+                            formatCell(
+                                to.columns[batchMode ? i - 1 : i],
+                                element[column]
+                            )
+                        "
+                    ></span>
 
                     <!-- This edit is defined in the cell and can implicitly access element -->
                     <!--<ng-template #nameEdit>
@@ -94,30 +170,52 @@
                     </ng-template>-->
                 </mat-cell>
             </ng-container>
-
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="formControl.enabled ? displayedColumns : displayedColumnsReadOnly"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: formControl.enabled ? displayedColumns : displayedColumnsReadOnly;"
-                 (click)="batchMode ? selection.toggle(row) : null"
-                 [class.disabled]="formControl.disabled"
-                 cdkDrag
-                 [cdkDragData]="row"
-                 [cdkDragDisabled]="dragDisabled"
-                 (cdkDragReleased)="dragDisabled = true">
+        <mat-header-row
+            *matHeaderRowDef="
+                formControl.enabled
+                    ? displayedColumns
+                    : displayedColumnsReadOnly
+            "
+        ></mat-header-row>
+        <mat-row
+            *matRowDef="
+                let row;
+                columns: formControl.enabled
+                    ? displayedColumns
+                    : displayedColumnsReadOnly
+            "
+            (click)="batchMode ? selection.toggle(row) : null"
+            [class.disabled]="formControl.disabled"
+            cdkDrag
+            [cdkDragData]="row"
+            [cdkDragDisabled]="dragDisabled"
+            (cdkDragReleased)="dragDisabled = true"
+        >
         </mat-row>
-
     </mat-table>
 </div>
 
-<div *ngIf="formControl.enabled" class="display-flex" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required">
-    <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
+<div
+    *ngIf="formControl.enabled"
+    class="display-flex"
+    [class.hasContextHelp]="to.hasContextHelp"
+    [class.required]="to.required"
+>
+    <ige-form-label
+        [hasContextHelp]="to.hasContextHelp"
+        (contextHelp)="showContextHelp($event)"
+    >
         <ng-container *ngIf="dataSource?.data?.length === 0">
             {{ to.externalLabel }}<span *ngIf="to.required">*</span>
         </ng-container>
     </ige-form-label>
-    <ige-add-button (add)="addRow()"
-                    [showRequiredError]="formFieldControl.errorState && formControl.errors?.required"
-                    [attr.data-cy]="to.externalLabel+'-add'"></ige-add-button>
+    <ige-add-button
+        (add)="addRow()"
+        [showRequiredError]="
+            formFieldControl.errorState && formControl.errors?.required
+        "
+        [attr.data-cy]="to.externalLabel + '-add'"
+    ></ige-add-button>
 </div>
-

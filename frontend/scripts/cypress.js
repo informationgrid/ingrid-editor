@@ -1,13 +1,13 @@
-const cypress = require('cypress');
-const fse = require('fs-extra');
-const { merge } = require('mochawesome-merge');
-const generator = require('mochawesome-report-generator');
+const cypress = require("cypress");
+const fse = require("fs-extra");
+const { merge } = require("mochawesome-merge");
+const generator = require("mochawesome-report-generator");
 
 async function runTests() {
   let opts = {
-    reportDir: 'cypress/mochawesome-reports',
-    reportFilename: 'index',
-    reportTitle: 'ige-ng tests'
+    reportDir: "cypress/mochawesome-reports",
+    reportFilename: "index",
+    reportTitle: "ige-ng tests",
   };
 
   await fse.remove(opts.reportDir); // remove the report folder

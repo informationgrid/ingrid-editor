@@ -1,18 +1,16 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
-  selector: 'ige-add-button',
-  templateUrl: './add-button.component.html',
-  styleUrls: ['./add-button.component.scss']
+  selector: "ige-add-button",
+  templateUrl: "./add-button.component.html",
+  styleUrls: ["./add-button.component.scss"],
 })
 export class AddButtonComponent implements OnInit {
   @Input() showRequiredError = false;
   @Input() showLabel = true;
   @Output() add = new EventEmitter();
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

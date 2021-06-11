@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {ConfigService, Configuration} from '../config/config.service';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { ConfigService, Configuration } from "../config/config.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
   private configuration: Configuration;

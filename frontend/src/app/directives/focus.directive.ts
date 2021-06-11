@@ -1,14 +1,12 @@
-import {Directive, ElementRef, Input} from '@angular/core';
+import { Directive, ElementRef, Input } from "@angular/core";
 
 @Directive({
-  selector: '[igeFocus]'
+  selector: "[igeFocus]",
 })
 export class FocusDirective {
-
   @Input() igeFocus: boolean;
 
-  constructor(private host: ElementRef) {
-  }
+  constructor(private host: ElementRef) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => this.host.nativeElement.focus());

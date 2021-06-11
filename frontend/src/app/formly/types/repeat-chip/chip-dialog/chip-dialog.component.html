@@ -7,16 +7,31 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <mat-selection-list #choice [(ngModel)]="data.model" data-cy="chip-dialog-option-list">
-        <mat-list-option *ngFor="let option of data.options | async" [value]="option.value">
-            {{option.label}}
+    <mat-selection-list
+        #choice
+        [(ngModel)]="data.model"
+        data-cy="chip-dialog-option-list"
+    >
+        <mat-list-option
+            *ngFor="let option of data.options | async"
+            [value]="option.value"
+        >
+            {{ option.label }}
         </mat-list-option>
     </mat-selection-list>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close data-cy="chip-dialog-abort">Abbrechen</button>
+    <button mat-button mat-dialog-close data-cy="chip-dialog-abort">
+        Abbrechen
+    </button>
     <div fxFlex></div>
-    <button mat-button mat-stroked-button color="primary" data-cy="chip-dialog-confirm"
-            [mat-dialog-close]="getSelection(choice.selectedOptions.selected)">Übernehmen
+    <button
+        mat-button
+        mat-stroked-button
+        color="primary"
+        data-cy="chip-dialog-confirm"
+        [mat-dialog-close]="getSelection(choice.selectedOptions.selected)"
+    >
+        Übernehmen
     </button>
 </mat-dialog-actions>

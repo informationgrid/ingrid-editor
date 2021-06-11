@@ -1,27 +1,41 @@
 <mat-nav-list fxFlex fxLayout="column" [class.collapsed]="!menuIsExpanded">
-    <a mat-list-item *ngFor="let item of menuItems | async" [routerLink]="item.path"
-       [matTooltip]="item.data?.title"
-       matTooltipPosition="right"
-       [matTooltipDisabled]="menuIsExpanded"
-       [matTooltipShowDelay]="1000"
-       [class.light]="!item.data?.onlyAdmin"
-       [class.active]="item.path === currentRoute">
-        <mat-icon mat-list-icon
-                  [svgIcon]="item.data?.icon">
-        </mat-icon>
-        <p mat-line>{{item.data?.title}}</p>
+    <a
+        mat-list-item
+        *ngFor="let item of menuItems | async"
+        [routerLink]="item.path"
+        [matTooltip]="item.data?.title"
+        matTooltipPosition="right"
+        [matTooltipDisabled]="menuIsExpanded"
+        [matTooltipShowDelay]="1000"
+        [class.light]="!item.data?.onlyAdmin"
+        [class.active]="item.path === currentRoute"
+    >
+        <mat-icon mat-list-icon [svgIcon]="item.data?.icon"> </mat-icon>
+        <p mat-line>{{ item.data?.title }}</p>
     </a>
 
     <div class="fillVertical"></div>
 
-    <a *ngIf="showDrawer | async" mat-list-item class="menu-toggle"
-       (click)="toggleSidebar(!menuIsExpanded)"
-       matTooltip="Vergrößern"
-       [matTooltipShowDelay]="1000"
-       [matTooltipDisabled]="menuIsExpanded"
-       matTooltipPosition="right">
-        <mat-icon *ngIf="!menuIsExpanded" mat-list-icon svgIcon="Nav-auf"></mat-icon>
-        <mat-icon *ngIf="menuIsExpanded" mat-list-icon svgIcon="Nav-zu"></mat-icon>
+    <a
+        *ngIf="showDrawer | async"
+        mat-list-item
+        class="menu-toggle"
+        (click)="toggleSidebar(!menuIsExpanded)"
+        matTooltip="Vergrößern"
+        [matTooltipShowDelay]="1000"
+        [matTooltipDisabled]="menuIsExpanded"
+        matTooltipPosition="right"
+    >
+        <mat-icon
+            *ngIf="!menuIsExpanded"
+            mat-list-icon
+            svgIcon="Nav-auf"
+        ></mat-icon>
+        <mat-icon
+            *ngIf="menuIsExpanded"
+            mat-list-icon
+            svgIcon="Nav-zu"
+        ></mat-icon>
         <p mat-line>Verkleinern</p>
     </a>
 </mat-nav-list>

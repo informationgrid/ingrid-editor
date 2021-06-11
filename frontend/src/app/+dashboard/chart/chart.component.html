@@ -1,28 +1,51 @@
-
-
 <div fxFlex fxLayout="column" *ngIf="data | async as dataSeq">
-
     <svg viewBox="0 0 36 36" class="circular-chart">
-      <path *ngIf="dataSeq[0]" class="circle circle-1" attr.stroke-dasharray="{{calculateAdjustedStrokeDash(dataSeq[0])}}, {{calculateStrokeDash(dataSeq[1])}}" d="M18 2.0845
+        <path
+            *ngIf="dataSeq[0]"
+            class="circle circle-1"
+            attr.stroke-dasharray="{{
+                calculateAdjustedStrokeDash(dataSeq[0])
+            }}, {{ calculateStrokeDash(dataSeq[1]) }}"
+            d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <path *ngIf="dataSeq[1]" class="circle circle-2" attr.stroke-dasharray="0, {{calculateStrokeDash(dataSeq[0])}}, {{calculateAdjustedStrokeDash(dataSeq[1])}}" d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        ></path>
+        <path
+            *ngIf="dataSeq[1]"
+            class="circle circle-2"
+            attr.stroke-dasharray="0, {{ calculateStrokeDash(dataSeq[0]) }}, {{
+                calculateAdjustedStrokeDash(dataSeq[1])
+            }}"
+            d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <path class="circle circle-3" stroke-dasharray="0.4, 99.2, 0.4" d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        ></path>
+        <path
+            class="circle circle-3"
+            stroke-dasharray="0.4, 99.2, 0.4"
+            d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-      <text class="text" x="18.5" y="19" dominant-baseline="middle" text-anchor="middle">{{total}}</text>
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        ></path>
+        <text
+            class="text"
+            x="18.5"
+            y="19"
+            dominant-baseline="middle"
+            text-anchor="middle"
+        >
+            {{ total }}
+        </text>
     </svg>
 
     <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">
         <div class="box working">
-            <div class="count">{{dataSeq[0]}}</div>
+            <div class="count">{{ dataSeq[0] }}</div>
             <div>In Bearbeitung</div>
         </div>
 
         <div class="box">
-            <div class="count">{{dataSeq[1]}}</div>
+            <div class="count">{{ dataSeq[1] }}</div>
             <div>Veröffentlicht</div>
         </div>
     </div>

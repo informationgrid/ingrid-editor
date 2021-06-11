@@ -5,7 +5,6 @@
 }
 
 :host {
-
   flex: 1 1 auto; // IE 11
 
   .mat-dialog-content {
@@ -79,7 +78,7 @@ mat-radio-button {
     background-color: $ige-mark-color !important;
 
     [svgicon="baseline-check-24px"] path {
-        fill: #398C32;
+      fill: #398c32;
     }
   }
 }

@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { RadioboxComponent } from './radiobox.component';
+import { RadioboxComponent } from "./radiobox.component";
 
-describe('RadioboxComponent', () => {
+describe("RadioboxComponent", () => {
   let component: RadioboxComponent;
   let fixture: ComponentFixture<RadioboxComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RadioboxComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [RadioboxComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RadioboxComponent);
@@ -19,7 +20,7 @@ describe('RadioboxComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

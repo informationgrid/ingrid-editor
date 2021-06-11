@@ -1,7 +1,6 @@
 @import "src/variables";
 
 :host {
-
   .mat-dialog-content {
     padding: 24px 0 8px;
     display: flex;
@@ -16,7 +15,6 @@
       padding-top: 24px;
     }
   }
-
 }
 
 ige-tree {
@@ -24,11 +22,11 @@ ige-tree {
   max-height: 550px;
 }
 
-.selection-divider{
+.selection-divider {
   height: 1px;
   background: $ige-primary;
 }
 
 .place-title {
-  padding-bottom: 12px!important;
+  padding-bottom: 12px !important;
 }

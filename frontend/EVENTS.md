@@ -1,8 +1,8 @@
 FormToolbarService
-    toolbarEvent$
+toolbarEvent$
 
 DocumentService
-    afterLoadAndSet$
+afterLoadAndSet$
     afterProfileSwitch$
-    datasetsChanged$
+datasetsChanged$
     beforeSave$

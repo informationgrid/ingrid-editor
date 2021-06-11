@@ -5,8 +5,11 @@
                (onClick)="handleChange()"></p-radioButton>-->
 
 <mat-radio-group [(ngModel)]="value">
-    <mat-radio-button *ngFor="let opt of options"
+    <mat-radio-button
+        *ngFor="let opt of options"
         [name]="radioName"
         [value]="opt.value"
-        (change)="handleChange($event)">{{opt.label}}</mat-radio-button>
+        (change)="handleChange($event)"
+        >{{ opt.label }}</mat-radio-button
+    >
 </mat-radio-group>

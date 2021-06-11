@@ -3,7 +3,7 @@
 .label-wrapper {
   min-width: 272px;
   padding-right: 24px;
-  padding-top: .95em;
+  padding-top: 0.95em;
 }
 
 :host {
@@ -15,7 +15,6 @@
 }
 
 :host-context(.hasContextHelp) {
-
   &:hover {
     .contextHelpIcon {
       display: inline-block;

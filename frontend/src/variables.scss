@@ -1,24 +1,33 @@
-
-$ige-primary: #196EA2; /* Middle blue, i.e. title */
-$ige-secondary: #28225B; /* Dark blue, i.e. button / link text */
+$ige-primary: #196ea2; /* Middle blue, i.e. title */
+$ige-secondary: #28225b; /* Dark blue, i.e. button / link text */
 $ige-secondary-dark: #161243; /* Darkest blue, background sidebar menu */
 $ige-comment-color: #979797; /* Middle grey, i.e. input outlines, placeholder, icons */
 
-$ige-mark-color: #DAEBF5; /* Light blue background of selected / highlighted */
+$ige-mark-color: #daebf5; /* Light blue background of selected / highlighted */
 
-$ige-background: #F3F3F3; /* Light grey background, i.e. toolbar */
+$ige-background: #f3f3f3; /* Light grey background, i.e. toolbar */
 $ige-background-bar: #dfdfdf; /* Middle grey background, i.e. header data set */
 
-$ige-info-background: rgba(20, 255, 0, 0.15); /* Green background, i.e. tree drop zone */
+$ige-info-background: rgba(
+  20,
+  255,
+  0,
+  0.15
+); /* Green background, i.e. tree drop zone */
 
-$state-working-color: #F27100; /* Orange */
+$state-working-color: #f27100; /* Orange */
 
-$error-background: #F6E5E8;
-$error-color: #B00020;
+$error-background: #f6e5e8;
+$error-color: #b00020;
 
-$ige-check-color: #398C32; /* Green, checkboxes and radio buttons */
+$ige-check-color: #398c32; /* Green, checkboxes and radio buttons */
 $ige-icon-color: #333; /* Icons toolbar, data set */
 
-$ige-text-color: rgba(0, 0, 0, 0.87); /* Dark grey, default text color - before #181818 - from material theme */
+$ige-text-color: rgba(
+  0,
+  0,
+  0,
+  0.87
+); /* Dark grey, default text color - before #181818 - from material theme */
 $ige-hint-color: rgba(0, 0, 0, 0.6); /* Middle grey - from material theme */
 $ige-placeholder-color: rgba(0, 0, 0, 0.45); /* Light grey */

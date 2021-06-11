@@ -1,4 +1,4 @@
-@import '../../variables';
+@import "../../variables";
 
 ige-session-timeout-info {
   display: none;
@@ -12,7 +12,8 @@ ige-session-timeout-info {
   height: inherit;
   text-align: end;
 
-  &:hover ige-session-timeout-info, ige-session-timeout-info.show {
+  &:hover ige-session-timeout-info,
+  ige-session-timeout-info.show {
     display: inline-block;
   }
 }
@@ -45,7 +46,9 @@ ige-session-timeout-info {
   }
 }
 
-.mat-toolbar-row, .mat-toolbar-single-row, .mat-toolbar-multiple-rows {
+.mat-toolbar-row,
+.mat-toolbar-single-row,
+.mat-toolbar-multiple-rows {
   height: 48px;
   min-height: 48px;
   background-color: #ffffff;
@@ -67,7 +70,6 @@ ige-session-timeout-info {
   padding-left: 20px;
 }
 
-
 .user-popup {
   height: 32px;
   width: 32px;
@@ -77,7 +79,6 @@ ige-session-timeout-info {
   margin-left: 12px;
 
   .mat-icon {
-
     line-height: 22px;
   }
 
@@ -146,7 +147,6 @@ mat-card-title {
 ::ng-deep .info-menu {
   &.mat-menu-panel {
     max-width: 350px;
-
   }
 
   .mat-card-title {
@@ -177,4 +177,3 @@ mat-card-title {
     padding: 16px;
   }
 }
-

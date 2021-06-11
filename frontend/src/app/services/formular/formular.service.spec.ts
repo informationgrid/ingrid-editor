@@ -1,7 +1,6 @@
-import {FormularService} from '../../+form/formular.service';
+import { FormularService } from "../../+form/formular.service";
 
-
-describe( 'Formular', () => {
+describe("Formular", () => {
   // let myFormularService: FormularService;
 
   beforeEach(() => {
@@ -23,230 +22,109 @@ describe( 'Formular', () => {
     });
   });
 */
-  xit( 'should save form data', () => {
+  xit("should save form data", () => {});
 
-  } );
+  xit("should validate data", () => {});
 
-  xit( 'should validate data', () => {
+  xit("should show form in multiple languages", () => {});
 
-  } );
+  describe("Text field", () => {
+    xit("should be defined mandatory", () => {});
 
-  xit( 'should show form in multiple languages', () => {
+    xit("should be defined required", () => {});
 
-  } );
+    xit("should be possible to add a custom validation", () => {});
 
-
-  describe( 'Text field', () => {
-
-    xit( 'should be defined mandatory', () => {
-
-    });
-
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be possible to add a custom validation', () => {
-
-    });
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+    xit("should be able to add an event listener", () => {});
   });
 
+  describe("Textarea field", () => {
+    xit("should be defined mandatory", () => {});
 
-  describe( 'Textarea field', () => {
+    xit("should be defined required", () => {});
 
-    xit( 'should be defined mandatory', () => {
+    xit("should be possible to add a custom validation", () => {});
 
-    });
-
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be possible to add a custom validation', () => {
-
-    });
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+    xit("should be able to add an event listener", () => {});
   });
 
-  describe( 'Selectbox field', () => {
+  describe("Selectbox field", () => {
+    xit("should be defined mandatory", () => {});
 
-    xit( 'should be defined mandatory', () => {
+    xit("should be defined required", () => {});
 
-    });
+    xit("should be possible to add a custom validation", () => {});
 
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be possible to add a custom validation', () => {
-
-    });
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+    xit("should be able to add an event listener", () => {});
   });
 
-  describe( 'Combobox field', () => {
+  describe("Combobox field", () => {
+    xit("should be defined mandatory", () => {});
 
-    xit( 'should be defined mandatory', () => {
+    xit("should be defined required", () => {});
 
-    });
+    xit("should be possible to add a custom validation", () => {});
 
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be possible to add a custom validation', () => {
-
-    });
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+    xit("should be able to add an event listener", () => {});
   });
 
-  describe( 'Checkbox field', () => {
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+  describe("Checkbox field", () => {
+    xit("should be able to add an event listener", () => {});
   });
 
-  describe( 'Radio button field', () => {
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+  describe("Radio button field", () => {
+    xit("should be able to add an event listener", () => {});
   });
 
-  describe( 'Table field', () => {
+  describe("Table field", () => {
+    xit("should be defined mandatory", () => {});
 
-    xit( 'should be defined mandatory', () => {
+    xit("should be defined required", () => {});
 
-    });
+    xit("should be possible to add a custom validation", () => {});
 
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be possible to add a custom validation', () => {
-
-    });
-
-    xit( 'should be able to add an event listener', () => {
-
-    });
-
+    xit("should be able to add an event listener", () => {});
   });
 
+  describe("Date field", () => {
+    xit("should be defined mandatory", () => {});
 
-  describe( 'Date field', () => {
+    xit("should be defined required", () => {});
 
-    xit( 'should be defined mandatory', () => {
+    xit("should be able to set a min date", () => {});
 
-    });
+    xit("should be able to set a max date", () => {});
 
-    xit( 'should be defined required', () => {
-
-    });
-
-    xit( 'should be able to set a min date', () => {
-
-    });
-
-    xit( 'should be able to set a max date', () => {
-
-    });
-
-    xit( 'should be able to set a min and max date', () => {
-
-    });
-
+    xit("should be able to set a min and max date", () => {});
   });
 
+  describe("Detail view", () => {});
 
+  describe("Compare view", () => {});
 
-  describe( 'Detail view', () => {
+  describe("Validators", () => {
+    xit("should check if any text was entered", () => {});
 
+    xit("should check if text is a number", () => {});
 
+    xit("should check if text is an email", () => {});
+
+    xit("should check if table has any data", () => {});
+
+    xit("should check if some columns of a table contain required data", () => {});
   });
 
+  describe("New Document", () => {
+    xit("should show a choice of possible document types when creating a new document", () => {});
 
-  describe( 'Compare view', () => {
-
+    xit("should be able to define a rule which document types are shown depending on the parent", () => {});
   });
 
+  describe("Copy & Paste", () => {});
 
-  describe( 'Validators', () => {
-
-
-    xit( 'should check if any text was entered', () => {
-
-    });
-
-    xit( 'should check if text is a number', () => {
-
-    });
-
-    xit( 'should check if text is an email', () => {
-
-    });
-
-    xit( 'should check if table has any data', () => {
-
-    });
-
-    xit( 'should check if some columns of a table contain required data', () => {
-
-    });
-
-
-
-  });
-
-
-  describe('New Document', () => {
-
-    xit('should show a choice of possible document types when creating a new document', () => {
-
-    });
-
-    xit('should be able to define a rule which document types are shown depending on the parent', () => {
-
-    });
-
-  });
-
-  describe('Copy & Paste', () => {
-
-  });
-
-  describe('Cut & Paste', () => {
-
-  });
-
+  describe("Cut & Paste", () => {});
 });
 
-
-describe('User behaviours/fields', () => {
-
-  xit('should behave...', () => {
-
-  });
-
+describe("User behaviours/fields", () => {
+  xit("should behave...", () => {});
 });
-

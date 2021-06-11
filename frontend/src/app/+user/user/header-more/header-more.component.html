@@ -1,34 +1,49 @@
-<div *ngIf="showMore" [@slideDown] class="more-info" [formGroup]="form" >
+<div *ngIf="showMore" [@slideDown] class="more-info" [formGroup]="form">
     <div fxLayout="row">
         <div>Zuletzt eingeloggt am</div>
-        <div *ngIf="user.latestLogin"><span [title]="user.latestLogin | date:'long'">{{user.latestLogin | date:'dd.MM.yyyy'}}</span></div>
+        <div *ngIf="user.latestLogin">
+            <span [title]="user.latestLogin | date: 'long'">{{
+                user.latestLogin | date: "dd.MM.yyyy"
+            }}</span>
+        </div>
         <div *ngIf="!user.latestLogin">Nie</div>
     </div>
     <div fxLayout="row">
         <div>Erstellt am</div>
-        <div *ngIf="user.creationDate"><span [title]="user.creationDate | date:'long'">{{user.creationDate | date:'dd.MM.yyyy'}}</span></div>
+        <div *ngIf="user.creationDate">
+            <span [title]="user.creationDate | date: 'long'">{{
+                user.creationDate | date: "dd.MM.yyyy"
+            }}</span>
+        </div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
-        <div *ngIf="user.modificationDate"><span [title]="user.modificationDate | date:'long'">{{user.modificationDate | date:'dd.MM.yyyy'}}</span></div>
+        <div *ngIf="user.modificationDate">
+            <span [title]="user.modificationDate | date: 'long'">{{
+                user.modificationDate | date: "dd.MM.yyyy"
+            }}</span>
+        </div>
     </div>
     <div *ngIf="user.manager" fxLayout="row">
         <div>Verantwortlich</div>
-        <div>{{user.manager}}</div>
+        <div>{{ user.manager }}</div>
     </div>
     <div *ngIf="standinUsers?.length" fxLayout="row">
         <div>Vertritt</div>
         <div>
-            <mat-chip-list><mat-chip *ngFor="let standUser of standinUsers">{{standUser}}</mat-chip></mat-chip-list>
+            <mat-chip-list
+                ><mat-chip *ngFor="let standUser of standinUsers">{{
+                    standUser
+                }}</mat-chip></mat-chip-list
+            >
         </div>
     </div>
     <div *ngIf="user.standin" fxLayout="row">
         <div>Wird vertreten von</div>
-        <div>{{user.standin}}</div>
+        <div>{{ user.standin }}</div>
     </div>
     <div fxLayout="row" class="padding-below">
         <div>ID/login</div>
-        <div>{{user.login}}</div>
+        <div>{{ user.login }}</div>
     </div>
-
 </div>

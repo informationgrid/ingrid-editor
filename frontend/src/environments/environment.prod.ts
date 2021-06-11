@@ -3,5 +3,5 @@ export const environment = {
   hmr: false,
   profileFromServer: false,
   // mockKeycloak: false,
-  configFile: 'assets/config.json'
+  configFile: "assets/config.json",
 };

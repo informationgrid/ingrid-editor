@@ -1,26 +1,25 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {CodelistEntry} from '../../store/codelist/codelist.model';
-
+import { Component, forwardRef, Input, OnInit } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { CodelistEntry } from "../../store/codelist/codelist.model";
 
 export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef( () => DropDownComponent ),
-  multi: true
+  useExisting: forwardRef(() => DropDownComponent),
+  multi: true,
 };
 
-@Component( {
-  selector: 'ige-drop-down',
-  templateUrl: './drop-down.component.html',
-  styleUrls: ['./drop-down.component.css'],
-  providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR]
-} )
+@Component({
+  selector: "ige-drop-down",
+  templateUrl: "./drop-down.component.html",
+  styleUrls: ["./drop-down.component.css"],
+  providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
+})
 export class DropDownComponent implements ControlValueAccessor, OnInit {
   @Input() options: CodelistEntry[];
   @Input() isCombo = false;
   @Input() useFilter = true;
   @Input() appendTo: string;
-  @Input() lang = 'de';
+  @Input() lang = "de";
 
   isDisabled = false;
 
@@ -36,8 +35,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   private _onChangeCallback: (x: any) => void;
   filteredOptions: any[];
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.simpleOptions = this.options; // this.options.map(option => option.value);
@@ -48,24 +46,24 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     return this._value;
   }
 
-  handleChange(value: string|any) {
+  handleChange(value: string | any) {
     let result = value;
-    if (typeof result !== 'object') {
+    if (typeof result !== "object") {
       result = {
-        id: '-1',
-        value: value
+        id: "-1",
+        value: value,
       };
     }
-    this._onChangeCallback( result );
+    this._onChangeCallback(result);
   }
 
   writeValue(optionValue: any): void {
-    if (optionValue && optionValue.id !== '-1') {
-      const value = this.options.find( option => option.id === optionValue.id );
+    if (optionValue && optionValue.id !== "-1") {
+      const value = this.options.find((option) => option.id === optionValue.id);
       if (value) {
         this._value = value.fields[this.lang];
       } else {
-        console.error( 'Could not find option value for: ', optionValue );
+        console.error("Could not find option value for: ", optionValue);
       }
     } else if (optionValue) {
       this._value = optionValue.value;
@@ -88,7 +86,10 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
   }
 
   onInput(value: string): void {
-    this.filteredOptions = this.simpleOptions
-      .filter(option => option.fields[this.lang].toLowerCase().indexOf(value.toLowerCase()) === 0);
+    this.filteredOptions = this.simpleOptions.filter(
+      (option) =>
+        option.fields[this.lang].toLowerCase().indexOf(value.toLowerCase()) ===
+        0
+    );
   }
 }

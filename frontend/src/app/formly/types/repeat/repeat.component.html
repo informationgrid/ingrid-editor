@@ -1,18 +1,42 @@
-<ige-form-error *ngIf="formControl.invalid && formControl.errors && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge {{formControl.errors | json}}</ige-form-error>
+<ige-form-error
+    *ngIf="
+        formControl.invalid &&
+        formControl.errors &&
+        !formControl.hasError('required')
+    "
+    >Dieser Fehler bezieht sich auf die gesamten Einträge
+    {{ formControl.errors | json }}</ige-form-error
+>
 
-<div cdkDropList
-     cdkDropListOrientation="vertical"
-     (cdkDropListDropped)="drop($event)">
-    <div *ngFor="let field of field.fieldGroup; let i = index;" class="display-flex" cdkDrag [cdkDragDisabled]="formControl.disabled">
+<div
+    cdkDropList
+    cdkDropListOrientation="vertical"
+    (cdkDropListDropped)="drop($event)"
+>
+    <div
+        *ngFor="let field of field.fieldGroup; let i = index"
+        class="display-flex"
+        cdkDrag
+        [cdkDragDisabled]="formControl.disabled"
+    >
         <mat-icon *ngIf="formControl.enabled" cdkDragHandle>
             drag_indicator
         </mat-icon>
         <formly-field [field]="field" class="flex-1"></formly-field>
-        <button *ngIf="formControl.enabled" [disabled]="to.minLength && i < to.minLength" mat-icon-button class="close" (click)="remove(i)">
+        <button
+            *ngIf="formControl.enabled"
+            [disabled]="to.minLength && i < to.minLength"
+            mat-icon-button
+            class="close"
+            (click)="remove(i)"
+        >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
     </div>
 </div>
 
-<ige-add-button *ngIf="formControl.enabled" (add)="add()"
-                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+<ige-add-button
+    *ngIf="formControl.enabled"
+    (add)="add()"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>

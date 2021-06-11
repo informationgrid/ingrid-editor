@@ -1,19 +1,17 @@
-import {DateboxComponent} from './datebox.component';
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import { DateboxComponent } from "./datebox.component";
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
-describe('DateboxComponent', () => {
-
+describe("DateboxComponent", () => {
   let spectator: Spectator<DateboxComponent>;
   const createComponent = createComponentFactory({
     component: DateboxComponent,
     imports: [],
-    detectChanges: false
+    detectChanges: false,
   });
 
-  beforeEach(() => spectator = createComponent());
+  beforeEach(() => (spectator = createComponent()));
 
-  it('should create', () => {
+  it("should create", () => {
     expect(spectator).toBeTruthy();
   });
-
 });

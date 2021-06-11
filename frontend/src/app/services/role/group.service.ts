@@ -1,30 +1,27 @@
-import {Injectable} from '@angular/core';
-import {Group} from '../../models/user-group';
-import {Observable} from 'rxjs';
-import {GroupDataService} from './group-data.service';
-import {map} from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { Group } from "../../models/user-group";
+import { Observable } from "rxjs";
+import { GroupDataService } from "./group-data.service";
+import { map } from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class GroupService {
-
-  constructor(private dataService: GroupDataService) {
-  }
+  constructor(private dataService: GroupDataService) {}
 
   getGroups(): Observable<Group[]> {
     return this.dataService.getGroups();
   }
 
   getGroup(id: string): Observable<Group> {
-    return this.dataService.getGroup(id)
-      .pipe(
-        map(json => this.prepareGroup([json])[0])
-      );
+    return this.dataService
+      .getGroup(id)
+      .pipe(map((json) => this.prepareGroup([json])[0]));
   }
 
   prepareGroup(groups: any[]) {
-    return groups.map(group => new Group(group));
+    return groups.map((group) => new Group(group));
   }
 
   updateGroup(group: Group): Observable<any> {
@@ -40,5 +37,4 @@ export class GroupService {
   deleteGroup(id: string): Observable<any> {
     return this.dataService.deleteGroup(id);
   }
-
 }

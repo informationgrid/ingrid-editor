@@ -1,4 +1,4 @@
-@import 'src/variables.scss';
+@import "src/variables.scss";
 
 as-split-area {
   background: white;
@@ -6,14 +6,14 @@ as-split-area {
 
 .user-management-header {
   height: 150px;
-
 }
 
 #formRoles form {
   padding: 20px;
 }
 
-::ng-deep .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
+::ng-deep .mat-tab-group,
+::ng-deep .mat-tab-body-wrapper {
   flex: 1;
 }
 
@@ -28,9 +28,7 @@ as-split-area {
   }
 }
 
-
 .save-buttons {
-
   button.btnAddGroup {
     &:not([disabled]):hover {
       background-color: lighten($ige-secondary, 5%);
@@ -40,7 +38,6 @@ as-split-area {
   button.btnAddGroup {
     margin-right: 0;
   }
-
 }
 
 .user-title {

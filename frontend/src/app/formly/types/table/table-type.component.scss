@@ -1,12 +1,12 @@
 @import "src/variables";
 
-.mat-column-_actions_, .mat-column-_select_ {
+.mat-column-_actions_,
+.mat-column-_select_ {
   width: 56px;
   flex: unset;
 }
 
 .table-header {
-
   button {
     margin-top: 10px;
   }
@@ -25,12 +25,14 @@
     top: calc(50% - 16px);
   }
 
-  .edit-mode ::ng-deep mat-header-cell:first-of-type, .edit-mode ::ng-deep mat-cell:first-of-type {
+  .edit-mode ::ng-deep mat-header-cell:first-of-type,
+  .edit-mode ::ng-deep mat-cell:first-of-type {
     padding-left: 12px;
   }
 }
 
-mat-row, mat-header-row {
+mat-row,
+mat-header-row {
   background-color: $ige-background;
   border-bottom-color: #ffffff;
 }
@@ -38,9 +40,8 @@ mat-row, mat-header-row {
 .select-controls {
   padding-right: 4px;
 
-  mat-icon{
+  mat-icon {
     color: $ige-placeholder-color;
-
   }
 }
 

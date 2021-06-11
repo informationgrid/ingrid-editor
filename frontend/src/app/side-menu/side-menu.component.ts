@@ -1,76 +1,75 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {ConfigService} from '../services/config/config.service';
-import {MenuService} from '../menu/menu.service';
-import {NavigationEnd, Route, Router} from '@angular/router';
-import {SessionQuery} from '../store/session.query';
-import {animate, style, transition, trigger} from '@angular/animations';
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { ConfigService } from "../services/config/config.service";
+import { MenuService } from "../menu/menu.service";
+import { NavigationEnd, Route, Router } from "@angular/router";
+import { SessionQuery } from "../store/session.query";
+import { animate, style, transition, trigger } from "@angular/animations";
 
 @Component({
-  selector: 'ige-side-menu',
-  templateUrl: './side-menu.component.html',
-  styleUrls: ['./side-menu.component.scss'],
+  selector: "ige-side-menu",
+  templateUrl: "./side-menu.component.html",
+  styleUrls: ["./side-menu.component.scss"],
   animations: [
-    trigger('toggle', [
-      transition('collapsed => expanded', [
-        style({width: 56}),
-        animate('300ms ease-in', style({width: 300}))
+    trigger("toggle", [
+      transition("collapsed => expanded", [
+        style({ width: 56 }),
+        animate("300ms ease-in", style({ width: 300 })),
       ]),
-      transition('* => collapsed', [
-        style({width: 300}),
-        animate('300ms ease-out', style({width: 56}))
-      ])
-    ])
-  ]
+      transition("* => collapsed", [
+        style({ width: 300 }),
+        animate("300ms ease-out", style({ width: 56 })),
+      ]),
+    ]),
+  ],
 })
 export class SideMenuComponent implements OnInit {
-
   showDrawer: Observable<boolean>;
 
-  menuItems: Observable<Route[]> = this.menuService.menu$
-    .pipe(
-      map(routes => routes.filter(route => this.checkIfUserHasAccess(route)))
-    );
+  menuItems: Observable<Route[]> = this.menuService.menu$.pipe(
+    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route)))
+  );
 
   menuIsExpanded = true;
 
   currentRoute: string;
-  toggleState = 'collapsed';
+  toggleState = "collapsed";
 
-  constructor(private router: Router, private configService: ConfigService, private menuService: MenuService,
-              private session: SessionQuery) {
-  }
+  constructor(
+    private router: Router,
+    private configService: ConfigService,
+    private menuService: MenuService,
+    private session: SessionQuery
+  ) {}
 
   ngOnInit() {
+    this.session.isSidebarExpanded$.subscribe(
+      (expanded) => (this.menuIsExpanded = expanded)
+    );
 
-    this.session.isSidebarExpanded$.subscribe(expanded => this.menuIsExpanded = expanded);
-
-    this.router.events.subscribe(event => this.handleCurrentRoute(event));
+    this.router.events.subscribe((event) => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
-      map(info => info.assignedCatalogs.length > 0)
+      map((info) => info.assignedCatalogs.length > 0)
     );
-
   }
 
   private handleCurrentRoute(event: any) {
     if (event instanceof NavigationEnd) {
-      const urlPath = event.url.split(';')[0].substring(1);
-      this.currentRoute = urlPath === '' ? 'dashboard' : urlPath;
+      const urlPath = event.url.split(";")[0].substring(1);
+      this.currentRoute = urlPath === "" ? "dashboard" : urlPath;
     }
   }
 
   toggleSidebar(setExanded: boolean) {
     this.menuService.toggleSidebar(setExanded);
-    this.toggleState = setExanded ? 'expanded' : 'collapsed';
+    this.toggleState = setExanded ? "expanded" : "collapsed";
   }
 
   private checkIfUserHasAccess(route: Route): boolean {
-
     let neededPermission = route.data.permission;
     return this.configService.hasPermission(neededPermission);
-
   }
 }

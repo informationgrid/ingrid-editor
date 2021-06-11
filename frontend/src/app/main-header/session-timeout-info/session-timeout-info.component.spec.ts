@@ -1,16 +1,16 @@
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
-import {SessionTimeoutInfoComponent} from './session-timeout-info.component';
-import {AuthService} from '../../services/security/auth.service';
+import { SessionTimeoutInfoComponent } from "./session-timeout-info.component";
+import { AuthService } from "../../services/security/auth.service";
 
-describe('SessionTimeoutInfoComponent', () => {
+describe("SessionTimeoutInfoComponent", () => {
   let spectator: Spectator<SessionTimeoutInfoComponent>;
   const createComponent = createComponentFactory({
     component: SessionTimeoutInfoComponent,
-    mocks: [AuthService]
+    mocks: [AuthService],
   });
 
-  it('should create', () => {
+  it("should create", () => {
     spectator = createComponent();
 
     expect(spectator.component).toBeTruthy();

@@ -1,19 +1,23 @@
-import {Injectable} from '@angular/core';
-import {Plugin} from '../../../+catalog/+behaviours/plugin';
-import {FormToolbarService, Separator, ToolbarItem} from '../../form-shared/toolbar/form-toolbar.service';
-import {TreeQuery} from '../../../store/tree/tree.query';
-import {filter} from 'rxjs/operators';
-import {DocumentAbstract} from '../../../store/document/document.model';
-import {TreeStore} from '../../../store/tree/tree.store';
-import {ShortTreeNode} from '../../sidebars/tree/tree.types';
-import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
+import { Injectable } from "@angular/core";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import {
+  FormToolbarService,
+  Separator,
+  ToolbarItem,
+} from "../../form-shared/toolbar/form-toolbar.service";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { filter } from "rxjs/operators";
+import { DocumentAbstract } from "../../../store/document/document.model";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { ShortTreeNode } from "../../sidebars/tree/tree.types";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
-  id = 'plugin.history';
-  _name = 'History Plugin';
-  group = 'Toolbar';
+  id = "plugin.history";
+  _name = "History Plugin";
+  group = "Toolbar";
   defaultActive = true;
 
   private stack: DocumentAbstract[] = [];
@@ -33,11 +37,13 @@ export class HistoryPlugin extends Plugin {
   private tree: TreeQuery | AddressTreeQuery;
   private treeStore: TreeStore | AddressTreeStore;
 
-  constructor(private formToolbarService: FormToolbarService,
-              private docTreeStore: TreeStore,
-              private addressTreeStore: AddressTreeStore,
-              private docTreeQuery: TreeQuery,
-              private addressTreeQuery: AddressTreeQuery) {
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private docTreeStore: TreeStore,
+    private addressTreeStore: AddressTreeStore,
+    private docTreeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery
+  ) {
     super();
   }
 
@@ -48,7 +54,7 @@ export class HistoryPlugin extends Plugin {
   register() {
     this.setupFields();
 
-    console.log('Register history plugin for address:', this.forAddress);
+    console.log("Register history plugin for address:", this.forAddress);
     super.register();
 
     this.addToolbarButtons();
@@ -56,14 +62,11 @@ export class HistoryPlugin extends Plugin {
     this.handleEvents();
 
     const treeSubscription = this.tree.openedDocument$
-      .pipe(
-        filter(doc => doc !== null)
-      )
-      .subscribe(doc => this.addDocToStack(doc));
+      .pipe(filter((doc) => doc !== null))
+      .subscribe((doc) => this.addDocToStack(doc));
 
     this.subscriptions.push(treeSubscription);
-  };
-
+  }
 
   private setupFields() {
     if (this.forAddress) {
@@ -76,14 +79,16 @@ export class HistoryPlugin extends Plugin {
   }
 
   private addDocToStack(doc: DocumentAbstract) {
-
     if (this.ignoreNextPush) {
       this.ignoreNextPush = false;
       return;
     }
 
     // if the last node was loaded again -> ignore
-    if (this.stack.length !== 0 && doc.id === this.stack[this.stack.length - 1].id) {
+    if (
+      this.stack.length !== 0 &&
+      doc.id === this.stack[this.stack.length - 1].id
+    ) {
       return;
     }
 
@@ -105,10 +110,10 @@ export class HistoryPlugin extends Plugin {
 
   private handleEvents() {
     // react on event when button is clicked
-    this.formToolbarService.toolbarEvent$.subscribe(eventId => {
-      if (eventId === 'HISTORY_NEXT') {
+    this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
+      if (eventId === "HISTORY_NEXT") {
         this.handleNext();
-      } else if (eventId === 'HISTORY_PREVIOUS') {
+      } else if (eventId === "HISTORY_PREVIOUS") {
         this.handlePrevious();
       }
     });
@@ -118,28 +123,27 @@ export class HistoryPlugin extends Plugin {
           .pipe(untilDestroyed(this))
           .subscribe(stack => this.handleButtonState(stack));
     */
-
   }
 
   private addToolbarButtons() {
     const buttons: Array<ToolbarItem | Separator> = [
-      {id: 'toolBtnNewSeparator', pos: 190, isSeparator: true},
+      { id: "toolBtnNewSeparator", pos: 190, isSeparator: true },
       {
-        id: 'toolBtnPreviousInHistory',
-        tooltip: 'Springe zum letzten Dokument',
-        matSvgVariable: 'Vorheriger-Datensatz',
-        eventId: 'HISTORY_PREVIOUS',
+        id: "toolBtnPreviousInHistory",
+        tooltip: "Springe zum letzten Dokument",
+        matSvgVariable: "Vorheriger-Datensatz",
+        eventId: "HISTORY_PREVIOUS",
         pos: 200,
-        active: false
+        active: false,
       },
       {
-        id: 'toolBtnNextInHistory',
-        tooltip: 'Springe zum nächsten Dokument',
-        matSvgVariable: 'Naechster-Datensatz',
-        eventId: 'HISTORY_NEXT',
+        id: "toolBtnNextInHistory",
+        tooltip: "Springe zum nächsten Dokument",
+        matSvgVariable: "Naechster-Datensatz",
+        eventId: "HISTORY_NEXT",
         pos: 210,
-        active: false
-      }
+        active: false,
+      },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
   }
@@ -147,16 +151,15 @@ export class HistoryPlugin extends Plugin {
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton('toolBtnNewSeparator');
-    this.formToolbarService.removeButton('toolBtnPreviousInHistory');
-    this.formToolbarService.removeButton('toolBtnNextInHistory');
+    this.formToolbarService.removeButton("toolBtnNewSeparator");
+    this.formToolbarService.removeButton("toolBtnPreviousInHistory");
+    this.formToolbarService.removeButton("toolBtnNextInHistory");
 
     this.stack = [];
     this.pointer = -1;
   }
 
   private handleNext() {
-
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
@@ -178,7 +181,6 @@ export class HistoryPlugin extends Plugin {
   }
 
   private handlePrevious() {
-
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
@@ -200,7 +202,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   private hasNext() {
-    return this.pointer < (this.stack.length - 1);
+    return this.pointer < this.stack.length - 1;
   }
 
   private hasPrevious() {
@@ -209,12 +211,18 @@ export class HistoryPlugin extends Plugin {
 
   private gotoNode(item: DocumentAbstract) {
     this.treeStore.update({
-      explicitActiveNode: new ShortTreeNode(item.id.toString(), item.title)
+      explicitActiveNode: new ShortTreeNode(item.id.toString(), item.title),
     });
   }
 
   private handleButtonState() {
-    this.formToolbarService.setButtonState('toolBtnPreviousInHistory', this.hasPrevious());
-    this.formToolbarService.setButtonState('toolBtnNextInHistory', this.hasNext());
+    this.formToolbarService.setButtonState(
+      "toolBtnPreviousInHistory",
+      this.hasPrevious()
+    );
+    this.formToolbarService.setButtonState(
+      "toolBtnNextInHistory",
+      this.hasNext()
+    );
   }
 }

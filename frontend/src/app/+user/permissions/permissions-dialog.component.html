@@ -7,14 +7,16 @@
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
-
     <ige-permissions formControlName="permissions"></ige-permissions>
-
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-button color="primary"
-            [mat-dialog-close]="form.value.permissions">Übernehmen
+    <button
+        mat-button
+        color="primary"
+        [mat-dialog-close]="form.value.permissions"
+    >
+        Übernehmen
     </button>
 </mat-dialog-actions>

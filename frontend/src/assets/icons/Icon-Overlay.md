@@ -1,11 +1,10 @@
 # Add new SVG
 
-* clean up SVG here: https://jakearchibald.github.io/svgomg/
-* add `class='coloring'` to foreground path element
-* replace svg-tag with symbol-tag
-* add symbol to svg-library-file
-* change color by using css class `coloring` via fill- and stroke-attribute
-
+- clean up SVG here: https://jakearchibald.github.io/svgomg/
+- add `class='coloring'` to foreground path element
+- replace svg-tag with symbol-tag
+- add symbol to svg-library-file
+- change color by using css class `coloring` via fill- and stroke-attribute
 
 # Overlays
 
@@ -25,7 +24,8 @@ div.failed_icon {
 }
 ```
 
---------
+---
+
 ```html
 <div class="failed_icon">
   <i class="material-icons large">mail</i>

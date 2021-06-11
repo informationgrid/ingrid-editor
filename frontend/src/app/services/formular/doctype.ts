@@ -1,6 +1,6 @@
-import {IgeDocument} from '../../models/ige-document';
-import {FormlyFieldConfig} from '@ngx-formly/core';
-import {SelectOption} from '../codelist/codelist.service';
+import { IgeDocument } from "../../models/ige-document";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { SelectOption } from "../codelist/codelist.service";
 
 /**
  * A profile defines the formular fields for a document and its' validation rules, as well as the behaviours on user
@@ -52,8 +52,5 @@ export interface Doctype {
    */
   getIconClass?(doc: IgeDocument): string;
 
-
   init(help: string[]);
-
 }
-

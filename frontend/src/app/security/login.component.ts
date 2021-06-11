@@ -1,22 +1,20 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {ModalService} from '../services/modal/modal.service';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { ModalService } from "../services/modal/modal.service";
 
 @Component({
-    selector: 'login',
-    templateUrl: './login.component.html'
+  selector: "login",
+  templateUrl: "./login.component.html",
 })
 export class LoginComponent implements OnInit {
   model: any = {
-    username: 'admin',
-    password: 'admin'
+    username: "admin",
+    password: "admin",
   };
   loading = false;
-  error = '';
+  error = "";
 
-  constructor(
-    private router: Router,
-    private modalService: ModalService) { }
+  constructor(private router: Router, private modalService: ModalService) {}
 
   ngOnInit() {
     // reset login status

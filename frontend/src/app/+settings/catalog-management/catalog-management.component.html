@@ -3,12 +3,18 @@
 
     <div main-header fxFlex fxLayoutAlign="start center">
         <p *ngIf="noAssignedCatalogs">
-            Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog angehören, können Sie zusätzliche Operationen
-            ausführen.
+            Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog
+            angehören, können Sie zusätzliche Operationen ausführen.
         </p>
 
         <div>
-            <button mat-flat-button color="primary" (click)="showCreateCatalogDialog()">Hinzufügen</button>
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="showCreateCatalogDialog()"
+            >
+                Hinzufügen
+            </button>
         </div>
     </div>
 
@@ -16,42 +22,83 @@
         <div class="section-title">Aktiver Katalog</div>
         <div fxLayout="row" style="padding-bottom: 48px">
             <div fxFlex="25" class="catalog-wrapper">
-                <mat-card class="hover-elevate selected" *ngIf="activeCatalog | async as catalog">
+                <mat-card
+                    class="hover-elevate selected"
+                    *ngIf="activeCatalog | async as catalog"
+                >
                     <div class="card-header">
                         <mat-icon>article</mat-icon>
-                        <span class="profile">{{catalog.type}}</span>
+                        <span class="profile">{{ catalog.type }}</span>
                         <div fxFlex></div>
-                        <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="catMenu">
+                        <button
+                            mat-icon-button
+                            class="menu dark menu-button"
+                            [matMenuTriggerFor]="catMenu"
+                        >
                             <mat-icon svgIcon="Mehr"></mat-icon>
                         </button>
                         <mat-menu #catMenu>
-                            <button mat-menu-item (click)="showCatalogDetail(catalog)">Bearbeiten</button>
+                            <button
+                                mat-menu-item
+                                (click)="showCatalogDetail(catalog)"
+                            >
+                                Bearbeiten
+                            </button>
                         </mat-menu>
                     </div>
 
-                    <ng-container [ngTemplateOutlet]="catContent" [ngTemplateOutletContext]="{cat:catalog}"></ng-container>
+                    <ng-container
+                        [ngTemplateOutlet]="catContent"
+                        [ngTemplateOutletContext]="{ cat: catalog }"
+                    ></ng-container>
                 </mat-card>
             </div>
         </div>
 
         <div class="section-title">Weitere Kataloge</div>
         <div fxLayout="row wrap" fxLayoutGap="48px grid">
-            <div *ngFor="let cat of nonActiveCatalogs | async; trackBy:trackByCatalogId" class="catalog-wrapper" >
-                <mat-card class="hover-elevate" [class.selected]="cat.id === currentCatalog">
+            <div
+                *ngFor="
+                    let cat of nonActiveCatalogs | async;
+                    trackBy: trackByCatalogId
+                "
+                class="catalog-wrapper"
+            >
+                <mat-card
+                    class="hover-elevate"
+                    [class.selected]="cat.id === currentCatalog"
+                >
                     <div class="card-header">
                         <mat-icon>article</mat-icon>
-                        <span class="profile">{{cat.type}}</span>
+                        <span class="profile">{{ cat.type }}</span>
                         <div fxFlex></div>
-                        <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="catMenu">
+                        <button
+                            mat-icon-button
+                            class="menu dark menu-button"
+                            [matMenuTriggerFor]="catMenu"
+                        >
                             <mat-icon svgIcon="Mehr"></mat-icon>
                         </button>
                         <mat-menu #catMenu>
-                            <button mat-menu-item (click)="showCatalogDetail(cat)">Bearbeiten</button>
-                            <button mat-menu-item (click)="chooseCatalog(cat.id)">Verwenden</button>
+                            <button
+                                mat-menu-item
+                                (click)="showCatalogDetail(cat)"
+                            >
+                                Bearbeiten
+                            </button>
+                            <button
+                                mat-menu-item
+                                (click)="chooseCatalog(cat.id)"
+                            >
+                                Verwenden
+                            </button>
                         </mat-menu>
                     </div>
 
-                    <ng-container [ngTemplateOutlet]="catContent" [ngTemplateOutletContext]="{cat:cat}"></ng-container>
+                    <ng-container
+                        [ngTemplateOutlet]="catContent"
+                        [ngTemplateOutletContext]="{ cat: cat }"
+                    ></ng-container>
                 </mat-card>
             </div>
 
@@ -60,16 +107,18 @@
     </div>
 
     <ng-template #catContent let-cat="cat">
-        <mat-card-title>{{cat.label}}</mat-card-title>
+        <mat-card-title>{{ cat.label }}</mat-card-title>
         <mat-card-subtitle *ngIf="cat.lastDocModification">
-            Letzte Änderung am {{ cat.lastDocModification | date:'dd.LL.yyyy HH:mm'}}
+            Letzte Änderung am
+            {{ cat.lastDocModification | date: "dd.LL.yyyy HH:mm" }}
         </mat-card-subtitle>
         <mat-card-subtitle *ngIf="!cat.lastDocModification">
-            Erstellt am {{ cat.created | date:'dd.LL.yyyy HH:mm'}}
+            Erstellt am {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
         </mat-card-subtitle>
         <mat-card-content>
-            <div class="content">{{cat.countDocuments | number}} Datensätze</div>
+            <div class="content">
+                {{ cat.countDocuments | number }} Datensätze
+            </div>
         </mat-card-content>
     </ng-template>
-
 </page-template>

@@ -1,17 +1,35 @@
-<ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')">{{getFirstError()}}</ige-form-error>
+<ige-form-error
+    *ngIf="formControl.invalid && !formControl.hasError('required')"
+    >{{ getFirstError() }}</ige-form-error
+>
 
-<div *ngIf="addresses.length > 0" fxLayout="row wrap" fxLayoutGap="24px grid" class="address-cards"
-     cdkDropList
-     cdkDropListOrientation="horizontal"
-     (cdkDropListDropped)="drop($event)">
-    <div *ngFor="let address of addresses; let i = index" fxFlex="50" class="address-card-wrapper" cdkDrag>
-        <ige-address-card (edit)="editAddress(address, i)"
-                          (remove)="removeAddress(address)"
-                          (gotoAddress)="gotoAddress(address)"
-                          [disabled]="formControl.disabled"
-                          [address]="address"></ige-address-card>
+<div
+    *ngIf="addresses.length > 0"
+    fxLayout="row wrap"
+    fxLayoutGap="24px grid"
+    class="address-cards"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="drop($event)"
+>
+    <div
+        *ngFor="let address of addresses; let i = index"
+        fxFlex="50"
+        class="address-card-wrapper"
+        cdkDrag
+    >
+        <ige-address-card
+            (edit)="editAddress(address, i)"
+            (remove)="removeAddress(address)"
+            (gotoAddress)="gotoAddress(address)"
+            [disabled]="formControl.disabled"
+            [address]="address"
+        ></ige-address-card>
     </div>
 </div>
 
-<ige-add-button *ngIf="formControl.enabled" (add)="addAddress()"
-                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+<ige-add-button
+    *ngIf="formControl.enabled"
+    (add)="addAddress()"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>

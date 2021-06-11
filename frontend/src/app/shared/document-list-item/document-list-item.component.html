@@ -1,27 +1,70 @@
-<mat-selection-list *ngIf="docs" class="doc-item" [multiple]="false" [class.dense]="denseMode" [class.hide-divider]="hideDivider">
-    <mat-list-option *ngFor="let doc of docs | async" (click)="makeSelection(doc)"
-                     [class.marker-space]="showSelection && (!currentSelection || currentSelection.id !== doc.id)"
-                     [class.selected]="currentSelection && (doc.id === currentSelection.id)"
-                     [class.hide-bg-selection]="showSelection">
-
+<mat-selection-list
+    *ngIf="docs"
+    class="doc-item"
+    [multiple]="false"
+    [class.dense]="denseMode"
+    [class.hide-divider]="hideDivider"
+>
+    <mat-list-option
+        *ngFor="let doc of docs | async"
+        (click)="makeSelection(doc)"
+        [class.marker-space]="
+            showSelection &&
+            (!currentSelection || currentSelection.id !== doc.id)
+        "
+        [class.selected]="currentSelection && doc.id === currentSelection.id"
+        [class.hide-bg-selection]="showSelection"
+    >
         <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
-        <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
+        <mat-icon
+            *ngIf="
+                showSelection &&
+                currentSelection &&
+                currentSelection.id === doc.id
+            "
+            class="marker"
+            matListIcon
+            svgIcon="baseline-check-24px"
+        ></mat-icon>
         <h3 matLine>
-            <span class="card-title">{{doc.title}}</span>
-            <span *ngIf="!hideDate" class="date" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo:"DE"}}</span>
+            <span class="card-title">{{ doc.title }}</span>
+            <span
+                *ngIf="!hideDate"
+                class="date"
+                [matTooltip]="doc._modified | date: 'dd.LL.yyyy HH:mm'"
+                >{{ doc._modified | dateAgo: "DE" }}</span
+            >
         </h3>
         <mat-divider></mat-divider>
     </mat-list-option>
 </mat-selection-list>
 
-<div *ngIf="doc" (keyup.enter)="select.next(doc)" class="doc-item single multiline" fxLayout="row" (click)="makeSelection(doc)">
-    <mat-icon *ngIf="showSelection && currentSelection && currentSelection.id === doc.id" class="marker" matListIcon svgIcon="baseline-check-24px"></mat-icon>
+<div
+    *ngIf="doc"
+    (keyup.enter)="select.next(doc)"
+    class="doc-item single multiline"
+    fxLayout="row"
+    (click)="makeSelection(doc)"
+>
+    <mat-icon
+        *ngIf="
+            showSelection && currentSelection && currentSelection.id === doc.id
+        "
+        class="marker"
+        matListIcon
+        svgIcon="baseline-check-24px"
+    ></mat-icon>
 
     <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
 
     <span matLine>
         <!-- in case we want to style title, we need to add it as innerHTML -->
         <span [innerHTML]="doc.title"></span>
-        <span  *ngIf="!hideDate" class="date" [matTooltip]='doc._modified | date:"dd.LL.yyyy HH:mm"'>{{doc._modified | dateAgo: "DE"}}</span>
+        <span
+            *ngIf="!hideDate"
+            class="date"
+            [matTooltip]="doc._modified | date: 'dd.LL.yyyy HH:mm'"
+            >{{ doc._modified | dateAgo: "DE" }}</span
+        >
     </span>
 </div>

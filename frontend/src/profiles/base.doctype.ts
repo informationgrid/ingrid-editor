@@ -1,43 +1,45 @@
-import {FormlyFieldConfig} from '@ngx-formly/core';
-import {Doctype} from '../app/services/formular/doctype';
-import {merge, Observable} from 'rxjs';
-import {CodelistService, SelectOption} from '../app/services/codelist/codelist.service';
-import {filter, map, tap} from 'rxjs/operators';
-import {CodelistQuery} from '../app/store/codelist/codelist.query';
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Doctype } from "../app/services/formular/doctype";
+import { merge, Observable } from "rxjs";
+import {
+  CodelistService,
+  SelectOption,
+} from "../app/services/codelist/codelist.service";
+import { filter, map, tap } from "rxjs/operators";
+import { CodelistQuery } from "../app/store/codelist/codelist.query";
 
 export abstract class BaseDoctype implements Doctype {
-
   fields = <FormlyFieldConfig[]>[
     {
-      key: 'title',
+      key: "title",
       templateOptions: {
-        label: 'Titel'
-      }
+        label: "Titel",
+      },
     },
     {
-      key: '_id'
+      key: "_id",
     },
     {
-      key: '_parent'
+      key: "_parent",
     },
     {
-      key: '_type',
+      key: "_type",
       templateOptions: {
-        label: 'Typ'
-      }
+        label: "Typ",
+      },
     },
     {
-      key: '_created'
+      key: "_created",
     },
     {
-      key: '_modified',
+      key: "_modified",
       templateOptions: {
-        label: 'Aktualität'
-      }
+        label: "Aktualität",
+      },
     },
     {
-      key: '_version'
-    }
+      key: "_version",
+    },
   ];
 
   id: string;
@@ -50,9 +52,10 @@ export abstract class BaseDoctype implements Doctype {
 
   fieldsMap: SelectOption[] = [];
 
-  constructor(private codelistService: CodelistService,
-              private codelistQuery: CodelistQuery) {
-  }
+  constructor(
+    private codelistService: CodelistService,
+    private codelistQuery: CodelistQuery
+  ) {}
 
   abstract documentFields(): FormlyFieldConfig[];
 
@@ -60,21 +63,24 @@ export abstract class BaseDoctype implements Doctype {
     return this.fields;
   }
 
-
-  getCodelistForSelectWithEmtpyOption(codelistId: number): Observable<SelectOption[]> {
-    return this.getCodelistForSelect(codelistId).pipe(map(cl => [{label: '', value: undefined}].concat(cl)));
+  getCodelistForSelectWithEmtpyOption(
+    codelistId: number
+  ): Observable<SelectOption[]> {
+    return this.getCodelistForSelect(codelistId).pipe(
+      map((cl) => [{ label: "", value: undefined }].concat(cl))
+    );
   }
 
-
   getCodelistForSelect(codelistId: number): Observable<SelectOption[]> {
-
-    this.codelistService.byId(codelistId + '');
+    this.codelistService.byId(codelistId + "");
 
     return merge(
       this.codelistQuery.selectEntity(codelistId),
-      this.codelistQuery.selectCatalogCodelist(codelistId + '').pipe(tap(console.log))
+      this.codelistQuery
+        .selectCatalogCodelist(codelistId + "")
+        .pipe(tap(console.log))
     ).pipe(
-      filter(codelist => codelist),
+      filter((codelist) => codelist),
       map(CodelistService.mapToSelectSorted)
     );
     /*return this.codelistQuery.selectEntity(codelistId).pipe(
@@ -88,12 +94,13 @@ export abstract class BaseDoctype implements Doctype {
     this.hasOptionalFields = this.hasOptionals(this.fields);
     this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
-    console.log('Profile initialized');
+    console.log("Profile initialized");
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
-    return fields.some(field => {
-      if (field.className && field.className.indexOf('optional') !== -1) return true;
+    return fields.some((field) => {
+      if (field.className && field.className.indexOf("optional") !== -1)
+        return true;
       if (field.fieldGroup) {
         if (this.hasOptionals(field.fieldGroup)) return true;
       }
@@ -101,7 +108,7 @@ export abstract class BaseDoctype implements Doctype {
   }
 
   private addContextHelp(fields: FormlyFieldConfig[]) {
-    fields.forEach(field => {
+    fields.forEach((field) => {
       let fieldKey = <string>field.key;
       if (field.fieldGroup) {
         this.addContextHelp(field.fieldGroup);
@@ -109,7 +116,7 @@ export abstract class BaseDoctype implements Doctype {
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.templateOptions.docType = this.id;
 
-        if (field.type === 'checkbox') {
+        if (field.type === "checkbox") {
           field.templateOptions.hasInlineContextHelp = true;
         } else if (!field.templateOptions.hasInlineContextHelp) {
           field.templateOptions.hasContextHelp = true;
@@ -119,7 +126,7 @@ export abstract class BaseDoctype implements Doctype {
   }
 
   private getFieldMap(fields: FormlyFieldConfig[]) {
-    fields.forEach(field => {
+    fields.forEach((field) => {
       let fieldKey = <string>field.key;
       if (field.fieldGroup) {
         this.getFieldMap(field.fieldGroup);
@@ -128,7 +135,9 @@ export abstract class BaseDoctype implements Doctype {
       if (fieldKey) {
         this.fieldsMap.push({
           value: fieldKey,
-          label: field.templateOptions?.externalLabel || field.templateOptions?.label
+          label:
+            field.templateOptions?.externalLabel ||
+            field.templateOptions?.label,
         });
       }
     });

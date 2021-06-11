@@ -1,32 +1,38 @@
-import {Component, OnInit} from '@angular/core';
-import {ConfigService, Configuration} from '../services/config/config.service';
-import {DocumentService} from '../services/document/document.service';
-import {DocumentAbstract} from '../store/document/document.model';
-import {Observable, Subject} from 'rxjs';
-import {SessionQuery} from '../store/session.query';
-import {Router} from '@angular/router';
-import {MatDialog} from '@angular/material/dialog';
-import {CreateNodeComponent, CreateOptions} from '../+form/dialogs/create/create-node.component';
+import { Component, OnInit } from "@angular/core";
+import {
+  ConfigService,
+  Configuration,
+} from "../services/config/config.service";
+import { DocumentService } from "../services/document/document.service";
+import { DocumentAbstract } from "../store/document/document.model";
+import { Observable, Subject } from "rxjs";
+import { SessionQuery } from "../store/session.query";
+import { Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  CreateNodeComponent,
+  CreateOptions,
+} from "../+form/dialogs/create/create-node.component";
 
 @Component({
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit {
-
   datasets;
 
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = new Subject<number[]>();
 
-  constructor(configService: ConfigService,
-              private router: Router,
-              private dialog: MatDialog,
-              private docService: DocumentService,
-              private sessionQuery: SessionQuery) {
+  constructor(
+    configService: ConfigService,
+    private router: Router,
+    private dialog: MatDialog,
+    private docService: DocumentService,
+    private sessionQuery: SessionQuery
+  ) {
     this.configuration = configService.getConfiguration();
-
   }
 
   ngOnInit() {
@@ -37,17 +43,13 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchStatistic() {
-
-    this.docService.getStatistic().subscribe(response => {
+    this.docService.getStatistic().subscribe((response) => {
       this.chartDataPublished.next([response.numDrafts, response.numPublished]);
     });
-
   }
 
   fetchData(query?: string) {
-
     this.docService.findRecent();
-
   }
 
   createNewDocument() {
@@ -56,12 +58,11 @@ export class DashboardComponent implements OnInit {
       maxWidth: 600,
       minHeight: 400,
       disableClose: true,
-      data:
-        {
-          parent: null,
-          forAddress: false,
-          isFolder: false
-        } as CreateOptions
+      data: {
+        parent: null,
+        forAddress: false,
+        isFolder: false,
+      } as CreateOptions,
     });
   }
 
@@ -71,25 +72,22 @@ export class DashboardComponent implements OnInit {
       maxWidth: 600,
       minHeight: 400,
       disableClose: true,
-      data:
-        {
-          parent: null,
-          forAddress: true,
-          isFolder: false
-        } as CreateOptions
+      data: {
+        parent: null,
+        forAddress: true,
+        isFolder: false,
+      } as CreateOptions,
     });
   }
 
-  createNewUser() {
-
-  }
+  createNewUser() {}
 
   openDocument(id: number | string) {
-    this.router.navigate(['/form', {id: id}]);
+    this.router.navigate(["/form", { id: id }]);
   }
 
   openAddress(id: number | string) {
-    this.router.navigate(['/address', {id: id}]);
+    this.router.navigate(["/address", { id: id }]);
   }
 
   createNewFolder() {
@@ -100,8 +98,8 @@ export class DashboardComponent implements OnInit {
       disableClose: true,
       data: {
         forAddress: false,
-        isFolder: true
-      } as CreateOptions
+        isFolder: true,
+      } as CreateOptions,
     });
   }
 }

@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { HeaderMoreComponent } from './header-more.component';
+import { HeaderMoreComponent } from "./header-more.component";
 
-describe('HeaderMoreComponent', () => {
+describe("HeaderMoreComponent", () => {
   let component: HeaderMoreComponent;
   let fixture: ComponentFixture<HeaderMoreComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HeaderMoreComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [HeaderMoreComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderMoreComponent);
@@ -19,7 +20,7 @@ describe('HeaderMoreComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

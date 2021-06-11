@@ -1,14 +1,16 @@
-@import './variables.scss';
-@import './material.override.scss';
-@import './material-fields.override.scss';
+@import "./variables.scss";
+@import "./material.override.scss";
+@import "./material-fields.override.scss";
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
 }
 
 body {
-  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial,
+    Lucida Grande, sans-serif;
   letter-spacing: 0.4px;
 }
 
@@ -47,7 +49,6 @@ h1 {
 }
 
 .mat-card {
-
   &.hover-elevate {
     &.mat-card {
       box-shadow: none;
@@ -56,7 +57,8 @@ h1 {
     }
 
     &:hover {
-      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2),
+        0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
     }
   }
 
@@ -66,7 +68,6 @@ h1 {
     -moz-box-shadow: none !important;
   }
 }
-
 
 .mat-list.hover-list {
   .mat-list-item:hover {
@@ -249,12 +250,15 @@ form-toolbar + div {
   }
 }
 
-
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover {
   background-color: #c9eeff !important;
 }
 
-.navbar-default .navbar-nav > li > a:focus, nav a.active, nav a:focus.active {
+.navbar-default .navbar-nav > li > a:focus,
+nav a.active,
+nav a:focus.active {
   background-color: #ececec;
 }
 
@@ -287,9 +291,9 @@ dyn-field {
   display: inline-block;
 }
 
-dynamic-form input[type=text],
-dynamic-form input[type=date],
-dynamic-form input[type=number],
+dynamic-form input[type="text"],
+dynamic-form input[type="date"],
+dynamic-form input[type="number"],
 dynamic-form select,
 dynamic-form textarea {
   width: 100%;
@@ -320,7 +324,6 @@ sidebar .list-group-item:hover {
 .nav-tabs li {
   cursor: pointer;
 }
-
 
 /* ngx-formly layout classes */
 .display-flex {
@@ -353,7 +356,6 @@ sidebar .list-group-item:hover {
 .flex-6 {
   flex: 6;
 }
-
 
 //}
 formly-field {
@@ -402,17 +404,15 @@ ige-root .mat-drawer-container {
 }
 
 .mat-icon.animated {
-  transition: all .2s linear;
+  transition: all 0.2s linear;
 }
 
 .mat-icon {
-
   &.passive {
     color: $ige-background-bar;
   }
 
   &.document-icon {
-
     svg {
       height: 24px;
       width: 24px;
@@ -430,7 +430,6 @@ ige-root .mat-drawer-container {
       fill: url("#myGradient");
     }
   }
-
 }
 
 svg {
@@ -444,7 +443,6 @@ svg {
 }
 
 .gray {
-
   &:hover .coloring {
     fill: darken($ige-comment-color, 5%);
   }
@@ -452,11 +450,9 @@ svg {
   .coloring {
     fill: $ige-comment-color;
   }
-
 }
 
 ige-side-menu {
-
   .coloring {
     fill: #ffffff;
   }
@@ -483,9 +479,8 @@ ige-side-menu {
 
 // Context Buttons
 .mat-icon-button {
-
   &.table-options {
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     line-height: 32px;
     height: 32px;
     width: 32px;
@@ -503,7 +498,6 @@ ige-side-menu {
     }
 
     &.dark {
-
       background-color: $ige-background-bar;
 
       &:hover {
@@ -531,7 +525,6 @@ ige-side-menu {
 /* validation error hide conditionally */
 
 .hide-validation {
-
   ige-form-error {
     display: none;
   }
@@ -554,16 +547,20 @@ ige-side-menu {
     caret-color: initial !important;
   }
 
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline {
+  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
+    .mat-form-field-outline {
     opacity: 1;
     color: $ige-comment-color !important;
   }
 
-  .mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick {
+  .mat-form-field-appearance-outline:not(.mat-form-field-disabled)
+    .mat-form-field-flex:hover
+    .mat-form-field-outline-thick {
     opacity: 1;
   }
 
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
+  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
+    .mat-form-field-outline-thick {
     color: initial;
     opacity: 0;
   }
@@ -575,7 +572,8 @@ ige-side-menu {
   .mat-form-field.mat-form-field-invalid .mat-form-field-label {
     color: $ige-placeholder-color !important;
 
-    &.mat-accent, .mat-form-field-required-marker {
+    &.mat-accent,
+    .mat-form-field-required-marker {
       color: $ige-placeholder-color !important;
     }
   }
@@ -588,7 +586,6 @@ ige-side-menu {
     font-weight: 500;
   }
 }
-
 
 /* Material Tabs */
 .page-tabs-routing {
@@ -605,13 +602,13 @@ ige-side-menu {
     border-bottom: none;
     height: 56px;
 
-    color: #FFFFFF;
+    color: #ffffff;
     letter-spacing: 1.25px;
     text-transform: uppercase;
     opacity: 0.75;
 
     &.active-link {
-      color: #4BA7D0;
+      color: #4ba7d0;
     }
   }
 
@@ -630,7 +627,7 @@ ige-side-menu {
     height: 56px;
 
     .mat-tab-label {
-      color: #FFFFFF;
+      color: #ffffff;
       letter-spacing: 1.25px;
       text-transform: uppercase;
       opacity: 0.75;
@@ -640,7 +637,7 @@ ige-side-menu {
         opacity: 1;
 
         .mat-tab-label-content {
-          color: #4BA7D0;
+          color: #4ba7d0;
         }
       }
     }
@@ -656,7 +653,8 @@ ige-side-menu {
   }
 }
 
-.page-tabs, .page-tabs-routing ~ * {
+.page-tabs,
+.page-tabs-routing ~ * {
   .status {
     padding: 30px;
     background-color: rgb(223, 223, 223);
@@ -703,8 +701,10 @@ ige-side-menu {
 .white-bg {
   margin-bottom: 12px;
 
-  .mat-form-field-outline-start, .mat-form-field-outline-gap, .mat-form-field-outline-end {
-    background-color: #FFFFFF;
+  .mat-form-field-outline-start,
+  .mat-form-field-outline-gap,
+  .mat-form-field-outline-end {
+    background-color: #ffffff;
   }
 
   .prefix {
@@ -714,15 +714,16 @@ ige-side-menu {
 }
 
 /* Form Field enhancements */
-.straight-border-right.mat-form-field-appearance-outline .mat-form-field-outline-end {
+.straight-border-right.mat-form-field-appearance-outline
+  .mat-form-field-outline-end {
   border-radius: 0;
   border-right: none;
 }
 
-.straight-border-left.mat-form-field-appearance-outline .mat-form-field-outline-start {
+.straight-border-left.mat-form-field-appearance-outline
+  .mat-form-field-outline-start {
   border-radius: 0;
 }
-
 
 mat-selection-list.with-menu .mat-list-text {
   align-items: center;
@@ -748,8 +749,7 @@ mat-selection-list.with-menu .mat-list-text {
   box-sizing: border-box;
   border-radius: 4px;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-  0 8px 10px 1px rgba(0, 0, 0, 0.14),
-  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .legend {

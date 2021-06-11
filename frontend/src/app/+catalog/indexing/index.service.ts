@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {ConfigService, Configuration} from '../../services/config/config.service';
-import {Catalog} from '../services/catalog.model';
-import {BehaviorSubject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import {
+  ConfigService,
+  Configuration,
+} from "../../services/config/config.service";
+import { Catalog } from "../services/catalog.model";
+import { BehaviorSubject } from "rxjs";
+import { tap } from "rxjs/operators";
 
 export interface LogResult {
   startTime: Date;
@@ -17,10 +20,9 @@ export interface LogResult {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class IndexService {
-
   private configuration: Configuration;
   private catalog: Catalog;
   lastLog$ = new BehaviorSubject<LogResult>(null);
@@ -31,27 +33,29 @@ export class IndexService {
   }
 
   start() {
-    return this.http.post(this.configuration.backendUrl + 'index', {
+    return this.http.post(this.configuration.backendUrl + "index", {
       catalogId: this.catalog.id,
-      format: 'portal'
+      format: "portal",
     });
   }
 
   setCronPattern(value: string) {
-    return this.http.post(this.configuration.backendUrl + 'index/config', {
+    return this.http.post(this.configuration.backendUrl + "index/config", {
       catalogId: this.catalog.id,
-      cronPattern: value
+      cronPattern: value,
     });
   }
 
   getCronPattern() {
-    return this.http.get<any>(this.configuration.backendUrl + 'index/config/' + this.catalog.id);
+    return this.http.get<any>(
+      this.configuration.backendUrl + "index/config/" + this.catalog.id
+    );
   }
 
   fetchLastLog() {
-    return this.http.get<any>(this.configuration.backendUrl + 'index/log')
-      .pipe(
-        tap(response => this.lastLog$.next(response))
-      ).subscribe();
+    return this.http
+      .get<any>(this.configuration.backendUrl + "index/log")
+      .pipe(tap((response) => this.lastLog$.next(response)))
+      .subscribe();
   }
 }

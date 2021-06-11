@@ -9,7 +9,8 @@
   background-color: $ige-background-bar;
 }
 
-.mat-toolbar-row, .mat-toolbar-single-row {
+.mat-toolbar-row,
+.mat-toolbar-single-row {
   height: 56px;
   padding-right: 16px;
 
@@ -22,7 +23,7 @@
 .separator {
   margin-right: 8px;
   padding-left: 8px;
-  height: 36px
+  height: 36px;
 }
 
 .standard-toolbar-button {
@@ -46,10 +47,9 @@
   }
 }
 
-
 .save-buttons {
-
-  button.btnPublish, button.btnPublishMore {
+  button.btnPublish,
+  button.btnPublishMore {
     &:not([disabled]):hover {
       background-color: lighten($ige-secondary, 5%);
     }
@@ -72,7 +72,6 @@
     margin-left: 1px;
     padding: 0;
   }
-
 }
 
 .mat-icon-button:not([disabled]):hover {

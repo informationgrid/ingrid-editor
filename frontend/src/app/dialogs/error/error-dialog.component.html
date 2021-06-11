@@ -7,30 +7,32 @@
     </h2>
 </div>
 <mat-dialog-content data-cy="error-dialog-content">
-
     <ng-container *ngIf="errors.length === 1">
-        <p>{{errors[0].message}}</p>
+        <p>{{ errors[0].message }}</p>
         <ul *ngIf="errors[0].detail || errors[0].stacktrace">
             <li>
-                {{errors[0].detail}}
-                <pre *ngIf="errors[0].stacktrace">{{errors[0].stacktrace}}</pre>
+                {{ errors[0].detail }}
+                <pre *ngIf="errors[0].stacktrace">{{
+                    errors[0].stacktrace
+                }}</pre>
             </li>
         </ul>
     </ng-container>
 
     <ul *ngIf="errors.length > 1">
         <li *ngFor="let error of errors">
-            {{error.message}}
+            {{ error.message }}
             <ul *ngIf="error.detail || error.stacktrace">
                 <li>
-                    {{error.detail}}
-                    <pre *ngIf="error.stacktrace">{{error.stacktrace}}</pre>
+                    {{ error.detail }}
+                    <pre *ngIf="error.stacktrace">{{ error.stacktrace }}</pre>
                 </li>
             </ul>
         </li>
     </ul>
-
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button (click)="close()" data-cy="error-dialog-close">Schließen</button>
+    <button mat-button (click)="close()" data-cy="error-dialog-close">
+        Schließen
+    </button>
 </mat-dialog-actions>

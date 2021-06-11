@@ -1,4 +1,4 @@
-@import '../../../variables';
+@import "../../../variables";
 
 .circular-chart {
   display: block;
@@ -21,8 +21,8 @@
   }
 
   // don't animate cicles on ios safari
-  @media not all and (min-resolution:.001dpcm) {
-    @supports (-webkit-appearance:none) {
+  @media not all and (min-resolution: 0.001dpcm) {
+    @supports (-webkit-appearance: none) {
       .circle {
         animation: none;
       }

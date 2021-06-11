@@ -1,53 +1,97 @@
-<div *ngIf="multiSelectionModeEnabled" class="multi-select-area" fxLayoutAlign="space-between center">
-    <mat-checkbox data-cy="toggle-all-selection"
-                  matTooltip="Alle Aus-/Abwählen"
-                  [checked]="checkToggleAll"
-                  [indeterminate]="indeterminateToggleAll"
-                  (change)="toggleAllSelection.next($event.checked)">Alle
+<div
+    *ngIf="multiSelectionModeEnabled"
+    class="multi-select-area"
+    fxLayoutAlign="space-between center"
+>
+    <mat-checkbox
+        data-cy="toggle-all-selection"
+        matTooltip="Alle Aus-/Abwählen"
+        [checked]="checkToggleAll"
+        [indeterminate]="indeterminateToggleAll"
+        (change)="toggleAllSelection.next($event.checked)"
+        >Alle
     </mat-checkbox>
-    <button mat-icon-button matSuffix class="close" (click)="deactivateMultiSelection()"
-            data-cy="exit-multi-select-mode">
+    <button
+        mat-icon-button
+        matSuffix
+        class="close"
+        (click)="deactivateMultiSelection()"
+        data-cy="exit-multi-select-mode"
+    >
         <mat-icon svgIcon="Entfernen"></mat-icon>
     </button>
 </div>
 
 <div class="header" fxLayout="column">
-    <div *ngIf="showOptions && !multiSelectionModeEnabled" class="options" fxLayout="row wrap-reverse"
-         fxLayoutAlign="space-between">
+    <div
+        *ngIf="showOptions && !multiSelectionModeEnabled"
+        class="options"
+        fxLayout="row wrap-reverse"
+        fxLayoutAlign="space-between"
+    >
         <div class="multi-select" *ngIf="showMultiSelectButton">
-            <mat-checkbox data-cy="edit-button" class="default-button"
-                          matTooltip="Mehrfachauswahl"
-                          (click)="activateMultiSelection()">
+            <mat-checkbox
+                data-cy="edit-button"
+                class="default-button"
+                matTooltip="Mehrfachauswahl"
+                (click)="activateMultiSelection()"
+            >
                 Auswahl
             </mat-checkbox>
         </div>
 
-
         <div fxFlex fxLayout="row">
             <div fxFlex="3 1 auto"></div>
-            <mat-slide-toggle class="show-all" checked disabled>Alle anzeigen</mat-slide-toggle>
+            <mat-slide-toggle class="show-all" checked disabled
+                >Alle anzeigen</mat-slide-toggle
+            >
 
-            <button *ngIf="showReloadButton" mat-icon-button data-cy="reload-button" class="reload-button"
-                    matTooltip="Aktualisieren"
-                    (click)="reloadTree()">
+            <button
+                *ngIf="showReloadButton"
+                mat-icon-button
+                data-cy="reload-button"
+                class="reload-button"
+                matTooltip="Aktualisieren"
+                (click)="reloadTree()"
+            >
                 <mat-icon>refresh</mat-icon>
             </button>
         </div>
-
     </div>
 
-    <mat-form-field class="search" appearance="outline" data-cy="tree-search-field">
-        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix>search</mat-icon>
-        <input matInput placeholder="Suchen" aria-label="Search"
-               [formControl]="query"
-               [matAutocomplete]="searchAuto">
-        <button *ngIf="query.value?.length > 0" mat-icon-button matSuffix class="close" (click)="query.reset('')"
-                data-cy="clear-tree-search-field">
+    <mat-form-field
+        class="search"
+        appearance="outline"
+        data-cy="tree-search-field"
+    >
+        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix
+            >search</mat-icon
+        >
+        <input
+            matInput
+            placeholder="Suchen"
+            aria-label="Search"
+            [formControl]="query"
+            [matAutocomplete]="searchAuto"
+        />
+        <button
+            *ngIf="query.value?.length > 0"
+            mat-icon-button
+            matSuffix
+            class="close"
+            (click)="query.reset('')"
+            data-cy="clear-tree-search-field"
+        >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
-        <mat-autocomplete #searchAuto="matAutocomplete" class="quicksearch-auto dense">
-            <mat-option *ngFor="let doc of searchResult | async"
-                        (onSelectionChange)="loadResultDocument(doc)">
+        <mat-autocomplete
+            #searchAuto="matAutocomplete"
+            class="quicksearch-auto dense"
+        >
+            <mat-option
+                *ngFor="let doc of searchResult | async"
+                (onSelectionChange)="loadResultDocument(doc)"
+            >
                 <ige-document-list-item [doc]="doc"></ige-document-list-item>
             </mat-option>
         </mat-autocomplete>

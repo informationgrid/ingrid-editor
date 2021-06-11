@@ -1,31 +1,41 @@
 <div #host class="form-info-bar">
-
     <div class="form-info-bar-inner">
-        <ige-breadcrumb [path]="path"
-                        [rootName]="rootName"
-                        [hideLastSeparator]="true"
-                        [selectable]="true"
-                        (select)="scrollToTreeNode($event)"></ige-breadcrumb>
+        <ige-breadcrumb
+            [path]="path"
+            [rootName]="rootName"
+            [hideLastSeparator]="true"
+            [selectable]="true"
+            (select)="scrollToTreeNode($event)"
+        ></ige-breadcrumb>
 
-        <ige-header-title-row [form]="form"
-                              [model]="model"
-                              [sections]="sections"
-                              [disableEdit]="forAddress"></ige-header-title-row>
+        <ige-header-title-row
+            [form]="form"
+            [model]="model"
+            [sections]="sections"
+            [disableEdit]="forAddress"
+        ></ige-header-title-row>
     </div>
 </div>
 
-<div #sticky_header class="navigation-header"
-     [class.sticky]="showScrollHeader"
-     [style.left]="scrollHeaderOffsetLeft + 'px'">
-
+<div
+    #sticky_header
+    class="navigation-header"
+    [class.sticky]="showScrollHeader"
+    [style.left]="scrollHeaderOffsetLeft + 'px'"
+>
     <div>
         <div class="document-type">
-            <mat-icon [svgIcon]="getIcon()"
-                      [title]="form?.get('title')?.value"
-                      [ngClass]="['document-icon',getStateClass()]"></mat-icon>
+            <mat-icon
+                [svgIcon]="getIcon()"
+                [title]="form?.get('title')?.value"
+                [ngClass]="['document-icon', getStateClass()]"
+            ></mat-icon>
         </div>
 
-        <ige-header-navigation fxFlex [sections]="sections"></ige-header-navigation>
+        <ige-header-navigation
+            fxFlex
+            [sections]="sections"
+        ></ige-header-navigation>
 
         <button mat-icon-button mat-flat-button class="menu clickable dark">
             <mat-icon svgIcon="Mehr"></mat-icon>
@@ -34,4 +44,3 @@
 
     <ige-form-message></ige-form-message>
 </div>
-

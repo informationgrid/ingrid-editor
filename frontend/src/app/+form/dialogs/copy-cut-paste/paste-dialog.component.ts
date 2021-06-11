@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {TreeQuery} from '../../../store/tree/tree.query';
-import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {ShortTreeNode} from '../../sidebars/tree/tree.types';
+import { Component, Inject, OnInit } from "@angular/core";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 
 export interface PasteDialogOptions {
   buttonText: string;
@@ -13,22 +13,23 @@ export interface PasteDialogOptions {
 }
 
 @Component({
-  templateUrl: './paste-dialog.component.html',
-  styleUrls: ['./paste-dialog.component.scss']
+  templateUrl: "./paste-dialog.component.html",
+  styleUrls: ["./paste-dialog.component.scss"],
 })
 export class PasteDialogComponent implements OnInit {
-
   selection = { parent: null, path: [] };
   path: string[];
   query: TreeQuery | AddressTreeQuery;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions, treeQuery: TreeQuery, addressTreeQuery: AddressTreeQuery) {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions,
+    treeQuery: TreeQuery,
+    addressTreeQuery: AddressTreeQuery
+  ) {
     this.query = data.forAddress ? addressTreeQuery : treeQuery;
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   handleSelected(evt: any) {
     this.selection = evt;
@@ -37,7 +38,7 @@ export class PasteDialogComponent implements OnInit {
   setPath(path: ShortTreeNode[]) {
     if (path.length > 0) {
       const active = this.query.getEntity(this.selection);
-      this.path = [...path.map(node => node.title), active.title];
+      this.path = [...path.map((node) => node.title), active.title];
     }
   }
 }

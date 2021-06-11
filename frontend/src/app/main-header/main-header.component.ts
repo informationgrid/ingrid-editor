@@ -1,70 +1,75 @@
-import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../services/ApiService';
-import {ConfigService, UserInfo, Version} from '../services/config/config.service';
-import {NavigationEnd, Router} from '@angular/router';
-import {SessionQuery} from '../store/session.query';
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import { Component, OnInit } from "@angular/core";
+import { ApiService } from "../services/ApiService";
+import {
+  ConfigService,
+  UserInfo,
+  Version,
+} from "../services/config/config.service";
+import { NavigationEnd, Router } from "@angular/router";
+import { SessionQuery } from "../store/session.query";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'ige-main-header',
-  templateUrl: './main-header.component.html',
-  styleUrls: ['./main-header.component.scss']
+  selector: "ige-main-header",
+  templateUrl: "./main-header.component.html",
+  styleUrls: ["./main-header.component.scss"],
 })
 export class MainHeaderComponent implements OnInit {
-
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
   currentCatalog$: Observable<string>;
   version: Version;
-  timeout$ = this.session.select('sessionTimeoutIn');
+  timeout$ = this.session.select("sessionTimeoutIn");
 
-  constructor(private apiService: ApiService, private configService: ConfigService,
-              private session: SessionQuery,
-              private router: Router) {
-  }
+  constructor(
+    private apiService: ApiService,
+    private configService: ConfigService,
+    private session: SessionQuery,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-
     this.version = this.configService.$userInfo.getValue().version;
-    this.currentCatalog$ = this.configService.$userInfo.pipe(map(userInfo => userInfo.currentCatalog.label));
-
-    this.router.events.subscribe(
-      (event: any) => {
-        if (event instanceof NavigationEnd) {
-          this.showShadow = this.router.url !== '/dashboard';
-          this.pageTitle = this.getPageTitleFromRoute(this.router.url);
-        }
-      }
+    this.currentCatalog$ = this.configService.$userInfo.pipe(
+      map((userInfo) => userInfo.currentCatalog.label)
     );
+
+    this.router.events.subscribe((event: any) => {
+      if (event instanceof NavigationEnd) {
+        this.showShadow = this.router.url !== "/dashboard";
+        this.pageTitle = this.getPageTitleFromRoute(this.router.url);
+      }
+    });
   }
 
   logout() {
     this.apiService.logout().subscribe(() => {
       window.location.reload(true);
-    })
+    });
   }
 
   private getPageTitleFromRoute(url: string) {
-    const firstPart = url.split(';')[0].substring(1);
+    const firstPart = url.split(";")[0].substring(1);
 
-    return this.router.config
-      .find(route => route.path === firstPart)
-      ?.data?.title ?? ''
+    return (
+      this.router.config.find((route) => route.path === firstPart)?.data
+        ?.title ?? ""
+    );
   }
 
   getInitials(user: UserInfo) {
-    return user.firstName[0]+user.lastName[0];
+    return user.firstName[0] + user.lastName[0];
   }
 
   userIsCatAdmin() {
     return this.userInfo$.pipe(
-      map(userInfo => {
+      map((userInfo) => {
         // TODO change when roles are fully implemented. Right now everybody is cat-admin
-        return true
+        return true;
         // return userInfo.roles.includes("cat-admin")
       })
-    )
+    );
   }
 }

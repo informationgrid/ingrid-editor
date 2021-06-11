@@ -13,7 +13,8 @@
 }
 
 // higher priority for drop class!
-.drop.drop.drop, .drop-root.drop-root.hover {
+.drop.drop.drop,
+.drop-root.drop-root.hover {
   background-color: $ige-info-background !important;
 
   .zone {
@@ -23,7 +24,6 @@
 
 .header-wrapper {
   position: relative;
-
 
   .drop-root {
     padding: 24px;
@@ -56,7 +56,6 @@
       }
     }
   }
-
 }
 
 mat-tree-node {
@@ -71,7 +70,6 @@ mat-tree-node {
     border-color: transparent;
 
     &.expanded {
-
       .toggle {
         color: $ige-text-color;
       }
@@ -82,7 +80,7 @@ mat-tree-node {
     }
 
     &.expanded.rootNode {
-       border-bottom: 1px solid $ige-background-bar;
+      border-bottom: 1px solid $ige-background-bar;
     }
 
     > div {
@@ -116,7 +114,6 @@ mat-tree-node {
       }
     }
 
-
     &.folder {
       font-size: 16px;
     }
@@ -126,7 +123,8 @@ mat-tree-node {
   &.rootNode.folder + &.rootNode:not(.folder), /* Line above records in root */
   &:not(.rootNode).expanded + &:not(.rootNode) > div, /* Within folder: folder or record below expanded folder */
   &:not(.rootNode):not(.folder) + &:not(.rootNode).folder > div, /* Within folder: folder below record */
-  &:not(.rootNode):not(.folder).afterExpanded > div { /* Within folder: record (of upper folder) below expanded folder's record */
+  &:not(.rootNode):not(.folder).afterExpanded > div {
+    /* Within folder: record (of upper folder) below expanded folder's record */
     border-top: 1px solid $ige-background-bar;
   }
 
@@ -141,20 +139,22 @@ mat-tree-node {
     position: relative;
     z-index: 1;
     margin-top: -1px;
-    background-color: lighten($ige-background, 10%); /* Other states' background colors have to be set important */
+    background-color: lighten(
+      $ige-background,
+      10%
+    ); /* Other states' background colors have to be set important */
 
     &:hover {
-      background-color: darken(#FFFFFF, 2.5%);
+      background-color: darken(#ffffff, 2.5%);
     }
 
     &.selected {
-      background-color: darken(#FFFFFF, 5%);
+      background-color: darken(#ffffff, 5%);
 
       &:hover {
-        background-color: darken(#FFFFFF, 10%);
+        background-color: darken(#ffffff, 10%);
       }
     }
-
   }
 
   .label {
@@ -181,10 +181,10 @@ mat-tree-node {
   }
 
   &.selected {
-    background-color: darken(#FFFFFF, 5%);
+    background-color: darken(#ffffff, 5%);
 
     &:hover {
-      background-color: darken(#FFFFFF, 10%);
+      background-color: darken(#ffffff, 10%);
     }
   }
 
@@ -196,14 +196,16 @@ mat-tree-node {
   }
 
   &:hover {
-    background-color: darken(#FFFFFF, 2.5%);
+    background-color: darken(#ffffff, 2.5%);
 
     .quick-child-selection {
       display: block;
     }
   }
 
-  &.active, &.rootNode.active, &:not(.rootNode).expanded + &.active:not(.rootNode) {
+  &.active,
+  &.rootNode.active,
+  &:not(.rootNode).expanded + &.active:not(.rootNode) {
     background-color: $ige-mark-color;
 
     &:hover {
@@ -277,7 +279,7 @@ mat-tree-node {
 .refresh {
   position: absolute;
   right: 0;
-  z-index: 1000
+  z-index: 1000;
 }
 
 .readonly {

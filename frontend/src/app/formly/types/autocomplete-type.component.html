@@ -1,21 +1,39 @@
 <mat-form-field class="width-100" appearance="outline">
-    <mat-label>{{to.label}}</mat-label>
-    <input matInput
-           [matAutocomplete]="auto"
-           [formControl]="formControl"
-           [formlyAttributes]="field"
-           [placeholder]="to.placeholder"
-           (keyup)="_filter(formControl.value || '')"
-           (click)="openAutocompletePanel()"
-           [errorStateMatcher]="errorStateMatcher">
-    <button *ngIf="formControl.value?.length > 0 && !this.to.hideDeleteButton" mat-icon-button type="button" matSuffix class="field-close"
-            (click)="formControl.setValue('')">
+    <mat-label>{{ to.label }}</mat-label>
+    <input
+        matInput
+        [matAutocomplete]="auto"
+        [formControl]="formControl"
+        [formlyAttributes]="field"
+        [placeholder]="to.placeholder"
+        (keyup)="_filter(formControl.value || '')"
+        (click)="openAutocompletePanel()"
+        [errorStateMatcher]="errorStateMatcher"
+    />
+    <button
+        *ngIf="formControl.value?.length > 0 && !this.to.hideDeleteButton"
+        mat-icon-button
+        type="button"
+        matSuffix
+        class="field-close"
+        (click)="formControl.setValue('')"
+    >
         <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
     </button>
     <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.label" [class.matching]="this.to.highlightMatches && !option.disabled && formControl.value">
+        <mat-option
+            *ngFor="let option of filteredOptions | async"
+            [value]="option.label"
+            [class.matching]="
+                this.to.highlightMatches &&
+                !option.disabled &&
+                formControl.value
+            "
+        >
             {{ option.label }}
         </mat-option>
     </mat-autocomplete>
-    <mat-error *ngIf="formControl.errors?.required">Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    <mat-error *ngIf="formControl.errors?.required"
+        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
+    >
 </mat-form-field>

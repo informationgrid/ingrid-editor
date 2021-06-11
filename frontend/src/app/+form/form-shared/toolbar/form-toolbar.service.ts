@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Subject } from "rxjs";
 
 export interface DefaultToolbarItem {
   id: string;
   pos: number;
-  align?: 'right' | 'left';
+  align?: "right" | "left";
 }
 
 export interface ToolbarMenuItem {
@@ -22,7 +22,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   active?: boolean;
   label?: string;
   isPrimary?: boolean;
-  menu?: ToolbarMenuItem[]
+  menu?: ToolbarMenuItem[];
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -31,7 +31,6 @@ export interface Separator extends DefaultToolbarItem {
 
 @Injectable()
 export class FormToolbarService {
-
   // event when a new button was added
   toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
@@ -40,8 +39,7 @@ export class FormToolbarService {
 
   private _buttons: Array<ToolbarItem | Separator> = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   get buttons(): Array<ToolbarItem | Separator> {
     return this._buttons;
@@ -53,7 +51,9 @@ export class FormToolbarService {
     this._buttons.splice(pos, 0, button);
 
     // sort buttons
-    this._buttons.sort((a, b) => a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1);
+    this._buttons.sort((a, b) =>
+      a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1
+    );
 
     this.toolbar$.next(this.buttons);
   }
@@ -78,7 +78,6 @@ export class FormToolbarService {
     this.toolbarEvent$.next(eventId);
   }
 
-
   /**
    * Set the state of a toolbar button to enabled or disabled.
    * @param id
@@ -94,7 +93,7 @@ export class FormToolbarService {
   setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {
     const button = <ToolbarItem>this.getButtonById(id);
     if (button) {
-      const menuButton = button.menu.find(item => item.eventId === eventId);
+      const menuButton = button.menu.find((item) => item.eventId === eventId);
 
       if (menuButton) {
         menuButton.active = active;

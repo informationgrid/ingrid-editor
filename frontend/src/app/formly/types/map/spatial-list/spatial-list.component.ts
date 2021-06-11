@@ -1,18 +1,21 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {SpatialBoundingBox} from '../spatial-dialog/spatial-result.model';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Observable} from 'rxjs';
-import {ConfirmDialogComponent, ConfirmDialogData} from '../../../../dialogs/confirm/confirm-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Observable } from "rxjs";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
-export type SpatialLocationType = 'free' | 'wkt' | 'geo-name';
+export type SpatialLocationType = "free" | "wkt" | "geo-name";
 
 export interface SpatialLocation {
   title: string;
-  type: SpatialLocationType,
-  value?: SpatialBoundingBox,
+  type: SpatialLocationType;
+  value?: SpatialBoundingBox;
   wkt?: string;
-  limitTypes?: SpatialLocationType[]
+  limitTypes?: SpatialLocationType[];
 }
 
 export interface SpatialLocationWithColor extends SpatialLocation {
@@ -22,12 +25,11 @@ export interface SpatialLocationWithColor extends SpatialLocation {
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-spatial-list',
-  templateUrl: './spatial-list.component.html',
-  styleUrls: ['./spatial-list.component.scss']
+  selector: "ige-spatial-list",
+  templateUrl: "./spatial-list.component.html",
+  styleUrls: ["./spatial-list.component.scss"],
 })
 export class SpatialListComponent implements OnInit {
-
   @Input() locations: Observable<SpatialLocationWithColor[]>;
   @Input() disabled = false;
 
@@ -38,53 +40,54 @@ export class SpatialListComponent implements OnInit {
   typedLocations: { [x: string]: SpatialLocationWithColor[] };
   types: SpatialLocationType[];
 
-  constructor(private dialog: MatDialog) {
-  }
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
-
     this.locations
       .pipe(untilDestroyed(this))
-      .subscribe(locations => this.updateLocations(locations));
-
+      .subscribe((locations) => this.updateLocations(locations));
   }
 
   private updateLocations(locations: SpatialLocationWithColor[]): void {
-
-    this.typedLocations = locations
-      .reduce((prev, curr) => {
+    this.typedLocations = locations.reduce(
+      (prev, curr) => {
         prev[curr.type].push(curr);
         return prev;
-      }, {free: [], wkt: [], 'geo-name': []});
+      },
+      { free: [], wkt: [], "geo-name": [] }
+    );
 
     // @ts-ignore
-    this.types = Object.keys(this.typedLocations)
-      .filter(type => this.typedLocations[type].length > 0);
-
+    this.types = Object.keys(this.typedLocations).filter(
+      (type) => this.typedLocations[type].length > 0
+    );
   }
 
   getTypeName(type: SpatialLocationType): string {
     switch (type) {
-      case 'free':
-        return 'Freier Raumbezug';
-      case 'wkt':
-        return 'Raumbezug (WKT)';
-      case 'geo-name':
-        return 'Geographischer Name';
+      case "free":
+        return "Freier Raumbezug";
+      case "wkt":
+        return "Raumbezug (WKT)";
+      case "geo-name":
+        return "Geographischer Name";
     }
   }
 
   confirmRemove(location: SpatialLocationWithColor): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Raumbezug löschen',
-        message: 'Möchten Sie wirklich diesen Raumbezug löschen?',
-        list: [location.title]
-      } as ConfirmDialogData
-    }).afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.remove.next(location.indexNumber);
-      }
-    });
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "Raumbezug löschen",
+          message: "Möchten Sie wirklich diesen Raumbezug löschen?",
+          list: [location.title],
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.remove.next(location.indexNumber);
+        }
+      });
   }
 }

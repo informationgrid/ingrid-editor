@@ -56,5 +56,8 @@ export class TreePermission {
 }
 
 export enum PermissionType {
-  PAGE, ACTION, DOCUMENTS, ADDRESSES
+  PAGE,
+  ACTION,
+  DOCUMENTS,
+  ADDRESSES,
 }

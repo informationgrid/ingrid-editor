@@ -1,4 +1,4 @@
-import {Permissions} from '../+user/user';
+import { Permissions } from "../+user/user";
 
 export class Group {
   id: string;
@@ -8,7 +8,7 @@ export class Group {
 
   constructor(values: Object = {}) {
     this.init();
-    Object.assign( this, values );
+    Object.assign(this, values);
   }
 
   private init() {

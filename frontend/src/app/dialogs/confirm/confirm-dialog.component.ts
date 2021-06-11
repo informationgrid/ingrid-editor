@@ -1,5 +1,5 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {Component, Inject} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { Component, Inject } from "@angular/core";
 
 export interface ConfirmDialogData {
   title: string;
@@ -17,24 +17,31 @@ export interface ConfirmDialogButton {
   disabledWhenNotConfirmed?: boolean;
 }
 
-@Component( {
-  templateUrl: 'confirm-dialog.component.html'
-} )
+@Component({
+  templateUrl: "confirm-dialog.component.html",
+})
 export class ConfirmDialogComponent {
   textConfirmed: string;
-  leftAlignedButtons: ConfirmDialogButton[] = [{text: 'Abbrechen'}];
-  rightAlignedButtons: ConfirmDialogButton[] = [{text: 'Ok', id: 'ok', emphasize: true}];
+  leftAlignedButtons: ConfirmDialogButton[] = [{ text: "Abbrechen" }];
+  rightAlignedButtons: ConfirmDialogButton[] = [
+    { text: "Ok", id: "ok", emphasize: true },
+  ];
 
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-              @Inject( MAT_DIALOG_DATA ) public data: ConfirmDialogData) {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
+  ) {
     if (data.buttons) {
-      this.leftAlignedButtons = data.buttons.filter(button => !button.alignRight);
-      this.rightAlignedButtons = data.buttons.filter(button => button.alignRight);
+      this.leftAlignedButtons = data.buttons.filter(
+        (button) => !button.alignRight
+      );
+      this.rightAlignedButtons = data.buttons.filter(
+        (button) => button.alignRight
+      );
     }
   }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
-
 }

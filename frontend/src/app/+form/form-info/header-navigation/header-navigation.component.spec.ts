@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { HeaderNavigationComponent } from './header-navigation.component';
+import { HeaderNavigationComponent } from "./header-navigation.component";
 
-describe('HeaderNavigationComponent', () => {
+describe("HeaderNavigationComponent", () => {
   let component: HeaderNavigationComponent;
   let fixture: ComponentFixture<HeaderNavigationComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HeaderNavigationComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [HeaderNavigationComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderNavigationComponent);
@@ -19,7 +20,7 @@ describe('HeaderNavigationComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

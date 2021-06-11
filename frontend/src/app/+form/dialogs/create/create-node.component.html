@@ -3,94 +3,119 @@
         <button mat-icon-button mat-dialog-close data-cy="dlg-close">
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">{{title}}</span>
+        <span class="text">{{ title }}</span>
     </h2>
 </div>
 <mat-dialog-content class="hide-tab-header create-dlg-content">
-
     <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
         <mat-tab label="Titel">
-            <div class="first-tab-wrapper" fxFlex fxLayout="column" [formGroup]="formGroup">
-
+            <div
+                class="first-tab-wrapper"
+                fxFlex
+                fxLayout="column"
+                [formGroup]="formGroup"
+            >
                 <ng-container *ngIf="isFolder || !forAddress; else addressForm">
                     <div class="dlg-field-label required">Titel*</div>
                     <mat-form-field appearance="outline">
-                        <input #title matInput
-                               formControlName="title"
-                               data-cy="create-title"
-                               placeholder="Eingeben..."
-                               autocomplete="off"
-                               (keyup.enter)="handleCreate()"
-                               required>
+                        <input
+                            #title
+                            matInput
+                            formControlName="title"
+                            data-cy="create-title"
+                            placeholder="Eingeben..."
+                            autocomplete="off"
+                            (keyup.enter)="handleCreate()"
+                            required
+                        />
                         <mat-error>Bitte geben Sie einen Titel ein</mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="numDocumentTypes > 1">
-                        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen:</div>
-                        <ige-document-list-item [docs]="documentTypes" showSelection="true"
-                                                [denseMode]="true"
-                                                [hideDivider]="true"
-                                                [setActiveItem]="initialActiveDocumentType"
-                                                (select)="setDocType($event)"></ige-document-list-item>
+                        <div class="dlg-create-place" id="doc-type">
+                            Datensatztyp wählen:
+                        </div>
+                        <ige-document-list-item
+                            [docs]="documentTypes"
+                            showSelection="true"
+                            [denseMode]="true"
+                            [hideDivider]="true"
+                            [setActiveItem]="initialActiveDocumentType"
+                            (select)="setDocType($event)"
+                        ></ige-document-list-item>
                     </ng-container>
                 </ng-container>
 
                 <ng-template #addressForm>
-
-                    <div class="dlg-field-label">Legen Sie eine Person oder Organisation an.<br>Tragen Sie dafür den Namen oder die Organisationsbezeichnung ein.</div>
+                    <div class="dlg-field-label">
+                        Legen Sie eine Person oder Organisation an.<br />Tragen
+                        Sie dafür den Namen oder die Organisationsbezeichnung
+                        ein.
+                    </div>
                     <div fxFlex fxLayout="row" fxLayoutGap="24px">
-
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Vorname</mat-label>
-                            <input matInput
-                                   data-cy="create-address-firstName"
-                                   formControlName="firstName"
-                                   cdkFocusInitial
-                                   autocomplete="off">
+                            <input
+                                matInput
+                                data-cy="create-address-firstName"
+                                formControlName="firstName"
+                                cdkFocusInitial
+                                autocomplete="off"
+                            />
                         </mat-form-field>
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Nachname</mat-label>
-                            <input matInput
-                                   data-cy="create-address-lastName"
-                                   autocomplete="off"
-                                   formControlName="lastName">
+                            <input
+                                matInput
+                                data-cy="create-address-lastName"
+                                autocomplete="off"
+                                formControlName="lastName"
+                            />
                         </mat-form-field>
                     </div>
                     <mat-form-field appearance="outline">
                         <mat-label>Organisation</mat-label>
-                        <input matInput
-                               data-cy="create-address-organization"
-                               name="organization"
-                               formControlName="organization">
+                        <input
+                            matInput
+                            data-cy="create-address-organization"
+                            name="organization"
+                            formControlName="organization"
+                        />
                     </mat-form-field>
-
                 </ng-template>
 
                 <div class="dlg-field-label dlg-create-place">Ordner</div>
-                <ige-breadcrumb [path]="path"
-                                [rootName]="rootTreeName"
-                                [selectable]="true"
-                                [hideLastSeparator]="true"
-                                (select)="quickBreadcrumbChange($event)"></ige-breadcrumb>
+                <ige-breadcrumb
+                    [path]="path"
+                    [rootName]="rootTreeName"
+                    [selectable]="true"
+                    [hideLastSeparator]="true"
+                    (select)="quickBreadcrumbChange($event)"
+                ></ige-breadcrumb>
             </div>
         </mat-tab>
 
         <mat-tab label="Ordner auswählen">
-            <ige-destination-selection [forAddress]="forAddress"
-                                       [initialSelectedId]="jumpedTreeNodeId"
-                                       (choice)="updateParent($event)"></ige-destination-selection>
+            <ige-destination-selection
+                [forAddress]="forAddress"
+                [initialSelectedId]="jumpedTreeNodeId"
+                (choice)="updateParent($event)"
+            ></ige-destination-selection>
         </mat-tab>
     </mat-tab-group>
-
-
 </mat-dialog-content>
 
 <div style="flex: 1"></div>
 
 <mat-dialog-actions>
-    <button *ngIf="selectedPage === 1" color="primary" mat-button
-            data-cy="create-back"
-            (click)="selectedPage = 0" class="back-button">
+    <button
+        *ngIf="selectedPage === 1"
+        color="primary"
+        mat-button
+        data-cy="create-back"
+        (click)="selectedPage = 0"
+        class="back-button"
+    >
         <mat-icon>chevron_left</mat-icon>
         <span>Zurück</span>
     </button>
@@ -98,21 +123,35 @@
     <div fxFlex></div>
 
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button *ngIf="selectedPage === 0" mat-button color="primary"
-            data-cy="create-changeLocation"
-            (click)="jumpToTree(this.parent)">Ordner ändern</button>
+    <button
+        *ngIf="selectedPage === 0"
+        mat-button
+        color="primary"
+        data-cy="create-changeLocation"
+        (click)="jumpToTree(this.parent)"
+    >
+        Ordner ändern
+    </button>
 
-    <button *ngIf="selectedPage === 0" mat-stroked-button color="primary"
-            class="btn-create"
-            data-cy="create-action"
-            [disabled]="formGroup.invalid"
-            (click)="handleCreate()">
+    <button
+        *ngIf="selectedPage === 0"
+        mat-stroked-button
+        color="primary"
+        class="btn-create"
+        data-cy="create-action"
+        [disabled]="formGroup.invalid"
+        (click)="handleCreate()"
+    >
         Anlegen
     </button>
 
-    <button *ngIf="selectedPage === 1" mat-stroked-button color="primary"
-            data-cy="create-applyLocation"
-            (click)="applyLocation()">
+    <button
+        *ngIf="selectedPage === 1"
+        mat-stroked-button
+        color="primary"
+        data-cy="create-applyLocation"
+        (click)="applyLocation()"
+    >
         Übernehmen
     </button>
 </mat-dialog-actions>

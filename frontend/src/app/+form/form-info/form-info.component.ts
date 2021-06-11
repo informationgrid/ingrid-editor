@@ -8,26 +8,34 @@ import {
   Input,
   OnInit,
   Output,
-  ViewChild
-} from '@angular/core';
-import {FormGroup} from '@angular/forms';
-import {IgeDocument} from '../../models/ige-document';
-import {TreeQuery} from '../../store/tree/tree.query';
-import {combineLatest, fromEvent} from 'rxjs';
-import {SessionQuery} from '../../store/session.query';
-import {distinctUntilChanged, map, startWith, throttleTime} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ProfileService} from '../../services/profile.service';
-import {AddressTreeQuery} from '../../store/address-tree/address-tree.query';
-import {ADDRESS_ROOT_NODE, DOCUMENT_ROOT_NODE} from '../../store/document/document.model';
-import {TreeStore} from '../../store/tree/tree.store';
-import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
-import {DocumentUtils} from '../../services/document.utils';
-import {TreeService} from '../sidebars/tree/tree.service';
-import {FormUtils} from '../form.utils';
-import {DocumentService} from '../../services/document/document.service';
-import {MatDialog} from '@angular/material/dialog';
-import {ShortTreeNode} from '../sidebars/tree/tree.types';
+  ViewChild,
+} from "@angular/core";
+import { FormGroup } from "@angular/forms";
+import { IgeDocument } from "../../models/ige-document";
+import { TreeQuery } from "../../store/tree/tree.query";
+import { combineLatest, fromEvent } from "rxjs";
+import { SessionQuery } from "../../store/session.query";
+import {
+  distinctUntilChanged,
+  map,
+  startWith,
+  throttleTime,
+} from "rxjs/operators";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ProfileService } from "../../services/profile.service";
+import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import {
+  ADDRESS_ROOT_NODE,
+  DOCUMENT_ROOT_NODE,
+} from "../../store/document/document.model";
+import { TreeStore } from "../../store/tree/tree.store";
+import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
+import { DocumentUtils } from "../../services/document.utils";
+import { TreeService } from "../sidebars/tree/tree.service";
+import { FormUtils } from "../form.utils";
+import { DocumentService } from "../../services/document/document.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ShortTreeNode } from "../sidebars/tree/tree.types";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -36,13 +44,12 @@ export interface StickyHeaderInfo {
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-form-info',
-  templateUrl: './form-info.component.html',
-  styleUrls: ['./form-info.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  selector: "ige-form-info",
+  templateUrl: "./form-info.component.html",
+  styleUrls: ["./form-info.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormInfoComponent implements OnInit, AfterViewInit {
-
   @Input() form: FormGroup;
   @Input() model: IgeDocument;
   @Input() sections: string[] = [];
@@ -50,8 +57,8 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() forAddress = false;
   @Output() showStickyHeader = new EventEmitter<StickyHeaderInfo>();
 
-  @ViewChild('host') host: ElementRef;
-  @ViewChild('sticky_header', {read: ElementRef}) stickyHeader: ElementRef;
+  @ViewChild("host") host: ElementRef;
+  @ViewChild("sticky_header", { read: ElementRef }) stickyHeader: ElementRef;
 
   path: ShortTreeNode[] = [];
   scrollHeaderOffsetLeft: number;
@@ -62,20 +69,20 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   private store: AddressTreeStore | TreeStore;
   private query: AddressTreeQuery | TreeQuery;
 
-  constructor(private treeQuery: TreeQuery,
-              private addressTreeQuery: AddressTreeQuery,
-              private treeService: TreeService,
-              private treeStore: TreeStore,
-              private addressTreeStore: AddressTreeStore,
-              private cdr: ChangeDetectorRef,
-              private sessionQuery: SessionQuery,
-              private documentService: DocumentService,
-              private dialog: MatDialog,
-              private profileService: ProfileService) {
-  }
+  constructor(
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery,
+    private treeService: TreeService,
+    private treeStore: TreeStore,
+    private addressTreeStore: AddressTreeStore,
+    private cdr: ChangeDetectorRef,
+    private sessionQuery: SessionQuery,
+    private documentService: DocumentService,
+    private dialog: MatDialog,
+    private profileService: ProfileService
+  ) {}
 
   ngOnInit() {
-
     if (this.forAddress) {
       this.rootName = ADDRESS_ROOT_NODE.title;
       this.query = this.addressTreeQuery;
@@ -88,8 +95,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
     this.query.pathTitles$
       .pipe(untilDestroyed(this))
-      .subscribe(path => this.updatePath(path));
-
+      .subscribe((path) => this.updatePath(path));
   }
 
   ngAfterViewInit(): void {
@@ -107,8 +113,9 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     combineLatest([
       this.sessionQuery.isSidebarExpanded$,
       this.sessionQuery.sidebarWidth$,
-      fromEvent(window, 'resize').pipe(startWith(0))
-    ]).pipe(untilDestroyed(this))
+      fromEvent(window, "resize").pipe(startWith(0)),
+    ])
+      .pipe(untilDestroyed(this))
       .subscribe((result) => {
         setTimeout(() => {
           const offsetLeft = this.host.nativeElement.offsetLeft;
@@ -120,26 +127,26 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
           }
         }, 100);
       });
-
   }
 
   private initScrollBehavior() {
     const element = this.parentContainer;
-    fromEvent(element, 'scroll').pipe(
-      untilDestroyed(this),
-      throttleTime(10), // do not handle all events
-      map(() => element.scrollTop),
-      map((top): boolean => this.determineToggleState(top)),
-      distinctUntilChanged()
-    ).subscribe(show => this.toggleStickyHeader(show));
-
+    fromEvent(element, "scroll")
+      .pipe(
+        untilDestroyed(this),
+        throttleTime(10), // do not handle all events
+        map(() => element.scrollTop),
+        map((top): boolean => this.determineToggleState(top)),
+        distinctUntilChanged()
+      )
+      .subscribe((show) => this.toggleStickyHeader(show));
   }
 
   private toggleStickyHeader(show: boolean) {
     this.showScrollHeader = show;
     this.showStickyHeader.next({
       show,
-      headerHeight: this.stickyHeader.nativeElement.clientHeight
+      headerHeight: this.stickyHeader.nativeElement.clientHeight,
     });
   }
 
@@ -153,10 +160,9 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     return top > this.initialHeaderOffset;
   }
 
-
   private updateScrollPositionInStore(top) {
     this.store.update({
-      scrollPosition: top
+      scrollPosition: top,
     });
   }
 
@@ -170,11 +176,14 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   }
 
   async scrollToTreeNode(nodeId: string) {
-
-    let handled = await FormUtils.handleDirtyForm(this.form, this.documentService, this.dialog, this.forAddress);
+    let handled = await FormUtils.handleDirtyForm(
+      this.form,
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);
     }
-
   }
 }

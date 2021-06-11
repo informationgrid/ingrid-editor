@@ -1,15 +1,21 @@
-import {Component} from '@angular/core';
-import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
-import {MatDialog} from '@angular/material/dialog';
-import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.component';
-import {FormControl} from '@angular/forms';
-import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import { Component } from "@angular/core";
+import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  ChipDialogComponent,
+  ChipDialogData,
+} from "./chip-dialog/chip-dialog.component";
+import { FormControl } from "@angular/forms";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 @Component({
-  selector: 'ige-repeat-chip',
-  templateUrl: './repeat-chip.component.html',
-  styleUrls: ['./repeat-chip.component.scss']
+  selector: "ige-repeat-chip",
+  templateUrl: "./repeat-chip.component.html",
+  styleUrls: ["./repeat-chip.component.scss"],
 })
 export class RepeatChipComponent extends FieldArrayType {
   inputControl = new FormControl();
@@ -18,28 +24,34 @@ export class RepeatChipComponent extends FieldArrayType {
     super();
 
     // show error immediately (on publish)
-    this.inputControl.setValue('');
+    this.inputControl.setValue("");
     this.inputControl.markAllAsTouched();
   }
 
   openDialog() {
-    this.dialog.open(ChipDialogComponent, {
-      data: <ChipDialogData>{
-        options: this.to.options,
-        model: this.model
-      }
-    }).afterClosed()
-      .subscribe(response => {
+    this.dialog
+      .open(ChipDialogComponent, {
+        data: <ChipDialogData>{
+          options: this.to.options,
+          model: this.model,
+        },
+      })
+      .afterClosed()
+      .subscribe((response) => {
         console.log(response);
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
         }
-      })
+      });
   }
 
   private addValuesFromResponse(response) {
-    response.forEach(item => (!this.model || this.model.indexOf(item) === -1) ? this.add(null, item) : null);
+    response.forEach((item) =>
+      !this.model || this.model.indexOf(item) === -1
+        ? this.add(null, item)
+        : null
+    );
   }
 
   /**
@@ -60,9 +72,9 @@ export class RepeatChipComponent extends FieldArrayType {
 
   addValues(value: string) {
     let duplicates = [];
-    value.split(',').forEach(item => {
+    value.split(",").forEach((item) => {
       const trimmed = item.trim();
-      if (trimmed == '') return;
+      if (trimmed == "") return;
 
       if (this.model.indexOf(trimmed) === -1) {
         this.add(null, trimmed);
@@ -70,21 +82,26 @@ export class RepeatChipComponent extends FieldArrayType {
         if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
       }
     });
-    this.inputControl.setValue('');
+    this.inputControl.setValue("");
     if (duplicates.length > 0) {
-      duplicates = duplicates.map(dup => "'" + dup + "'");
-      var formatedDuplicates = ""
+      duplicates = duplicates.map((dup) => "'" + dup + "'");
+      var formatedDuplicates = "";
       if (duplicates.length == 1) {
         formatedDuplicates = duplicates[0];
       } else {
-        formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, '\ und$1');
+        formatedDuplicates = duplicates
+          .join(", ")
+          .replace(/,([^,]*)$/, " und$1");
       }
       this.dialog.open(ConfirmDialogComponent, {
         data: {
-          title: 'Bitte beachten',
-          message: 'Die Eingabe von ' + formatedDuplicates + ' erfolgte mehrfach, wurde aber nur einmal übernommen.',
-          buttons: [{text: 'Ok', alignRight: true, emphasize: true}]
-        } as ConfirmDialogData
+          title: "Bitte beachten",
+          message:
+            "Die Eingabe von " +
+            formatedDuplicates +
+            " erfolgte mehrfach, wurde aber nur einmal übernommen.",
+          buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
+        } as ConfirmDialogData,
       });
     }
   }

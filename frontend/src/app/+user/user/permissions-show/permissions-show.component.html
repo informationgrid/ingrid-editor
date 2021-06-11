@@ -3,26 +3,38 @@
     <div class="permissions typef" fxLayout="row" fxLayoutGap="20px">
         <div fxLayout="column" class="page">
             <div class="mat-subheading-1">Seiten</div>
-            <div *ngFor="let permission of permissions.pages" class="permission">
-                {{permission.value}}
+            <div
+                *ngFor="let permission of permissions.pages"
+                class="permission"
+            >
+                {{ permission.value }}
             </div>
         </div>
         <div fxLayout="column" class="action">
             <div class="mat-subheading-1">Aktionen</div>
-            <div *ngFor="let permission of permissions.actions" class="permission">
-                {{permission.value}}
+            <div
+                *ngFor="let permission of permissions.actions"
+                class="permission"
+            >
+                {{ permission.value }}
             </div>
         </div>
         <div fxLayout="column" class="documents">
             <div class="mat-subheading-1">Dokumente</div>
-            <div *ngFor="let permission of permissions.documents" class="permission">
-                {{permission.title}} ({{permission.permission}})
+            <div
+                *ngFor="let permission of permissions.documents"
+                class="permission"
+            >
+                {{ permission.title }} ({{ permission.permission }})
             </div>
         </div>
         <div fxLayout="column" class="addresses">
             <div class="mat-subheading-1">Adressen</div>
-            <div *ngFor="let permission of permissions.addresses" class="permission">
-                {{permission.title}} ({{permission.permission}})
+            <div
+                *ngFor="let permission of permissions.addresses"
+                class="permission"
+            >
+                {{ permission.title }} ({{ permission.permission }})
             </div>
         </div>
     </div>

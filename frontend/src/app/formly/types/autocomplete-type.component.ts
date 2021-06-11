@@ -1,21 +1,25 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {FieldType} from '@ngx-formly/material';
-import {MatInput} from '@angular/material/input';
-import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {Observable} from 'rxjs';
-import {filter, map, startWith, take, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {SelectOption} from '../../services/codelist/codelist.service';
+import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { FieldType } from "@ngx-formly/material";
+import { MatInput } from "@angular/material/input";
+import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
+import { Observable } from "rxjs";
+import { filter, map, startWith, take, tap } from "rxjs/operators";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { SelectOption } from "../../services/codelist/codelist.service";
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-formly-autocomplete-type',
-  templateUrl: './autocomplete-type.component.html',
-  styleUrls: ['./autocomplete-type.component.scss']
+  selector: "ige-formly-autocomplete-type",
+  templateUrl: "./autocomplete-type.component.html",
+  styleUrls: ["./autocomplete-type.component.scss"],
 })
-export class AutocompleteTypeComponent extends FieldType implements OnInit, AfterViewInit {
-  @ViewChild(MatInput, {static: true}) formFieldControl: MatInput;
-  @ViewChild(MatAutocompleteTrigger, {static: true}) autocomplete: MatAutocompleteTrigger;
+export class AutocompleteTypeComponent
+  extends FieldType
+  implements OnInit, AfterViewInit
+{
+  @ViewChild(MatInput, { static: true }) formFieldControl: MatInput;
+  @ViewChild(MatAutocompleteTrigger, { static: true })
+  autocomplete: MatAutocompleteTrigger;
 
   private parameterOptions: SelectOption[] = [];
   filteredOptions: Observable<SelectOption[]>;
@@ -27,9 +31,9 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
       this.to.options
         .pipe(
           untilDestroyed(this),
-          filter(data => data !== undefined && data.length > 0),
+          filter((data) => data !== undefined && data.length > 0),
           take(1),
-          tap(data => this.initInputListener(data))
+          tap((data) => this.initInputListener(data))
         )
         .subscribe();
     } else {
@@ -42,20 +46,23 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
 
     this.filteredOptions = this.formControl.valueChanges.pipe(
       untilDestroyed(this),
-      startWith(''),
-      map(value => this._filter(<string>value))
+      startWith(""),
+      map((value) => this._filter(<string>value))
     );
   }
 
   _filter(value: string): SelectOption[] {
-    if (value === undefined || value === null || this.to.doNotFilter) return this.parameterOptions;
+    if (value === undefined || value === null || this.to.doNotFilter)
+      return this.parameterOptions;
     const filterValue = value.toLowerCase();
 
     return this.parameterOptions
-      ? this.parameterOptions?.map(option => {
-        option.disabled = !option.label.toLowerCase().includes(filterValue)
-        return option
-      }).filter(option => !option.disabled || this.to.highlightMatches)
+      ? this.parameterOptions
+          ?.map((option) => {
+            option.disabled = !option.label.toLowerCase().includes(filterValue);
+            return option;
+          })
+          .filter((option) => !option.disabled || this.to.highlightMatches)
       : [];
   }
 
@@ -68,5 +75,4 @@ export class AutocompleteTypeComponent extends FieldType implements OnInit, Afte
   openAutocompletePanel() {
     this.autocomplete.openPanel();
   }
-
 }

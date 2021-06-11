@@ -1,11 +1,17 @@
 <span *ngIf="path" [class.emphasize]="emphasize">
     <span *ngIf="showRoot" class="root">
-        <span [class.selectable]="selectable" (click)="onSelect(null)">{{rootName}}</span>
-        <mat-icon *ngIf="path.length > 0 || !hideLastSeparator">chevron_right</mat-icon>
+        <span [class.selectable]="selectable" (click)="onSelect(null)">{{
+            rootName
+        }}</span>
+        <mat-icon *ngIf="path.length > 0 || !hideLastSeparator"
+            >chevron_right</mat-icon
+        >
     </span>
 
     <span *ngFor="let item of path; let last = last">
-        <span [class.selectable]="selectable" (click)="onSelect(item.id)">{{item.title}}</span>
+        <span [class.selectable]="selectable" (click)="onSelect(item.id)">{{
+            item.title
+        }}</span>
         <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
     </span>
 </span>

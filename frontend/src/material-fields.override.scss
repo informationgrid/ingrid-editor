@@ -1,4 +1,5 @@
-.wrapper, .cdk-overlay-container {
+.wrapper,
+.cdk-overlay-container {
   .mat-form-field-infix {
     /*border-top: 0.2em solid transparent;*/
     border-top: 0;
@@ -23,7 +24,7 @@
   }
 
   .mat-form-field-wrapper {
-    margin: .25em 0;
+    margin: 0.25em 0;
     padding-bottom: 0.3em;
   }
 
@@ -35,9 +36,10 @@
     top: -0.64375em;
   }
 
-  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
-    -webkit-transform: translateY(-1.09375em) scale(.75);
-    transform: translateY(-1.09375em) scale(.75);
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+    .mat-form-field-label {
+    -webkit-transform: translateY(-1.09375em) scale(0.75);
+    transform: translateY(-1.09375em) scale(0.75);
   }
 
   .mat-select-arrow-wrapper {
@@ -67,7 +69,7 @@
 
   /* Toggle Buttons */
   .mat-button-toggle-appearance-standard {
-    background-color: #E1E1E1;
+    background-color: #e1e1e1;
   }
   /*.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
     background-color: #DADADA;
@@ -81,7 +83,7 @@
     }
 
     &.mat-button-toggle-appearance-standard {
-      color: #FFFFFF;
+      color: #ffffff;
       font-weight: 500;
     }
   }
@@ -137,7 +139,6 @@
 /* Error states */
 .mat-form-field-appearance-outline {
   &.mat-form-field.mat-form-field-invalid {
-
     .mat-form-field-outline {
       color: $error-color !important;
       opacity: 1;
@@ -157,7 +158,7 @@
     }
 
     .mat-input-element {
-      caret-color: $error-color ;
+      caret-color: $error-color;
     }
   }
 }
@@ -168,7 +169,6 @@
 }
 
 .mat-form-field .mat-select.mat-select-invalid {
-
   .mat-select-placeholder {
     color: $error-color;
   }
@@ -227,11 +227,11 @@ ige-card-box .doc-item .mat-list-text {
 
   &.dense {
     mat-list-option {
-
       .mat-list-item-content {
         min-height: 40px;
 
-        ige-document-icon, .mat-icon {
+        ige-document-icon,
+        .mat-icon {
           align-self: unset;
         }
       }

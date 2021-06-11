@@ -1,20 +1,36 @@
 <mat-form-field appearance="outline" class="width-100">
-    <input type="text" #filter
-           [placeholder]="placeholder"
-           aria-label="Number"
-           matInput
-           [formControl]="control"
-           [matAutocomplete]="auto">
-        <button *ngIf="control.value?.length > 0" mat-icon-button matSuffix class="close" (click)="resetInput()">
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
-        <!--<div matSuffix class="arrow-wrapper">
+    <input
+        type="text"
+        #filter
+        [placeholder]="placeholder"
+        aria-label="Number"
+        matInput
+        [formControl]="control"
+        [matAutocomplete]="auto"
+    />
+    <button
+        *ngIf="control.value?.length > 0"
+        mat-icon-button
+        matSuffix
+        class="close"
+        (click)="resetInput()"
+    >
+        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+    </button>
+    <!--<div matSuffix class="arrow-wrapper">
             <div class="arrow"></div>
         </div>-->
-    <mat-autocomplete autoActiveFirstOption  #auto="matAutocomplete" (optionSelected)="updateSelection($event.option.value)">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-            {{labelFormat(option)}}
+    <mat-autocomplete
+        autoActiveFirstOption
+        #auto="matAutocomplete"
+        (optionSelected)="updateSelection($event.option.value)"
+    >
+        <mat-option
+            *ngFor="let option of filteredOptions | async"
+            [value]="option"
+        >
+            {{ labelFormat(option) }}
         </mat-option>
     </mat-autocomplete>
-    <mat-hint>{{hintText}}</mat-hint>
+    <mat-hint>{{ hintText }}</mat-hint>
 </mat-form-field>

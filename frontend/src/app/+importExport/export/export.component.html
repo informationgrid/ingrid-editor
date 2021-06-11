@@ -3,19 +3,35 @@
         <ng-template matStepLabel>Datensatz auswählen</ng-template>
         <ige-tree (selected)="selectDatasets($event)"></ige-tree>
         <div class="wizard-footer">
-            <button mat-button matStepperNext [disabled]="!datasetSelected">Weiter</button>
+            <button mat-button matStepperNext [disabled]="!datasetSelected">
+                Weiter
+            </button>
         </div>
     </mat-step>
     <mat-step [stepControl]="secondFormGroup">
         <form [formGroup]="secondFormGroup">
             <ng-template matStepLabel>Optionen</ng-template>
-            <mat-radio-group formControlName="tree" fxLayout="column" fxLayoutGap="10px" disabled>
-                <mat-radio-button name="exportOption" value="dataset" checked>nur diesen Datensatz</mat-radio-button>
-                <mat-radio-button name="exportOption" value="sub">alle untergeordneten</mat-radio-button>
-                <mat-radio-button name="exportOption" value="thisAndSub">dieser und alle untergeordneten</mat-radio-button>
+            <mat-radio-group
+                formControlName="tree"
+                fxLayout="column"
+                fxLayoutGap="10px"
+                disabled
+            >
+                <mat-radio-button name="exportOption" value="dataset" checked
+                    >nur diesen Datensatz</mat-radio-button
+                >
+                <mat-radio-button name="exportOption" value="sub"
+                    >alle untergeordneten</mat-radio-button
+                >
+                <mat-radio-button name="exportOption" value="thisAndSub"
+                    >dieser und alle untergeordneten</mat-radio-button
+                >
             </mat-radio-group>
 
-            <mat-checkbox formControlName="drafts" style="margin-top: 12px; display: block;">
+            <mat-checkbox
+                formControlName="drafts"
+                style="margin-top: 12px; display: block"
+            >
                 Auch Entwürfe exportieren
             </mat-checkbox>
             <div class="wizard-footer">
@@ -30,8 +46,11 @@
         <mat-form-field style="width: 300px; padding-top: 10px">
             <mat-label>Format</mat-label>
             <mat-select [(ngModel)]="formatSelection">
-                <mat-option *ngFor="let format of exportFormats | async" [value]="format">
-                    {{format.name}}
+                <mat-option
+                    *ngFor="let format of exportFormats | async"
+                    [value]="format"
+                >
+                    {{ format.name }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -41,4 +60,4 @@
     </mat-step>
 </mat-horizontal-stepper>
 
-<pre *ngIf="exportResult">{{exportResult}}</pre>
+<pre *ngIf="exportResult">{{ exportResult }}</pre>

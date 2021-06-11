@@ -3,19 +3,33 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">{{titleText}}</span>
+        <span class="text">{{ titleText }}</span>
     </h2>
 </div>
 <mat-dialog-content data-cy="form-dialog-content">
-
-    <formly-form [form]="form" [fields]="data.fields" [model]="data.model"></formly-form>
-
+    <formly-form
+        [form]="form"
+        [fields]="data.fields"
+        [model]="data.model"
+    ></formly-form>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close color="primary" data-cy="form-dialog-cancel">Abbrechen</button>
+    <button
+        mat-button
+        mat-dialog-close
+        color="primary"
+        data-cy="form-dialog-cancel"
+    >
+        Abbrechen
+    </button>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary" data-cy="form-dialog-confirm"
-            [mat-dialog-close]="form.value">Ok
+    <button
+        mat-stroked-button
+        color="primary"
+        data-cy="form-dialog-confirm"
+        [mat-dialog-close]="form.value"
+    >
+        Ok
     </button>
 </mat-dialog-actions>

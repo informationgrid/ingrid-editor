@@ -1,11 +1,11 @@
 {
   "/api/*": {
-    "target":  "http://localhost:8550",
+    "target": "http://localhost:8550",
     "secure": false,
     "logLevel": "debug"
   },
   "/login": {
-    "target":  "http://localhost:8550",
+    "target": "http://localhost:8550",
     "secure": false,
     "logLevel": "debug"
   }

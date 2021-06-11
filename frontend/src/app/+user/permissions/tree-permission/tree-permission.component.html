@@ -1,38 +1,64 @@
 <div>
-    <h5 style="font-weight: 500;">Zugewiesene Rechte</h5>
-    <mat-selection-list #list [multiple]="false" dense (selectionChange)="jumpToTreeNode($event)">
+    <h5 style="font-weight: 500">Zugewiesene Rechte</h5>
+    <mat-selection-list
+        #list
+        [multiple]="false"
+        dense
+        (selectionChange)="jumpToTreeNode($event)"
+    >
         <mat-list-option *ngFor="let option of val" [value]="option.uuid">
             <mat-icon mat-list-icon>change_history</mat-icon>
-            <div mat-line>{{option.title}}</div>
-            <div mat-line>{{option.permission}}</div>
+            <div mat-line>{{ option.title }}</div>
+            <div mat-line>{{ option.permission }}</div>
         </mat-list-option>
     </mat-selection-list>
-    <button mat-button
-            [disabled]="list.selectedOptions.isEmpty()"
-            (click)="removePermission(list.selectedOptions.selected[0])"
-    >Löschen</button>
+    <button
+        mat-button
+        [disabled]="list.selectedOptions.isEmpty()"
+        (click)="removePermission(list.selectedOptions.selected[0])"
+    >
+        Löschen
+    </button>
 </div>
 
 <div>
-    <ige-tree (selected)="selection = $event"
-              [forAddresses]="address"
-              [disabledCondition]="disableTreeNodes"
-              [setActiveNode]="activeNodeSetter"
-              [showHeader]="false"></ige-tree>
-    <button mat-button
-            [matMenuTriggerFor]="permissionAddMenu"
-            #menuTrigger="matMenuTrigger" (mouseenter)="menuTrigger.openMenu()"
-            [disabled]="shouldDisableAddButton()"
-            (click)="addPermission('readDataset')">Hinzufügen
+    <ige-tree
+        (selected)="selection = $event"
+        [forAddresses]="address"
+        [disabledCondition]="disableTreeNodes"
+        [setActiveNode]="activeNodeSetter"
+        [showHeader]="false"
+    ></ige-tree>
+    <button
+        mat-button
+        [matMenuTriggerFor]="permissionAddMenu"
+        #menuTrigger="matMenuTrigger"
+        (mouseenter)="menuTrigger.openMenu()"
+        [disabled]="shouldDisableAddButton()"
+        (click)="addPermission('readDataset')"
+    >
+        Hinzufügen
     </button>
     <mat-menu #permissionAddMenu="matMenu">
         <div (mouseleave)="menuTrigger.closeMenu()">
-            <button mat-menu-item (click)="addPermission('writeSubTree')">Schreiben (Unterbaum)</button>
-            <button mat-menu-item (click)="addPermission('readSubTree')">Lesen (Unterbaum)</button>
-            <button mat-menu-item (click)="addPermission('writeTree')">Schreiben (Baum)</button>
-            <button mat-menu-item (click)="addPermission('readTree')">Lesen (Baum)</button>
-            <button mat-menu-item (click)="addPermission('writeDataset')">Schreiben (Datensatz)</button>
-            <button mat-menu-item (click)="addPermission('readDataset')">Lesen (Datensatz)</button>
+            <button mat-menu-item (click)="addPermission('writeSubTree')">
+                Schreiben (Unterbaum)
+            </button>
+            <button mat-menu-item (click)="addPermission('readSubTree')">
+                Lesen (Unterbaum)
+            </button>
+            <button mat-menu-item (click)="addPermission('writeTree')">
+                Schreiben (Baum)
+            </button>
+            <button mat-menu-item (click)="addPermission('readTree')">
+                Lesen (Baum)
+            </button>
+            <button mat-menu-item (click)="addPermission('writeDataset')">
+                Schreiben (Datensatz)
+            </button>
+            <button mat-menu-item (click)="addPermission('readDataset')">
+                Lesen (Datensatz)
+            </button>
         </div>
     </mat-menu>
 </div>

@@ -1,7 +1,7 @@
-import {ErrorHandler, Injectable} from '@angular/core';
-import {ModalService} from './services/modal/modal.service';
-import {IgeError} from './models/ige-error';
-import {HttpErrorResponse} from '@angular/common/http';
+import { ErrorHandler, Injectable } from "@angular/core";
+import { ModalService } from "./services/modal/modal.service";
+import { IgeError } from "./models/ige-error";
+import { HttpErrorResponse } from "@angular/common/http";
 
 export interface IgeValidationError {
   errorCode: string;
@@ -10,16 +10,13 @@ export interface IgeValidationError {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class GlobalErrorHandler implements ErrorHandler {
-
-  constructor(private modalService: ModalService) {
-  }
+  constructor(private modalService: ModalService) {}
 
   handleError(error) {
-
-    console.log('HANDLE ERROR', error);
+    console.log("HANDLE ERROR", error);
 
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
@@ -30,7 +27,10 @@ export class GlobalErrorHandler implements ErrorHandler {
         this.modalService.showIgeError(e);
       } else {
         const e = new IgeError();
-        e.setMessage(error.message, (error.error && error.error.message) ? error.error.message : error.error);
+        e.setMessage(
+          error.message,
+          error.error && error.error.message ? error.error.message : error.error
+        );
         this.modalService.showIgeError(e);
       }
     } else if (error.errorCode) {
@@ -39,14 +39,13 @@ export class GlobalErrorHandler implements ErrorHandler {
       this.modalService.showIgeError(e);
     } else if (error.rejection) {
       const e = new IgeError();
-      const message = error.rejection.error?.errorText ?? error.rejection.message;
+      const message =
+        error.rejection.error?.errorText ?? error.rejection.message;
       const detail = error.rejection.error?.stacktrace;
       e.setMessage(message, detail);
       this.modalService.showIgeError(e);
     } else {
       this.modalService.showJavascriptError(error.message, error.stack);
     }
-
   }
-
 }

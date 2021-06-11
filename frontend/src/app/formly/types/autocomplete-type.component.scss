@@ -3,7 +3,8 @@
 .matching {
   background-color: $ige-mark-color !important;
 
-  &:hover, &.mat-active {
+  &:hover,
+  &.mat-active {
     background-color: darken($ige-mark-color, 5%) !important;
   }
 }

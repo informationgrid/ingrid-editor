@@ -42,16 +42,16 @@
     .menu {
       opacity: 1;
     }
-
   }
 
   ::ng-deep .anchor-navigation {
-    transition: padding .2s linear;
+    transition: padding 0.2s linear;
   }
 
-  .document-type, .menu {
+  .document-type,
+  .menu {
     opacity: 0;
-    transition: opacity .2s linear;
+    transition: opacity 0.2s linear;
   }
   .menu {
     width: 26px;
@@ -93,8 +93,8 @@
 }
 
 /* Safari 11+ only: don't reserve space for scrollbar */
-@media not all and (min-resolution:.001dpcm) {
-  @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) and (stroke-color: transparent) {
     .sticky {
       right: 0 !important;
     }

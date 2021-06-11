@@ -1,18 +1,21 @@
-import {ConfigService, Configuration} from '../services/config/config.service';
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {
+  ConfigService,
+  Configuration,
+} from "../services/config/config.service";
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 export interface ExportOptions {
-  id: string,
-  includeSubDocs: boolean,
-  exportFormat: string,
-  useDraft: boolean
+  id: string;
+  includeSubDocs: boolean;
+  exportFormat: string;
+  useDraft: boolean;
 }
 
 export interface ExportFormOptions {
-  tree: 'dataset' | 'sub' | 'thisAndSub';
-  drafts: boolean
+  tree: "dataset" | "sub" | "thisAndSub";
+  drafts: boolean;
 }
 
 export interface ExportTypeInfo {
@@ -24,18 +27,21 @@ export interface ExportTypeInfo {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ImportExportService {
-
   private configuration: Configuration;
 
-  public static prepareExportInfo(docId: string, format: string, options: ExportFormOptions): ExportOptions {
+  public static prepareExportInfo(
+    docId: string,
+    format: string,
+    options: ExportFormOptions
+  ): ExportOptions {
     return {
       id: docId,
-      includeSubDocs: options.tree === 'sub' || options.tree === 'thisAndSub',
+      includeSubDocs: options.tree === "sub" || options.tree === "thisAndSub",
       exportFormat: format,
-      useDraft: options.drafts
+      useDraft: options.drafts,
     };
   }
 
@@ -44,15 +50,18 @@ export class ImportExportService {
   }
 
   import(file: File): Observable<any> {
-    return this.http.post( this.configuration.backendUrl + 'import', file );
+    return this.http.post(this.configuration.backendUrl + "import", file);
   }
 
   export(options: ExportOptions): Observable<Blob> {
-    return this.http.post( this.configuration.backendUrl + 'export', options, {responseType: 'blob'} );
+    return this.http.post(this.configuration.backendUrl + "export", options, {
+      responseType: "blob",
+    });
   }
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
-    return this.http.get<ExportTypeInfo[]>( this.configuration.backendUrl + 'export?profile=mcloud' );
+    return this.http.get<ExportTypeInfo[]>(
+      this.configuration.backendUrl + "export?profile=mcloud"
+    );
   }
-
 }

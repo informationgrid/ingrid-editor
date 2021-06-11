@@ -1,18 +1,17 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DocumentAbstract} from '../../store/document/document.model';
-import {Observable, Subject} from 'rxjs';
-import {TreeNode} from '../../store/tree/tree-node.model';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {DocumentUtils} from '../../services/document.utils';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { DocumentAbstract } from "../../store/document/document.model";
+import { Observable, Subject } from "rxjs";
+import { TreeNode } from "../../store/tree/tree-node.model";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DocumentUtils } from "../../services/document.utils";
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-document-list-item',
-  templateUrl: './document-list-item.component.html',
-  styleUrls: ['./document-list-item.component.scss']
+  selector: "ige-document-list-item",
+  templateUrl: "./document-list-item.component.html",
+  styleUrls: ["./document-list-item.component.scss"],
 })
 export class DocumentListItemComponent implements OnInit {
-
   @Input() docs: Observable<DocumentAbstract[] | TreeNode[]>;
   @Input() doc: DocumentAbstract | TreeNode;
   @Input() denseMode = false;
@@ -24,14 +23,13 @@ export class DocumentListItemComponent implements OnInit {
 
   currentSelection: DocumentAbstract;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit(): void {
     if (this.setActiveItem) {
       this.setActiveItem
         .pipe(untilDestroyed(this))
-        .subscribe(doc => this.updateSelectionFromExternal(doc));
+        .subscribe((doc) => this.updateSelectionFromExternal(doc));
     }
   }
 

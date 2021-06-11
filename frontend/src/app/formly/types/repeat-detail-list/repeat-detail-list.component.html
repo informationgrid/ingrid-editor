@@ -1,27 +1,49 @@
-<mat-list cdkDropList
-          cdkDropListOrientation="vertical"
-          (cdkDropListDropped)="drop($event)">
-    <mat-list-item *ngFor="let field of field.fieldGroup; let i = index;" cdkDrag
-                   class="clickable small-padding-right"
-                   [class.image]="to.asImage">
-
-        <div *ngIf="to.asImage" mat-list-avatar class="avatar"
-             [style.background-image]="'url(' + model[i].description + ')'">
-        </div>
-        <div *ngIf="!to.asImage" mat-list-avatar class="avatar" [ngSwitch]="model[i]._type">
-            <mat-icon *ngSwitchCase="'internal'" svgIcon="download-doc"></mat-icon>
-            <mat-icon *ngSwitchCase="'external'" svgIcon="download-link"></mat-icon>
+<mat-list
+    cdkDropList
+    cdkDropListOrientation="vertical"
+    (cdkDropListDropped)="drop($event)"
+>
+    <mat-list-item
+        *ngFor="let field of field.fieldGroup; let i = index"
+        cdkDrag
+        class="clickable small-padding-right"
+        [class.image]="to.asImage"
+    >
+        <div
+            *ngIf="to.asImage"
+            mat-list-avatar
+            class="avatar"
+            [style.background-image]="'url(' + model[i].description + ')'"
+        ></div>
+        <div
+            *ngIf="!to.asImage"
+            mat-list-avatar
+            class="avatar"
+            [ngSwitch]="model[i]._type"
+        >
+            <mat-icon
+                *ngSwitchCase="'internal'"
+                svgIcon="download-doc"
+            ></mat-icon>
+            <mat-icon
+                *ngSwitchCase="'external'"
+                svgIcon="download-link"
+            ></mat-icon>
             <div *ngSwitchCase="'download'" class="download-image">
                 <mat-icon svgIcon="download-doc"></mat-icon>
                 <mat-icon svgIcon="download-arrow" class="overlay"></mat-icon>
             </div>
         </div>
 
-        <div mat-line class="type">{{model[i].type}}</div>
-        <div mat-line class="title">{{model[i].title}}</div>
-        <div mat-line class="description">{{model[i].description}}</div>
+        <div mat-line class="type">{{ model[i].type }}</div>
+        <div mat-line class="title">{{ model[i].title }}</div>
+        <div mat-line class="description">{{ model[i].description }}</div>
 
-        <button mat-icon-button class="menu-button" [mat-menu-trigger-for]="menu">
+        <button
+            mat-icon-button
+            class="menu-button"
+            [mat-menu-trigger-for]="menu"
+        >
             <mat-icon svgIcon="Mehr"></mat-icon>
         </button>
         <mat-menu #menu>
@@ -33,5 +55,7 @@
     </mat-list-item>
 </mat-list>
 
-<ige-add-button (add)="addItem()"
-                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+<ige-add-button
+    (add)="addItem()"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>

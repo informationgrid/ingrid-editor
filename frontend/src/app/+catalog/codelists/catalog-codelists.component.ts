@@ -1,41 +1,45 @@
-import {Component, OnInit} from '@angular/core';
-import {CodelistService, SelectOption} from '../../services/codelist/codelist.service';
-import {Codelist, CodelistEntry} from '../../store/codelist/codelist.model';
-import {delay, filter, map, tap} from 'rxjs/operators';
-import {CodelistQuery} from '../../store/codelist/codelist.query';
-import {MatDialog} from '@angular/material/dialog';
-import {UpdateCodelistComponent} from './update-codelist/update-codelist.component';
-import {ConfirmDialogComponent, ConfirmDialogData} from '../../dialogs/confirm/confirm-dialog.component';
-import {FormControl} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { Component, OnInit } from "@angular/core";
+import {
+  CodelistService,
+  SelectOption,
+} from "../../services/codelist/codelist.service";
+import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
+import { delay, filter, map, tap } from "rxjs/operators";
+import { CodelistQuery } from "../../store/codelist/codelist.query";
+import { MatDialog } from "@angular/material/dialog";
+import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../dialogs/confirm/confirm-dialog.component";
+import { FormControl } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
-  selector: 'ige-catalog-codelists',
-  templateUrl: './catalog-codelists.component.html',
-  styleUrls: ['./catalog-codelists.component.scss']
+  selector: "ige-catalog-codelists",
+  templateUrl: "./catalog-codelists.component.html",
+  styleUrls: ["./catalog-codelists.component.scss"],
 })
 export class CatalogCodelistsComponent implements OnInit {
-
   hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
-  catalogCodelists = this.codelistQuery.catalogCodelists$
-    .pipe(
-      map(codelists => this.codelistService.mapToOptions(codelists)),
-      delay(0), // set initial value in next rendering cycle!
-      tap(options => this.setInitialValue(options))
-    );
+  catalogCodelists = this.codelistQuery.catalogCodelists$.pipe(
+    map((codelists) => this.codelistService.mapToOptions(codelists)),
+    delay(0), // set initial value in next rendering cycle!
+    tap((options) => this.setInitialValue(options))
+  );
 
   selectedCodelist: Codelist;
   initialValue: SelectOption;
   descriptionCtrl = new FormControl();
 
-  constructor(private codelistService: CodelistService,
-              private codelistQuery: CodelistQuery,
-              private _snackBar: MatSnackBar,
-              private dialog: MatDialog) {
-  }
+  constructor(
+    private codelistService: CodelistService,
+    private codelistQuery: CodelistQuery,
+    private _snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   addCodelist() {
     this.editCodelist();
@@ -43,37 +47,50 @@ export class CatalogCodelistsComponent implements OnInit {
 
   editCodelist(entry?: CodelistEntry) {
     const oldId = entry?.id ?? null;
-    const editEntry = entry ? entry : {
-      fields: {}
-    };
-    this.dialog.open(UpdateCodelistComponent, {
-      minWidth: 400,
-      disableClose: true,
-      data: editEntry
-    }).afterClosed()
+    const editEntry = entry
+      ? entry
+      : {
+          fields: {},
+        };
+    this.dialog
+      .open(UpdateCodelistComponent, {
+        minWidth: 400,
+        disableClose: true,
+        data: editEntry,
+      })
+      .afterClosed()
       .pipe(
-        filter(result => result),
-        tap(result => this.modifyCodelistEntry(oldId, result)),
+        filter((result) => result),
+        tap((result) => this.modifyCodelistEntry(oldId, result)),
         tap(() => this.save())
-      ).subscribe();
+      )
+      .subscribe();
   }
 
   removeCodelist(entry: CodelistEntry) {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: <ConfirmDialogData>{
-        message: `Möchten Sie den Codelist-Eintrag "${entry.fields['de']}" wirklich löschen:`,
-        title: 'Löschen',
-        buttons: [
-          {text: 'Abbrechen'},
-          {text: 'Löschen', alignRight: true, id: 'confirm', emphasize: true}
-        ]
-      }
-    }).afterClosed()
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie den Codelist-Eintrag "${entry.fields["de"]}" wirklich löschen:`,
+          title: "Löschen",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
       .pipe(
-        filter(result => result),
+        filter((result) => result),
         tap(() => this.removeEntryFromCodelist(entry)),
         tap(() => this.save())
-      ).subscribe();
+      )
+      .subscribe();
   }
 
   selectCodelist(option: SelectOption) {
@@ -81,7 +98,9 @@ export class CatalogCodelistsComponent implements OnInit {
     const other = JSON.parse(JSON.stringify(this.selectedCodelist));
     this.sortCodelist(other);
     this.selectedCodelist = other;
-    this.descriptionCtrl.setValue(this.selectedCodelist.description, {emitEvent: false});
+    this.descriptionCtrl.setValue(this.selectedCodelist.description, {
+      emitEvent: false,
+    });
   }
 
   setAsDefault(entry: CodelistEntry) {
@@ -90,35 +109,46 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   resetCodelist() {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: <ConfirmDialogData>{
-        message: `Möchten Sie die Codeliste wirklich zurücksetzen?`,
-        title: 'Zurücksetzen',
-        buttons: [
-          {text: 'Abbrechen'},
-          {text: 'Zurücksetzen', alignRight: true, id: 'confirm', emphasize: true}
-        ]
-      }
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.codelistService.resetCodelist(this.selectedCodelist?.id ?? null).subscribe();
-      }
-    });
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie die Codeliste wirklich zurücksetzen?`,
+          title: "Zurücksetzen",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Zurücksetzen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.codelistService
+            .resetCodelist(this.selectedCodelist?.id ?? null)
+            .subscribe();
+        }
+      });
   }
 
   save() {
-    this.codelistService.updateCodelist(this.selectedCodelist)
-      .pipe(
-        tap(() => this._snackBar.open('Codeliste gespeichert'))
-      ).subscribe();
+    this.codelistService
+      .updateCodelist(this.selectedCodelist)
+      .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
+      .subscribe();
   }
 
   private modifyCodelistEntry(oldId: string, result) {
     if (oldId === null) {
       this.selectedCodelist.entries.push(result);
     } else {
-      const index = this.selectedCodelist.entries
-        .findIndex(e => e.id === oldId);
+      const index = this.selectedCodelist.entries.findIndex(
+        (e) => e.id === oldId
+      );
       this.selectedCodelist.entries.splice(index, 1, result);
     }
 
@@ -127,20 +157,22 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private removeEntryFromCodelist(entry: CodelistEntry) {
     const oldId = entry.id;
-    const index = this.selectedCodelist.entries
-      .findIndex(e => e.id === oldId);
+    const index = this.selectedCodelist.entries.findIndex(
+      (e) => e.id === oldId
+    );
     this.selectedCodelist.entries.splice(index, 1);
   }
 
   private sortCodelist(codelist: Codelist) {
-    codelist.entries
-      .sort((a, b) => a.id.localeCompare(b.id));
+    codelist.entries.sort((a, b) => a.id.localeCompare(b.id));
   }
 
   private setInitialValue(options: SelectOption[]) {
     if (options?.length > 0) {
       if (this.selectedCodelist) {
-        this.initialValue = options.find(option => option.value === this.selectedCodelist.id);
+        this.initialValue = options.find(
+          (option) => option.value === this.selectedCodelist.id
+        );
       } else {
         this.initialValue = options[0];
       }

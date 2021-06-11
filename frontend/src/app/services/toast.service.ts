@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 @Injectable()
 export class ToastService {
   // constructor(private messageService: MessageService) {
   // }
 
-  show(message: string) {
+  show(message: string) {}
 
-  }
-
-/*
+  /*
 
   show(message: string) {
 

@@ -7,15 +7,24 @@
     </h2>
 </div>
 <mat-dialog-content>
+    <p>
+        Das Dokument wurde zwischenzeitlich aktualisiert. Sie haben jetzt die
+        folgenden Optionen:
+    </p>
 
-    <p>Das Dokument wurde zwischenzeitlich aktualisiert. Sie haben jetzt die folgenden Optionen:</p>
-
-    <ige-option-list [options]="options" (select)="choice = $event"></ige-option-list>
-
+    <ige-option-list
+        [options]="options"
+        (select)="choice = $event"
+    ></ige-option-list>
 </mat-dialog-content>
 <mat-dialog-actions>
     <div fxFlex></div>
-    <button mat-button color="primary"
-            [disabled]="!choice"
-            [mat-dialog-close]="choice">Fortsetzen</button>
+    <button
+        mat-button
+        color="primary"
+        [disabled]="!choice"
+        [mat-dialog-close]="choice"
+    >
+        Fortsetzen
+    </button>
 </mat-dialog-actions>

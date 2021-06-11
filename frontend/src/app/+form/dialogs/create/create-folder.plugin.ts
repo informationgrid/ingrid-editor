@@ -1,36 +1,38 @@
-import {Injectable} from '@angular/core';
-import {FormToolbarService} from '../../form-shared/toolbar/form-toolbar.service';
-import {Plugin} from '../../../+catalog/+behaviours/plugin';
-import {MatDialog} from '@angular/material/dialog';
-import {TreeQuery} from '../../../store/tree/tree.query';
-import {CreateNodeComponent, CreateOptions} from './create-node.component';
-import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
-import {filter, take} from 'rxjs/operators';
-import {FormUtils} from '../../form.utils';
-import {DocumentService} from '../../../services/document/document.service';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {FormStateService} from "../../form-state.service";
+import { Injectable } from "@angular/core";
+import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { MatDialog } from "@angular/material/dialog";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { CreateNodeComponent, CreateOptions } from "./create-node.component";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { filter, take } from "rxjs/operators";
+import { FormUtils } from "../../form.utils";
+import { DocumentService } from "../../../services/document/document.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FormStateService } from "../../form-state.service";
 
 @UntilDestroy()
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
-  id = 'plugin.folder';
-  _name = 'Folder Plugin';
-  group = 'Toolbar';
+  id = "plugin.folder";
+  _name = "Folder Plugin";
+  group = "Toolbar";
   defaultActive = true;
 
-  eventCreateFolderId = 'CREATE_FOLDER';
+  eventCreateFolderId = "CREATE_FOLDER";
 
   get name() {
     return this._name;
   }
 
-  constructor(private formToolbarService: FormToolbarService,
-              private treeQuery: TreeQuery,
-              private addressTreeQuery: AddressTreeQuery,
-              private documentService: DocumentService,
-              private formStateService: FormStateService,
-              private dialog: MatDialog) {
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery,
+    private documentService: DocumentService,
+    private formStateService: FormStateService,
+    private dialog: MatDialog
+  ) {
     super();
     this.isActive = true;
   }
@@ -38,20 +40,20 @@ export class CreateFolderPlugin extends Plugin {
   register() {
     super.register();
 
-    console.log('register folder plugin');
+    console.log("register folder plugin");
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
-      id: 'toolBtnFolder',
-      tooltip: 'Ordner erstellen',
-      matSvgVariable: 'outline-create_new_folder-24px',
+      id: "toolBtnFolder",
+      tooltip: "Ordner erstellen",
+      matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
       pos: 1,
-      active: true
+      active: true,
     });
 
     // add event handler for revert
-    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$
-      .subscribe(eventId => {
+    const toolbarEventSubscription =
+      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
         if (eventId === this.eventCreateFolderId) {
           this.createFolder();
         }
@@ -71,17 +73,22 @@ export class CreateFolderPlugin extends Plugin {
     // loaded while we clicked on the create node button. In this case the function
     // getFirstParentFolder would throw an error
     if (selectedDoc) {
-
-      let handled = await FormUtils.handleDirtyForm(this.formStateService.getForm(), this.documentService, this.dialog, this.forAddress);
+      let handled = await FormUtils.handleDirtyForm(
+        this.formStateService.getForm(),
+        this.documentService,
+        this.dialog,
+        this.forAddress
+      );
 
       if (!handled) {
         return;
       }
 
-      query.selectEntity(selectedDoc.id)
+      query
+        .selectEntity(selectedDoc.id)
         .pipe(
           untilDestroyed(this),
-          filter(entity => entity !== undefined),
+          filter((entity) => entity !== undefined),
           take(1)
         )
         .subscribe((entity) => {
@@ -95,7 +102,6 @@ export class CreateFolderPlugin extends Plugin {
     } else {
       this.showDialog(null);
     }
-
   }
 
   showDialog(parentDocId: string) {
@@ -108,15 +114,14 @@ export class CreateFolderPlugin extends Plugin {
       data: {
         parent: parentDocId,
         forAddress: this.forAddress,
-        isFolder: true
-      } as CreateOptions
+        isFolder: true,
+      } as CreateOptions,
     });
   }
 
   unregister() {
     super.unregister();
 
-    this.formToolbarService.removeButton('toolBtnFolder');
+    this.formToolbarService.removeButton("toolBtnFolder");
   }
-
 }

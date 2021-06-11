@@ -7,47 +7,74 @@
     </h2>
 </div>
 <mat-dialog-content>
-
     <div class="side-padding place-title">1. Schritt: Adresse wählen</div>
-    <div class="side-padding" *ngIf="(recentAddresses$ | async ).length > 0">
+    <div class="side-padding" *ngIf="(recentAddresses$ | async).length > 0">
         <mat-form-field appearance="outline" class="width-100">
-            <mat-select (selectionChange)="updateAddressList($event.value)" placeholder="Zuletzt verwendete Adressen..."
-                        data-cy="recent-address-select">
-                <mat-option *ngFor="let address of recentAddresses$ | async" [value]=address>
-                    {{address.title}}
+            <mat-select
+                (selectionChange)="updateAddressList($event.value)"
+                placeholder="Zuletzt verwendete Adressen..."
+                data-cy="recent-address-select"
+            >
+                <mat-option
+                    *ngFor="let address of recentAddresses$ | async"
+                    [value]="address"
+                >
+                    {{ address.title }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
 
-    <ige-tree (selected)="updateAddressTree($event[0]) " data-cy="choose-address-tree"
-              [setActiveNode]="selectedNode"
-              [forAddresses]="true"
-              [disabledCondition]="disabledCondition"
-              [showReloadButton]="false"></ige-tree>
-
+    <ige-tree
+        (selected)="updateAddressTree($event[0])"
+        data-cy="choose-address-tree"
+        [setActiveNode]="selectedNode"
+        [forAddresses]="true"
+        [disabledCondition]="disabledCondition"
+        [showReloadButton]="false"
+    ></ige-tree>
 
     <div class="selection-divider"></div>
 
-    <div class="side-padding top-padding place-title">2. Schritt: Adresstyp zuordnen</div>
+    <div class="side-padding top-padding place-title">
+        2. Schritt: Adresstyp zuordnen
+    </div>
     <div class="side-padding">
         <div class="dlg-field-label required">Adresstyp*</div>
         <mat-form-field appearance="outline" class="width-100">
-            <mat-select [(value)]="selectedType" placeholder="Bitte wählen ..." data-cy="address-type-select">
-                <mat-option *ngFor="let type of types | async" [value]="type.value">
-                    {{type.label}}
+            <mat-select
+                [(value)]="selectedType"
+                placeholder="Bitte wählen ..."
+                data-cy="address-type-select"
+            >
+                <mat-option
+                    *ngFor="let type of types | async"
+                    [value]="type.value"
+                >
+                    {{ type.label }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close cdkFocusInitial color="primary" data-cy="choose-address-cancel">Abbrechen</button>
+    <button
+        mat-button
+        mat-dialog-close
+        cdkFocusInitial
+        color="primary"
+        data-cy="choose-address-cancel"
+    >
+        Abbrechen
+    </button>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary" data-cy="choose-address-confirm"
-            [disabled]="!selection || !selectedType"
-            (click)="getResult()">
+    <button
+        mat-stroked-button
+        color="primary"
+        data-cy="choose-address-confirm"
+        [disabled]="!selection || !selectedType"
+        (click)="getResult()"
+    >
         Übernehmen
     </button>
 </mat-dialog-actions>

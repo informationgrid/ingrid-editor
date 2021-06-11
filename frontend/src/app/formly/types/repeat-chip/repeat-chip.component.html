@@ -1,47 +1,84 @@
-<ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
+<ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')"
+    >Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error
+>
 
-<mat-chip-list *ngIf="field.fieldGroup.length > 0"
-               [disabled]="formControl.disabled"
-               cdkDropList
-               cdkDropListOrientation="horizontal"
-               (cdkDropListDropped)="drop($event)">
-    <mat-chip disableRipple cdkDrag *ngFor="let field of field.fieldGroup; let i = index"
-              [cdkDragDisabled]="formControl.disabled"
-              [removable]="true"
-              [selectable]="false"
-              (removed)="remove(i)">
-        <mat-icon *ngIf="to.showLanguage" class="avatar gray" svgIcon="language-24px"></mat-icon>
+<mat-chip-list
+    *ngIf="field.fieldGroup.length > 0"
+    [disabled]="formControl.disabled"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="drop($event)"
+>
+    <mat-chip
+        disableRipple
+        cdkDrag
+        *ngFor="let field of field.fieldGroup; let i = index"
+        [cdkDragDisabled]="formControl.disabled"
+        [removable]="true"
+        [selectable]="false"
+        (removed)="remove(i)"
+    >
+        <mat-icon
+            *ngIf="to.showLanguage"
+            class="avatar gray"
+            svgIcon="language-24px"
+        ></mat-icon>
 
         <ng-container *ngIf="to.codelistId > -1; else simpleLabel">
-            <div class="label">{{model[i] | codelist:to.codelistId | async}}</div>
+            <div class="label">
+                {{ model[i] | codelist: to.codelistId | async }}
+            </div>
         </ng-container>
 
-        <ng-template #simpleLabel><div class="label">{{model[i]}}</div></ng-template>
+        <ng-template #simpleLabel
+            ><div class="label">{{ model[i] }}</div></ng-template
+        >
 
         <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <ige-add-button *ngIf="to.useDialog && formControl.enabled"
-                    [showLabel]="false"
-                    (add)="openDialog()"
-                    [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+    <ige-add-button
+        *ngIf="to.useDialog && formControl.enabled"
+        [showLabel]="false"
+        (add)="openDialog()"
+        [showRequiredError]="
+            formControl.invalid && formControl.errors?.required
+        "
+    ></ige-add-button>
 </mat-chip-list>
 
-<ige-add-button *ngIf="to.useDialog && formControl.enabled &&  field.fieldGroup.length === 0" class="add-button-initial"
-                [showLabel]="field.fieldGroup.length === 0"
-                (add)="openDialog()"
-                [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
+<ige-add-button
+    *ngIf="to.useDialog && formControl.enabled && field.fieldGroup.length === 0"
+    class="add-button-initial"
+    [showLabel]="field.fieldGroup.length === 0"
+    (add)="openDialog()"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>
 
 <ng-container *ngIf="!to.useDialog && formControl.enabled">
     <mat-form-field class="width-100" appearance="outline">
-        <input matInput placeholder="Bitte eingeben..."
-               autocomplete="off"
-               [formControl]="inputControl"
-               [required]="to.required && formControl.invalid"
-               (keydown.enter)="addValues(inputControl.value)">
-        <button *ngIf="inputControl.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="inputControl.setValue('')">
+        <input
+            matInput
+            placeholder="Bitte eingeben..."
+            autocomplete="off"
+            [formControl]="inputControl"
+            [required]="to.required && formControl.invalid"
+            (keydown.enter)="addValues(inputControl.value)"
+        />
+        <button
+            *ngIf="inputControl.value.length > 0"
+            mat-icon-button
+            matSuffix
+            class="field-close"
+            (click)="inputControl.setValue('')"
+        >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
-        <mat-hint>Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen</mat-hint>
+        <mat-hint
+            >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
+            trennen</mat-hint
+        >
     </mat-form-field>
-    <mat-error *ngIf="formControl.errors?.required">Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    <mat-error *ngIf="formControl.errors?.required"
+        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
+    >
 </ng-container>

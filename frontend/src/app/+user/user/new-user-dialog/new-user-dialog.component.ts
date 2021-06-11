@@ -1,53 +1,55 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {UserService} from '../../../services/user/user.service';
-import {FrontendUser} from '../../user';
-import {ConfigService} from '../../../services/config/config.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {IgeError} from '../../../models/ige-error';
-import {SelectOption} from '../../../services/codelist/codelist.service';
-import {tap} from 'rxjs/operators';
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
+import { UserService } from "../../../services/user/user.service";
+import { FrontendUser } from "../../user";
+import { ConfigService } from "../../../services/config/config.service";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { IgeError } from "../../../models/ige-error";
+import { SelectOption } from "../../../services/codelist/codelist.service";
+import { tap } from "rxjs/operators";
 
 @Component({
-  selector: 'ige-new-user-dialog',
-  templateUrl: './new-user-dialog.component.html',
-  styleUrls: ['./new-user-dialog.component.css']
+  selector: "ige-new-user-dialog",
+  templateUrl: "./new-user-dialog.component.html",
+  styleUrls: ["./new-user-dialog.component.css"],
 })
 export class NewUserDialogComponent implements OnInit {
-  users: Observable<FrontendUser[]> = this.userService.getExternalUsers()
-    .pipe(tap(users => this.noAvailableUsers = users.length === 0));
+  users: Observable<FrontendUser[]> = this.userService
+    .getExternalUsers()
+    .pipe(tap((users) => (this.noAvailableUsers = users.length === 0)));
   form: FormGroup;
   roles: SelectOption[];
   noAvailableUsers = true;
 
-  constructor(private userService: UserService,
-              private configService: ConfigService) {
-  }
+  constructor(
+    private userService: UserService,
+    private configService: ConfigService
+  ) {}
 
   ngOnInit(): void {
-
     this.initRoles();
 
     this.form = new FormGroup({
-      role: new FormControl('', Validators.required),
-      user: new FormControl('', Validators.required)
+      role: new FormControl("", Validators.required),
+      user: new FormControl("", Validators.required),
     });
-
   }
 
   private initRoles() {
     const userRole = this.configService.$userInfo.value.role;
     switch (userRole) {
-      case 'ige-super-admin':
-      case 'cat-admin':
+      case "ige-super-admin":
+      case "cat-admin":
         this.roles = this.userService.availableRoles;
         break;
-      case 'md-admin':
-        this.roles = this.userService.availableRoles.filter(r => r.value !== 'cat-admin');
+      case "md-admin":
+        this.roles = this.userService.availableRoles.filter(
+          (r) => r.value !== "cat-admin"
+        );
         break;
-      case 'author':
+      case "author":
       default:
-        throw new IgeError('Als Autor dürfen Sie keine Nutzer anlegen');
+        throw new IgeError("Als Autor dürfen Sie keine Nutzer anlegen");
     }
   }
 }

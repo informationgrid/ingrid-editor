@@ -8,8 +8,11 @@
 </div>
 <mat-dialog-content>
     <mat-selection-list #userList dense>
-        <mat-list-option *ngFor="let user of users | async" [value]="user.login">
-            {{user.firstName}} {{user.lastName}} ({{user.login}})
+        <mat-list-option
+            *ngFor="let user of users | async"
+            [value]="user.login"
+        >
+            {{ user.firstName }} {{ user.lastName }} ({{ user.login }})
         </mat-list-option>
         <mat-divider></mat-divider>
     </mat-selection-list>
@@ -17,6 +20,7 @@
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-button color="primary"
-            [mat-dialog-close]="userList._value">Ok</button>
+    <button mat-button color="primary" [mat-dialog-close]="userList._value">
+        Ok
+    </button>
 </mat-dialog-actions>

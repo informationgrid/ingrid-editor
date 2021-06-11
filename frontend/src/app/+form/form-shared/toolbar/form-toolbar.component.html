@@ -1,83 +1,131 @@
 <mat-toolbar>
     <mat-toolbar-row>
         <ng-container *ngFor="let button of buttons_left">
-            <button *ngIf="!button.isSeparator && !button.menu" mat-button class="standard-toolbar-button"
-                    [attr.data-cy]="'toolbar_' + button.eventId"
-                    [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
-                    (click)="sendEvent(button.eventId)"
-                    [disabled]="!button.active">
-                <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
+            <button
+                *ngIf="!button.isSeparator && !button.menu"
+                mat-button
+                class="standard-toolbar-button"
+                [attr.data-cy]="'toolbar_' + button.eventId"
+                [matTooltip]="button.tooltip"
+                [matTooltipShowDelay]="1000"
+                (click)="sendEvent(button.eventId)"
+                [disabled]="!button.active"
+            >
+                <mat-icon
+                    class="material-icons-outlined"
+                    [svgIcon]="button.matSvgVariable"
+                    >{{ button.matIconVariable }}</mat-icon
+                >
             </button>
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
-                <button mat-icon-button
-                        class="drop-down"
-                        [matMenuTriggerFor]="copyMenu"
-                        [attr.data-cy]="'toolbar_' + button.eventId"
-                        [matTooltip]="button.tooltip"
-                        [matTooltipShowDelay]="1000"
-                        [disabled]="!button.active"
-                        (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
-                    <mat-icon class="material-icons-outlined" [svgIcon]="button.matSvgVariable">{{button.matIconVariable}}</mat-icon>
-                    <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+                <button
+                    mat-icon-button
+                    class="drop-down"
+                    [matMenuTriggerFor]="copyMenu"
+                    [attr.data-cy]="'toolbar_' + button.eventId"
+                    [matTooltip]="button.tooltip"
+                    [matTooltipShowDelay]="1000"
+                    [disabled]="!button.active"
+                    (menuOpened)="menu[button.id] = true"
+                    (menuClosed)="menu[button.id] = false"
+                >
+                    <mat-icon
+                        class="material-icons-outlined"
+                        [svgIcon]="button.matSvgVariable"
+                        >{{ button.matIconVariable }}</mat-icon
+                    >
+                    <mat-icon>{{
+                        menu[button.id] ? "arrow_drop_up" : "arrow_drop_down"
+                    }}</mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
-                    <button *ngFor="let menuItem of button.menu" mat-menu-item
-                            [disabled]="!menuItem.active"
-                            [attr.data-cy]="'copyMenu_' + menuItem.eventId"
-                            (click)="sendEvent(menuItem.eventId)">
-                        <span>{{menuItem.label}}</span>
+                    <button
+                        *ngFor="let menuItem of button.menu"
+                        mat-menu-item
+                        [disabled]="!menuItem.active"
+                        [attr.data-cy]="'copyMenu_' + menuItem.eventId"
+                        (click)="sendEvent(menuItem.eventId)"
+                    >
+                        <span>{{ menuItem.label }}</span>
                     </button>
                 </mat-menu>
             </ng-container>
-            <mat-divider *ngIf="button.isSeparator" class="separator" [vertical]="true"></mat-divider>
+            <mat-divider
+                *ngIf="button.isSeparator"
+                class="separator"
+                [vertical]="true"
+            ></mat-divider>
         </ng-container>
         <div fxFlex></div>
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">
-                <button *ngIf="!button.isSeparator && !button.label" mat-icon-button
-                        [matTooltip]="button.tooltip"
-                        [matTooltipShowDelay]="1000"
-                        [attr.data-cy]="'toolbar_' + button.eventId"
-                        (click)="sendEvent(button.eventId)"
-                        [disabled]="!button.active">
+                <button
+                    *ngIf="!button.isSeparator && !button.label"
+                    mat-icon-button
+                    [matTooltip]="button.tooltip"
+                    [matTooltipShowDelay]="1000"
+                    [attr.data-cy]="'toolbar_' + button.eventId"
+                    (click)="sendEvent(button.eventId)"
+                    [disabled]="!button.active"
+                >
                     <!--aria-label="{{button.tooltip}}"-->
-                    <mat-icon>{{button.matIconVariable}}</mat-icon>
+                    <mat-icon>{{ button.matIconVariable }}</mat-icon>
                 </button>
-                <button *ngIf="button.label && !button.isPrimary" mat-stroked-button
-                        [attr.data-cy]="'toolbar_' + button.eventId"
+                <button
+                    *ngIf="button.label && !button.isPrimary"
+                    mat-stroked-button
+                    [attr.data-cy]="'toolbar_' + button.eventId"
+                    [matTooltip]="button.tooltip"
+                    [matTooltipShowDelay]="1000"
+                    [disabled]="!button.active"
+                    (click)="sendEvent(button.eventId)"
+                >
+                    {{ button.label }}
+                </button>
+                <ng-container *ngIf="button.label && button.isPrimary">
+                    <button
+                        class="btnPublish"
+                        mat-flat-button
+                        color="primary"
+                        (click)="sendEvent(button.eventId)"
+                        [attr.data-cy]="'toolbar_publish_now'"
                         [matTooltip]="button.tooltip"
                         [matTooltipShowDelay]="1000"
                         [disabled]="!button.active"
-                        (click)="sendEvent(button.eventId)">
-                    {{button.label}}
-                </button>
-                <ng-container *ngIf="button.label && button.isPrimary">
-                    <button class="btnPublish" mat-flat-button color="primary"
-                            (click)="sendEvent(button.eventId)"
-                            [attr.data-cy]="'toolbar_publish_now'"
-                            [matTooltip]="button.tooltip"
-                            [matTooltipShowDelay]="1000"
-                            [disabled]="!button.active">
-                        {{button.label}}
+                    >
+                        {{ button.label }}
                     </button>
-                    <button class="btnPublishMore" mat-flat-button color="primary"
-                            [disabled]="!button.active"
-                            [attr.data-cy]="'toolbar_' + button.eventId"
-                            [matMenuTriggerFor]="publishMenu"
-                            (menuOpened)="menu[button.id] = true" (menuClosed)="menu[button.id] = false">
-                        <mat-icon>{{menu[button.id] ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+                    <button
+                        class="btnPublishMore"
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="!button.active"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        [matMenuTriggerFor]="publishMenu"
+                        (menuOpened)="menu[button.id] = true"
+                        (menuClosed)="menu[button.id] = false"
+                    >
+                        <mat-icon>{{
+                            menu[button.id]
+                                ? "arrow_drop_up"
+                                : "arrow_drop_down"
+                        }}</mat-icon>
                     </button>
 
                     <mat-menu #publishMenu="matMenu">
-                      <button *ngFor="let menuItem of button.menu" mat-menu-item [disabled]="!menuItem.active" [attr.data-cy]="'toolbar_' + menuItem.eventId" (click)="sendEvent(menuItem.eventId)">
-                        <span>{{menuItem.label}}</span>
-                      </button>
+                        <button
+                            *ngFor="let menuItem of button.menu"
+                            mat-menu-item
+                            [disabled]="!menuItem.active"
+                            [attr.data-cy]="'toolbar_' + menuItem.eventId"
+                            (click)="sendEvent(menuItem.eventId)"
+                        >
+                            <span>{{ menuItem.label }}</span>
+                        </button>
                     </mat-menu>
                 </ng-container>
-
             </ng-container>
         </span>
     </mat-toolbar-row>

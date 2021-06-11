@@ -1,4 +1,10 @@
 <ng-container #fieldComponent></ng-container>
-<button *ngIf="to.hasInlineContextHelp" type="button" mat-icon-button class="menu-button infoIcon" (click)="showContextHelp($event)">
+<button
+    *ngIf="to.hasInlineContextHelp"
+    type="button"
+    mat-icon-button
+    class="menu-button infoIcon"
+    (click)="showContextHelp($event)"
+>
     <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
 </button>

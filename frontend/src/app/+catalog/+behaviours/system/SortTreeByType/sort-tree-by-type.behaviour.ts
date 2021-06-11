@@ -1,25 +1,29 @@
-import {Injectable} from '@angular/core';
-import {Plugin} from '../../plugin';
-import {TreeService, TreeSortFn} from '../../../../+form/sidebars/tree/tree.service';
-import {TreeNode} from '../../../../store/tree/tree-node.model';
+import { Injectable } from "@angular/core";
+import { Plugin } from "../../plugin";
+import {
+  TreeService,
+  TreeSortFn,
+} from "../../../../+form/sidebars/tree/tree.service";
+import { TreeNode } from "../../../../store/tree/tree-node.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class SortTreeByTypeBehaviour extends Plugin {
-  id = 'plugin.sort.tree.by.type';
-  name = 'Sortierung des Baums nach Dokumententyp';
-  group = 'Baum';
+  id = "plugin.sort.tree.by.type";
+  name = "Sortierung des Baums nach Dokumententyp";
+  group = "Baum";
   defaultActive = false;
 
-  description = 'Anstatt die Baumknoten nach dem Titel zu sortieren, werden diese ' +
-    'nach dem Dokumenttyp sortiert. Verzeichnisse erscheinen weiterhin als erstes.';
+  description =
+    "Anstatt die Baumknoten nach dem Titel zu sortieren, werden diese " +
+    "nach dem Dokumenttyp sortiert. Verzeichnisse erscheinen weiterhin als erstes.";
 
   private sortByDocumentType: TreeSortFn = (a: TreeNode, b: TreeNode) => {
     // folders first
-    if (a.type === 'FOLDER' && b.type !== 'FOLDER') {
+    if (a.type === "FOLDER" && b.type !== "FOLDER") {
       return -1;
-    } else if (a.type !== 'FOLDER' && b.type === 'FOLDER') {
+    } else if (a.type !== "FOLDER" && b.type === "FOLDER") {
       return 1;
     } else {
       return a.type.localeCompare(b.type);
@@ -31,7 +35,7 @@ export class SortTreeByTypeBehaviour extends Plugin {
   }
 
   register() {
-    console.log('Register Sort Tree behaviour');
+    console.log("Register Sort Tree behaviour");
     super.register();
 
     this.treeService.registerTreeSortFunction(this.sortByDocumentType);

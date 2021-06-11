@@ -1,23 +1,25 @@
-import {BaseBehaviour} from '../../base.behaviour';
-import {EventManager} from '@angular/platform-browser';
-import {FormGroup} from '@angular/forms';
-import {DocumentService} from '../../../../services/document/document.service';
-import {Inject} from '@angular/core';
-import {Behaviour} from '../../../../services/behavior/behaviour';
+import { BaseBehaviour } from "../../base.behaviour";
+import { EventManager } from "@angular/platform-browser";
+import { FormGroup } from "@angular/forms";
+import { DocumentService } from "../../../../services/document/document.service";
+import { Inject } from "@angular/core";
+import { Behaviour } from "../../../../services/behavior/behaviour";
 
 /**
  * OpenDataBehaviour
  */
 export class OpenDataBehaviour extends BaseBehaviour implements Behaviour {
-  id = 'open-data';
-  title = 'Open Data Behaviour';
-  description = '...';
+  id = "open-data";
+  title = "Open Data Behaviour";
+  description = "...";
   defaultActive = true;
-  forProfile = 'ISO';
+  forProfile = "ISO";
 
   conformEl: HTMLElement = null;
 
-  constructor(@Inject(DocumentService) private storageService: DocumentService) {
+  constructor(
+    @Inject(DocumentService) private storageService: DocumentService
+  ) {
     super();
   }
 
@@ -41,7 +43,7 @@ export class OpenDataBehaviour extends BaseBehaviour implements Behaviour {
         );
     */
   }
-/*
+  /*
   getFieldContainer(query: string): HTMLElement {
     let parent = <HTMLElement> document.querySelector(query);
     while (parent && !parent.classList.contains('fieldContainer')) {

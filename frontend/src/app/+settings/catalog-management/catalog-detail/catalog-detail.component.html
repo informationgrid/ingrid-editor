@@ -7,10 +7,9 @@
     </h2>
 </div>
 <mat-dialog-content>
-
     <mat-form-field appearance="outline" class="width-100">
         <mat-label>Titel</mat-label>
-        <input matInput [(ngModel)]="catalog.label">
+        <input matInput [(ngModel)]="catalog.label" />
     </mat-form-field>
     <mat-form-field appearance="outline" class="width-100">
         <mat-label>Beschreibung</mat-label>
@@ -20,15 +19,22 @@
     <mat-list dense>
         <h3 mat-subheader class="inline">Administratoren</h3>
         <mat-list-item *ngFor="let admin of catAdmins">
-            <h4 mat-line>{{admin.firstName}} {{admin.lastName}} ({{admin.login}})</h4>
+            <h4 mat-line>
+                {{ admin.firstName }} {{ admin.lastName }} ({{ admin.login }})
+            </h4>
             <button mat-icon-button (click)="removeCatAdmin(admin.login)">
                 <mat-icon mat-list-icon>delete</mat-icon>
             </button>
         </mat-list-item>
     </mat-list>
 
-    <button mat-stroked-button (click)="chooseUserForAdmin()" style="float: right;">Hinzufügen</button>
-
+    <button
+        mat-stroked-button
+        (click)="chooseUserForAdmin()"
+        style="float: right"
+    >
+        Hinzufügen
+    </button>
 </mat-dialog-content>
 
 <mat-dialog-actions>

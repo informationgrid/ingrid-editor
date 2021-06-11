@@ -1,13 +1,13 @@
-import {ResearchComponent} from './research.component';
-import {createComponentFactory, Spectator} from '@ngneat/spectator';
-import {ResearchService} from './research.service';
-import {RouterTestingModule} from '@angular/router/testing';
-import {LeafletService} from '../formly/types/map/leaflet.service';
-import {ProfileService} from '../services/profile.service';
-import {MatDialogModule} from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import { ResearchComponent } from "./research.component";
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { ResearchService } from "./research.service";
+import { RouterTestingModule } from "@angular/router/testing";
+import { LeafletService } from "../formly/types/map/leaflet.service";
+import { ProfileService } from "../services/profile.service";
+import { MatDialogModule } from "@angular/material/dialog";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
-describe('ResearchComponent', () => {
+describe("ResearchComponent", () => {
   let spectator: Spectator<ResearchComponent>;
   const createComponent = createComponentFactory({
     component: ResearchComponent,
@@ -20,13 +20,13 @@ describe('ResearchComponent', () => {
       }
     })],*/
     mocks: [ResearchService, LeafletService, ProfileService],
-    detectChanges: false
+    detectChanges: false,
   });
 
   beforeEach(() => {
     spectator = createComponent();
   });
-  it('should create', () => {
+  it("should create", () => {
     expect(spectator.component).toBeTruthy();
   });
 });

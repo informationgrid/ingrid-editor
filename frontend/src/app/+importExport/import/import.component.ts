@@ -1,15 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ImportExportService} from '../import-export-service';
-import {ConfigService} from '../../services/config/config.service';
+import { Component, OnInit } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
+import { ImportExportService } from "../import-export-service";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
-  selector: 'ige-import',
-  templateUrl: './import.component.html',
-  styleUrls: ['./import.component.scss']
+  selector: "ige-import",
+  templateUrl: "./import.component.html",
+  styleUrls: ["./import.component.scss"],
 })
 export class ImportComponent implements OnInit {
-
   file: File;
 
   currentTab: string;
@@ -28,25 +27,30 @@ export class ImportComponent implements OnInit {
   analyzedData: any;
   importFileErrorMessage: any;
 
-  constructor(private importExportService: ImportExportService, config: ConfigService) {
-
+  constructor(
+    private importExportService: ImportExportService,
+    config: ConfigService
+  ) {
     // this.uploader = new FileUploader({url: config.getConfiguration().backendUrl + '/upload'});
-    this.uploadUrl = config.getConfiguration().backendUrl + '/upload';
+    this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
 
-    const ctrl = new FormControl('xxx');
-    this.form = new FormGroup({title: ctrl});
+    const ctrl = new FormControl("xxx");
+    this.form = new FormGroup({ title: ctrl });
   }
 
   ngOnInit(): void {
-    this.currentTab = 'import';
+    this.currentTab = "import";
   }
 
   import(files: File[]) {
     const file = files[0];
     console.log(file);
-    this.importExportService.import(file).subscribe(data => {
-      console.log('Import result:', data);
-    }, error => this.importFileErrorMessage = error);
+    this.importExportService.import(file).subscribe(
+      (data) => {
+        console.log("Import result:", data);
+      },
+      (error) => (this.importFileErrorMessage = error)
+    );
   }
 
   onUpload(event) {
@@ -55,7 +59,7 @@ export class ImportComponent implements OnInit {
     }
 
     this.msgs = [];
-    this.msgs.push({severity: 'info', summary: 'File Uploaded', detail: ''});
+    this.msgs.push({ severity: "info", summary: "File Uploaded", detail: "" });
   }
 
   /*handleError(event) {
@@ -66,6 +70,6 @@ export class ImportComponent implements OnInit {
     console.log(data); // We just print out data bubbled up from event emitter.
     this.analyzedData = data;
     this.datasetSelected = true;
-    setTimeout(() => this.activeStepIndex = 1);
+    setTimeout(() => (this.activeStepIndex = 1));
   }
 }

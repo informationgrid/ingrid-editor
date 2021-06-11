@@ -6,12 +6,12 @@ export interface Query {
 }
 
 export interface SqlQuery extends Query {
-  type: 'sql';
+  type: "sql";
   sql: string;
 }
 
 export interface FacetQuery extends Query {
-  type: 'facet';
+  type: "facet";
   term: string;
   model: any;
   parameter: any;

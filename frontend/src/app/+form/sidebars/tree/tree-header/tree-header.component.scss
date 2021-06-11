@@ -1,4 +1,4 @@
-@import 'src/variables';
+@import "src/variables";
 
 :host {
   background-color: $ige-background;
@@ -34,7 +34,6 @@
     .reload-button {
       margin-right: -10px;
     }
-
   }
 }
 
@@ -59,7 +58,8 @@
     padding: 0 !important;
   }
 
-  mat-option, ::ng-deep .doc-item {
+  mat-option,
+  ::ng-deep .doc-item {
     height: 40px !important;
   }
 }

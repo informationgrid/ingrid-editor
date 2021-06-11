@@ -10,8 +10,8 @@
 //     - might not be flexible enough, see UVP example!!!
 //     - or should it be realised as a plugin?
 
-import {Subscription} from 'rxjs';
-import {FormlyFieldConfig} from '@ngx-formly/core';
+import { Subscription } from "rxjs";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export abstract class Plugin {
   id: string;
@@ -31,14 +31,13 @@ export abstract class Plugin {
   }
 
   unregister(): void {
-    console.log('Unregister: ', name);
+    console.log("Unregister: ", name);
     this.isActive = false;
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];
   }
 
-  update(): void {
-  }
+  update(): void {}
 
   setForAddress(): void {
     this.forAddress = true;

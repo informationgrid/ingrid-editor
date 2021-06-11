@@ -1,29 +1,30 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CodelistEntry} from '../../../store/codelist/codelist.model';
+import { Component, Inject, OnInit } from "@angular/core";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { CodelistEntry } from "../../../store/codelist/codelist.model";
 
 @Component({
-  selector: 'ige-update-codelist',
-  templateUrl: './update-codelist.component.html',
-  styleUrls: ['./update-codelist.component.scss']
+  selector: "ige-update-codelist",
+  templateUrl: "./update-codelist.component.html",
+  styleUrls: ["./update-codelist.component.scss"],
 })
 export class UpdateCodelistComponent implements OnInit {
   model: CodelistEntry;
   fields: any[];
   isNew = true;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public entry: CodelistEntry,
-              private dialogRef: MatDialogRef<UpdateCodelistComponent>) {
-    this.model = {...entry};
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public entry: CodelistEntry,
+    private dialogRef: MatDialogRef<UpdateCodelistComponent>
+  ) {
+    this.model = { ...entry };
     this.isNew = entry.id === undefined;
-    this.fields = Object.keys(entry.fields).map(key => ({
+    this.fields = Object.keys(entry.fields).map((key) => ({
       key: key,
-      value: entry.fields[key]
+      value: entry.fields[key],
     }));
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   addEntry() {
     this.fields.push({});

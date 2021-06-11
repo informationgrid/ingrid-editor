@@ -1,22 +1,21 @@
-import { Component, forwardRef, Input, OnInit, Output } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Subject } from 'rxjs';
+import { Component, forwardRef, Input, OnInit, Output } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { MatCheckboxChange } from "@angular/material/checkbox";
+import { Subject } from "rxjs";
 
 export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => CheckboxComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-  selector: 'ige-checkbox',
-  templateUrl: './checkbox.component.html',
-  styleUrls: ['./checkbox.component.css'],
-  providers: [CHECKBOX_CONTROL_VALUE_ACCESSOR]
+  selector: "ige-checkbox",
+  templateUrl: "./checkbox.component.html",
+  styleUrls: ["./checkbox.component.css"],
+  providers: [CHECKBOX_CONTROL_VALUE_ACCESSOR],
 })
 export class CheckboxComponent implements ControlValueAccessor, OnInit {
-
   @Input() label;
 
   @Output() change = new Subject<boolean>();
@@ -29,11 +28,9 @@ export class CheckboxComponent implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   get value() {
     return this._value;
@@ -44,7 +41,7 @@ export class CheckboxComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(val: any): void {
-    this.value = val === '' ? false : val;
+    this.value = val === "" ? false : val;
   }
 
   handleChange(event: MatCheckboxChange) {
@@ -59,5 +56,4 @@ export class CheckboxComponent implements ControlValueAccessor, OnInit {
   registerOnTouched(fn: any): void {
     this._onTouchedCallback = fn;
   }
-
 }

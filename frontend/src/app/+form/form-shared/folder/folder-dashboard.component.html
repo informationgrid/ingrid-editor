@@ -1,28 +1,50 @@
 <div class="text-center shortcut">
     <button mat-button (click)="createNewFolder()">
-        <mat-icon class="material-icons-outlined" svgIcon="outline-create_new_folder-24px"></mat-icon>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="outline-create_new_folder-24px"
+        ></mat-icon>
         <span>Neuer Unterordner</span>
     </button>
     <button mat-button (click)="createNewDataset()">
-        <mat-icon class="material-icons-outlined" svgIcon="Neuer-Datensatz"></mat-icon>
-        <span>{{isAddress ? "Neue Adresse" : "Neuer Datensatz"}}</span>
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="Neuer-Datensatz"
+        ></mat-icon>
+        <span>{{ isAddress ? "Neue Adresse" : "Neuer Datensatz" }}</span>
     </button>
 </div>
 
 <div *ngIf="numChildren">
-    <ige-card-box fxFlex label="Zuletzt bearbeitet im Ordner" data-cy="card-latest-docs">
-        <ige-document-list-item [docs]="childDocs$"
-                                [hideDate]="false"
-                                (select)="openDocument($event.id)"></ige-document-list-item>
+    <ige-card-box
+        fxFlex
+        label="Zuletzt bearbeitet im Ordner"
+        data-cy="card-latest-docs"
+    >
+        <ige-document-list-item
+            [docs]="childDocs$"
+            [hideDate]="false"
+            (select)="openDocument($event.id)"
+        ></ige-document-list-item>
     </ige-card-box>
 </div>
 
 <div *ngIf="numChildren === 0" class="banner text-center">
     <div class="circle-wrapper">
-        <mat-icon [svgIcon]="isAddress ? 'image-banner-address' :'image-banner-dataset'"></mat-icon>
+        <mat-icon
+            [svgIcon]="
+                isAddress ? 'image-banner-address' : 'image-banner-dataset'
+            "
+        ></mat-icon>
     </div>
-<!--    <h2>Kein Ordner oder {{isAddress ? "Adresse" : "Datensatz"}} vorhanden</h2>-->
+    <!--    <h2>Kein Ordner oder {{isAddress ? "Adresse" : "Datensatz"}} vorhanden</h2>-->
     <h2>Dieser Ordner ist noch leer</h2>
-    <p>Legen Sie einen neuen Unterordner oder {{isAddress ? "eine neue Adresse" : "Datensatz"}} an.</p>
-    <p>Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in der Werkzeugleiste.</p>
+    <p>
+        Legen Sie einen neuen Unterordner oder
+        {{ isAddress ? "eine neue Adresse" : "Datensatz" }} an.
+    </p>
+    <p>
+        Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
+        der Werkzeugleiste.
+    </p>
 </div>

@@ -8,38 +8,39 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
-} from '@angular/core';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {TreeNode} from '../../../store/tree/tree-node.model';
-import {combineLatest, Observable, Subject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
-import {UpdateDatasetInfo} from '../../../models/update-dataset-info.model';
-import {UpdateType} from '../../../models/update-type.enum';
-import {DynamicDataSource} from './dynamic.datasource';
-import {DynamicDatabase} from './dynamic.database';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {TreeService} from './tree.service';
-import {DocumentUtils} from '../../../services/document.utils';
-import {DragNDropUtils} from './dragndrop.utils';
-import {ShortTreeNode} from './tree.types';
-import {SelectionModel} from '@angular/cdk/collections';
-import {MatCheckboxChange} from '@angular/material/checkbox';
+  ViewChild,
+} from "@angular/core";
+import { FlatTreeControl } from "@angular/cdk/tree";
+import { TreeNode } from "../../../store/tree/tree-node.model";
+import { combineLatest, Observable, Subject } from "rxjs";
+import { map, tap } from "rxjs/operators";
+import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
+import { UpdateType } from "../../../models/update-type.enum";
+import { DynamicDataSource } from "./dynamic.datasource";
+import { DynamicDatabase } from "./dynamic.database";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { TreeService } from "./tree.service";
+import { DocumentUtils } from "../../../services/document.utils";
+import { DragNDropUtils } from "./dragndrop.utils";
+import { ShortTreeNode } from "./tree.types";
+import { SelectionModel } from "@angular/cdk/collections";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 export enum TreeActionType {
-  ADD, UPDATE, DELETE
+  ADD,
+  UPDATE,
+  DELETE,
 }
 
 @UntilDestroy()
 @Component({
-  selector: 'ige-tree',
-  templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss'],
+  selector: "ige-tree",
+  templateUrl: "./tree.component.html",
+  styleUrls: ["./tree.component.scss"],
   providers: [DynamicDatabase],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeComponent implements OnInit, OnDestroy {
-
   @Input() forAddresses: boolean;
   @Input() expandNodeIds: Subject<string[]>;
   @Input() showHeader = true;
@@ -54,14 +55,15 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** The node selection must be kept local */
   selectionModel = new SelectionModel<TreeNode>(true);
   @Output() selected = this.selectionModel.changed.pipe(
-    map(data => data.source.selected.map(item => item._id))
+    map((data) => data.source.selected.map((item) => item._id))
   );
   @Output() activate = new EventEmitter<string[]>();
   @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
 
-  @ViewChild('treeComponent', {read: ElementRef}) treeContainerElement: ElementRef;
+  @ViewChild("treeComponent", { read: ElementRef })
+  treeContainerElement: ElementRef;
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
@@ -85,12 +87,21 @@ export class TreeComponent implements OnInit, OnDestroy {
     return false;
   };
 
-
-  constructor(private database: DynamicDatabase,
-              public treeService: TreeService,
-              private cdr: ChangeDetectorRef) {
-    this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new DynamicDataSource(this.treeControl, database, treeService, this.selectionModel);
+  constructor(
+    private database: DynamicDatabase,
+    public treeService: TreeService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.treeControl = new FlatTreeControl<TreeNode>(
+      this.getLevel,
+      this.isExpandable
+    );
+    this.dataSource = new DynamicDataSource(
+      this.treeControl,
+      database,
+      treeService,
+      this.selectionModel
+    );
     this.dragManager = new DragNDropUtils(this.treeControl);
   }
 
@@ -107,8 +118,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     this.database.treeUpdates
       .pipe(untilDestroyed(this))
-      .subscribe(data => this.handleUpdate(data));
-
+      .subscribe((data) => this.handleUpdate(data));
   }
 
   private handleActiveNodeSubscription() {
@@ -116,14 +126,12 @@ export class TreeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.setActiveNode
-      .pipe(untilDestroyed(this))
-      .subscribe(id => {
-        if (this.activeNodeId === id) {
-          return;
-        }
-        this.jumpToNode(id);
-      });
+    this.setActiveNode.pipe(untilDestroyed(this)).subscribe((id) => {
+      if (this.activeNodeId === id) {
+        return;
+      }
+      this.jumpToNode(id);
+    });
   }
 
   private expandOnDataChange(ids: string[]): Promise<void> {
@@ -134,8 +142,8 @@ export class TreeComponent implements OnInit, OnDestroy {
     //        search for a sub folder of the opened folder, then root nodes will always be
     //        triggered by dataChange, which mixes up resolveNextTime timing
 
-    return new Promise(resolve => {
-      const changeObserver = this.dataSource.dataChange.subscribe(data => {
+    return new Promise((resolve) => {
+      const changeObserver = this.dataSource.dataChange.subscribe((data) => {
         if (resolveNextTime) {
           setTimeout(() => changeObserver.unsubscribe(), 0);
           resolve();
@@ -147,11 +155,12 @@ export class TreeComponent implements OnInit, OnDestroy {
 
         if (ids.length > 0) {
           nextId = ids.shift();
-          const nodeToExpand = data.filter(node => node._id === nextId)[0];
+          const nodeToExpand = data.filter((node) => node._id === nextId)[0];
           this.treeControl.expand(nodeToExpand);
         }
         if (ids.length === 0) {
-          const folderAlreadyExpanded = data.find(d => d.parent === nextId) !== undefined;
+          const folderAlreadyExpanded =
+            data.find((d) => d.parent === nextId) !== undefined;
           if (folderAlreadyExpanded) {
             setTimeout(() => changeObserver.unsubscribe(), 0);
             resolve();
@@ -168,10 +177,8 @@ export class TreeComponent implements OnInit, OnDestroy {
    * @param node is the current tree node
    */
   isFolder = (_: number, node: TreeNode) => {
-
     // return node.hasChildren;
-    return node.type === 'FOLDER';
-
+    return node.type === "FOLDER";
   };
 
   /**
@@ -180,7 +187,6 @@ export class TreeComponent implements OnInit, OnDestroy {
    * @param $event
    */
   selectNode(node: TreeNode, $event: MouseEvent) {
-
     if (this.multiSelectionModeEnabled) {
       this.nodeSelectionToggle(node, $event);
     } else {
@@ -200,7 +206,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleSingleSelection(node: TreeNode) {
-
     // deselect all nodes first
     this.selectionModel.clear();
     this.selectionModel.select(node);
@@ -215,7 +220,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (node.hasChildren) {
       this.treeControl.toggle(node);
     }
-
   }
 
   private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
@@ -232,33 +236,32 @@ export class TreeComponent implements OnInit, OnDestroy {
     return path.reverse();
   }
 
-  private getParentNode(node: TreeNode): { node: TreeNode, parent: TreeNode } {
+  private getParentNode(node: TreeNode): { node: TreeNode; parent: TreeNode } {
     const nodeIndex = this.dataSource.data.indexOf(node);
 
     for (let i = nodeIndex - 1; i >= 0; i--) {
       if (this.dataSource.data[i].level === node.level - 1) {
-        return {node: node, parent: this.dataSource.data[i]};
+        return { node: node, parent: this.dataSource.data[i] };
       }
     }
 
-    return {node: node, parent: null};
+    return { node: node, parent: null };
   }
 
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
-    return this.database.initialData(forceFromServer, this.forAddresses)
-      .pipe(
-        map(docs => this.database.mapDocumentsToTreeNodes(docs, 0)),
-        map(docs => docs.sort(this.treeService.getSortTreeNodesFunction())),
-        tap(rootElements => {
-          this.dataSource.data = rootElements;
-          this.selectionModel.clear();
-          if (this.activeNodeId) {
-            this.jumpToNode(this.activeNodeId);
-          }
-          // after new data has arrived call change detection
-          this.cdr.detectChanges();
-        })
-      );
+    return this.database.initialData(forceFromServer, this.forAddresses).pipe(
+      map((docs) => this.database.mapDocumentsToTreeNodes(docs, 0)),
+      map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
+      tap((rootElements) => {
+        this.dataSource.data = rootElements;
+        this.selectionModel.clear();
+        if (this.activeNodeId) {
+          this.jumpToNode(this.activeNodeId);
+        }
+        // after new data has arrived call change detection
+        this.cdr.detectChanges();
+      })
+    );
   }
 
   /**
@@ -281,21 +284,21 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.deleteNode(updateInfo);
         return;
       case UpdateType.Move:
-        const srcDocIds = updateInfo.data.map(doc => <string>doc.id);
+        const srcDocIds = updateInfo.data.map((doc) => <string>doc.id);
         this.moveNodes(srcDocIds, updateInfo.parent);
         return;
       default:
-        throw new Error('Tree Action type not known: ' + updateInfo.type);
+        throw new Error("Tree Action type not known: " + updateInfo.type);
     }
   }
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
-    const treeNodes = updateInfo['data']
-      .map(doc => this.dataSource.data.find(item => item._id === doc.id));
+    const treeNodes = updateInfo["data"].map((doc) =>
+      this.dataSource.data.find((item) => item._id === doc.id)
+    );
 
     // update parent nodes in case they do not have any children anymore
-    treeNodes.forEach(node => this.handleNodeRemoval(node));
-
+    treeNodes.forEach((node) => this.handleNodeRemoval(node));
   }
 
   private handleNodeRemoval(node: TreeNode) {
@@ -310,18 +313,21 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private async addNewNodes(updateInfo: UpdateDatasetInfo) {
-
     if (!updateInfo.doNotSelect) {
-      this.activeNodeId = updateInfo.data[0].id + '';
+      this.activeNodeId = updateInfo.data[0].id + "";
     }
 
     if (updateInfo.parent) {
-
-      const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === updateInfo.parent);
+      const parentNodeIndex = this.dataSource.data.findIndex(
+        (item) => item._id === updateInfo.parent
+      );
 
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
-        console.log('Parent not found, expanding tree nodes: ', updateInfo.path);
+        console.log(
+          "Parent not found, expanding tree nodes: ",
+          updateInfo.path
+        );
         if (this.expandNodeIds) {
           this.expandNodeIds.next(updateInfo.path);
         }
@@ -329,12 +335,18 @@ export class TreeComponent implements OnInit, OnDestroy {
       }
 
       // TODO: use function jumpToNode
-      this.updateChildrenFromServer(updateInfo.parent, <string>updateInfo.data[0].id, updateInfo.doNotSelect);
-
+      this.updateChildrenFromServer(
+        updateInfo.parent,
+        <string>updateInfo.data[0].id,
+        updateInfo.doNotSelect
+      );
     } else {
-      const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(updateInfo.data, 0);
+      const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(
+        updateInfo.data,
+        0
+      );
 
-      newRootTreeNodes.forEach(treeNode => {
+      newRootTreeNodes.forEach((treeNode) => {
         this.dataSource.insertNodeInTree(treeNode, null);
         if (!updateInfo.doNotSelect) {
           this.updateNodePath(treeNode._id);
@@ -347,25 +359,31 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (!updateInfo.doNotSelect) {
       this.selectionModel.clear();
     }
-
   }
 
-  private updateChildrenFromServer(parentNodeId: string, id: string, doNotSelect: boolean) {
+  private updateChildrenFromServer(
+    parentNodeId: string,
+    id: string,
+    doNotSelect: boolean
+  ) {
     if (parentNodeId === null) {
       this.reloadTree(true).subscribe();
       return;
     }
 
-    const parentNodeIndex = this.dataSource.data.findIndex(item => item._id === parentNodeId);
+    const parentNodeIndex = this.dataSource.data.findIndex(
+      (item) => item._id === parentNodeId
+    );
     const parentNode = this.dataSource.data[parentNodeIndex];
     parentNode.hasChildren = true;
 
     // node will be added automatically when expanded
     const isExpanded = this.treeControl.isExpanded(parentNode);
 
-    this.database.getChildren(parentNodeId, true, this.forAddresses)
+    this.database
+      .getChildren(parentNodeId, true, this.forAddresses)
       .subscribe((children) => {
-        console.log('updated children', children);
+        console.log("updated children", children);
         if (isExpanded) {
           this.treeControl.collapse(parentNode);
         }
@@ -390,8 +408,12 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (parentNode) {
       const index = this.dataSource.data.indexOf(parentNode);
       let count = 0;
-      for (let i = index + 1; i < this.dataSource.data.length && this.dataSource.data[i].level > parentNode.level; i++, count++) {
-      }
+      for (
+        let i = index + 1;
+        i < this.dataSource.data.length &&
+        this.dataSource.data[i].level > parentNode.level;
+        i++, count++
+      ) {}
       parentNode.hasChildren = count !== 0;
 
       if (!parentNode.hasChildren) {
@@ -402,7 +424,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private handleExpandNodes(ids: string[]) {
-
     ids = this.skipExpandedNodeIDs(ids);
 
     if (ids && ids.length > 0) {
@@ -410,7 +431,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     } else {
       return Promise.resolve();
     }
-
   }
 
   getStateClass(node: TreeNode) {
@@ -418,7 +438,6 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   jumpToNode(id: string, resetSelection = true): Promise<void> {
-
     if (resetSelection) {
       this.selectionModel.clear();
     }
@@ -428,21 +447,20 @@ export class TreeComponent implements OnInit, OnDestroy {
       return this.database.getPath(id).then((path) => {
         const nextActiveNode = path.pop();
         if (path.length > 0) {
-          return this.handleExpandNodes(path)
-            .then(() => {
-              const node = this.dataSource.getNode(id);
-              if (node) {
-                const nodePath = this.getTitlesFromNodePath(node);
-                this.currentPath.next(nodePath);
-                if (resetSelection) {
-                  this.activate.next([id]);
-                  this.selectionModel.select(node);
-                  this.activeNodeId = nextActiveNode;
-                  this.activeNode = node;
-                }
-                this.scrollToActiveElement();
+          return this.handleExpandNodes(path).then(() => {
+            const node = this.dataSource.getNode(id);
+            if (node) {
+              const nodePath = this.getTitlesFromNodePath(node);
+              this.currentPath.next(nodePath);
+              if (resetSelection) {
+                this.activate.next([id]);
+                this.selectionModel.select(node);
+                this.activeNodeId = nextActiveNode;
+                this.activeNode = node;
               }
-            });
+              this.scrollToActiveElement();
+            }
+          });
         } else {
           if (resetSelection) {
             this.activate.next(id ? [id] : []);
@@ -461,7 +479,7 @@ export class TreeComponent implements OnInit, OnDestroy {
               this.scrollToActiveElement();
             }
           } else {
-            console.error('ID cannot be null!?', id);
+            console.error("ID cannot be null!?", id);
           }
         }
       });
@@ -474,17 +492,23 @@ export class TreeComponent implements OnInit, OnDestroy {
   private scrollToActiveElement() {
     // TODO: wait till dom node is actually there
     if (!this.treeContainerElement) {
-      console.warn('treeContainerElement is not available');
+      console.warn("treeContainerElement is not available");
       return;
     }
 
-    const queryFn = () => this.treeContainerElement.nativeElement.querySelector('.mat-tree-node.active');
+    const queryFn = () =>
+      this.treeContainerElement.nativeElement.querySelector(
+        ".mat-tree-node.active"
+      );
 
     this.waitFor(queryFn, () => {
       const element = queryFn();
       if (element) {
         // we need a timeout here to let node settle in tree so we can scroll to it
-        setTimeout(() => element.scrollIntoView({behavior: 'smooth', block: 'center'}), 100);
+        setTimeout(
+          () => element.scrollIntoView({ behavior: "smooth", block: "center" }),
+          100
+        );
       }
     });
   }
@@ -492,7 +516,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   private waitFor(elementFunction, callback, count = 3) {
     const queryResult = elementFunction();
     if (!queryResult && count !== 0) {
-      console.log('Waiting for tree container element', count);
+      console.log("Waiting for tree container element", count);
       setTimeout(() => this.waitFor(elementFunction, callback, --count), 500);
       return;
     }
@@ -500,14 +524,13 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private skipExpandedNodeIDs(ids: string[]): string[] {
-
     if (!this.dataSource.data) {
       return ids;
     }
 
     let pos = null;
     ids.some((id, index) => {
-      const treeNode = this.dataSource.data.find(item => item._id === id);
+      const treeNode = this.dataSource.data.find((item) => item._id === id);
       const isExpanded = this.treeControl.isExpanded(treeNode);
       if (!isExpanded) {
         pos = index;
@@ -525,21 +548,17 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (this.expandNodeIds) {
       // FIXME: this path might not be used anymore, since tree takes care of expanded nodes
       //        itself, when setting activeNodeId
-      combineLatest([
-        this.reloadTree(),
-        this.expandNodeIds
-      ])
+      combineLatest([this.reloadTree(), this.expandNodeIds])
         .pipe(untilDestroyed(this))
-        .subscribe(result => {
+        .subscribe((result) => {
           setTimeout(() => {
             const ids = result[1];
-            this.handleExpandNodes(ids)
-              .then(() => {
-                const node = this.dataSource.getNode(this.activeNodeId);
-                const nodePath = this.getTitlesFromNodePath(node);
-                this.currentPath.next(nodePath);
-                this.selectionModel.select(node);
-              });
+            this.handleExpandNodes(ids).then(() => {
+              const node = this.dataSource.getNode(this.activeNodeId);
+              const nodePath = this.getTitlesFromNodePath(node);
+              this.currentPath.next(nodePath);
+              this.selectionModel.select(node);
+            });
           });
         });
     } else {
@@ -559,14 +578,16 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   private async moveNodes(srcDocIds: string[], destination: string) {
-
-    const treeNodes = srcDocIds
-      .map(docId => this.dataSource.data.find(item => item._id === docId));
-    treeNodes.forEach(node => this.handleNodeRemoval(node));
+    const treeNodes = srcDocIds.map((docId) =>
+      this.dataSource.data.find((item) => item._id === docId)
+    );
+    treeNodes.forEach((node) => this.handleNodeRemoval(node));
 
     // make sure new parent has correct children info
     if (destination) {
-      const destinationNodeIndex = this.dataSource.data.findIndex(item => item._id === destination);
+      const destinationNodeIndex = this.dataSource.data.findIndex(
+        (item) => item._id === destination
+      );
       if (destinationNodeIndex > -1) {
         this.dataSource.data[destinationNodeIndex].hasChildren = true;
       }
@@ -576,7 +597,9 @@ export class TreeComponent implements OnInit, OnDestroy {
     const id = <string>srcDocIds[0];
     await this.jumpToNode(id, false);
 
-    treeNodes.forEach(treeNode => this.dataSource.insertNodeInTree(treeNode, destination));
+    treeNodes.forEach((treeNode) =>
+      this.dataSource.insertNodeInTree(treeNode, destination)
+    );
 
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
@@ -592,13 +615,12 @@ export class TreeComponent implements OnInit, OnDestroy {
   drop(event: DragEvent, droppedNode: TreeNode) {
     event.preventDefault();
 
-
     const dropInfo = this.dragManager.getDropInfo(droppedNode);
 
     if (dropInfo.allow) {
       this.dropped.next({
-        srcIds: this.selectionModel.selected.map(node => node._id),
-        destination: droppedNode === null ? null : droppedNode._id
+        srcIds: this.selectionModel.selected.map((node) => node._id),
+        destination: droppedNode === null ? null : droppedNode._id,
       });
 
       // move will be initiated by document service when node was moved in backend
@@ -606,22 +628,17 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
 
     this.dragManager.handleDragEnd();
-
   }
 
   handleDragStart($event: DragEvent, node: any) {
-
     // set flag delayed to correctly initiate dragging of a node
-    setTimeout(() => this.isDragging = true);
+    setTimeout(() => (this.isDragging = true));
     this.dragManager.handleDragStart($event, node);
-
   }
 
   handleDragEnd() {
-
     this.isDragging = false;
     this.dragManager.handleDragEnd();
-
   }
 
   /**
@@ -629,7 +646,10 @@ export class TreeComponent implements OnInit, OnDestroy {
    */
 
   /** Toggle a leaf node selection */
-  nodeSelectionToggle(node: TreeNode, $event: MouseEvent | MatCheckboxChange): void {
+  nodeSelectionToggle(
+    node: TreeNode,
+    $event: MouseEvent | MatCheckboxChange
+  ): void {
     // mark all nodes in between the last selected node
     if ($event instanceof MouseEvent && $event.shiftKey) {
       this.toggleNodesInBetween(node);
@@ -653,9 +673,13 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.selectionModel.clear();
 
     if (startIndex < nodeIndex) {
-      this.selectionModel.select(...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1));
+      this.selectionModel.select(
+        ...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1)
+      );
     } else {
-      this.selectionModel.select(...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1));
+      this.selectionModel.select(
+        ...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1)
+      );
     }
   }
 
@@ -677,7 +701,9 @@ export class TreeComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    return this.selectionModel.selected[this.selectionModel.selected.length - 1];
+    return this.selectionModel.selected[
+      this.selectionModel.selected.length - 1
+    ];
   }
 
   isSelected(node: TreeNode): boolean {
@@ -706,12 +732,17 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   allNodesSelected() {
-    return this.treeControl.dataNodes.every(node => this.selectionModel.isSelected(node));
+    return this.treeControl.dataNodes.every((node) =>
+      this.selectionModel.isSelected(node)
+    );
   }
 
   atLeastOneButNotAllNodesSelected() {
-    return this.treeControl.dataNodes.some(node => this.selectionModel.isSelected(node))
-      && !this.allNodesSelected();
+    return (
+      this.treeControl.dataNodes.some((node) =>
+        this.selectionModel.isSelected(node)
+      ) && !this.allNodesSelected()
+    );
   }
 
   toggleAllSelection(checked: boolean) {

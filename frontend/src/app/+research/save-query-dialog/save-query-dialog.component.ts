@@ -1,17 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'ige-save-query-dialog',
-  templateUrl: './save-query-dialog.component.html',
-  styleUrls: ['./save-query-dialog.component.scss']
+  selector: "ige-save-query-dialog",
+  templateUrl: "./save-query-dialog.component.html",
+  styleUrls: ["./save-query-dialog.component.scss"],
 })
 export class SaveQueryDialogComponent implements OnInit {
-
   model: any = {};
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

@@ -14,7 +14,7 @@ export class Catalog {
       id: catalog.id,
       name: catalog.label,
       description: catalog.description,
-      type: catalog.type
+      type: catalog.type,
     };
   }
 

@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'ige-name-spatial',
-  templateUrl: './name-spatial.component.html',
-  styleUrls: ['./name-spatial.component.scss']
+  selector: "ige-name-spatial",
+  templateUrl: "./name-spatial.component.html",
+  styleUrls: ["./name-spatial.component.scss"],
 })
 export class NameSpatialComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

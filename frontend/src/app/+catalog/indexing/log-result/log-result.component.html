@@ -1,26 +1,44 @@
 <div *ngIf="data | async as log" class="log">
     <div class="date-area">
-        <div>Startzeit: {{log.startTime | date:'dd.LL.yyyy HH:mm:ss'}}</div>
-        <div *ngIf="log.endTime">&nbsp;&nbsp;Endzeit: {{log.endTime | date:'dd.LL.yyyy HH:mm:ss'}}</div>
+        <div>Startzeit: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+        <div *ngIf="log.endTime">
+            &nbsp;&nbsp;Endzeit: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+        </div>
     </div>
 
-    <div *ngIf="log.progressDocuments != log.numDocuments; else showNumDocuments">
+    <div
+        *ngIf="log.progressDocuments != log.numDocuments; else showNumDocuments"
+    >
         Indizierung von Dokumenten
-        <mat-progress-bar color="primary" mode="determinate" [value]="(log.progressDocuments / log.numDocuments) * 100"></mat-progress-bar>
-        <div class="progress-hint">{{log.progressDocuments}} / {{log.numDocuments}}</div>
+        <mat-progress-bar
+            color="primary"
+            mode="determinate"
+            [value]="(log.progressDocuments / log.numDocuments) * 100"
+        ></mat-progress-bar>
+        <div class="progress-hint">
+            {{ log.progressDocuments }} / {{ log.numDocuments }}
+        </div>
     </div>
     <ng-template #showNumDocuments>
-        <div>Anzahl Dokumente: {{log.numDocuments}}</div>
+        <div>Anzahl Dokumente: {{ log.numDocuments }}</div>
     </ng-template>
 
-    <div *ngIf="log.progressAddresses != log.numAddresses; else showNumAddresses" style="padding-top: 24px">
+    <div
+        *ngIf="log.progressAddresses != log.numAddresses; else showNumAddresses"
+        style="padding-top: 24px"
+    >
         Indizierung von Adressen
-        <mat-progress-bar mode="determinate" [value]="(log.progressAddresses / log.numAddresses) * 100"></mat-progress-bar>
-        <div class="progress-hint">{{log.progressAddresses}} / {{log.numAddresses}}</div>
+        <mat-progress-bar
+            mode="determinate"
+            [value]="(log.progressAddresses / log.numAddresses) * 100"
+        ></mat-progress-bar>
+        <div class="progress-hint">
+            {{ log.progressAddresses }} / {{ log.numAddresses }}
+        </div>
     </div>
     <ng-template #showNumAddresses>
-        <div>Anzahl Adressen: {{log.numAddresses}}</div>
+        <div>Anzahl Adressen: {{ log.numAddresses }}</div>
     </ng-template>
 
-    <div *ngIf="log.errors?.length > 0">{{log.errors.join('<br>')}}</div>
+    <div *ngIf="log.errors?.length > 0">{{log.errors.join('<br />')}}</div>
 </div>

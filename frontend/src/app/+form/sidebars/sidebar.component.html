@@ -1,12 +1,13 @@
-<ige-tree [showReloadButton]="true"
-          [update]="updateTree"
-          [setActiveNode]="activeTreeNode"
-          [forAddresses]="address"
-          [enableDrag]="true"
-          [showMultiSelectButton]="true"
-          (currentPath)="storePathTitles($event)"
-          (dropped)="dropped.next($event)"
-          (activate)="handleLoad($event)"
-          (multiEditMode)="updateTreeMode($event)"
-          (selected)="handleSelection($event)"></ige-tree>
-
+<ige-tree
+    [showReloadButton]="true"
+    [update]="updateTree"
+    [setActiveNode]="activeTreeNode"
+    [forAddresses]="address"
+    [enableDrag]="true"
+    [showMultiSelectButton]="true"
+    (currentPath)="storePathTitles($event)"
+    (dropped)="dropped.next($event)"
+    (activate)="handleLoad($event)"
+    (multiEditMode)="updateTreeMode($event)"
+    (selected)="handleSelection($event)"
+></ige-tree>

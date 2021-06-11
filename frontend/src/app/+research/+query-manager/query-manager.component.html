@@ -1,17 +1,27 @@
 <ige-card-box label="Ihre Suchanfragen" data-cy="card-saved-queries">
     <mat-selection-list [multiple]="false" class="doc-item dense with-menu">
-        <mat-list-option *ngFor="let query of userQueries | async; trackBy: getIdentifier" (click)="load(query.id)">
-
+        <mat-list-option
+            *ngFor="let query of userQueries | async; trackBy: getIdentifier"
+            (click)="load(query.id)"
+        >
             <mat-icon mat-list-icon>star_outline</mat-icon>
             <div>
-                <div mat-line>{{query.name}}</div>
-                <div *ngIf="query.description" mat-line>{{query.description}}</div>
+                <div mat-line>{{ query.name }}</div>
+                <div *ngIf="query.description" mat-line>
+                    {{ query.description }}
+                </div>
             </div>
             <div fxFlex></div>
 
-            <span [title]="query.modified | date:'long'">{{query.modified | dateAgo:"DE"}}</span>
-            <button mat-icon-button class="menu-button" [matMenuTriggerFor]="spatialRef"
-                    (click)="$event.stopImmediatePropagation()">
+            <span [title]="query.modified | date: 'long'">{{
+                query.modified | dateAgo: "DE"
+            }}</span>
+            <button
+                mat-icon-button
+                class="menu-button"
+                [matMenuTriggerFor]="spatialRef"
+                (click)="$event.stopImmediatePropagation()"
+            >
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #spatialRef="matMenu">

@@ -1,4 +1,4 @@
-import {InjectionToken} from '@angular/core';
+import { InjectionToken } from "@angular/core";
 
-export const PluginToken = new InjectionToken<Plugin>('Plugin');
-export const FormPluginToken = new InjectionToken<Plugin>('Plugin');
+export const PluginToken = new InjectionToken<Plugin>("Plugin");
+export const FormPluginToken = new InjectionToken<Plugin>("Plugin");

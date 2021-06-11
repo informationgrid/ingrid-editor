@@ -3,36 +3,59 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">{{data.title}}</span>
+        <span class="text">{{ data.title }}</span>
     </h2>
 </div>
 <mat-dialog-content>
-    <p>{{data.message}}</p>
+    <p>{{ data.message }}</p>
     <ul *ngIf="data.list">
-        <li *ngFor="let item of data.list">{{item}}</li>
+        <li *ngFor="let item of data.list">{{ item }}</li>
     </ul>
     <div *ngIf="data.confirmText">
         <mat-form-field class="width-100">
-            <input matInput igeFocus
-                   [placeholder]="'Geben Sie das Wort \'' + data.confirmText + '\' ein'"
-                   [(ngModel)]="textConfirmed">
+            <input
+                matInput
+                igeFocus
+                [placeholder]="
+                    'Geben Sie das Wort \'' + data.confirmText + '\' ein'
+                "
+                [(ngModel)]="textConfirmed"
+            />
         </mat-form-field>
     </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button *ngFor="let button of leftAlignedButtons" mat-button color="primary"
-            [class.mat-stroked-button]="button.emphasize"
-            [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
-            [mat-dialog-close]="button.id || false" [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')">
-        {{button.text}}
+    <button
+        *ngFor="let button of leftAlignedButtons"
+        mat-button
+        color="primary"
+        [class.mat-stroked-button]="button.emphasize"
+        [disabled]="
+            button.disabledWhenNotConfirmed &&
+            data.confirmText &&
+            textConfirmed !== data.confirmText
+        "
+        [mat-dialog-close]="button.id || false"
+        [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+    >
+        {{ button.text }}
     </button>
     <div fxFlex></div>
-    <button *ngFor="let button of rightAlignedButtons" mat-button color="primary"
-            [class.mat-stroked-button]="button.emphasize"
-            [disabled]="button.disabledWhenNotConfirmed && data.confirmText && textConfirmed !== data.confirmText"
-            igeFocus
-            [mat-dialog-close]="button.id || false" [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')">
-        {{button.text}}
+    <button
+        *ngFor="let button of rightAlignedButtons"
+        mat-button
+        color="primary"
+        [class.mat-stroked-button]="button.emphasize"
+        [disabled]="
+            button.disabledWhenNotConfirmed &&
+            data.confirmText &&
+            textConfirmed !== data.confirmText
+        "
+        igeFocus
+        [mat-dialog-close]="button.id || false"
+        [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+    >
+        {{ button.text }}
     </button>
 </mat-dialog-actions>

@@ -1,5 +1,5 @@
-import {FormGroup} from '@angular/forms';
-import {EventManager} from '@angular/platform-browser';
+import { FormGroup } from "@angular/forms";
+import { EventManager } from "@angular/platform-browser";
 
 export interface Behaviour {
   id: string;

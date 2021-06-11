@@ -1,14 +1,14 @@
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {AddressComponent} from './address/address.component';
-import {routing} from './address.routing';
-import {AngularSplitModule} from 'angular-split';
-import {ReactiveFormsModule} from '@angular/forms';
-import {FormlyModule} from '@ngx-formly/core';
-import {FlexModule} from '@angular/flex-layout';
-import {AddressDashboardComponent} from './address-dashboard/address-dashboard.component';
-import {SharedModule} from '../shared/shared.module';
-import {FormSharedModule} from '../+form/form-shared/form-shared.module';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { AddressComponent } from "./address/address.component";
+import { routing } from "./address.routing";
+import { AngularSplitModule } from "angular-split";
+import { ReactiveFormsModule } from "@angular/forms";
+import { FormlyModule } from "@ngx-formly/core";
+import { FlexModule } from "@angular/flex-layout";
+import { AddressDashboardComponent } from "./address-dashboard/address-dashboard.component";
+import { SharedModule } from "../shared/shared.module";
+import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 
 @NgModule({
   declarations: [AddressComponent, AddressDashboardComponent],
@@ -20,9 +20,8 @@ import {FormSharedModule} from '../+form/form-shared/form-shared.module';
     FormlyModule,
     FlexModule,
     SharedModule,
-    FormSharedModule
+    FormSharedModule,
   ],
-  providers: []
+  providers: [],
 })
-export class AddressModule {
-}
+export class AddressModule {}

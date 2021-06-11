@@ -1,44 +1,57 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Subscription} from 'rxjs/Subscription';
-import {UploadService} from './upload.service';
-import {ModalService} from '../../services/modal/modal.service';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
+import { Subscription } from "rxjs/Subscription";
+import { UploadService } from "./upload.service";
+import { ModalService } from "../../services/modal/modal.service";
 
 @Component({
-  selector: 'ige-file-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss'],
+  selector: "ige-file-upload",
+  templateUrl: "./upload.component.html",
+  styleUrls: ["./upload.component.scss"],
   animations: [
-    trigger('fadeInOut', [
-      state('in', style({opacity: 100})),
-      transition('* => void', [
-        animate(300, style({opacity: 0}))
-      ])
-    ])
-  ]
+    trigger("fadeInOut", [
+      state("in", style({ opacity: 100 })),
+      transition("* => void", [animate(300, style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class UploadComponent implements OnInit {
   /** Link text */
-  @Input() text = 'Hochladen';
+  @Input() text = "Hochladen";
   /** Name used in form which will be sent in HTTP request. */
-  @Input() param = 'file';
+  @Input() param = "file";
   /** Target URL for file uploading. */
-  @Input() target = '/api/import';
+  @Input() target = "/api/import";
   /** File extension that accepted, same as 'accept' of <input type="file" />.
    By the default, it's set to 'image/*'. */
-  @Input() accept = '*.*';
+  @Input() accept = "*.*";
   /** Allow you to add handler after its completion. Bubble up response text from remote. */
   @Output() complete = new EventEmitter<string>();
 
   files: Array<FileUploadModel> = [];
 
-  @ViewChild('fileUploadInput') htmlFileUpload: ElementRef;
+  @ViewChild("fileUploadInput") htmlFileUpload: ElementRef;
 
-  constructor(private uploadService: UploadService, private modalService: ModalService) {
-  }
+  constructor(
+    private uploadService: UploadService,
+    private modalService: ModalService
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     const fileUpload = this.htmlFileUpload.nativeElement;
@@ -46,8 +59,12 @@ export class UploadComponent implements OnInit {
       for (let index = 0; index < fileUpload.files.length; index++) {
         const file = fileUpload.files[index];
         this.files.push({
-          data: file, state: 'in',
-          inProgress: false, progress: 0, canRetry: false, canCancel: true
+          data: file,
+          state: "in",
+          inProgress: false,
+          progress: 0,
+          canRetry: false,
+          canCancel: true,
         });
       }
       this.uploadFiles();
@@ -67,26 +84,25 @@ export class UploadComponent implements OnInit {
 
   private uploadFiles() {
     const fileUpload = this.htmlFileUpload.nativeElement;
-    fileUpload.value = '';
+    fileUpload.value = "";
 
-    this.files.forEach(file => {
+    this.files.forEach((file) => {
       this.uploadFile(file);
     });
   }
 
   private uploadFile(file: FileUploadModel) {
-
-    file.sub = this.uploadService.uploadFile(file, this.param, this.target)
+    file.sub = this.uploadService
+      .uploadFile(file, this.param, this.target)
       .subscribe((event: any) => {
-          if (typeof (event) === 'object') {
-            this.removeFileFromArray(file);
-            this.complete.emit(event.body);
-          } else { // on error
-            this.modalService.showJavascriptError(event);
-          }
-        },
-      );
-
+        if (typeof event === "object") {
+          this.removeFileFromArray(file);
+          this.complete.emit(event.body);
+        } else {
+          // on error
+          this.modalService.showJavascriptError(event);
+        }
+      });
   }
 
   removeFileFromArray(file: FileUploadModel) {
@@ -95,7 +111,6 @@ export class UploadComponent implements OnInit {
       this.files.splice(index, 1);
     }
   }
-
 }
 
 export class FileUploadModel {

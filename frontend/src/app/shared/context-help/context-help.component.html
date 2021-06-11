@@ -1,13 +1,19 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextHelpContainer>
     <h2 mat-dialog-title cdkDragHandle>
         <div class="infoIcon">
-            <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+            ></mat-icon>
         </div>
-        <span class="text">{{title}}</span>
+        <span class="text">{{ title }}</span>
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
     </h2>
-    <div mat-dialog-content [innerHTML]="description$ | async" [class.initialWidth]="notResized">
-    </div>
+    <div
+        mat-dialog-content
+        [innerHTML]="description$ | async"
+        [class.initialWidth]="notResized"
+    ></div>
 </div>

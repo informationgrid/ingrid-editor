@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
-import { DestinationSelectionComponent } from './destination-selection.component';
+import { DestinationSelectionComponent } from "./destination-selection.component";
 
-describe('DestinationSelectionComponent', () => {
+describe("DestinationSelectionComponent", () => {
   let component: DestinationSelectionComponent;
   let fixture: ComponentFixture<DestinationSelectionComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DestinationSelectionComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [DestinationSelectionComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DestinationSelectionComponent);
@@ -19,7 +20,7 @@ describe('DestinationSelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

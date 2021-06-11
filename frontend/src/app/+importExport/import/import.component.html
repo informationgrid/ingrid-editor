@@ -1,20 +1,27 @@
-<mat-horizontal-stepper [linear]="true" labelPosition="bottom" [selectedIndex]="activeStepIndex">
+<mat-horizontal-stepper
+    [linear]="true"
+    labelPosition="bottom"
+    [selectedIndex]="activeStepIndex"
+>
     <mat-step [completed]="datasetSelected">
         <ng-template matStepLabel>Datei hochladen</ng-template>
 
         <div class="text-center">
             <p>Bitte wählen Sie die zu importierende Datei aus</p>
-            <ige-file-upload (complete)="onFileComplete($event)"></ige-file-upload>
+            <ige-file-upload
+                (complete)="onFileComplete($event)"
+            ></ige-file-upload>
 
-            <span *ngIf="importFileErrorMessage">{{importFileErrorMessage}}</span>
+            <span *ngIf="importFileErrorMessage">{{
+                importFileErrorMessage
+            }}</span>
         </div>
-
     </mat-step>
-    <mat-step [stepControl]="secondFormGroup" >
+    <mat-step [stepControl]="secondFormGroup">
         <form [formGroup]="secondFormGroup">
             <ng-template matStepLabel>Analyse</ng-template>
 
-            <pre>{{analyzedData | json}}</pre>
+            <pre>{{ analyzedData | json }}</pre>
 
             <div class="wizard-footer">
                 <button mat-button matStepperPrevious>Zurück</button>

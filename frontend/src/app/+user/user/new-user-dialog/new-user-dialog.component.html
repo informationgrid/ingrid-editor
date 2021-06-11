@@ -11,7 +11,7 @@
         <mat-label>Rolle wählen</mat-label>
         <mat-select formControlName="role">
             <mat-option *ngFor="let role of roles" [value]="role.value">
-                {{role.label}}
+                {{ role.label }}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -19,17 +19,23 @@
         <mat-label>Benutzer auswählen</mat-label>
         <mat-select formControlName="user">
             <mat-option *ngFor="let user of users | async" [value]="user">
-                {{user.firstName}} {{user.lastName}} ({{user.login}})
+                {{ user.firstName }} {{ user.lastName }} ({{ user.login }})
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <div *ngIf="noAvailableUsers">Es gibt keine verfügbaren Nutzer in Keycloak</div>
+    <div *ngIf="noAvailableUsers">
+        Es gibt keine verfügbaren Nutzer in Keycloak
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>
     <div fxFlex></div>
-    <button mat-button color="primary"
-            [disabled]="form.invalid"
-            [mat-dialog-close]="form.value">Ok
+    <button
+        mat-button
+        color="primary"
+        [disabled]="form.invalid"
+        [mat-dialog-close]="form.value"
+    >
+        Ok
     </button>
 </mat-dialog-actions>

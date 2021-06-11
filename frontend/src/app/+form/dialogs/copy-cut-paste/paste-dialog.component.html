@@ -3,21 +3,25 @@
         <button mat-icon-button mat-dialog-close data-cy="dlg-close">
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">{{data.titleText}}</span>
+        <span class="text">{{ data.titleText }}</span>
     </h2>
 </div>
 
 <mat-dialog-content class="hide-tab-header create-dlg-content">
-    <ige-destination-selection [forAddress]="data.forAddress"
-                               (choice)="handleSelected($event)"></ige-destination-selection>
-
+    <ige-destination-selection
+        [forAddress]="data.forAddress"
+        (choice)="handleSelected($event)"
+    ></ige-destination-selection>
 </mat-dialog-content>
 
 <mat-dialog-actions>
     <div fxFlex></div>
-    <button mat-stroked-button color="primary"
-            data-cy="create-applyLocation"
-            [mat-dialog-close]="{selection: selection, path: path}">
-        {{data.buttonText}}
+    <button
+        mat-stroked-button
+        color="primary"
+        data-cy="create-applyLocation"
+        [mat-dialog-close]="{ selection: selection, path: path }"
+    >
+        {{ data.buttonText }}
     </button>
 </mat-dialog-actions>

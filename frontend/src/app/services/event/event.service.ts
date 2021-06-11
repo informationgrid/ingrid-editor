@@ -1,13 +1,14 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable, of, Subject } from "rxjs";
+import { filter, map, switchMap, take, tap } from "rxjs/operators";
 
 export enum IgeEvent {
-  DELETE = 'DELETE'
+  DELETE = "DELETE",
 }
 
 export enum IgeEventResultType {
-  SUCCESS, FAIL
+  SUCCESS,
+  FAIL,
 }
 
 export interface EventData {
@@ -26,10 +27,9 @@ export type EventResponseHandler = (data: EventData) => void;
  * https://stackoverflow.com/questions/44572193/rxjs-request-data-from-all-subscribers-and-complete-after-theyve-all-returned
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class EventService {
-
   // records how many components have updated the info for an event type
   private observersCount$: { [x: string]: BehaviorSubject<any> } = {};
 
@@ -65,10 +65,9 @@ export class EventService {
    * @param type defines the Event Type
    */
   sendEventAndContinueOnSuccess(type: IgeEvent): Observable<EventData[]> {
-    return this.sendEvent(type)
-      .pipe(
-        filter(responses => this.allResponsesSuccessful(type, responses))
-      );
+    return this.sendEvent(type).pipe(
+      filter((responses) => this.allResponsesSuccessful(type, responses))
+    );
   }
 
   /**
@@ -78,14 +77,20 @@ export class EventService {
    * @param type defines the Event Type
    */
   respondToEvent(type: IgeEvent): Observable<EventResponseHandler> {
-    return this.event$[type].asObservable()
+    return this.event$[type]
+      .asObservable()
       .pipe(map(() => (data) => this.updateEventData(type, data)));
   }
 
   private allResponsesSuccessful(type: IgeEvent, responses: EventData[]) {
-    const isSuccessful = responses.every(item => item.result === IgeEventResultType.SUCCESS);
+    const isSuccessful = responses.every(
+      (item) => item.result === IgeEventResultType.SUCCESS
+    );
     if (!isSuccessful) {
-      console.log('One subscriber prevented to run original method for: ' + type, responses);
+      console.log(
+        "One subscriber prevented to run original method for: " + type,
+        responses
+      );
     }
     return isSuccessful;
   }
@@ -96,17 +101,19 @@ export class EventService {
   }
 
   private receiveEventResult(type: IgeEvent): Observable<EventData[]> {
-    return this.observersCount$[type]
-      .pipe(
-        filter(count => this.allSubscribersHaveFinished(type, count)),
-        take(1),
-        switchMap(() => of(this.result[type])),
-        tap(() => this.resetEvent(type))
-      );
+    return this.observersCount$[type].pipe(
+      filter((count) => this.allSubscribersHaveFinished(type, count)),
+      take(1),
+      switchMap(() => of(this.result[type])),
+      tap(() => this.resetEvent(type))
+    );
   }
 
   private allSubscribersHaveFinished(type: IgeEvent, count): boolean {
-    return (this.event$[type].observers.length === 0) || (count === this.event$[type].observers.length && count !== 0);
+    return (
+      this.event$[type].observers.length === 0 ||
+      (count === this.event$[type].observers.length && count !== 0)
+    );
   }
 
   private resetEvent(type: IgeEvent) {

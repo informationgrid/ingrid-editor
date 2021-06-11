@@ -35,7 +35,6 @@
   margin-left: -24px;
   margin-right: -24px;
   padding: 0 10px !important;
-
 }
 
 // all buttons shall be uppercase
@@ -70,7 +69,8 @@ button .mat-button-wrapper {
   flex: 1;
   margin: -10px 0 0 -10px;
 
-  ng-component, ige-new-document {
+  ng-component,
+  ige-new-document {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -105,7 +105,8 @@ button .mat-button-wrapper {
     padding-top: 24px;
     padding-bottom: 24px;
 
-    .place-title, .place-title-other {
+    .place-title,
+    .place-title-other {
       color: $ige-primary;
       font-size: 24px;
       line-height: 30px;
@@ -128,7 +129,6 @@ ige-root .mat-card {
 
 /* TOOLTIPS */
 .mat-tooltip-panel {
-
   .mat-tooltip {
     background-color: #333333;
     font-size: 12px;
@@ -137,9 +137,12 @@ ige-root .mat-card {
 }
 
 /* Checkboxes, radio btns */
-.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-checkbox-background,
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent
+  .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
+  .mat-checkbox-background,
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
+  .mat-ripple-element,
 .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-slide-toggle:not(.mat-disabled).mat-accent .mat-ripple-element,
 .mat-pseudo-checkbox-checked {
@@ -147,7 +150,9 @@ ige-root .mat-card {
 }
 
 .mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
-.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+.mat-radio-button.mat-accent
+  .mat-radio-ripple
+  .mat-ripple-element:not(.mat-radio-persistent-ripple),
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
 .mat-slide-toggle.mat-accent .mat-ripple-element,
 .mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-thumb,
@@ -156,10 +161,11 @@ ige-root .mat-card {
 }
 
 .mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
-  background-color: #{$ige-check-color + '8a'} !important;
+  background-color: #{$ige-check-color + "8a"} !important;
 }
 
-.mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled) .mat-radio-outer-circle {
+.mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled)
+  .mat-radio-outer-circle {
   border-color: $ige-check-color !important;
 }
 
@@ -168,29 +174,31 @@ ige-root .mat-card {
 }
 
 /* Placeholder */
-::-moz-placeholder { /* Firefox 19+ */
+::-moz-placeholder {
+  /* Firefox 19+ */
   opacity: 1;
 }
 
-:-moz-placeholder { /* Firefox 4 - 18 */
+:-moz-placeholder {
+  /* Firefox 4 - 18 */
   opacity: 1;
 }
 
 /* Table */
 .mat-table {
-  th.mat-header-cell:last-of-type, td.mat-cell:last-of-type {
+  th.mat-header-cell:last-of-type,
+  td.mat-cell:last-of-type {
     padding-right: 12px;
     text-align: end;
   }
 
   .disabled .mat-cell {
-
-    &, a {
+    &,
+    a {
       color: $ige-comment-color;
     }
   }
 }
-
 
 /* Progress Bar */
 .wrapper .mat-progress-bar-buffer {

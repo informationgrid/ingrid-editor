@@ -10,23 +10,34 @@
     <form #catForm="ngForm" fxFlex fxLayout="column">
         <mat-form-field appearance="outline">
             <mat-label>Katalogname</mat-label>
-            <input matInput autocomplete="off" igeFocus
-                   [(ngModel)]="model.name" name="name" required>
+            <input
+                matInput
+                autocomplete="off"
+                igeFocus
+                [(ngModel)]="model.name"
+                name="name"
+                required
+            />
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Typ</mat-label>
             <mat-select [(ngModel)]="model.type" name="type" required>
                 <mat-option *ngFor="let type of types" [value]="type.id">
-                    {{type.title}}
+                    {{ type.title }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-button type="submit" color="primary" mat-stroked-button
-            [mat-dialog-close]="model"
-            [disabled]="catForm.form.invalid">
+    <button
+        mat-button
+        type="submit"
+        color="primary"
+        mat-stroked-button
+        [mat-dialog-close]="model"
+        [disabled]="catForm.form.invalid"
+    >
         Anlegen
     </button>
 </mat-dialog-actions>

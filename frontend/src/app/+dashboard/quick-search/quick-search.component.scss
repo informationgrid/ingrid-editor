@@ -64,7 +64,8 @@
   }
 
   ::ng-deep mat-form-field {
-    .mat-form-field-subscript-wrapper, .mat-form-field-underline {
+    .mat-form-field-subscript-wrapper,
+    .mat-form-field-underline {
       position: absolute;
     }
   }
@@ -79,7 +80,8 @@
     padding: 0 !important;
   }
 
-  &.option-no-padding mat-option, &.option-no-padding .doc-item {
+  &.option-no-padding mat-option,
+  &.option-no-padding .doc-item {
     height: 40px !important;
 
     &.multiline {

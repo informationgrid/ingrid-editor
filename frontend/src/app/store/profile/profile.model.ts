@@ -1,4 +1,3 @@
-
 export interface ProfileAbstract {
   id: string;
   label: string;
@@ -13,6 +12,6 @@ export interface ProfileAbstract {
  */
 export function createProfile(params: Partial<ProfileAbstract>) {
   return {
-    isInitialized: false
+    isInitialized: false,
   } as ProfileAbstract;
 }

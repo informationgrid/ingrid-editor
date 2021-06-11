@@ -1,45 +1,97 @@
-<div *ngIf="field.fieldGroup.length > 0" class="component-list"
-          cdkDropList
-          cdkDropListOrientation="vertical"
-          (cdkDropListDropped)="drop($event)">
-    <div *ngFor="let field of field.fieldGroup; let i = index;" cdkDrag class="clickable list-item">
-<!--        {{model[i] | selectOption:to.options | async}}-->
-        <span *ngIf="to.codelistId">{{model[i] | codelist:to.codelistId | async}}</span>
-        <span *ngIf="!to.codelistId">{{model[i] | selectOption:to.options | async}}</span>
-        <button type="button" mat-icon-button class="close gray" (click)="removeItem(i)">
+<div
+    *ngIf="field.fieldGroup.length > 0"
+    class="component-list"
+    cdkDropList
+    cdkDropListOrientation="vertical"
+    (cdkDropListDropped)="drop($event)"
+>
+    <div
+        *ngFor="let field of field.fieldGroup; let i = index"
+        cdkDrag
+        class="clickable list-item"
+    >
+        <!--        {{model[i] | selectOption:to.options | async}}-->
+        <span *ngIf="to.codelistId">{{
+            model[i] | codelist: to.codelistId | async
+        }}</span>
+        <span *ngIf="!to.codelistId">{{
+            model[i] | selectOption: to.options | async
+        }}</span>
+        <button
+            type="button"
+            mat-icon-button
+            class="close gray"
+            (click)="removeItem(i)"
+        >
             <mat-icon svgIcon="Entfernen"></mat-icon>
         </button>
-
     </div>
 </div>
 
-<mat-form-field *ngIf="to.asSelect; else templateAutocomplete" appearance="outline" class="width-100">
-    <mat-select [placeholder]="to.placeholder" (valueChange)="addToList($event)" [formControl]="inputControl">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value" [disabled]="option.disabled">
-            {{option.label}}
+<mat-form-field
+    *ngIf="to.asSelect; else templateAutocomplete"
+    appearance="outline"
+    class="width-100"
+>
+    <mat-select
+        [placeholder]="to.placeholder"
+        (valueChange)="addToList($event)"
+        [formControl]="inputControl"
+    >
+        <mat-option
+            *ngFor="let option of filteredOptions | async"
+            [value]="option.value"
+            [disabled]="option.disabled"
+        >
+            {{ option.label }}
         </mat-option>
     </mat-select>
 </mat-form-field>
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
-        <mat-icon *ngIf="parameterOptions && repeatListInput.value.length === 0" class="gray" matPrefix>search</mat-icon>
-        <input type="text" #repeatListInput
-               [placeholder]="to.placeholder"
-               matInput
-               [formControl]="inputControl"
-               [required]="to.required && formControl.invalid"
-               (keydown.enter)="addToList(repeatListInput.value)"
-               [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addToList($event.option.value)">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.value" [disabled]="option.disabled">
-                {{option.label}}
+        <mat-icon
+            *ngIf="parameterOptions && repeatListInput.value.length === 0"
+            class="gray"
+            matPrefix
+            >search</mat-icon
+        >
+        <input
+            type="text"
+            #repeatListInput
+            [placeholder]="to.placeholder"
+            matInput
+            [formControl]="inputControl"
+            [required]="to.required && formControl.invalid"
+            (keydown.enter)="addToList(repeatListInput.value)"
+            [matAutocomplete]="auto"
+        />
+        <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="addToList($event.option.value)"
+        >
+            <mat-option
+                *ngFor="let option of filteredOptions | async"
+                [value]="option.value"
+                [disabled]="option.disabled"
+            >
+                {{ option.label }}
             </mat-option>
         </mat-autocomplete>
-        <button *ngIf="repeatListInput.value.length > 0" mat-icon-button matSuffix class="field-close" (click)="repeatListInput.value = ''">
+        <button
+            *ngIf="repeatListInput.value.length > 0"
+            mat-icon-button
+            matSuffix
+            class="field-close"
+            (click)="repeatListInput.value = ''"
+        >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
-        <mat-hint *ngIf="!parameterOptions">Eingabe mit RETURN bestätigen</mat-hint>
+        <mat-hint *ngIf="!parameterOptions"
+            >Eingabe mit RETURN bestätigen</mat-hint
+        >
     </mat-form-field>
-    <mat-error *ngIf="formControl.errors?.required">Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    <mat-error *ngIf="formControl.errors?.required"
+        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
+    >
 </ng-template>

@@ -1,13 +1,16 @@
 <div class="timeout-wrapper" [class.warn]="timeout < 300">
-
     <span class="label">Logout in&nbsp;</span>
-    <span  *ngIf="timeout>=300" class="time">{{timeout | time:"short"}}&nbsp;Minuten</span>
-    <span  *ngIf="timeout<300" class="time">{{timeout | time}}</span>
+    <span *ngIf="timeout >= 300" class="time"
+        >{{ timeout | time: "short" }}&nbsp;Minuten</span
+    >
+    <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
     <div class="separator"></div>
 
-    <button mat-icon-button
-            matTooltip="Aktualisieren"
-            (click)="refreshSession()">
+    <button
+        mat-icon-button
+        matTooltip="Aktualisieren"
+        (click)="refreshSession()"
+    >
         <mat-icon>refresh</mat-icon>
     </button>
 </div>

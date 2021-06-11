@@ -1,32 +1,44 @@
 <div fxLayout="column" class="free-spatial-wrapper">
-
     <div class="place-title small-bottom">Raumbezug herstellen</div>
 
     <div class="dlg-field-label">Ort</div>
     <mat-form-field appearance="outline">
         <mat-icon matPrefix class="passive">search</mat-icon>
-        <input matInput igeFocus data-cy="spatial-dialog-free" placeholder="Suchen" [formControl]="searchInput">
+        <input
+            matInput
+            igeFocus
+            data-cy="spatial-dialog-free"
+            placeholder="Suchen"
+            [formControl]="searchInput"
+        />
         <mat-hint *ngIf="showWelcome">
-            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
+            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
+            zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
+            werden die zugehörigen Breiten-/Längenkoordinaten automatisch
+            angezeigt.
         </mat-hint>
     </mat-form-field>
 
-    <div *ngIf="showNoResult">
-        Keine Ergebnisse. Ändern Sie Ihre Suche.
-    </div>
+    <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
 
     <div class="result-wrapper">
         <div class="list-wrapper">
             <mat-list dense style="overflow: auto" ngDefaultControl>
                 <ng-container *ngFor="let entry of nominatimResult">
-                    <mat-list-item (click)="handleSelection(entry)" class="clickable">
-                        <mat-radio-button matListIcon [value]="entry" [checked]="spatialSelection === entry"></mat-radio-button>
-                        <p matLine>{{entry.display_name}}</p>
+                    <mat-list-item
+                        (click)="handleSelection(entry)"
+                        class="clickable"
+                    >
+                        <mat-radio-button
+                            matListIcon
+                            [value]="entry"
+                            [checked]="spatialSelection === entry"
+                        ></mat-radio-button>
+                        <p matLine>{{ entry.display_name }}</p>
                     </mat-list-item>
                     <mat-divider></mat-divider>
                 </ng-container>
             </mat-list>
         </div>
     </div>
-
 </div>

@@ -1,21 +1,20 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatRadioChange } from '@angular/material/radio';
+import { Component, forwardRef, Input, OnInit } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { MatRadioChange } from "@angular/material/radio";
 
 export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioboxComponent),
-  multi: true
+  multi: true,
 };
 
 @Component({
-  selector: 'ige-radiobox',
-  templateUrl: './radiobox.component.html',
-  styleUrls: ['./radiobox.component.css'],
-  providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR]
+  selector: "ige-radiobox",
+  templateUrl: "./radiobox.component.html",
+  styleUrls: ["./radiobox.component.css"],
+  providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR],
 })
 export class RadioboxComponent implements ControlValueAccessor, OnInit {
-
   @Input() options: any[];
   @Input() radioName: string;
 
@@ -27,11 +26,9 @@ export class RadioboxComponent implements ControlValueAccessor, OnInit {
 
   private _onChangeCallback: (x: any) => void;
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   get value() {
     return this._value;
@@ -42,11 +39,11 @@ export class RadioboxComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(val: any): void {
-    this.value = val === '' ? undefined : val;
+    this.value = val === "" ? undefined : val;
   }
 
   handleChange(event: MatRadioChange) {
-    this._onChangeCallback( event.value );
+    this._onChangeCallback(event.value);
   }
 
   registerOnChange(fn: any): void {
@@ -56,5 +53,4 @@ export class RadioboxComponent implements ControlValueAccessor, OnInit {
   registerOnTouched(fn: any): void {
     this._onTouchedCallback = fn;
   }
-
 }

@@ -1,22 +1,20 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Layer, Map} from 'leaflet';
-import {LeafletService} from '../../leaflet.service';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Layer, Map } from "leaflet";
+import { LeafletService } from "../../leaflet.service";
 
 @Component({
-  selector: 'ige-wkt-spatial',
-  templateUrl: './wkt-spatial.component.html',
-  styleUrls: ['./wkt-spatial.component.scss']
+  selector: "ige-wkt-spatial",
+  templateUrl: "./wkt-spatial.component.html",
+  styleUrls: ["./wkt-spatial.component.scss"],
 })
 export class WktSpatialComponent implements OnInit {
-
   @Input() map: Map;
-  @Input() wktString = '';
+  @Input() wktString = "";
   @Output() result = new EventEmitter<string>();
 
   private drawnWkt: Layer;
 
-  constructor(private leafletService: LeafletService) {
-  }
+  constructor(private leafletService: LeafletService) {}
 
   ngOnInit(): void {
     this.leafletService.zoomToInitialBox(this.map);
@@ -27,11 +25,9 @@ export class WktSpatialComponent implements OnInit {
   }
 
   validateWKT(value: string) {
-
     this.clearLayer();
     this.drawWkt(value);
     this.result.next(value);
-
   }
 
   private clearLayer() {

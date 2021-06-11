@@ -1,22 +1,25 @@
-import {enableProdMode} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import { enableProdMode } from "@angular/core";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
-import {AppModule} from './app/app.module';
-import {environment} from './environments/environment';
-import {enableAkitaProdMode, persistState} from '@datorama/akita';
+import { AppModule } from "./app/app.module";
+import { environment } from "./environments/environment";
+import { enableAkitaProdMode, persistState } from "@datorama/akita";
 
 // add scrollto polyfill for ie11
-import smoothscroll from 'smoothscroll-polyfill';
+import smoothscroll from "smoothscroll-polyfill";
 smoothscroll.polyfill();
 
 if (environment.production) {
   enableProdMode();
-  enableAkitaProdMode()
+  enableAkitaProdMode();
 }
 
 persistState({
-  include: ['session'],
-  preStorageUpdate: (storeName: string, state: any) => ({ui: state.ui, recentAddresses: state.recentAddresses})
+  include: ["session"],
+  preStorageUpdate: (storeName: string, state: any) => ({
+    ui: state.ui,
+    recentAddresses: state.recentAddresses,
+  }),
 });
 
 platformBrowserDynamic().bootstrapModule(AppModule);

@@ -1,17 +1,17 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import {GroupHeaderMoreComponent} from "./group-header-more.component";
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { GroupHeaderMoreComponent } from "./group-header-more.component";
 
-
-describe('HeaderMoreComponent', () => {
+describe("HeaderMoreComponent", () => {
   let component: GroupHeaderMoreComponent;
   let fixture: ComponentFixture<GroupHeaderMoreComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ GroupHeaderMoreComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [GroupHeaderMoreComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GroupHeaderMoreComponent);
@@ -19,7 +19,7 @@ describe('HeaderMoreComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

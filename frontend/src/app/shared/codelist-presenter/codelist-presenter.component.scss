@@ -1,7 +1,6 @@
 @import "src/variables";
 
 .entry-list {
-
   .mat-expansion-panel-header-description {
     justify-content: flex-end;
     align-items: center;
@@ -23,7 +22,8 @@
     height: 60px;
     padding-right: 0;
   }
-  .mat-expansion-panel:first-of-type, .mat-expansion-panel:last-of-type {
+  .mat-expansion-panel:first-of-type,
+  .mat-expansion-panel:last-of-type {
     border-radius: 0 !important;
   }
 
@@ -59,7 +59,7 @@
   transition: all 0.2s linear;
 
   &.expanded {
-    transform: scale(1,-1);
+    transform: scale(1, -1);
   }
 }
 

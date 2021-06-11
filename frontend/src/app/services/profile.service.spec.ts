@@ -1,12 +1,16 @@
-import {ProfileService} from './profile.service';
-import {createServiceFactory, mockProvider, SpectatorService} from '@ngneat/spectator';
-import {ConfigService, UserInfo} from './config/config.service';
-import {BehaviorSubject} from 'rxjs';
-import {ContextHelpService} from './context-help/context-help.service';
-import {ModalService} from './modal/modal.service';
-import {Catalog} from '../+catalog/services/catalog.model';
+import { ProfileService } from "./profile.service";
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from "@ngneat/spectator";
+import { ConfigService, UserInfo } from "./config/config.service";
+import { BehaviorSubject } from "rxjs";
+import { ContextHelpService } from "./context-help/context-help.service";
+import { ModalService } from "./modal/modal.service";
+import { Catalog } from "../+catalog/services/catalog.model";
 
-describe('ProfileService', () => {
+describe("ProfileService", () => {
   let spectator: SpectatorService<ProfileService>;
   const createService = createServiceFactory({
     service: ProfileService,
@@ -15,28 +19,26 @@ describe('ProfileService', () => {
         $userInfo: new BehaviorSubject<UserInfo>({
           assignedCatalogs: [],
           currentCatalog: new Catalog({}),
-          name: 'x',
-          firstName: 'x',
-          lastName: 'x',
-          role: '',
+          name: "x",
+          firstName: "x",
+          lastName: "x",
+          role: "",
           groups: [],
-          userId: 'y',
+          userId: "y",
           version: null,
           lastLogin: new Date(),
-          permissions: []
-        })
-      })
+          permissions: [],
+        }),
+      }),
     ],
-    mocks: [ContextHelpService, ModalService]
+    mocks: [ContextHelpService, ModalService],
   });
 
   beforeEach(() => {
     spectator = createService();
   });
 
-  it('should get catalogs', () => {
-
+  it("should get catalogs", () => {
     expect(spectator.service.getProfiles().length).toBe(0);
-
   });
 });

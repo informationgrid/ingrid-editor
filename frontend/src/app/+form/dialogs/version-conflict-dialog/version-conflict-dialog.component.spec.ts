@@ -1,12 +1,14 @@
-import { Spectator, createComponentFactory } from '@ngneat/spectator';
+import { Spectator, createComponentFactory } from "@ngneat/spectator";
 
-import { VersionConflictDialogComponent } from './version-conflict-dialog.component';
+import { VersionConflictDialogComponent } from "./version-conflict-dialog.component";
 
-describe('VersionConflictDialogComponent', () => {
+describe("VersionConflictDialogComponent", () => {
   let spectator: Spectator<VersionConflictDialogComponent>;
-  const createComponent = createComponentFactory(VersionConflictDialogComponent);
+  const createComponent = createComponentFactory(
+    VersionConflictDialogComponent
+  );
 
-  it('should create', () => {
+  it("should create", () => {
     spectator = createComponent();
 
     expect(spectator.component).toBeTruthy();

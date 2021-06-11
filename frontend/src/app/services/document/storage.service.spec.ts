@@ -1,25 +1,13 @@
-import { DocumentService} from './document.service';
+import { DocumentService } from "./document.service";
 
-describe( 'Save', () => {
+describe("Save", () => {
+  xit("should save a document when there is no validation", () => {});
 
-  xit( 'should save a document when there is no validation', () => {
-
-  });
-
-  xit( 'should show a validation error when a field registered to onSave-validation', () => {
-
-  });
-
+  xit("should show a validation error when a field registered to onSave-validation", () => {});
 });
 
-describe( 'Publish', () => {
+describe("Publish", () => {
+  xit("should show a dialog if document really should be published", () => {});
 
-  xit( 'should show a dialog if document really should be published', () => {
-
-  });
-
-  xit( 'should show a validation error when a field registered to onPublish-validation', () => {
-
-  });
-
+  xit("should show a validation error when a field registered to onPublish-validation", () => {});
 });

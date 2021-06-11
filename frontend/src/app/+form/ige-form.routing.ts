@@ -1,21 +1,30 @@
-import {Routes} from '@angular/router';
-import {AuthGuard} from '../security/auth.guard';
-import {FormChangeDeactivateGuard} from '../security/form-change.guard';
-import {ListFormWizardsComponent} from '../wizard/list-form-wizards/list-form-wizards.component';
-import {OpenDataWizardComponent} from '../wizard/open-data-wizard/open-data-wizard.component';
-import {FormComponent} from './form/form.component';
-import {RedirectFormGuard} from './redirect-form.guard';
+import { Routes } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
+import { FormChangeDeactivateGuard } from "../security/form-change.guard";
+import { ListFormWizardsComponent } from "../wizard/list-form-wizards/list-form-wizards.component";
+import { OpenDataWizardComponent } from "../wizard/open-data-wizard/open-data-wizard.component";
+import { FormComponent } from "./form/form.component";
+import { RedirectFormGuard } from "./redirect-form.guard";
 
 export const routing: Routes = [
   {
-    path: '',
+    path: "",
     component: FormComponent,
-    canActivate: [RedirectFormGuard, AuthGuard/*, NoCatalogAssignedGuard*/],
-    data: {roles: ['author', 'admin']},
+    canActivate: [RedirectFormGuard, AuthGuard /*, NoCatalogAssignedGuard*/],
+    data: { roles: ["author", "admin"] },
     canDeactivate: [FormChangeDeactivateGuard],
     children: [
-      {path: '', component: ListFormWizardsComponent, outlet: 'wizard', pathMatch: 'full'},
-      {path: 'opendata', component: OpenDataWizardComponent, outlet: 'wizard'}
+      {
+        path: "",
+        component: ListFormWizardsComponent,
+        outlet: "wizard",
+        pathMatch: "full",
+      },
+      {
+        path: "opendata",
+        component: OpenDataWizardComponent,
+        outlet: "wizard",
+      },
     ],
-  }
+  },
 ];

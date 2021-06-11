@@ -1,44 +1,54 @@
 <div [formGroup]="formGroup" style="max-height: unset">
-
     <div fxLayout="row" fxLayoutGap="20px">
         <mat-selection-list #option [multiple]="false">
             <mat-list-option value="pages" selected>
                 Seitenzugriff
             </mat-list-option>
-            <mat-list-option value="actions">
-                Aktionen
-            </mat-list-option>
-            <mat-list-option value="documents">
-                Dokumente
-            </mat-list-option>
-            <mat-list-option value="addresses">
-                Adressen
-            </mat-list-option>
+            <mat-list-option value="actions"> Aktionen </mat-list-option>
+            <mat-list-option value="documents"> Dokumente </mat-list-option>
+            <mat-list-option value="addresses"> Adressen </mat-list-option>
         </mat-selection-list>
 
-        <div *ngIf="option.selectedOptions.selected[0].value === 'pages'" fxLayout="column" fxLayoutGap="12px" formGroupName="pages">
-            <mat-slide-toggle *ngFor="let page of pagePermissions" [formControlName]="page.id">
-                {{page.label}}
+        <div
+            *ngIf="option.selectedOptions.selected[0].value === 'pages'"
+            fxLayout="column"
+            fxLayoutGap="12px"
+            formGroupName="pages"
+        >
+            <mat-slide-toggle
+                *ngFor="let page of pagePermissions"
+                [formControlName]="page.id"
+            >
+                {{ page.label }}
             </mat-slide-toggle>
         </div>
 
-        <div *ngIf="option.selectedOptions.selected[0].value === 'actions'" fxLayout="column" fxLayoutGap="12px" formGroupName="actions">
+        <div
+            *ngIf="option.selectedOptions.selected[0].value === 'actions'"
+            fxLayout="column"
+            fxLayoutGap="12px"
+            formGroupName="actions"
+        >
             Hier können Rechte zu einzelnen Aktionen vergeben werden.
-            <mat-slide-toggle formControlName="demo">
-                Demo
-            </mat-slide-toggle>
-            <mat-slide-toggle formControlName="test">
-                Test
-            </mat-slide-toggle>
+            <mat-slide-toggle formControlName="demo"> Demo </mat-slide-toggle>
+            <mat-slide-toggle formControlName="test"> Test </mat-slide-toggle>
         </div>
 
         <div *ngIf="option.selectedOptions.selected[0].value === 'documents'">
-            <ige-tree-permission formControlName="documents" fxLayout="row" fxLayoutGap="20px"></ige-tree-permission>
+            <ige-tree-permission
+                formControlName="documents"
+                fxLayout="row"
+                fxLayoutGap="20px"
+            ></ige-tree-permission>
         </div>
 
         <div *ngIf="option.selectedOptions.selected[0].value === 'addresses'">
-            <ige-tree-permission [address]="true" formControlName="addresses" fxLayout="row" fxLayoutGap="20px"></ige-tree-permission>
+            <ige-tree-permission
+                [address]="true"
+                formControlName="addresses"
+                fxLayout="row"
+                fxLayoutGap="20px"
+            ></ige-tree-permission>
         </div>
     </div>
-
 </div>

@@ -1,21 +1,21 @@
-import {Directive, ElementRef} from '@angular/core';
+import { Directive, ElementRef } from "@angular/core";
 
 // todo: add animate
 // todo: add init and on change
-@Directive( {
-  selector: '[collapse]',
-  inputs: ['collapse'],
+@Directive({
+  selector: "[collapse]",
+  inputs: ["collapse"],
   host: {
-    '[class.in]': 'isExpanded',
-    '[class.collapse]': 'isCollapse',
-    '[class.collapsing]': 'isCollapsing',
-    '[attr.aria-expanded]': 'isExpanded',
-    '[attr.aria-hidden]': 'isCollapsed',
-    '[style.height]': 'height'
-  }
-} )
+    "[class.in]": "isExpanded",
+    "[class.collapse]": "isCollapse",
+    "[class.collapsing]": "isCollapsing",
+    "[attr.aria-expanded]": "isExpanded",
+    "[attr.aria-hidden]": "isCollapsed",
+    "[style.height]": "height",
+  },
+})
 export class Collapse {
-  public test: any = 'wtf';
+  public test: any = "wtf";
   // style
   private height: string;
   // classes
@@ -28,8 +28,7 @@ export class Collapse {
   // animation state
   private isCollapsing = false;
 
-  constructor(private el: ElementRef) {
-  }
+  constructor(private el: ElementRef) {}
 
   private get collapse(): boolean {
     return this.isExpanded;
@@ -54,11 +53,11 @@ export class Collapse {
 
     this.isExpanded = false;
     this.isCollapsed = true;
-    setTimeout( () => {
-      this.height = '0';
+    setTimeout(() => {
+      this.height = "0";
       this.isCollapse = true;
       this.isCollapsing = false;
-    }, 4 );
+    }, 4);
   }
 
   show() {
@@ -67,11 +66,11 @@ export class Collapse {
 
     this.isExpanded = true;
     this.isCollapsed = false;
-    setTimeout( () => {
-      this.height = 'auto';
+    setTimeout(() => {
+      this.height = "auto";
 
       this.isCollapse = true;
       this.isCollapsing = false;
-    }, 4 );
+    }, 4);
   }
 }

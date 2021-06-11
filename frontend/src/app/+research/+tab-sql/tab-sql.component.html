@@ -1,26 +1,47 @@
 <page-template label="SQL Suche">
     <div left-side>
-        <p>Hier können Sie komplexe SQL Anfragen abschicken, wenn die erweiterte Suche nicht ausreicht.</p>
+        <p>
+            Hier können Sie komplexe SQL Anfragen abschicken, wenn die
+            erweiterte Suche nicht ausreicht.
+        </p>
         <p>Hier sind ein paar Beispiele:</p>
         <mat-chip-list>
-            <mat-chip *ngFor="let example of sqlExamples"
-                      (click)="query.emit(example.value)">{{example.label}}</mat-chip>
+            <mat-chip
+                *ngFor="let example of sqlExamples"
+                (click)="query.emit(example.value)"
+                >{{ example.label }}</mat-chip
+            >
         </mat-chip-list>
     </div>
 
     <div main-header fxFlex>
         <mat-form-field appearance="outline" class="width-100">
-            <textarea matInput rows="4" placeholder="SELECT * FROM ..." [(ngModel)]="sql"></textarea>
+            <textarea
+                matInput
+                rows="4"
+                placeholder="SELECT * FROM ..."
+                [(ngModel)]="sql"
+            ></textarea>
         </mat-form-field>
 
         <div fxLayoutGap="12px">
             <div fxFlex></div>
-            <button mat-stroked-button color="primary"
-                    [disabled]="sql.length === 0"
-                    (click)="query.emit('')">Entfernen</button>
-            <button mat-flat-button color="primary"
-                    [disabled]="!sql"
-                    (click)="query.emit(sql)">Suchen</button>
+            <button
+                mat-stroked-button
+                color="primary"
+                [disabled]="sql.length === 0"
+                (click)="query.emit('')"
+            >
+                Entfernen
+            </button>
+            <button
+                mat-flat-button
+                color="primary"
+                [disabled]="!sql"
+                (click)="query.emit(sql)"
+            >
+                Suchen
+            </button>
         </div>
 
         <div>
@@ -32,5 +53,3 @@
         <ng-content></ng-content>
     </div>
 </page-template>
-
-

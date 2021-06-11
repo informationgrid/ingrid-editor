@@ -1,7 +1,7 @@
 <div class="anchor-navigation mat-body">
-    <ng-container *ngFor="let section of sections; let i = index;">
+    <ng-container *ngFor="let section of sections; let i = index">
         <a mat-button class="link-button" (click)="scrollToSection(i)">
-            {{section}}
+            {{ section }}
         </a>
         <ng-container *ngIf="i !== sections.length - 1">|</ng-container>
     </ng-container>
