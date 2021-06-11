@@ -41,10 +41,10 @@
     </mat-toolbar>
 </div>
 <as-split>
-    <as-split-area [size]="25" id="sidebarUser" class="split-pane-content-primary container">
+    <as-split-area [size]="50" id="sidebarUser" class="split-pane-content-primary container">
         <user-table [query]="searchQuery" [users]="users" (onUserSelect)="selectedUser = $event; loadUser($event.login)"></user-table>
     </as-split-area>
-    <as-split-area [size]="75" id="formUser" class="split-pane-content-secondary container-fluid" style="display: block;">
+    <as-split-area [size]="50" id="formUser" class="split-pane-content-secondary container-fluid" style="display: block;">
         <form *ngIf="(selectedUser || isNewUser) && !isLoading; else noUserOrLoading"  fxLayout="column" fxFill
               [formGroup]="form"
               style="padding: 20px">
