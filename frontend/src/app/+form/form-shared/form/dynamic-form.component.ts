@@ -123,13 +123,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.query = this.treeQuery;
     }
 
+    this.formStateService.updateForm(this.form);
+
     this.form.valueChanges
       .pipe(
         untilDestroyed(this),
         debounceTime(3000) // send request 3s after last form change
       ).subscribe(() => this.auth.refreshSession().subscribe());
-
-    this.initializeFormStore();
 
     this.query.select('isDocLoading')
       .pipe(untilDestroyed(this))
@@ -196,28 +196,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
         .pipe(untilDestroyed(this))
         .subscribe(show => this.showJson = show);
     }
-  }
-
-  private initializeFormStore() {
-
-    // TODO: check if this is still needed
-    /*const shallOpenDoc = this.route.snapshot.params.id;
-    if (shallOpenDoc) {
-      // FIXME: Workaround when we revisit page with a previously opened document, the form state is not updated correctly
-      //        This might happen because of ngx-formly is building form after connected to formsManager!?
-      const update = (maxTimes: number) => {
-        if (this.form.value._id) {
-          // @ts-ignore
-          this.formsManager.updateStore(this.formStateName, this.form);
-        }
-        const hasBeenLoaded = this.formsManager.getControl(this.formStateName).value._id;
-        if (!hasBeenLoaded && maxTimes > 0) {
-          setTimeout(() => update(--maxTimes), 100);
-        }
-      };
-
-      update(10);
-    }*/
   }
 
   private handleServerSideValidationErrors() {
@@ -333,8 +311,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       }
 
       this.model = {...data};
-      this.resetForm();
-      this.formStateService.updateForm(this.form);
+      this.initializeForm(data.hasWritePermission);
       this.documentService.setDocLoadingState(false, this.address);
 
     } catch (ex) {
@@ -369,10 +346,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
       : 20 + 'px';
   }
 
-  private resetForm() {
+  private initializeForm(writePermission: boolean) {
 
     this.form.markAsPristine();
     this.form.markAsUntouched();
+    setTimeout(() => {
+      writePermission ? this.form.enable() : this.form.disable();
+    });
+
 
   }
 

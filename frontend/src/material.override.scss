@@ -180,6 +180,13 @@ mat-checkbox .mat-checkbox-layout .mat-checkbox-label {
     padding-right: 12px;
     text-align: end;
   }
+
+  .disabled .mat-cell {
+
+    &, a {
+      color: $ige-comment-color;
+    }
+  }
 }
 
 

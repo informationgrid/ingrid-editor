@@ -22,6 +22,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
 
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns: string[];
+  displayedColumnsReadOnly: string[];
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
   dragDisabled = false;
@@ -41,6 +42,7 @@ export class TableTypeComponent extends FieldType implements OnInit, AfterViewIn
     this.displayedColumns = this.to.columns.map(column => column.key);
     this.displayedColumns.push('_actions_');
     this.displayedColumns.forEach(column => this.preservedValues[column] = new WeakMap<any, any>());
+    this.displayedColumnsReadOnly = this.displayedColumns.slice(0, -1);
 
     this.formControl.valueChanges
       .pipe(

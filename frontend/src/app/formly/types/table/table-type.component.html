@@ -2,12 +2,14 @@
     <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         {{ to.externalLabel }}<span *ngIf="to.required">*</span>
     </ige-form-label>
-    <div fxFlex></div>
-    <button type="button" *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
-    <button type="button" *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
-        <mat-icon>done</mat-icon>
-        Fertig
-    </button>
+    <ng-container *ngIf="formControl.enabled">
+        <div fxFlex></div>
+        <button type="button" *ngIf="!batchMode" mat-button (click)="toggleBatchMode()">Bearbeiten</button>
+        <button type="button" *ngIf="batchMode" mat-button (click)="toggleBatchMode()">
+            <mat-icon>done</mat-icon>
+            Fertig
+        </button>
+    </ng-container>
 </div>
 
 <div fxLayout="column">
@@ -95,9 +97,10 @@
 
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"
+        <mat-header-row *matHeaderRowDef="formControl.enabled ? displayedColumns : displayedColumnsReadOnly"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: formControl.enabled ? displayedColumns : displayedColumnsReadOnly;"
                  (click)="batchMode ? selection.toggle(row) : null"
+                 [class.disabled]="formControl.disabled"
                  cdkDrag
                  [cdkDragData]="row"
                  [cdkDragDisabled]="dragDisabled"
@@ -107,7 +110,7 @@
     </mat-table>
 </div>
 
-<div class="display-flex" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required">
+<div *ngIf="formControl.enabled" class="display-flex" [class.hasContextHelp]="to.hasContextHelp" [class.required]="to.required">
     <ige-form-label [hasContextHelp]="to.hasContextHelp" (contextHelp)="showContextHelp($event)">
         <ng-container *ngIf="dataSource?.data?.length === 0">
             {{ to.externalLabel }}<span *ngIf="to.required">*</span>

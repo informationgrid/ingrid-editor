@@ -138,7 +138,6 @@ export class PublishPlugin extends Plugin {
   }
 
   private getForm(): FormGroup {
-    const formDoc = this.forAddress ? 'address' : 'document';
     return this.formStateService.getForm();
   }
 
@@ -184,7 +183,7 @@ export class PublishPlugin extends Plugin {
       this.treeQuery.openedDocument$,
       this.addressTreeQuery.openedDocument$
     ).subscribe(loadedDocument => {
-      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._type !== 'FOLDER');
+      this.formToolbarService.setButtonState('toolBtnPublish', loadedDocument !== null && loadedDocument._type !== 'FOLDER' && loadedDocument.hasWritePermission);
       this.formToolbarService.setMenuItemStateOfButton('toolBtnPublish', this.eventRevertId,loadedDocument !== null && loadedDocument._state === 'PW');
     });
 

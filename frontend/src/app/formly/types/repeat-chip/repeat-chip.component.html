@@ -1,10 +1,12 @@
 <ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')">Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error>
 
 <mat-chip-list *ngIf="field.fieldGroup.length > 0"
+               [disabled]="formControl.disabled"
                cdkDropList
                cdkDropListOrientation="horizontal"
                (cdkDropListDropped)="drop($event)">
     <mat-chip disableRipple cdkDrag *ngFor="let field of field.fieldGroup; let i = index"
+              [cdkDragDisabled]="formControl.disabled"
               [removable]="true"
               [selectable]="false"
               (removed)="remove(i)">
@@ -16,20 +18,20 @@
 
         <ng-template #simpleLabel><div class="label">{{model[i]}}</div></ng-template>
 
-        <mat-icon matChipRemove>cancel</mat-icon>
+        <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <ige-add-button *ngIf="to.useDialog"
+    <ige-add-button *ngIf="to.useDialog && formControl.enabled"
                     [showLabel]="false"
                     (add)="openDialog()"
                     [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
 </mat-chip-list>
 
-<ige-add-button *ngIf="to.useDialog && field.fieldGroup.length === 0" class="add-button-initial"
+<ige-add-button *ngIf="to.useDialog && formControl.enabled &&  field.fieldGroup.length === 0" class="add-button-initial"
                 [showLabel]="field.fieldGroup.length === 0"
                 (add)="openDialog()"
                 [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>
 
-<ng-container *ngIf="!to.useDialog">
+<ng-container *ngIf="!to.useDialog && formControl.enabled">
     <mat-form-field class="width-100" appearance="outline">
         <input matInput placeholder="Bitte eingeben..."
                autocomplete="off"

@@ -80,7 +80,7 @@ export class SavePlugin extends Plugin {
       .subscribe((openedDoc) => {
         this.formToolbarService.setButtonState(
           'toolBtnSave',
-          openedDoc !== null);
+          openedDoc !== null && openedDoc.hasWritePermission);
 
         // do not allow to modify form if multiple nodes have been selected in tree
         // openedDoc !== null ? this.form.enable() : this.form.disable();
@@ -92,7 +92,6 @@ export class SavePlugin extends Plugin {
   }
 
   private getForm() {
-    const formDoc = this.forAddress ? 'address' : 'document';
     return this.formStateService.getForm();
   }
 
