@@ -6,8 +6,9 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
-import org.hibernate.Session
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 
 /**
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component
  */
 @Component
 class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
+
+    val log = logger()
 
     companion object {
         private val PROFILES = arrayOf<String>()
@@ -40,7 +43,12 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
         // update parent in case of moving a document
         val parent = payload.document.data.get(FIELD_PARENT)
         if (!parent.isNull) {
-            payload.wrapper.parent = docWrapperRepo.findByUuid(parent.asText())
+            try {
+                payload.wrapper.parent = docWrapperRepo.findById(parent.asText())
+            } catch (ex: EmptyResultDataAccessException) {
+                // in case of no permission just log information
+                log.warn("Parent Wrapper not found, possibly to read permission on parent?")
+            }
         }
         
         // set catalog information

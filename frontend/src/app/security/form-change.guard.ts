@@ -6,18 +6,18 @@ import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {FormComponent} from '../+form/form/form.component';
 import {AddressComponent} from '../+address/address/address.component';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {TreeService} from '../+form/sidebars/tree/tree.service';
 import {DocumentService} from '../services/document/document.service';
-import {untilDestroyed} from '@ngneat/until-destroy';
+import {FormStateService} from "../+form/form-state.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
-  constructor(private dialog: MatDialog, private formsManager: NgFormsManager,
+  constructor(private dialog: MatDialog,
               private documentService: DocumentService,
+              private formStateService: FormStateService,
               private treeService: TreeService) {
   }
 
@@ -30,10 +30,10 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     }
 
     const type = target instanceof FormComponent ? 'document' : 'address';
-    const formHasChanged = this.formsManager.getControl(type)?.dirty;
+    const formHasChanged = this.formStateService.getForm()?.dirty;
 
     if (formHasChanged) {
-      const currentId = this.formsManager.getControl(type).value._id;
+      const currentId = this.formStateService.getForm().value._id;
       return this.dialog.open(ConfirmDialogComponent, {
         disableClose: true,
         data: {
@@ -59,7 +59,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     const isAddress = type === 'address';
 
     if (action === 'save') {
-      const form = this.formsManager.getControl(type)?.value;
+      const form = this.formStateService.getForm()?.value;
       await this.documentService.save(form, false, isAddress, null, true);
     } else if (action === 'stay') {
       this.treeService.selectTreeNode(isAddress, currentId);

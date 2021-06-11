@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Location} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLinkActive} from "@angular/router";
 
 @Component({
   selector: 'settings',
@@ -9,31 +8,19 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class SettingsComponent implements OnInit {
 
-  tabIndex = 0;
-  private mapTabToRoute = [];
+  activeLink = 'general';
 
-  constructor(private router: Router, route: ActivatedRoute, private location: Location) {
-    this.tabIndex = route.snapshot.routeConfig?.data?.index ?? 0;
+  tabs = [
+    {label: 'Allgemein', path: 'general'},
+    {label: 'Codelist Repository', path: 'codelist'},
+    {label: 'Katalogverwaltung', path: 'catalog'}
+  ];
 
-    this.prepareTabToRouteMap();
-  }
-
-  private prepareTabToRouteMap() {
-    this.router.config
-      .find(r => r.path === 'settings')
-      // @ts-ignore
-      ._loadedConfig?.routes
-      ?.filter(r => r.data?.index !== undefined)
-      ?.forEach(r => {
-        this.mapTabToRoute[r.data.index] = r.path;
-      });
+  constructor(router: Router) {
+    this.activeLink = router.getCurrentNavigation().extractedUrl.root.children.primary.segments[1]?.path ?? 'general';
   }
 
   ngOnInit(): void {
   }
 
-  updateRoute(index: number) {
-    let path = `/settings/${this.mapTabToRoute[index]}`;
-    this.location.replaceState(path);
-  }
 }

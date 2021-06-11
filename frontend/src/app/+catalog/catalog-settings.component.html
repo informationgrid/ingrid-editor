@@ -1,27 +1,11 @@
-<mat-tab-group [animationDuration]="'0ms'" fxFlex class="page-tabs">
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a *ngFor="let tab of tabs" mat-tab-link
+       routerLinkActive="active-link"
+       [routerLink]="tab.params ? [tab.path, tab.params] : tab.path"
+       (click)="activeLink = tab.path"
+       [active]="activeLink == tab.path">
+        {{tab.label}}
+    </a>
+</nav>
 
-    <mat-tab label="Codelisten">
-        <ige-catalog-codelists></ige-catalog-codelists>
-    </mat-tab>
-
-    <mat-tab label="Formulare">
-        <ng-template matTabContent>
-            <ige-behaviours type="form" #behaviours></ige-behaviours>
-        </ng-template>
-    </mat-tab>
-
-    <mat-tab label="Katalogverhalten">
-        <ng-template matTabContent>
-            <ige-behaviours type="catalog" #behavioursCatalog></ige-behaviours>
-        </ng-template>
-    </mat-tab>
-
-    <mat-tab label="Indizierung">
-        <ng-template matTabContent>
-            <ige-indexing></ige-indexing>
-        </ng-template>
-    </mat-tab>
-
-</mat-tab-group>
-
-
+<router-outlet></router-outlet>

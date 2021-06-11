@@ -72,6 +72,7 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            [class.readonly]="!row.hasWritePermission"
             (click)="openDataset(row)"></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>

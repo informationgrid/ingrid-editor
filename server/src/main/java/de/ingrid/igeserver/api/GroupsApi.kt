@@ -38,7 +38,7 @@ interface GroupsApi {
         method = [RequestMethod.POST]
     )
     fun createGroup(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Void>
 
@@ -58,7 +58,7 @@ interface GroupsApi {
         method = [RequestMethod.DELETE]
     )
     fun deleteGroup(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
     ): ResponseEntity<Void>
 
@@ -70,14 +70,14 @@ interface GroupsApi {
         method = [RequestMethod.GET]
     )
     fun getGroup(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
     ): ResponseEntity<Group>
 
     @Operation(description = "")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of groups")])
     @RequestMapping(value = ["/groups"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
-    fun listGroups(principal: Principal?): ResponseEntity<List<Group>>
+    fun listGroups(principal: Principal): ResponseEntity<List<Group>>
 
     @Operation(description = "Updates a group. If group could not be found an error will be returned.")
     @ApiResponses(
@@ -92,7 +92,7 @@ interface GroupsApi {
         method = [RequestMethod.PUT]
     )
     fun updateGroup(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Group>

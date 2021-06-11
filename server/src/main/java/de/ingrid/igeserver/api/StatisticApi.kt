@@ -22,5 +22,5 @@ interface StatisticApi {
     @Operation
     @GetMapping(value = ["/statistic"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
-    fun getStatistic(principal: Principal?): ResponseEntity<StatisticResponse>
+    fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse>
 }

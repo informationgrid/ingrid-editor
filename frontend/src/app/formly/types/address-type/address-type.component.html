@@ -8,9 +8,10 @@
         <ige-address-card (edit)="editAddress(address, i)"
                           (remove)="removeAddress(address)"
                           (gotoAddress)="gotoAddress(address)"
+                          [disabled]="formControl.disabled"
                           [address]="address"></ige-address-card>
     </div>
 </div>
 
-<ige-add-button (add)="addAddress()"
+<ige-add-button *ngIf="formControl.enabled" (add)="addAddress()"
                 [showRequiredError]="formControl.invalid && formControl.errors?.required"></ige-add-button>

@@ -21,7 +21,7 @@ class ProfileApiController : ProfileApi {
     private lateinit var catalogService: CatalogService
 
     override fun getProfiles(principal: Principal?): ResponseEntity<List<CatalogProfile>> {
-        val catProfiles = catalogService.getAvailableCatalogs()
+        val catProfiles = catalogService.getAvailableCatalogProfiles()
         return ResponseEntity.ok(catProfiles)
     }
 

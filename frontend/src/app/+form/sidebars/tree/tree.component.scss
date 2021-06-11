@@ -279,3 +279,8 @@ mat-tree-node {
   right: 0;
   z-index: 1000
 }
+
+.readonly {
+  color: $ige-comment-color;
+  font-style: italic;
+}

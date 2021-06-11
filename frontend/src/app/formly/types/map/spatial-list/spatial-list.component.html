@@ -37,8 +37,8 @@
                     </button>
                     <mat-menu #spatialRef="matMenu">
                         <button mat-menu-item (click)="selectLocation.next(location.indexNumber)">Anzeigen</button>
-                        <button mat-menu-item (click)="edit.next(location.indexNumber)">Bearbeiten</button>
-                        <button mat-menu-item (click)="confirmRemove(location)">Löschen</button>
+                        <button mat-menu-item (click)="edit.next(location.indexNumber)" [disabled]="disabled">Bearbeiten</button>
+                        <button mat-menu-item (click)="confirmRemove(location)" [disabled]="disabled">Löschen</button>
                     </mat-menu>
                 </div>
             </div>

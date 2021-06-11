@@ -10,13 +10,13 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -72,7 +72,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun deleteUser(principal: Principal?, userId: String): ResponseEntity<Void> {
+    override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
 
         catalogService.deleteUser(userId)
         keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
@@ -81,7 +81,7 @@ class UsersApiController : UsersApi {
     }
 
     @ExperimentalTime
-    override fun getUser(principal: Principal?, userId: String): ResponseEntity<User> {
+    override fun getUser(principal: Principal, userId: String): ResponseEntity<User> {
 
         var user: User
         val durationALl = measureTime {
@@ -115,11 +115,8 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun list(principal: Principal?): ResponseEntity<List<User>> {
+    override fun list(principal: Principal): ResponseEntity<List<User>> {
 
-        if (principal == null && !developmentMode) {
-            throw UnauthenticatedException.withUser("")
-        }
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val users = keycloakService.getUsersWithIgeRoles(principal)
@@ -131,7 +128,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(filteredUsers)
     }
 
-    override fun updateUser(principal: Principal?, id: String, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         keycloakService.updateUser(principal, user)
@@ -140,13 +137,13 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun currentUserInfo(principal: Principal?): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
+    override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
             val user = keycloakService.getUser(client, userId)
 
-            val roles = keycloakService.getRoles(principal as KeycloakAuthenticationToken?)
+            val roles = keycloakService.getRoles(principal as Authentication)
 
             val lastLogin = this.getLastLogin(principal, user.login, roles)
             val dbUser = catalogService.getUser(userId)
@@ -157,17 +154,19 @@ class UsersApiController : UsersApi {
                 lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
                 firstName = user.firstName,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
-                roles = roles,
+                role = dbUser?.role?.name,
+                groups = roles,
                 currentCatalog = dbUser?.curCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
-                useElasticsearch = env.activeProfiles.contains("elasticsearch")
+                useElasticsearch = env.activeProfiles.contains("elasticsearch"),
+                permissions = catalogService.getPermissions(principal)
             )
             return ResponseEntity.ok(userInfo)
         }
     }
 
-    private fun getLastLogin(principal: Principal?, userIdent: String, roles: Set<String>?): Date? {
+    private fun getLastLogin(principal: Principal, userIdent: String, roles: Set<String>?): Date? {
         keycloakService.getClient(principal).use { client ->
             val lastLoginKeyCloak = keycloakService.getLatestLoginDate(client, userIdent)
             if (lastLoginKeyCloak != null) {
@@ -188,12 +187,6 @@ class UsersApiController : UsersApi {
                     }
                 }
                 var user = userRepo.findByUserId(userIdent)
-                if (user == null && catalogService.isSuperAdmin(roles)) {
-                    user = UserInfo().apply {
-                        userId = userIdent
-                        data = UserInfoData()
-                    }
-                }
                 if (user != null) {
                     catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
                 }
@@ -212,7 +205,7 @@ class UsersApiController : UsersApi {
     }
 
     override fun setCatalogAdmin(
-        principal: Principal?,
+        principal: Principal,
         info: CatalogAdmin
     ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
 
@@ -248,7 +241,7 @@ class UsersApiController : UsersApi {
         userRepo.save(user)
     }
 
-    override fun assignedUsers(principal: Principal?, id: String): ResponseEntity<List<String>> {
+    override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
 
         val result: MutableList<String> = ArrayList()
         val query = listOf(QueryField("catalogIds", id))
@@ -264,7 +257,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(result)
     }
 
-    override fun switchCatalog(principal: Principal?, catalogId: String): ResponseEntity<Void> {
+    override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Void> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
@@ -282,7 +275,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun listExternal(principal: Principal?): ResponseEntity<List<User>> {
+    override fun listExternal(principal: Principal): ResponseEntity<List<User>> {
 
         if (principal == null && !developmentMode) {
             throw UnauthenticatedException.withUser("")
@@ -297,7 +290,7 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun requestPasswordChange(principal: Principal?, id: String): ResponseEntity<Void> {
+    override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
 
         keycloakService.requestPasswordChange(principal, id)
         return ResponseEntity.ok().build()

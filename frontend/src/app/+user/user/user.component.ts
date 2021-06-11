@@ -207,6 +207,7 @@ export class UserComponent implements OnInit {
 
   getRoleIcon(role: string) {
     switch (true) {
+      case role === 'ige-super-admin':
       case role === 'cat-admin':
         return 'catalog-admin'
       case role.includes('admin'):

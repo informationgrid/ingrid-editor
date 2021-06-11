@@ -38,8 +38,10 @@ describe('CatalogManagerComponent', () => {
       name: '',
       firstName: '',
       lastName: '',
-      roles: [],
-      userId: ''
+      role: '',
+      groups: [],
+      userId: '',
+      permissions: []
     });
 
     spectator.detectChanges();

@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ChipDialogComponent, ChipDialogData} from './chip-dialog/chip-dialog.component';
 import {FormControl} from '@angular/forms';
 import {ConfirmDialogComponent, ConfirmDialogData} from "../../../dialogs/confirm/confirm-dialog.component";
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'ige-repeat-chip',

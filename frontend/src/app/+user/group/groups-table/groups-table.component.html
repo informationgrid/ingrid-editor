@@ -1,0 +1,51 @@
+<table mat-table [dataSource]="dataSource" matSort class="width-100">
+
+    <!-- Role Column -->
+    <ng-container matColumnDef="role-icon" class="thin-column">
+        <th mat-header-cell *matHeaderCellDef> Rolle</th>
+        <td mat-cell *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)">
+<!--            <mat-icon [svgIcon]="getRoleIcon(element.role)"></mat-icon>-->
+            <mat-icon>groups</mat-icon>
+        </td>
+    </ng-container>
+
+    <!-- Name/description Column -->
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Bezeichnung/Beschreibung</th>
+        <td mat-cell *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)">
+            <div>{{element.name}}</div>
+            <div class="td-subtitle">{{element.description}}</div>
+        </td>
+    </ng-container>
+
+    <!-- Settings -->
+    <ng-container matColumnDef="settings">
+        <th mat-header-cell *matHeaderCellDef class="thin-column">
+            <button mat-icon-button>
+                <mat-icon>settings</mat-icon>
+            </button>
+        </th>
+        <td mat-cell class="thin-column" *matCellDef="let element" (click)="selection.select(element)"
+            [class.selected]="selection.isSelected(element)">
+            <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="groupEditMenu" (click)="$event.stopPropagation()">
+                <mat-icon svgIcon="Mehr"></mat-icon>
+            </button>
+            <mat-menu #groupEditMenu="matMenu">
+                <button mat-menu-item>Option 1</button>
+                <button mat-menu-item>Option 2</button>
+            </mat-menu>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<mat-paginator [hidePageSize]="true" matPaginator showFirstLastButtons></mat-paginator>
+<div class="legend">
+    <mat-icon svgIcon="group"></mat-icon>
+    <span> Eigene Gruppe,</span>
+    <mat-icon svgIcon="group-standin"></mat-icon>
+    <span> Fremde Gruppe</span>
+</div>

@@ -1,17 +1,11 @@
-<mat-tab-group animationDuration="0" class="page-tabs"
-               [selectedIndex]="tabIndex"
-               (selectedIndexChange)="updateRoute($event)">
-    <mat-tab label="Allgemein">
-        <page-template label="Allgemein">
-            <general-settings main-header fxFlex></general-settings>
-        </page-template>
-    </mat-tab>
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a *ngFor="let tab of tabs" mat-tab-link
+       routerLinkActive="active-link"
+       [routerLink]="tab.path"
+       (click)="activeLink = tab.path"
+       [active]="activeLink == tab.path">
+        {{tab.label}}
+    </a>
+</nav>
 
-    <mat-tab label="Codelist Repository">
-        <ige-codelists></ige-codelists>
-    </mat-tab>
-
-    <mat-tab label="Katalogverwaltung">
-        <ige-catalog-management></ige-catalog-management>
-    </mat-tab>
-</mat-tab-group>
+<router-outlet></router-outlet>

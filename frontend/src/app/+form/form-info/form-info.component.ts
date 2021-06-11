@@ -26,7 +26,6 @@ import {DocumentUtils} from '../../services/document.utils';
 import {TreeService} from '../sidebars/tree/tree.service';
 import {FormUtils} from '../form.utils';
 import {DocumentService} from '../../services/document/document.service';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {MatDialog} from '@angular/material/dialog';
 import {ShortTreeNode} from '../sidebars/tree/tree.types';
 
@@ -71,7 +70,6 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
               private cdr: ChangeDetectorRef,
               private sessionQuery: SessionQuery,
               private documentService: DocumentService,
-              private formsManager: NgFormsManager,
               private dialog: MatDialog,
               private profileService: ProfileService) {
   }
@@ -173,7 +171,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
   async scrollToTreeNode(nodeId: string) {
 
-    let handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.forAddress);
+    let handled = await FormUtils.handleDirtyForm(this.form, this.documentService, this.dialog, this.forAddress);
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);
     }

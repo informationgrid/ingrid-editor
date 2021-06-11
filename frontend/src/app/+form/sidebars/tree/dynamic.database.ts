@@ -63,7 +63,7 @@ export class DynamicDatabase {
     return docs.map(doc =>
       new TreeNode(
         doc.id.toString(), doc.title, doc._type, doc._state, level, doc._hasChildren, doc._parent,
-        doc.icon)
+        doc.icon, false, doc.hasWritePermission)
     );
   }
 }

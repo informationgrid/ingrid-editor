@@ -4,6 +4,10 @@ mat-card {
   padding: 12px 12px 12px 16px;
   background-color: $ige-background;
 
+  &.disabled {
+    color: $ige-comment-color;
+  }
+
   .mat-card-header {
     align-content: center;
     margin-bottom: 8px;

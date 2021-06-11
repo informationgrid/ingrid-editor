@@ -36,8 +36,9 @@ export class NewUserDialogComponent implements OnInit {
   }
 
   private initRoles() {
-    const userRole = this.configService.$userInfo.value.roles[0];
+    const userRole = this.configService.$userInfo.value.role;
     switch (userRole) {
+      case 'ige-super-admin':
       case 'cat-admin':
         this.roles = this.userService.availableRoles;
         break;
@@ -45,6 +46,7 @@ export class NewUserDialogComponent implements OnInit {
         this.roles = this.userService.availableRoles.filter(r => r.value !== 'cat-admin');
         break;
       case 'author':
+      default:
         throw new IgeError('Als Autor dürfen Sie keine Nutzer anlegen');
     }
   }

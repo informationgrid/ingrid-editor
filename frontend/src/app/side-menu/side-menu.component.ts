@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../services/config/config.service';
 import {MenuService} from '../menu/menu.service';
@@ -28,7 +28,10 @@ export class SideMenuComponent implements OnInit {
 
   showDrawer: Observable<boolean>;
 
-  menuItems: BehaviorSubject<Route[]> = this.menuService.menu$;
+  menuItems: Observable<Route[]> = this.menuService.menu$
+    .pipe(
+      map(routes => routes.filter(route => this.checkIfUserHasAccess(route)))
+    );
 
   menuIsExpanded = true;
 
@@ -64,4 +67,10 @@ export class SideMenuComponent implements OnInit {
     this.toggleState = setExanded ? 'expanded' : 'collapsed';
   }
 
+  private checkIfUserHasAccess(route: Route): boolean {
+
+    let neededPermission = route.data.permission;
+    return this.configService.hasPermission(neededPermission);
+
+  }
 }

@@ -1,15 +1,18 @@
 package de.ingrid.igeserver
 
 import de.ingrid.igeserver.configuration.BeansConfiguration
+import de.ingrid.igeserver.development.DevelopmentProperties
 import org.apache.logging.log4j.LogManager
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @Configuration
 @EnableAutoConfiguration
+@EnableConfigurationProperties(DevelopmentProperties::class)
 @Import(BeansConfiguration::class)
 @EnableScheduling
 class IgeServer

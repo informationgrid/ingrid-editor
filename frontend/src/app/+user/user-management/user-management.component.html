@@ -1,7 +1,7 @@
-<mat-tab-group class="page-tabs" [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event" [selectedIndex]="currentTab">
+<mat-tab-group dynamicHeight class="page-tabs" [animationDuration]="'0ms'" (selectedIndexChange)="currentTab = $event" [selectedIndex]="currentTab" scoll>
 
     <mat-tab label="Nutzer">
-        <ige-user-manager></ige-user-manager>
+        <ige-user-manager ></ige-user-manager>
     </mat-tab>
 
     <mat-tab label="Gruppen">

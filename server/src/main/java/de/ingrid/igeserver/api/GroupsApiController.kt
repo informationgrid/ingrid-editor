@@ -19,14 +19,14 @@ class GroupsApiController @Autowired constructor(
     private val authUtils: AuthUtils
 ) : GroupsApi {
 
-    override fun createGroup(principal: Principal?, group: Group): ResponseEntity<Void> {
+    override fun createGroup(principal: Principal, group: Group): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         
         groupService.create(catalogId, group)
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun deleteGroup(principal: Principal?, id: Int): ResponseEntity<Void> {
+    override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         
 
@@ -34,7 +34,7 @@ class GroupsApiController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun getGroup(principal: Principal?, id: Int): ResponseEntity<Group> {
+    override fun getGroup(principal: Principal, id: Int): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         return when (val group = groupService.get(catalogId, id)) {
@@ -43,14 +43,14 @@ class GroupsApiController @Autowired constructor(
         }
     }
 
-    override fun listGroups(principal: Principal?): ResponseEntity<List<Group>> {
+    override fun listGroups(principal: Principal): ResponseEntity<List<Group>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val groups = groupService.getAll(catalogId)
         return ResponseEntity.ok(groups)
     }
 
-    override fun updateGroup(principal: Principal?, id: Int, group: Group): ResponseEntity<Group> {
+    override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         return when (val updatedGroup = groupService.update(catalogId, id, group)) {

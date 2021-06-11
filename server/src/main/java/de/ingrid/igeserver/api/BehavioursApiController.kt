@@ -20,7 +20,7 @@ class BehavioursApiController : BehavioursApi, Logging {
     @Autowired
     private lateinit var behaviourService: BehaviourService
 
-    override fun getBehaviours(principal: Principal?): ResponseEntity<List<Behaviour>> {
+    override fun getBehaviours(principal: Principal): ResponseEntity<List<Behaviour>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val result = this.behaviourService.get(catalogId)
@@ -28,7 +28,7 @@ class BehavioursApiController : BehavioursApi, Logging {
     }
 
     override fun setBehaviours(
-        principal: Principal?,
+        principal: Principal,
         behaviours: List<Behaviour>
     ): ResponseEntity<Void> {
 

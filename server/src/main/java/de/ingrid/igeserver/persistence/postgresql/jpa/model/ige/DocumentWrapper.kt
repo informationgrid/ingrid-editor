@@ -1,21 +1,28 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.services.DocumentService
-import org.hibernate.annotations.Formula
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
+import org.hibernate.annotations.*
 import java.util.*
 import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.Table
 
 @Entity
-@Table(name="document_wrapper")
+@Table(name = "document_wrapper")
+@TypeDef(
+    name = "list-array",
+    typeClass = ListArrayType::class
+)
 class DocumentWrapper {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    var id: Int? = null
+    var dbId: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catalog_id", nullable = false)
@@ -23,15 +30,16 @@ class DocumentWrapper {
     @JsonIgnore
     var catalog: Catalog? = null
 
-    @Column(nullable=false)
+    // must be named "id" since getId() method is used for ACL permissions!
+    @Column(name = "uuid", nullable = false)
     @JsonProperty("_id")
-    var uuid: String = UUID.randomUUID().toString()
+    var id: String = UUID.randomUUID().toString()
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @JsonProperty("_type")
     var type: String? = null
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @JsonProperty("_category")
     var category: String? = null
 
@@ -40,8 +48,8 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains a document wrapper uuid ('parent') only, we need
      * to map it manually to the document wrapper instance for persistence
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="parent_id", nullable=true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonAlias("_parent") // hint for model registry
     @JsonIgnore
@@ -54,7 +62,7 @@ class DocumentWrapper {
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
         if (this.parentUuid == null) {
-            this.parentUuid = parent?.uuid
+            this.parentUuid = parent?.id
         }
         return this.parentUuid
     }
@@ -64,8 +72,8 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains a document id ('draft') only, we need
      * to map it manually to the document instance for persistence
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="draft", nullable=true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "draft", nullable = true)
     @JsonAlias("draft") // hint for model registry
     @JsonIgnore
     var draft: Document? = null
@@ -87,8 +95,8 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains a document id ('published') only, we need
      * to map it manually to the document instance for persistence
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="published", nullable=true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "published", nullable = true)
     @JsonAlias("published") // hint for model registry
     @JsonIgnore
     var published: Document? = null
@@ -110,11 +118,11 @@ class DocumentWrapper {
      * NOTE Since the JSON representation contains document ids ('archive') only, we need
      * to map them manually to document instances for persistence
      */
-    @ManyToMany(cascade=[CascadeType.ALL], fetch=FetchType.LAZY)
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinTable(
-            name="document_archive",
-            joinColumns=[JoinColumn(name="wrapper_id")],
-            inverseJoinColumns=[JoinColumn(name="document_id")]
+        name = "document_archive",
+        joinColumns = [JoinColumn(name = "wrapper_id")],
+        inverseJoinColumns = [JoinColumn(name = "document_id")]
     )
     @JsonAlias("archive") // hint for model registry
     @JsonIgnore
@@ -132,9 +140,17 @@ class DocumentWrapper {
         return this.archiveIds!!
     }
 
+    @Type(type = "list-array")
+    @Column(
+        name = "path",
+        columnDefinition = "text[]"
+    )
+    var path = emptyList<String>()
+
+
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id)")
     var countChildren: Int = 0
-    
+
     @Transient
     fun getState(): String {
         val hasDraft = draft != null
@@ -147,4 +163,7 @@ class DocumentWrapper {
             DocumentService.DocumentState.DRAFT.value
         }
     }
+
+    @Transient
+    var hasWritePermission: Boolean = true
 }

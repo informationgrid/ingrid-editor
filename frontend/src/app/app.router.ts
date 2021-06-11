@@ -46,6 +46,7 @@ export const routes: Routes = [
       title: 'Nutzer & Rechte',
       featureFlag: 'AP3',
       onlyAdmin: true,
+      permission: 'manage_users',
       icon: 'Nutzer'
     }
   },
@@ -58,6 +59,7 @@ export const routes: Routes = [
       title: 'Import / Export',
       featureFlag: 'NotForDemo',
       onlyAdmin: true,
+      permission: ['can_import', 'can_export'],
       icon: 'Im-Export'
     }
   },
@@ -67,6 +69,7 @@ export const routes: Routes = [
     data: {
       title: 'Katalog',
       onlyAdmin: true,
+      permission: 'manage_catalog',
       icon: 'Katalog'
     }
   },

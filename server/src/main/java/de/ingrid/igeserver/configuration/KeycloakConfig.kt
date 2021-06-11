@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.configuration
 
-import org.apache.logging.log4j.LogManager
+import de.ingrid.igeserver.configuration.acl.MyAuthenticationProvider
+import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
 import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -20,14 +22,18 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
-import javax.servlet.*
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+@Profile("!dev")
 @KeycloakConfiguration
 internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
-    @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
-    var developmentMode = false
+
+    val log = logger()
 
     @Value("\${app.enable-csrf:false}")
     var csrfEnabled = false
@@ -40,9 +46,10 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     inner class RequestResponseLoggingFilter : Filter {
         override fun doFilter(
-                request: ServletRequest,
-                response: ServletResponse,
-                chain: FilterChain) {
+            request: ServletRequest,
+            response: ServletResponse,
+            chain: FilterChain
+        ) {
             val req = request as HttpServletRequest
             val res = response as HttpServletResponse
 
@@ -67,6 +74,9 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         }
     }
 
+    @Autowired
+    lateinit var myAuthenticationProvider: MyAuthenticationProvider
+
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
@@ -75,10 +85,11 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         // check out: https://www.thomasvitale.com/spring-security-keycloak/
         val grantedAuthorityMapper = SimpleAuthorityMapper()
         grantedAuthorityMapper.setPrefix("ROLE_")
-        val keycloakAuthenticationProvider = keycloakAuthenticationProvider()
+        val keycloakAuthenticationProvider = myAuthenticationProvider
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(grantedAuthorityMapper)
         auth.authenticationProvider(keycloakAuthenticationProvider)
     }
+
 
     /**
      * Provide a session authentication strategy bean which should be of type
@@ -119,42 +130,31 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     override fun configure(httpSec: HttpSecurity) {
         var http = httpSec
         super.configure(http)
-        if (developmentMode) {
-            log.info("======================================================")
-            log.info("================== DEVELOPMENT MODE ==================")
-            log.info("======================================================")
-            http
-                    .csrf().disable()
-                    .authorizeRequests().anyRequest().permitAll()
+
+        http = if (csrfEnabled) {
+            http.csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and() // make cookies readable within JS
         } else {
-            http = if (csrfEnabled) {
-                http.csrf()
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .and() // make cookies readable within JS
-            } else {
-                http.csrf().disable()
-            }
-            if (!corsEnabled) {
-                http = http.cors().disable()
-            }
-            if (!httpsEnabled) {
-                http = http.requiresChannel()
-                        .anyRequest()
-                        .requiresSecure()
-                        .and()
-            }
-            http
-                    .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
-                    .authorizeRequests()
-                    .anyRequest().authenticated()
-                    .and()
-                    .anonymous().disable() // force login when keycloak session timeouts because of inactivity
-                    .logout()
-                    .permitAll()
+            http.csrf().disable()
         }
+        if (!corsEnabled) {
+            http = http.cors().disable()
+        }
+        if (!httpsEnabled) {
+            http = http.requiresChannel()
+                .anyRequest()
+                .requiresSecure()
+                .and()
+        }
+        http
+            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
+            .authorizeRequests()
+            .anyRequest().authenticated()
+            .and()
+            .anonymous().disable() // force login when keycloak session timeouts because of inactivity
+            .logout()
+            .permitAll()
     }
 
-    companion object {
-        private val log = LogManager.getLogger(KeycloakConfig::class.java)
-    }
 }

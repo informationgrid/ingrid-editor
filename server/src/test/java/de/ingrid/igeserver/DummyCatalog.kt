@@ -23,4 +23,12 @@ class DummyCatalog : CatalogProfile {
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
     }
+
+    override fun getElasticsearchMapping(format: String): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun getElasticsearchSetting(format: String): String {
+        TODO("Not yet implemented")
+    }
 }

@@ -4,12 +4,12 @@ import {TreeStore} from '../../store/tree/tree.store';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {AddressTreeStore} from '../../store/address-tree/address-tree.store';
-import {NgFormsManager} from '@ngneat/forms-manager';
 import {FormUtils} from '../form.utils';
 import {MatDialog} from '@angular/material/dialog';
 import {DocumentService} from '../../services/document/document.service';
 import {TreeService} from './tree/tree.service';
 import {ShortTreeNode, TreeAction} from './tree/tree.types';
+import {FormStateService} from "../form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -34,7 +34,7 @@ export class SidebarComponent implements OnInit {
   constructor(private router: Router,
               private dialog: MatDialog,
               private documentService: DocumentService,
-              private formsManager: NgFormsManager,
+              private formStateService: FormStateService,
               private addressTreeStore: AddressTreeStore,
               private treeService: TreeService,
               private docTreeStore: TreeStore) {
@@ -74,7 +74,7 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
-    const currentId = this.formsManager.getControl(this.formType)?.value?._id;
+    const currentId = this.formStateService.getForm()?.value?._id;
 
     // do not load same node again
     if (currentId === selectedDocIds[0] && this.router.url.indexOf(currentId) !== -1) {
@@ -84,7 +84,7 @@ export class SidebarComponent implements OnInit {
     // reset scroll position when loading a new document
     this.treeStore.update({scrollPosition: 0});
 
-    const handled = await FormUtils.handleDirtyForm(this.formsManager, this.documentService, this.dialog, this.address);
+    const handled = await FormUtils.handleDirtyForm(this.formStateService.getForm(), this.documentService, this.dialog, this.address);
 
     if (handled) {
       this.router.navigate([this.path, {id: selectedDocIds[0]}]);

@@ -1,0 +1,63 @@
+<div class="table-title">{{title}}</div>
+<table mat-table [dataSource]="dataSource" class="width-100">
+
+    <!-- Title/path -->
+    <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef> Bezeichung/Ort</th>
+        <td mat-cell *matCellDef="let element">
+            <div>{{element.title}}</div>
+            <div class="td-subtitle">{{element.path}}</div>
+        </td>
+    </ng-container>
+
+    <!-- Permissiontype -->
+    <ng-container matColumnDef="permissionLevel">
+        <th mat-header-cell *matHeaderCellDef> Berechtigung Ordner / Unterordner</th>
+        <td mat-cell *matCellDef="let element">
+            <mat-button (click)="element.permissionLevel = 0" class="left-button"
+                        [class.active]="element.permissionLevel == 0">
+                <mat-icon>edit</mat-icon>
+            </mat-button>
+            <mat-button (click)="element.permissionLevel = 1" [class.active]="element.permissionLevel == 1">
+                <mat-icon>visibility</mat-icon>
+            </mat-button>
+            <mat-button style="margin-right: 8px" (click)="element.permissionLevel = 2" class="right-button"
+                        [class.active]="element.permissionLevel == 2">
+                <mat-icon>do_not_disturb</mat-icon>
+            </mat-button>
+
+            <mat-button (click)="element.subPermissionLevel = 0" class="left-button"
+                        [class.active]="element.subPermissionLevel == 0">
+                <mat-icon>edit</mat-icon>
+            </mat-button>
+            <mat-button (click)="element.subPermissionLevel = 1" [class.active]="element.subPermissionLevel == 1">
+                <mat-icon>visibility</mat-icon>
+            </mat-button>
+            <mat-button (click)="element.subPermissionLevel = 2" class="right-button"
+                        [class.active]="element.subPermissionLevel == 2">
+                <mat-icon>do_not_disturb</mat-icon>
+            </mat-button>
+        </td>
+    </ng-container>
+
+    <!-- Settings -->
+    <ng-container matColumnDef="settings">
+        <th mat-header-cell *matHeaderCellDef class="thin-column">
+            Aktion
+        </th>
+        <td mat-cell class="thin-column" *matCellDef="let element" (click)="null">
+            <button mat-icon-button class="menu dark menu-button" [matMenuTriggerFor]="permissionEditMenu"
+                    (click)="$event.stopPropagation()">
+                <mat-icon svgIcon="Mehr"></mat-icon>
+            </button>
+            <mat-menu #permissionEditMenu="matMenu">
+                <button mat-menu-item>Pfad ändern</button>
+                <button mat-menu-item>Löschen</button>
+            </mat-menu>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<ige-add-button [showLabel]="false" (add)="null"></ige-add-button>

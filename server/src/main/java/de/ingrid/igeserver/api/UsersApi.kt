@@ -63,7 +63,7 @@ interface UsersApi {
         )]
     )
     fun deleteUser(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<Void>
 
@@ -75,14 +75,14 @@ interface UsersApi {
     @Operation(description = "Get the user with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<User>
 
     @RequestMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users registered in IGE")])
-    fun list(principal: Principal?): ResponseEntity<List<User>>
+    fun list(principal: Principal): ResponseEntity<List<User>>
 
     @RequestMapping(
         value = ["/users/{id}"],
@@ -97,7 +97,7 @@ interface UsersApi {
         ), ApiResponse(responseCode = "400", description = "A user already exists with the given login")]
     )
     fun updateUser(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(
             description = "Save the user data into the database.",
@@ -117,7 +117,7 @@ interface UsersApi {
             description = ""
         )]
     )
-    fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo>
+    fun currentUserInfo(principal: Principal): ResponseEntity<UserInfo>
 
     @RequestMapping(
         value = ["/info/setCatalogAdmin"],
@@ -132,7 +132,7 @@ interface UsersApi {
         )]
     )
     fun setCatalogAdmin(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(
             description = "Save the user data into the database.",
             required = true
@@ -147,7 +147,7 @@ interface UsersApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun assignedUsers(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(
             description = "The catalog id to query the assigned users from.",
             required = true
@@ -158,7 +158,7 @@ interface UsersApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun switchCatalog(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(
             description = "The id of the catalog to switch to for the current user",
             required = true
@@ -173,12 +173,12 @@ interface UsersApi {
     @RequestMapping(value = ["/externalUsers"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of external users (keycloak)")])
-    fun listExternal(principal: Principal?): ResponseEntity<List<User>>
+    fun listExternal(principal: Principal): ResponseEntity<List<User>>
 
     @RequestMapping(value = ["/externalUsers/requestPasswordChange/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Sends an email to a user for changing its password")])
-    fun requestPasswordChange(principal: Principal?,
+    fun requestPasswordChange(principal: Principal,
                               @Parameter(
                                   description = "The user login the password change request shall be initiated.",
                                   required = true

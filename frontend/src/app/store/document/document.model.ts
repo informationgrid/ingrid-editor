@@ -10,6 +10,7 @@ export interface DocumentAbstract {
   _parent: string;
   _hasChildren: boolean;
   _modified: any;
+  hasWritePermission?: boolean;
 }
 
 export const ADDRESS_ROOT_NODE: Partial<DocumentAbstract> = {

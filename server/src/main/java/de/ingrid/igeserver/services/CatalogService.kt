@@ -16,10 +16,12 @@ import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.acls.model.AclService
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
-import kotlin.collections.HashSet
 
 @Service
 class CatalogService @Autowired constructor(
@@ -28,12 +30,13 @@ class CatalogService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
+    private val aclService: AclService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
     private val log = logger()
 
-    fun getCurrentCatalogForPrincipal(principal: Principal?): String {
+    fun getCurrentCatalogForPrincipal(principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         return getCurrentCatalogForUser(userId)
     }
@@ -51,14 +54,12 @@ class CatalogService @Autowired constructor(
     }
 
     private fun getFirstAssignedCatalog(user: UserInfo): String {
-        // ... or first catalog, if existing
-        val newCurrentCatalog = user.catalogs.first()
 
         // save first catalog as current catalog
-        user.curCatalog = newCurrentCatalog
+        user.curCatalog = user.catalogs.firstOrNull() ?: throw NotFoundException.withMissingUserCatalog(user.userId)
         userRepo.save(user)
 
-        return newCurrentCatalog.identifier
+        return user.curCatalog!!.identifier
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
@@ -92,18 +93,18 @@ class CatalogService @Autowired constructor(
         userRepo.save(user)
     }
 
-    fun isSuperAdmin(roles: Set<String>?): Boolean {
-        return roles?.contains("admin") ?: false
-    }
-
-    fun getAvailableCatalogs(): List<CatalogProfile> {
+    fun getAvailableCatalogProfiles(): List<CatalogProfile> {
         return catalogProfiles
     }
 
+    fun getCatalogProfile(id: String): CatalogProfile {
+        return this.catalogProfiles
+            .find { it.identifier == id }!!
+    }
+
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
-        this.catalogProfiles
-            .find { it.identifier == type }
-            ?.initCatalogCodelists(catalogId, codelistId)
+        this.getCatalogProfile(type)
+            .initCatalogCodelists(catalogId, codelistId)
     }
 
     fun getCatalogs(): List<Catalog> {
@@ -130,7 +131,7 @@ class CatalogService @Autowired constructor(
     }
 
     fun updateCatalog(updatedCatalog: Catalog) {
-        if (updatedCatalog.id == null || !catalogExists(updatedCatalog.identifier)) {
+        if (!catalogExists(updatedCatalog.identifier)) {
             throw PersistenceException.withReason("Catalog '${updatedCatalog.id}' does not exist.")
         }
 
@@ -156,6 +157,7 @@ class CatalogService @Autowired constructor(
         user.id = userFromDB?.id
         user.data?.creationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
         user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
         userRepo.save(user)
 
     }
@@ -170,9 +172,9 @@ class CatalogService @Autowired constructor(
                     modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
                 )
             }
-            
+
             groups = mergeGroups(catalogId, groups, user)
-            role = roleRepo.findByName(user.role)
+            role = if (user.role.isNotEmpty()) roleRepo.findByName(user.role) else null
         }
     }
 
@@ -199,14 +201,78 @@ class CatalogService @Autowired constructor(
 
     }
 
+    @Transactional
     fun updateUser(catalogId: String, userModel: User) {
 
 //        val userFromDB = getUser(userModel.login) ?: throw NotFoundException.withMissingUserCatalog(userModel.login)
         val user = convertUser(catalogId, userModel)
 //        user.id = userFromDB.id
-        
+
+//        updateAcl(user.groups)
+
         userRepo.save(user)
 
+    }
+
+    /*private fun updateAcl(groups: MutableSet<Group>) {
+
+        aclService as JdbcMutableAclService
+        
+        groups.forEach { group ->
+            group.data?.documents?.forEach {
+                val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+                val acl: MutableAcl = try {
+                    aclService.readAclById(objIdentity) as MutableAcl
+                } catch (ex: org.springframework.security.acls.model.NotFoundException) {
+                    aclService.createAcl(objIdentity)
+                }
+
+                val sid = GrantedAuthoritySid("GROUP_${group.name}")
+
+                addACEs(acl, it, sid)
+                aclService.updateAcl(acl)
+            }
+        }
+
+
+    }
+
+    private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
+        // write complete new acl entries for this object 
+        // removeEntries(acl)
+        
+        determinePermission(docPermission)
+            .forEach {
+                acl.insertAce(acl.entries.size, it, sid, true)
+            }
+    }
+
+    private fun removeEntries(acl: MutableAcl) {
+        // remove always the first element until empty
+        while(acl.entries.isNotEmpty()) { acl.deleteAce(0) }
+    }
+
+    private fun determinePermission(docPermission: JsonNode): List<Permission> {
+        return when (docPermission.get("permission").asText()) {
+            "writeSubTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            else -> listOf(BasePermission.READ)
+        }
+    }*/
+
+    fun getPermissions(principal: Authentication): List<String> {
+        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
+        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
+        return if (isMdAdmin || isCatAdmin) {
+            listOf(
+                Permissions.manage_users.name,
+                Permissions.can_export.name,
+                Permissions.can_import.name,
+                Permissions.manage_catalog.name
+            )
+        } else {
+            listOf()
+        }
     }
 
 }

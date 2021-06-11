@@ -20,6 +20,7 @@ import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -64,7 +65,7 @@ class KeycloakService : UserManagementService {
     @Value("\${keycloak.credentials.secret}")
     private val keycloakSecret: String? = null
 
-    override fun getUsersWithIgeRoles(principal: Principal?): Set<User> {
+    override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         try {
             initClient(principal).use {
                 val roles = it.realm().roles()
@@ -75,7 +76,7 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getUsers(principal: Principal?): Set<User> {
+    override fun getUsers(principal: Principal): Set<User> {
 
         try {
             initClient(principal).use {
@@ -168,16 +169,18 @@ class KeycloakService : UserManagementService {
         )
     }
 
-    override fun getRoles(principal: KeycloakAuthenticationToken?): Set<String>? {
-        return principal?.account?.roles
+    override fun getRoles(principal: Authentication): Set<String>? {
+        principal as KeycloakAuthenticationToken
+        return principal.account?.roles
     }
 
-    override fun getName(principal: KeycloakAuthenticationToken?): String? {
-        val expiration = principal?.account?.keycloakSecurityContext?.token?.exp ?: -99
-        val issuedAt = principal?.account?.keycloakSecurityContext?.token?.iat ?: -99
+    override fun getName(principal: Authentication): String? {
+        principal as KeycloakAuthenticationToken
+        val expiration = principal.account?.keycloakSecurityContext?.token?.exp ?: -99
+        val issuedAt = principal.account?.keycloakSecurityContext?.token?.iat ?: -99
         log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
         log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
-        return principal?.account?.keycloakSecurityContext?.idToken?.name
+        return principal.account?.keycloakSecurityContext?.idToken?.name
     }
 
     override fun getCurrentPrincipal(): Principal? {
@@ -203,7 +206,7 @@ class KeycloakService : UserManagementService {
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
             usersResource.get(userId).apply {
-                roles().realmLevel().add(getRoleRepresentation(it.realm(), user))
+                roles().realmLevel().add(listOf( it.realm().roles().get("ige-user").toRepresentation()))
                 
                 // send an email to the user to set a password
                 try {
@@ -291,15 +294,6 @@ class KeycloakService : UserManagementService {
 
         return (client as KeycloakCloseableClient).realm().roles().list()
             .filter { roles.contains(it.name) }
-
-    }
-
-    private fun getRoleRepresentation(realmResource: RealmResource, user: User): List<RoleRepresentation> {
-
-        val role = realmResource.roles()
-            .get(user.role).toRepresentation()
-
-        return listOf(role)
 
     }
 

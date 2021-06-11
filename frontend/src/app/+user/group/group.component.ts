@@ -4,7 +4,7 @@ import {GroupService} from '../../services/role/group.service';
 import {Group} from '../../models/user-group';
 import {Observable, Subject} from 'rxjs';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn} from '@angular/forms';
-import {Permissions} from '../user';
+import {Permissions, User} from '../user';
 import {debounceTime, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {dirtyCheck} from '@ngneat/dirty-check-forms';
@@ -14,7 +14,8 @@ import {MatDialog} from '@angular/material/dialog';
 @UntilDestroy()
 @Component({
   selector: 'ige-group-manager',
-  templateUrl: './group.component.html'
+  templateUrl: './group.component.html',
+  styleUrls: ['./group.component.scss']
 })
 export class GroupComponent implements OnInit {
 
@@ -22,6 +23,7 @@ export class GroupComponent implements OnInit {
   state$ = new Subject<any>();
 
   groups: Group[] = [];
+  searchQuery: string;
 
   isNewGroup = false;
   form: FormGroup;
@@ -32,7 +34,10 @@ export class GroupComponent implements OnInit {
     description: '',
     permissions: new Permissions()
   };
-  selectedGroup = new FormControl();
+  selectedGroupForm = new FormControl();
+  selectedGroup: Group;
+  isLoading = false;
+  showMore= false;
 
   constructor(private modalService: ModalService,
               private fb: FormBuilder,
@@ -56,12 +61,12 @@ export class GroupComponent implements OnInit {
   }
 
   fetchGroups(): Observable<Group[]> {
-    const currentValue = this.selectedGroup.value;
+    const currentValue = this.selectedGroupForm.value;
 
     return this.groupService.getGroups()
       .pipe(
         tap(groups => this.groups = groups),
-        tap(() => setTimeout(() => this.selectedGroup.setValue(currentValue)))
+        tap(() => setTimeout(() => this.selectedGroupForm.setValue(currentValue)))
       );
   }
 
@@ -73,6 +78,7 @@ export class GroupComponent implements OnInit {
   }
 
   loadGroup(id: string) {
+    this.isLoading = true;
     this.isNewGroup = false;
     this.form.disable();
     this.groupService.getGroup(id)
@@ -85,6 +91,7 @@ export class GroupComponent implements OnInit {
         // we need to make a general object of the group in order to compare
         // its state with the form value correctly
         this.state$.next(JSON.parse(JSON.stringify(fetchedGroup)));
+        this.isLoading = false;
       });
   }
 
@@ -146,11 +153,15 @@ export class GroupComponent implements OnInit {
   forbiddenNameValidator(): ValidatorFn {
     return (control: AbstractControl) => {
       const forbidden = this.groups
-        .filter(group => group.name === control.value && group.id !== this.selectedGroup.value[0])
+        .filter(group => group.name === control.value && group.id !== this.selectedGroup?.id)
         .length > 0;
 
       return forbidden ? {forbiddenName: {value: control.value}} : null;
     };
+  }
+
+  onSearchChange(searchValue: string): void {
+    this.searchQuery = searchValue;
   }
 
 }

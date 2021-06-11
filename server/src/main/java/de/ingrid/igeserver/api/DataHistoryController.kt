@@ -19,7 +19,7 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
      * Find dataset versions.
      */
     override fun find(
-        principal: Principal?,
+        principal: Principal,
         id: String?,
         user: String?,
         action: String?,

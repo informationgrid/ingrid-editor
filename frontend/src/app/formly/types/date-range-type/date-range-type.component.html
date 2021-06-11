@@ -1,4 +1,4 @@
-<mat-date-range-input [rangePicker]="picker" [formGroup]="rangeFormGroup">
+<mat-date-range-input [rangePicker]="picker" [formGroup]="rangeFormGroup" [disabled]="formControl.disabled">
     <input matStartDate placeholder="TT.MM.JJJJ" formControlName="start" (change)="updateFormControl()">
     <input matEndDate placeholder="TT.MM.JJJJ" formControlName="end" (change)="updateFormControl()">
 </mat-date-range-input>

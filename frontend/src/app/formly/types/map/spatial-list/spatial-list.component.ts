@@ -29,6 +29,8 @@ export interface SpatialLocationWithColor extends SpatialLocation {
 export class SpatialListComponent implements OnInit {
 
   @Input() locations: Observable<SpatialLocationWithColor[]>;
+  @Input() disabled = false;
+
   @Output() selectLocation = new EventEmitter<number>();
   @Output() edit = new EventEmitter<number>();
   @Output() remove = new EventEmitter<number>();

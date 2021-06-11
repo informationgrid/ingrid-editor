@@ -4,7 +4,6 @@ import {Plugin} from '../../../+catalog/+behaviours/plugin';
 import {MatDialog} from '@angular/material/dialog';
 import {TreeQuery} from '../../../store/tree/tree.query';
 import {
-  ConfirmDialogButton,
   ConfirmDialogComponent,
   ConfirmDialogData
 } from '../../../dialogs/confirm/confirm-dialog.component';
@@ -14,8 +13,6 @@ import {AddressTreeQuery} from '../../../store/address-tree/address-tree.query';
 import {EventService, IgeEvent} from '../../../services/event/event.service';
 import {filter, take} from 'rxjs/operators';
 import {DocumentAbstract} from '../../../store/document/document.model';
-import {TreeStore} from '../../../store/tree/tree.store';
-import {AddressTreeStore} from '../../../store/address-tree/address-tree.store';
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -25,7 +22,6 @@ export class DeleteDocsPlugin extends Plugin {
   defaultActive = true;
 
   private tree: TreeQuery | AddressTreeQuery;
-  private treeStore: TreeStore | AddressTreeStore;
 
   get name() {
     return this._name;

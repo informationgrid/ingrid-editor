@@ -31,18 +31,18 @@ interface CodelistApi {
     @Operation
     @RequestMapping(value = ["/{ids}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getCodelistsByIds(
-        principal: Principal?,
+        principal: Principal,
         @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>
     ): ResponseEntity<List<CodeList>>
 
     @Operation
     @GetMapping(value = ["/manage"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getCatalogCodelists(principal: Principal?): ResponseEntity<List<CodeList>>
+    fun getCatalogCodelists(principal: Principal): ResponseEntity<List<CodeList>>
 
     @Operation
     @PutMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updateCatalogCodelist(
-        principal: Principal?,
+        principal: Principal,
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody codelist: Codelist
     ): ResponseEntity<Codelist>
@@ -50,7 +50,7 @@ interface CodelistApi {
     @Operation
     @DeleteMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun resetCatalogCodelist(
-        principal: Principal?,
+        principal: Principal,
         @Parameter() @PathVariable id: String?
     ): ResponseEntity<List<CodeList>>
 

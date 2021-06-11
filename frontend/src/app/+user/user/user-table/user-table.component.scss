@@ -22,18 +22,6 @@ table {
   color: $ige-hint-color;
 }
 
-.legend {
-  color: $ige-comment-color;
-  padding-left: 12px;
-  span {
-    vertical-align: super;
-    padding-right: 4px;
-  }
-  ::ng-deep svg path {
-    fill: $ige-comment-color;
-  }
-}
-
 tr button {
   visibility: hidden;
 }

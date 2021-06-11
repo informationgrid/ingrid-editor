@@ -21,40 +21,40 @@ interface ResearchApi {
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     @ResponseBody
-    fun load(principal: Principal?): ResponseEntity<List<Query>>
+    fun load(principal: Principal): ResponseEntity<List<Query>>
 
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun save(principal: Principal?,
+    fun save(principal: Principal,
              @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query): ResponseEntity<Query>
 
     @Operation
     @DeleteMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun delete(principal: Principal?,
+    fun delete(principal: Principal,
     @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int): ResponseEntity<Void>
 
     @Operation
     @PostMapping(value = ["/query"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun search(principal: Principal?,
+    fun search(principal: Principal,
                @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery): ResponseEntity<ResearchResponse>
     
     @Operation
     @PostMapping(value = ["/querySql"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun searchSql(principal: Principal?,
+    fun searchSql(principal: Principal,
                @Parameter(description = "the sql query") @RequestBody sqlQuery: String): ResponseEntity<ResearchResponse>
 
     @Operation
     @GetMapping(value = ["/quickFilter"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun getQuickFilter(principal: Principal?): ResponseEntity<Facets>
+    fun getQuickFilter(principal: Principal): ResponseEntity<Facets>
 
     @Operation
     @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun export(principal: Principal?): ResponseEntity<Any>
+    fun export(principal: Principal): ResponseEntity<Any>
 
 }

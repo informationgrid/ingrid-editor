@@ -39,8 +39,6 @@ as-split-area {
 
   button.btnAddUser {
     margin-right: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
   }
 
 }
@@ -112,10 +110,15 @@ h1 {
   font-size: 2em;
 }
 
-ngx-skeleton-loader{
+ngx-skeleton-loader {
   padding: 10px;
 }
 
 .no-selection-text {
   color: $ige-comment-color;
+}
+
+
+as-split-area {
+  padding-bottom: 100px;
 }

@@ -19,7 +19,7 @@ class ImportApiController @Autowired constructor(private val importService: Impo
 
     private val log = logger()
 
-    override fun importDataset(principal: Principal?, file: MultipartFile): ResponseEntity<ImportAnalyzeInfo> {
+    override fun importDataset(principal: Principal, file: MultipartFile): ResponseEntity<ImportAnalyzeInfo> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 

@@ -1,6 +1,6 @@
 <div #leaflet [class.passive]="!hasAnyLocations"></div>
 
-<div class="button-wrapper text-center" [class.has-spatial]="hasAnyLocations">
+<div *ngIf="formControl.enabled" class="button-wrapper text-center" [class.has-spatial]="hasAnyLocations">
     <div *ngIf="!hasAnyLocations" class="spatialBtnText">
         Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
     </div>
@@ -18,6 +18,7 @@
 
 <ige-spatial-list *ngIf="hasAnyLocations"
                   [locations]="locationsWithColor$"
+                  [disabled]="formControl.disabled"
                   (selectLocation)="highlightLocation($event)"
                   (edit)="openSpatialDialog($event)"
                   (remove)="removeLocation($event)"></ige-spatial-list>
