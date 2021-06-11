@@ -108,6 +108,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit, A
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);
+
+    // correctly destroy service since it's not always destroyed by lifecycle
+    this.formPlugins.onDestroy();
   }
 
   ngOnInit() {

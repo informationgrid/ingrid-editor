@@ -1,11 +1,11 @@
-import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Plugin} from '../../+catalog/+behaviours/plugin';
 import {Router} from '@angular/router';
 import {BehaviourService} from '../../services/behavior/behaviour.service';
 import {FormPluginToken} from '../../tokens/plugin.token';
 
 @Injectable()
-export class FormPluginsService implements OnDestroy {
+export class FormPluginsService {
 
   plugins: Plugin[] = [];
 
@@ -26,7 +26,9 @@ export class FormPluginsService implements OnDestroy {
 
   }
 
-  ngOnDestroy(): void {
+  // on destroy must be called manually from provided component since it may not be
+  // called always
+  onDestroy(): void {
     this.plugins.forEach(p => p.unregister());
   }
 
