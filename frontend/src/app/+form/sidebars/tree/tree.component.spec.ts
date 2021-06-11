@@ -554,7 +554,30 @@ describe("TreeComponent", () => {
       // @ts-ignore
       db.treeUpdates.next({
         type: UpdateType.Delete,
-        data: [{ id: "1" }, { id: "2" }],
+        data: [
+          {
+            id: "1",
+            title: "",
+            _type: "",
+            icon: "",
+            _state: "W",
+            _hasChildren: false,
+            _modified: false,
+            _parent: "",
+            hasWritePermission: true,
+          },
+          {
+            id: "2",
+            title: "",
+            _type: "",
+            icon: "",
+            _state: "W",
+            _hasChildren: false,
+            _modified: false,
+            _parent: "",
+            hasWritePermission: true,
+          },
+        ],
       });
 
       tick(1000);
@@ -719,6 +742,9 @@ describe("TreeComponent", () => {
           _parent: options.parent || null,
           _state: options.state || "W",
           title: options.title || "Test Document 123",
+          _hasChildren: false,
+          _modified: false,
+          icon: "",
         },
       ],
       parent: options.parent || null,
