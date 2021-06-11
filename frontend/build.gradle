@@ -36,6 +36,10 @@ task test(type: YarnTask) {
   args = ['run', 'test-headless']
 }
 
+task testFormatting(type: YarnTask) {
+  args = ['prettier', '--check', "."]
+}
+
 task packageNpmApp(type: Zip) {
   dependsOn bundle
   baseName 'ige-frontend-app'
