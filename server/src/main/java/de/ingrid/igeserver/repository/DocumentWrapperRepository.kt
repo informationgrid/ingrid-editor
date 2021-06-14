@@ -13,10 +13,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 
 interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
 
-    @PostAuthorize("hasRole('cat-admin') || hasPermission(returnObject, 'READ')")
+    @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findById(uuid: String): DocumentWrapper
 
-    @PostFilter("hasRole('cat-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
