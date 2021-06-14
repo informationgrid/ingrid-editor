@@ -24,4 +24,8 @@ class AuthUtilsMock : AuthUtils {
         return principal.authorities.any { it.authority == role }
     }
 
+    override fun isAdmin(principal: Principal): Boolean {
+        return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
+    }
+
 }

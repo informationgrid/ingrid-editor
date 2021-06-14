@@ -60,7 +60,7 @@ class ResearchApiController @Autowired constructor(
     override fun searchSql(principal: Principal, sqlQuery: String): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = researchService.querySql(dbId, sqlQuery)
+        val result = researchService.querySql(principal, dbId, sqlQuery)
         return ResponseEntity.ok(result)
     }
 

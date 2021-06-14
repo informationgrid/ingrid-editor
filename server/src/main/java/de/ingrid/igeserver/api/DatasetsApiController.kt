@@ -228,7 +228,7 @@ class DatasetsApiController @Autowired constructor(
     ): ResponseEntity<List<JsonNode>> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
+        val isCatAdmin = authUtils.isAdmin(principal)
         val children = if (!isCatAdmin && parentId == null) {
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups

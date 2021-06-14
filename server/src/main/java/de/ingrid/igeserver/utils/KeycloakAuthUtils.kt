@@ -24,4 +24,8 @@ class KeycloakAuthUtils : AuthUtils {
         principal as KeycloakAuthenticationToken
         return principal.authorities.contains(SimpleGrantedAuthority(role))
     }
+
+    override fun isAdmin(principal: Principal): Boolean {
+        return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
+    }
 }

@@ -1,15 +1,14 @@
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.utils.AuthUtils
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
@@ -41,6 +40,9 @@ class ResearchService {
 
     @Autowired
     private lateinit var aclService: IgeAclService
+    
+    @Autowired
+    private lateinit var authUtils: AuthUtils
 
     private val specialFilter = arrayOf("selectPublished", "selectLatest")
 
@@ -51,32 +53,25 @@ class ResearchService {
 
     }
 
-    fun query(principal: Principal?, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
+    fun query(principal: Principal, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
 
-        val groupIds = aclService.getDatasetUuidsFromGroups(groups, false)
+        val isAdmin = authUtils.isAdmin(principal)
+        val groupIds = if (isAdmin) emptyList() else aclService.getDatasetUuidsFromGroups(groups, false)
+        
+        // if a user has no groups then user is not allowed anything
+        if (groupIds.isEmpty() && !isAdmin) {
+            return ResearchResponse(0, emptyList())
+        }
+        
         val sql = createQuery(dbId, query, groupIds)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
-        val map = mapResult(result)
-//        val filtered = filterResultsByPermission(principal as Authentication, map.toMutableList())
+        val map = mapResult(result, isAdmin)
 
         return ResearchResponse(result.size, map)
     }
-
-    private fun filterResultsByPermission(authentication: Authentication, result: MutableList<Result>): List<Result> {
-        return result.mapNotNull {
-            val info = aclService.getPermissionInfo(authentication, it.uuid!!)
-            val mapped = if (info.canRead) {
-                it.hasWritePermission = info.canWrite
-                it
-            } else {
-                null
-            }
-            mapped
-        }
-    }
-
+    
     private fun getParameters(query: ResearchQuery): List<Any> {
         return query.clauses?.clauses
             ?.mapNotNull { it.parameter }
@@ -105,7 +100,7 @@ class ResearchService {
         val catalogFilter = createCatalogFilter(dbId)
         val groupDocUuidsString = groupDocUuids.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
-        val permissionFilter =
+        val permissionFilter = if (groupDocUuids.isEmpty()) "" else
             """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
                     OR ('{$groupDocUuidsString}') && document_wrapper.path)
             """.trimIndent()
@@ -220,11 +215,9 @@ class ResearchService {
             .resultList as List<Array<Any>>
     }
 
-    private fun mapResult(result: List<Any>): List<Result> {
+    private fun mapResult(result: List<Any>, isAdmin: Boolean): List<Result> {
         return result.map {
             val item = it as Array<out Any>
-//            val node = jacksonObjectMapper().createObjectNode()
-            val node: ObjectNode = item[0] as ObjectNode
             Result(
                 title = item[1] as? String,
                 uuid = item[2] as? String,
@@ -233,18 +226,19 @@ class ResearchService {
                 _modified = item[5] as? Date,
                 _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
                 _category = (item[7] as? String),
-                hasWritePermission = false
+                hasWritePermission = if (isAdmin) true else false // TODO: check for permission in query or post processing
             )
         }
     }
 
-    fun querySql(dbId: String, sqlQuery: String): ResearchResponse {
+    fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
 
+        val isAdmin = authUtils.isAdmin(principal)
         try {
             val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
             val result = sendQuery(catalogQuery, emptyList())
 
-            return ResearchResponse(result.size, mapResult(result))
+            return ResearchResponse(result.size, mapResult(result, isAdmin))
         } catch (error: Exception) {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
