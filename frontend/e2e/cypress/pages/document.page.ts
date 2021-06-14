@@ -406,7 +406,7 @@ export class DocumentPage extends BasePage {
   }
 
   static clickSpatialEntry(spatialName: string) {
-    cy.get('ige-formly--type mat-list').find('div.mat-line.spatial-title').contains(spatialName).click();
+    cy.get('ige-formly--type mat-list div.mat-line').contains(spatialName).click({force:true});
   }
 
   static clickLeafletMapResetBtn() {
