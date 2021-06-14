@@ -1,9 +1,7 @@
-import {BasePage, CatalogsTabmenu} from './base.page';
-import {DocumentPage} from "./document.page";
+import { BasePage, CatalogsTabmenu } from './base.page';
+import { DocumentPage } from './document.page';
 
 export class BehavioursPage extends BasePage {
-
-
   static checkPageContains(cssItem: string, wordlist: string[]) {
     wordlist.forEach(el => {
       cy.get(cssItem).contains(el);
@@ -16,7 +14,7 @@ export class BehavioursPage extends BasePage {
 
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
     cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
-    cy.get('mat-tab-header div.mat-tab-label:nth-child(' + tabmenu + ')').click();
+    cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')').click();
   }
 
   private static toggleCatalogSetting(title: string): void {
@@ -29,7 +27,16 @@ export class BehavioursPage extends BasePage {
 
   static setCatalogInputbox(title: string, input: string) {
     BehavioursPage.getCatalogCheckbox(title).find('[aria-checked="true"]');
-    return cy.get('mat-card').find('mat-card-title').contains(title).parent().parent().parent().find('mat-card-content').clear().type(input);
+    return cy
+      .get('mat-card')
+      .find('mat-card-title')
+      .contains(title)
+      .parent()
+      .parent()
+      .parent()
+      .find('mat-card-content')
+      .clear()
+      .type(input);
   }
 
   static checkTimeoutIs(timeout: string) {
@@ -39,17 +46,14 @@ export class BehavioursPage extends BasePage {
   static setCatalogSetting(settingTitle: string, desiredState: boolean, save = true): void {
     const toggleNeeded = BehavioursPage.getCatalogCheckbox(settingTitle).find('[aria-checked="' + !desiredState + '"]');
 
-    if (toggleNeeded)
-      this.toggleCatalogSetting(settingTitle);
+    if (toggleNeeded) this.toggleCatalogSetting(settingTitle);
 
-    if (save)
-      this.saveCatalogSetting();
-  };
+    if (save) this.saveCatalogSetting();
+  }
 
   static setCatalogSettingInput(settingTitle: string, input: string) {
     this.setCatalogSetting(settingTitle, true, false);
     this.setCatalogInputbox(settingTitle, input);
     this.saveCatalogSetting();
   }
-
 }
