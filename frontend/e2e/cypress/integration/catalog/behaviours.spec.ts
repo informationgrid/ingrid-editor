@@ -207,11 +207,7 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
     });
 
-    it('should jump back to a previously opened document via history buttons', () => {
-      const firstObject = 'Testdokumente';
-      const secondObject = 'Ordner 2. Ebene';
-      const thirdObject = 'Tiefes Dokument';
-
+    it('should show and hide the history buttons', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Previous).should('exist');
       cy.get(DocumentPage.Toolbar.Next).should('exist');
@@ -226,6 +222,12 @@ describe('Behaviours', () => {
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('History Plugin', true);
+    });
+
+    it('should jump back to a previously opened document via history buttons', () => {
+      const firstObject = 'Testdokumente';
+      const secondObject = 'Ordner 2. Ebene';
+      const thirdObject = 'Tiefes Dokument';
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
 
