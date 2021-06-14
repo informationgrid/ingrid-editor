@@ -22,7 +22,8 @@ class KeycloakAuthUtils : AuthUtils {
 
     override fun containsRole(principal: Principal, role: String): Boolean {
         principal as KeycloakAuthenticationToken
-        return principal.authorities.contains(SimpleGrantedAuthority(role))
+        // check in keycloak role (which contains prefix "ROLE_") and in additional roles defined by application
+        return principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
     }
 
     override fun isAdmin(principal: Principal): Boolean {
