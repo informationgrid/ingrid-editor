@@ -47,8 +47,8 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val parent = data.get(FIELD_PARENT)
-        val parentId = if (parent.isNull) null else parent.asText() 
-         val resultDoc = documentService.createDocument(catalogId, data, parentId, address, publish)
+        val parentId = if (parent == null || parent.isNull) null else parent.asText()
+        val resultDoc = documentService.createDocument(catalogId, data, parentId, address, publish)
         return ResponseEntity.ok(resultDoc)
     }
 
@@ -75,7 +75,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     @Transactional
-    override fun deleteById(principal: Principal, ids: Array<String>): ResponseEntity<String>{
+    override fun deleteById(principal: Principal, ids: Array<String>): ResponseEntity<String> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         for (id in ids) {
@@ -133,7 +133,7 @@ class DatasetsApiController @Autowired constructor(
         val origParentId = doc[FIELD_ID].asText()
 
         val objectNode = doc as ObjectNode
-        
+
         // remove fields that shouldn't be persisted
         // also copied docs need new ID
         listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
@@ -236,7 +236,7 @@ class DatasetsApiController @Autowired constructor(
         } else {
             documentService.findChildrenDocs(dbId, parentId, isAddress).hits
         }
-        
+
         val childDocs = children
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
@@ -250,10 +250,10 @@ class DatasetsApiController @Autowired constructor(
         userGroups: MutableSet<Group>?,
         isAddress: Boolean,
     ): List<DocumentWrapper> {
-        
-        return aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress) 
+
+        return aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress)
             .map { uuid -> documentService.getWrapperByDocumentId(uuid) }
-        
+
     }
 
     override fun find(

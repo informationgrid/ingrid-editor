@@ -41,7 +41,7 @@ class MyAuthenticationProvider @Autowired constructor(
         val username = token.account.principal.name
         var userDb = userRepository.findByUserId(username)
         if (userDb == null && isSuperAdmin) {
-        // create user for super admin in db
+            // create user for super admin in db
             userDb = UserInfo().apply {
                 userId = username
                 role = roleRepository.findByName("ige-super-admin")
