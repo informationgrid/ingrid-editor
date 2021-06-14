@@ -203,4 +203,14 @@ export class Tree {
     cy.get(DocumentPage.Toolbar.Previous).click();
     cy.wait(100);
   }
+
+  static multiSelectObject(cssItem: string, nodelist: string[]) {
+    cy.get('[data-cy=edit-button]').click();
+    cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
+
+    nodelist.forEach(node => {
+      cy.get(cssItem).contains(node).click();
+      cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(node);
+    });
+  }
 }

@@ -461,7 +461,7 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
       Tree.openNode(['Neue Testdokumente']);
-      DocumentPage.multiSelectObject('mat-tree', [title, title2]);
+      Tree.multiSelectObject('mat-tree', [title, title2]);
 
       DocumentPage.checkOnlyActiveToolbarButtons(['Copy', 'Delete']);
     });
@@ -508,7 +508,7 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false, undefined);
 
       Tree.openNode(['Neue Testdokumente', title]);
-      DocumentPage.multiSelectObject('mat-tree', [title2]);
+      Tree.multiSelectObject('mat-tree', [title2]);
       CopyCutUtils.copyObject([node]);
 
       Tree.deactivateMultiSelectMode();
@@ -528,7 +528,7 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
       Tree.openNode(['Neue Testdokumente']);
-      DocumentPage.multiSelectObject('mat-tree', [title, title2]);
+      Tree.multiSelectObject('mat-tree', [title, title2]);
     });
 
     it('should delete multiple selected nodes', () => {
@@ -539,7 +539,7 @@ describe('Tree', () => {
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
 
       Tree.openNode(['Neue Testdokumente', title]);
-      DocumentPage.multiSelectObject('mat-tree', [title2]);
+      Tree.multiSelectObject('mat-tree', [title2]);
 
       DocumentPage.deleteLoadedNode();
       // check if multiple selected Docs were deleted

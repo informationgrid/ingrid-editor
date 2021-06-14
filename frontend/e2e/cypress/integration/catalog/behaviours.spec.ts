@@ -124,13 +124,13 @@ describe('Behaviours', () => {
 
     it('should show and hide the new document button', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_NEW_DOC]').should('exist');
+      cy.get(DocumentPage.Toolbar.NewDoc).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Neues Dokument Plugin',false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_NEW_DOC]').should('not.exist');
+      cy.get(DocumentPage.Toolbar.NewDoc).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Neues Dokument Plugin', true);
@@ -141,70 +141,70 @@ describe('Behaviours', () => {
 
     it('should show and hide the save button', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_SAVE]').should('exist');
+      cy.get(DocumentPage.Toolbar.Save).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Save Plugin',false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_SAVE]').should('not.exist');
+      cy.get(DocumentPage.Toolbar.Save).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Save Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_SAVE]').should('exist');
+      cy.get(DocumentPage.Toolbar.Save).should('exist');
     });
 
     it('should show and hide the create folder button', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('exist');
+      cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Folder Plugin',false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('not.exist');
+      cy.get(DocumentPage.Toolbar.NewFolder).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Folder Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_CREATE_FOLDER]').should('exist');
+      cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
     });
 
     it('should show and hide the copy/cut button', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_COPY]').should('exist');
+      cy.get(DocumentPage.Toolbar.Copy).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Copy Cut Paste',false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_COPY]').should('not.exist');
+      cy.get(DocumentPage.Toolbar.Copy).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Copy Cut Paste', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_COPY]').should('exist');
+      cy.get(DocumentPage.Toolbar.Copy).should('exist');
     });
 
     it('should show and hide the delete doc/folder button', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_DELETE]').should('exist');
+      cy.get(DocumentPage.Toolbar.Delete).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Delete Docs Plugin',false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_DELETE]').should('not.exist');
+      cy.get(DocumentPage.Toolbar.Delete).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
       BehavioursPage.setCatalogSetting('Delete Docs Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      cy.get('[data-cy=toolbar_DELETE]').should('exist');
+      cy.get(DocumentPage.Toolbar.Delete).should('exist');
     });
 
     it('should jump back to a previously opened document via history buttons', () => {
