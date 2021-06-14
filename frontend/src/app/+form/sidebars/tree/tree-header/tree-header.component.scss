@@ -14,10 +14,11 @@
     .multi-select {
       flex: 2;
       font-size: 14px;
+      display: flex;
+      align-items: center;
 
       mat-checkbox {
         padding: 0 12px;
-        line-height: 40px;
 
         &:hover {
           background-color: $ige-background-bar;
@@ -28,7 +29,6 @@
     .show-all {
       font-size: 14px;
       height: 40px;
-      //flex: 2;
     }
 
     .reload-button {
@@ -38,17 +38,10 @@
 }
 
 .multi-select-area {
-  /*position: absolute;
-  top: 0;
-  left: 0;*/
   background-color: $ige-mark-color;
   width: 100%;
   padding: 8px 12px 8px 24px;
   font-size: 14px;
-
-  mat-checkbox {
-    line-height: 40px;
-  }
 }
 
 ::ng-deep .quicksearch-auto {
