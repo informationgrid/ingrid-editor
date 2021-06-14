@@ -100,7 +100,11 @@ CREATE TABLE document_archive (
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            entityManager.createNativeQuery(sql).executeUpdate()
+            // only setup schema if any/catalog table exists 
+            val found = entityManager.createNativeQuery("SELECT cast(to_regclass('catalogX') as varchar)").resultList.first()
+            if (found == null) {
+                entityManager.createNativeQuery(sql).executeUpdate()
+            }
         }
     }
 
