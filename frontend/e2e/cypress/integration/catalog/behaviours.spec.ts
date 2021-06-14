@@ -207,14 +207,61 @@ describe('Behaviours', () => {
       cy.get('[data-cy=toolbar_DELETE]').should('exist');
     });
 
-    xit('should jump back to a previously opened document via history buttons', () => {
-      // also test if button disappears when behaviour disabled
+    it('should jump back to a previously opened document via history buttons', () => {
+      const firstObject = 'Testdokumente';
+      const secondObject = 'Ordner 2. Ebene';
+      const thirdObject = 'Tiefes Dokument';
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get(DocumentPage.Toolbar.Previous).should('exist');
+      cy.get(DocumentPage.Toolbar.Next).should('exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('History Plugin',false);
+
+      // check button disappears when behaviour disabled
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+      cy.get(DocumentPage.Toolbar.Previous).should('not.exist');
+      cy.get(DocumentPage.Toolbar.Next).should('not.exist');
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.setCatalogSetting('History Plugin', true);
+
+      cy.get(DocumentPage.Sidemenu.Daten).click();
+
       // open 3 documents after another
+      Tree.clickOnNodeWithTitle(firstObject);
+      Tree.clickOnNodeWithTitle(secondObject);
+      Tree.clickOnNodeWithTitle(thirdObject);
+
       // check if forward button is disabled and backward button enabled and doc 3 is opened
+      cy.get(DocumentPage.Toolbar.Next).should('be.disabled');
+      cy.get(DocumentPage.Toolbar.Previous).should('be.enabled');
+      cy.get(DocumentPage.title).should('have.text', thirdObject);
+
       // go backwards -> forward and backward buttons are enabled and doc 2 is opened
+      Tree.goBack();
+      Tree.goForward();
+      Tree.goBack();
+      cy.get(DocumentPage.title).contains(secondObject);
+
       // go backwards -> forward button is enabled and backward button is disabled and doc 1 is opened
+      Tree.goBack();
+      cy.get(DocumentPage.Toolbar.Next).should('be.enabled');
+      cy.get(DocumentPage.Toolbar.Previous).should('be.disabled');
+      cy.get(DocumentPage.title).contains(firstObject);
+
       // go forward -> forward and backward buttons are enabled and doc 2 is opened
+      Tree.goForward();
+      Tree.goForward();
+      Tree.goBack();
+      cy.get(DocumentPage.title).contains(secondObject);
+
       // go forward -> forward button is disabled and backward button enabled and doc 3 is opened
+      Tree.goForward();
+      cy.get(DocumentPage.Toolbar.Next).should('be.disabled');
+      cy.get(DocumentPage.Toolbar.Previous).should('be.enabled');
+      cy.get(DocumentPage.title).contains(thirdObject);
     });
 
     it('should be only possible to delete non empty folders if behaviour is switched off', () => {

@@ -193,4 +193,14 @@ export class Tree {
   private static getRegExp(nodeTitle: string): RegExp {
     return new RegExp('^' + nodeTitle + '$');
   }
+
+  static goForward(){
+    cy.get(DocumentPage.Toolbar.Next).click();
+    cy.wait(100);
+  }
+
+  static goBack(){
+    cy.get(DocumentPage.Toolbar.Previous).click();
+    cy.wait(100);
+  }
 }
