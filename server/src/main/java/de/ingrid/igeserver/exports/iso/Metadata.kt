@@ -1,19 +1,18 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlRootElement
-import javax.xml.bind.annotation.XmlType
+import javax.xml.bind.annotation.*
 
-@XmlRootElement(name = "MD_Metadata")
+@XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
     namespace = "http://www.isotc211.org/2005/gmd",
     propOrder = ["fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName", "contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale", "spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo", "contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints", "applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType", "featureAttribute"]
 )
 data class Metadata(
+    @field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
     var fileIdentifier: CharacterString? = null,
     var characterSet: CharacterSetCode? = null,
+    @field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
     var language: LanguageCode? = null,
     var parentIdentifier: CharacterString? = null,
     var hierarchyLevel: ScopeCode? = null,

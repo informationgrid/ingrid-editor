@@ -6,6 +6,6 @@ import javax.xml.bind.annotation.XmlElement
 
 @XmlAccessorType(XmlAccessType.FIELD)
 data class LanguageCode(
-    @XmlElement(name = "LanguageCode")
+    @field:XmlElement(name = "LanguageCode", namespace = "http://www.isotc211.org/2005/gmd")
     var codelist: CodelistAttributes? = null
 )
