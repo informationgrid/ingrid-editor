@@ -317,26 +317,8 @@ class DatasetsApiController @Autowired constructor(
         id: String
     ): ResponseEntity<List<String>> {
 
-        var parentId: String = id
-        val path: MutableList<String> = ArrayList()
-        path.add(id)
+        val path = documentService.getWrapperByDocumentId(id).path
+        return ResponseEntity.ok(path + id)
 
-        while (true) {
-            val doc = try {
-                documentService.getWrapperByDocumentId(parentId)
-            } catch (ex: AccessDeniedException) {
-                log.warn("Parent '$parentId' could not be fetched because of missing access rights")
-                break
-            }
-            val nextParentId = doc.parent?.id
-            if (nextParentId != null) {
-                path.add(nextParentId)
-                parentId = nextParentId
-            } else {
-                break
-            }
-        }
-
-        return ResponseEntity.ok(path.reversed())
     }
 }
