@@ -8,9 +8,11 @@
             [showOptions]="showHeaderOptions"
             [showOnlyFolders]="showOnlyFolders"
             [showMultiSelectButton]="showMultiSelectButton"
-            [checkToggleAll]="allNodesSelected()"
-            [indeterminateToggleAll]="atLeastOneButNotAllNodesSelected()"
-            (toggleAllSelection)="toggleAllSelection($event)"
+            [checkToggleAll]="selection.allNodesSelected()"
+            [indeterminateToggleAll]="selection.atLeastOneButNotAllNodesSelected()"
+            [multiSelectionModeEnabled]="selection.multiSelectionModeEnabled"
+            (toggleAllSelection)="selection.toggleAllSelection($event)"
+            (toggleView)="toggleView($event)"
             (edit)="toggleSelectionMode($event)"
             (open)="handleSelection($event)"
         ></ige-tree-header>
@@ -49,7 +51,7 @@
             matTreeNodePadding
             matTreeNodePaddingIndent="24"
             (click)="!disabledCondition(node) && selectNode(node, $event)"
-            [class.selected]="isSelected(node)"
+            [class.selected]="selection.isSelected(node)"
             [class.active]="node._id === activeNodeId"
             [class.hide]="showOnlyFolders"
             [class.readonly]="!node.hasWritePermission"
@@ -59,10 +61,10 @@
         >
             <div class="label">
                 <mat-checkbox
-                    *ngIf="multiSelectionModeEnabled"
-                    [checked]="isSelected(node)"
+                    *ngIf="selection.multiSelectionModeEnabled"
+                    [checked]="selection.isSelected(node)"
                     (click)="$event.stopImmediatePropagation()"
-                    (change)="nodeSelectionToggle(node, $event)"
+                    (change)="selection.nodeSelectionToggle(node, $event)"
                 ></mat-checkbox>
                 <mat-icon
                     [svgIcon]="node.iconClass"
@@ -84,7 +86,7 @@
             matTreeNodePaddingIndent="24"
             (click)="handleFolderClick(node, $event)"
             [class.drop]="dragManager.dragNodeExpandOverNode === node"
-            [class.selected]="isSelected(node)"
+            [class.selected]="selection.isSelected(node)"
             [class.active]="node._id === activeNodeId"
             [class.expanded]="treeControl.isExpanded(node)"
             [class.readonly]="!node.hasWritePermission"
@@ -117,10 +119,10 @@
 
                 <div class="label">
                     <mat-checkbox
-                        *ngIf="showFolderCheckbox()"
-                        (change)="nodeSelectionToggle(node, $event)"
+                        *ngIf="selection.showFolderCheckbox()"
+                        (change)="selection.nodeSelectionToggle(node, $event)"
                         (click)="$event.stopImmediatePropagation()"
-                        [checked]="isSelected(node)"
+                        [checked]="selection.isSelected(node)"
                     ></mat-checkbox>
 
                     <span>{{ node.title }}</span>

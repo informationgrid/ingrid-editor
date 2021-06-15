@@ -18,6 +18,7 @@ export class TreeHeaderComponent implements OnInit {
   @Input() showOptions = true;
   @Input() showOnlyFolders = false;
   @Input() showMultiSelectButton = true;
+  @Input() multiSelectionModeEnabled = false;
 
   @Input() checkToggleAll = false;
   @Input() indeterminateToggleAll = false;
@@ -26,10 +27,10 @@ export class TreeHeaderComponent implements OnInit {
   @Output() open = new EventEmitter();
   @Output() edit = new EventEmitter<boolean>();
   @Output() toggleAllSelection = new EventEmitter<boolean>();
+  @Output() toggleView = new EventEmitter<boolean>();
 
   searchResult = new Subject<TreeNode[]>();
   query = new FormControl("");
-  multiSelectionModeEnabled = false;
 
   constructor(private db: DynamicDatabase) {}
 

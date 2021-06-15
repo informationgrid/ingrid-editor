@@ -42,7 +42,8 @@
 
         <div fxFlex fxLayout="row">
             <div fxFlex="3 1 auto"></div>
-            <mat-slide-toggle class="show-all" checked disabled
+            <mat-slide-toggle class="show-all" checked
+                              (change)="toggleView.emit($event.checked)"
                 >Alle anzeigen</mat-slide-toggle
             >
 
