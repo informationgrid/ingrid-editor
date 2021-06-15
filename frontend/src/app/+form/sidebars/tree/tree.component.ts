@@ -100,8 +100,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.dataSource = new DynamicDataSource(
       this.treeControl,
       database,
-      treeService,
-      this.selection.model
+      treeService
     );
 
     this.dragManager = new DragNDropUtils(this.treeControl);
@@ -534,7 +533,7 @@ export class TreeComponent implements OnInit, OnDestroy {
         this.treeControl.toggle(node);
       }
     } else {
-      this.selection.selectNode(node, $event);
+      this.selectNode(node, $event);
     }
   }
 
@@ -613,7 +612,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   toggleView(showAll: boolean) {
-
+    this.database.hideReadOnly = !showAll;
+    this.reloadTree(true).subscribe();
   }
 
   toggleSelectionMode(isEditMode: boolean) {

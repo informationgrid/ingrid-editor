@@ -1,12 +1,13 @@
-import { Injectable } from "@angular/core";
-import { Observable, of, Subject } from "rxjs";
-import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
-import { DocumentService } from "../../../services/document/document.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { DocumentAbstract } from "../../../store/document/document.model";
-import { TreeNode } from "../../../store/tree/tree-node.model";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {Injectable} from "@angular/core";
+import {Observable, of, Subject} from "rxjs";
+import {UpdateDatasetInfo} from "../../../models/update-dataset-info.model";
+import {DocumentService} from "../../../services/document/document.service";
+import {TreeQuery} from "../../../store/tree/tree.query";
+import {DocumentAbstract} from "../../../store/document/document.model";
+import {TreeNode} from "../../../store/tree/tree-node.model";
+import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {map} from "rxjs/operators";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -16,6 +17,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 @Injectable()
 export class DynamicDatabase {
   treeUpdates = new Subject<UpdateDatasetInfo>();
+
+  hideReadOnly = false;
 
   constructor(
     private docService: DocumentService,
@@ -32,7 +35,12 @@ export class DynamicDatabase {
     forceFromServer?: boolean,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
-    return this.getChildren(null, forceFromServer, isAddress);
+    const children = this.getChildren(null, forceFromServer, isAddress);
+    if (this.hideReadOnly) {
+      return children.pipe(map(docs => docs.filter(doc => doc.hasWritePermission)));
+    } else {
+      return children;
+    }
   }
 
   getChildren(
@@ -54,7 +62,13 @@ export class DynamicDatabase {
     if (children.length > 0) {
       return of(children);
     }
-    return this.docService.getChildren(parentId, isAddress);
+
+    const moreChildren = this.docService.getChildren(parentId, isAddress);
+    if (this.hideReadOnly) {
+      return moreChildren.pipe(map(docs => docs.filter(doc => doc.hasWritePermission)));
+    } else {
+      return moreChildren;
+    }
   }
 
   search(value: string, isAddress: boolean) {

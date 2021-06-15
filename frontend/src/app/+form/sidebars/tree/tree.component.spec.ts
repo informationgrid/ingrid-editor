@@ -478,7 +478,7 @@ describe("TreeComponent", () => {
       spectator.click('[data-cy="edit-button"]');
 
       const toggleAllSelectionSpy = spyOn(
-        spectator.component,
+        spectator.component.selection,
         "toggleAllSelection"
       );
       expect(toggleAllSelectionSpy).toHaveBeenCalledTimes(0);
@@ -489,7 +489,7 @@ describe("TreeComponent", () => {
       expect(toggleAllSelectionSpy).toHaveBeenCalledWith(true);
 
       // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
-      spectator.component.selectionModel.select(
+      spectator.component.selection.model.select(
         ...spectator.component.treeControl.dataNodes
       );
       spectator.triggerEventHandler(
@@ -500,7 +500,7 @@ describe("TreeComponent", () => {
       checkSelectionCount(3);
 
       // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
-      spectator.component.selectionModel.clear();
+      spectator.component.selection.model.clear();
       spectator.triggerEventHandler(
         '[data-cy="toggle-all-selection"]',
         "change",
@@ -620,7 +620,7 @@ describe("TreeComponent", () => {
     it("should remove a deleted node from the selection model", fakeAsync(() => {
       spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
-      let selectionModel = spectator.fixture.componentInstance.selectionModel;
+      let selectionModel = spectator.fixture.componentInstance.selection.model;
 
       expect(selectionModel.selected.length).toBe(0);
       selectNode(0);

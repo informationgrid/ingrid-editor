@@ -37,8 +37,7 @@ export class DynamicDataSource {
   constructor(
     private _treeControl: FlatTreeControl<TreeNode>,
     private _database: DynamicDatabase,
-    private treeService: TreeService,
-    private selectionModel: SelectionModel<TreeNode>
+    private treeService: TreeService
   ) {}
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
