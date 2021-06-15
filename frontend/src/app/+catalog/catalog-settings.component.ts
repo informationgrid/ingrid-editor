@@ -27,8 +27,8 @@ export class CatalogSettingsComponent implements OnInit {
 
   constructor(router: Router) {
     this.activeLink =
-      router.getCurrentNavigation().extractedUrl.root.children.primary
-        .segments[1]?.path ?? "general";
+      router.getCurrentNavigation()?.extractedUrl?.root?.children?.primary
+        ?.segments[1]?.path ?? "general";
   }
 
   ngOnInit(): void {}

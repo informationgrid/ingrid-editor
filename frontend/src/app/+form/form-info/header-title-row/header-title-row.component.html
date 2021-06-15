@@ -11,7 +11,7 @@
         *ngIf="!showTitleInput"
         fxFlex
         class="label"
-        [class.editable]="!disableEdit"
+        [class.editable]="!disableEdit && form.enabled"
         (click)="!disableEdit && form.enabled && editTitle()"
     >
         <span>{{ form.get("title")?.value || "Kein Titel" }}</span>

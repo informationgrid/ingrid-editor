@@ -5,8 +5,10 @@
 >
     <mat-list-item
         *ngFor="let field of field.fieldGroup; let i = index"
-        cdkDrag
-        class="clickable small-padding-right"
+        cdkDrag [cdkDragDisabled]="formControl.disabled"
+        class="small-padding-right"
+        [class.clickable]="formControl.enabled"
+        [class.draggable]="formControl.enabled"
         [class.image]="to.asImage"
     >
         <div
@@ -40,6 +42,7 @@
         <div mat-line class="description">{{ model[i].description }}</div>
 
         <button
+            *ngIf="formControl.enabled"
             mat-icon-button
             class="menu-button"
             [mat-menu-trigger-for]="menu"
@@ -56,6 +59,7 @@
 </mat-list>
 
 <ige-add-button
+    *ngIf="formControl.enabled"
     (add)="addItem()"
     [showRequiredError]="formControl.invalid && formControl.errors?.required"
 ></ige-add-button>

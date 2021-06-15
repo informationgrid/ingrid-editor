@@ -1,6 +1,9 @@
 .address-cards {
-  cursor: move;
   padding-bottom: 14px;
+
+  &.draggable {
+    cursor: move;
+  }
 
   .address-card-wrapper {
     min-width: 240px;
