@@ -2,6 +2,7 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
+import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
 import org.springframework.security.acls.domain.*
@@ -43,8 +44,13 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
             return true
         }
 
-        val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(domainObject)
-        return checkPermission(authentication, objectIdentity, permission, domainObject)
+        // convert HibernateProxy to real document class if necessary
+        val finalDomainObject = if (domainObject is HibernateProxy) {
+            domainObject.writeReplace()
+        } else domainObject
+        
+        val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
+        return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
     }
 
     private fun hasAdminRole(authentication: Authentication): Boolean {
