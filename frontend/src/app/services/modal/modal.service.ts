@@ -18,6 +18,7 @@ interface DialogContent {
 export class ModalService {
   private dialogRef: MatDialogRef<ErrorDialogComponent, any>;
   errors: IgeError[] = [];
+  isExclusive = false;
 
   constructor(private dialog: MatDialog, private ngZone: NgZone) {}
 
@@ -30,8 +31,23 @@ export class ModalService {
       .afterClosed();
   }
 
-  showIgeError(error: IgeError) {
-    this.errors.push(error);
+  /**
+   *
+   * @param error
+   * @param exclusive if true, shows only this error and no other
+   */
+  showIgeError(error: IgeError, exclusive = false) {
+    // do not show error if modal is already showing an exclusive message unless it's also exclusive
+    if (this.isExclusive && !exclusive) {
+      return;
+    }
+
+    if (exclusive) {
+      this.isExclusive = true;
+      this.errors = [error];
+    } else {
+      this.errors.push(error);
+    }
 
     if (this.dialogRef) {
       console.log("Dialog already open, just updated error information");
@@ -46,6 +62,7 @@ export class ModalService {
       this.dialogRef.afterClosed().subscribe(() => {
         this.dialogRef = null;
         this.errors = [];
+        this.isExclusive = false;
       });
     });
   }
@@ -56,6 +73,11 @@ export class ModalService {
    * @param moreInfo
    */
   showJavascriptError(message: string | any, moreInfo?: string) {
+    // do not show error if modal is already showing an exclusive message unless it's also exclusive
+    if (this.isExclusive) {
+      return;
+    }
+
     const errorObj = new IgeError();
     errorObj.message = message;
 
@@ -86,6 +108,7 @@ export class ModalService {
       this.dialogRef.afterClosed().subscribe(() => {
         this.dialogRef = null;
         this.errors = [];
+        this.isExclusive = false;
       });
     });
   }

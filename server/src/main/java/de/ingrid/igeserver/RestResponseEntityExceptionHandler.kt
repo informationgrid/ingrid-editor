@@ -2,6 +2,7 @@ package de.ingrid.igeserver
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.InvalidParameterException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.lang.Nullable
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -52,6 +54,18 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
             log.debug(logMessage, ex)
         }
         return handleExceptionInternal(ex, data, HttpHeaders(), ex.statusCode, request)
+    }
+
+
+
+    /**
+     * Handler for authorization exceptions
+     */
+    @ExceptionHandler(value = [AccessDeniedException::class])
+    protected fun handleAuthorizationException(t: Throwable, request: WebRequest): ResponseEntity<Any> {
+        // wrap into server exception
+        val igeException = ForbiddenException.withAccessRights(t.localizedMessage)
+        return handleIgeException(igeException, request)
     }
 
     /**

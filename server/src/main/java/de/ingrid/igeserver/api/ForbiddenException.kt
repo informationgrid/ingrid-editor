@@ -20,5 +20,9 @@ open class ForbiddenException: ClientException {
         fun withUser(user: String, cause: Throwable? = null) : ForbiddenException {
             return ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
         }
+        
+        fun withAccessRights(message: String, cause: Throwable? = null) : ForbiddenException {
+            return ForbiddenException(STATUS_CODE, ERROR_CODE, message, null, cause)
+        }
     }
 }

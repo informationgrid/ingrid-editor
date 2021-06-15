@@ -288,7 +288,7 @@ class DatasetsApiController @Autowired constructor(
         val searchResult = SearchResult<JsonNode>()
         searchResult.totalHits = docs.totalElements
         searchResult.hits = docs.content
-            .map { doc -> documentService.getLatestDocument(doc) }
+            .map { doc -> documentService.getLatestDocument(doc, resolveLinks = false) }
             .map { doc -> documentService.convertToJsonNode(doc) }
         return ResponseEntity.ok(searchResult)
     }
@@ -299,11 +299,15 @@ class DatasetsApiController @Autowired constructor(
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
 
-        val wrapper = documentService.getWrapperByDocumentId(id);
+        try {
+            val wrapper = documentService.getWrapperByDocumentId(id);
 
-        val doc = documentService.getLatestDocument(wrapper)
-        val jsonDoc = documentService.convertToJsonNode(doc)
-        return ResponseEntity.ok(jsonDoc)
+            val doc = documentService.getLatestDocument(wrapper)
+            val jsonDoc = documentService.convertToJsonNode(doc)
+            return ResponseEntity.ok(jsonDoc)
+        } catch (ex: AccessDeniedException) {
+            throw ForbiddenException.withAccessRights("No read access to document")
+        }
 
     }
 

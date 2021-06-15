@@ -14,7 +14,6 @@ import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { Group } from "../../../models/user-group";
 import { IgeDocument } from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
 import { TreeQuery } from "../../../store/tree/tree.query";
@@ -34,6 +33,7 @@ import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @UntilDestroy()
 @Component({
@@ -71,8 +71,6 @@ export class DynamicFormComponent
   error = false;
   model: IgeDocument | any = {};
 
-  userRoles: Group[];
-
   paddingWithHeader: string;
 
   showValidationErrors = false;
@@ -100,9 +98,6 @@ export class DynamicFormComponent
     private auth: AuthService,
     private route: ActivatedRoute
   ) {
-    // TODO: get roles definiton
-    this.userRoles = [];
-
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
 
@@ -249,6 +244,7 @@ export class DynamicFormComponent
     if (id === undefined) {
       this.fields = [];
       this.activeId.next(null);
+      this.form.reset();
       this.documentService.updateOpenedDocumentInTreestore(
         null,
         this.address,
@@ -269,10 +265,6 @@ export class DynamicFormComponent
 
     this.showValidationErrors = false;
 
-    // set activeId delayed in case of page initialization explicitActiveNode$ observable
-    // comes a bit later
-    setTimeout(() => this.activeId.next(id));
-
     let previousDocId = this.form.value._id;
 
     this.documentService
@@ -280,8 +272,8 @@ export class DynamicFormComponent
       .pipe(untilDestroyed(this))
       .subscribe(
         (doc) => this.updateFormWithData(doc),
-        (error) => {
-          if (error.error.errorText === "Access is denied") {
+        (error: HttpErrorResponse) => {
+          if (error.status === 403) {
             // select previous document
             const target = this.address ? "/address" : "/form";
             if (previousDocId) {
@@ -296,9 +288,14 @@ export class DynamicFormComponent
   }
 
   private updateFormWithData(data) {
+
     if (data === null) {
       return;
     }
+
+    // set activeId delayed in case of page initialization explicitActiveNode$ observable
+    // comes a bit later
+    setTimeout(() => this.activeId.next(data._id));
 
     const profile = data._type;
 

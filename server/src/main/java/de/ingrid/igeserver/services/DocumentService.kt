@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -401,7 +403,11 @@ class DocumentService @Autowired constructor(
         if (resolveLinks) {
             val refType = getDocumentType(docType)
 
-            refType.updateReferences(docData, onlyPublished)
+            try {
+                refType.updateReferences(docData, onlyPublished)
+            } catch (ex: AccessDeniedException) {
+                throw ForbiddenException.withAccessRights("No access to referenced dataset")
+            }
         }
 
         return docData
