@@ -145,7 +145,8 @@ class DocumentWrapper {
         name = "path",
         columnDefinition = "text[]"
     )
-    var path = emptyList<String>()
+    var path: List<String> = emptyList()
+        get() = if (field == null) emptyList() else field // field can actually be null if in db table null
 
 
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id)")
