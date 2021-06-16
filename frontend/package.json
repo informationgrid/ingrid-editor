@@ -17,7 +17,8 @@
     "test-headless": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
-    "sme": "source-map-explorer"
+    "sme": "source-map-explorer",
+    "prepare": "cd .. && husky install frontend/.husky"
   },
   "private": true,
   "dependencies": {
@@ -68,6 +69,7 @@
     "@types/node": "^12.11.1",
     "akita-schematics": "^2.0.1",
     "codelyzer": "^6.0.2",
+    "husky": "^6.0.0",
     "jasmine-reporters": "^2.3.2",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.4",
@@ -78,6 +80,7 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-junit-reporter": "^2.0.1",
     "karma-sourcemap-loader": "^0.3.8",
+    "lint-staged": "^11.0.0",
     "prettier": "2.3.1",
     "source-map-explorer": "^2.5.2",
     "typescript": "~4.2.4"
@@ -86,5 +89,8 @@
     "npm": "please-use-yarn",
     "yarn": ">= 1.22.0",
     "node": ">= 10.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,scss,js,css,html,md}": "prettier --check"
   }
 }
