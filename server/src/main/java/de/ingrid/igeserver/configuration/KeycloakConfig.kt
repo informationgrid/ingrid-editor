@@ -17,17 +17,20 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.web.authentication.logout.LogoutFilter
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 
 @Profile("!dev")
 @KeycloakConfiguration
@@ -129,7 +132,33 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      */
     override fun configure(httpSec: HttpSecurity) {
         var http = httpSec
-        super.configure(http)
+        // TODO: call to super would trigger spring security issue 9787
+        //       revert after Spring Security 5.5.1 has been released
+        // super.configure(http);
+
+        // BEGIN OF TEMPORARY FIX
+        http
+            .csrf().requireCsrfProtectionMatcher(keycloakCsrfRequestMatcher())
+            .and()
+            .sessionManagement()
+            .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+            .and()
+            .addFilterBefore(keycloakPreAuthActionsFilter(), LogoutFilter::class.java)
+            .addFilterBefore(keycloakAuthenticationProcessingFilter(), LogoutFilter::class.java)
+            .addFilterAfter(keycloakSecurityContextRequestFilter(), SecurityContextHolderAwareRequestFilter::class.java)
+//            .addFilterAfter(RequestResponseLoggingFilter(), SecurityContextHolderAwareRequestFilter::class.java)
+            .addFilterAfter(
+                keycloakAuthenticatedActionsRequestFilter(),
+                SecurityContextHolderAwareRequestFilter::class.java
+            )
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+            .and()
+            .logout()
+            .addLogoutHandler(keycloakLogoutHandler())
+            .logoutUrl("/sso/logout").permitAll()
+            .logoutSuccessUrl("/")
+        
+        // END OF TEMPORARY FIX
 
         http = if (csrfEnabled) {
             http.csrf()
@@ -148,7 +177,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .and()
         }
         http
-            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
+//            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
             .authorizeRequests()
             .anyRequest().authenticated()
             .and()
