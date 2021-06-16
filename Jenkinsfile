@@ -55,8 +55,12 @@ pipeline {
                         script {
                             try {
                                 sh './gradlew :frontend:test'
-                                sh './gradlew :frontend:testFormatting'
                             } catch(error) {}
+                            try {
+                                sh './gradlew :frontend:testFormatting'
+                            } catch(error) {
+                                currentBuild.result = 'UNSTABLE'
+                            }
                         }
                     }
                 }
