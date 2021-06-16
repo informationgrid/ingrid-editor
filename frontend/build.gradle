@@ -45,6 +45,7 @@ task packageNpmApp(type: Zip) {
   baseName 'ige-frontend-app'
   extension 'jar'
   destinationDir file("${projectDir}/build/packageApp")
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
   from('build/dist') {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
     into 'static'
