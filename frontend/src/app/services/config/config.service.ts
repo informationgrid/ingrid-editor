@@ -3,6 +3,7 @@ import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
+import {IgeError} from "../../models/ige-error";
 
 export class Configuration {
   constructor(
@@ -68,6 +69,11 @@ export class ConfigService {
   // TODO: refactor to fetchCurrentUserInfo()
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo().then((userInfo) => {
+      if (userInfo === null) {
+        const error = new IgeError();
+        error.setMessage("Could not get current user");
+        throw new IgeError(error);
+      }
       this.$userInfo.next(userInfo);
       this.isAdministrator =
         userInfo.groups && userInfo.groups.indexOf("ige-super-admin") !== -1;
