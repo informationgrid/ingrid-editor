@@ -57,7 +57,7 @@ export class KeycloakService {
             keycloakAuth.realm +
             "/protocol/openid-connect/logout?redirect_uri=" +
             document.baseURI;
-          resolve();
+          resolve(null);
         })
         .error((e) => {
           console.error("Error initializing Keycloak", e);
