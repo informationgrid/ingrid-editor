@@ -5,7 +5,8 @@
 >
     <mat-list-item
         *ngFor="let field of field.fieldGroup; let i = index"
-        cdkDrag [cdkDragDisabled]="formControl.disabled"
+        cdkDrag
+        [cdkDragDisabled]="formControl.disabled"
         class="small-padding-right"
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"

@@ -3,7 +3,7 @@ import {
   Component,
   forwardRef,
   Input,
-  OnInit
+  OnInit,
 } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { MatTableDataSource } from "@angular/material/table";
@@ -15,7 +15,10 @@ import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
 import { fa } from "cronstrue/dist/i18n/locales/fa";
 import { MatListOption } from "@angular/material/list";
-import { ConfirmDialogComponent, ConfirmDialogData } from "../../../dialogs/confirm/confirm-dialog.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: "permission-table",
@@ -25,9 +28,9 @@ import { ConfirmDialogComponent, ConfirmDialogData } from "../../../dialogs/conf
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => PermissionTableComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() title: string;
@@ -41,23 +44,18 @@ export class PermissionTableComponent implements ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
-  constructor(private dialog: MatDialog) {
-  }
+  constructor(private dialog: MatDialog) {}
 
   callEditDialog() {
     return this.dialog
       .open(PermissionAddDialogComponent, {
         minWidth: 500,
-        data: { forAddress: this.forAddress, value: this.value }
-
+        data: { forAddress: this.forAddress, value: this.value },
       })
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.value = [
-            ...this.val,
-            data
-          ];
+          this.value = [...this.val, data];
         }
       });
   }
@@ -74,10 +72,10 @@ export class PermissionTableComponent implements ControlValueAccessor {
               text: "Löschen",
               alignRight: true,
               id: "confirm",
-              emphasize: true
-            }
-          ]
-        }
+              emphasize: true,
+            },
+          ],
+        },
       })
       .afterClosed()
       .subscribe((result) => {
@@ -86,7 +84,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
         this.removePermission(uuid);
       });
   }
-
 
   private removePermission(uuid: string) {
     this.value = this.val.filter((entry) => uuid !== entry.uuid);

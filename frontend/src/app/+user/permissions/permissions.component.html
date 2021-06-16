@@ -1,5 +1,5 @@
 <div [formGroup]="formGroup" style="max-height: unset">
-<!--    <div fxLayout="row" fxLayoutGap="20px">
+    <!--    <div fxLayout="row" fxLayoutGap="20px">
         <mat-selection-list #option [multiple]="false">
             <mat-list-option value="pages" selected>
                 Seitenzugriff
@@ -51,8 +51,15 @@
             ></ige-tree-permission>
         </div>
     </div>-->
-    <permission-table formControlName="documents" title="Datensätze"></permission-table>
-    <permission-table formControlName="addresses" title="Adressen" [forAddress]="true"></permission-table>
+    <permission-table
+        formControlName="documents"
+        title="Datensätze"
+    ></permission-table>
+    <permission-table
+        formControlName="addresses"
+        title="Adressen"
+        [forAddress]="true"
+    ></permission-table>
 
     <div class="legend">
         <mat-icon svgIcon="edit-folder"></mat-icon>

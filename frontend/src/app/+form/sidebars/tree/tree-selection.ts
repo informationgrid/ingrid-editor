@@ -1,10 +1,9 @@
-import {TreeNode} from "../../../store/tree/tree-node.model";
-import {MatCheckboxChange} from "@angular/material/checkbox";
-import {SelectionModel} from "@angular/cdk/collections";
-import {FlatTreeControl} from "@angular/cdk/tree";
+import { TreeNode } from "../../../store/tree/tree-node.model";
+import { MatCheckboxChange } from "@angular/material/checkbox";
+import { SelectionModel } from "@angular/cdk/collections";
+import { FlatTreeControl } from "@angular/cdk/tree";
 
 export class TreeSelection {
-
   model = new SelectionModel<TreeNode>(true);
 
   lastSelectedNode: TreeNode;
@@ -13,9 +12,7 @@ export class TreeSelection {
 
   activeNode: TreeNode = null;
 
-  constructor(private treeControl: FlatTreeControl<TreeNode>) {
-
-  }
+  constructor(private treeControl: FlatTreeControl<TreeNode>) {}
 
   /**
    *
@@ -110,9 +107,7 @@ export class TreeSelection {
       return null;
     }
 
-    return this.model.selected[
-    this.model.selected.length - 1
-      ];
+    return this.model.selected[this.model.selected.length - 1];
   }
 
   isSelected(node: TreeNode): boolean {
@@ -145,9 +140,8 @@ export class TreeSelection {
 
   atLeastOneButNotAllNodesSelected() {
     return (
-      this.treeControl.dataNodes.some((node) =>
-        this.model.isSelected(node)
-      ) && !this.allNodesSelected()
+      this.treeControl.dataNodes.some((node) => this.model.isSelected(node)) &&
+      !this.allNodesSelected()
     );
   }
 
@@ -158,5 +152,4 @@ export class TreeSelection {
 
     this.lastSelectedNode = null;
   }
-
 }

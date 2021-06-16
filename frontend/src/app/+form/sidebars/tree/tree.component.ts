@@ -23,7 +23,7 @@ import { TreeService } from "./tree.service";
 import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { ShortTreeNode } from "./tree.types";
-import {TreeSelection} from "./tree-selection";
+import { TreeSelection } from "./tree-selection";
 
 export enum TreeActionType {
   ADD,

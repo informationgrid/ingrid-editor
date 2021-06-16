@@ -1,10 +1,16 @@
-import {Injectable} from "@angular/core";
-import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest,} from "@angular/common/http";
-import {KeycloakService} from "./keycloak.service";
-import {Observable, throwError} from "rxjs";
-import {catchError} from "rxjs/operators";
-import {ModalService} from "../../services/modal/modal.service";
-import {IgeError} from "../../models/ige-error";
+import { Injectable } from "@angular/core";
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from "@angular/common/http";
+import { KeycloakService } from "./keycloak.service";
+import { Observable, throwError } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { ModalService } from "../../services/modal/modal.service";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -13,8 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private auth: KeycloakService,
     private modalService: ModalService
-  ) {
-  }
+  ) {}
 
   // TODO: https://stackoverflow.com/questions/54925361/how-to-give-session-idle-timeout-in-angular-6
 
@@ -55,12 +60,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private getMessage(error: HttpErrorResponse): string {
     switch (error.error.errorText) {
-      case 'No access to referenced dataset':
-        return 'Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.'
-      case 'No read access to document':
-        return 'Sie haben keine Berechtigung auf diesen Datensatz.'
+      case "No access to referenced dataset":
+        return "Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.";
+      case "No read access to document":
+        return "Sie haben keine Berechtigung auf diesen Datensatz.";
       default:
-        return 'Sie haben keine Berechtigung für diese Aktion.';
+        return "Sie haben keine Berechtigung für diese Aktion.";
     }
   }
 }

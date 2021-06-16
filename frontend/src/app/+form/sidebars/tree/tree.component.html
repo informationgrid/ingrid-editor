@@ -9,7 +9,9 @@
             [showOnlyFolders]="showOnlyFolders"
             [showMultiSelectButton]="showMultiSelectButton"
             [checkToggleAll]="selection.allNodesSelected()"
-            [indeterminateToggleAll]="selection.atLeastOneButNotAllNodesSelected()"
+            [indeterminateToggleAll]="
+                selection.atLeastOneButNotAllNodesSelected()
+            "
             [multiSelectionModeEnabled]="selection.multiSelectionModeEnabled"
             (toggleAllSelection)="selection.toggleAllSelection($event)"
             (toggleView)="toggleView($event)"

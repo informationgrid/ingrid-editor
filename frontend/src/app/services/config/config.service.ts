@@ -3,7 +3,7 @@ import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
-import {IgeError} from "../../models/ige-error";
+import { IgeError } from "../../models/ige-error";
 
 export class Configuration {
   constructor(

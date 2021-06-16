@@ -69,7 +69,7 @@ import { PermissionAddDialogComponent } from "./permissions/permission-add-dialo
     GroupHeaderMoreComponent,
     HeaderMoreComponent,
     PermissionTableComponent,
-    PermissionAddDialogComponent
+    PermissionAddDialogComponent,
   ],
 })
 export class UserModule {}

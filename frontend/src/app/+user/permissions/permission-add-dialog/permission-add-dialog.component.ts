@@ -11,7 +11,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
   selector: "permission-add-dialog",
   templateUrl: "./permission-add-dialog.component.html",
   styleUrls: ["./permission-add-dialog.component.scss"],
-
 })
 export class PermissionAddDialogComponent {
   @Input() forAddress = this.data?.forAddress;
@@ -43,7 +42,7 @@ export class PermissionAddDialogComponent {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<PermissionAddDialogComponent>,
+    public dialogRef: MatDialogRef<PermissionAddDialogComponent>
   ) {
     this.value = this.data?.value ?? [];
   }
@@ -63,7 +62,11 @@ export class PermissionAddDialogComponent {
   addPermission(option: string) {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const entity = query.getEntity(this.selection[0]);
-    this.dialogRef.close({ uuid: this.selection[0], title: entity.title, permission: option });
+    this.dialogRef.close({
+      uuid: this.selection[0],
+      title: entity.title,
+      permission: option,
+    });
   }
 
   jumpToTreeNode($event: MatSelectionListChange) {

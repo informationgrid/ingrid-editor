@@ -33,7 +33,7 @@ import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
-import {HttpErrorResponse} from "@angular/common/http";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @UntilDestroy()
 @Component({
@@ -288,7 +288,6 @@ export class DynamicFormComponent
   }
 
   private updateFormWithData(data) {
-
     if (data === null) {
       return;
     }

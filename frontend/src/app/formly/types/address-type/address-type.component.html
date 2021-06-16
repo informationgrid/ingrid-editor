@@ -17,7 +17,8 @@
         fxFlex="50"
         class="address-card-wrapper"
         [class.draggable]="formControl.enabled"
-        cdkDrag [cdkDragDisabled]="formControl.disabled"
+        cdkDrag
+        [cdkDragDisabled]="formControl.disabled"
     >
         <ige-address-card
             (edit)="editAddress(address, i)"

@@ -1,13 +1,13 @@
-import {Injectable} from "@angular/core";
-import {Observable, of, Subject} from "rxjs";
-import {UpdateDatasetInfo} from "../../../models/update-dataset-info.model";
-import {DocumentService} from "../../../services/document/document.service";
-import {TreeQuery} from "../../../store/tree/tree.query";
-import {DocumentAbstract} from "../../../store/document/document.model";
-import {TreeNode} from "../../../store/tree/tree-node.model";
-import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
-import {map} from "rxjs/operators";
+import { Injectable } from "@angular/core";
+import { Observable, of, Subject } from "rxjs";
+import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
+import { DocumentService } from "../../../services/document/document.service";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { DocumentAbstract } from "../../../store/document/document.model";
+import { TreeNode } from "../../../store/tree/tree-node.model";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { map } from "rxjs/operators";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -37,7 +37,9 @@ export class DynamicDatabase {
   ): Observable<DocumentAbstract[]> {
     const children = this.getChildren(null, forceFromServer, isAddress);
     if (this.hideReadOnly) {
-      return children.pipe(map(docs => docs.filter(doc => doc.hasWritePermission)));
+      return children.pipe(
+        map((docs) => docs.filter((doc) => doc.hasWritePermission))
+      );
     } else {
       return children;
     }
@@ -65,7 +67,9 @@ export class DynamicDatabase {
 
     const moreChildren = this.docService.getChildren(parentId, isAddress);
     if (this.hideReadOnly) {
-      return moreChildren.pipe(map(docs => docs.filter(doc => doc.hasWritePermission)));
+      return moreChildren.pipe(
+        map((docs) => docs.filter((doc) => doc.hasWritePermission))
+      );
     } else {
       return moreChildren;
     }
