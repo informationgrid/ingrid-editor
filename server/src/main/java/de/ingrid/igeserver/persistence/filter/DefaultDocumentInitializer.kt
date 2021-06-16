@@ -71,6 +71,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
             else -> docWrapperRepo.findById(parentId.asText())
         }
         val documentType = payload.document.type
+        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id
 
         with(payload.wrapper) {
             catalog = catalogRef
@@ -81,13 +82,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
             type = documentType
             category = payload.category
             archive = mutableSetOf()
-        }
-
-        // add path info to created wrapper
-        if (parentRef?.path != null) {
-            payload.wrapper.path = listOf(*parentRef.path.toTypedArray()) + parentRef.id
-        } else if (parentRef != null) {
-            payload.wrapper.path = listOf(parentRef.id)
+            path = newPath
         }
     }
 }

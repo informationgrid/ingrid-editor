@@ -66,12 +66,7 @@ class CatalogService @Autowired constructor(
 
         val userData = getUser(userId)?.data
 
-        return if (userData == null) {
-            log.error("The user '$userId' does not seem to be assigned to any database.")
-            mutableListOf()
-        } else userData.recentLogins
-            .map { Date(it) }
-            .toMutableList()
+        return userData?.recentLogins?.map { Date(it) }?.toMutableList() ?: mutableListOf()
     }
 
     fun getUserOfCatalog(catalogId: String): List<UserInfo> {

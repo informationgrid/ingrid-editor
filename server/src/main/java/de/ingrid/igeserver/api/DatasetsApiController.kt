@@ -183,41 +183,57 @@ class DatasetsApiController @Autowired constructor(
         }
         validateCopyOperation(catalogId, id, options.destId)
 
-        // TODO: update parent
-//        doc.parent = options.destId
+        // update parent
+        doc.data.put(FIELD_PARENT, options.destId)
 
         val published = doc.state == DocumentService.DocumentState.PUBLISHED.value
 
         // update document which includes updating the wrapper
         documentService.updateDocument(catalogId, id, doc, published)
 
+        // get new parent path
+        val newPath = if (options.destId == null) emptyList() else {
+            getPathFromWrapper(options.destId) + options.destId
+        }
+
         // updateWrapper
         val wrapperWithLinks = documentService.getWrapperByDocumentId(id)
         wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findById(options.destId)
+        wrapperWithLinks.path = newPath
+
         docWrapperRepo.save(wrapperWithLinks)
+
+        updatePathForAllChildren(catalogId, newPath, id)
+    }
+
+    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: String) {
+        documentService.findChildren(catalogId, id).hits
+            .forEach {
+                it.path = path + id
+                if (it.type == "FOLDER") {
+                    updatePathForAllChildren(catalogId, it.path, it.id)
+                }
+                docWrapperRepo.save(it)
+            }
     }
 
     private fun validateCopyOperation(catalogId: String, sourceId: String, destinationId: String?) {
         // check destination is not part of source
-        val descIds = getAllDescendantIds(catalogId, sourceId).drop(1)
+        val descIds = getAllDescendantIds(catalogId, sourceId)
         if (descIds.contains(destinationId)) {
             throw ConflictException.withReason("Cannot copy '$sourceId' to contained '$destinationId'")
         }
     }
 
     /**
-     *  first id in result is always own id
+     *  Get a list of all IDs hierarchically below a given id
      */
     private fun getAllDescendantIds(catalogId: String, id: String): List<String> {
         val docs = documentService.findChildren(catalogId, id)
         return if (docs.hits.isEmpty()) {
-            List(1) { id }
+            emptyList()
         } else {
-            val result = mutableListOf(id)
-            docs.hits.forEach { doc ->
-                result.addAll(getAllDescendantIds(catalogId, doc.id))
-            }
-            result
+            docs.hits.flatMap { doc -> getAllDescendantIds(catalogId, doc.id) }
         }
     }
 
@@ -311,14 +327,16 @@ class DatasetsApiController @Autowired constructor(
 
     }
 
-    @ExperimentalStdlibApi
     override fun getPath(
         principal: Principal,
         id: String
     ): ResponseEntity<List<String>> {
 
-        val path = documentService.getWrapperByDocumentId(id).path
+        val path = getPathFromWrapper(id)
         return ResponseEntity.ok(path + id)
 
     }
+
+    private fun getPathFromWrapper(id: String) = documentService.getWrapperByDocumentId(id).path
+
 }
