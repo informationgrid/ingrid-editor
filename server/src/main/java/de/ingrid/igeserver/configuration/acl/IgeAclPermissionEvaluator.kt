@@ -32,6 +32,12 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
         if (hasAdminRole(authentication)) {
             return true
         }
+        
+        // root elements can only be created by admins
+        if (targetId == null) {
+            return false
+        }
+        
         return super.hasPermission(authentication, targetId, targetType, permission)
     }
 
