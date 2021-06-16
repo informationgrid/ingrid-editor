@@ -2,7 +2,9 @@
 
 :host {
   display: block;
-  padding: 0 24px 24px;
+  padding-bottom: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .info-box {

@@ -58,7 +58,6 @@
     height: 26px;
     line-height: 24px;
     background-color: $ige-background-bar;
-    margin-right: 11px;
   }
   .document-type {
     display: inline-block;
@@ -66,7 +65,6 @@
     border-radius: 50%;
     height: 28px;
     width: 28px;
-    margin-left: 18px;
 
     mat-icon {
       line-height: 32px;
@@ -88,8 +86,15 @@
   }
 }
 
-.navigation-header > div {
-  align-items: center;
+.navigation-header {
+
+  padding: 0 24px 0 36px;
+
+  & > div {
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+  }
 }
 
 /* Safari 11+ only: don't reserve space for scrollbar */
