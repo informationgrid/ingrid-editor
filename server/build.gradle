@@ -57,7 +57,7 @@ dependencies {
     implementation project(':api')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    compile "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
+    implementation "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -69,7 +69,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-acl'
-    compile 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -81,8 +81,8 @@ dependencies {
 //    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // Keycloak
-    implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.1'
-    implementation 'org.keycloak:keycloak-admin-client:12.0.1'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.4'
+    implementation 'org.keycloak:keycloak-admin-client:12.0.4'
 
     // Markdown
     implementation "com.atlassian.commonmark:commonmark:0.16.1"
