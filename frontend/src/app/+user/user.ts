@@ -43,16 +43,10 @@ export class Permissions {
   addresses: TreePermission[] = [];
 }
 
-export class Permission {
-  type: PermissionType;
-  key: string;
-  value: string;
-}
-
 export class TreePermission {
-  uuid;
-  title;
-  permission;
+  uuid: string;
+  title: string;
+  permission: string;
 }
 
 export enum PermissionType {
@@ -60,4 +54,13 @@ export enum PermissionType {
   ACTION,
   DOCUMENTS,
   ADDRESSES,
+}
+
+export enum PermissionLevel {
+  /** Write Access to whole tree */
+  WRITE_FOLDER = "writeTree",
+  /** Write Access to sub tree*/
+  WRITE = "writeTreeExceptParent",
+  /** Read Access to whole tree */
+  READ = "readTree",
 }

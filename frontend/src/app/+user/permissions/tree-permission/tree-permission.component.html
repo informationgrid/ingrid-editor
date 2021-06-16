@@ -41,23 +41,14 @@
     </button>
     <mat-menu #permissionAddMenu="matMenu">
         <div (mouseleave)="menuTrigger.closeMenu()">
-            <button mat-menu-item (click)="addPermission('writeSubTree')">
-                Schreiben (Unterbaum)
-            </button>
-            <button mat-menu-item (click)="addPermission('readSubTree')">
-                Lesen (Unterbaum)
-            </button>
             <button mat-menu-item (click)="addPermission('writeTree')">
-                Schreiben (Baum)
+                Schreiben Baum
+            </button>
+            <button mat-menu-item (click)="addPermission('writeTreeExceptParent')">
+                Lesen Ordner, Schreiben Unterbaum
             </button>
             <button mat-menu-item (click)="addPermission('readTree')">
-                Lesen (Baum)
-            </button>
-            <button mat-menu-item (click)="addPermission('writeDataset')">
-                Schreiben (Datensatz)
-            </button>
-            <button mat-menu-item (click)="addPermission('readDataset')">
-                Lesen (Datensatz)
+                Lesen Baum
             </button>
         </div>
     </mat-menu>

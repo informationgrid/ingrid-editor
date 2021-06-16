@@ -1,135 +1,117 @@
-import { AfterViewInit, Component, Input, OnInit } from "@angular/core";
-import { TreePermission } from "../../user";
+import {
+  AfterViewInit,
+  Component,
+  forwardRef,
+  Input,
+  OnInit
+} from "@angular/core";
+import { PermissionLevel, TreePermission } from "../../user";
 import { MatTableDataSource } from "@angular/material/table";
-
-export enum PermissionLevel {
-  WRITE,
-  READ,
-  NONE,
-}
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { AddressRef } from "../../../formly/types/address-type/address-card/address-card.component";
+import { ChooseAddressDialogComponent } from "../../../formly/types/address-type/choose-address-dialog/choose-address-dialog.component";
+import { filter } from "rxjs/operators";
+import { MatDialog } from "@angular/material/dialog";
+import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
+import { fa } from "cronstrue/dist/i18n/locales/fa";
+import { MatListOption } from "@angular/material/list";
+import { ConfirmDialogComponent, ConfirmDialogData } from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: "permission-table",
   templateUrl: "./permission-table.component.html",
   styleUrls: ["./permission-table.component.scss"],
-})
-export class PermissionTableComponent implements OnInit, AfterViewInit {
-  @Input() title: string;
-  @Input() permissions: TreePermission[];
-
-  displayedColumns: string[] = ["title", "permissionLevel", "settings"];
-  dataSource = new MatTableDataSource([
+  providers: [
     {
-      title: "Ordner1",
-      path: "pfad ordner/ ... / letzter ordner",
-      permissionLevel: PermissionLevel.READ,
-      subPermissionLevel: PermissionLevel.NONE,
-    },
-  ]);
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => PermissionTableComponent),
+      multi: true
+    }
+  ]
+})
+export class PermissionTableComponent implements ControlValueAccessor {
+  @Input() title: string;
+  @Input() forAddress = false;
 
-  constructor() {
-    const initialSelection = [];
-    const allowMultiSelect = false;
+  public permissionLevel: typeof PermissionLevel = PermissionLevel;
+
+  displayedColumns: string[] = ["title", "permission", "settings"];
+
+  val = [];
+  private onChange: (x: any) => {};
+  private onTouch: (x: any) => {};
+
+  constructor(private dialog: MatDialog) {
   }
 
-  ngOnInit() {}
+  callEditDialog() {
+    return this.dialog
+      .open(PermissionAddDialogComponent, {
+        minWidth: 500,
+        data: { forAddress: this.forAddress, value: this.value }
 
-  ngAfterViewInit() {}
-
-  encodePermission(
-    oldStylePermission: string
-  ): [PermissionLevel, PermissionLevel] {
-    let folderPermission = PermissionLevel.NONE;
-    let subFolderPermission = PermissionLevel.NONE;
-    switch (oldStylePermission) {
-      case "writeSubTree":
-        subFolderPermission = PermissionLevel.WRITE;
-        return;
-      case "readSubTree":
-        subFolderPermission = PermissionLevel.READ;
-        return;
-      case "writeTree":
-        folderPermission = PermissionLevel.WRITE;
-        subFolderPermission = PermissionLevel.WRITE;
-        return;
-      case "readTree":
-        folderPermission = PermissionLevel.READ;
-        subFolderPermission = PermissionLevel.READ;
-        return;
-      case "writeDataset":
-        folderPermission = PermissionLevel.WRITE;
-        return;
-      case "readDataset":
-        folderPermission = PermissionLevel.READ;
-        return;
-    }
-    return [folderPermission, subFolderPermission];
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.value = [
+            ...this.val,
+            data
+          ];
+        }
+      });
   }
 
-  decodePermission(
-    folderPermission: PermissionLevel,
-    subFolderPermission: PermissionLevel
-  ): string[] {
-    let encodedPermissions = [];
-    if (
-      folderPermission == PermissionLevel.WRITE &&
-      subFolderPermission == PermissionLevel.WRITE
-    ) {
-      encodedPermissions.push("writeTree");
-    }
-    if (
-      folderPermission == PermissionLevel.READ &&
-      subFolderPermission == PermissionLevel.READ
-    ) {
-      encodedPermissions.push("readTree");
-    }
-    if (
-      folderPermission == PermissionLevel.NONE &&
-      subFolderPermission == PermissionLevel.READ
-    ) {
-      encodedPermissions.push("readSubTree");
-    }
-    if (
-      folderPermission == PermissionLevel.NONE &&
-      subFolderPermission == PermissionLevel.WRITE
-    ) {
-      encodedPermissions.push("writeSubTree");
-    }
-    if (
-      folderPermission == PermissionLevel.WRITE &&
-      subFolderPermission == PermissionLevel.NONE
-    ) {
-      encodedPermissions.push("writeDataset");
-    }
-    if (
-      folderPermission == PermissionLevel.READ &&
-      subFolderPermission == PermissionLevel.NONE
-    ) {
-      encodedPermissions.push("readDataset");
-    }
+  callRemovePermissionDialog(uuid: string) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie die Berechtigung wirklich löschen?`,
+          title: "Löschen",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true
+            }
+          ]
+        }
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
 
-    // TODO Attention! The next 3 cases can't be described as a single permission with the old style
-    if (
-      folderPermission == PermissionLevel.WRITE &&
-      subFolderPermission == PermissionLevel.READ
-    ) {
-      encodedPermissions.push("writeDataset");
-      encodedPermissions.push("readSubTree");
-    }
-    if (
-      folderPermission == PermissionLevel.READ &&
-      subFolderPermission == PermissionLevel.WRITE
-    ) {
-      encodedPermissions.push("readDataset");
-      encodedPermissions.push("writeSubTree");
-    }
-    if (
-      folderPermission == PermissionLevel.NONE &&
-      subFolderPermission == PermissionLevel.NONE
-    ) {
-      //NO Rights
-    }
+        this.removePermission(uuid);
+      });
+  }
 
-    return encodedPermissions;
+
+  private removePermission(uuid: string) {
+    this.value = this.val.filter((entry) => uuid !== entry.uuid);
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouch = fn;
+  }
+
+  writeValue(value: any): void {
+    this.value = value;
+  }
+
+  set value(val) {
+    // TODO: fetch titles from tree nodes
+    this.val = val ?? [];
+    if (this.onChange) {
+      this.onChange(val);
+    }
+    if (this.onTouch) {
+      this.onTouch(val);
+    }
   }
 }

@@ -1,0 +1,37 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Rechte hinzufügen</span>
+    </h2>
+</div>
+<mat-dialog-content>
+    <ige-tree
+        (selected)="selection = $event"
+        [forAddresses]="forAddress"
+        [disabledCondition]="disableTreeNodes"
+        [setActiveNode]="activeNodeSetter"
+        [showHeader]="false"
+    ></ige-tree>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button
+        mat-button
+        mat-dialog-close
+        cdkFocusInitial
+        color="primary"
+    >
+        Abbrechen
+    </button>
+    <div fxFlex></div>
+    <button
+        mat-stroked-button
+        color="primary"
+        [disabled]="shouldDisableAddButton()"
+        (click)="addPermission('readTree')"
+    >
+        Hinzufügen
+    </button>
+</mat-dialog-actions>
+

@@ -147,24 +147,13 @@
             </mat-form-field>
 
             <mat-divider style="margin: 5px 0 20px"></mat-divider>
-            <permission-table title="Datensätze"></permission-table>
-            <permission-table title="Adressen"></permission-table>
 
-            <div class="legend">
-                <mat-icon>edit</mat-icon>
-                <span> Schreibrecht,</span>
-                <mat-icon>visibility</mat-icon>
-                <span> Leserecht,</span>
-                <mat-icon>do_not_disturb</mat-icon>
-                <span> Keine Berechtigung</span>
-            </div>
-            <mat-divider style="margin: 5px 0 20px"></mat-divider>
 
             <ige-permissions formControlName="permissions"></ige-permissions>
 
-            <!-- NO GROUP SELECTED -->
         </form>
 
+        <!-- NO GROUP SELECTED -->
         <ng-template #noGroupOrLoading>
             <div
                 *ngIf="!isLoading; else loading"

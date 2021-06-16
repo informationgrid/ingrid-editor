@@ -30,6 +30,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { GroupsTableComponent } from "./group/groups-table/groups-table.component";
 import { GroupHeaderMoreComponent } from "./group/group-header-more/group-header-more.component";
 import { PermissionTableComponent } from "./permissions/permission-table/permission-table.component";
+import { PermissionAddDialogComponent } from "./permissions/permission-add-dialog/permission-add-dialog.component";
 
 @NgModule({
   imports: [
@@ -68,6 +69,7 @@ import { PermissionTableComponent } from "./permissions/permission-table/permiss
     GroupHeaderMoreComponent,
     HeaderMoreComponent,
     PermissionTableComponent,
+    PermissionAddDialogComponent
   ],
 })
 export class UserModule {}

@@ -123,8 +123,9 @@ class GroupService @Autowired constructor(
     private fun determinePermission(docPermission: JsonNode): List<Permission> {
         return when (docPermission.get("permission").asText()) {
             "writeTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
-            "writeSubTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
-            "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            // TODO Create logic for only read permission on parentnode and read + write on all descendants
+            "writeTreeExceptParent" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }
     }
