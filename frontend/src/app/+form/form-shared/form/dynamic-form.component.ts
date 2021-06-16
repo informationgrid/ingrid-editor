@@ -293,9 +293,8 @@ export class DynamicFormComponent
       return;
     }
 
-    // set activeId delayed in case of page initialization explicitActiveNode$ observable
-    // comes a bit later
-    setTimeout(() => this.activeId.next(data._id));
+    // update tree state
+    this.activeId.next(data._id);
 
     const profile = data._type;
 
