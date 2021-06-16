@@ -280,6 +280,25 @@ This means that data history records can be retrieved by filtering audit log rec
 ### Profiles
 
 A profile generally is created for every customer, who needs special requirements for entering and handling documents.
+
+For each profile a `profile definiton file` must be implemented, which is a class extending the `CatalogProfile`-interface.
+
+A profile definition file contains the configurations for a specific profile.
+This profile contains the following information:
+
+|Property|Description|
+|---|---|
+|identifier|unique identifier for a profile|
+|name|a proper name|
+|description|describes the profiles|
+|facet definition for documents|definition of filters for documents used on research page|
+|facet definition for addresses|definition of filters for addresses used on research page|
+|definiton of catalog codelists|additional codelists used in this profile|
+|definition of elasticsearch mappings and settings|used for index configuration|
+
+The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the 
+presentation of the research page (facets / quick filters).
+
 An example of how to add a new profile can be found in FAQ.md.
 
 #### Document types
@@ -324,6 +343,10 @@ is also used in the frontend, to choose from a collection of exporters.
 It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document. 
 In combination with a model-class, the template can be easily filled with all the information. When the model-class 
 implements one of the provided interfaces, e.g. `DCAT` then the same template can be even used for multiple document types.
+
+An exporter is also used for indexing where the document will be converted to a JSON format which is then stored in an
+Elasticsearch index. Since the index itself can have a configuration on its own, you can define a settings and mapping
+configuration for the index. This can be defined in the profile definition file.
 
 ## Database
 

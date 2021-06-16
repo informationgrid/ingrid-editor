@@ -70,18 +70,7 @@ open fun onDelete(doc: Document) {}
 ```
 ### Profile definition file
 
-Every profile has definition file, which contains configurations for the specific profile.
-This profile is used for the following information:
-
-* identifier of the profile
-* name
-* description
-* facet definition for documents 
-* facet definition for addresses
-* definiton of catalog codelists
-
-A new Profile definition class must be available as a service for the specific profile. It also must
-implement the interface `CatalogProfile`
+Each profile needs a definition file which contains necessary information about the profile. An example can be found below.  
 
 <details>
   <summary>Example</summary>
@@ -99,6 +88,9 @@ class MCloudProfile : CatalogProfile {
   override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {}
 
   override fun initCatalogCodelists(catalogId: String) {}
+
+  override fun getElasticsearchMapping(format: String): String
+  override fun getElasticsearchSetting(format: String): String
   
 }
 ```
@@ -214,11 +206,15 @@ class ExampleImporter : IgeImporter {
 
 ### Indexing
 
-Indexing is done after a document is published. For this we can implement a filter to be executed at the specific time.
+Indexing uses the export functionality of a catalog and can be done in two ways. It can be run for all datasets of a catalog or after a dataset has been published.
+When indexing the whole catalog, each dataset is exported to a specified format that shall be sent to an Elasticsearch index.
+In the profile definition is the possibility to define the settings and mappings used for the index.
+
+If you want to index a dataset immediately after its publication, you need to implement a filter, which is executed at the specific time.
 Here are the steps:
 
 * create a new component for your profile implementing `Filter<PostPublishPayload>`
-  * when using elasticsearch for indexing, make sure to enable profile
+  * when using elasticsearch for indexing, make sure to enable profile `elasticsearch`
 * implement `invoke()`-method
 
 ```kotlin
