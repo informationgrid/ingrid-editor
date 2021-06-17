@@ -9,11 +9,20 @@
 <mat-dialog-content fxLayout="column">
     <mat-form-field appearance="outline">
         <mat-label>Id</mat-label>
-        <input matInput igeFocus [(ngModel)]="model.id" />
+        <input
+            matInput
+            igeFocus
+            [(ngModel)]="model.id"
+            data-cy="codelist-entry-id"
+        />
     </mat-form-field>
     <mat-form-field appearance="outline">
         <mat-label>Beschreibung</mat-label>
-        <textarea matInput [(ngModel)]="model.description"></textarea>
+        <textarea
+            matInput
+            [(ngModel)]="model.description"
+            data-cy="codelist-entry-description"
+        ></textarea>
     </mat-form-field>
     <mat-form-field appearance="outline">
         <mat-label>Data</mat-label>
@@ -21,6 +30,7 @@
             matInput
             placeholder='{"url":"https://xxx"}'
             [(ngModel)]="model.data"
+            data-cy="codelist-entry-data"
         />
     </mat-form-field>
     <div
@@ -30,11 +40,19 @@
     >
         <mat-form-field appearance="outline">
             <mat-label>Schlüssel</mat-label>
-            <input matInput [(ngModel)]="field.key" />
+            <input
+                matInput
+                [(ngModel)]="field.key"
+                [attr.data-cy]="'codelist-entry-key-' + i"
+            />
         </mat-form-field>
         <mat-form-field appearance="outline" fxFlex>
             <mat-label>Titel</mat-label>
-            <input matInput [(ngModel)]="field.value" />
+            <input
+                matInput
+                [(ngModel)]="field.value"
+                [attr.data-cy]="'codelist-entry-title-' + i"
+            />
         </mat-form-field>
         <button mat-icon-button (click)="removeEntry(i)">
             <mat-icon>clear</mat-icon>
