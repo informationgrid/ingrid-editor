@@ -25,5 +25,11 @@ export enum CatalogsTabmenu {
   Codelisten = 1,
   Formulare,
   Katalogverhalten,
-  Indizierung,
+  Indizierung
 }
+
+export enum CodelistSubMenu {
+  Bearbeiten = 1,
+  Defaultwert,
+  Loeschen
+};
