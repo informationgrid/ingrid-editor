@@ -343,6 +343,12 @@ export class DocumentService {
           doNotSelect: true,
           // path: path
         });
+      }),
+      catchError(error => {
+        if (error.error.errorText.indexOf('is part of the hierarchy')) {
+          throw new IgeError('Kopieren von Dokumentenbäumen unter sich selbst ist nicht möglich')
+        }
+        throw error;
       })
     );
   }

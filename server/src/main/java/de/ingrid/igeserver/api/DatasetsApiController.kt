@@ -221,7 +221,7 @@ class DatasetsApiController @Autowired constructor(
         // check destination is not part of source
         val descIds = getAllDescendantIds(catalogId, sourceId)
         if (descIds.contains(destinationId)) {
-            throw ConflictException.withReason("Cannot copy '$sourceId' to contained '$destinationId'")
+            throw ConflictException.withReason("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
         }
     }
 
@@ -233,7 +233,8 @@ class DatasetsApiController @Autowired constructor(
         return if (docs.hits.isEmpty()) {
             emptyList()
         } else {
-            docs.hits.flatMap { doc -> getAllDescendantIds(catalogId, doc.id) }
+            docs.hits
+                .flatMap { doc -> if (doc.countChildren > 0) getAllDescendantIds(catalogId, doc.id) + doc.id else listOf(doc.id) }
         }
     }
 
