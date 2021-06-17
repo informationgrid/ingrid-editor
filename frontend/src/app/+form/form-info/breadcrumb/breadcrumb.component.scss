@@ -21,6 +21,11 @@
     cursor: pointer;
     color: $ige-primary;
   }
+
+  .disabled {
+    color: $ige-comment-color;
+    cursor: default;
+  }
 }
 
 mat-icon {

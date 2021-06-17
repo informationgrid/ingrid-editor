@@ -19,16 +19,16 @@ export class TreeSelection {
    * @param node
    * @param $event
    */
-  selectNode(node: TreeNode, $event: MouseEvent) {
+  selectNode(node: TreeNode, $event?: MouseEvent) {
     if (this.multiSelectionModeEnabled) {
       this.nodeSelectionToggle(node, $event);
     } else {
-      if ($event.ctrlKey) {
+      if ($event?.ctrlKey) {
         this.model.toggle(node);
         this.multiSelectionModeEnabled = true;
         this.model.select(node);
         return;
-      } else if ($event.shiftKey) {
+      } else if ($event?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
         this.multiSelectionModeEnabled = true;
         this.nodeSelectionToggle(node, $event);

@@ -20,6 +20,8 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
+    
+    fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 

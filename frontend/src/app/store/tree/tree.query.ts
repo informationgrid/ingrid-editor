@@ -38,12 +38,13 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
     return this.getAll().filter((doc) => doc._parent === parent);
   }
 
-  getParents(id: string): string[] {
+  getParents(id: string): ShortTreeNode[] {
     const parents = [];
-    let parent = this.getEntity(id)._parent;
+    let entity = this.getEntity(id);
+    let parent = this.getEntity(entity.id);
     while (parent) {
       parents.push(parent);
-      parent = this.getEntity(parent)._parent;
+      parent = this.getEntity(parent._parent);
     }
     return parents;
   }

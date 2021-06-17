@@ -10,32 +10,32 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FormGroup } from "@angular/forms";
-import { IgeDocument } from "../../models/ige-document";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { combineLatest, fromEvent } from "rxjs";
-import { SessionQuery } from "../../store/session.query";
+import {FormGroup} from "@angular/forms";
+import {IgeDocument} from "../../models/ige-document";
+import {TreeQuery} from "../../store/tree/tree.query";
+import {combineLatest, fromEvent} from "rxjs";
+import {SessionQuery} from "../../store/session.query";
 import {
-  distinctUntilChanged,
+  distinctUntilChanged, filter,
   map,
-  startWith,
+  startWith, take, tap,
   throttleTime,
 } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ProfileService } from "../../services/profile.service";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {ProfileService} from "../../services/profile.service";
+import {AddressTreeQuery} from "../../store/address-tree/address-tree.query";
 import {
   ADDRESS_ROOT_NODE,
   DOCUMENT_ROOT_NODE,
 } from "../../store/document/document.model";
-import { TreeStore } from "../../store/tree/tree.store";
-import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
-import { DocumentUtils } from "../../services/document.utils";
-import { TreeService } from "../sidebars/tree/tree.service";
-import { FormUtils } from "../form.utils";
-import { DocumentService } from "../../services/document/document.service";
-import { MatDialog } from "@angular/material/dialog";
-import { ShortTreeNode } from "../sidebars/tree/tree.types";
+import {TreeStore} from "../../store/tree/tree.store";
+import {AddressTreeStore} from "../../store/address-tree/address-tree.store";
+import {DocumentUtils} from "../../services/document.utils";
+import {TreeService} from "../sidebars/tree/tree.service";
+import {FormUtils} from "../form.utils";
+import {DocumentService} from "../../services/document/document.service";
+import {MatDialog} from "@angular/material/dialog";
+import {ShortTreeNode} from "../sidebars/tree/tree.types";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -51,15 +51,32 @@ export interface StickyHeaderInfo {
 })
 export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() form: FormGroup;
-  @Input() model: IgeDocument;
+
+  @Input() set model(value) {
+    this._model = value;
+    this.documentService.getPath(value._id)
+      .pipe(
+        tap(result => this.path = result
+          .slice(0, -1)
+          .map(path => new ShortTreeNode(path.id, path.title, !this.query.hasEntity(path.id)))
+        )
+      )
+      .subscribe()
+  };
+
   @Input() sections: string[] = [];
   @Input() parentContainer: HTMLElement;
   @Input() forAddress = false;
   @Output() showStickyHeader = new EventEmitter<StickyHeaderInfo>();
 
   @ViewChild("host") host: ElementRef;
-  @ViewChild("sticky_header", { read: ElementRef }) stickyHeader: ElementRef;
+  @ViewChild("sticky_header", {read: ElementRef}) stickyHeader: ElementRef;
 
+  get model() {
+    return this._model
+  }
+
+  _model: IgeDocument;
   path: ShortTreeNode[] = [];
   scrollHeaderOffsetLeft: number;
 
@@ -80,7 +97,8 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     private documentService: DocumentService,
     private dialog: MatDialog,
     private profileService: ProfileService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     if (this.forAddress) {
@@ -93,9 +111,9 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
       this.store = this.treeStore;
     }
 
-    this.query.pathTitles$
+    /*this.query.pathTitles$
       .pipe(untilDestroyed(this))
-      .subscribe((path) => this.updatePath(path));
+      .subscribe((path) => this.updatePath(path));*/
   }
 
   ngAfterViewInit(): void {
@@ -104,10 +122,18 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     this.initScrollBehavior();
   }
 
-  private updatePath(path: ShortTreeNode[]) {
-    this.path = path.slice(0, path.length - 1);
-    this.cdr.markForCheck();
-  }
+  /*  private updatePath(path: ShortTreeNode[]) {
+      /!*this.treeQuery.selectEntity(this.model._id)
+        .pipe(
+          filter(entity => entity !== undefined),
+          take(1),
+          tap(entity => this.path = this.treeQuery.getParents(this.model._id)),
+          // tap(() => this.cdr.markForCheck())
+        ).subscribe();*!/
+
+      this.path = path.slice(0, path.length - 1);
+      this.cdr.markForCheck();
+    }*/
 
   private initResizeBehavior() {
     combineLatest([

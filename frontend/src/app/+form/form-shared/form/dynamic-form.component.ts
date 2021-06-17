@@ -23,7 +23,7 @@ import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { debounceTime, filter, map } from "rxjs/operators";
+import {debounceTime, filter, map, tap} from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { BehaviorSubject, combineLatest, merge } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
@@ -69,7 +69,7 @@ export class DynamicFormComponent
 
   behaviours: Behaviour[];
   error = false;
-  model: IgeDocument | any = {};
+  model: Partial<IgeDocument> = {};
 
   paddingWithHeader: string;
 

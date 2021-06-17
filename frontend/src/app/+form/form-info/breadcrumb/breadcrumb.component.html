@@ -9,7 +9,9 @@
     </span>
 
     <span *ngFor="let item of path; let last = last">
-        <span [class.selectable]="selectable" (click)="onSelect(item.id)">{{
+        <span [class.selectable]="selectable && !item.disabled"
+              [class.disabled]="item.disabled"
+              (click)="!item.disabled && onSelect(item.id)">{{
             item.title
         }}</span>
         <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>

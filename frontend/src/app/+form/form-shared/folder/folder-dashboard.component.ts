@@ -9,6 +9,7 @@ import { map, tap } from "rxjs/operators";
 import { FormUtils } from "../../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
+import {IgeDocument} from "../../../models/ige-document";
 
 @Component({
   selector: "ige-folder-dashboard",
@@ -18,7 +19,7 @@ import { FormStateService } from "../../form-state.service";
 export class FolderDashboardComponent {
   @Input() isAddress = false;
 
-  @Input() set parentId(value: string) {
+  @Input() set model(value: IgeDocument) {
     this.updateChildren(value);
   }
 
@@ -34,10 +35,15 @@ export class FolderDashboardComponent {
     private dialog: MatDialog
   ) {}
 
-  updateChildren(parentId) {
+  updateChildren(model) {
+    if (!model._hasChildren) {
+      this.numChildren = 0;
+      return;
+    }
+
     // TODO switch to user specific query
     this.docService
-      .getChildren(parentId, this.isAddress)
+      .getChildren(model._id, this.isAddress)
       .pipe(
         tap((children) => (this.numChildren = children.length)),
         map((children) =>

@@ -29,6 +29,7 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { StatisticResponse } from "../../models/statistic.model";
 import { IgeError } from "../../models/ige-error";
 import { SessionQuery } from "../../store/session.query";
+import {PathResponse} from "../../models/path-response";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -124,6 +125,7 @@ export class DocumentService {
     docs: IgeDocument[],
     parentId?: string
   ): DocumentAbstract[] {
+
     return docs.map((doc) => {
       return {
         id: doc._id,
@@ -131,7 +133,7 @@ export class DocumentService {
         title: doc.title || "-Ohne Titel-",
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: parentId,
+        _parent: doc._parent,
         _type: doc._type,
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
@@ -306,7 +308,7 @@ export class DocumentService {
     );
   }
 
-  getPath(id: string): Observable<string[]> {
+  getPath(id: string): Observable<PathResponse[]> {
     return this.dataService
       .getPath(id)
       .pipe

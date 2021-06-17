@@ -258,6 +258,7 @@ class DatasetsApiController @Autowired constructor(
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
                 latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
+                latest.data.put(FIELD_PARENT, doc.parent?.id)
                 documentService.convertToJsonNode(latest)
             }
         return ResponseEntity.ok(childDocs)
@@ -320,6 +321,7 @@ class DatasetsApiController @Autowired constructor(
             val wrapper = documentService.getWrapperByDocumentId(id);
 
             val doc = documentService.getLatestDocument(wrapper)
+            doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
             val jsonDoc = documentService.convertToJsonNode(doc)
             return ResponseEntity.ok(jsonDoc)
         } catch (ex: AccessDeniedException) {
@@ -331,12 +333,21 @@ class DatasetsApiController @Autowired constructor(
     override fun getPath(
         principal: Principal,
         id: String
-    ): ResponseEntity<List<String>> {
+    ): ResponseEntity<List<PathResponse>> {
 
-        val path = getPathFromWrapper(id)
-        return ResponseEntity.ok(path + id)
+        val wrapper = documentService.getWrapperByDocumentId(id)
+        val path = wrapper.path
+        
+        val response = path.map { uuid ->
+            val title = documentService.getTitleFromDocumentId(uuid)
+            PathResponse(uuid, title)
+        }
+        
+        return ResponseEntity.ok(response + PathResponse(id, wrapper.draft?.title ?: wrapper.published?.title ?: "???"))
 
     }
+    
+    data class PathResponse(val id: String, val title: String)
 
     private fun getPathFromWrapper(id: String) = documentService.getWrapperByDocumentId(id).path
 

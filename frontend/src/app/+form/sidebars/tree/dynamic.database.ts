@@ -8,6 +8,7 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
+import {PathResponse} from "../../../models/path-response";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -80,7 +81,10 @@ export class DynamicDatabase {
   }
 
   getPath(id: string): Promise<string[]> {
-    return this.docService.getPath(id).toPromise();
+    return this.docService.getPath(id)
+      .pipe(
+        map(paths => paths.map(path => path.id))
+      ).toPromise();
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number): TreeNode[] {

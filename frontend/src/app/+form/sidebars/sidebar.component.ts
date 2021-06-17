@@ -8,7 +8,7 @@ import { FormUtils } from "../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { DocumentService } from "../../services/document/document.service";
 import { TreeService } from "./tree/tree.service";
-import { ShortTreeNode, TreeAction } from "./tree/tree.types";
+import { TreeAction} from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
 
 @UntilDestroy()
@@ -57,10 +57,6 @@ export class SidebarComponent implements OnInit {
 
     this.activeId?.subscribe((id) => {
       this.activeTreeNode.next(id);
-
-      if (id === null) {
-        this.storePathTitles([]);
-      }
     });
   }
 
@@ -101,12 +97,6 @@ export class SidebarComponent implements OnInit {
 
   handleSelection(selectedDocsId: string[]) {
     this.treeStore.setActive(selectedDocsId);
-  }
-
-  storePathTitles(path: ShortTreeNode[]) {
-    this.treeStore.update({
-      activePathTitles: path,
-    });
   }
 
   updateTreeMode(multiSelect: boolean) {

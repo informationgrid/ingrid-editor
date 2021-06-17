@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { filter, take } from "rxjs/operators";
+import {filter, take, tap} from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
@@ -54,6 +54,7 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
+  private query: TreeQuery | AddressTreeQuery;
   private selectedLocation: any = {
     parent: null,
     path: [],
@@ -91,7 +92,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   ngOnInit() {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     if (this.isFolder || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
@@ -99,8 +100,8 @@ export class CreateNodeComponent implements OnInit {
       this.initializeForAddresses();
     }
 
-    query.pathTitles$.pipe(take(1)).subscribe((path) => {
-      const selectedNode = query.getOpenedDocument();
+    this.query.pathTitles$.pipe(take(1)).subscribe((path) => {
+      const selectedNode = this.query.getOpenedDocument();
       this.path = [...path];
 
       if (selectedNode && selectedNode._type !== "FOLDER") {
@@ -182,7 +183,14 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     this.parent = this.selectedLocation.parent;
-    this.path = this.selectedLocation.path.filter((x) => x.id);
+    this.documentService.getPath(this.selectedLocation.parent)
+      .pipe(
+        tap(result => this.path = result
+          //.slice(0, -1)
+          .map(path => new ShortTreeNode(path.id, path.title, !this.query.hasEntity(path.id)))
+        )
+      )
+      .subscribe()
     this.selectedPage = 0;
   }
 
