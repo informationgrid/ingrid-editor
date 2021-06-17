@@ -6,13 +6,16 @@
     (currentPath)="updatePath($event)"
     [forAddresses]="forAddress"
     [showOnlyFolders]="true"
-    [showReloadButton]="false"
+    [showHeaderOptions]="false"
+    [hideReadOnly]="true"
 ></ige-tree>
-<div class="selection-divider"></div>
-<div class="side-padding place-title-other">Oder anlegen unter</div>
-<ige-document-list-item
-    [docs]="getRootNode()"
-    [hideDivider]="true"
-    [setActiveItem]="activeListItem"
-    (select)="updateParent([null], 'List')"
-></ige-document-list-item>
+<ng-container *ngIf="isAdmin">
+    <div class="selection-divider"></div>
+    <div class="side-padding place-title-other">Oder anlegen unter</div>
+    <ige-document-list-item
+        [docs]="getRootNode()"
+        [hideDivider]="true"
+        [setActiveItem]="activeListItem"
+        (select)="updateParent([null], 'List')"
+    ></ige-document-list-item>
+</ng-container>

@@ -27,6 +27,7 @@ import { ProfileQuery } from "../../../store/profile/profile.query";
 import { DocType } from "./create-doc.plugin";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
+import {ProfileAbstract} from "../../../store/profile/profile.model";
 
 export interface CreateOptions {
   parent: string;
@@ -119,15 +120,7 @@ export class CreateNodeComponent implements OnInit {
       this.profileQuery.documentProfiles
         .pipe(filter((types) => types.length > 0))
         .subscribe((result) => {
-          const docTypes = result
-            .map((profile) => ({
-              id: profile.id,
-              label: profile.label,
-              icon: profile.iconClass,
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label));
-          this.documentTypes = this.prepareDocumentTypes(docTypes);
-          this.formGroup.get("choice").setValue(docTypes[0].id);
+          const docTypes = this.createDocTypes(result);
           this.initialActiveDocumentType.next(docTypes[0]);
         });
     }
@@ -148,17 +141,21 @@ export class CreateNodeComponent implements OnInit {
 
     this.profileQuery.addressProfiles
       .pipe(filter((types) => types.length > 0))
-      .subscribe((result) => {
-        const docTypes = result
-          .map((profile) => ({
-            id: profile.id,
-            label: profile.label,
-            icon: profile.iconClass,
-          }))
-          .sort((a, b) => a.label.localeCompare(b.label));
-        this.documentTypes = this.prepareDocumentTypes(docTypes);
-        this.formGroup.get("choice").setValue(docTypes[0].id); // 'AddressDoc'
-      });
+      .subscribe((result) => this.createDocTypes(result));
+  }
+
+
+  private createDocTypes(result: ProfileAbstract[]) {
+    const docTypes = result
+      .map((profile) => ({
+        id: profile.id,
+        label: profile.label,
+        icon: profile.iconClass,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+    this.documentTypes = this.prepareDocumentTypes(docTypes);
+    this.formGroup.get("choice").setValue(docTypes[0].id);
+    return docTypes;
   }
 
   nameOrOganizationValidator(control: FormGroup): ValidationErrors | null {

@@ -50,6 +50,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   @Input() showHeaderOptions = true;
   @Input() showOnlyFolders = false;
   @Input() enableDrag = false;
+  @Input() hideReadOnly = false;
 
   /** The node selection must be kept local */
   selection: TreeSelection;
@@ -111,6 +112,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   isExpandable = (node: TreeNode) => node.hasChildren;
 
   ngOnInit(): void {
+    this.database.hideReadOnly = this.hideReadOnly;
     this.dataSource.setForAddress(this.forAddresses);
 
     // make sure the tree with root nodes is loaded before we start
@@ -120,6 +122,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.database.treeUpdates
       .pipe(untilDestroyed(this))
       .subscribe((data) => this.handleUpdate(data));
+
   }
 
   private handleActiveNodeSubscription() {
