@@ -1,3 +1,5 @@
+import {HttpErrorResponse} from "@angular/common/http";
+
 export class IgeError {
   message: string;
   status?: number;
@@ -5,16 +7,18 @@ export class IgeError {
   detail?: string;
   actions?: any[];
 
-  constructor(error?) {
-    // TODO: if (error instanceof Error)
-    if (!error) {
-      return;
-    }
+  constructor(error?: HttpErrorResponse | string) {
+    if (error instanceof HttpErrorResponse) {
+      if (!error) {
+        return;
+      }
 
-    this.message = error.message;
-    this.detail = error.error ? error.error.message : null;
-    this.status = error.status;
-    // this.stacktrace = 'XXX';
+      this.message = error.message;
+      this.detail = error.error ? error.error.message : null;
+      this.status = error.status;
+    } else {
+      this.setMessage(error);
+    }
   }
 
   setMessage(message: string, detail?: string) {
