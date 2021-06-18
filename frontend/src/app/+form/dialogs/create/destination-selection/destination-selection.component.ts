@@ -15,7 +15,7 @@ import {
   DocumentAbstract,
 } from "../../../../store/document/document.model";
 import { ShortTreeNode } from "../../../sidebars/tree/tree.types";
-import {ConfigService} from "../../../../services/config/config.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
 @Component({
   selector: "ige-destination-selection",

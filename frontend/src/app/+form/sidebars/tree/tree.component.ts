@@ -122,7 +122,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.database.treeUpdates
       .pipe(untilDestroyed(this))
       .subscribe((data) => this.handleUpdate(data));
-
   }
 
   private handleActiveNodeSubscription() {

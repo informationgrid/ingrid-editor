@@ -27,7 +27,7 @@ import { ProfileQuery } from "../../../store/profile/profile.query";
 import { DocType } from "./create-doc.plugin";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import {ProfileAbstract} from "../../../store/profile/profile.model";
+import { ProfileAbstract } from "../../../store/profile/profile.model";
 
 export interface CreateOptions {
   parent: string;
@@ -143,7 +143,6 @@ export class CreateNodeComponent implements OnInit {
       .pipe(filter((types) => types.length > 0))
       .subscribe((result) => this.createDocTypes(result));
   }
-
 
   private createDocTypes(result: ProfileAbstract[]) {
     const docTypes = result
