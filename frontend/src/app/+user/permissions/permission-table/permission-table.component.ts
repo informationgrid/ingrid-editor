@@ -1,24 +1,13 @@
-import {
-  AfterViewInit,
-  Component,
-  forwardRef,
-  Input,
-  OnInit,
-} from "@angular/core";
-import { PermissionLevel, TreePermission } from "../../user";
-import { MatTableDataSource } from "@angular/material/table";
+import { Component, forwardRef, Input } from "@angular/core";
+import { PermissionLevel } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { AddressRef } from "../../../formly/types/address-type/address-card/address-card.component";
-import { ChooseAddressDialogComponent } from "../../../formly/types/address-type/choose-address-dialog/choose-address-dialog.component";
-import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
-import { fa } from "cronstrue/dist/i18n/locales/fa";
-import { MatListOption } from "@angular/material/list";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
+import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 
 @Component({
   selector: "permission-table",
@@ -30,6 +19,7 @@ import {
       useExisting: forwardRef(() => PermissionTableComponent),
       multi: true,
     },
+    DynamicDatabase,
   ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
@@ -44,9 +34,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private database: DynamicDatabase) {}
 
-  callEditDialog() {
+  callAddPermissionDialog() {
     return this.dialog
       .open(PermissionAddDialogComponent, {
         minWidth: 500,
@@ -104,11 +94,18 @@ export class PermissionTableComponent implements ControlValueAccessor {
   set value(val) {
     // TODO: fetch titles from tree nodes
     this.val = val ?? [];
+    this.val.forEach((doc) => {
+      if (!doc.path) this.getPath(doc.uuid).then((path) => (doc.path = path));
+    });
     if (this.onChange) {
       this.onChange(val);
     }
     if (this.onTouch) {
       this.onTouch(val);
     }
+  }
+
+  getPath(uuid: string): Promise<string> {
+    return this.database.getPath(uuid).then((path) => path.join(" > "));
   }
 }

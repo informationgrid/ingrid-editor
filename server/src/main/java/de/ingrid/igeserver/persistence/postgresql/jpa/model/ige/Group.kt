@@ -37,6 +37,10 @@ class Group {
     @Type(type="jsonb")
     @Column(name="permissions", columnDefinition="jsonb")
     @JsonProperty("permissions")
-    var data: PermissionsData? = null
+    var permissions: PermissionsData? = null
+
+    @Type(type = "jsonb")
+    @Column(name = "data", columnDefinition = "jsonb")
+    var data: GroupData? = null
 
 }

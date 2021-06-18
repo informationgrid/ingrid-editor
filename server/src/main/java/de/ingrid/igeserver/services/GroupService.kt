@@ -1,8 +1,10 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.GroupData
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
 import org.apache.logging.log4j.kotlin.logger
@@ -18,6 +20,7 @@ import org.springframework.security.acls.model.Permission
 import org.springframework.security.acls.model.Sid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 
 @Service
@@ -32,12 +35,15 @@ class GroupService @Autowired constructor(
     @Transactional
     fun create(catalogId: String, group: Group) {
         group.catalog = catalogRepo.findByIdentifier(catalogId)
+        group.data = group.data ?: GroupData()
+        group.data?.creationDate = Date()
+        group.data?.modificationDate = Date()
 
         updateAcl(group)
 
         groupRepo.save(group)
 
-        /*group.data?.documents?.forEach {
+        /*group.permissions?.documents?.forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
             val acl = aclService.createAcl(objIdentity)
             aclService.updateAcl(acl)
@@ -68,6 +74,8 @@ class GroupService @Autowired constructor(
             this.id = oldGroup?.id
             catalog = oldGroup?.catalog
         }
+        group.data = group.data ?: GroupData()
+        group.data?.modificationDate = Date()
 
         updateAcl(group)
 
@@ -78,8 +86,8 @@ class GroupService @Autowired constructor(
     private fun updateAcl(group: Group) {
         aclService as JdbcMutableAclService
 
-        val docs = group.data?.documents ?: emptyList()
-        val addresses = group.data?.addresses ?: emptyList()
+        val docs = group.permissions?.documents ?: emptyList()
+        val addresses = group.permissions?.addresses ?: emptyList()
         (docs + addresses).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
             val acl: MutableAcl = try {

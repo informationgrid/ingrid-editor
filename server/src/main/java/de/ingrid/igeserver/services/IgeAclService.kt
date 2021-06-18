@@ -41,7 +41,7 @@ class IgeAclService @Autowired constructor(
     
     fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<String> {
         return groups
-            .map {group -> if (isAddress) group.data?.addresses else group.data?.documents }
+            .map {group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
             .flatten()
     }

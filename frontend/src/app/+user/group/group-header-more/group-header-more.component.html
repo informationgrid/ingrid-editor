@@ -5,13 +5,19 @@
     </div>
     <div fxLayout="row">
         <div>Erstellt am</div>
-        <!--        <div *ngIf="group.creationDate"><span [title]="group.creationDate | date:'long'">{{group.creationDate | date:'dd.MM.yyyy'}}</span></div>-->
-        <div>01.01.1970</div>
+        <div *ngIf="group.data.creationDate">
+            <span [title]="group.data.creationDate | date: 'long'">{{
+                group.data.creationDate | date: "dd.MM.yyyy"
+            }}</span>
+        </div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
-        <!--        <div *ngIf="group.modificationDate"><span [title]="group.modificationDate | date:'long'">{{group.modificationDate | date:'dd.MM.yyyy'}}</span></div>-->
-        <div>01.01.1970</div>
+        <div *ngIf="group.data.modificationDate">
+            <span [title]="group.data.modificationDate | date: 'long'">{{
+                group.data.modificationDate | date: "dd.MM.yyyy"
+            }}</span>
+        </div>
     </div>
     <div fxLayout="row">
         <div>ID</div>

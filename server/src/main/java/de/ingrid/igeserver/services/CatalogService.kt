@@ -150,8 +150,8 @@ class CatalogService @Autowired constructor(
         val user = convertUser(catalogId, userModel)
         val userFromDB = getUser(user.userId)
         user.id = userFromDB?.id
-        user.data?.creationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
-        user.data?.modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+        user.data?.creationDate = Date()
+        user.data?.modificationDate = Date()
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
         userRepo.save(user)
 
@@ -164,7 +164,7 @@ class CatalogService @Autowired constructor(
             userId = user.login
             if (data == null) {
                 data = UserInfoData(
-                    modificationDate = Date(Message.dateService?.now()?.toEpochSecond() ?: 0)
+                    modificationDate = Date()
                 )
             }
 
@@ -214,7 +214,7 @@ class CatalogService @Autowired constructor(
         aclService as JdbcMutableAclService
         
         groups.forEach { group ->
-            group.data?.documents?.forEach {
+            group.permissions?.documents?.forEach {
                 val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
                 val acl: MutableAcl = try {
                     aclService.readAclById(objIdentity) as MutableAcl

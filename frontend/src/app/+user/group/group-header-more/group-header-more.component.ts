@@ -34,7 +34,7 @@ export class GroupHeaderMoreComponent implements OnInit {
   @Input() group: Group;
   @Input() showMore = false;
 
-  constructor(private profileQuery: ProfileQuery) {}
+  constructor() {}
 
   ngOnInit() {}
 }

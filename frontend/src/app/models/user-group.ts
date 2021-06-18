@@ -5,6 +5,7 @@ export class Group {
   name: string;
   description: string;
   permissions: Permissions;
+  data: GroupData;
 
   constructor(values: Object = {}) {
     this.init();
@@ -14,4 +15,9 @@ export class Group {
   private init() {
     this.permissions = new Permissions();
   }
+}
+
+export class GroupData {
+  creationDate: Date;
+  modificationDate: Date;
 }

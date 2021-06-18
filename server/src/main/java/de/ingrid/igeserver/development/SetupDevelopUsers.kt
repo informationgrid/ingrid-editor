@@ -2,6 +2,7 @@ package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
@@ -50,6 +51,10 @@ class SetupDevelopUsers @Autowired constructor(
         val user = UserInfo().apply {
             this.userId = login
             this.role = roleRepo.findByName(role)
+            this.data = UserInfoData().apply {
+                this.creationDate = Date()
+                this.modificationDate = Date()
+            }
         }
 
         val persistedUser = userRepo.save(user)
