@@ -89,6 +89,7 @@ describe('mCLOUD documents', function () {
       AddressPage.apiCreateAddress(json, true);
 
       cy.visit('/address');
+      cy.wait(100);
       DocumentPage.checkURL('/address');
       Tree.containsNodeWithObjectTitle('APICallPublishedAdr');
     });
