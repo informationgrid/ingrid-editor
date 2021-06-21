@@ -6,9 +6,9 @@
     "type": "object",
     "properties": {
       "_version": {
-        "description": "The version of export format. Consists of an prefix and an version, i.e 'export:0.1'",
+        "description": "The version of export format. Consists of an prefix and an version, i.e 'export:0.0.1'. The version follows the semantic versioning rules (https://semver.org/).",
         "type": "string",
-        "pattern": "^(([a-zA-Z])+:)?[0-9]+\\.[[0-9]+]$"
+        "pattern": "^(([a-zA-Z])+:)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
       },
       "_export_date": {
         "description": "The date of the export.",
