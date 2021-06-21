@@ -56,4 +56,9 @@ export class BehavioursPage extends BasePage {
     this.setCatalogInputbox(settingTitle, input);
     this.saveCatalogSetting();
   }
+
+  static openIndexStatusBox(){
+    cy.get('div.header [data-mat-icon-type=font]').click();
+    cy.get('div.status').should('be.visible');
+  }
 }
