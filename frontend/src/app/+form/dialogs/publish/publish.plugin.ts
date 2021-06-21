@@ -1,29 +1,29 @@
-import {Injectable} from "@angular/core";
-import {FormToolbarService} from "../../form-shared/toolbar/form-toolbar.service";
-import {ModalService} from "../../../services/modal/modal.service";
-import {DocumentService} from "../../../services/document/document.service";
-import {Plugin} from "../../../+catalog/+behaviours/plugin";
-import {TreeQuery} from "../../../store/tree/tree.query";
-import {MessageService} from "../../../services/message.service";
-import {AddressTreeQuery} from "../../../store/address-tree/address-tree.query";
-import {merge, Subscription} from "rxjs";
-import {IgeDocument} from "../../../models/ige-document";
-import {HttpErrorResponse} from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { ModalService } from "../../../services/modal/modal.service";
+import { DocumentService } from "../../../services/document/document.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { MessageService } from "../../../services/message.service";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { merge, Subscription } from "rxjs";
+import { IgeDocument } from "../../../models/ige-document";
+import { HttpErrorResponse } from "@angular/common/http";
 import {
   VersionConflictChoice,
   VersionConflictDialogComponent,
 } from "../version-conflict-dialog/version-conflict-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import {ErrorDialogComponent} from "../../../dialogs/error/error-dialog.component";
-import {IgeError} from "../../../models/ige-error";
-import {SessionStore} from "../../../store/session.store";
-import {ServerValidation} from "../../../server-validation.util";
-import {FormStateService} from "../../form-state.service";
-import {AbstractControl, FormGroup} from "@angular/forms";
+import { ErrorDialogComponent } from "../../../dialogs/error/error-dialog.component";
+import { IgeError } from "../../../models/ige-error";
+import { SessionStore } from "../../../store/session.store";
+import { ServerValidation } from "../../../server-validation.util";
+import { FormStateService } from "../../form-state.service";
+import { AbstractControl, FormGroup } from "@angular/forms";
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -36,8 +36,6 @@ export class PublishPlugin extends Plugin {
   eventRevertId = "REVERT";
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
-
-  formIsValid = false;
 
   get name() {
     return this._name;
@@ -125,7 +123,7 @@ export class PublishPlugin extends Plugin {
             title: "Veröffentlichen",
             message,
             buttons: [
-              {text: "Abbrechen"},
+              { text: "Abbrechen" },
               {
                 text: "Veröffentlichen",
                 id: "confirm",
@@ -184,7 +182,7 @@ export class PublishPlugin extends Plugin {
           title: "Zurücksetzen",
           message,
           buttons: [
-            {text: "Abbrechen"},
+            { text: "Abbrechen" },
             {
               text: "Zurücksetzen",
               id: "revert",
@@ -199,8 +197,7 @@ export class PublishPlugin extends Plugin {
       .subscribe((doRevert) => {
         if (doRevert) {
           this.storageService.revert(doc._id, this.forAddress).subscribe(
-            () => {
-            },
+            () => {},
             (err) => {
               console.log("Error when reverting data", err);
               throw err;
@@ -228,8 +225,8 @@ export class PublishPlugin extends Plugin {
       this.formToolbarService.setButtonState(
         "toolBtnPublish",
         loadedDocument !== null &&
-        loadedDocument._type !== "FOLDER" &&
-        loadedDocument.hasWritePermission
+          loadedDocument._type !== "FOLDER" &&
+          loadedDocument.hasWritePermission
       );
       this.formToolbarService.setMenuItemStateOfButton(
         "toolBtnPublish",
@@ -264,9 +261,10 @@ export class PublishPlugin extends Plugin {
         ),
       });
       this.dialog.open(ErrorDialogComponent, {
-        data: new IgeError('Beim Veröffentlichen wurden Fehler im Formular entdeckt'
+        data: new IgeError(
+          "Beim Veröffentlichen wurden Fehler im Formular entdeckt"
           // error: {message: ServerValidation.prepareServerError(error?.error)})
-        )
+        ),
       });
     } else {
       throw error;

@@ -15,7 +15,7 @@ import {
   DocumentAbstract,
 } from "../../../../store/document/document.model";
 import { ShortTreeNode } from "../../../sidebars/tree/tree.types";
-import {ConfigService} from "../../../../services/config/config.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
 @Component({
   selector: "ige-destination-selection",
@@ -70,12 +70,6 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
   getRootNode() {
     return of([this.rootNode]);
   }
-
-/*  updatePath(path: ShortTreeNode[]) {
-    // TODO
-    this.path = path;
-    this.updateParent([this.parent], "Tree");
-  }*/
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.initialSelectedId) {

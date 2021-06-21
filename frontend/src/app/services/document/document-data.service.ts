@@ -3,8 +3,7 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { IgeDocument } from "../../models/ige-document";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-import {tap} from "rxjs/operators";
-import {PathResponse} from "../../models/path-response";
+import { PathResponse } from "../../models/path-response";
 
 @Injectable({
   providedIn: "root",

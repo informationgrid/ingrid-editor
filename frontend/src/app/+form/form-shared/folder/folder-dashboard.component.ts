@@ -9,7 +9,7 @@ import { map, tap } from "rxjs/operators";
 import { FormUtils } from "../../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
-import {IgeDocument} from "../../../models/ige-document";
+import { IgeDocument } from "../../../models/ige-document";
 
 @Component({
   selector: "ige-folder-dashboard",

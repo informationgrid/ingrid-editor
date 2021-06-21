@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {ConfigDataService} from "./config-data.service";
-import {BehaviorSubject} from "rxjs";
-import {Catalog} from "../../+catalog/services/catalog.model";
-import {coerceArray} from "@datorama/akita";
-import {IgeError} from "../../models/ige-error";
+import { Injectable } from "@angular/core";
+import { ConfigDataService } from "./config-data.service";
+import { BehaviorSubject } from "rxjs";
+import { Catalog } from "../../+catalog/services/catalog.model";
+import { coerceArray } from "@datorama/akita";
+import { IgeError } from "../../models/ige-error";
 
 export class Configuration {
   constructor(
@@ -11,8 +11,7 @@ export class Configuration {
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string
-  ) {
-  }
+  ) {}
 }
 
 export interface Version {
@@ -71,11 +70,12 @@ export class ConfigService {
   getCurrentUserInfo(): Promise<UserInfo> {
     return this.dataService.getCurrentUserInfo().then((userInfo) => {
       if (userInfo === null) {
-        throw new IgeError('Could not get current user');
+        throw new IgeError("Could not get current user");
       }
 
       this.isAdministrator =
-        userInfo.groups?.indexOf("ige-super-admin") !== -1 || userInfo.role === 'cat-admin';
+        userInfo.groups?.indexOf("ige-super-admin") !== -1 ||
+        userInfo.role === "cat-admin";
 
       this.$userInfo.next(userInfo);
       return userInfo;
