@@ -101,9 +101,9 @@ class UsersApiController : UsersApi {
                 user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
                 user.role = frontendUser.role?.name ?: ""
 
-                //TODO implement manager and standin
-                user.manager = "ige"
-                user.standin = "herbert"
+                // TODO implement manager and standin
+                //user.manager = "ige"
+                //user.standin = "herbert"
 
                 logger.info("getUser: $durationGetUser")
                 logger.info("getLatestLoginDate: $durationGetLatestLoginDate")

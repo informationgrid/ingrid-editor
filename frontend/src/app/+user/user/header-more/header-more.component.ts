@@ -45,16 +45,6 @@ export class HeaderMoreComponent implements OnInit {
 
   getStandinUsers(): String[] {
     // TODO implement
-    return ["User1", "user2"];
-  }
-
-  getCreationDate() {
-    // TODO implement
-    return "";
-  }
-
-  getModificationDate() {
-    // TODO implement
-    return "";
+    return [];
   }
 }
