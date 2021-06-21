@@ -11,6 +11,7 @@ data class User(
     val lastName: String,
     val email: String,
     var role: String = "",
+    var organisation: String = "",
     var manager: String = "",
     var standin: String?,
     var groups: List<Int> = emptyList(),

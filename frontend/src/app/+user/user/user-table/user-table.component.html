@@ -38,7 +38,7 @@
     </ng-container>
 
     <!-- Organisation -->
-    <ng-container matColumnDef="login">
+    <ng-container matColumnDef="organisation">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Organisation</th>
         <td
             mat-cell
@@ -46,7 +46,7 @@
             (click)="selection.select(element)"
             [class.selected]="selection.isSelected(element)"
         >
-            {{ element.login }}
+            {{ element.organisation }}
         </td>
     </ng-container>
 

@@ -100,6 +100,7 @@ class UsersApiController : UsersApi {
                 user.creationDate = frontendUser.data?.creationDate ?: Date(0)
                 user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
                 user.role = frontendUser.role?.name ?: ""
+                user.organisation = frontendUser.data?.organisation ?: ""
 
                 // TODO implement manager and standin
                 //user.manager = "ige"
@@ -119,11 +120,15 @@ class UsersApiController : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val users = keycloakService.getUsersWithIgeRoles(principal)
+        val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
         val catalogUsers = catalogService.getUserOfCatalog(catalogId)
-        val filteredUsers = users
+        val filteredUsers = keyCloakUsers
             .filter { user -> catalogUsers.any { it.userId == user.login } }
-            .onEach { user -> user.role = catalogUsers.find { it.userId == user.login }?.role?.name ?: "" }
+            .onEach { user ->
+                val catUser = catalogUsers.find { it.userId == user.login }
+                user.role = catUser?.role?.name ?: ""
+                user.organisation = catUser?.data?.organisation ?: ""
+            }
 
         return ResponseEntity.ok(filteredUsers)
     }

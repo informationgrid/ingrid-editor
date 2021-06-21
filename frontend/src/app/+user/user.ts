@@ -3,6 +3,7 @@ export abstract class User {
   firstName: string;
   lastName: string;
   role: string;
+  organisation: string;
   attributes: any[];
   password?: string;
   manager?: string;

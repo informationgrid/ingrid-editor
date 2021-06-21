@@ -71,6 +71,7 @@ export class UserComponent implements OnInit {
       firstName: ["", Validators.required],
       lastName: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
+      organisation: this.fb.control([]),
       groups: this.fb.control([]),
       manager: this.fb.control([]),
       standin: this.fb.control([]),

@@ -33,7 +33,12 @@ export class UserTableComponent implements OnInit, AfterViewInit {
 
   @Input() selectedUser: User;
   @Input() selectedUserForm: FormControl;
-  displayedColumns: string[] = ["role-icon", "firstName", "login", "settings"];
+  displayedColumns: string[] = [
+    "role-icon",
+    "firstName",
+    "organisation",
+    "settings",
+  ];
   dataSource = new MatTableDataSource([]);
   private selection: SelectionModel<User>;
 

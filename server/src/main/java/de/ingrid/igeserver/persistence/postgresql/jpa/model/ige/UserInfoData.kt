@@ -7,5 +7,6 @@ import java.util.*
 data class UserInfoData(
     var recentLogins: List<Long> = emptyList(),
     var creationDate: Date? = null,
-    var modificationDate: Date? = null
+    var modificationDate: Date? = null,
+    var organisation: String? = null
 )
