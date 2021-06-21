@@ -395,6 +395,9 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (id !== null && id !== undefined) {
       // TODO: do not always request path, when not needed
       return this.database.getPath(id).then((path) => {
+        // skip last node which does not need to be expanded
+        path.pop();
+
         if (path.length > 0) {
           return this.handleExpandNodes(path).then(() => {
             const node = this.dataSource.getNode(id);
