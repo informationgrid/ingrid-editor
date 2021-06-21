@@ -15,8 +15,8 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   expandedNodes$: Observable<string[]> = this.select(
     (state) => state.expandedNodes
   );
-  pathTitles$: Observable<ShortTreeNode[]> = this.select(
-    (state) => state.activePathTitles
+  breadcrumb$: Observable<ShortTreeNode[]> = this.select(
+    (state) => state.breadcrumb
   );
   selectedNodes$: Observable<string[]> = this.select((state) => state.selected);
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(

@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {filter, take, tap} from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
@@ -27,7 +27,8 @@ import { ProfileQuery } from "../../../store/profile/profile.query";
 import { DocType } from "./create-doc.plugin";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import {ProfileAbstract} from "../../../store/profile/profile.model";
+import { ProfileAbstract } from "../../../store/profile/profile.model";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 export interface CreateOptions {
   parent: string;
@@ -35,6 +36,7 @@ export interface CreateOptions {
   isFolder: boolean;
 }
 
+@UntilDestroy()
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
@@ -100,14 +102,18 @@ export class CreateNodeComponent implements OnInit {
       this.initializeForAddresses();
     }
 
-    this.query.pathTitles$.pipe(take(1)).subscribe((path) => {
-      const selectedNode = this.query.getOpenedDocument();
-      this.path = [...path];
-
-      if (selectedNode && selectedNode._type !== "FOLDER") {
-        this.path.pop();
-      }
-    });
+    this.query.breadcrumb$
+      .pipe(
+        untilDestroyed(this),
+        tap(
+          (path) =>
+            (this.path =
+              this.query.getOpenedDocument()._type !== "FOLDER"
+                ? path.slice(0, -1)
+                : path)
+        )
+      )
+      .subscribe();
   }
 
   private initializeForDocumentsAndFolders() {
@@ -144,7 +150,6 @@ export class CreateNodeComponent implements OnInit {
       .pipe(filter((types) => types.length > 0))
       .subscribe((result) => this.createDocTypes(result));
   }
-
 
   private createDocTypes(result: ProfileAbstract[]) {
     const docTypes = result
@@ -183,14 +188,24 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     this.parent = this.selectedLocation.parent;
-    this.documentService.getPath(this.selectedLocation.parent)
+    this.documentService
+      .getPath(this.selectedLocation.parent)
       .pipe(
-        tap(result => this.path = result
-          //.slice(0, -1)
-          .map(path => new ShortTreeNode(path.id, path.title, !this.query.hasEntity(path.id)))
+        tap(
+          (result) =>
+            (this.path = result
+              //.slice(0, -1)
+              .map(
+                (path) =>
+                  new ShortTreeNode(
+                    path.id,
+                    path.title,
+                    !this.query.hasEntity(path.id)
+                  )
+              ))
         )
       )
-      .subscribe()
+      .subscribe();
     this.selectedPage = 0;
   }
 

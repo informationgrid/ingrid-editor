@@ -29,7 +29,10 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { StatisticResponse } from "../../models/statistic.model";
 import { IgeError } from "../../models/ige-error";
 import { SessionQuery } from "../../store/session.query";
-import {PathResponse} from "../../models/path-response";
+import { PathResponse } from "../../models/path-response";
+import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
+import { TreeQuery } from "../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -125,7 +128,6 @@ export class DocumentService {
     docs: IgeDocument[],
     parentId?: string
   ): DocumentAbstract[] {
-
     return docs.map((doc) => {
       return {
         id: doc._id,
@@ -309,11 +311,7 @@ export class DocumentService {
   }
 
   getPath(id: string): Observable<PathResponse[]> {
-    return this.dataService
-      .getPath(id)
-      .pipe
-      // tap( path => this.treeStore.setExpandedNodes(path))
-      ();
+    return this.dataService.getPath(id);
   }
 
   /**
@@ -346,9 +344,11 @@ export class DocumentService {
           // path: path
         });
       }),
-      catchError(error => {
-        if (error.error.errorText.indexOf('is part of the hierarchy')) {
-          throw new IgeError('Kopieren von Dokumentenbäumen unter sich selbst ist nicht möglich')
+      catchError((error) => {
+        if (error.error.errorText.indexOf("is part of the hierarchy")) {
+          throw new IgeError(
+            "Kopieren von Dokumentenbäumen unter sich selbst ist nicht möglich"
+          );
         }
         throw error;
       })
@@ -598,5 +598,39 @@ export class DocumentService {
     }
 
     return of([]);
+  }
+
+  updateBreadcrumb(
+    id: string,
+    query: TreeQuery | AddressTreeQuery,
+    isAddress = false
+  ) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    this.getPath(id)
+      .pipe(
+        map((path) => this.preparePath(path, query)),
+        tap((path) =>
+          store.update({
+            breadcrumb: path,
+          })
+        )
+      )
+      .subscribe();
+  }
+
+  private preparePath(
+    result: PathResponse[],
+    query: TreeQuery | AddressTreeQuery
+  ) {
+    const path = result.map(
+      (pathItem) => new ShortTreeNode(pathItem.id, pathItem.title)
+    );
+
+    path.some((node) => {
+      if (!query.hasEntity(node.id)) node.disabled = true;
+      else return true;
+    });
+    return path;
   }
 }

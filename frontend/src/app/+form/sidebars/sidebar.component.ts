@@ -8,7 +8,7 @@ import { FormUtils } from "../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { DocumentService } from "../../services/document/document.service";
 import { TreeService } from "./tree/tree.service";
-import { TreeAction} from "./tree/tree.types";
+import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
 
 @UntilDestroy()
@@ -19,7 +19,10 @@ import { FormStateService } from "../form-state.service";
 })
 export class SidebarComponent implements OnInit {
   @Input() address = false;
-  @Input() activeId: Subject<string>;
+
+  @Input() set activeId(id) {
+    this.activeTreeNode.next(id);
+  }
 
   @Output() dropped = new EventEmitter();
 
@@ -54,10 +57,6 @@ export class SidebarComponent implements OnInit {
     // TODO: sure? Improve performance by keeping store! Make it more intelligent
     //       to avoid node creation from dashboard conflict
     this.clearTreeStore();
-
-    this.activeId?.subscribe((id) => {
-      this.activeTreeNode.next(id);
-    });
   }
 
   async handleLoad(selectedDocIds: string[]) {

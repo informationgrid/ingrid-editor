@@ -322,6 +322,7 @@ class DatasetsApiController @Autowired constructor(
 
             val doc = documentService.getLatestDocument(wrapper)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
+            doc.data.put(FIELD_PARENT, wrapper.parent?.id)
             val jsonDoc = documentService.convertToJsonNode(doc)
             return ResponseEntity.ok(jsonDoc)
         } catch (ex: AccessDeniedException) {

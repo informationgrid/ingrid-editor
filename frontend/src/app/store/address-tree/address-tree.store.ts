@@ -6,7 +6,7 @@ const initialState = {
   active: [],
   openedDocument: null,
   expandedNodes: [],
-  activePathTitles: [],
+  breadcrumb: [],
   explicitActiveNode: undefined,
   scrollPosition: 0,
 };

@@ -15,7 +15,7 @@ export interface TreeState
   openedNodes: DocumentAbstract[];
   openedDocument: DocumentAbstract;
   expandedNodes: string[];
-  activePathTitles: ShortTreeNode[];
+  breadcrumb: ShortTreeNode[];
   explicitActiveNode: ShortTreeNode;
   scrollPosition: number;
   isDocLoading: boolean;
@@ -26,7 +26,7 @@ const initialState = {
   active: [],
   openedDocument: null,
   expandedNodes: [],
-  activePathTitles: [],
+  breadcrumb: [],
   explicitActiveNode: undefined,
   scrollPosition: 0,
   isDocLoading: false,

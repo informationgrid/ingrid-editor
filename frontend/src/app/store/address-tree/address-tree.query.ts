@@ -11,8 +11,8 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
   openedDocument$: Observable<DocumentAbstract> = this.select(
     (state) => state.openedDocument
   );
-  pathTitles$: Observable<ShortTreeNode[]> = this.select(
-    (state) => state.activePathTitles
+  breadcrumb$: Observable<ShortTreeNode[]> = this.select(
+    (state) => state.breadcrumb
   );
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(
     (state) => state.explicitActiveNode

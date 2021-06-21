@@ -23,7 +23,7 @@ import { TreeService } from "./tree.service";
 import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
-import {ShortTreeNode} from "./tree.types";
+import { ShortTreeNode } from "./tree.types";
 
 export enum TreeActionType {
   ADD,
@@ -121,7 +121,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.database.treeUpdates
       .pipe(untilDestroyed(this))
       .subscribe((data) => this.handleUpdate(data));
-
   }
 
   private handleActiveNodeSubscription() {
@@ -393,7 +392,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selection.model.clear();
     }
 
-    if (id !== null) {
+    if (id !== null && id !== undefined) {
       // TODO: do not always request path, when not needed
       return this.database.getPath(id).then((path) => {
         if (path.length > 0) {
@@ -486,8 +485,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     return pos === null ? [] : ids.slice(pos, ids.length);
   }
 
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 
   private handleTreeExpandToInitialNode() {
     if (this.expandNodeIds) {

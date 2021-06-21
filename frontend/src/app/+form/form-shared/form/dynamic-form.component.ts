@@ -23,9 +23,9 @@ import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import {debounceTime, filter, map, tap} from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { BehaviorSubject, combineLatest, merge } from "rxjs";
+import { combineLatest, merge } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { AuthService } from "../../../services/security/auth.service";
@@ -34,6 +34,8 @@ import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { PathResponse } from "../../../models/path-response";
+import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 
 @UntilDestroy()
 @Component({
@@ -51,7 +53,9 @@ export class DynamicFormComponent
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
 
-  activeId = new BehaviorSubject<string>(null);
+  // set tree node when we don't explicitly click on it (initialization or reset after unsaved changes)
+  activeId: string;
+
   sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
@@ -176,7 +180,7 @@ export class DynamicFormComponent
 
     // only activate tree node (when rejecting unsaved changes dialog)
     externalTreeNodeChange$.subscribe((node) => {
-      this.activeId.next(node.id);
+      this.activeId = node.id;
     });
 
     this.handleJsonViewPlugin();
@@ -242,26 +246,11 @@ export class DynamicFormComponent
    */
   loadDocument(id: string) {
     if (id === undefined) {
-      this.fields = [];
-      this.activeId.next(null);
-      this.form.reset();
-      this.documentService.updateOpenedDocumentInTreestore(
-        null,
-        this.address,
-        true
-      );
+      this.resetForm();
       return;
-    } else {
-      // form might not be available on first visit
-      setTimeout(() => (this.scrollForm.nativeElement.scrollTop = 0));
-      const scrollPosition = this.query.getValue().scrollPosition;
-      if (scrollPosition !== 0) {
-        setTimeout(
-          () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
-          500
-        );
-      }
     }
+
+    this.updateScrollPosition();
 
     this.showValidationErrors = false;
 
@@ -272,19 +261,46 @@ export class DynamicFormComponent
       .pipe(untilDestroyed(this))
       .subscribe(
         (doc) => this.updateFormWithData(doc),
-        (error: HttpErrorResponse) => {
-          if (error.status === 403) {
-            // select previous document
-            const target = this.address ? "/address" : "/form";
-            if (previousDocId) {
-              this.router.navigate([target, { id: previousDocId }]);
-            } else {
-              this.router.navigate([target]);
-            }
-          }
-          throw error;
-        }
+        (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
       );
+
+    this.documentService.updateBreadcrumb(id, this.query, this.address);
+  }
+
+  private handleLoadError(error: HttpErrorResponse, previousDocId) {
+    if (error.status === 403) {
+      // select previous document
+      const target = this.address ? "/address" : "/form";
+      if (previousDocId) {
+        this.router.navigate([target, { id: previousDocId }]);
+      } else {
+        this.router.navigate([target]);
+      }
+    }
+    throw error;
+  }
+
+  private updateScrollPosition() {
+    // form might not be available on first visit
+    setTimeout(() => (this.scrollForm.nativeElement.scrollTop = 0));
+    const scrollPosition = this.query.getValue().scrollPosition;
+    if (scrollPosition !== 0) {
+      setTimeout(
+        () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
+        500
+      );
+    }
+  }
+
+  private resetForm() {
+    this.fields = [];
+    this.activeId = null;
+    this.form.reset();
+    this.documentService.updateOpenedDocumentInTreestore(
+      null,
+      this.address,
+      true
+    );
   }
 
   private updateFormWithData(data) {
@@ -293,7 +309,7 @@ export class DynamicFormComponent
     }
 
     // update tree state
-    this.activeId.next(data._id);
+    this.activeId = data._id;
 
     const profile = data._type;
 
