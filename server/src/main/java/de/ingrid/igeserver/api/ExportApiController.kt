@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.services.CatalogService
@@ -29,13 +30,12 @@ class ExportApiController : ExportApi {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
-        var result: String? = ""
         val doc = documentService.getWrapperByDocumentId(data.id)
         val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
         val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
-        result = exporter.run(docVersion) as String
-        return ResponseEntity.ok(result)
+        val result = exporter.run(docVersion) as ObjectNode
+        return ResponseEntity.ok(result.toPrettyString())
     }
 
     override fun exportTypes(principal: Principal, profile: String): ResponseEntity<List<ExportTypeInfo>> {

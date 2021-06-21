@@ -1,22 +1,32 @@
 package de.ingrid.igeserver.exports.internal
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class InternalExporter : IgeExporter {
+class InternalExporter @Autowired constructor(val documentService: DocumentService) : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
-        get() = ExportTypeInfo(DocumentCategory.DATA, "internal", "IGE", "Interne Datenstruktur des IGE", MediaType.APPLICATION_JSON_VALUE, "json", listOf())
+        get() = ExportTypeInfo(
+            DocumentCategory.DATA,
+            "internal",
+            "IGE",
+            "Interne Datenstruktur des IGE",
+            MediaType.APPLICATION_JSON_VALUE,
+            "json",
+            listOf()
+        )
 
-    override fun run(jsonData: Document): Any {
+    override fun run(doc: Document): Any {
         // TODO: profile must be added to the exported format!
-        return jsonData // TODO: migrate
+        return documentService.convertToJsonNode(doc)
     }
 
     override fun toString(exportedObject: Any): String {

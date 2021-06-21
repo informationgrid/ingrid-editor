@@ -25,7 +25,7 @@ class PortalExporterAddress : IgeExporter {
             )
         }
 
-    override fun run(jsonData: Document): Any {
+    override fun run(doc: Document): Any {
         // do not export addresses
         return "{}"
     }

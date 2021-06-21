@@ -30,7 +30,7 @@ class PortalExporter : IgeExporter {
             )
         }
 
-    override fun run(jsonData: Document): Any {
+    override fun run(doc: Document): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
             //.newLineTrimming(false)
@@ -41,7 +41,7 @@ class PortalExporter : IgeExporter {
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
 
         val writer: Writer = StringWriter()
-        val map = getMapFromObject(jsonData)
+        val map = getMapFromObject(doc)
         compiledTemplate.evaluate(writer, map)
         return writer.toString()
     }

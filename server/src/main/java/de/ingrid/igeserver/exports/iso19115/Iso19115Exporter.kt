@@ -18,13 +18,13 @@ class Iso19115Exporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = info
 
-    override fun run(jsonData: Document): Any {
+    override fun run(doc: Document): Any {
         val engine = PebbleEngine.Builder()
-                .newLineTrimming(false)
-                .build()
+            .newLineTrimming(false)
+            .build()
         val compiledTemplate = engine.getTemplate("templates/export/iso/iso-base.peb")
         val writer: Writer = StringWriter()
-        compiledTemplate.evaluate(writer, createContext(jsonData))
+        compiledTemplate.evaluate(writer, createContext(doc))
         return writer.toString().replace("\\s+\n".toRegex(), "\n")
     }
 

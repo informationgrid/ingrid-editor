@@ -33,11 +33,12 @@ class ImportService {
         val importedDoc = importer.run(fileContent)
 
         log.debug("Transformed document: $importedDoc")
+        val doc = documentService.convertToDocument(importedDoc as JsonNode)
 
-        extractAndSaveReferences(importedDoc as Document)
+        extractAndSaveReferences(doc)
 
         // TODO: return created document instead of transformed JSON
-        return Pair(importedDoc, importer.name)
+        return Pair(doc, importer.name)
     }
 
     private fun extractAndSaveReferences(doc: Document) {

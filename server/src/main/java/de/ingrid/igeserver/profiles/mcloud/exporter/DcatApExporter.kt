@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -30,7 +29,7 @@ class DcatApExporter : IgeExporter {
             )
         }
 
-    override fun run(jsonData: Document): Any {
+    override fun run(doc: Document): Any {
         val engine = PebbleEngine.Builder()
             .newLineTrimming(false)
             .build()
@@ -38,7 +37,7 @@ class DcatApExporter : IgeExporter {
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/dcat.peb")
 
         val writer: Writer = StringWriter()
-        val map = getMapFromObject(jsonData)
+        val map = getMapFromObject(doc)
         compiledTemplate.evaluate(writer, map)
         return writer.toString().replace("\\s+\n".toRegex(), "\n")
     }

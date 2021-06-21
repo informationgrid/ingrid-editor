@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -14,8 +13,8 @@ class IsoExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = ExportTypeInfo(DocumentCategory.DATA, "xxx", "IsoExporter", "", "text/xml", "xml", listOf())
 
-    override fun run(jsonData: Document): Any {
-        return mapMetadata(jsonData)
+    override fun run(doc: Document): Any {
+        return mapMetadata(doc)
     }
 
     private fun mapMetadata(tree: Document): Metadata {
