@@ -15,7 +15,6 @@ import {
   DocumentAbstract,
 } from "../../../../store/document/document.model";
 import { ShortTreeNode } from "../../../sidebars/tree/tree.types";
-import { ConfigService } from "../../../../services/config/config.service";
 
 @Component({
   selector: "ige-destination-selection",
@@ -25,6 +24,8 @@ import { ConfigService } from "../../../../services/config/config.service";
 export class DestinationSelectionComponent implements OnInit, OnChanges {
   @Input() forAddress: boolean;
   @Input() initialSelectedId: string;
+  @Input() disableRoot = false;
+
   @Output() choice = new EventEmitter();
 
   parent: string = null;
@@ -33,9 +34,7 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
   activeTreeNode = new BehaviorSubject<string>(null);
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
 
-  isAdmin = this.config.isAdmin();
-
-  constructor(private config: ConfigService) {}
+  constructor() {}
 
   ngOnInit(): void {
     if (this.forAddress) {

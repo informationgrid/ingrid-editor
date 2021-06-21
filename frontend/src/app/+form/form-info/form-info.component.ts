@@ -18,7 +18,6 @@ import { SessionQuery } from "../../store/session.query";
 import {
   distinctUntilChanged,
   map,
-  skipLast,
   startWith,
   tap,
   throttleTime,
@@ -38,7 +37,6 @@ import { FormUtils } from "../form.utils";
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
-import { PathResponse } from "../../models/path-response";
 
 export interface StickyHeaderInfo {
   show: boolean;

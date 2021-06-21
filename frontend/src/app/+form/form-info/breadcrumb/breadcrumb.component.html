@@ -1,8 +1,11 @@
 <span *ngIf="path" [class.emphasize]="emphasize">
     <span *ngIf="showRoot" class="root">
-        <span [class.selectable]="selectable" (click)="onSelect(null)">{{
-            rootName
-        }}</span>
+        <span
+            [class.selectable]="selectable && !disableRoot"
+            [class.disabled]="disableRoot"
+            (click)="!disableRoot && onSelect(null)"
+            >{{ rootName }}</span
+        >
         <mat-icon *ngIf="path.length > 0 || !hideLastSeparator"
             >chevron_right</mat-icon
         >

@@ -108,7 +108,7 @@ export class CreateFolderPlugin extends Plugin {
     this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
+      minHeight: 500,
       // height: 'calc(100vh - 235px)',
       disableClose: true,
       data: {

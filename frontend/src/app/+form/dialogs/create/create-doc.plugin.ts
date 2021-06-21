@@ -108,7 +108,7 @@ export class CreateDocumentPlugin extends Plugin {
     this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
+      minHeight: 500,
       disableClose: true,
       data: {
         parent: parentDocId,

@@ -13,6 +13,7 @@ export class BreadcrumbComponent implements OnInit {
   @Input() rootName = "Daten";
   @Input() emphasize = false;
   @Input() selectable = false;
+  @Input() disableRoot = false;
 
   @Output() select = new EventEmitter<string>();
 

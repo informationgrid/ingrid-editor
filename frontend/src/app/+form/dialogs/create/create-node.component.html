@@ -90,6 +90,7 @@
                     [rootName]="rootTreeName"
                     [selectable]="true"
                     [hideLastSeparator]="true"
+                    [disableRoot]="!isAdmin"
                     (select)="quickBreadcrumbChange($event)"
                 ></ige-breadcrumb>
             </div>
@@ -97,6 +98,7 @@
 
         <mat-tab label="Ordner auswählen">
             <ige-destination-selection
+                [disableRoot]="!isAdmin"
                 [forAddress]="forAddress"
                 [initialSelectedId]="jumpedTreeNodeId"
                 (choice)="updateParent($event)"

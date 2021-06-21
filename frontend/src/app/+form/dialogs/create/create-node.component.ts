@@ -29,6 +29,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { ProfileAbstract } from "../../../store/profile/profile.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ConfigService } from "../../../services/config/config.service";
 
 export interface CreateOptions {
   parent: string;
@@ -56,11 +57,6 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
-  private query: TreeQuery | AddressTreeQuery;
-  private selectedLocation: any = {
-    parent: null,
-    path: [],
-  };
   formGroup: FormGroup;
   documentTypes: Observable<DocumentAbstract[]>;
   numDocumentTypes: number;
@@ -68,8 +64,15 @@ export class CreateNodeComponent implements OnInit {
     null
   );
   jumpedTreeNodeId: string = null;
+  isAdmin = this.config.isAdmin();
+  private query: TreeQuery | AddressTreeQuery;
+  private selectedLocation: any = {
+    parent: null,
+    path: [],
+  };
 
   constructor(
+    private config: ConfigService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private router: Router,
@@ -105,15 +108,76 @@ export class CreateNodeComponent implements OnInit {
     this.query.breadcrumb$
       .pipe(
         untilDestroyed(this),
+        tap((path) => this.mapPath(path))
+      )
+      .subscribe();
+  }
+
+  nameOrOganizationValidator(control: FormGroup): ValidationErrors | null {
+    const firstName = control.get("firstName");
+    const lastName = control.get("lastName");
+    const organization = control.get("organization");
+
+    return !firstName.value && !lastName.value && !organization.value
+      ? { nameOrOrganization: true }
+      : null;
+  }
+
+  async handleCreate() {
+    if (this.isFolder || !this.forAddress) {
+      this.handleDocumentCreate();
+    } else {
+      this.handleAddressCreate();
+    }
+  }
+
+  updateParent(parentInfo: any) {
+    this.selectedLocation = parentInfo;
+  }
+
+  applyLocation() {
+    this.parent = this.selectedLocation.parent;
+    this.documentService
+      .getPath(this.selectedLocation.parent)
+      .pipe(
         tap(
-          (path) =>
-            (this.path =
-              this.query.getOpenedDocument()._type !== "FOLDER"
-                ? path.slice(0, -1)
-                : path)
+          (result) =>
+            (this.path = result.map(
+              (path) =>
+                new ShortTreeNode(
+                  path.id,
+                  path.title,
+                  !this.query.hasEntity(path.id)
+                )
+            ))
         )
       )
       .subscribe();
+    this.selectedPage = 0;
+  }
+
+  jumpToTree(id: string) {
+    this.selectedPage = 1;
+    if (id !== null) {
+      this.jumpedTreeNodeId = id;
+    }
+  }
+
+  setDocType(docType: DocumentAbstract) {
+    this.formGroup.get("choice").setValue(docType.id);
+  }
+
+  quickBreadcrumbChange(id: string) {
+    this.parent = id;
+    const index = this.path.findIndex((item) => item.id === id);
+    this.path = this.path.splice(0, index + 1);
+  }
+
+  private mapPath(path: ShortTreeNode[]) {
+    this.path =
+      this.query.getOpenedDocument()._type !== "FOLDER"
+        ? path.slice(0, -1)
+        : [...path];
   }
 
   private initializeForDocumentsAndFolders() {
@@ -162,51 +226,6 @@ export class CreateNodeComponent implements OnInit {
     this.documentTypes = this.prepareDocumentTypes(docTypes);
     this.formGroup.get("choice").setValue(docTypes[0].id);
     return docTypes;
-  }
-
-  nameOrOganizationValidator(control: FormGroup): ValidationErrors | null {
-    const firstName = control.get("firstName");
-    const lastName = control.get("lastName");
-    const organization = control.get("organization");
-
-    return !firstName.value && !lastName.value && !organization.value
-      ? { nameOrOrganization: true }
-      : null;
-  }
-
-  async handleCreate() {
-    if (this.isFolder || !this.forAddress) {
-      this.handleDocumentCreate();
-    } else {
-      this.handleAddressCreate();
-    }
-  }
-
-  updateParent(parentInfo: any) {
-    this.selectedLocation = parentInfo;
-  }
-
-  applyLocation() {
-    this.parent = this.selectedLocation.parent;
-    this.documentService
-      .getPath(this.selectedLocation.parent)
-      .pipe(
-        tap(
-          (result) =>
-            (this.path = result
-              //.slice(0, -1)
-              .map(
-                (path) =>
-                  new ShortTreeNode(
-                    path.id,
-                    path.title,
-                    !this.query.hasEntity(path.id)
-                  )
-              ))
-        )
-      )
-      .subscribe();
-    this.selectedPage = 0;
   }
 
   private prepareDocumentTypes(
@@ -261,22 +280,5 @@ export class CreateNodeComponent implements OnInit {
 
     const page = this.forAddress ? "/address" : "/form";
     this.router.navigate([page, { id: id }]);
-  }
-
-  jumpToTree(id: string) {
-    this.selectedPage = 1;
-    if (id !== null) {
-      this.jumpedTreeNodeId = id;
-    }
-  }
-
-  setDocType(docType: DocumentAbstract) {
-    this.formGroup.get("choice").setValue(docType.id);
-  }
-
-  quickBreadcrumbChange(id: string) {
-    this.parent = id;
-    const index = this.path.findIndex((item) => item.id === id);
-    this.path = this.path.splice(0, index + 1);
   }
 }

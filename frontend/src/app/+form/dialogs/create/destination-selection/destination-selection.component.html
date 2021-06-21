@@ -8,7 +8,7 @@
     [showHeaderOptions]="false"
     [hideReadOnly]="true"
 ></ige-tree>
-<ng-container *ngIf="isAdmin">
+<ng-container *ngIf="!disableRoot">
     <div class="selection-divider"></div>
     <div class="side-padding place-title-other">Oder anlegen unter</div>
     <ige-document-list-item
