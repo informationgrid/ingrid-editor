@@ -35,7 +35,7 @@ The persistence layer of IGE Server consists of the following main **interfaces*
 
 - `Repositories` define the access layer to the database. These are offered by Spring Data and can be easily extended with
   additional functionality, often without writing any SQL.
-- `EntityType` is the base interface for all **document types**. This could be general domain specific types like 
+- `EntityType` is the base interface for all **document types**. This could be general domain specific types like
   `AddressType` or profile specific types like `MCloudType`.
   Services will use these interfaces to execute additional tasks that only the document type itself knows how to handle.
   If a document has references to another document or address, then it's his responsibility to handle the resolution of
@@ -128,12 +128,12 @@ IGE Server defines the following **exception hierarchy**:
   }
   ```
 
-- `ServerException` is the base class for all exceptions that occur while processing a valid request to the REST API. 
+- `ServerException` is the base class for all exceptions that occur while processing a valid request to the REST API.
 
   - Server exceptions have the `statusCode` value **500** if not set to more specific value of **5XX** in sub classes.
   - Server exceptions will be logged with **log level ERROR**.
 
-- `ClientException` is the base class for exceptions that are caused by invalid request to the REST API. 
+- `ClientException` is the base class for exceptions that are caused by invalid request to the REST API.
 
   - Client exceptions have the `statusCode` value to **400** if not set to more specific value of **4XX** in sub classes.
   - Client exceptions will be logged with **log level DEBUG**.
@@ -296,7 +296,7 @@ This profile contains the following information:
 |definiton of catalog codelists|additional codelists used in this profile|
 |definition of elasticsearch mappings and settings|used for index configuration|
 
-The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the 
+The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the
 presentation of the research page (facets / quick filters).
 
 An example of how to add a new profile can be found in FAQ.md.
@@ -304,8 +304,8 @@ An example of how to add a new profile can be found in FAQ.md.
 #### Document types
 
 A profile can contain one or more document/entity types. Each document type contains a definition of fields for the form
-in the frontend and a definition in the backend. The definition in the backend should contain information about how to 
-resolve references to other addresses/documents. 
+in the frontend and a definition in the backend. The definition in the backend should contain information about how to
+resolve references to other addresses/documents.
 
 Moreover each type can control its publication and do some validations by overriding the `onPublish`-function
 
@@ -323,8 +323,8 @@ An importer is a service which implements the interface `IgeImporter`. With the 
 the importer is only initialized when a specified profile is active.
 
 The function `canHandleImportFile` is needed to check, if the given file can be imported by this importer. With the given
-content and its content-type we should be able to determine if the importer is suitable. If multiple importer say that 
-they can handle the input file, then the user is presented a choice dialog, to select the correct importer.  
+content and its content-type we should be able to determine if the importer is suitable. If multiple importer say that
+they can handle the input file, then the user is presented a choice dialog, to select the correct importer.
 
 After an importer is run, we expect to receive a JsonNode object, which is filled with data coming from the imported file.
 The object should represent the JSON format, in which the document is stored in the database.
@@ -340,13 +340,18 @@ A profile can offer multiple export formats. You need to create a new service, w
 is. This service must implement the interface `IgeExporter` and return a typeInfo with a description of the exporter. This
 is also used in the frontend, to choose from a collection of exporters.
 
-It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document. 
-In combination with a model-class, the template can be easily filled with all the information. When the model-class 
+It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document.
+In combination with a model-class, the template can be easily filled with all the information. When the model-class
 implements one of the provided interfaces, e.g. `DCAT` then the same template can be even used for multiple document types.
 
 An exporter is also used for indexing where the document will be converted to a JSON format which is then stored in an
 Elasticsearch index. Since the index itself can have a configuration on its own, you can define a settings and mapping
 configuration for the index. This can be defined in the profile definition file.
+
+### Export format
+
+The documentation of the export format is  here: [Definition Export format](./export_format.md).
+
 
 ## Database
 
