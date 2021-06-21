@@ -1,0 +1,28 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://informationgrid.eu/schema/ige_export.schema.json",
+    "title": "IGE-NG Export Format",
+    "description": "An import and export format for internal data exchange between IGE-NG instances.",
+    "type": "object",
+    "properties": {
+      "_version": {
+        "description": "The version of export format. Consists of an prefix and an version, i.e 'export:0.1'",
+        "type": "string",
+        "pattern": "^(([a-zA-Z])+:)?[0-9]+\\.[[0-9]+]$"
+      },
+      "_export_date": {
+        "description": "The date of the export.",
+        "type": "string",
+        "format": "date-time"
+      },
+      "resources": {
+        "description": "A list of ressources as objects. Can contain datasets, addresses, etc.",
+        "type": "array",
+        "items": {
+            "type": "object"
+          }
+      }
+
+    },
+    "required": [ "_version", "_export_date", "resources" ]
+  }
