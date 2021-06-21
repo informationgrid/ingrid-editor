@@ -8,6 +8,10 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { DocumentService } from "../../../services/document/document.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "permission-table",
@@ -34,7 +38,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
-  constructor(private dialog: MatDialog, private database: DynamicDatabase) {}
+  constructor(
+    private dialog: MatDialog,
+    private database: DynamicDatabase,
+    private documentService: DocumentService
+  ) {}
 
   callAddPermissionDialog() {
     return this.dialog
@@ -96,6 +104,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.val = val ?? [];
     this.val.forEach((doc) => {
       if (!doc.path) this.getPath(doc.uuid).then((path) => (doc.path = path));
+      if (doc.isFolder === undefined)
+        this.isFolder(doc.uuid).then((isFolder) => (doc.isFolder = isFolder));
     });
     if (this.onChange) {
       this.onChange(val);
@@ -107,5 +117,12 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   getPath(uuid: string): Promise<string> {
     return this.database.getPath(uuid).then((path) => path.join(" > "));
+  }
+
+  isFolder(uuid: string): Promise<boolean> {
+    return this.documentService
+      .load(uuid, this.forAddress)
+      .pipe(map((doc) => doc._type === "FOLDER"))
+      .toPromise();
   }
 }

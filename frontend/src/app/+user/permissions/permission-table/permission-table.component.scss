@@ -1,9 +1,5 @@
 @import "src/variables";
 
-:host {
-  padding-bottom: 20px;
-}
-
 table {
   background: $ige-background;
 }
@@ -31,12 +27,18 @@ mat-button {
   margin: 1px;
   padding: 6px;
   color: $ige-hint-color;
+  ::ng-deep svg path {
+    fill: $ige-hint-color;
+  }
   background: $ige-background-bar;
   vertical-align: middle;
 
   &.active {
     color: white;
     background: $ige-check-color;
+    ::ng-deep svg path {
+      fill: white;
+    }
   }
 
   .mat-icon {
@@ -62,4 +64,9 @@ ige-add-button {
 .table-title {
   font-weight: 500;
   padding: 10px 5px;
+}
+
+.mat-column-permission {
+  white-space: nowrap;
+  text-align: center;
 }

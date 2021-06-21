@@ -58,9 +58,9 @@ export enum PermissionType {
 
 export enum PermissionLevel {
   /** Write Access to whole tree */
-  WRITE_FOLDER = "writeTree",
+  WRITE = "writeTree",
   /** Write Access to sub tree*/
-  WRITE = "writeTreeExceptParent",
+  WRITE_EXCEPT_PARENT = "writeTreeExceptParent",
   /** Read Access to whole tree */
   READ = "readTree",
 }
