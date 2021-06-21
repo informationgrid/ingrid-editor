@@ -78,13 +78,11 @@ class DocumentService @Autowired constructor(
     /**
      * Get the DocumentWrapper with the given document uuid
      */
-    fun getWrapperByDocumentId(id: String): DocumentWrapper {
-
-        val doc = docWrapperRepo.findById(id)
-//        val acl = aclService.readAclById(ObjectIdentityImpl(DocumentWrapper::class.java, id))
-//        val hasWritePermission = acl.isGranted(listOf(BasePermission.WRITE))
-//        doc.hasWritePermission = hasWritePermission
-        return doc
+    fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
+    
+    fun getTitleFromDocumentId(id: String): String {
+        val wrapper = docWrapperRepo.findByDraftUuidOrPublishedUuid(id, id)
+        return wrapper.draft?.title ?: wrapper.published?.title ?: "???!"
     }
 
     fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults<DocumentWrapper> {

@@ -83,7 +83,7 @@ interface DatasetsApi {
     @RequestMapping(value = ["/datasets/{id}/path"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getPath(
             principal: Principal,
-            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String): ResponseEntity<List<String>>
+            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String): ResponseEntity<List<DatasetsApiController.PathResponse>>
 
     @Operation(description = "Move a dataset or tree under another dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets have been moved successfully.")])

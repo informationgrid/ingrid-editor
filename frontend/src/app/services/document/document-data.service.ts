@@ -3,6 +3,7 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { IgeDocument } from "../../models/ige-document";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
+import { PathResponse } from "../../models/path-response";
 
 @Injectable({
   providedIn: "root",
@@ -74,8 +75,8 @@ export class DocumentDataService {
     );
   }
 
-  getPath(id: string): Observable<string[]> {
-    return this.http.get<string[]>(
+  getPath(id: string): Observable<PathResponse[]> {
+    return this.http.get<PathResponse[]>(
       this.configuration.backendUrl + "datasets/" + id + "/path"
     );
   }

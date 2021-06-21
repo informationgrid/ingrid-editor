@@ -18,7 +18,9 @@ import { SessionQuery } from "../../store/session.query";
 import {
   distinctUntilChanged,
   map,
+  skipLast,
   startWith,
+  tap,
   throttleTime,
 } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -36,6 +38,7 @@ import { FormUtils } from "../form.utils";
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
+import { PathResponse } from "../../models/path-response";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -51,7 +54,9 @@ export interface StickyHeaderInfo {
 })
 export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() form: FormGroup;
+
   @Input() model: IgeDocument;
+
   @Input() sections: string[] = [];
   @Input() parentContainer: HTMLElement;
   @Input() forAddress = false;
@@ -93,20 +98,18 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
       this.store = this.treeStore;
     }
 
-    this.query.pathTitles$
-      .pipe(untilDestroyed(this))
-      .subscribe((path) => this.updatePath(path));
+    this.query.breadcrumb$
+      .pipe(
+        untilDestroyed(this),
+        tap((path) => (this.path = path.slice(0, -1)))
+      )
+      .subscribe();
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => this.initResizeBehavior(), 500);
 
     this.initScrollBehavior();
-  }
-
-  private updatePath(path: ShortTreeNode[]) {
-    this.path = path.slice(0, path.length - 1);
-    this.cdr.markForCheck();
   }
 
   private initResizeBehavior() {

@@ -80,7 +80,10 @@ export class DynamicDatabase {
   }
 
   getPath(id: string): Promise<string[]> {
-    return this.docService.getPath(id).toPromise();
+    return this.docService
+      .getPath(id)
+      .pipe(map((paths) => paths.map((path) => path.id)))
+      .toPromise();
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number): TreeNode[] {

@@ -22,8 +22,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeService } from "./tree.service";
 import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
-import { ShortTreeNode } from "./tree.types";
 import { TreeSelection } from "./tree-selection";
+import { ShortTreeNode } from "./tree.types";
 
 export enum TreeActionType {
   ADD,
@@ -57,7 +57,6 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   @Output() selected;
   @Output() activate = new EventEmitter<string[]>();
-  @Output() currentPath = new EventEmitter<ShortTreeNode[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
 
@@ -310,9 +309,6 @@ export class TreeComponent implements OnInit, OnDestroy {
 
       newRootTreeNodes.forEach((treeNode) => {
         this.dataSource.insertNodeInTree(treeNode, null);
-        if (!updateInfo.doNotSelect) {
-          this.updateNodePath(treeNode._id);
-        }
       });
       this.scrollToActiveElement();
     }
@@ -351,19 +347,11 @@ export class TreeComponent implements OnInit, OnDestroy {
         }
         this.treeControl.expand(parentNode);
         if (!doNotSelect) {
-          this.updateNodePath(id);
           this.scrollToActiveElement();
           let node = this.dataSource.getNode(id);
-          this.selection.model.select(node);
+          this.selectNode(node);
         }
       });
-  }
-
-  private updateNodePath(id: string) {
-    const nodePath = this.getTitlesFromNodePath(this.dataSource.getNode(id));
-    if (nodePath) {
-      this.currentPath.next(nodePath);
-    }
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {
@@ -404,21 +392,18 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.selection.model.clear();
     }
 
-    if (id !== null) {
+    if (id !== null && id !== undefined) {
       // TODO: do not always request path, when not needed
       return this.database.getPath(id).then((path) => {
-        const nextActiveNode = path.pop();
+        // skip last node which does not need to be expanded
+        path.pop();
+
         if (path.length > 0) {
           return this.handleExpandNodes(path).then(() => {
             const node = this.dataSource.getNode(id);
             if (node) {
-              const nodePath = this.getTitlesFromNodePath(node);
-              this.currentPath.next(nodePath);
               if (resetSelection) {
-                this.activate.next([id]);
-                this.selection.model.select(node);
-                this.activeNodeId = nextActiveNode;
-                this.selection.activeNode = node;
+                this.selectNode(node);
               }
               this.scrollToActiveElement();
             }
@@ -431,12 +416,8 @@ export class TreeComponent implements OnInit, OnDestroy {
           if (id) {
             const node = this.dataSource.getNode(id);
             if (node) {
-              const nodePath = this.getTitlesFromNodePath(node);
-              this.currentPath.next(nodePath);
               if (resetSelection) {
-                this.selection.model.select(node);
-                this.activeNodeId = nextActiveNode;
-                this.selection.activeNode = node;
+                this.selectNode(node);
               }
               this.scrollToActiveElement();
             }
@@ -493,6 +474,11 @@ export class TreeComponent implements OnInit, OnDestroy {
     let pos = null;
     ids.some((id, index) => {
       const treeNode = this.dataSource.data.find((item) => item._id === id);
+      // if a tree node is undefined then is should be one where we don't have access to
+      // but only to its children
+      // handle node as expanded in this case
+      if (treeNode === undefined) return false;
+
       const isExpanded = this.treeControl.isExpanded(treeNode);
       if (!isExpanded) {
         pos = index;
@@ -502,9 +488,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     return pos === null ? [] : ids.slice(pos, ids.length);
   }
 
-  ngOnDestroy(): void {
-    this.currentPath.next([]);
-  }
+  ngOnDestroy(): void {}
 
   private handleTreeExpandToInitialNode() {
     if (this.expandNodeIds) {
@@ -517,9 +501,7 @@ export class TreeComponent implements OnInit, OnDestroy {
             const ids = result[1];
             this.handleExpandNodes(ids).then(() => {
               const node = this.dataSource.getNode(this.activeNodeId);
-              const nodePath = this.getTitlesFromNodePath(node);
-              this.currentPath.next(nodePath);
-              this.selection.model.select(node);
+              this.selectNode(node);
             });
           });
         });
@@ -566,7 +548,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
     this.activate.next([id]);
-    this.updateNodePath(id);
   }
 
   /**
@@ -607,7 +588,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     if (this.selection.multiSelectionModeEnabled) {
       await this.jumpToNode(id, false);
       const node = this.dataSource.getNode(id);
-      this.selection.model.select(node);
+      this.selectNode(node);
     } else {
       await this.jumpToNode(id);
     }
@@ -625,16 +606,12 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.multiEditMode.next(this.selection.multiSelectionModeEnabled);
   }
 
-  selectNode(node, $event: MouseEvent) {
+  selectNode(node: TreeNode, $event?: MouseEvent) {
     const id = this.selection.selectNode(node, $event);
 
     if (id) {
       this.activeNodeId = id;
       this.activate.next([this.activeNodeId]);
-
-      // set path in tree for bread crumb (extract to method)
-      const path = this.getTitlesFromNodePath(node);
-      this.currentPath.next(path);
     }
   }
 }

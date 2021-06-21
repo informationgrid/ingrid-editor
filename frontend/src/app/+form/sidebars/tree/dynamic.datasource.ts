@@ -103,6 +103,7 @@ export class DynamicDataSource {
       .subscribe((children) => {
         const index = this.data.findIndex((item) => item === node);
 
+        // not children length > 0 since we need the dataChange event for expansion handling
         if (children) {
           // mark node after children to set border-top correctly
           const nextIndex = index + 1;

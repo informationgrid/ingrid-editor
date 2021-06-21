@@ -1,7 +1,11 @@
 import { TreeActionType } from "./tree.component";
 
 export class ShortTreeNode {
-  constructor(public id: string, public title: string) {}
+  constructor(
+    public id: string,
+    public title: string,
+    public disabled = false
+  ) {}
 }
 
 export class TreeAction {

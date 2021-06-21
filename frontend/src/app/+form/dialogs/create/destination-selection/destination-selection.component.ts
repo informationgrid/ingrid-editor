@@ -71,11 +71,6 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
     return of([this.rootNode]);
   }
 
-  updatePath(path: ShortTreeNode[]) {
-    this.path = path;
-    this.updateParent([this.parent], "Tree");
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.initialSelectedId) {
       this.activeTreeNode.next(changes.initialSelectedId.currentValue);

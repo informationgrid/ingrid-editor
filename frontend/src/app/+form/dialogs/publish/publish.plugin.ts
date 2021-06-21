@@ -37,8 +37,6 @@ export class PublishPlugin extends Plugin {
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
 
-  formIsValid = false;
-
   get name() {
     return this._name;
   }

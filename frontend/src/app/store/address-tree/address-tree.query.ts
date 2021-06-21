@@ -11,8 +11,8 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
   openedDocument$: Observable<DocumentAbstract> = this.select(
     (state) => state.openedDocument
   );
-  pathTitles$: Observable<ShortTreeNode[]> = this.select(
-    (state) => state.activePathTitles
+  breadcrumb$: Observable<ShortTreeNode[]> = this.select(
+    (state) => state.breadcrumb
   );
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(
     (state) => state.explicitActiveNode
@@ -35,7 +35,7 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  getParents(id: string): string[] {
+  getParents(id: string): ShortTreeNode[] {
     const parents = [];
     let parent = this.getEntity(id)._parent;
     while (parent) {

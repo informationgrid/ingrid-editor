@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { filter, take } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
@@ -28,6 +28,7 @@ import { DocType } from "./create-doc.plugin";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { ProfileAbstract } from "../../../store/profile/profile.model";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 export interface CreateOptions {
   parent: string;
@@ -35,6 +36,7 @@ export interface CreateOptions {
   isFolder: boolean;
 }
 
+@UntilDestroy()
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
@@ -54,6 +56,7 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
+  private query: TreeQuery | AddressTreeQuery;
   private selectedLocation: any = {
     parent: null,
     path: [],
@@ -91,7 +94,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   ngOnInit() {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     if (this.isFolder || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
@@ -99,14 +102,18 @@ export class CreateNodeComponent implements OnInit {
       this.initializeForAddresses();
     }
 
-    query.pathTitles$.pipe(take(1)).subscribe((path) => {
-      const selectedNode = query.getOpenedDocument();
-      this.path = [...path];
-
-      if (selectedNode && selectedNode._type !== "FOLDER") {
-        this.path.pop();
-      }
-    });
+    this.query.breadcrumb$
+      .pipe(
+        untilDestroyed(this),
+        tap(
+          (path) =>
+            (this.path =
+              this.query.getOpenedDocument()._type !== "FOLDER"
+                ? path.slice(0, -1)
+                : path)
+        )
+      )
+      .subscribe();
   }
 
   private initializeForDocumentsAndFolders() {
@@ -181,7 +188,24 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     this.parent = this.selectedLocation.parent;
-    this.path = this.selectedLocation.path.filter((x) => x.id);
+    this.documentService
+      .getPath(this.selectedLocation.parent)
+      .pipe(
+        tap(
+          (result) =>
+            (this.path = result
+              //.slice(0, -1)
+              .map(
+                (path) =>
+                  new ShortTreeNode(
+                    path.id,
+                    path.title,
+                    !this.query.hasEntity(path.id)
+                  )
+              ))
+        )
+      )
+      .subscribe();
     this.selectedPage = 0;
   }
 
