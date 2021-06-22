@@ -3,36 +3,9 @@
     <mat-toolbar>
         <mat-toolbar-row>
             <!--            Searchfield-->
-            <mat-form-field
-                #userSearch
-                class="search"
-                appearance="outline"
-                data-cy="tree-search-field"
-            >
-                <mat-icon
-                    *ngIf="searchQuery?.length === 0"
-                    class="passive"
-                    matPrefix
-                    >search</mat-icon
-                >
-                <input
-                    #search
-                    matInput
-                    placeholder="Suchen"
-                    aria-label="Search"
-                    (input)="onSearchChange($event.target.value)"
-                />
-                <button
-                    *ngIf="searchQuery?.length > 0"
-                    mat-icon-button
-                    matSuffix
-                    class="close"
-                    (click)="search.value = ''; searchQuery = ''"
-                    data-cy="clear-tree-search-field"
-                >
-                    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-                </button>
-            </mat-form-field>
+            <ige-search-field
+                (queryUpdate)="this.searchQuery = $event"
+            ></ige-search-field>
             <div fxFlex></div>
 
             <span class="save-buttons">
@@ -48,7 +21,7 @@
                     Speichern
                 </button>
                 <button
-                    class="btnAddGroup"
+                    class="btnAddNew"
                     mat-flat-button
                     color="primary"
                     (click)="addGroup()"

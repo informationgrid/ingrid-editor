@@ -24,7 +24,7 @@ import { dirtyCheck } from "@ngneat/dirty-check-forms";
 @Component({
   selector: "ige-user-manager",
   templateUrl: "./user.component.html",
-  styleUrls: ["./user.component.scss"],
+  styleUrls: ["../user.styles.scss"],
 })
 export class UserComponent implements OnInit {
   isDirty$: Observable<boolean>;
@@ -55,7 +55,9 @@ export class UserComponent implements OnInit {
     private dialog: MatDialog,
     private userService: UserService,
     private groupService: GroupService
-  ) {}
+  ) {
+    this.searchQuery = "";
+  }
 
   ngOnInit() {
     this.currentTab = "users";
@@ -234,10 +236,6 @@ export class UserComponent implements OnInit {
     }
 
     return email.hasError("email") ? "Keine gültige Email-Adresse" : "";
-  }
-
-  onSearchChange(searchValue: string): void {
-    this.searchQuery = searchValue;
   }
 
   getRoleIcon(role: string) {

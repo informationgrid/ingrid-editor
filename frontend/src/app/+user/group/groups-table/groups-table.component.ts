@@ -17,7 +17,7 @@ import { Group } from "../../../models/user-group";
 @Component({
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
-  styleUrls: ["./groups-table.component.scss"],
+  styleUrls: ["../../user.styles.scss"],
 })
 export class GroupsTableComponent implements OnInit, AfterViewInit {
   @Input()

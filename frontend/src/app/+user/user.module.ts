@@ -31,6 +31,7 @@ import { GroupsTableComponent } from "./group/groups-table/groups-table.componen
 import { GroupHeaderMoreComponent } from "./group/group-header-more/group-header-more.component";
 import { PermissionTableComponent } from "./permissions/permission-table/permission-table.component";
 import { PermissionAddDialogComponent } from "./permissions/permission-add-dialog/permission-add-dialog.component";
+import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
 
 @NgModule({
   imports: [
@@ -70,6 +71,7 @@ import { PermissionAddDialogComponent } from "./permissions/permission-add-dialo
     HeaderMoreComponent,
     PermissionTableComponent,
     PermissionAddDialogComponent,
+    IgeSearchField,
   ],
 })
 export class UserModule {}

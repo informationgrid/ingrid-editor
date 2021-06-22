@@ -734,6 +734,43 @@ mat-selection-list.with-menu .mat-list-text {
   }
 }
 
+.ige-form-field {
+  padding-top: 6px;
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
+    margin-bottom: 0;
+
+    .mat-form-field-flex {
+      align-items: center;
+      height: 40px;
+    }
+
+    .mat-form-field-outline {
+      top: 0;
+      background-color: #ffffff;
+      border-radius: 4px;
+
+      &:not(.mat-form-field-outline-thick) > div {
+        border: none;
+      }
+    }
+
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      top: 0;
+    }
+
+    .mat-form-field-infix {
+      padding: 0;
+
+      input {
+        height: 100%;
+      }
+    }
+  }
+}
+
 /* DRAG N DROP ANIMIATION */
 /* Animate items as they're being sorted. */
 .cdk-drop-list-dragging .cdk-drag {

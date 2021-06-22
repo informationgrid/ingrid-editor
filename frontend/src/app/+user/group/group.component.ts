@@ -24,7 +24,7 @@ import { MatDialog } from "@angular/material/dialog";
 @Component({
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
-  styleUrls: ["./group.component.scss"],
+  styleUrls: ["../user.styles.scss"],
 })
 export class GroupComponent implements OnInit {
   isDirty$: Observable<boolean>;
@@ -52,7 +52,9 @@ export class GroupComponent implements OnInit {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private groupService: GroupService
-  ) {}
+  ) {
+    this.searchQuery = "";
+  }
 
   ngOnInit() {
     this.fetchGroups().subscribe();
@@ -173,9 +175,5 @@ export class GroupComponent implements OnInit {
 
       return forbidden ? { forbiddenName: { value: control.value } } : null;
     };
-  }
-
-  onSearchChange(searchValue: string): void {
-    this.searchQuery = searchValue;
   }
 }

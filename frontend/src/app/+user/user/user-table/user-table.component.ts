@@ -17,7 +17,7 @@ import { SelectionModel } from "@angular/cdk/collections";
 @Component({
   selector: "user-table",
   templateUrl: "./user-table.component.html",
-  styleUrls: ["./user-table.component.scss"],
+  styleUrls: ["../../user.styles.scss"],
 })
 export class UserTableComponent implements OnInit, AfterViewInit {
   // @Input() users: User[];
@@ -96,6 +96,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
 
   getRoleIcon(role: string) {
     switch (true) {
+      case role === "ige-super-admin":
       case role === "cat-admin":
         return "catalog-admin";
       case role.includes("admin"):
