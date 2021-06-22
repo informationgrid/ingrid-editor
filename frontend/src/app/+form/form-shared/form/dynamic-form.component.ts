@@ -179,6 +179,8 @@ export class DynamicFormComponent
     });
 
     // only activate tree node (when rejecting unsaved changes dialog)
+    // -> this is handled in sidebar-component now
+    // TODO: is this still used?
     externalTreeNodeChange$.subscribe((node) => {
       this.activeId = node.id;
     });

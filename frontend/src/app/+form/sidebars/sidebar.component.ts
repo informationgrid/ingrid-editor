@@ -7,7 +7,6 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { FormUtils } from "../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { DocumentService } from "../../services/document/document.service";
-import { TreeService } from "./tree/tree.service";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
 
@@ -39,7 +38,6 @@ export class SidebarComponent implements OnInit {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private addressTreeStore: AddressTreeStore,
-    private treeService: TreeService,
     private docTreeStore: TreeStore
   ) {}
 
@@ -90,7 +88,7 @@ export class SidebarComponent implements OnInit {
     if (handled) {
       this.router.navigate([this.path, { id: selectedDocIds[0] }]);
     } else {
-      this.treeService.selectTreeNode(this.address, currentId);
+      this.activeId = currentId;
     }
   }
 
