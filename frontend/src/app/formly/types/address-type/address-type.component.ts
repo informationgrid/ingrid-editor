@@ -101,7 +101,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   }
 
   private getAddressFromBackend(id: string) {
-    return this.documentService.load(id, true);
+    return this.documentService.load(id, true, false);
   }
 
   // TODO: let ige-form-error handle all error messages

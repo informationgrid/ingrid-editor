@@ -143,20 +143,30 @@ export class DocumentService {
     });
   }
 
-  load(id: string, address?: boolean): Observable<IgeDocument> {
+  load(
+    id: string,
+    address?: boolean,
+    updateStore = true
+  ): Observable<IgeDocument> {
     return this.dataService.load(id).pipe(
-      tap((doc) => this.updateTreeStore(doc, address)),
-      catchError((e: HttpErrorResponse) => {
-        if (e.status === 404) {
-          const error = new IgeError();
-          error.setMessage("Der Datensatz konnte nicht gefunden werden");
-          this.modalService.showIgeError(error);
-          return of(null);
-        } else {
-          throw e;
+      tap((doc) => {
+        if (updateStore) {
+          this.updateTreeStore(doc, address);
         }
-      })
+      }),
+      catchError((e: HttpErrorResponse) => this.handleLoadError(e))
     );
+  }
+
+  private handleLoadError(e: HttpErrorResponse) {
+    if (e.status === 404) {
+      const error = new IgeError();
+      error.setMessage("Der Datensatz konnte nicht gefunden werden");
+      this.modalService.showIgeError(error);
+      return of(null);
+    } else {
+      throw e;
+    }
   }
 
   private updateTreeStore(doc: IgeDocument, address: boolean) {
