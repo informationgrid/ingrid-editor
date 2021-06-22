@@ -53,7 +53,6 @@
             matTreeNodePadding
             matTreeNodePaddingIndent="24"
             (click)="!disabledCondition(node) && selectNode(node, $event)"
-            [class.selected]="selection.isSelected(node)"
             [class.active]="node._id === activeNodeId"
             [class.hide]="showOnlyFolders"
             [class.readonly]="!node.hasWritePermission"
@@ -88,7 +87,6 @@
             matTreeNodePaddingIndent="24"
             (click)="handleFolderClick(node, $event)"
             [class.drop]="dragManager.dragNodeExpandOverNode === node"
-            [class.selected]="selection.isSelected(node)"
             [class.active]="node._id === activeNodeId"
             [class.expanded]="treeControl.isExpanded(node)"
             [class.readonly]="!node.hasWritePermission"

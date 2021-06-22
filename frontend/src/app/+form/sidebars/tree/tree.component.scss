@@ -62,10 +62,6 @@ mat-tree-node {
   cursor: pointer;
   min-height: 20px;
 
-  /*::ng-deep svg path {
-    fill: #000000;
-  }*/
-
   &.folder {
     border-color: transparent;
 
@@ -106,14 +102,6 @@ mat-tree-node {
       background-color: darken($ige-background, 5%);
     }
 
-    &.selected {
-      background-color: darken($ige-background, 5%);
-
-      &:hover {
-        background-color: darken($ige-background, 10%);
-      }
-    }
-
     &.folder {
       font-size: 16px;
     }
@@ -147,14 +135,6 @@ mat-tree-node {
     &:hover {
       background-color: darken(#ffffff, 2.5%);
     }
-
-    &.selected {
-      background-color: darken(#ffffff, 5%);
-
-      &:hover {
-        background-color: darken(#ffffff, 10%);
-      }
-    }
   }
 
   .label {
@@ -180,14 +160,6 @@ mat-tree-node {
     }
   }
 
-  &.selected {
-    background-color: darken(#ffffff, 5%);
-
-    &:hover {
-      background-color: darken(#ffffff, 10%);
-    }
-  }
-
   .quick-child-selection {
     display: none;
     button {
@@ -210,14 +182,6 @@ mat-tree-node {
 
     &:hover {
       background-color: darken($ige-mark-color, 5%) !important;
-    }
-
-    &.selected {
-      background-color: darken($ige-mark-color, 5%) !important;
-
-      &:hover {
-        background-color: darken($ige-mark-color, 10%) !important;
-      }
     }
   }
 
