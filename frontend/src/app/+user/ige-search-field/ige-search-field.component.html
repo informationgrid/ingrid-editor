@@ -1,0 +1,20 @@
+<mat-form-field class="ige-form-field" appearance="outline">
+    <mat-icon *ngIf="searchQuery.length === 0" class="passive" matSuffix
+        >search</mat-icon
+    >
+    <input
+        matInput
+        placeholder="Suchen"
+        aria-label="Search"
+        (input)="onSearchChange($event.target.value)"
+    />
+    <button
+        *ngIf="searchQuery.length > 0"
+        mat-icon-button
+        matSuffix
+        class="close"
+        (click)="onSearchChange('')"
+    >
+        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+    </button>
+</mat-form-field>
