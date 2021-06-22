@@ -13,6 +13,8 @@ declare namespace Cypress {
   interface Chainable {
     shouldHaveTrimmedText(value: string): Chainable<Element>;
 
+    countShouldBeGreaterThan(greaterThan: Number): Chainable<Element>;
+
     hasErrorDialog(content?: string): void;
 
     fieldIsValid(fieldClass: string): void;

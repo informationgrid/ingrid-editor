@@ -18,7 +18,11 @@ describe('Dashboard', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  xit('should show correct number of published and draft documents in chart', function () {});
+  it('make sure number of published and draft documents in chart is present and greater than 0', function () {
+    cy.get('.box.working .count').countShouldBeGreaterThan(0);
+    cy.get('.box .count').countShouldBeGreaterThan(0);
+
+  });
 
   it('should load a document from dashboard from latest docs box', () => {
     DashboardPage.getLatestDocTitle(1).then(text => {

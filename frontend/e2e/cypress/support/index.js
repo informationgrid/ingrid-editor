@@ -44,7 +44,20 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('hasErrorDialog', content => {
+Cypress.Commands.add(
+  'countShouldBeGreaterThan',
+  {
+    prevSubject: true,
+  },
+  (subject, greaterThan) => {
+
+    expect(parseInt(subject.text())).to.gt(greaterThan);
+
+    return subject;
+  },
+);
+
+Cypress.Commands.add('hasErrorDialog', (content) => {
   cy.get('error-dialog').should('be.visible');
 
   if (content) {
