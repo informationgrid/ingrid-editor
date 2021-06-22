@@ -1,14 +1,17 @@
+import { FormlyFieldConfig } from "@ngx-formly/core";
+
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, Subject } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import {
   FormBuilder,
   FormControl,
   FormGroup,
+  ValidationErrors,
   Validators,
 } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -19,6 +22,9 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { debounceTime, map, tap } from "rxjs/operators";
 import { dirtyCheck } from "@ngneat/dirty-check-forms";
+import { SelectOption } from "../../services/codelist/codelist.service";
+import { IpValidator } from "../../formly/ige-formly.module";
+import { Group } from "../../models/user-group";
 
 @UntilDestroy()
 @Component({
@@ -36,7 +42,7 @@ export class UserComponent implements OnInit {
   admins: User[];
   ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "superadmin"];
   currentTab: string;
-  form: FormGroup;
+  form = new FormGroup({});
 
   isNewUser = false;
   private isNewExternalUser = false;
@@ -48,6 +54,8 @@ export class UserComponent implements OnInit {
   showMore = false;
   searchQuery: string;
   isLoading = false;
+  formlyFieldConfig: FormlyFieldConfig[];
+  model: User;
 
   constructor(
     private modalService: ModalService,
@@ -56,7 +64,103 @@ export class UserComponent implements OnInit {
     private userService: UserService,
     private groupService: GroupService
   ) {
+    this.model = new FrontendUser();
     this.searchQuery = "";
+    this.formlyFieldConfig = <FormlyFieldConfig[]>[
+      {
+        key: "login",
+        type: "input",
+        wrappers: ["panel", "form-field"],
+        templateOptions: {
+          externalLabel: "Login",
+          appearance: "outline",
+          required: true,
+        },
+      },
+      {
+        key: "role",
+        type: "select",
+        wrappers: ["panel", "form-field"],
+        templateOptions: {
+          externalLabel: "Rolle",
+          label: "Rolle",
+          appearance: "outline",
+          required: true,
+          options: of(this.roles),
+        },
+      },
+      {
+        wrappers: ["panel"],
+        templateOptions: {
+          externalLabel: "Name",
+          required: true,
+        },
+        fieldGroup: [
+          {
+            fieldGroupClassName: "display-flex",
+            fieldGroup: [
+              {
+                key: "firstName",
+                className: "flex-1 firstName",
+                type: "input",
+                templateOptions: {
+                  label: "Vorname",
+                  appearance: "outline",
+                },
+              },
+              {
+                key: "lastName",
+                className: "flex-1 lastName",
+                type: "input",
+                templateOptions: {
+                  label: "Nachname",
+                  appearance: "outline",
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        key: "email",
+        type: "input",
+        wrappers: ["panel", "form-field"],
+        templateOptions: {
+          externalLabel: "E-Mail",
+          appearance: "outline",
+          required: true,
+        },
+      },
+      {
+        key: "organisation",
+        type: "input",
+        wrappers: ["panel", "form-field"],
+        templateOptions: {
+          externalLabel: "Organisation",
+          appearance: "outline",
+        },
+      },
+      {
+        key: "groups",
+        type: "repeatList",
+        wrappers: ["panel"],
+        templateOptions: {
+          externalLabel: "Gruppen",
+          placeholder: "Gruppe wählen...",
+          options: this.groups.pipe(
+            map((groups) => {
+              return groups.map((group) => {
+                return {
+                  label: group.name,
+                  value: group.id,
+                };
+              });
+            })
+          ),
+          asSelect: true,
+        },
+      },
+    ];
   }
 
   ngOnInit() {
@@ -65,18 +169,14 @@ export class UserComponent implements OnInit {
     this.fetchUsers();
 
     this.form = this.fb.group({
-      login: this.fb.control(
-        { value: "", disabled: true },
-        Validators.required
-      ),
-      role: this.fb.control({ value: "", disabled: true }, Validators.required),
-      firstName: ["", Validators.required],
-      lastName: ["", Validators.required],
-      email: ["", [Validators.required, Validators.email]],
-      organisation: this.fb.control([]),
-      groups: this.fb.control([]),
-      manager: this.fb.control([]),
-      standin: this.fb.control([]),
+      // login: this.fb.control(
+      //   { value: "", disabled: true },
+      //   Validators.required
+      // ),
+      // role: this.fb.control({ value: "", disabled: true }, Validators.required),
+      // firstName: ["", Validators.required],
+      // lastName: ["", Validators.required],
+      // email: ["", [Validators.required, Validators.email]],
     });
 
     this.isDirty$ = dirtyCheck(this.form, this.state$, { debounce: 100 })
@@ -114,6 +214,7 @@ export class UserComponent implements OnInit {
     this.form.disable();
     this.userService.getUser(login).subscribe((user) => {
       this.selectedUser = user;
+      this.model = user;
       this.updateUserForm(user);
     });
   }
@@ -164,7 +265,7 @@ export class UserComponent implements OnInit {
     this.isNewUser = true;
     this.form.reset(newUser);
     this.state$.next(newUser);
-    setTimeout(() => this.loginRef.nativeElement.focus(), 300);
+    // setTimeout(() => this.loginRef.nativeElement.focus(), 300);
   }
 
   deleteUser(login: string) {
@@ -190,7 +291,7 @@ export class UserComponent implements OnInit {
     // user.roles = user.roles.map(role => +role);
     this.form.disable();
 
-    const user = this.form.getRawValue();
+    const user = this.model;
     if (this.isNewUser) {
       observer = this.userService.createUser(user, this.isNewExternalUser);
     } else {
@@ -223,10 +324,6 @@ export class UserComponent implements OnInit {
         }
       }
     );
-  }
-
-  toggleMoreInfo() {
-    this.showMore = !this.showMore;
   }
 
   getEmailErrorMessage() {

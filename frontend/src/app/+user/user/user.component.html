@@ -69,7 +69,7 @@
         class="split-pane-content-secondary container-fluid"
         style="display: block"
     >
-        <form
+        <!--        <form
             *ngIf="
                 (selectedUser || isNewUser) && !isLoading;
                 else noUserOrLoading
@@ -81,7 +81,7 @@
         >
             <div class="user-title">
                 <div class="document-type">
-                    <!--                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>-->
+                    &lt;!&ndash;                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>&ndash;&gt;
                     <mat-icon
                         [svgIcon]="getRoleIcon(this.form.get('role').value)"
                     ></mat-icon>
@@ -192,7 +192,13 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-        </form>
+        </form>-->
+        <formly-form
+            id="form"
+            [form]="form"
+            [fields]="formlyFieldConfig"
+            [model]="model"
+        ></formly-form>
         <ng-template #noUserOrLoading>
             <div
                 *ngIf="!isLoading; else loading"

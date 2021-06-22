@@ -1,9 +1,13 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import {
-  FieldArrayType,
-  FormlyFieldConfig,
-  FormlyFormBuilder,
-} from "@ngx-formly/core";
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
 import { filter, map, startWith, take, tap } from "rxjs/operators";
 import { merge, Observable, Subject } from "rxjs";
@@ -54,13 +58,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.inputControl.markAllAsTouched();
 
     this.filteredOptions = merge(
+      this.formControl.valueChanges,
       this.inputControl.valueChanges,
       this.manualUpdate.asObservable()
     ).pipe(
       untilDestroyed(this),
       startWith(""),
       filter((value) => value !== undefined && value !== null),
-      map((value) => this._filter(<string>value)),
+      map((value) => this._filter(value)),
       map((value) => this._markSelected(value))
     );
   }
@@ -73,7 +78,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     this.add(null, value);
 
-    this.inputControl.setValue("");
+    this.inputControl.setValue(null);
 
     if (!this.to.asSelect) {
       // element successfully added when input was blurred
@@ -88,18 +93,16 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  private _filter(value: string): SelectOption[] {
-    const filterValue = value.toLowerCase();
-
-    return this.parameterOptions?.filter((option) =>
-      option.label.toLowerCase().includes(filterValue)
-    );
+  private _filter(value): SelectOption[] {
+    if (!value) {
+      return this.parameterOptions;
+    }
+    return this.parameterOptions?.filter((option) => option.value !== value);
   }
 
   private _markSelected(value: SelectOption[]): SelectOption[] {
     return value?.map((option) => {
       if (this.model.indexOf(option.value) !== -1) {
-        console.log(option);
         option.disabled = true;
       } else {
         option.disabled = false;
