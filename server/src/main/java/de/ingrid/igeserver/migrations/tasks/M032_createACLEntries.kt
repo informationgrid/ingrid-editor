@@ -9,7 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M030_createACLEntries : MigrationBase("0.30") {
+class M032_createACLEntries : MigrationBase("0.32") {
 
     private var log = logger()
 
@@ -51,10 +51,19 @@ class M030_createACLEntries : MigrationBase("0.30") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            
+
+            entityManager.createNativeQuery(
+                """
+                truncate table acl_class cascade;
+                truncate table acl_entry cascade ;
+                truncate table acl_object_identity cascade ;
+                truncate table acl_sid cascade ;
+            """.trimIndent()
+            ).executeUpdate()
+
             entityManager.createNativeQuery(insertClass).executeUpdate()
             entityManager.createNativeQuery(insertSid).executeUpdate()
-            
+
             val parentIds =
                 entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is null").resultList
 
@@ -94,7 +103,7 @@ class M030_createACLEntries : MigrationBase("0.30") {
                 .setParameter("uuid", childUuid)
                 .executeUpdate()
 
-            addChildren(childUuid as String, previousUuids)
+            addChildren(childUuid as String, previousUuids.toMutableList())
         }
 
         // TODO: increase id generators for tables with inserted data
