@@ -1,10 +1,9 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_ID
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
@@ -33,7 +32,7 @@ class ImportService {
         val importedDoc = importer.run(fileContent)
 
         log.debug("Transformed document: $importedDoc")
-        val doc = documentService.convertToDocument(importedDoc as JsonNode)
+        val doc = documentService.convertToDocument((importedDoc as ArrayNode)[0])
 
         extractAndSaveReferences(doc)
 

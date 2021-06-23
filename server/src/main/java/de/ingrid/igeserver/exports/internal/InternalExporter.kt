@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.exports.internal
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -9,6 +11,7 @@ import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 
 @Service
 class InternalExporter @Autowired constructor(val documentService: DocumentService) : IgeExporter {
@@ -26,7 +29,18 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
 
     override fun run(doc: Document): Any {
         // TODO: profile must be added to the exported format!
-        return documentService.convertToJsonNode(doc)
+        val json = documentService.convertToJsonNode(doc)
+        return addExportWrapper(json)
+    }
+
+    private fun addExportWrapper(json: JsonNode): ObjectNode {
+
+        return jacksonObjectMapper().createObjectNode().apply { 
+            put("_export_date", OffsetDateTime.now().toString())
+            put("_version", "0.0.1")
+            put("resources", jacksonObjectMapper().createArrayNode().add(json))
+        }
+
     }
 
     override fun toString(exportedObject: Any): String {

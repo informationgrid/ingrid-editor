@@ -15,12 +15,13 @@ class InternalImporter : IgeImporter {
     private val mapperService = MapperService()
 
     override fun run(data: Any): JsonNode {
-        return mapperService.getJsonNode((data as String))
+        val json = mapperService.getJsonNode((data as String))
+        return json.get("resources")
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
         val isJson = MediaType.APPLICATION_JSON_VALUE == contentType || MediaType.TEXT_PLAIN_VALUE == contentType
-        val hasNecessaryFields = fileContent.contains("\"_id\"") && fileContent.contains("\"_type\"") && fileContent.contains("\"_state\"")
+        val hasNecessaryFields = fileContent.contains("\"_export_date\"") && fileContent.contains("\"_version\"") && fileContent.contains("\"resources\"")
         return isJson && hasNecessaryFields
     }
 
