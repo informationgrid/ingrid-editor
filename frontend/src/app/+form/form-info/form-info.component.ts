@@ -16,6 +16,7 @@ import { TreeQuery } from "../../store/tree/tree.query";
 import { combineLatest, fromEvent } from "rxjs";
 import { SessionQuery } from "../../store/session.query";
 import {
+  debounceTime,
   distinctUntilChanged,
   map,
   startWith,
@@ -135,7 +136,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     fromEvent(element, "scroll")
       .pipe(
         untilDestroyed(this),
-        throttleTime(10), // do not handle all events
+        debounceTime(300), // do not handle all events
         map(() => element.scrollTop),
         map((top): boolean => this.determineToggleState(top)),
         distinctUntilChanged()

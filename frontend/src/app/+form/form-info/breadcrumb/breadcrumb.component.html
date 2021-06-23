@@ -9,7 +9,7 @@
                     : ''
             "
             (click)="!disableRoot && onSelect(null)"
-        >{{ rootName }}</span
+            >{{ rootName }}</span
         >
         <mat-icon *ngIf="path.length > 0 || !hideLastSeparator"
             >chevron_right</mat-icon
@@ -26,7 +26,7 @@
             [class.selectable]="selectable && !item.disabled"
             [class.disabled]="item.disabled"
             (click)="!item.disabled && onSelect(item.id)"
-        >{{ item.title }}</span
+            >{{ item.title }}</span
         >
         <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
     </span>
