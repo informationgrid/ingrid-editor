@@ -3,6 +3,7 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { ShortTreeNode } from "./tree.types";
+import { transaction } from "@datorama/akita";
 
 export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
 
@@ -48,11 +49,17 @@ export class TreeService {
    * @param isAddress
    * @param id
    */
+  @transaction()
   selectTreeNode(isAddress: boolean, id: string) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     store.update({
       explicitActiveNode: new ShortTreeNode(id, "?"),
     });
+    if (id === null) {
+      store.update({
+        breadcrumb: [],
+      });
+    }
   }
 }
