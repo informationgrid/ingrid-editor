@@ -686,8 +686,7 @@ describe("TreeComponent", () => {
     tick(1000);
   }
 
-  const nodeAtIndex = (index) =>
-    spectator.queryAll(".mat-tree-node .mat-icon")[index];
+  const nodeAtIndex = (index) => spectator.queryAll(".mat-tree-node")[index];
 
   const expectNode = (index) =>
     expect(spectator.queryAll(".mat-tree-node")[index]);
@@ -721,7 +720,11 @@ describe("TreeComponent", () => {
   }
 
   function nodesAreMarkedForSelection(...index: number[]) {
-    index.forEach((i) => expectNode(i).toHaveClass("selected"));
+    index.forEach((i) =>
+      expect(spectator.queryAll(".mat-tree-node .mat-checkbox")[i]).toHaveClass(
+        "mat-checkbox-checked"
+      )
+    );
   }
 
   function newNode(options: {
