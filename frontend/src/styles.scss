@@ -813,3 +813,13 @@ mat-icon.wide-icon-26px {
 .expanded .mat-icon.rotating {
   transform: rotate(180deg);
 }
+
+
+/* TABLE */
+.mat-table .mat-row:hover {
+  background-color: darken(#ffffff, 5%);
+
+  .menu-button {
+    background-color: #ffffff;
+  }
+}

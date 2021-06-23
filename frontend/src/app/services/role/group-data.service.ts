@@ -3,6 +3,7 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { Group } from "../../models/user-group";
 import { Injectable } from "@angular/core";
+import { User } from "../../+user/user";
 
 @Injectable({
   providedIn: "root",
@@ -42,5 +43,11 @@ export class GroupDataService {
 
   getGroup(id: string): Observable<Group> {
     return this.http.get<Group>(this.configuration.backendUrl + "groups/" + id);
+  }
+
+  getUsersOfGroup(id: string): Observable<User[]> {
+    return this.http.get<User[]>(
+      this.configuration.backendUrl + "groups/" + id + "/users"
+    );
   }
 }

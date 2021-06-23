@@ -5,7 +5,9 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -13,10 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import javax.validation.Valid
 
@@ -32,10 +31,9 @@ interface GroupsApi {
             description = "A group with the given login does not exist and cannot be updated"
         )]
     )
-    @RequestMapping(
+    @PostMapping(
         value = ["/groups"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun createGroup(
         principal: Principal,
@@ -52,10 +50,9 @@ interface GroupsApi {
             description = "A group with the given id does not exist and cannot be deleted"
         )]
     )
-    @RequestMapping(
+    @DeleteMapping(
         value = ["/groups/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.DELETE]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun deleteGroup(
         principal: Principal,
@@ -64,10 +61,9 @@ interface GroupsApi {
 
     @Operation(description = "Get the group with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the group")])
-    @RequestMapping(
+    @GetMapping(
         value = ["/groups/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun getGroup(
         principal: Principal,
@@ -76,7 +72,7 @@ interface GroupsApi {
 
     @Operation(description = "")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of groups")])
-    @RequestMapping(value = ["/groups"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    @GetMapping(value = ["/groups"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun listGroups(principal: Principal): ResponseEntity<List<Group>>
 
     @Operation(description = "Updates a group. If group could not be found an error will be returned.")
@@ -86,14 +82,29 @@ interface GroupsApi {
             description = "Group was successfully created"
         ), ApiResponse(responseCode = "400", description = "A group already exists with the given login")]
     )
-    @RequestMapping(
+    @PutMapping(
         value = ["/groups/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.PUT]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun updateGroup(
         principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
     ): ResponseEntity<Group>
+
+    @Operation(description = "Updates a group. If group could not be found an error will be returned.")
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Group was successfully created"
+        ), ApiResponse(responseCode = "400", description = "A group already exists with the given login")]
+    )
+    @GetMapping(
+        value = ["/groups/{id}/users"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun getUsersOfGroup(
+        principal: Principal,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
+    ): ResponseEntity<List<User>>
 }

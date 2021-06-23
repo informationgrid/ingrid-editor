@@ -3,6 +3,7 @@ import { Group } from "../../models/user-group";
 import { Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
 import { map } from "rxjs/operators";
+import { User } from "../../+user/user";
 
 @Injectable({
   providedIn: "root",
@@ -36,5 +37,9 @@ export class GroupService {
   // delete group metadata from backend
   deleteGroup(id: string): Observable<any> {
     return this.dataService.deleteGroup(id);
+  }
+
+  getUsersOfGroup(id: string): Observable<User[]> {
+    return this.dataService.getUsersOfGroup(id);
   }
 }

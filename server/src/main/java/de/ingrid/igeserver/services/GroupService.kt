@@ -5,8 +5,10 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.GroupData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
@@ -26,6 +28,7 @@ import java.util.*
 @Service
 class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
+    private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
     private val aclService: AclService
 ) {
@@ -142,6 +145,10 @@ class GroupService @Autowired constructor(
 
         groupRepo.deleteById(id)
 
+    }
+    
+    fun getUsersOfGroup(id: Int) : List<UserInfo> {
+        return userRepo.findByGroups_Id(id);
     }
 
 }

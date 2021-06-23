@@ -40,10 +40,9 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     "settings",
   ];
   dataSource = new MatTableDataSource([]);
-  private selection: SelectionModel<User>;
+  selection: SelectionModel<User>;
 
-  @Output()
-  onUserSelect = new EventEmitter<User>();
+  @Output() onUserSelect = new EventEmitter<User>();
 
   constructor() {
     const initialSelection = [];

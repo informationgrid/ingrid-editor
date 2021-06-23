@@ -12,6 +12,8 @@ interface UserRepository : JpaRepository<UserInfo, Int> {
     
     @Query("SELECT u FROM UserInfo u INNER JOIN u.catalogs cat WHERE cat.identifier=?1")
     fun findAllByCatalogId(catalogId: String): List<UserInfo>
+
+    fun findByGroups_Id(groups_id: Int): List<UserInfo>
     
     fun deleteByUserId(userId: String)
 }

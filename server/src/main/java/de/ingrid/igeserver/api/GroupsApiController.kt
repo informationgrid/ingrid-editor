@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
@@ -21,14 +22,14 @@ class GroupsApiController @Autowired constructor(
 
     override fun createGroup(principal: Principal, group: Group): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        
+
         groupService.create(catalogId, group)
         return ResponseEntity(HttpStatus.OK)
     }
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        
+
 
         groupService.remove(catalogId, id)
         return ResponseEntity(HttpStatus.OK)
@@ -53,9 +54,15 @@ class GroupsApiController @Autowired constructor(
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        return when (val updatedGroup = groupService.update(catalogId, id, group)) {
-            null -> ResponseEntity.status(500).build()
-            else -> ResponseEntity.ok(updatedGroup)
-        }
+        val updatedGroup = groupService.update(catalogId, id, group)
+        return ResponseEntity.ok(updatedGroup)
+    }
+
+    override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<User>> {
+
+        val users = groupService.getUsersOfGroup(id)
+            .map { User(it.userId) }
+        return ResponseEntity.ok(users)
+
     }
 }

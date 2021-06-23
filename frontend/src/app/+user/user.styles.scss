@@ -1,5 +1,14 @@
 @import "src/variables";
 
+:host {
+  display: block;
+  height: 100%;
+
+  & > div {
+    padding: 40px 56px 26px;
+  }
+}
+
 as-split-area {
   background: white;
 }
@@ -140,12 +149,12 @@ table {
   color: $ige-hint-color;
 }
 
-td button {
+.mat-row .menu-button {
   visibility: hidden;
   margin-right: 7px;
 }
 
-td:hover button {
+.mat-row:hover .menu-button {
   visibility: visible;
 }
 

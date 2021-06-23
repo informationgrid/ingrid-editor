@@ -1,153 +1,160 @@
-<div class="user-management-header">
-    <h1>Gruppen {{ groups ? "(" + groups.length + ")" : "" }}</h1>
-    <mat-toolbar>
-        <mat-toolbar-row>
-            <!--            Searchfield-->
-            <ige-search-field
-                (queryUpdate)="this.searchQuery = $event"
-            ></ige-search-field>
-            <div fxFlex></div>
+<div fxLayout="column" fxFill>
+    <div class="user-management-header">
+        <h1>Gruppen {{ groups ? "(" + groups.length + ")" : "" }}</h1>
+        <mat-toolbar>
+            <mat-toolbar-row>
+                <!--            Searchfield-->
+                <ige-search-field
+                    (queryUpdate)="this.searchQuery = $event"
+                ></ige-search-field>
+                <div fxFlex></div>
 
-            <span class="save-buttons">
-                <button
-                    mat-stroked-button
-                    *ngIf="selectedGroup || isNewGroup"
-                    data-cy="toolbar_save_user"
-                    matTooltip="Speichern"
-                    [matTooltipShowDelay]="1000"
-                    (click)="saveGroup()"
-                    [disabled]="form.invalid || !(isDirty$ | async)"
-                >
-                    Speichern
-                </button>
-                <button
-                    class="btnAddNew"
-                    mat-flat-button
-                    color="primary"
-                    (click)="addGroup()"
-                    matTooltip="Gruppe hinzufügen"
-                    [matTooltipShowDelay]="1000"
-                >
-                    <mat-icon>person_add</mat-icon> Hinzufügen
-                </button>
-            </span>
-        </mat-toolbar-row>
-    </mat-toolbar>
-</div>
-<as-split>
-    <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
-
-    <!-- GROUP LIST -->
-    <as-split-area
-        [size]="35"
-        id="sidebarRoles"
-        class="split-pane-content-primary container"
-    >
-        <groups-table
-            [query]="searchQuery"
-            [groups]="groups"
-            (onGroupSelect)="selectedGroup = $event; loadGroup($event.id)"
-        ></groups-table>
-    </as-split-area>
-
-    <!-- GROUP DETAIL -->
-    <as-split-area
-        [size]="65"
-        id="formRoles"
-        class="split-pane-content-secondary container-fluid"
-        style="display: block"
-    >
-        <form
-            *ngIf="
-                selectedGroup || (isNewGroup && !isLoading);
-                else noGroupOrLoading
-            "
-            fxLayout="column"
-            fxFill
-            [formGroup]="form"
-        >
-            <div class="user-title">
-                <div class="document-type">
-                    <!--                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>-->
-                    <mat-icon svgIcon="group"></mat-icon>
-                </div>
-
-                <span fxFlex class="label" [class.editable]="false">
-                    <span>{{ form.get("name")?.value || "Kein Titel" }}</span>
-                </span>
-
-                <button
-                    mat-icon-button
-                    class="dark menu-button"
-                    [class.expanded]="showMore"
-                    (click)="this.showMore = !this.showMore"
-                >
-                    <mat-icon class="rotating animated"
-                        >keyboard_arrow_down</mat-icon
-                    >
-                </button>
-                <button
-                    mat-icon-button
-                    class="menu dark menu-button"
-                    [matMenuTriggerFor]="groupMoreMenu"
-                >
-                    <mat-icon svgIcon="Mehr"></mat-icon>
-                </button>
-                <mat-menu #groupMoreMenu="matMenu">
+                <span class="save-buttons">
                     <button
-                        mat-menu-item
-                        (click)="deleteGroup(selectedGroup.id)"
+                        mat-stroked-button
+                        *ngIf="selectedGroup || isNewGroup"
+                        data-cy="toolbar_save_user"
+                        matTooltip="Speichern"
+                        [matTooltipShowDelay]="1000"
+                        (click)="saveGroup()"
+                        [disabled]="form.invalid || !(isDirty$ | async)"
                     >
-                        Löschen
+                        Speichern
                     </button>
-                </mat-menu>
-            </div>
-            <group-header-more
-                [showMore]="this.showMore"
-                [group]="selectedGroup"
-            ></group-header-more>
-            <!-- TITLE -->
-            <mat-form-field appearance="outline">
-                <mat-label>Name</mat-label>
-                <input matInput formControlName="name" />
-                <mat-error *ngIf="form.get('name').errors?.forbiddenName"
-                    >Es gibt bereits eine Gruppe mit diesem Namen
-                </mat-error>
-            </mat-form-field>
+                    <button
+                        class="btnAddNew"
+                        mat-flat-button
+                        color="primary"
+                        (click)="addGroup()"
+                        matTooltip="Gruppe hinzufügen"
+                        [matTooltipShowDelay]="1000"
+                    >
+                        <mat-icon>person_add</mat-icon> Hinzufügen
+                    </button>
+                </span>
+            </mat-toolbar-row>
+        </mat-toolbar>
+    </div>
+    <as-split>
+        <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
 
-            <!-- DESCRIPTION -->
-            <mat-form-field appearance="outline">
-                <mat-label>Beschreibung</mat-label>
-                <textarea matInput formControlName="description"></textarea>
-            </mat-form-field>
+        <!-- GROUP LIST -->
+        <as-split-area
+            [size]="35"
+            id="sidebarRoles"
+            class="split-pane-content-primary container"
+        >
+            <groups-table
+                [query]="searchQuery"
+                [groups]="groups"
+                (onGroupSelect)="selectedGroup = $event; loadGroup($event.id)"
+                (onDelete)="deleteGroup($event)"
+            ></groups-table>
+        </as-split-area>
 
-            <mat-divider style="margin: 5px 0 20px"></mat-divider>
-
-            <ige-permissions formControlName="permissions"></ige-permissions>
-        </form>
-
-        <!-- NO GROUP SELECTED -->
-        <ng-template #noGroupOrLoading>
-            <div
-                *ngIf="!isLoading; else loading"
-                fxFlex
+        <!-- GROUP DETAIL -->
+        <as-split-area
+            [size]="65"
+            id="formRoles"
+            class="split-pane-content-secondary container-fluid"
+            style="display: block"
+        >
+            <form
+                *ngIf="
+                    selectedGroup || (isNewGroup && !isLoading);
+                    else noGroupOrLoading
+                "
                 fxLayout="column"
-                fxLayoutAlign="center center"
+                fxFill
+                [formGroup]="form"
             >
-                <div>
-                    <img
-                        src="assets/icons/group-management.png"
-                        alt="group-management"
-                    />
+                <div class="user-title">
+                    <div class="document-type">
+                        <!--                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>-->
+                        <mat-icon svgIcon="group"></mat-icon>
+                    </div>
+
+                    <span fxFlex class="label" [class.editable]="false">
+                        <span>{{
+                            form.get("name")?.value || "Kein Titel"
+                        }}</span>
+                    </span>
+
+                    <button
+                        mat-icon-button
+                        class="dark menu-button"
+                        [class.expanded]="showMore"
+                        (click)="this.showMore = !this.showMore"
+                    >
+                        <mat-icon class="rotating animated"
+                            >keyboard_arrow_down</mat-icon
+                        >
+                    </button>
+                    <button
+                        mat-icon-button
+                        class="menu dark menu-button"
+                        [matMenuTriggerFor]="groupMoreMenu"
+                    >
+                        <mat-icon svgIcon="Mehr"></mat-icon>
+                    </button>
+                    <mat-menu #groupMoreMenu="matMenu">
+                        <button
+                            mat-menu-item
+                            (click)="deleteGroup(selectedGroup.id)"
+                        >
+                            Löschen
+                        </button>
+                    </mat-menu>
                 </div>
-                <div class="no-selection-text">
-                    Wählen Sie einen Eintrag aus, um Berechtigungen anzuzeigen
-                    oder Änderungen durchzuführen.
+                <group-header-more
+                    [showMore]="this.showMore"
+                    [group]="selectedGroup"
+                ></group-header-more>
+                <!-- TITLE -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" />
+                    <mat-error *ngIf="form.get('name').errors?.forbiddenName"
+                        >Es gibt bereits eine Gruppe mit diesem Namen
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- DESCRIPTION -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Beschreibung</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                </mat-form-field>
+
+                <mat-divider style="margin: 5px 0 20px"></mat-divider>
+
+                <ige-permissions
+                    formControlName="permissions"
+                ></ige-permissions>
+            </form>
+
+            <!-- NO GROUP SELECTED -->
+            <ng-template #noGroupOrLoading>
+                <div
+                    *ngIf="!isLoading; else loading"
+                    fxFlex
+                    fxLayout="column"
+                    fxLayoutAlign="center center"
+                >
+                    <div>
+                        <img
+                            src="assets/icons/group-management.png"
+                            alt="group-management"
+                        />
+                    </div>
+                    <div class="no-selection-text">
+                        Wählen Sie einen Eintrag aus, um Berechtigungen
+                        anzuzeigen oder Änderungen durchzuführen.
+                    </div>
                 </div>
-            </div>
-        </ng-template>
-        <ng-template #loading>
-            <mat-spinner style="margin: 100px auto"></mat-spinner>
-        </ng-template>
-    </as-split-area>
-</as-split>
+            </ng-template>
+            <ng-template #loading>
+                <mat-spinner style="margin: 100px auto"></mat-spinner>
+            </ng-template>
+        </as-split-area>
+    </as-split>
+</div>

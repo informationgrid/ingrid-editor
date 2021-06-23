@@ -34,10 +34,10 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   @Input() selectedGroupForm: FormControl;
   displayedColumns: string[] = ["role-icon", "name", "settings"];
   dataSource = new MatTableDataSource([]);
-  private selection: SelectionModel<Group>;
+  selection: SelectionModel<Group>;
 
-  @Output()
-  onGroupSelect = new EventEmitter<Group>();
+  @Output() onGroupSelect = new EventEmitter<Group>();
+  @Output() onDelete = new EventEmitter<string>();
 
   constructor() {
     const initialSelection = [];

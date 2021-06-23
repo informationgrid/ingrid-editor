@@ -145,24 +145,25 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  deleteGroup(id: string) {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: "Gruppe löschen",
-          message: "Möchten Sie die Gruppe wirklich löschen?",
-        } as ConfirmDialogData,
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.groupService.deleteGroup(id).subscribe(() => {
-            this.fetchGroups()
-              .pipe(tap(() => this.form.reset()))
-              .subscribe();
-          });
-        }
-      });
+  async deleteGroup(id: string) {
+    this.groupService.getUsersOfGroup(id).subscribe((users) => {
+      const data = this.createDeleteDialogData(users);
+
+      this.dialog
+        .open(ConfirmDialogComponent, {
+          data: data,
+        })
+        .afterClosed()
+        .subscribe((result) => {
+          if (result) {
+            this.groupService.deleteGroup(id).subscribe(() => {
+              this.fetchGroups()
+                .pipe(tap(() => (this.selectedGroup = null)))
+                .subscribe();
+            });
+          }
+        });
+    });
   }
 
   forbiddenNameValidator(): ValidatorFn {
@@ -174,6 +175,17 @@ export class GroupComponent implements OnInit {
         ).length > 0;
 
       return forbidden ? { forbiddenName: { value: control.value } } : null;
+    };
+  }
+
+  private createDeleteDialogData(users: User[]): ConfirmDialogData {
+    return {
+      title: "Gruppe löschen",
+      message:
+        users.length > 0
+          ? `Die Gruppe wird von ${users.length} Nutzer(n) verwendet. Möchten Sie die Gruppe trotzdem löschen?`
+          : "Möchten Sie die Gruppe wirklich löschen?",
+      list: users.map((user) => user.login),
     };
   }
 }
