@@ -14,36 +14,20 @@ describe('Indexing', () => {
   });
 
   it('Index and check indexed object counter has increased', () => {
-    const json = {
-      firstName: 'vor',
-      lastName: 'nach',
-      organization: 'org',
-      title: 'APICall-forINDEX',
-      _type: 'AddressDoc',
-      contact: [{ type: 1, connection: '0123456789' }]
-    };
-
-    AddressPage.apiCreateAddress(json, true);
-
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
     BehavioursPage.openIndexStatusBox();
+
+    const statusEntry = cy.get('div.status').invoke('text');
 
     cy.get('button').contains('Indizieren').click();
     DocumentPage.waitUntilElementIsVisible("div.status:contains('Endzeit')");
 
-    cy.get('div.status').should('not.contain', 'Anzahl Adressen: 0');
+    // compare status box entry is not the same like before indexing
+    cy.get('div.status').invoke('text').should('not.equal', statusEntry);
   });
 
   it('Set a cron expression and check', () => {
     const cron = '*/10 * * * * *';
-    const json = {
-      firstName: 'vor',
-      lastName: 'nach',
-      organization: 'org',
-      title: 'APICall-forcronINDEX',
-      _type: 'AddressDoc',
-      contact: [{ type: 1, connection: '0123456789' }]
-    };
 
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
     BehavioursPage.openIndexStatusBox();
@@ -58,21 +42,45 @@ describe('Indexing', () => {
   });
 
   it('Set cron expression via example buttons', () => {
-    const json = {
-      firstName: 'vor',
-      lastName: 'nach',
-      organization: 'org',
-      title: 'APICall-forcronexampleINDEX',
-      _type: 'AddressDoc',
-      contact: [{ type: 1, connection: '0123456789' }]
-    };
-
-    AddressPage.apiCreateAddress(json, true);
-
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
 
     cy.get('mat-chip').contains('Alle 30 Minuten').click();
 
     cy.get('mat-hint').contains('Alle 30 Minuten');
+  });
+
+  it('Only index published documents', () => {
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
+    BehavioursPage.openIndexStatusBox();
+
+    cy.get('button').contains('Indizieren').click();
+    DocumentPage.waitUntilElementIsVisible("div.status:contains('Endzeit')");
+
+    cy.get('div.status')
+      .contains('Anzahl Dokumente')
+      .invoke('text')
+      .then(text => {
+        const fullText = text;
+        const pattern = /[0-9]+/g;
+        const number = fullText.match(pattern);
+        cy.log('Anzahl der indexierten Dokumente: ' + number);
+
+        DocumentPage.CreateFullMcloudDocumentWithAPI('Published_mCloudDoc_Indextest', true);
+
+        cy.get('button').contains('Indizieren').click();
+        DocumentPage.waitUntilElementIsVisible("div.status:contains('Endzeit')");
+
+        cy.get('div.status')
+          .contains('Anzahl Dokumente')
+          .invoke('text')
+          .then(text => {
+            const fullText2 = text;
+            const number2 = fullText2.match(pattern);
+            cy.log('Anzahl der indexierten Dokumente: ' + number2);
+
+            // compare number of indexed objects
+            assert.notEqual(number2, number, number2 + ' ' + number + ' are not equal');
+          });
+      });
   });
 });
