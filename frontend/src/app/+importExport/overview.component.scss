@@ -4,8 +4,9 @@
   flex: 1;
 }
 
+// TODO: use page template which includes max-width?
 .import_export_tabs ::ng-deep .mat-tab-body-content {
-  max-width: 1200px;
+  max-width: 1260px;
   margin: 0 auto;
 
   > * {

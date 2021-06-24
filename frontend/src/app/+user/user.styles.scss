@@ -4,17 +4,37 @@
   display: block;
   height: 100%;
 
-  & > div {
-    padding: 40px 56px 26px;
+  .page-wrapper {
+    padding: 40px 24px 24px 56px;
   }
+}
+
+as-split {
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 as-split-area {
   background: white;
 }
 
+.header-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 .user-management-header {
-  height: 150px;
+  height: 110px;
+
+  .page-title {
+    margin-top: 0;
+    padding-bottom: 6px;
+    font-size: 34px;
+    letter-spacing: 0.25px;
+    line-height: 44px;
+    color: $ige-primary;
+  }
 }
 
 #formRoles form,
@@ -109,6 +129,7 @@ as-split-area {
 
 mat-toolbar-row {
   background-color: $ige-background;
+  padding: 0;
 }
 
 h1 {
@@ -168,4 +189,8 @@ ige-search-field {
       top: -0.15em !important;
     }
   }
+}
+
+.legend {
+  padding-left: 14px;
 }

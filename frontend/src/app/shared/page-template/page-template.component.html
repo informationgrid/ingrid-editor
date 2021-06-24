@@ -1,7 +1,9 @@
 <div fxLayout="column" class="tab-padding">
     <div fxLayout="row" class="header">
         <div class="page-title left-side">{{ label }}</div>
-        <ng-content select="[main-header]"></ng-content>
+        <div class="main-header">
+            <ng-content select="[main-header]"></ng-content>
+        </div>
     </div>
 
     <ng-content select="[status]"></ng-content>
@@ -10,6 +12,8 @@
         <div class="left-side">
             <ng-content select="[left-side]"></ng-content>
         </div>
-        <ng-content select="[main-content]"></ng-content>
+        <div class="main-content">
+            <ng-content select="[main-content]"></ng-content>
+        </div>
     </div>
 </div>

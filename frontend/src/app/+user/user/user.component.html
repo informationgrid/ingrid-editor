@@ -1,56 +1,60 @@
-<div fxLayout="column" fxFill>
-    <div class="user-management-header">
-        <h1>Nutzer {{ users ? "(" + users.length + ")" : "" }}</h1>
-        <mat-toolbar>
-            <mat-toolbar-row>
-                <!--            Searchfield-->
-                <ige-search-field
-                    (queryUpdate)="this.searchQuery = $event"
-                ></ige-search-field>
-                <div fxFlex></div>
+<div fxLayout="column" fxFill class="page-wrapper">
+    <div class="header-wrapper">
+        <div class="user-management-header">
+            <div class="page-title">
+                Nutzer {{ users ? "(" + users.length + ")" : "" }}
+            </div>
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <!--            Searchfield-->
+                    <ige-search-field
+                        (queryUpdate)="this.searchQuery = $event"
+                    ></ige-search-field>
+                    <div fxFlex></div>
 
-                <span class="save-buttons">
-                    <button
-                        mat-stroked-button
-                        *ngIf="selectedUser || isNewUser"
-                        data-cy="toolbar_save_user"
-                        matTooltip="Speichern"
-                        [matTooltipShowDelay]="1000"
-                        (click)="saveUser()"
-                        [disabled]="form?.invalid"
-                    >
-                        Speichern
-                    </button>
-                    <button
-                        class="btnAddNew"
-                        mat-flat-button
-                        color="primary"
-                        [mat-menu-trigger-for]="userAddMenu"
-                        data-cy="toolbar_add_user"
-                        matTooltip="Nutzer hinzufügen"
-                        [matTooltipShowDelay]="1000"
-                    >
-                        <mat-icon>person_add</mat-icon> Hinzufügen
-                    </button>
-                    <mat-menu #userAddMenu="matMenu">
+                    <span class="save-buttons">
                         <button
-                            type="button"
-                            mat-menu-item
-                            (click)="showExternalUsersDialog()"
+                            mat-stroked-button
+                            *ngIf="selectedUser || isNewUser"
+                            data-cy="toolbar_save_user"
+                            matTooltip="Speichern"
+                            [matTooltipShowDelay]="1000"
+                            (click)="saveUser()"
+                            [disabled]="form?.invalid"
                         >
-                            Benutzer importieren
+                            Speichern
                         </button>
                         <button
-                            type="button"
-                            mat-menu-item
-                            (click)="initNewKeycloakUser()"
+                            class="btnAddNew"
+                            mat-flat-button
+                            color="primary"
+                            [mat-menu-trigger-for]="userAddMenu"
+                            data-cy="toolbar_add_user"
+                            matTooltip="Nutzer hinzufügen"
+                            [matTooltipShowDelay]="1000"
                         >
-                            Neuen Benutzer anlegen
+                            <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
-                    </mat-menu>
-                </span>
-            </mat-toolbar-row>
-        </mat-toolbar>
+                        <mat-menu #userAddMenu="matMenu">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                (click)="showExternalUsersDialog()"
+                            >
+                                Benutzer importieren
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                (click)="initNewKeycloakUser()"
+                            >
+                                Neuen Benutzer anlegen
+                            </button>
+                        </mat-menu>
+                    </span>
+                </mat-toolbar-row>
+            </mat-toolbar>
+        </div>
     </div>
     <as-split>
         <as-split-area

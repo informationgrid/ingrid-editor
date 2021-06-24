@@ -13,17 +13,13 @@
 }
 
 .header {
-  padding-bottom: 24px;
-}
-
-.content {
-  padding-top: 24px;
+  padding-bottom: 12px;
 }
 
 .left-side {
-  //max-width: 350px;
-  min-width: 350px;
   width: 350px;
+  min-width: 350px;
+  height: 110px;
   line-height: 22px;
   margin-right: 56px;
 
@@ -34,4 +30,16 @@
     line-height: 44px;
     color: $ige-primary;
   }
+}
+
+.main-header,
+.main-content {
+  max-width: 1260px;
+  margin: 0 auto;
+  width: 100%;
+  align-self: flex-start;
+}
+
+.main-header {
+  padding-top: 4px;
 }

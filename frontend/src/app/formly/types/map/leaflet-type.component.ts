@@ -144,7 +144,7 @@ export class LeafletTypeComponent
       .open(SpatialDialogComponent, {
         width: "90%",
         disableClose: true,
-        maxWidth: 1200,
+        maxWidth: 1260,
         minWidth: 600,
         // minHeight: '85vh',
         data: this.locations[locationIndex],

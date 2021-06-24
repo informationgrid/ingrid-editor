@@ -1,39 +1,43 @@
 <div fxLayout="column" fxFill>
-    <div class="user-management-header">
-        <h1>Gruppen {{ groups ? "(" + groups.length + ")" : "" }}</h1>
-        <mat-toolbar>
-            <mat-toolbar-row>
-                <!--            Searchfield-->
-                <ige-search-field
-                    (queryUpdate)="this.searchQuery = $event"
-                ></ige-search-field>
-                <div fxFlex></div>
+    <div class="header-wrapper">
+        <div class="user-management-header">
+            <div class="page-title">
+                Gruppen {{ groups ? "(" + groups.length + ")" : "" }}
+            </div>
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <!--            Searchfield-->
+                    <ige-search-field
+                        (queryUpdate)="this.searchQuery = $event"
+                    ></ige-search-field>
+                    <div fxFlex></div>
 
-                <span class="save-buttons">
-                    <button
-                        mat-stroked-button
-                        *ngIf="selectedGroup || isNewGroup"
-                        data-cy="toolbar_save_user"
-                        matTooltip="Speichern"
-                        [matTooltipShowDelay]="1000"
-                        (click)="saveGroup()"
-                        [disabled]="form.invalid || !(isDirty$ | async)"
-                    >
-                        Speichern
-                    </button>
-                    <button
-                        class="btnAddNew"
-                        mat-flat-button
-                        color="primary"
-                        (click)="addGroup()"
-                        matTooltip="Gruppe hinzufügen"
-                        [matTooltipShowDelay]="1000"
-                    >
-                        <mat-icon>person_add</mat-icon> Hinzufügen
-                    </button>
-                </span>
-            </mat-toolbar-row>
-        </mat-toolbar>
+                    <span class="save-buttons">
+                        <button
+                            mat-stroked-button
+                            *ngIf="selectedGroup || isNewGroup"
+                            data-cy="toolbar_save_user"
+                            matTooltip="Speichern"
+                            [matTooltipShowDelay]="1000"
+                            (click)="saveGroup()"
+                            [disabled]="form.invalid || !(isDirty$ | async)"
+                        >
+                            Speichern
+                        </button>
+                        <button
+                            class="btnAddNew"
+                            mat-flat-button
+                            color="primary"
+                            (click)="addGroup()"
+                            matTooltip="Gruppe hinzufügen"
+                            [matTooltipShowDelay]="1000"
+                        >
+                            <mat-icon>person_add</mat-icon> Hinzufügen
+                        </button>
+                    </span>
+                </mat-toolbar-row>
+            </mat-toolbar>
+        </div>
     </div>
     <as-split>
         <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
