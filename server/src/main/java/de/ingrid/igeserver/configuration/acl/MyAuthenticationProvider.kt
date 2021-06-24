@@ -13,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
 import org.springframework.stereotype.Service
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class MyAuthenticationProvider @Autowired constructor(
@@ -45,7 +47,10 @@ class MyAuthenticationProvider @Autowired constructor(
             userDb = UserInfo().apply {
                 userId = username
                 role = roleRepository.findByName("ige-super-admin")
-                data = UserInfoData()
+                data = UserInfoData().apply{
+                    this.creationDate = Date()
+                    this.modificationDate = Date()
+                }
             }
             userRepository.save(userDb)
         }

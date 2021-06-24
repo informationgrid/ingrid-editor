@@ -1,9 +1,13 @@
 import { Injectable } from "@angular/core";
 import { FrontendUser, User } from "../../+user/user";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
 import { SelectOption } from "../codelist/codelist.service";
+import { Group } from "../../models/user-group";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { GroupService } from "../role/group.service";
+import { getUserFormFields } from "../../+user/user/user.formly-fields";
 
 @Injectable({
   providedIn: "root",
@@ -15,7 +19,10 @@ export class UserService {
     { label: "Autor", value: "author" },
   ];
 
-  constructor(private dataService: UserDataService) {}
+  constructor(
+    private dataService: UserDataService,
+    private groupService: GroupService
+  ) {}
 
   getUsers(): Observable<FrontendUser[]> {
     return this.dataService
@@ -51,5 +58,12 @@ export class UserService {
 
   getExternalUsers(): Observable<FrontendUser[]> {
     return this.dataService.getExternalUsers();
+  }
+
+  getUserFormFields(): FormlyFieldConfig[] {
+    return getUserFormFields(
+      this.availableRoles,
+      this.groupService.getGroups()
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { FrontendUser } from "../../user";
@@ -7,6 +7,8 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { IgeError } from "../../../models/ige-error";
 import { SelectOption } from "../../../services/codelist/codelist.service";
 import { tap } from "rxjs/operators";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { CodelistEntry } from "../../../store/codelist/codelist.model";
 
 @Component({
   selector: "ige-new-user-dialog",
@@ -20,19 +22,29 @@ export class NewUserDialogComponent implements OnInit {
   form: FormGroup;
   roles: SelectOption[];
   noAvailableUsers = true;
+  importExternal: boolean;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data,
     private userService: UserService,
     private configService: ConfigService
   ) {}
 
   ngOnInit(): void {
     this.initRoles();
+    this.importExternal = this.data?.importExternal ?? false;
 
     this.form = new FormGroup({
       role: new FormControl("", Validators.required),
-      user: new FormControl("", Validators.required),
     });
+    if (this.importExternal) {
+      this.form.addControl("user", new FormControl("", Validators.required));
+    } else {
+      this.form.addControl(
+        "userLogin",
+        new FormControl("", Validators.required)
+      );
+    }
   }
 
   private initRoles() {

@@ -15,7 +15,7 @@
                     <span class="save-buttons">
                         <button
                             mat-stroked-button
-                            *ngIf="selectedUser || isNewUser"
+                            *ngIf="(selectedUser || isNewUser) && !isLoading"
                             data-cy="toolbar_save_user"
                             matTooltip="Speichern"
                             [matTooltipShowDelay]="1000"
@@ -39,14 +39,14 @@
                             <button
                                 type="button"
                                 mat-menu-item
-                                (click)="showExternalUsersDialog()"
+                                (click)="showAddUsersDialog(true)"
                             >
                                 Benutzer importieren
                             </button>
                             <button
                                 type="button"
                                 mat-menu-item
-                                (click)="initNewKeycloakUser()"
+                                (click)="showAddUsersDialog(false)"
                             >
                                 Neuen Benutzer anlegen
                             </button>
@@ -72,138 +72,68 @@
             [size]="50"
             id="formUser"
             class="split-pane-content-secondary container-fluid"
-            style="display: block"
         >
-            <!--        <form
-            *ngIf="
-                (selectedUser || isNewUser) && !isLoading;
-                else noUserOrLoading
-            "
-            fxLayout="column"
-            fxFill
-            [formGroup]="form"
-            style="padding: 20px"
-        >
-            <div class="user-title">
-                <div class="document-type">
-                    &lt;!&ndash;                    <mat-icon>{{getRoleIcon(this.form.get('role').value)}}</mat-icon>&ndash;&gt;
-                    <mat-icon
-                        [svgIcon]="getRoleIcon(this.form.get('role').value)"
-                    ></mat-icon>
-                </div>
+            <div
+                class="detail-user"
+                *ngIf="
+                    (selectedUser || isNewUser) && !isLoading;
+                    else noUserOrLoading
+                "
+            >
+                <div class="user-title">
+                    <div class="document-type">
+                        <mat-icon
+                            [svgIcon]="
+                                getRoleIcon(this.form.get('role')?.value)
+                            "
+                        ></mat-icon>
+                    </div>
 
-                <span fxFlex class="label" [class.editable]="false">
-                    <span>{{ form.get("login")?.value || "Kein Titel" }}</span>
-                </span>
+                    <span fxFlex class="label">
+                        <span>{{ model.login || "Kein Titel" }}</span>
+                    </span>
 
-                <button
-                    mat-icon-button
-                    class="dark menu-button"
-                    [class.expanded]="showMore"
-                    (click)="toggleMoreInfo()"
-                >
-                    <mat-icon class="rotating animated"
-                        >keyboard_arrow_down</mat-icon
-                    >
-                </button>
-                <button
-                    mat-icon-button
-                    class="menu dark menu-button"
-                    [matMenuTriggerFor]="userMoreMenu"
-                >
-                    <mat-icon svgIcon="Mehr"></mat-icon>
-                </button>
-                <mat-menu #userMoreMenu="matMenu">
                     <button
-                        mat-menu-item
-                        (click)="deleteUser(selectedUser.login)"
+                        mat-icon-button
+                        class="dark menu-button"
+                        [class.expanded]="showMore"
+                        (click)="showMore = !showMore"
                     >
-                        Löschen
+                        <mat-icon class="rotating animated"
+                            >keyboard_arrow_down
+                        </mat-icon>
                     </button>
-                </mat-menu>
-            </div>
-            <user-header-more
-                [showMore]="showMore"
-                [user]="selectedUser"
-                [admins]="admins"
-                [allUsers]="users"
-                [form]="form"
-            ></user-header-more>
-
-            <mat-form-field appearance="outline">
-                <mat-label>Login</mat-label>
-                <input
-                    matInput
-                    #loginRef
-                    formControlName="login"
-                    autocomplete="off"
-                    required
-                />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Rolle</mat-label>
-                <mat-select formControlName="role" required>
-                    <mat-option *ngFor="let role of roles" [value]="role.value">
-                        {{ role.label }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <div fxLayout="row" fxLayoutGap="20px">
-                <mat-form-field appearance="outline" style="width: 100%">
-                    <mat-label>Vorname</mat-label>
-                    <input
-                        matInput
-                        autocomplete="off"
-                        formControlName="firstName"
-                        required
-                    />
-                </mat-form-field>
-                <mat-form-field appearance="outline" style="width: 100%">
-                    <mat-label>Nachname</mat-label>
-                    <input
-                        matInput
-                        autocomplete="off"
-                        formControlName="lastName"
-                        required
-                    />
-                </mat-form-field>
-            </div>
-            <mat-form-field appearance="outline">
-                <mat-label>Email</mat-label>
-                <input
-                    matInput
-                    autocomplete="off"
-                    formControlName="email"
-                    type="email"
-                    required
-                />
-                <mat-error *ngIf="form?.get('email')?.invalid">{{
-                    getEmailErrorMessage()
-                }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Organisation</mat-label>
-                <input matInput formControlName="organisation" type="text" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-                <mat-label>Gruppen</mat-label>
-                <mat-select multiple formControlName="groups">
-                    <mat-option
-                        *ngFor="let group of groups | async"
-                        [value]="group.id"
+                    <button
+                        mat-icon-button
+                        class="menu dark menu-button"
+                        [matMenuTriggerFor]="userMoreMenu"
                     >
-                        {{ group.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </form>-->
-            <formly-form
-                id="form"
-                [form]="form"
-                [fields]="formlyFieldConfig"
-                [model]="model"
-            ></formly-form>
+                        <mat-icon svgIcon="Mehr"></mat-icon>
+                    </button>
+                    <mat-menu #userMoreMenu="matMenu">
+                        <button
+                            mat-menu-item
+                            (click)="deleteUser(selectedUser.login)"
+                        >
+                            Löschen
+                        </button>
+                    </mat-menu>
+                </div>
+                <user-header-more
+                    [showMore]="showMore"
+                    [user]="selectedUser"
+                    [admins]="admins"
+                    [allUsers]="users"
+                    [form]="form"
+                ></user-header-more>
+                <formly-form
+                    id="form"
+                    [form]="form"
+                    [fields]="formlyFieldConfig"
+                    [model]="model"
+                >
+                </formly-form>
+            </div>
             <ng-template #noUserOrLoading>
                 <div
                     *ngIf="!isLoading; else loading"

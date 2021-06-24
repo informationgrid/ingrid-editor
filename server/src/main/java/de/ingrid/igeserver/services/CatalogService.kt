@@ -147,12 +147,13 @@ class CatalogService @Autowired constructor(
 
     fun createUser(catalogId: String, userModel: User) {
 
+        // TODO merge existing user who is allready in different catalog
         val user = convertUser(catalogId, userModel)
-        val userFromDB = getUser(user.userId)
-        user.id = userFromDB?.id
         user.data?.creationDate = Date()
         user.data?.modificationDate = Date()
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
+        //        user.catalogs = if (user.catalogs)  user.catalogs.add(this.getCatalogById(catalogId)) else mutableSetOf(this.getCatalogById(catalogId))
+
         userRepo.save(user)
 
     }

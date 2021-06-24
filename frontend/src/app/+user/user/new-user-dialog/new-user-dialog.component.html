@@ -3,7 +3,9 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">Benutzer importieren</span>
+        <span class="text">{{
+            importExternal ? "Benutzer importieren" : "Benutzer anlegen"
+        }}</span>
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
@@ -15,7 +17,11 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field style="width: 100%" [class.hide]="noAvailableUsers">
+    <mat-form-field
+        *ngIf="importExternal"
+        style="width: 100%"
+        [class.hide]="noAvailableUsers"
+    >
         <mat-label>Benutzer auswählen</mat-label>
         <mat-select formControlName="user">
             <mat-option *ngFor="let user of users | async" [value]="user">
@@ -23,7 +29,11 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <div *ngIf="noAvailableUsers">
+    <mat-form-field *ngIf="!importExternal" style="width: 100%">
+        <mat-label>Benutzer Login</mat-label>
+        <input matInput formControlName="userLogin" />
+    </mat-form-field>
+    <div *ngIf="noAvailableUsers && importExternal">
         Es gibt keine verfügbaren Nutzer in Keycloak
     </div>
 </mat-dialog-content>

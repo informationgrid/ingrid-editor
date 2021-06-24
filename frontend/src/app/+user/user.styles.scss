@@ -37,13 +37,12 @@ as-split-area {
   }
 }
 
-#formRoles form,
-#formUser form {
+#formRoles form {
   padding: 20px;
 }
 
-::ng-deep .mat-tab-group,
-::ng-deep .mat-tab-body-wrapper {
+.detail-user {
+  padding: 20px 20px 20px 56px;
   flex: 1;
 }
 
@@ -163,6 +162,10 @@ td {
 
 table {
   cursor: pointer;
+
+  td.mat-cell:last-of-type {
+    text-align: left;
+  }
 }
 
 .td-subtitle {
@@ -193,4 +196,8 @@ ige-search-field {
 
 .legend {
   padding-left: 14px;
+}
+
+mat-toolbar-row {
+  padding: 0;
 }

@@ -32,6 +32,7 @@ import { GroupHeaderMoreComponent } from "./group/group-header-more/group-header
 import { PermissionTableComponent } from "./permissions/permission-table/permission-table.component";
 import { PermissionAddDialogComponent } from "./permissions/permission-add-dialog/permission-add-dialog.component";
 import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   imports: [
@@ -41,6 +42,7 @@ import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
     SharedModule,
     MatTabsModule,
     MatFormFieldModule,
+    MatInputModule,
     MatDialogModule,
     FormsModule,
     MatSlideToggleModule,

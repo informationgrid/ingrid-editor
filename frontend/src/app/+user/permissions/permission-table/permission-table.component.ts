@@ -32,7 +32,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   public permissionLevel: typeof PermissionLevel = PermissionLevel;
 
-  displayedColumns: string[] = ["title", "permission", "settings"];
+  displayedColumns: string[] = ["type-icon", "title", "permission", "settings"];
 
   val = [];
   private onChange: (x: any) => {};
@@ -124,5 +124,15 @@ export class PermissionTableComponent implements ControlValueAccessor {
       .load(uuid, this.forAddress)
       .pipe(map((doc) => doc._type === "FOLDER"))
       .toPromise();
+  }
+
+  getIcon(element) {
+    if (element.isFolder) {
+      return "Ordner";
+    } else if (this.forAddress) {
+      return "Freie-Adresse";
+    } else {
+      return "Fachaufgabe";
+    }
   }
 }

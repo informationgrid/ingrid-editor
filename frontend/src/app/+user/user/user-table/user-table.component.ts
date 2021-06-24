@@ -37,7 +37,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     "role-icon",
     "firstName",
     "organisation",
-    "settings",
+    // "settings",
   ];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<User>;

@@ -1,19 +1,21 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  AfterContentChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, of, Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  Validators,
-} from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -22,9 +24,8 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { debounceTime, map, tap } from "rxjs/operators";
 import { dirtyCheck } from "@ngneat/dirty-check-forms";
-import { SelectOption } from "../../services/codelist/codelist.service";
-import { IpValidator } from "../../formly/ige-formly.module";
-import { Group } from "../../models/user-group";
+import { log } from "util";
+import { Subscription } from "rxjs/Subscription";
 
 @UntilDestroy()
 @Component({
@@ -32,17 +33,15 @@ import { Group } from "../../models/user-group";
   templateUrl: "./user.component.html",
   styleUrls: ["../user.styles.scss"],
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, AfterContentChecked {
   isDirty$: Observable<boolean>;
   state$ = new Subject<any>();
 
-  @ViewChild("loginRef") loginRef: ElementRef;
-
   users: User[];
   admins: User[];
-  ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "superadmin"];
+  ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "ige-super-admin"];
   currentTab: string;
-  form = new FormGroup({});
+  @ViewChild("form", { static: true }) form = new FormGroup({});
 
   isNewUser = false;
   private isNewExternalUser = false;
@@ -62,105 +61,16 @@ export class UserComponent implements OnInit {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private userService: UserService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
     this.searchQuery = "";
-    this.formlyFieldConfig = <FormlyFieldConfig[]>[
-      {
-        key: "login",
-        type: "input",
-        wrappers: ["panel", "form-field"],
-        templateOptions: {
-          externalLabel: "Login",
-          appearance: "outline",
-          required: true,
-        },
-      },
-      {
-        key: "role",
-        type: "select",
-        wrappers: ["panel", "form-field"],
-        templateOptions: {
-          externalLabel: "Rolle",
-          label: "Rolle",
-          appearance: "outline",
-          required: true,
-          options: of(this.roles),
-        },
-      },
-      {
-        wrappers: ["panel"],
-        templateOptions: {
-          externalLabel: "Name",
-          required: true,
-        },
-        fieldGroup: [
-          {
-            fieldGroupClassName: "display-flex",
-            fieldGroup: [
-              {
-                key: "firstName",
-                className: "flex-1 firstName",
-                type: "input",
-                templateOptions: {
-                  label: "Vorname",
-                  appearance: "outline",
-                },
-              },
-              {
-                key: "lastName",
-                className: "flex-1 lastName",
-                type: "input",
-                templateOptions: {
-                  label: "Nachname",
-                  appearance: "outline",
-                },
-              },
-            ],
-          },
-        ],
-      },
-      {
-        key: "email",
-        type: "input",
-        wrappers: ["panel", "form-field"],
-        templateOptions: {
-          externalLabel: "E-Mail",
-          appearance: "outline",
-          required: true,
-        },
-      },
-      {
-        key: "organisation",
-        type: "input",
-        wrappers: ["panel", "form-field"],
-        templateOptions: {
-          externalLabel: "Organisation",
-          appearance: "outline",
-        },
-      },
-      {
-        key: "groups",
-        type: "repeatList",
-        wrappers: ["panel"],
-        templateOptions: {
-          externalLabel: "Gruppen",
-          placeholder: "Gruppe wählen...",
-          options: this.groups.pipe(
-            map((groups) => {
-              return groups.map((group) => {
-                return {
-                  label: group.name,
-                  value: group.id,
-                };
-              });
-            })
-          ),
-          asSelect: true,
-        },
-      },
-    ];
+    this.formlyFieldConfig = this.userService.getUserFormFields();
+  }
+
+  ngAfterContentChecked(): void {
+    this.cdRef.detectChanges();
   }
 
   ngOnInit() {
@@ -228,44 +138,35 @@ export class UserComponent implements OnInit {
       },
       user
     );
-    this.form.enable();
-    this.form.get("login").disable();
-    this.form.get("role").disable();
+    this.enableForm();
     this.form.reset(mergedUser);
     this.state$.next(mergedUser);
     this.isLoading = false;
   }
 
-  showExternalUsersDialog() {
+  showAddUsersDialog(importExternal: boolean) {
     this.dialog
-      .open(NewUserDialogComponent)
+      .open(NewUserDialogComponent, {
+        data: { importExternal: importExternal },
+      })
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.form.get("login").disable();
-          this.form.get("role").disable();
-          this.isNewExternalUser = false;
-
+          this.isNewExternalUser = !importExternal;
           this.addUser(result);
         }
       });
   }
 
-  initNewKeycloakUser() {
-    this.form.get("login").enable();
-    this.form.get("role").enable();
-    this.isNewExternalUser = true;
-
-    this.addUser({});
-  }
-
   private addUser(initial: any) {
-    const newUser = initial.user ?? { groups: [], manager: "TODO" };
+    this.isLoading = true;
+    const newUser: User = initial.user ?? {};
+    if (initial.userLogin) newUser.login = initial.userLogin;
     newUser.role = initial.role ?? "";
     this.isNewUser = true;
     this.form.reset(newUser);
     this.state$.next(newUser);
-    // setTimeout(() => this.loginRef.nativeElement.focus(), 300);
+    this.saveUser(newUser);
   }
 
   deleteUser(login: string) {
@@ -284,14 +185,14 @@ export class UserComponent implements OnInit {
       });
   }
 
-  saveUser() {
+  saveUser(user?: User): void {
     let observer: Observable<User>;
 
     // convert roles to numbers
     // user.roles = user.roles.map(role => +role);
     this.form.disable();
 
-    const user = this.model;
+    user = user ?? this.model;
     if (this.isNewUser) {
       observer = this.userService.createUser(user, this.isNewExternalUser);
     } else {
@@ -303,10 +204,11 @@ export class UserComponent implements OnInit {
       () => {
         this.isNewUser = false;
         this.fetchUsers();
-        this.form.enable();
+        this.enableForm();
+        this.loadUser(user.login);
       },
       (err: any) => {
-        this.form.enable();
+        this.enableForm();
         if (err.status === 406) {
           if (this.isNewUser) {
             this.modalService.showJavascriptError(
@@ -340,10 +242,16 @@ export class UserComponent implements OnInit {
       case role === "ige-super-admin":
       case role === "cat-admin":
         return "catalog-admin";
-      case role.includes("admin"):
+      case role?.includes("admin"):
         return "meta-admin";
       default:
         return "author";
     }
+  }
+
+  enableForm() {
+    this.form.enable();
+    this.form.get("login")?.disable();
+    this.form.get("role")?.disable();
   }
 }

@@ -286,7 +286,7 @@ class UsersApiController : UsersApi {
             throw UnauthenticatedException.withUser("")
         }
 
-        val users = keycloakService.getUsers(principal)
+        val users = keycloakService.getUsersWithIgeRoles(principal)
 
         // remove users that are already present in this instance
         val filteredUsers = users.filter { catalogService.getUser(it.login) == null }
