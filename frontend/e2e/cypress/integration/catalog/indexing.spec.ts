@@ -1,7 +1,7 @@
 import { BehavioursPage } from '../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../pages/base.page';
-import {AddressPage} from "../../pages/address.page";
-import {DocumentPage} from "../../pages/document.page";
+import { AddressPage } from '../../pages/address.page';
+import { DocumentPage } from '../../pages/document.page';
 
 describe('Indexing', () => {
   beforeEach(() => {
@@ -32,11 +32,10 @@ describe('Indexing', () => {
     DocumentPage.waitUntilElementIsVisible("div.status:contains('Endzeit')");
 
     cy.get('div.status').should('not.contain', 'Anzahl Adressen: 0');
-
-  })
+  });
 
   it('Set a cron expression and check', () => {
-    const cron = '*/30 * * * * *';
+    const cron = '*/10 * * * * *';
     const json = {
       firstName: 'vor',
       lastName: 'nach',
@@ -46,13 +45,11 @@ describe('Indexing', () => {
       contact: [{ type: 1, connection: '0123456789' }]
     };
 
-    AddressPage.apiCreateAddress(json, true);
-
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
     BehavioursPage.openIndexStatusBox();
     cy.get('mat-form-field input').clear().type(cron);
 
-    cy.get('mat-hint').contains('Alle 30 Sekunden');
+    cy.get('mat-hint').contains('Alle 10 Sekunden');
 
     cy.get('button').contains('Übernehmen').click();
     DocumentPage.waitUntilElementIsVisible("div.status:contains('Endzeit')");
@@ -78,5 +75,4 @@ describe('Indexing', () => {
 
     cy.get('mat-hint').contains('Alle 30 Minuten');
   });
-
 });
