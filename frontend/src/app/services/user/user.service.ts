@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
 import { FrontendUser, User } from "../../+user/user";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
 import { SelectOption } from "../codelist/codelist.service";
-import { Group } from "../../models/user-group";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
