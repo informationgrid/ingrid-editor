@@ -14,7 +14,6 @@ import {
   DOCUMENT_ROOT_NODE,
   DocumentAbstract,
 } from "../../../../store/document/document.model";
-import { ShortTreeNode } from "../../../sidebars/tree/tree.types";
 
 @Component({
   selector: "ige-destination-selection",
@@ -26,10 +25,9 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
   @Input() initialSelectedId: string;
   @Input() disableRoot = false;
 
-  @Output() choice = new EventEmitter();
+  @Output() choice = new EventEmitter<string>();
 
   parent: string = null;
-  path: ShortTreeNode[] = [];
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new BehaviorSubject<string>(null);
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
@@ -55,15 +53,11 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
 
     if (source === "List") {
       this.activeTreeNode.next(null);
-      this.path = [new ShortTreeNode(null, this.rootNode.title)];
     } else {
       this.activeListItem.next(null);
     }
 
-    this.choice.next({
-      parent: this.parent,
-      path: this.path,
-    });
+    this.choice.next(this.parent);
   }
 
   getRootNode() {

@@ -30,6 +30,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { ProfileAbstract } from "../../../store/profile/profile.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
+import { PathResponse } from "../../../models/path-response";
 
 export interface CreateOptions {
   parent: string;
@@ -66,10 +67,7 @@ export class CreateNodeComponent implements OnInit {
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.isAdmin();
   private query: TreeQuery | AddressTreeQuery;
-  private selectedLocation: any = {
-    parent: null,
-    path: [],
-  };
+  private selectedLocation: string;
 
   constructor(
     private config: ConfigService,
@@ -125,34 +123,28 @@ export class CreateNodeComponent implements OnInit {
 
   async handleCreate() {
     if (this.isFolder || !this.forAddress) {
-      this.handleDocumentCreate();
+      await this.handleDocumentCreate();
     } else {
-      this.handleAddressCreate();
+      await this.handleAddressCreate();
     }
   }
 
-  updateParent(parentInfo: any) {
-    this.selectedLocation = parentInfo;
+  updateParent(parentId: string) {
+    this.selectedLocation = parentId;
   }
 
   applyLocation() {
-    this.parent = this.selectedLocation.parent;
-    this.documentService
-      .getPath(this.selectedLocation.parent)
-      .pipe(
-        tap(
-          (result) =>
-            (this.path = result.map(
-              (path) =>
-                new ShortTreeNode(
-                  path.id,
-                  path.title,
-                  !this.query.hasEntity(path.id)
-                )
-            ))
-        )
-      )
-      .subscribe();
+    this.parent = this.selectedLocation;
+
+    if (this.selectedLocation === null) {
+      this.path = [];
+    } else {
+      this.documentService
+        .getPath(this.parent)
+        .pipe(tap((result) => (this.path = this.convertPathResponses(result))))
+        .subscribe();
+    }
+
     this.selectedPage = 0;
   }
 
@@ -280,5 +272,12 @@ export class CreateNodeComponent implements OnInit {
 
     const page = this.forAddress ? "/address" : "/form";
     this.router.navigate([page, { id: id }]);
+  }
+
+  private convertPathResponses(result: PathResponse[]) {
+    return result.map(
+      (path) =>
+        new ShortTreeNode(path.id, path.title, !this.query.hasEntity(path.id))
+    );
   }
 }
