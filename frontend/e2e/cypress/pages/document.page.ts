@@ -406,7 +406,7 @@ export class DocumentPage extends BasePage {
   }
 
   static clickSpatialEntry(spatialName: string) {
-    cy.get('ige-formly--type mat-list div.mat-line').contains(spatialName).click({force:true});
+    cy.get('ige-formly--type mat-list div.mat-line').contains(spatialName).click({ force: true });
   }
 
   static clickLeafletMapResetBtn() {
@@ -418,8 +418,8 @@ export class DocumentPage extends BasePage {
     cy.url().should('include', text);
   }
 
-  static waitUntilElementIsVisible(css:string){
-    cy.get(css, { timeout: 15000 }).should('be.visible');
+  static waitUntilElementIsVisible(css: string) {
+    cy.get(css, { timeout: 20000 }).should('be.visible');
     cy.wait(100);
   }
 }

@@ -57,7 +57,7 @@ export class BehavioursPage extends BasePage {
     this.saveCatalogSetting();
   }
 
-  static openIndexStatusBox(){
+  static openIndexStatusBox() {
     cy.get('div.header [data-mat-icon-type=font]').click();
     cy.get('div.status').should('be.visible');
   }
