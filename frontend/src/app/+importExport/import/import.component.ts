@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import { ImportExportService } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
+import { FileUploadModel } from "../upload/upload.component";
 
 @Component({
   selector: "ige-import",
@@ -10,6 +11,7 @@ import { ConfigService } from "../../services/config/config.service";
 })
 export class ImportComponent implements OnInit {
   file: File;
+  droppedFiles: FileUploadModel[] = [];
 
   currentTab: string;
 
@@ -53,23 +55,54 @@ export class ImportComponent implements OnInit {
     );
   }
 
-  onUpload(event) {
-    for (const file of event.files) {
-      this.uploadedFiles.push(file);
-    }
-
-    this.msgs = [];
-    this.msgs.push({ severity: "info", summary: "File Uploaded", detail: "" });
-  }
-
-  /*handleError(event) {
-    this.errorService.handle(event.xhr);
-  }*/
-
   onFileComplete(data: any) {
     console.log(data); // We just print out data bubbled up from event emitter.
     this.analyzedData = data;
     this.datasetSelected = true;
     setTimeout(() => (this.activeStepIndex = 1));
+  }
+
+  /**
+   * on file drop handler
+   */
+  onFileDropped(files: FileList) {
+    console.log(files);
+    for (let index = 0; index < files.length; index++) {
+      this.droppedFiles.push({
+        data: files.item(index),
+        state: "in",
+        inProgress: false,
+        progress: 0,
+        canRetry: false,
+        canCancel: true,
+      });
+    }
+  }
+
+  /**
+   * Convert Files list to normal array list
+   * @param files (Files List)
+   */
+  prepareFilesList(files: Array<any>) {
+    for (const item of files) {
+      item.progress = 0;
+      // this.files.push(item);
+    }
+  }
+
+  /**
+   * format bytes
+   * @param bytes (File size in bytes)
+   * @param decimals (Decimals point)
+   */
+  formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) {
+      return "0 Bytes";
+    }
+    const k = 1024;
+    const dm = decimals <= 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   }
 }

@@ -1,32 +1,59 @@
-<mat-horizontal-stepper
-    [linear]="true"
-    labelPosition="bottom"
-    [selectedIndex]="activeStepIndex"
->
-    <mat-step [completed]="datasetSelected">
-        <ng-template matStepLabel>Datei hochladen</ng-template>
+<page-template label="Import">
+    <div left-side>
+        Hier können Sie verschiedene Dateien importieren und in Datensätze
+        umwandeln.
+    </div>
 
-        <div class="text-center">
-            <p>Bitte wählen Sie die zu importierende Datei aus</p>
-            <ige-file-upload
-                (complete)="onFileComplete($event)"
-            ></ige-file-upload>
+    <section main-content fxFlex>
+        <mat-horizontal-stepper
+            [linear]="true"
+            labelPosition="bottom"
+            [selectedIndex]="activeStepIndex"
+        >
+            <mat-step [completed]="datasetSelected">
+                <ng-template matStepLabel>Hochladen</ng-template>
 
-            <span *ngIf="importFileErrorMessage">{{
-                importFileErrorMessage
-            }}</span>
-        </div>
-    </mat-step>
-    <mat-step [stepControl]="secondFormGroup">
-        <form [formGroup]="secondFormGroup">
-            <ng-template matStepLabel>Analyse</ng-template>
+                <div
+                    class="text-center upload-content"
+                    appDnd
+                    (fileDropped)="onFileDropped($event)"
+                >
+                    <div class="strong">
+                        Datei(en) zum Hochladen hier ablegen
+                    </div>
+                    <mat-icon class="upload light" svgIcon="upload"></mat-icon>
+                    <div class="alternative-text">oder auswählen</div>
 
-            <pre>{{ analyzedData | json }}</pre>
+                    <ige-file-upload
+                        [droppedFiles]="droppedFiles"
+                        (complete)="onFileComplete($event)"
+                    ></ige-file-upload>
 
-            <div class="wizard-footer">
-                <button mat-button matStepperPrevious>Zurück</button>
-                <button mat-button matStepperNext>Importieren</button>
-            </div>
-        </form>
-    </mat-step>
-</mat-horizontal-stepper>
+                    <span *ngIf="importFileErrorMessage">{{
+                        importFileErrorMessage
+                    }}</span>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="action-bar" fxLayoutAlign="end">
+                    <button mat-button mat-stroked-button color="primary">
+                        Weiter
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup">
+                <form [formGroup]="secondFormGroup">
+                    <ng-template matStepLabel>Analyse</ng-template>
+
+                    <pre>{{ analyzedData | json }}</pre>
+
+                    <div class="wizard-footer">
+                        <button mat-button matStepperPrevious>Zurück</button>
+                        <button mat-button matStepperNext>Importieren</button>
+                    </div>
+                </form>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </section>
+</page-template>

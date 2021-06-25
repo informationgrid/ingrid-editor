@@ -1,6 +1,8 @@
 import { RouterModule } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
 import { OverviewComponent } from "./overview.component";
+import { ImportComponent } from "./import/import.component";
+import { ExportComponent } from "./export/export.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -8,5 +10,19 @@ export const routing = RouterModule.forChild([
     component: OverviewComponent,
     canActivate: [AuthGuard],
     data: { roles: ["admin"] },
+    children: [
+      {
+        path: "",
+        redirectTo: "import",
+      },
+      {
+        path: "import",
+        component: ImportComponent,
+      },
+      {
+        path: "export",
+        component: ExportComponent,
+      },
+    ],
   },
 ]);

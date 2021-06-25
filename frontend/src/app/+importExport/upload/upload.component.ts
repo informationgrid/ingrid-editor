@@ -31,7 +31,7 @@ import { ModalService } from "../../services/modal/modal.service";
 })
 export class UploadComponent implements OnInit {
   /** Link text */
-  @Input() text = "Hochladen";
+  @Input() text = "Datei auswählen ...";
   /** Name used in form which will be sent in HTTP request. */
   @Input() param = "file";
   /** Target URL for file uploading. */
@@ -40,6 +40,12 @@ export class UploadComponent implements OnInit {
    By the default, it's set to 'image/*'. */
   @Input() accept = "*.*";
   /** Allow you to add handler after its completion. Bubble up response text from remote. */
+
+  @Input() set droppedFiles(files: FileUploadModel[]) {
+    this.files = files;
+    this.uploadFiles();
+  }
+
   @Output() complete = new EventEmitter<string>();
 
   files: Array<FileUploadModel> = [];
@@ -83,8 +89,8 @@ export class UploadComponent implements OnInit {
   }
 
   private uploadFiles() {
-    const fileUpload = this.htmlFileUpload.nativeElement;
-    fileUpload.value = "";
+    const fileUpload = this.htmlFileUpload?.nativeElement;
+    if (fileUpload) fileUpload.value = "";
 
     this.files.forEach((file) => {
       this.uploadFile(file);
@@ -95,13 +101,8 @@ export class UploadComponent implements OnInit {
     file.sub = this.uploadService
       .uploadFile(file, this.param, this.target)
       .subscribe((event: any) => {
-        if (typeof event === "object") {
-          this.removeFileFromArray(file);
-          this.complete.emit(event.body);
-        } else {
-          // on error
-          this.modalService.showJavascriptError(event);
-        }
+        this.removeFileFromArray(file);
+        this.complete.emit(event.body);
       });
   }
 

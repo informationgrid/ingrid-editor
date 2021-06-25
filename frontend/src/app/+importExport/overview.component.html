@@ -1,13 +1,14 @@
-<mat-tab-group
-    class="import_export_tabs"
-    [animationDuration]="'0ms'"
-    mat-align-tabs="center"
->
-    <mat-tab label="Import">
-        <ige-import></ige-import>
-    </mat-tab>
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a
+        *ngFor="let tab of tabs"
+        mat-tab-link
+        routerLinkActive="active-link"
+        [routerLink]="tab.path"
+        (click)="activeLink = tab.path"
+        [active]="activeLink == tab.path"
+    >
+        {{ tab.label }}
+    </a>
+</nav>
 
-    <mat-tab label="Export">
-        <ige-export></ige-export>
-    </mat-tab>
-</mat-tab-group>
+<router-outlet></router-outlet>

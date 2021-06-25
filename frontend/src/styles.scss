@@ -432,6 +432,13 @@ ige-root .mat-drawer-container {
   }
 }
 
+.mat-icon.light svg .coloring {
+  fill: #eff8ff;
+}
+.fileover .mat-icon.light svg .coloring {
+  fill: #ffffff;
+}
+
 svg {
   .coloring {
     fill: $ige-icon-color;

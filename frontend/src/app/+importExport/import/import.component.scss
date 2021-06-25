@@ -1,0 +1,33 @@
+@import "src/variables";
+
+.upload {
+  height: 128px;
+  width: 192px;
+  margin-top: 24px;
+  margin-bottom: 60px;
+}
+
+.strong {
+  font-weight: 500;
+}
+
+.alternative-text {
+  padding-bottom: 6px;
+}
+
+.upload-content {
+  padding: 30px 0;
+}
+
+.action-bar {
+  padding-top: 24px;
+}
+
+.fileover {
+  background-color: #eef8ff;
+
+  .alternative-text,
+  ige-file-upload {
+    visibility: hidden;
+  }
+}

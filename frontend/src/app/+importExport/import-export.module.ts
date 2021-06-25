@@ -19,6 +19,8 @@ import { OverviewComponent } from "./overview.component";
 import { UploadComponent } from "./upload/upload.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { PageTemplateModule } from "../shared/page-template/page-template.module";
+import { DndDirective } from "../directives/dnd.directive";
 
 @NgModule({
   imports: [
@@ -38,12 +40,14 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatSelectModule,
     MatProgressBarModule,
     MatCheckboxModule,
+    PageTemplateModule,
   ],
   declarations: [
     OverviewComponent,
     ImportComponent,
     ExportComponent,
     UploadComponent,
+    DndDirective,
   ],
   providers: [ImportExportService],
 })

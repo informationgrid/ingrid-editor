@@ -8,6 +8,7 @@ import {
 import { catchError, last, map } from "rxjs/operators";
 import { FileUploadModel } from "./upload.component";
 import { of } from "rxjs";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -38,7 +39,14 @@ export class UploadService {
       catchError((error: HttpErrorResponse) => {
         file.inProgress = false;
         file.canRetry = true;
-        return of(`${file.data.name} upload failed: ${error.error.message}`);
+        if (error.error.errorText.indexOf("No importer found") !== -1) {
+          throw new IgeError(
+            "Es wurde kein Importer gefunden, der die Datei importieren könnte"
+          );
+        }
+        throw new IgeError(
+          `${file.data.name} upload failed: ${error.error.message}`
+        );
       })
     );
   }
