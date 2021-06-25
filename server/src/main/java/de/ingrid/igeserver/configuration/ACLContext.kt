@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.configuration
 
+import de.ingrid.igeserver.configuration.acl.CustomPermissionFactory
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -76,6 +77,7 @@ class ACLContext {
     @Bean
     fun lookupStrategy(): LookupStrategy {
         val strategy = BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), ConsoleAuditLogger())
+        strategy.setPermissionFactory(CustomPermissionFactory())
         strategy.setAclClassIdSupported(true)
         return strategy;
     }

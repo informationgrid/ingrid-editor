@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.GroupData
@@ -134,8 +134,7 @@ class GroupService @Autowired constructor(
     private fun determinePermission(docPermission: JsonNode): List<Permission> {
         return when (docPermission.get("permission").asText()) {
             "writeTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
-            // TODO Create logic for only read permission on parentnode and read + write on all descendants
-            "writeTreeExceptParent" -> listOf(BasePermission.READ, BasePermission.WRITE)
+            "writeTreeExceptParent" -> listOf(BasePermission.READ, CustomPermission.WRITE_ONLY_SUBTREE)
             "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }

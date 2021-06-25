@@ -127,9 +127,29 @@ INSERT INTO audit_log VALUES (302, 'AuditLog', '{
 );
 
 
-
+-- add permission groups
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (1, false, 'GROUP_READTREE');
+INSERT INTO public.acl_sid (id, principal, sid) VALUES (2, false, 'GROUP_WRITETREE');
+INSERT INTO public.acl_sid (id, principal, sid) VALUES (3, false, 'GROUP_WRITESUBTREE');
+
+-- add entity class to protect
 INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.String');
+
+-- add documents for protection
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (1, 1, '5d2ff598-45fd-4516-b843-0b1787bd8264', null, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (2, 1, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 1, 1, true);
+
+-- connect documents with permission groups
+-- read access for GROUP_READTREE
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (1, 1, 1, 1, 1, true, true, true);
+
+-- read access for GROUP_WRITETREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (2, 1, 2, 2, 1, true, true, true);
+-- write access for GROUP_WRITETREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (3, 1, 3, 2, 2, true, true, true);
+
+-- read access for GROUP_WRITESUBTREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (4, 1, 4, 3, 1, true, true, true);
+-- write access only to children for GROUP_WRITESUBTREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (5, 1, 5, 3, 32, true, true, true);
+-- INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (5, 1, 5, 3, 1, false, true, true);

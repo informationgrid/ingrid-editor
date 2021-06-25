@@ -5,13 +5,16 @@ import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
-import org.springframework.security.acls.domain.*
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl
+import org.springframework.security.acls.domain.PermissionFactory
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import java.io.Serializable
 import java.util.*
 
-class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvaluator(aclService) {
+class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvaluator(aclService) {
 
     val logger = logger()
 
@@ -21,31 +24,32 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
 
     private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
 
-    private val permissionFactory: PermissionFactory = DefaultPermissionFactory()
+    private val permissionFactory: PermissionFactory = CustomPermissionFactory()
 
     override fun hasPermission(
         authentication: Authentication,
         targetId: Serializable?,
         targetType: String?,
-        permission: Any?
+        permission: Any
     ): Boolean {
         if (hasAdminRole(authentication)) {
             return true
         }
-        
+
         // root elements can only be created by admins
         if (targetId == null) {
             return false
         }
-        
-        return super.hasPermission(authentication, targetId, targetType, permission)
+
+        val objectIdentity = this.objectIdentityGenerator.createObjectIdentity(targetId, targetType)
+        return checkPermission(authentication, objectIdentity, permission, null)
     }
 
     override fun hasPermission(authentication: Authentication, domainObject: Any?, permission: Any): Boolean {
         if (domainObject == null) {
             return false
         }
-        
+
         if (hasAdminRole(authentication)) {
             return true
         }
@@ -54,7 +58,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
         val finalDomainObject = if (domainObject is HibernateProxy) {
             domainObject.writeReplace()
         } else domainObject
-        
+
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
         return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
     }
@@ -64,25 +68,50 @@ class IgeAclPermissionEvaluator(val aclService: AclService): AclPermissionEvalua
         return roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
 
-    private fun checkPermission(authentication: Authentication, oid: ObjectIdentity, permission: Any, domainObject: Any): Boolean {
+    private fun checkPermission(
+        authentication: Authentication,
+        oid: ObjectIdentity,
+        permission: Any,
+        domainObject: Any?
+    ): Boolean {
         // Obtain the SIDs applicable to the principal
         val sids = sidRetrievalStrategy.getSids(authentication)
         val requiredPermission = resolvePermission(permission)
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
+        var acl: Acl? = null
         try {
             // Lookup only ACLs for SIDs we're interested in
-            val acl = this.aclService.readAclById(oid, sids)
+            acl = this.aclService.readAclById(oid, sids)
             if (acl.isGranted(requiredPermission, sids, false)) {
                 logger.debug("Access is granted")
                 if (domainObject is DocumentWrapper) {
+                    // TODO: set true, if already checked permission is WRITE
+                    val writePermission = if (acl.parentAcl == null) listOf(BasePermission.WRITE) else listOf(
+                        BasePermission.WRITE,
+                        CustomPermission.WRITE_ONLY_SUBTREE
+                    )
                     domainObject.hasWritePermission = try {
-                        acl.isGranted(listOf(BasePermission.WRITE), sids, false)
-                    } catch (nfe: NotFoundException) { false }
+                        acl.isGranted(writePermission, sids, false)
+                    } catch (nfe: NotFoundException) {
+                        false
+                    }
                 }
                 return true
             }
+
             logger.debug("Returning false - ACLs returned, but insufficient permissions for this principal")
         } catch (nfe: NotFoundException) {
+            // check if WRITE_ONLY_SUBTREE Permission was used
+            if (acl != null && permission == "WRITE"
+                && acl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+            ) {
+                // check that it's not the root node, where we only have read access
+                if (acl.parentAcl != null) {
+                    logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
+                    return true
+                }
+            }
+
             logger.debug("Returning false - no ACLs apply for this principal")
         }
         return false

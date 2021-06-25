@@ -201,62 +201,11 @@ class CatalogService @Autowired constructor(
     @Transactional
     fun updateUser(catalogId: String, userModel: User) {
 
-//        val userFromDB = getUser(userModel.login) ?: throw NotFoundException.withMissingUserCatalog(userModel.login)
         val user = convertUser(catalogId, userModel)
-//        user.id = userFromDB.id
-
-//        updateAcl(user.groups)
-
         userRepo.save(user)
 
     }
-
-    /*private fun updateAcl(groups: MutableSet<Group>) {
-
-        aclService as JdbcMutableAclService
-        
-        groups.forEach { group ->
-            group.permissions?.documents?.forEach {
-                val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
-                val acl: MutableAcl = try {
-                    aclService.readAclById(objIdentity) as MutableAcl
-                } catch (ex: org.springframework.security.acls.model.NotFoundException) {
-                    aclService.createAcl(objIdentity)
-                }
-
-                val sid = GrantedAuthoritySid("GROUP_${group.name}")
-
-                addACEs(acl, it, sid)
-                aclService.updateAcl(acl)
-            }
-        }
-
-
-    }
-
-    private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
-        // write complete new acl entries for this object 
-        // removeEntries(acl)
-        
-        determinePermission(docPermission)
-            .forEach {
-                acl.insertAce(acl.entries.size, it, sid, true)
-            }
-    }
-
-    private fun removeEntries(acl: MutableAcl) {
-        // remove always the first element until empty
-        while(acl.entries.isNotEmpty()) { acl.deleteAce(0) }
-    }
-
-    private fun determinePermission(docPermission: JsonNode): List<Permission> {
-        return when (docPermission.get("permission").asText()) {
-            "writeSubTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
-            "writeDataset" -> listOf(BasePermission.READ, BasePermission.WRITE)
-            else -> listOf(BasePermission.READ)
-        }
-    }*/
-
+    
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
