@@ -417,9 +417,4 @@ export class DocumentPage extends BasePage {
   static checkURL(text: string) {
     cy.url().should('include', text);
   }
-
-  static waitUntilElementIsVisible(css: string) {
-    cy.get(css, { timeout: 20000 }).should('be.visible');
-    cy.wait(100);
-  }
 }

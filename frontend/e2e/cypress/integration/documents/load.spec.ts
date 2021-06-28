@@ -15,7 +15,8 @@ describe('Load documents', () => {
 
   it('should show a dashboard view when no document is selected or in root element', function () {
     DocumentPage.visit();
-    DocumentPage.waitUntilElementIsVisible('ige-form-dashboard');
+    cy.get('ige-form-dashboard', { timeout: 20000 }).should('exist');
+
     cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
