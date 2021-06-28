@@ -101,15 +101,19 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
 
             logger.debug("Returning false - ACLs returned, but insufficient permissions for this principal")
         } catch (nfe: NotFoundException) {
-            // check if WRITE_ONLY_SUBTREE Permission was used
-            if (acl != null && permission == "WRITE"
-                && acl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
-            ) {
-                // check that it's not the root node, where we only have read access
-                if (acl.parentAcl != null) {
-                    logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
-                    return true
+            try {
+                // check if WRITE_ONLY_SUBTREE Permission was used
+                if (acl != null && permission == "WRITE"
+                    && acl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+                ) {
+                    // check that it's not the root node, where we only have read access
+                    if (acl.parentAcl != null) {
+                        logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
+                        return true
+                    }
                 }
+            } catch (nfe: NotFoundException) {
+                logger.debug("WRITE_ONLY_SUBTREE permission also not found")
             }
 
             logger.debug("Returning false - no ACLs apply for this principal")
@@ -117,7 +121,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         return false
     }
 
-    fun resolvePermission(permission: Any): List<Permission?>? {
+    fun resolvePermission(permission: Any): List<Permission?> {
         if (permission is Int) {
             return listOf(permissionFactory.buildFromMask(permission))
         }
