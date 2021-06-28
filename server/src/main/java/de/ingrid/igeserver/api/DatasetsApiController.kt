@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -341,14 +342,21 @@ class DatasetsApiController @Autowired constructor(
         
         val response = path.map { uuid ->
             val title = documentService.getTitleFromDocumentId(uuid)
-            PathResponse(uuid, title)
+            val permission = aclService.getPermissionInfo(principal as Authentication, uuid)
+            PathResponse(uuid, title, permission)
         }
-        
-        return ResponseEntity.ok(response + PathResponse(id, wrapper.draft?.title ?: wrapper.published?.title ?: "???"))
+
+        return ResponseEntity.ok(
+            response + PathResponse(
+                id,
+                wrapper.draft?.title ?: wrapper.published?.title ?: "???",
+                PermissionInfo(true, wrapper.hasWritePermission)
+            )
+        )
 
     }
-    
-    data class PathResponse(val id: String, val title: String)
+
+    data class PathResponse(val id: String, val title: String, val permission: PermissionInfo? = null)
 
     private fun getPathFromWrapper(id: String) = documentService.getWrapperByDocumentId(id).path
 

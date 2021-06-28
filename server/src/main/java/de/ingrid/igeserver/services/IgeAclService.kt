@@ -24,7 +24,12 @@ class IgeAclService @Autowired constructor(
 ) {
 
     fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
+        if (hasAdminRole(authentication)) {
+            return PermissionInfo(true, true)
+        }
+
         return try {
+
             val acl = this.aclService.readAclById(
                 ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
             )
@@ -58,13 +63,18 @@ class IgeAclService @Autowired constructor(
         // first create permission ACL
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
         val acl = (aclService as JdbcMutableAclService).createAcl(objIdentity)
-        
+
         if (parentUuid != null) {
             val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
             val parentAcl = aclService.readAclById(parentObjIdentity)
             acl.setParent(parentAcl)
             (aclService as JdbcMutableAclService).updateAcl(acl)
         }
+    }
+
+    private fun hasAdminRole(authentication: Authentication): Boolean {
+        val roles = authentication.authorities.map { it.authority }
+        return roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
 
 }

@@ -111,38 +111,6 @@ export class DocumentService {
     );
   }
 
-  private updateTreeStoreDocs(
-    isAddress: boolean,
-    parentId: string,
-    docs: DocumentAbstract[]
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-    if (parentId === null) {
-      store.set(docs);
-    } else {
-      store.add(docs);
-    }
-  }
-
-  private mapToDocumentAbstracts(
-    docs: IgeDocument[],
-    parentId?: string
-  ): DocumentAbstract[] {
-    return docs.map((doc) => {
-      return {
-        id: doc._id,
-        icon: this.profileService.getDocumentIcon(doc),
-        title: doc.title || "-Ohne Titel-",
-        _state: doc._state,
-        _hasChildren: doc._hasChildren,
-        _parent: doc._parent,
-        _type: doc._type,
-        _modified: doc._modified,
-        hasWritePermission: doc.hasWritePermission ?? false,
-      };
-    });
-  }
-
   load(
     id: string,
     address?: boolean,
@@ -156,22 +124,6 @@ export class DocumentService {
       }),
       catchError((e: HttpErrorResponse) => this.handleLoadError(e))
     );
-  }
-
-  private handleLoadError(e: HttpErrorResponse) {
-    if (e.status === 404) {
-      const error = new IgeError();
-      error.setMessage("Der Datensatz konnte nicht gefunden werden");
-      this.modalService.showIgeError(error);
-      return of(null);
-    } else {
-      throw e;
-    }
-  }
-
-  private updateTreeStore(doc: IgeDocument, address: boolean) {
-    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
-    return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
   updateOpenedDocumentInTreestore(
@@ -436,15 +388,6 @@ export class DocumentService {
     }
   }
 
-  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-    const openedDocId = store.getValue().openedDocument?.id.toString();
-    const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
-    if (openedDocWasMoved) {
-      this.reload$.next(openedDocId);
-    }
-  }
-
   addExpandedNode(nodeId: string) {
     this.treeStore.update((node) => ({
       expandedNodes: arrayAdd(node.expandedNodes, nodeId),
@@ -467,13 +410,6 @@ export class DocumentService {
     this.treeStore.update(id, {
       _hasChildren: hasChildren,
     });
-  }
-
-  private mapSearchResults(result: ServerSearchResult): SearchResult {
-    return {
-      totalHits: result.totalHits,
-      hits: this.mapToDocumentAbstracts(result.hits, null),
-    } as SearchResult;
   }
 
   createAddressTitle(address: IgeDocument) {
@@ -514,6 +450,101 @@ export class DocumentService {
     );
   }
 
+  public addToRecentAdresses(address: DocumentAbstract) {
+    let addresses = this.sessionQuery.recentAddresses.slice();
+    addresses = addresses.filter((ad) => ad.id !== address.id);
+    addresses.unshift(address);
+
+    // only store 5 most recent addresses
+    if (addresses.length > 5) {
+      addresses = addresses.slice(0, 5);
+    }
+    this.sessionStore.update({ recentAddresses: addresses });
+  }
+
+  updateBreadcrumb(
+    id: string,
+    query: TreeQuery | AddressTreeQuery,
+    isAddress = false
+  ) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    this.getPath(id)
+      .pipe(
+        map((path) => this.preparePath(path)),
+        tap((path) =>
+          store.update({
+            breadcrumb: path,
+          })
+        )
+      )
+      .subscribe();
+  }
+
+  private updateTreeStoreDocs(
+    isAddress: boolean,
+    parentId: string,
+    docs: DocumentAbstract[]
+  ) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    if (parentId === null) {
+      store.set(docs);
+    } else {
+      store.add(docs);
+    }
+  }
+
+  private mapToDocumentAbstracts(
+    docs: IgeDocument[],
+    parentId?: string
+  ): DocumentAbstract[] {
+    return docs.map((doc) => {
+      return {
+        id: doc._id,
+        icon: this.profileService.getDocumentIcon(doc),
+        title: doc.title || "-Ohne Titel-",
+        _state: doc._state,
+        _hasChildren: doc._hasChildren,
+        _parent: doc._parent,
+        _type: doc._type,
+        _modified: doc._modified,
+        hasWritePermission: doc.hasWritePermission ?? false,
+      };
+    });
+  }
+
+  private handleLoadError(e: HttpErrorResponse) {
+    if (e.status === 404) {
+      const error = new IgeError();
+      error.setMessage("Der Datensatz konnte nicht gefunden werden");
+      this.modalService.showIgeError(error);
+      return of(null);
+    } else {
+      throw e;
+    }
+  }
+
+  private updateTreeStore(doc: IgeDocument, address: boolean) {
+    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+    return this.updateOpenedDocumentInTreestore(absDoc, address);
+  }
+
+  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    const openedDocId = store.getValue().openedDocument?.id.toString();
+    const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
+    if (openedDocWasMoved) {
+      this.reload$.next(openedDocId);
+    }
+  }
+
+  private mapSearchResults(result: ServerSearchResult): SearchResult {
+    return {
+      totalHits: result.totalHits,
+      hits: this.mapToDocumentAbstracts(result.hits, null),
+    } as SearchResult;
+  }
+
   private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
@@ -552,18 +583,6 @@ export class DocumentService {
         _hasChildren: true,
       });
     }
-  }
-
-  public addToRecentAdresses(address: DocumentAbstract) {
-    let addresses = this.sessionQuery.recentAddresses.slice();
-    addresses = addresses.filter((ad) => ad.id !== address.id);
-    addresses.unshift(address);
-
-    // only store 5 most recent addresses
-    if (addresses.length > 5) {
-      addresses = addresses.slice(0, 5);
-    }
-    this.sessionStore.update({ recentAddresses: addresses });
   }
 
   @transaction()
@@ -610,37 +629,14 @@ export class DocumentService {
     return of([]);
   }
 
-  updateBreadcrumb(
-    id: string,
-    query: TreeQuery | AddressTreeQuery,
-    isAddress = false
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-
-    this.getPath(id)
-      .pipe(
-        map((path) => this.preparePath(path, query)),
-        tap((path) =>
-          store.update({
-            breadcrumb: path,
-          })
+  private preparePath(result: PathResponse[]) {
+    return result.map(
+      (pathItem) =>
+        new ShortTreeNode(
+          pathItem.id,
+          pathItem.title,
+          !pathItem.permission.canWrite
         )
-      )
-      .subscribe();
-  }
-
-  private preparePath(
-    result: PathResponse[],
-    query: TreeQuery | AddressTreeQuery
-  ) {
-    const path = result.map(
-      (pathItem) => new ShortTreeNode(pathItem.id, pathItem.title)
     );
-
-    path.some((node) => {
-      if (!query.hasEntity(node.id)) node.disabled = true;
-      else return true;
-    });
-    return path;
   }
 }

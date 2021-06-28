@@ -109,8 +109,8 @@ export class CreateFolderPlugin extends Plugin {
       minWidth: 500,
       maxWidth: 600,
       minHeight: 500,
-      // height: 'calc(100vh - 235px)',
-      disableClose: true,
+      disableClose: false,
+      hasBackdrop: true,
       data: {
         parent: parentDocId,
         forAddress: this.forAddress,

@@ -109,7 +109,8 @@ export class CreateDocumentPlugin extends Plugin {
       minWidth: 500,
       maxWidth: 600,
       minHeight: 500,
-      disableClose: true,
+      disableClose: false,
+      hasBackdrop: true,
       data: {
         parent: parentDocId,
         forAddress: this.forAddress,

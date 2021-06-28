@@ -93,6 +93,9 @@
                     [disableRoot]="!isAdmin"
                     (select)="quickBreadcrumbChange($event)"
                 ></ige-breadcrumb>
+                <div *ngIf="!pathWithWritePermission" class="error-box">
+                    Sie haben keine Schreibrechte auf den Zielordner
+                </div>
             </div>
         </mat-tab>
 
@@ -106,8 +109,6 @@
         </mat-tab>
     </mat-tab-group>
 </mat-dialog-content>
-
-<div style="flex: 1"></div>
 
 <mat-dialog-actions>
     <button
@@ -141,7 +142,7 @@
         color="primary"
         class="btn-create"
         data-cy="create-action"
-        [disabled]="formGroup.invalid"
+        [disabled]="formGroup.invalid || !pathWithWritePermission"
         (click)="handleCreate()"
     >
         Anlegen
@@ -152,6 +153,7 @@
         mat-stroked-button
         color="primary"
         data-cy="create-applyLocation"
+        [disabled]="!isAdmin && !selectedLocation"
         (click)="applyLocation()"
     >
         Übernehmen

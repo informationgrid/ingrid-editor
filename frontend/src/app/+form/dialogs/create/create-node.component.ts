@@ -44,17 +44,9 @@ export interface CreateOptions {
   styleUrls: ["./create-node.component.scss"],
 })
 export class CreateNodeComponent implements OnInit {
-  @ViewChild("title")
-  set input(element: ElementRef) {
-    if (element) {
-      setTimeout(() => element.nativeElement.focus());
-    }
-  }
-
   title = "Neuen Ordner anlegen";
   parent: string = null;
   forAddress: boolean;
-  path: ShortTreeNode[] = [];
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
@@ -66,8 +58,9 @@ export class CreateNodeComponent implements OnInit {
   );
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.isAdmin();
+  selectedLocation: string;
+  pathWithWritePermission = false;
   private query: TreeQuery | AddressTreeQuery;
-  private selectedLocation: string;
 
   constructor(
     private config: ConfigService,
@@ -91,6 +84,24 @@ export class CreateNodeComponent implements OnInit {
       this.title = this.forAddress
         ? "Neue Adresse anlegen"
         : "Neuen Datensatz anlegen";
+    }
+  }
+
+  private _path: ShortTreeNode[] = [];
+
+  get path() {
+    return this._path;
+  }
+
+  set path(value: ShortTreeNode[]) {
+    this._path = value;
+    this.pathWithWritePermission = !value[value.length - 1].disabled;
+  }
+
+  @ViewChild("title")
+  set input(element: ElementRef) {
+    if (element) {
+      setTimeout(() => element.nativeElement.focus());
     }
   }
 
@@ -150,7 +161,7 @@ export class CreateNodeComponent implements OnInit {
 
   jumpToTree(id: string) {
     this.selectedPage = 1;
-    if (id !== null) {
+    if (id !== null && !this.pathWithWritePermission) {
       this.jumpedTreeNodeId = id;
     }
   }
@@ -277,7 +288,7 @@ export class CreateNodeComponent implements OnInit {
   private convertPathResponses(result: PathResponse[]) {
     return result.map(
       (path) =>
-        new ShortTreeNode(path.id, path.title, !this.query.hasEntity(path.id))
+        new ShortTreeNode(path.id, path.title, !path.permission.canWrite)
     );
   }
 }

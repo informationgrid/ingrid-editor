@@ -20,19 +20,20 @@ import {
   templateUrl: "./destination-selection.component.html",
   styleUrls: ["./destination-selection.component.scss"],
 })
-export class DestinationSelectionComponent implements OnInit, OnChanges {
+export class DestinationSelectionComponent implements OnInit {
   @Input() forAddress: boolean;
-  @Input() initialSelectedId: string;
   @Input() disableRoot = false;
-
   @Output() choice = new EventEmitter<string>();
-
   parent: string = null;
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new BehaviorSubject<string>(null);
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
 
   constructor() {}
+
+  @Input() set initialSelectedId(value: string) {
+    if (value !== null) this.activeTreeNode.next(value);
+  }
 
   ngOnInit(): void {
     if (this.forAddress) {
@@ -49,7 +50,7 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
   }
 
   updateParent(node: string[], source: "Tree" | "List") {
-    this.parent = node[0];
+    this.parent = node[0] ?? null;
 
     if (source === "List") {
       this.activeTreeNode.next(null);
@@ -62,11 +63,5 @@ export class DestinationSelectionComponent implements OnInit, OnChanges {
 
   getRootNode() {
     return of([this.rootNode]);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.initialSelectedId) {
-      this.activeTreeNode.next(changes.initialSelectedId.currentValue);
-    }
   }
 }
