@@ -81,7 +81,8 @@ export class LeafletTypeComponent
       this.leafletReference.on("dragend", () => (this.mapHasMoved = true));
 
       this.locations = this.formFieldControl.value || [];
-      this.updateBoundingBox();
+      // delay update to prevent template error because of 'hasAnyLocations' update
+      setTimeout(() => this.updateBoundingBox());
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);

@@ -165,7 +165,7 @@ export class CopyCutPastePlugin extends Plugin {
             includeTree
               ? this.getSelectedDatasetsWithoutChildren()
               : this.getSelectedDatasets(),
-            result.selection.parent,
+            result.selection,
             includeTree,
             this.forAddress
           )
@@ -181,7 +181,7 @@ export class CopyCutPastePlugin extends Plugin {
         switchMap((result) =>
           this.documentService.move(
             this.getSelectedDatasetsWithoutChildren(),
-            result.selection.parent,
+            result.selection,
             this.forAddress
           )
         )
