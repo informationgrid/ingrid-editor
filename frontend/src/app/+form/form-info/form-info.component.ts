@@ -136,12 +136,14 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     fromEvent(element, "scroll")
       .pipe(
         untilDestroyed(this),
-        debounceTime(300), // do not handle all events
-        map(() => element.scrollTop),
-        map((top): boolean => this.determineToggleState(top)),
+        debounceTime(10), // do not handle all events
+        map((top): boolean => this.determineToggleState(element.scrollTop)),
+        map((show) => this.toggleStickyHeader(show)),
+        debounceTime(300), // update store less frequently
+        tap((top) => this.updateScrollPositionInStore(element.scrollTop)),
         distinctUntilChanged()
       )
-      .subscribe((show) => this.toggleStickyHeader(show));
+      .subscribe();
   }
 
   private toggleStickyHeader(show: boolean) {
@@ -156,8 +158,6 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     if (!this.showScrollHeader) {
       this.initialHeaderOffset = this.stickyHeader.nativeElement.offsetTop - 56;
     }
-
-    this.updateScrollPositionInStore(top);
 
     return top > this.initialHeaderOffset;
   }
