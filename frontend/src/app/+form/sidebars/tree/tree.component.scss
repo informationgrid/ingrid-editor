@@ -187,7 +187,6 @@ mat-tree-node {
 
   &.disabled {
     color: $ige-hint-color;
-    font-style: italic;
   }
 
   &:not(.rootNode) {
@@ -246,7 +245,7 @@ mat-tree-node {
   z-index: 1000;
 }
 
+// TODO: use class disabled instead?
 .readonly {
   color: $ige-comment-color;
-  font-style: italic;
 }
