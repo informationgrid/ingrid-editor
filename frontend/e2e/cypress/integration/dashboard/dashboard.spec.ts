@@ -21,7 +21,6 @@ describe('Dashboard', () => {
   it('make sure number of published and draft documents in chart is present and greater than 0', function () {
     cy.get('.box.working .count').countShouldBeGreaterThan(0);
     cy.get('.box .count').countShouldBeGreaterThan(0);
-
   });
 
   it('should load a document from dashboard from latest docs box', () => {
@@ -50,7 +49,7 @@ describe('Dashboard', () => {
 
   describe('Action Buttons', () => {
     it('should create a new folder', () => {
-      cy.get('.shortcut').contains('Neuer Ordner').click();
+      cy.get('.shortcut', { timeout: 10000 }).contains('Neuer Ordner').click();
 
       const folderName = 'Test Ordner aus dashboard button' + Utils.randomString();
       cy.get('[data-cy=create-title]').type(folderName);
@@ -60,7 +59,7 @@ describe('Dashboard', () => {
     });
 
     it('should create a new document', () => {
-      cy.get('.shortcut').contains('Neuer Datensatz').click();
+      cy.get('.shortcut', { timeout: 10000 }).contains('Neuer Datensatz').click();
 
       const dataName = 'Test Datensatz aus dashboard button' + Utils.randomString();
       cy.get('[data-cy=create-title]').type(dataName);

@@ -18,7 +18,7 @@ export class DashboardPage {
   }
 
   static search(query: string) {
-    return cy.get('ige-quick-search input').type(query).wait(300);
+    return cy.get('ige-quick-search input', { timeout: 10000 }).type(query).wait(300);
   }
 
   static clearSearch() {
