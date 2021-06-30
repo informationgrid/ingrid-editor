@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
-import { Observable, Subject } from "rxjs";
+import { Observable } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
@@ -11,9 +11,8 @@ import {
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
-import { debounceTime, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { dirtyCheck } from "@ngneat/dirty-check-forms";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -27,9 +26,6 @@ import { MatDialog } from "@angular/material/dialog";
   styleUrls: ["../user.styles.scss"],
 })
 export class GroupComponent implements OnInit {
-  isDirty$: Observable<boolean>;
-  state$ = new Subject<any>();
-
   groups: Group[] = [];
   searchQuery: string;
 
@@ -65,10 +61,6 @@ export class GroupComponent implements OnInit {
       description: [],
       permissions: [],
     });
-
-    this.isDirty$ = dirtyCheck(this.form, this.state$, { debounce: 100 })
-      // add debounceTime with same as in dirtyCheck to prevent save button flicker
-      .pipe(debounceTime(100));
   }
 
   fetchGroups(): Observable<Group[]> {
@@ -83,10 +75,6 @@ export class GroupComponent implements OnInit {
   addGroup() {
     this.isNewGroup = true;
     this.form.setValue(this.initialValue);
-    // make sure change detection works after setting state first time
-    setTimeout(() =>
-      this.state$.next(JSON.parse(JSON.stringify(this.initialValue)))
-    );
   }
 
   loadGroup(id: string) {
@@ -99,9 +87,6 @@ export class GroupComponent implements OnInit {
       }
       this.form.reset(fetchedGroup);
       this.form.enable();
-      // we need to make a general object of the group in order to compare
-      // its state with the form value correctly
-      this.state$.next(JSON.parse(JSON.stringify(fetchedGroup)));
       this.isLoading = false;
     });
   }
@@ -122,7 +107,6 @@ export class GroupComponent implements OnInit {
         this.isNewGroup = false;
         this.fetchGroups()
           .pipe(tap(() => this.form.markAsPristine()))
-          .pipe(tap(() => this.state$.next(group)))
           .subscribe();
       },
       (err: any) => {

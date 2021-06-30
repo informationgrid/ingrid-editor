@@ -12,6 +12,7 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { DocumentService } from "../../../services/document/document.service";
 import { map } from "rxjs/operators";
+import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
 
 @Component({
   selector: "permission-table",
@@ -37,10 +38,10 @@ export class PermissionTableComponent implements ControlValueAccessor {
   val = [];
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
+  breadcrumb: { [x: string]: ShortTreeNode[] } = {};
 
   constructor(
     private dialog: MatDialog,
-    private database: DynamicDatabase,
     private documentService: DocumentService
   ) {}
 
@@ -100,10 +101,13 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   set value(val) {
-    // TODO: fetch titles from tree nodes
     this.val = val ?? [];
     this.val.forEach((doc) => {
-      if (!doc.path) this.getPath(doc.uuid).then((path) => (doc.path = path));
+      if (!this.breadcrumb[doc.uuid]) {
+        this.documentService
+          .getPath(doc.uuid)
+          .subscribe((path) => (this.breadcrumb[doc.uuid] = path.slice(0, -1)));
+      }
       if (doc.isFolder === undefined)
         this.isFolder(doc.uuid).then((isFolder) => (doc.isFolder = isFolder));
     });
@@ -113,10 +117,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (this.onTouch) {
       this.onTouch(val);
     }
-  }
-
-  getPath(uuid: string): Promise<string> {
-    return this.database.getPath(uuid).then((path) => path.join(" > "));
   }
 
   isFolder(uuid: string): Promise<boolean> {
@@ -134,5 +134,10 @@ export class PermissionTableComponent implements ControlValueAccessor {
     } else {
       return "Fachaufgabe";
     }
+  }
+
+  updatePermission(element, level: PermissionLevel) {
+    element.permission = level;
+    this.onChange(this.val);
   }
 }

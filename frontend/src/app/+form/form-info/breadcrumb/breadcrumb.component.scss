@@ -7,6 +7,14 @@
   color: $ige-secondary;
   line-height: 17px;
 
+  &.no-padding {
+    padding: 0;
+  }
+
+  &.disabled {
+    color: $ige-comment-color;
+  }
+
   .emphasize {
     font-size: 16px;
     font-weight: 500;

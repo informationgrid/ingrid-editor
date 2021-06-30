@@ -831,6 +831,9 @@ mat-icon.wide-icon-26px {
     background-color: #ffffff;
   }
 }
+.mat-table.dark .mat-row:hover {
+  background-color: darken($ige-background, 5%);
+}
 
 /* LABEL */
 .label {

@@ -20,7 +20,7 @@
                             matTooltip="Speichern"
                             [matTooltipShowDelay]="1000"
                             (click)="saveGroup()"
-                            [disabled]="form.invalid || !(isDirty$ | async)"
+                            [disabled]="form.invalid || !form.dirty"
                         >
                             Speichern
                         </button>
