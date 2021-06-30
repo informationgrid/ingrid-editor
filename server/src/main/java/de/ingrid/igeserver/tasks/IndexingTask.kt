@@ -5,6 +5,7 @@ import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
+import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -61,60 +62,59 @@ class IndexingTask @Autowired constructor(
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
-        categories.forEach { category ->
+        categories.forEach categoryLoop@ { category ->
             // needed information:
             //   database/catalog
             //   indexingMethod: ibus or elasticsearch direct
             //   indexName
+            val categoryAlias = "${elasticsearchAlias}_${category.value}"
 
+            // TODO: support profile specific configuration which documents to be published
+            val exporter = try {
+                indexService.getExporter(category, format)
+            } catch (ex: ConfigurationException) {
+                log.warn("No exporter defined for '${format}' and category '${category.value}'")
+                return@categoryLoop
+            }
+            
             // pre phase
-            val info = indexPrePhase(elasticsearchAlias, catalog.type, format)
+            val info = indexPrePhase(categoryAlias, catalog.type, format)
 
-            // iterate over all documents
             // TODO: dynamically get target to send exported documents
 
             // TODO: configure index name
             val indexInfo = IndexInfo()
             indexInfo.realIndexName = info.second
             indexInfo.toType = "base"
-            indexInfo.toAlias = elasticsearchAlias
+            indexInfo.toAlias = categoryAlias
             indexInfo.docIdField = "uuid"
 
-            // TODO: support profile specific configuration which documents to be published
-            val exporter = indexService.getExporter(category, format)
 
-            // TODO: use paging to get all documents
-            val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format)
-            if (category == DocumentCategory.DATA) {
-                message.numDocuments = docsToPublish.totalElements.toInt()
-            } else {
-                message.numAddresses = docsToPublish.totalElements.toInt()
-            }
+            var page = -1
+            do {
+                page++
+                val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
+                if (category == DocumentCategory.DATA) {
+                    message.numDocuments = docsToPublish.totalElements.toInt()
+                } else {
+                    message.numAddresses = docsToPublish.totalElements.toInt()
+                }
 
-            docsToPublish.content
-                .onEachIndexed { index, _ ->
-                    log.info("start $index")
-                    // TODO: remove dummy wait
-                    Thread.sleep(1000)
-                    if (category == DocumentCategory.DATA) {
-                        notify.sendMessage(message.apply { this.progressDocuments = index + 1 })
-                    } else {
-                        notify.sendMessage(message.apply { this.progressAddresses = index + 1 })
+                docsToPublish.content
+                    .onEachIndexed { index, _ -> sendNotification(category, message, index + (page * 10)) }
+                    .map {
+                        log.debug("export ${it.uuid}")
+                        exporter.run(it)
                     }
-                }
-                .map {
-                    log.info("export")
-                    exporter.run(it)
-                }
-                .onEach {
-                    log.info("write to Elasticsearch")
-                    indexManager.update(indexInfo, convertToElasticDocument(it), false)
-                }
+                    .onEach {
+                        indexManager.update(indexInfo, convertToElasticDocument(it), false)
+                    }
+            } while (!docsToPublish.isLast)
 
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
             // post phase
-            indexPostPhase(elasticsearchAlias, info.first, info.second)
+            indexPostPhase(categoryAlias, info.first, info.second)
 
         }
 
@@ -131,6 +131,18 @@ class IndexingTask @Autowired constructor(
             catalog.settings?.lastLogSummary = message
         }
         catalogRepo.save(catalog)
+    }
+
+    private fun sendNotification(
+        category: DocumentCategory,
+        message: IndexMessage,
+        index: Int
+    ) {
+        if (category == DocumentCategory.DATA) {
+            notify.sendMessage(message.apply { this.progressDocuments = index + 1 })
+        } else {
+            notify.sendMessage(message.apply { this.progressAddresses = index + 1 })
+        }
     }
 
     /**
@@ -152,10 +164,15 @@ class IndexingTask @Autowired constructor(
 
     private fun indexPrePhase(alias: String, catalogType: String, format: String): Pair<String, String> {
         val catalogProfile = catalogService.getCatalogProfile(catalogType)
-        
+
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, uuid)
         val newIndex = IndexManager.getNextIndexName(alias, uuid, "ige-ng-test")
-        indexManager.createIndex(newIndex, "base", catalogProfile.getElasticsearchMapping(format), catalogProfile.getElasticsearchSetting(format))
+        indexManager.createIndex(
+            newIndex,
+            "base",
+            catalogProfile.getElasticsearchMapping(format),
+            catalogProfile.getElasticsearchSetting(format)
+        )
         return Pair(oldIndex, newIndex)
     }
 

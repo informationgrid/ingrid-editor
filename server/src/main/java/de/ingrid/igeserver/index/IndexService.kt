@@ -14,6 +14,7 @@ import de.ingrid.igeserver.services.FIELD_PUBLISHED
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 
 @Service
@@ -48,9 +49,9 @@ class IndexService @Autowired constructor(
             .first()
     }
 
-    fun getPublishedDocuments(catalogId: String, category: String, format: String): Page<Document> {
-        // TODO: Request all results or use paging
-        val docsToIndex = documentService.find(catalogId, category, INDEX_PUBLISHED_DOCUMENTS(format).dbFilter)
+    fun getPublishedDocuments(catalogId: String, category: String, format: String, currentPage: Int = 0): Page<Document> {
+        val page = PageRequest.of(currentPage, 10)
+        val docsToIndex = documentService.find(catalogId, category, INDEX_PUBLISHED_DOCUMENTS(format).dbFilter, page)
             .map { documentService.getLatestDocument(it, true) }
 
         return if (docsToIndex.isEmpty) {

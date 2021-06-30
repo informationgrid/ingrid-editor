@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
-@Service
-@Profile("mcloud")
+/**
+ * ATTENTION: Addresses are not exported. This class can be removed
+ */
+//@Service
+//@Profile("mcloud")
 class PortalExporterAddress : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
