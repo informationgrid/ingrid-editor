@@ -30,7 +30,7 @@ import {
   animations: [
     trigger("fadeInOut", [
       state("in", style({ opacity: 100 })),
-      transition("* => void", [animate(300, style({ opacity: 0 }))],
+      transition("* => void", [animate(300, style({ opacity: 0 }))]),
     ]),
   ],
 })
@@ -64,8 +64,7 @@ export class UploadComponent implements OnInit {
   constructor(
     private uploadService: UploadService,
     private modalService: ModalService
-  ) {
-  }
+  ) {}
 
   /** Allow you to add handler after its completion. Bubble up response text from remote. */
 
@@ -74,8 +73,7 @@ export class UploadComponent implements OnInit {
     this.analyzeFiles();
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onClick() {
     const fileUpload = this.htmlFileUpload.nativeElement;
@@ -88,7 +86,7 @@ export class UploadComponent implements OnInit {
           inProgress: false,
           progress: 0,
           canRetry: false,
-          canCancel: tru,
+          canCancel: true,
         });
       }
       this.analyzeFiles();
@@ -141,7 +139,7 @@ export class UploadComponent implements OnInit {
       .subscribe((event: any) => {
         this.analyzed.emit({
           file: file,
-          analysis: event.body
+          analysis: event.body,
         });
       });
   }

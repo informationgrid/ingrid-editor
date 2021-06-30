@@ -272,8 +272,10 @@ export class DocumentService {
     );
   }
 
-  getPath(id: string): Observable<PathResponse[]> {
-    return this.dataService.getPath(id);
+  getPath(id: string): Observable<ShortTreeNode[]> {
+    return this.dataService
+      .getPath(id)
+      .pipe(map((path) => this.preparePath(path)));
   }
 
   /**
@@ -471,7 +473,6 @@ export class DocumentService {
 
     this.getPath(id)
       .pipe(
-        map((path) => this.preparePath(path)),
         tap((path) =>
           store.update({
             breadcrumb: path,

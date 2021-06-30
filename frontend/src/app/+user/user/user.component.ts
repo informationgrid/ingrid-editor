@@ -2,17 +2,14 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 import {
   AfterContentChecked,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   OnInit,
-  ViewChild,
 } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, Subject } from "rxjs";
+import { Observable, of } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
@@ -22,10 +19,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { debounceTime, map, tap } from "rxjs/operators";
-import { dirtyCheck } from "@ngneat/dirty-check-forms";
-import { log } from "util";
-import { Subscription } from "rxjs/Subscription";
+import { map, tap } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -34,18 +28,13 @@ import { Subscription } from "rxjs/Subscription";
   styleUrls: ["../user.styles.scss"],
 })
 export class UserComponent implements OnInit, AfterContentChecked {
-  isDirty$: Observable<boolean>;
-  state$ = new Subject<any>();
-
   users: User[];
   admins: User[];
   ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "ige-super-admin"];
   currentTab: string;
-  @ViewChild("form", { static: true }) form = new FormGroup({});
+  form = new FormGroup({});
 
   isNewUser = false;
-  private isNewExternalUser = false;
-
   roles = this.userService.availableRoles;
   groups = this.groupService.getGroups();
   selectedUserForm = new FormControl();
@@ -55,6 +44,7 @@ export class UserComponent implements OnInit, AfterContentChecked {
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
   model: User;
+  private isNewExternalUser = false;
 
   constructor(
     private modalService: ModalService,
@@ -77,21 +67,6 @@ export class UserComponent implements OnInit, AfterContentChecked {
     this.currentTab = "users";
 
     this.fetchUsers();
-
-    this.form = this.fb.group({
-      // login: this.fb.control(
-      //   { value: "", disabled: true },
-      //   Validators.required
-      // ),
-      // role: this.fb.control({ value: "", disabled: true }, Validators.required),
-      // firstName: ["", Validators.required],
-      // lastName: ["", Validators.required],
-      // email: ["", [Validators.required, Validators.email]],
-    });
-
-    this.isDirty$ = dirtyCheck(this.form, this.state$, { debounce: 100 })
-      // add debounceTime with same as in dirtyCheck to prevent save button flicker
-      .pipe(debounceTime(100));
   }
 
   fetchUsers() {
@@ -119,29 +94,18 @@ export class UserComponent implements OnInit, AfterContentChecked {
   }
 
   loadUser(login: string) {
-    this.isLoading = true;
-    this.isNewUser = false;
-    this.form.disable();
-    this.userService.getUser(login).subscribe((user) => {
-      this.selectedUser = user;
-      this.model = user;
-      this.updateUserForm(user);
+    this.dirtyFormHandled().subscribe((confirmed) => {
+      if (confirmed) {
+        this.isLoading = true;
+        this.isNewUser = false;
+        this.form.disable();
+        this.userService.getUser(login).subscribe((user) => {
+          this.selectedUser = user;
+          this.model = user;
+          this.updateUserForm(user);
+        });
+      }
     });
-  }
-
-  private updateUserForm(user: FrontendUser) {
-    const mergedUser = Object.assign(
-      {
-        email: "",
-        groups: [],
-        role: "Keiner Rolle zugeordnet",
-      },
-      user
-    );
-    this.enableForm();
-    this.form.reset(mergedUser);
-    this.state$.next(mergedUser);
-    this.isLoading = false;
   }
 
   showAddUsersDialog(importExternal: boolean) {
@@ -156,17 +120,6 @@ export class UserComponent implements OnInit, AfterContentChecked {
           this.addUser(result);
         }
       });
-  }
-
-  private addUser(initial: any) {
-    this.isLoading = true;
-    const newUser: User = initial.user ?? {};
-    if (initial.userLogin) newUser.login = initial.userLogin;
-    newUser.role = initial.role ?? "";
-    this.isNewUser = true;
-    this.form.reset(newUser);
-    this.state$.next(newUser);
-    this.saveUser(newUser);
   }
 
   deleteUser(login: string) {
@@ -253,5 +206,54 @@ export class UserComponent implements OnInit, AfterContentChecked {
     this.form.enable();
     this.form.get("login")?.disable();
     this.form.get("role")?.disable();
+  }
+
+  private updateUserForm(user: FrontendUser) {
+    const mergedUser = {
+      ...{
+        email: "",
+        groups: [],
+        role: "Keiner Rolle zugeordnet",
+        ...user,
+      },
+    };
+    this.enableForm();
+    this.form.reset(mergedUser);
+    this.isLoading = false;
+  }
+
+  private addUser(initial: any) {
+    this.isLoading = true;
+    const newUser: User = initial.user ?? {};
+    if (initial.userLogin) newUser.login = initial.userLogin;
+    newUser.role = initial.role ?? "";
+    this.isNewUser = true;
+    this.form.reset(newUser);
+    this.saveUser(newUser);
+  }
+
+  private dirtyFormHandled(): Observable<boolean> {
+    if (this.form.dirty) {
+      return this.dialog
+        .open(ConfirmDialogComponent, {
+          data: (<ConfirmDialogData>{
+            title: "Änderungen verwerfen?",
+            message: "Wollen Sie die Änderungen verwerfen?",
+            buttons: [
+              { text: "Abbrechen" },
+              {
+                text: "Verwerfen",
+                id: "discard",
+                alignRight: true,
+                emphasize: true,
+              },
+            ],
+          }) as ConfirmDialogData,
+        })
+        .afterClosed()
+        .pipe(map((response) => response === "discard"));
+    }
+
+    return of(true);
   }
 }

@@ -30,7 +30,6 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { ProfileAbstract } from "../../../store/profile/profile.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
-import { PathResponse } from "../../../models/path-response";
 
 export interface CreateOptions {
   parent: string;
@@ -152,7 +151,7 @@ export class CreateNodeComponent implements OnInit {
     } else {
       this.documentService
         .getPath(this.parent)
-        .pipe(tap((result) => (this.path = this.convertPathResponses(result))))
+        .pipe(tap((result) => (this.path = result)))
         .subscribe();
     }
 
@@ -283,12 +282,5 @@ export class CreateNodeComponent implements OnInit {
 
     const page = this.forAddress ? "/address" : "/form";
     this.router.navigate([page, { id: id }]);
-  }
-
-  private convertPathResponses(result: PathResponse[]) {
-    return result.map(
-      (path) =>
-        new ShortTreeNode(path.id, path.title, !path.permission.canWrite)
-    );
   }
 }

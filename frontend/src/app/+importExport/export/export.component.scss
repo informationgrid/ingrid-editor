@@ -1,15 +1,13 @@
+@import "src/variables";
+
 .badge {
   padding-left: 15px;
   padding-right: 15px;
   font-size: 30px;
 }
 
-.wizard-title {
-  vertical-align: super;
-}
-
-.wizard-footer {
-  margin-top: 20px;
+form {
+  background-color: $ige-background;
 }
 
 ige-tree {

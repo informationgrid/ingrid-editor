@@ -72,7 +72,7 @@ export class ImportExportService {
 
   export(options: ExportOptions): Observable<Blob> {
     return this.http.post(this.configuration.backendUrl + "export", options, {
-      responseType: "blob,
+      responseType: "blob",
     });
   }
 

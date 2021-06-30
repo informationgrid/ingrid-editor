@@ -4,21 +4,15 @@
     [animationDuration]="'0ms'"
     (selectedIndexChange)="currentTab = $event"
     [selectedIndex]="currentTab"
-    scoll
 >
     <mat-tab label="Nutzer">
-        <ige-user-manager></ige-user-manager>
+        <ige-user-manager #user></ige-user-manager>
     </mat-tab>
 
     <mat-tab label="Gruppen">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
-            <ige-group-manager></ige-group-manager>
+            <ige-group-manager #group></ige-group-manager>
         </ng-template>
     </mat-tab>
 </mat-tab-group>
-
-<!--<div style="position:absolute; right: 0; top: 6px; z-index: 1000">
-    <button mat-button (click)="remove()" [disabled]="!canDelete()">Löschen</button>
-    <button mat-button color="primary" (click)="save()" [disabled]="!canSave">Speichern</button>
-</div>-->

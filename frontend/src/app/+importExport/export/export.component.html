@@ -1,63 +1,106 @@
-<mat-horizontal-stepper [linear]="true" labelPosition="bottom">
-    <mat-step [completed]="datasetSelected">
-        <ng-template matStepLabel>Datensatz auswählen</ng-template>
-        <ige-tree (selected)="selectDatasets($event)"></ige-tree>
-        <div class="wizard-footer">
-            <button mat-button matStepperNext [disabled]="!datasetSelected">
-                Weiter
-            </button>
-        </div>
-    </mat-step>
-    <mat-step [stepControl]="secondFormGroup">
-        <form [formGroup]="secondFormGroup">
-            <ng-template matStepLabel>Optionen</ng-template>
-            <mat-radio-group
-                formControlName="tree"
-                fxLayout="column"
-                fxLayoutGap="10px"
-                disabled
-            >
-                <mat-radio-button name="exportOption" value="dataset" checked
-                    >nur diesen Datensatz</mat-radio-button
-                >
-                <mat-radio-button name="exportOption" value="sub"
-                    >alle untergeordneten</mat-radio-button
-                >
-                <mat-radio-button name="exportOption" value="thisAndSub"
-                    >dieser und alle untergeordneten</mat-radio-button
-                >
-            </mat-radio-group>
+<page-template label="Export">
+    <div left-side>Hier können Sie ein oder mehrere Dateien exportieren.</div>
 
-            <mat-checkbox
-                formControlName="drafts"
-                style="margin-top: 12px; display: block"
-            >
-                Auch Entwürfe exportieren
-            </mat-checkbox>
-            <div class="wizard-footer">
-                <button mat-button matStepperPrevious>Zurück</button>
-                <button mat-button matStepperNext>Weiter</button>
-            </div>
-        </form>
-    </mat-step>
-    <mat-step [stepControl]="secondFormGroup">
-        <ng-template matStepLabel>Exportieren</ng-template>
+    <section main-content fxFlex>
+        <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
+            <mat-step [completed]="datasetSelected">
+                <ng-template matStepLabel>Datensatz wählen</ng-template>
+                <ige-tree (selected)="selectDatasets($event)"></ige-tree>
 
-        <mat-form-field style="width: 300px; padding-top: 10px">
-            <mat-label>Format</mat-label>
-            <mat-select [(ngModel)]="formatSelection">
-                <mat-option
-                    *ngFor="let format of exportFormats | async"
-                    [value]="format"
-                >
-                    {{ format.name }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <div class="wizard-footer">
-            <button mat-button (click)="runExport()">Export starten</button>
-        </div>
-    </mat-step>
-</mat-horizontal-stepper>
+                <mat-divider></mat-divider>
+
+                <div class="action-bar" fxLayoutAlign="end">
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        matStepperNext
+                        [disabled]="!datasetSelected"
+                    >
+                        Weiter
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step [stepControl]="optionsFormGroup">
+                <form [formGroup]="optionsFormGroup">
+                    <ng-template matStepLabel>Optionen wählen</ng-template>
+
+                    <div class="label">Ort</div>
+                    <ige-breadcrumb [path]="path"></ige-breadcrumb>
+
+                    <div class="label space">Export</div>
+
+                    <mat-radio-group
+                        class="radio-vertical"
+                        formControlName="option"
+                    >
+                        <mat-radio-button
+                            name="exportOption"
+                            value="dataset"
+                            checked
+                            >nur diesen Datensatz
+                        </mat-radio-button>
+                        <mat-radio-button name="exportOption" value="sub"
+                            >alle untergeordneten
+                        </mat-radio-button>
+                        <mat-radio-button name="exportOption" value="thisAndSub"
+                            >dieser und alle untergeordneten
+                        </mat-radio-button>
+                    </mat-radio-group>
+
+                    <div class="label space">Datensätze</div>
+                    <mat-checkbox
+                        formControlName="drafts"
+                        style="margin-top: 12px; display: block"
+                    >
+                        Auch Entwürfe exportieren
+                    </mat-checkbox>
+
+                    <div class="label space">Format</div>
+                    <mat-form-field appearance="outline" style="width: 300px">
+                        <mat-label>Format</mat-label>
+                        <mat-select formControlName="format">
+                            <mat-option
+                                *ngFor="let format of exportFormats | async"
+                                [value]="format"
+                            >
+                                {{ format.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
+                <div>
+                    <button mat-button (click)="cancel()">Abbrechen</button>
+                    <div fxFlex></div>
+                    <button mat-button matStepperPrevious>Zurück</button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        matStepperNext
+                        [disabled]="optionsFormGroup.invalid"
+                    >
+                        Weiter
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Vorschau</ng-template>
+
+                <div>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        matStepperNext
+                        (click)="runExport()"
+                    >
+                        Export starten
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Fertig</ng-template>
+            </mat-step>
+        </mat-horizontal-stepper>
+    </section>
+</page-template>
 
 <pre *ngIf="exportResult">{{ exportResult }}</pre>

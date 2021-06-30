@@ -832,7 +832,26 @@ mat-icon.wide-icon-26px {
   }
 }
 
+/* LABEL */
+.label {
+  font-size: 16px;
+  font-weight: 500;
+
+  &.space {
+    padding-top: 24px;
+  }
+}
+
 /* RADIO */
+.radio-vertical {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+
+  mat-radio-button {
+    margin: 5px 0;
+  }
+}
 
 /* Stepper */
 /*.full-height {
