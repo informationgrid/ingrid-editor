@@ -91,5 +91,66 @@ describe('Search', function () {
     cy.get('.mat-row').should('have.length.at.least', 5);
   });
 
-  xit('should switch to research page and filter by all documents/addresses', () => {});
-});
+
+  it('should switch to research page and filter by all documents', () => {
+    //make sure test waits for query results
+    cy.intercept('**/api/search/query').as('query');
+
+    let sum = 0;
+    //go to Dashboard, do empty search and thus retrieve sum of all documents
+    DashboardPage.visit();
+    cy.get('.btn-search > .mat-button-wrapper').click();
+    cy.wait('@query');
+    cy.get('.result').contains('Ergebnisse gefunden').then(($node) => {
+      // extract number from string
+      sum = parseInt($node.text().split(" ")[0]);  // sum of all results, be it documents or addresses
+
+    // go back to Dashboard to start non-empty search
+    DashboardPage.visit();
+    DashboardPage.search('api');
+    cy.wait(500);
+
+    cy.get('a').contains(" Alle ").eq(0).click();  // start by filtering "Daten"
+    cy.wait('@query');
+    cy.get('.result').contains('Ergebnisse gefunden').then((node) => {
+    // extract number from string
+    let filtered_res = parseInt(node.text().split(" ")[0]);
+
+    cy.wrap(filtered_res).should('be.lessThan', sum).and('be.gt', 0);
+    })
+  })
+  });
+
+
+  it('should switch to research page and filter by all addresses', () => {
+    //make sure test waits for query results
+    cy.intercept('**/api/search/query').as('query');
+
+    let sum = 0;
+    //go to Dashboard, do empty search and thus retrieve sum of all addresses
+    DashboardPage.visit();
+    cy.get('.btn-search > .mat-button-wrapper').click();
+    cy.wait('@query');
+    //find display of elements
+    cy.get('.result').contains('Ergebnisse gefunden').then(($node) => {
+      // extract number from string
+      sum = parseInt($node.text().split(" ")[0]);  // sum of all results
+
+      // go back to Dashboard to start non-empty search
+      DashboardPage.visit();
+      DashboardPage.search('a');
+      cy.wait(500);
+
+      cy.contains("div.show-all-link:nth-child(16) a", "Alle").click();
+      cy.wait('@query');
+      cy.get('.result').contains('Ergebnisse gefunden').then((node) => {
+        // extract number from string
+        let filtered_res = parseInt(node.text().split(" ")[0]);
+
+        cy.wrap(filtered_res).should('be.lessThan', sum).and('be.gt', 0);
+      })
+    })
+    })
+
+})
+
