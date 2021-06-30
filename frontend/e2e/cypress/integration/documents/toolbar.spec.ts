@@ -9,7 +9,7 @@ describe('Toolbar behavior', () => {
   });
 
   afterEach(() => {
-    cy.kcLogout();
+    //cy.kcLogout();
   });
 
   it('initially only create folder and create doc are enabled', () => {
@@ -58,9 +58,14 @@ describe('Toolbar behavior', () => {
     // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
-  xit('should activate specific buttons when a published document is loaded', () => {
-    Tree.openNode(['ddd']);
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish']);
+  it('should activate specific buttons when a published document is loaded', () => {
+
+    Tree.openNode(['Neue Testdokumente', "Published_mCloudDoc_Indextest"]);
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get('[data-cy=copyMenu_COPY]').contains('Kopieren');
+    cy.get('[data-cy=copyMenu_COPYTREE]').contains('Kopieren mit Teilbaum');
+    cy.get('[data-cy=copyMenu_CUT]').contains('Verschieben (inkl. Teilbaum)');
   });
 
   xit('should activate specific buttons when a published document with draft is loaded', () => {
