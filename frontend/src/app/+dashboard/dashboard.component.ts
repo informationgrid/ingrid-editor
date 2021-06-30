@@ -80,7 +80,9 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  createNewUser() {}
+  gotoImportPage() {
+    this.router.navigate(["/importExport/import"]);
+  }
 
   openDocument(id: number | string) {
     this.router.navigate(["/form", { id: id }]);
