@@ -5,6 +5,7 @@ import {
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { FileUploadModel } from "./upload/upload.component";
 
 export interface ExportOptions {
   id: string;
@@ -24,6 +25,22 @@ export interface ExportTypeInfo {
   description: string;
   dataType: string;
   fileExtension: string;
+}
+
+export interface ImportTypeInfo {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface ImportAnalyzeResponse {
+  importer: string[];
+  existingDatasets: string[];
+}
+
+export interface UploadAnalysis {
+  file: FileUploadModel;
+  analysis: ImportAnalyzeResponse;
 }
 
 @Injectable({
@@ -55,13 +72,19 @@ export class ImportExportService {
 
   export(options: ExportOptions): Observable<Blob> {
     return this.http.post(this.configuration.backendUrl + "export", options, {
-      responseType: "blob",
+      responseType: "blob,
     });
   }
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
     return this.http.get<ExportTypeInfo[]>(
       this.configuration.backendUrl + "export?profile=mcloud"
+    );
+  }
+
+  getImportTypes(): Observable<ImportTypeInfo[]> {
+    return this.http.get<ImportTypeInfo[]>(
+      this.configuration.backendUrl + "import?profile=mcloud"
     );
   }
 }

@@ -1,8 +1,15 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
-import { ImportExportService } from "../import-export-service";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  ImportExportService,
+  ImportTypeInfo,
+  UploadAnalysis,
+} from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
 import { FileUploadModel } from "../upload/upload.component";
+import { MatStepper } from "@angular/material/stepper";
+import { tap } from "rxjs/operators";
+import { UploadService } from "../upload/upload.service";
 
 @Component({
   selector: "ige-import",
@@ -10,38 +17,40 @@ import { FileUploadModel } from "../upload/upload.component";
   styleUrls: ["./import.component.scss"],
 })
 export class ImportComponent implements OnInit {
+  @ViewChild("stepper") stepper: MatStepper;
   file: File;
   droppedFiles: FileUploadModel[] = [];
 
-  currentTab: string;
-
-  formFields = [];
-  form = null;
-
-  msgs: any[];
-  uploadedFiles: any[] = [];
-
   uploadUrl: string;
 
-  datasetSelected: any;
-  activeStepIndex = 0;
-  secondFormGroup = new FormGroup({});
+  step1Complete: any;
+  optionsFormGroup = new FormGroup({
+    importer: new FormControl("", Validators.required),
+    option: new FormControl("", Validators.required),
+  });
   analyzedData: any;
   importFileErrorMessage: any;
 
+  importers: ImportTypeInfo[];
+  compatibleImporters: string[] = [];
+  locationDoc: string[] = [];
+  locationAddress: string[] = [];
+  readyForImport = false;
+  chosenFiles: FileUploadModel[];
+
   constructor(
     private importExportService: ImportExportService,
-    config: ConfigService
+    config: ConfigService,
+    private uploadService: UploadService
   ) {
-    // this.uploader = new FileUploader({url: config.getConfiguration().backendUrl + '/upload'});
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
-
-    const ctrl = new FormControl("xxx");
-    this.form = new FormGroup({ title: ctrl });
   }
 
   ngOnInit(): void {
-    this.currentTab = "import";
+    this.importExportService
+      .getImportTypes()
+      .pipe(tap((response) => (this.importers = response)))
+      .subscribe();
   }
 
   import(files: File[]) {
@@ -55,11 +64,21 @@ export class ImportComponent implements OnInit {
     );
   }
 
+  onAnalyzeComplete(info: UploadAnalysis) {
+    this.compatibleImporters = info.analysis.importer;
+    if (this.compatibleImporters.length === 1) {
+      this.optionsFormGroup
+        .get("importer")
+        .setValue(this.compatibleImporters[0]);
+    }
+    this.step1Complete = true;
+  }
+
   onFileComplete(data: any) {
     console.log(data); // We just print out data bubbled up from event emitter.
     this.analyzedData = data;
-    this.datasetSelected = true;
-    setTimeout(() => (this.activeStepIndex = 1));
+    this.step1Complete = true;
+    setTimeout(() => this.stepper.next());
   }
 
   /**
@@ -68,25 +87,17 @@ export class ImportComponent implements OnInit {
   onFileDropped(files: FileList) {
     console.log(files);
     for (let index = 0; index < files.length; index++) {
-      this.droppedFiles.push({
-        data: files.item(index),
-        state: "in",
-        inProgress: false,
-        progress: 0,
-        canRetry: false,
-        canCancel: true,
-      });
-    }
-  }
-
-  /**
-   * Convert Files list to normal array list
-   * @param files (Files List)
-   */
-  prepareFilesList(files: Array<any>) {
-    for (const item of files) {
-      item.progress = 0;
-      // this.files.push(item);
+      this.droppedFiles = [
+        ...this.droppedFiles,
+        {
+          data: files.item(index),
+          state: "in",
+          inProgress: false,
+          progress: 0,
+          canRetry: false,
+          canCancel: true,
+        },
+      ];
     }
   }
 
@@ -104,5 +115,34 @@ export class ImportComponent implements OnInit {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
+
+  cancel() {
+    this.droppedFiles = [];
+    this.stepper.selectedIndex = 0;
+    this.step1Complete = false;
+  }
+
+  setLocation(location: string[], isAddress: boolean) {
+    isAddress
+      ? (this.locationAddress = location)
+      : (this.locationDoc = location);
+    this.readyForImport =
+      this.locationDoc.length === 1 && this.locationAddress.length === 1;
+  }
+
+  startImport() {
+    this.chosenFiles.forEach((file) => {
+      const importer = this.optionsFormGroup.get("importer").value;
+      const option = this.optionsFormGroup.get("option").value;
+      this.uploadService
+        .uploadFile(
+          file,
+          "file",
+          `api/import?importerId=${importer}&parentDoc=${this.locationDoc[0]}&parentAddress=${this.locationAddress[0]}&options=${option}`
+        )
+        .pipe(tap((response) => console.log("File imported", response)))
+        .subscribe();
+    });
   }
 }

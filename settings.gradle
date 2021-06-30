@@ -1,4 +1,4 @@
-include 'frontend', 'api', 'server'
+include 'frontend', 'server'
 
 rootProject.name='IGE-NG'
 

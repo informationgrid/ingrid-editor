@@ -21,6 +21,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { DndDirective } from "../directives/dnd.directive";
+import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 
 @NgModule({
   imports: [
@@ -41,6 +42,7 @@ import { DndDirective } from "../directives/dnd.directive";
     MatProgressBarModule,
     MatCheckboxModule,
     PageTemplateModule,
+    FormSharedModule,
   ],
   declarations: [
     OverviewComponent,

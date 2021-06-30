@@ -5,12 +5,8 @@
     </div>
 
     <section main-content fxFlex>
-        <mat-horizontal-stepper
-            [linear]="true"
-            labelPosition="bottom"
-            [selectedIndex]="activeStepIndex"
-        >
-            <mat-step [completed]="datasetSelected">
+        <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
+            <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
 
                 <div
@@ -18,16 +14,33 @@
                     appDnd
                     (fileDropped)="onFileDropped($event)"
                 >
-                    <div class="strong">
-                        Datei(en) zum Hochladen hier ablegen
-                    </div>
-                    <mat-icon class="upload light" svgIcon="upload"></mat-icon>
-                    <div class="alternative-text">oder auswählen</div>
+                    <div *ngIf="!step1Complete; else analyzeFinished">
+                        <div class="strong">
+                            Datei(en) zum Hochladen hier ablegen
+                        </div>
+                        <mat-icon
+                            class="upload light"
+                            svgIcon="upload"
+                        ></mat-icon>
+                        <div class="alternative-text">oder auswählen</div>
 
-                    <ige-file-upload
-                        [droppedFiles]="droppedFiles"
-                        (complete)="onFileComplete($event)"
-                    ></ige-file-upload>
+                        <ige-file-upload
+                            [droppedFiles]="droppedFiles"
+                            (analyzed)="onAnalyzeComplete($event)"
+                            (complete)="onFileComplete($event)"
+                            (chosenFiles)="chosenFiles = $event"
+                        ></ige-file-upload>
+                    </div>
+
+                    <ng-template #analyzeFinished>
+                        <div class="label">Datei hochgeladen:</div>
+                        <div *ngFor="let file of droppedFiles">
+                            {{ file.data.name }}
+                        </div>
+                        <mat-icon class="success-icon"
+                            >check_circle_outline
+                        </mat-icon>
+                    </ng-template>
 
                     <span *ngIf="importFileErrorMessage">{{
                         importFileErrorMessage
@@ -36,23 +49,138 @@
 
                 <mat-divider></mat-divider>
 
-                <div class="action-bar" fxLayoutAlign="end">
-                    <button mat-button mat-stroked-button color="primary">
+                <div class="action-bar">
+                    <button
+                        *ngIf="step1Complete"
+                        mat-button
+                        mat-flat-button
+                        (click)="cancel()"
+                    >
+                        Abbrechen
+                    </button>
+                    <div fxFlex></div>
+                    <button
+                        mat-button
+                        mat-flat-button
+                        color="primary"
+                        matStepperNext
+                        [disabled]="!step1Complete"
+                    >
                         Weiter
                     </button>
                 </div>
             </mat-step>
-            <mat-step [stepControl]="secondFormGroup">
-                <form [formGroup]="secondFormGroup">
-                    <ng-template matStepLabel>Analyse</ng-template>
+            <mat-step [stepControl]="optionsFormGroup">
+                <form [formGroup]="optionsFormGroup">
+                    <ng-template matStepLabel>Optionen wählen</ng-template>
+                    <div>
+                        <div class="label">Typ</div>
+                        <mat-form-field appearance="fill" style="width: 372px">
+                            <mat-select
+                                formControlName="importer"
+                                [disabled]="compatibleImporters.length === 1"
+                                placeholder="Importer auswählen"
+                            >
+                                <mat-option
+                                    *ngFor="let importer of importers"
+                                    [value]="importer.id"
+                                    >{{ importer.name }}</mat-option
+                                >
+                            </mat-select>
+                        </mat-form-field>
 
-                    <pre>{{ analyzedData | json }}</pre>
+                        <div class="label">Import</div>
+                        <mat-radio-group
+                            class="radio-vertical"
+                            formControlName="option"
+                        >
+                            <mat-radio-button value="overwrite_identical">
+                                Identische Metadaten überschreiben
+                            </mat-radio-button>
+                            <mat-radio-button value="create_under_target">
+                                Anlage nur unter gewähltem Importknoten
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
 
-                    <div class="wizard-footer">
+                    <mat-divider></mat-divider>
+
+                    <div class="action-bar">
+                        <button mat-button (click)="cancel()">Abbrechen</button>
+                        <div fxFlex></div>
                         <button mat-button matStepperPrevious>Zurück</button>
-                        <button mat-button matStepperNext>Importieren</button>
+                        <button
+                            mat-button
+                            mat-flat-button
+                            matStepperNext
+                            color="primary"
+                            [disabled]="optionsFormGroup.invalid"
+                        >
+                            Weiter
+                        </button>
                     </div>
                 </form>
+            </mat-step>
+            <mat-step [completed]="readyForImport">
+                <ng-template matStepLabel>Ort wählen</ng-template>
+
+                Dokument:
+                <ige-tree
+                    [hideReadOnly]="true"
+                    [showOnlyFolders]="true"
+                    [showMultiSelectButton]="false"
+                    (activate)="setLocation($event, false)"
+                ></ige-tree>
+
+                Adresse:
+                <ige-tree
+                    [forAddresses]="true"
+                    [hideReadOnly]="true"
+                    [showOnlyFolders]="true"
+                    [showMultiSelectButton]="false"
+                    (activate)="setLocation($event, true)"
+                ></ige-tree>
+
+                <mat-divider></mat-divider>
+
+                <div class="action-bar">
+                    <button mat-button (click)="cancel()">Abbrechen</button>
+                    <div fxFlex></div>
+                    <button mat-button matStepperPrevious>Zurück</button>
+                    <button
+                        mat-button
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="!readyForImport"
+                        matStepperNext
+                        (click)="startImport()"
+                    >
+                        Importieren
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Fertig</ng-template>
+
+                Datei importiert: Ort:
+                <ige-breadcrumb [path]="null"></ige-breadcrumb>
+                <button mat-button mat-stroked-button color="primary">
+                    Öffnen
+                </button>
+                <pre>{{ analyzedData | json }}</pre>
+
+                <mat-divider></mat-divider>
+
+                <div class="action-bar" fxLayoutAlign="end">
+                    <button
+                        mat-button
+                        mat-flat-button
+                        color="primary"
+                        (click)="cancel()"
+                    >
+                        Neuer Import
+                    </button>
+                </div>
             </mat-step>
         </mat-horizontal-stepper>
     </section>

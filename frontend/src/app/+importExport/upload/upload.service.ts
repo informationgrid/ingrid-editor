@@ -7,7 +7,6 @@ import {
 } from "@angular/common/http";
 import { catchError, last, map } from "rxjs/operators";
 import { FileUploadModel } from "./upload.component";
-import { of } from "rxjs";
 import { IgeError } from "../../models/ige-error";
 
 @Injectable({

@@ -1,8 +1,9 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.model.ImportAnalyzeInfo
+import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
@@ -15,17 +16,37 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class ImportApiController @Autowired constructor(private val importService: ImportService, private val catalogService: CatalogService) : ImportApi {
+class ImportApiController @Autowired constructor(
+    private val importService: ImportService,
+    private val catalogService: CatalogService
+) : ImportApi {
 
     private val log = logger()
+    override fun getImporter(principal: Principal, profile: String): ResponseEntity<List<ImportTypeInfo>> {
+        val importer = importService.getImporterInfos()
+        return ResponseEntity.ok(importer)
+    }
 
-    override fun importDataset(principal: Principal, file: MultipartFile): ResponseEntity<ImportAnalyzeInfo> {
+
+    override fun importDataset(
+        principal: Principal,
+        file: MultipartFile,
+        importerId: String,
+        parentDoc: String,
+        parentAddress: String,
+        options: String
+    ): ResponseEntity<ImportAnalyzeInfo> {
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val (result, importerName) = importService.importFile(dbId, file)
+        val (result, importerName) = importService.importFile(dbId, importerId, file)
         val info = createInfo(importerName, result)
         return ResponseEntity.ok(info)
+    }
+
+    override fun analyzeFile(principal: Principal, file: MultipartFile): ResponseEntity<ImportAnalyzeResponse> {
+        val response = importService.analyzeFile(file)
+        return ResponseEntity.ok(response)
     }
 
     private fun createInfo(importerName: String, result: Document): ImportAnalyzeInfo {

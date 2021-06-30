@@ -435,6 +435,7 @@ ige-root .mat-drawer-container {
 .mat-icon.light svg .coloring {
   fill: #eff8ff;
 }
+
 .fileover .mat-icon.light svg .coloring {
   fill: #ffffff;
 }
@@ -830,3 +831,29 @@ mat-icon.wide-icon-26px {
     background-color: #ffffff;
   }
 }
+
+/* RADIO */
+
+/* Stepper */
+/*.full-height {
+  mat-horizontal-stepper {
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    flex: 1;
+
+    .mat-horizontal-content-container {
+      flex: 1;
+    }
+    .mat-horizontal-stepper-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      //height: 100%;
+
+      & > div:first-child {
+        flex: 1;
+      }
+    }
+  }
+}*/

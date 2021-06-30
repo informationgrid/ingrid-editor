@@ -2,10 +2,9 @@ package de.ingrid.igeserver.imports.iso
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.ingrid.ige.api.IgeImporter
-import de.ingrid.igeserver.exports.iso.CharacterString
-import de.ingrid.igeserver.exports.iso.CodelistAttributes
 import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.imports.IgeImporter
+import de.ingrid.igeserver.imports.ImportTypeInfo
 import org.apache.logging.log4j.kotlin.logger
 import java.io.StringReader
 import javax.xml.bind.JAXBContext
@@ -27,10 +26,6 @@ class IsoImporter : IgeImporter {
         return "text/xml" == contentType
     }
 
-    override fun getName(): String {
-        return "ISO"
-    }
-
     private fun mapToJson(md: Metadata): JsonNode {
         val mapper = ObjectMapper()
         val node = mapper.createObjectNode()
@@ -38,4 +33,12 @@ class IsoImporter : IgeImporter {
         node.put("metadataLanguage", md.getLanguage())
         return node
     }
+
+    override val typeInfo: ImportTypeInfo
+        get() = ImportTypeInfo(
+            "iso",
+            "ISO",
+            "ISO Dokumente",
+            emptyList()
+        )
 }

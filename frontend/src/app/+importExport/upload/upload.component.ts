@@ -17,6 +17,11 @@ import {
 import { Subscription } from "rxjs/Subscription";
 import { UploadService } from "./upload.service";
 import { ModalService } from "../../services/modal/modal.service";
+import {
+  ImportAnalyzeResponse,
+  ImportTypeInfo,
+  UploadAnalysis,
+} from "../import-export-service";
 
 @Component({
   selector: "ige-file-upload",
@@ -25,7 +30,7 @@ import { ModalService } from "../../services/modal/modal.service";
   animations: [
     trigger("fadeInOut", [
       state("in", style({ opacity: 100 })),
-      transition("* => void", [animate(300, style({ opacity: 0 }))]),
+      transition("* => void", [animate(300, style({ opacity: 0 }))],
     ]),
   ],
 })
@@ -35,45 +40,58 @@ export class UploadComponent implements OnInit {
   /** Name used in form which will be sent in HTTP request. */
   @Input() param = "file";
   /** Target URL for file uploading. */
+  @Input() targetAnalyze = "/api/import/analyze";
+
   @Input() target = "/api/import";
   /** File extension that accepted, same as 'accept' of <input type="file" />.
    By the default, it's set to 'image/*'. */
   @Input() accept = "*.*";
-  /** Allow you to add handler after its completion. Bubble up response text from remote. */
-
-  @Input() set droppedFiles(files: FileUploadModel[]) {
-    this.files = files;
-    this.uploadFiles();
+  @Output() analyzed = new EventEmitter<UploadAnalysis>();
+  @Output() complete = new EventEmitter<string>();
+  @Output() chosenFiles = new EventEmitter<FileUploadModel[]>();
+  private _files: FileUploadModel[] = [];
+  get files(): FileUploadModel[] {
+    return this._files;
   }
 
-  @Output() complete = new EventEmitter<string>();
-
-  files: Array<FileUploadModel> = [];
+  set files(value: FileUploadModel[]) {
+    this._files = value;
+    this.chosenFiles.emit(this._files);
+  }
 
   @ViewChild("fileUploadInput") htmlFileUpload: ElementRef;
 
   constructor(
     private uploadService: UploadService,
     private modalService: ModalService
-  ) {}
+  ) {
+  }
 
-  ngOnInit() {}
+  /** Allow you to add handler after its completion. Bubble up response text from remote. */
+
+  @Input() set droppedFiles(files: FileUploadModel[]) {
+    this.files = files;
+    this.analyzeFiles();
+  }
+
+  ngOnInit() {
+  }
 
   onClick() {
     const fileUpload = this.htmlFileUpload.nativeElement;
     fileUpload.onchange = () => {
-      for (let index = 0; index < fileUpload.files.length; index++) {
-        const file = fileUpload.files[index];
+      for (let index = 0; index < fileUpload._files.length; index++) {
+        const file = fileUpload._files[index];
         this.files.push({
           data: file,
           state: "in",
           inProgress: false,
           progress: 0,
           canRetry: false,
-          canCancel: true,
+          canCancel: tru,
         });
       }
-      this.uploadFiles();
+      this.analyzeFiles();
     };
     fileUpload.click();
   }
@@ -86,6 +104,13 @@ export class UploadComponent implements OnInit {
   retryFile(file: FileUploadModel) {
     this.uploadFile(file);
     file.canRetry = false;
+  }
+
+  removeFileFromArray(file: FileUploadModel) {
+    const index = this.files.indexOf(file);
+    if (index > -1) {
+      this.files.splice(index, 1);
+    }
   }
 
   private uploadFiles() {
@@ -106,11 +131,19 @@ export class UploadComponent implements OnInit {
       });
   }
 
-  removeFileFromArray(file: FileUploadModel) {
-    const index = this.files.indexOf(file);
-    if (index > -1) {
-      this.files.splice(index, 1);
-    }
+  private analyzeFiles() {
+    this.files.forEach((file) => this.analyzeFile(file));
+  }
+
+  private analyzeFile(file: FileUploadModel) {
+    file.sub = this.uploadService
+      .uploadFile(file, this.param, this.target + "/analyze")
+      .subscribe((event: any) => {
+        this.analyzed.emit({
+          file: file,
+          analysis: event.body
+        });
+      });
   }
 }
 

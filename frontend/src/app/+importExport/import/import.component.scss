@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  flex: 1;
+}
+
 .upload {
   height: 128px;
   width: 192px;
@@ -30,4 +34,26 @@
   ige-file-upload {
     visibility: hidden;
   }
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.radio-vertical {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+
+  mat-radio-button {
+    margin: 5px 0;
+  }
+}
+
+.success-icon {
+  height: 128px;
+  width: 128px;
+  font-size: 128px;
+  color: $ige-check-color;
 }
