@@ -10,7 +10,8 @@
   .mat-dialog-content {
     padding: 24px 0;
     display: flex;
-    max-height: unset;
+    // max-height unset leads to large dialog where action bar leaves browser window
+    // max-height: unset;
 
     .mat-tab-group {
       flex: 1;
