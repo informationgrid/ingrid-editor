@@ -33,7 +33,7 @@
                     </div>
 
                     <ng-template #analyzeFinished>
-                        <div class="label">Datei hochgeladen:</div>
+                        <div class="ige-label">Datei hochgeladen:</div>
                         <div *ngFor="let file of droppedFiles">
                             {{ file.data.name }}
                         </div>
@@ -74,7 +74,7 @@
                 <form [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
                     <div>
-                        <div class="label">Typ</div>
+                        <div class="ige-label">Typ</div>
                         <mat-form-field appearance="fill" style="width: 372px">
                             <mat-select
                                 formControlName="importer"
@@ -89,7 +89,7 @@
                             </mat-select>
                         </mat-form-field>
 
-                        <div class="label">Import</div>
+                        <div class="ige-label">Import</div>
                         <mat-radio-group
                             class="radio-vertical"
                             formControlName="option"
