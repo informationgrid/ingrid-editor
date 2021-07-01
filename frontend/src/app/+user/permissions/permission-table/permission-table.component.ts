@@ -28,7 +28,7 @@ import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
   ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
-  @Input() title: string;
+  @Input() label: string;
   @Input() forAddress = false;
 
   public permissionLevel: typeof PermissionLevel = PermissionLevel;

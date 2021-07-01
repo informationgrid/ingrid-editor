@@ -1,4 +1,4 @@
-<div class="table-title">{{ title }}</div>
+<div class="table-title">{{ label }}</div>
 <table mat-table [dataSource]="val" class="width-100 dark">
     <ng-container matColumnDef="type-icon">
         <th mat-header-cell *matHeaderCellDef></th>
@@ -62,12 +62,7 @@
     <!-- Settings -->
     <ng-container matColumnDef="settings">
         <th mat-header-cell *matHeaderCellDef class="thin-column">Entfernen</th>
-        <td
-            mat-cell
-            class="thin-column"
-            *matCellDef="let element"
-            (click)="(null)"
-        >
+        <td mat-cell class="thin-column" *matCellDef="let element">
             <button
                 mat-icon-button
                 class="menu menu-button"
