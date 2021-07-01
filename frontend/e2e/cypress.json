@@ -19,5 +19,6 @@
   "screenshotsFolder": "cypress/mochawesome-reports/assets",
   "videosFolder": "cypress/mochawesome-reports/assets",
   "videoUploadOnPasses": false,
-  "viewportWidth": 1200
+  "viewportHeight": 1080,
+  "viewportWidth": 1920
 }
