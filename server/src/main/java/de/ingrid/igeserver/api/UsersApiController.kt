@@ -17,6 +17,7 @@ import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -72,6 +73,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok().build()
     }
 
+    @Transactional
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
 
         catalogService.deleteUser(userId)
