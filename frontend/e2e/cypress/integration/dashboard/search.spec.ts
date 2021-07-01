@@ -106,7 +106,7 @@ describe('Search', function () {
       // must have more than 5 results for the 'Alle' Button to show up
       DashboardPage.search('te');
       // First button for datasets
-      cy.get('.show-all-link > a').eq(0).click();
+      cy.get('[data-cy=all-link-data]').click();
       cy.wait('@query');
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
@@ -127,7 +127,7 @@ describe('Search', function () {
       // must have more than 5 results for the 'Alle' Button to show up
       DashboardPage.search('te');
       // Second button for addresses
-      cy.get('.show-all-link > a').eq(1).click();
+      cy.get('[data-cy=all-link-address]').click();
       cy.wait('@query');
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
