@@ -23,6 +23,10 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.scheduling.config.ScheduledTaskRegistrar
 import org.springframework.scheduling.support.CronTrigger
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.Executors
@@ -62,7 +66,7 @@ class IndexingTask @Autowired constructor(
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
-        categories.forEach categoryLoop@ { category ->
+        categories.forEach categoryLoop@{ category ->
             // needed information:
             //   database/catalog
             //   indexingMethod: ibus or elasticsearch direct
@@ -76,7 +80,7 @@ class IndexingTask @Autowired constructor(
                 log.warn("No exporter defined for '${format}' and category '${category.value}'")
                 return@categoryLoop
             }
-            
+
             // pre phase
             val info = indexPrePhase(categoryAlias, catalog.type, format)
 
@@ -212,6 +216,10 @@ class IndexingTask @Autowired constructor(
     private fun addSchedule(config: IndexConfig): ScheduledFuture<*>? {
         val trigger = CronTrigger(config.cron)
         return scheduler.schedule({
+            val auth: Authentication =
+                UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+            SecurityContextHolder.getContext().authentication = auth
+            
             startIndexing(config.catalogId, "portal")
         }, trigger)
     }
