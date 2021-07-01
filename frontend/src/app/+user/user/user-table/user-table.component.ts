@@ -54,6 +54,14 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.selection.changed.subscribe((selection) => {
       this.onUserSelect.emit(selection.source.selected[0]);
     });
+    this.dataSource.filterPredicate = (user: User, filterValue: string) => {
+      let searchIn =
+        (user.firstName ?? "") +
+        (user.lastName ?? "") +
+        (user.email ?? "") +
+        (user.organisation ?? "").trim().toLowerCase();
+      return searchIn.includes(filterValue.trim().toLowerCase());
+    };
   }
 
   ngOnInit() {}

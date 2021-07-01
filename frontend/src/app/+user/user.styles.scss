@@ -58,13 +58,13 @@ as-split-area {
 }
 
 .save-buttons {
-  button.btnAddNew {
+  button.btnSave {
     &:not([disabled]):hover {
       background-color: lighten($ige-secondary, 5%);
     }
   }
 
-  button.btnAddNew {
+  button.btnSave {
     margin-right: 0;
   }
 }

@@ -40,10 +40,16 @@ export class NewUserDialogComponent implements OnInit {
     if (this.importExternal) {
       this.form.addControl("user", new FormControl("", Validators.required));
     } else {
+      this.form.addControl("login", new FormControl("", Validators.required));
       this.form.addControl(
-        "userLogin",
+        "firstName",
         new FormControl("", Validators.required)
       );
+      this.form.addControl(
+        "lastName",
+        new FormControl("", Validators.required)
+      );
+      this.form.addControl("email", new FormControl("", Validators.required));
     }
   }
 

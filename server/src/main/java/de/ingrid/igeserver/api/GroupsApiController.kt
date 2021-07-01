@@ -20,11 +20,9 @@ class GroupsApiController @Autowired constructor(
     private val authUtils: AuthUtils
 ) : GroupsApi {
 
-    override fun createGroup(principal: Principal, group: Group): ResponseEntity<Void> {
+    override fun createGroup(principal: Principal, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        groupService.create(catalogId, group)
-        return ResponseEntity(HttpStatus.OK)
+        return ResponseEntity.ok(groupService.create(catalogId, group))
     }
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {

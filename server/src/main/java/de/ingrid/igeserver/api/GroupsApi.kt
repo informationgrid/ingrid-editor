@@ -38,7 +38,7 @@ interface GroupsApi {
     fun createGroup(
         principal: Principal,
         @Parameter(description = "Save the group into the database.", required = true) @RequestBody group: @Valid Group
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Group>
 
     @Operation(description = "Delete a group with a given ID. If group with a given id does not exists an error will be returned.")
     @ApiResponses(

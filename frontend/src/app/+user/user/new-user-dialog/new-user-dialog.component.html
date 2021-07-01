@@ -29,13 +29,27 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field *ngIf="!importExternal" style="width: 100%">
-        <mat-label>Benutzer Login</mat-label>
-        <input matInput formControlName="userLogin" />
-    </mat-form-field>
     <div *ngIf="noAvailableUsers && importExternal">
         Es gibt keine verfügbaren Nutzer in Keycloak
     </div>
+    <ng-container *ngIf="!importExternal">
+        <mat-form-field style="width: 100%">
+            <mat-label>Login</mat-label>
+            <input matInput formControlName="login" />
+        </mat-form-field>
+        <mat-form-field style="width: 50%">
+            <mat-label>Vorname</mat-label>
+            <input matInput formControlName="firstName" />
+        </mat-form-field>
+        <mat-form-field style="width: 50%">
+            <mat-label>Nachname</mat-label>
+            <input matInput formControlName="lastName" />
+        </mat-form-field>
+        <mat-form-field style="width: 100%">
+            <mat-label>E-Mail</mat-label>
+            <input matInput formControlName="email" />
+        </mat-form-field>
+    </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Abbrechen</button>

@@ -11,6 +11,7 @@ export abstract class User {
   creationDate: Date;
   modificationDate: Date;
   latestLogin?: Date;
+  email?: string;
 
   constructor(values: Object = {}) {
     Object.assign(this, values);

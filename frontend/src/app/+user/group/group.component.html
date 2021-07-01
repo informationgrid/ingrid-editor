@@ -15,24 +15,23 @@
                     <span class="save-buttons">
                         <button
                             mat-stroked-button
-                            *ngIf="selectedGroup || isNewGroup"
-                            data-cy="toolbar_save_user"
-                            matTooltip="Speichern"
-                            [matTooltipShowDelay]="1000"
-                            (click)="saveGroup()"
-                            [disabled]="form.invalid || !form.dirty"
-                        >
-                            Speichern
-                        </button>
-                        <button
-                            class="btnAddNew"
-                            mat-flat-button
-                            color="primary"
-                            (click)="addGroup()"
+                            (click)="openAddGroupDialog()"
                             matTooltip="Gruppe hinzufügen"
                             [matTooltipShowDelay]="1000"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
+                        </button>
+                        <button
+                            class="btnSave"
+                            mat-flat-button
+                            color="primary"
+                            data-cy="toolbar_save_user"
+                            matTooltip="Speichern"
+                            [matTooltipShowDelay]="1000"
+                            (click)="saveGroup()"
+                            [disabled]="form?.invalid || !form?.dirty"
+                        >
+                            Speichern
                         </button>
                     </span>
                 </mat-toolbar-row>

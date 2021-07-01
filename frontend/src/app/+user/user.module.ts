@@ -18,6 +18,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { PermissionsDialogComponent } from "./permissions/permissions-dialog.component";
 import { MatSelectModule } from "@angular/material/select";
 import { NewUserDialogComponent } from "./user/new-user-dialog/new-user-dialog.component";
+import { NewGroupDialogComponent } from "./group/new-group-dialog/new-group-dialog.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { HeaderMoreComponent } from "./user/header-more/header-more.component";
@@ -66,6 +67,7 @@ import { MatInputModule } from "@angular/material/input";
     PermissionsShowComponent,
     TreePermissionComponent,
     NewUserDialogComponent,
+    NewGroupDialogComponent,
     GroupHeaderMoreComponent,
     UserTableComponent,
     GroupsTableComponent,

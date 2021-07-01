@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
@@ -11,13 +11,15 @@ import {
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
+import { Subscription } from "rxjs/Subscription";
 
 @UntilDestroy()
 @Component({
@@ -32,12 +34,6 @@ export class GroupComponent implements OnInit {
   isNewGroup = false;
   form: FormGroup;
 
-  initialValue = {
-    id: null,
-    name: "",
-    description: "",
-    permissions: new Permissions(),
-  };
   selectedGroupForm = new FormControl();
   selectedGroup: Group;
   isLoading = false;
@@ -72,26 +68,48 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  addGroup() {
+  openAddGroupDialog() {
+    this.dialog
+      .open(NewGroupDialogComponent)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.name) {
+          this.addGroup(result.name);
+          this.saveGroup();
+        }
+      });
+  }
+
+  addGroup(name: string) {
     this.isNewGroup = true;
-    this.form.setValue(this.initialValue);
+    const initialValue = {
+      id: null,
+      name: name,
+      description: "",
+      permissions: new Permissions(),
+    };
+    this.form.setValue(initialValue);
   }
 
   loadGroup(id: string) {
-    this.isLoading = true;
-    this.isNewGroup = false;
-    this.form.disable();
-    this.groupService.getGroup(id).subscribe((fetchedGroup) => {
-      if (!fetchedGroup.permissions) {
-        fetchedGroup.permissions = new Permissions();
+    this.dirtyFormHandled().subscribe((confirmed) => {
+      if (confirmed) {
+        this.isLoading = true;
+        this.isNewGroup = false;
+        this.form.disable();
+        this.groupService.getGroup(id).subscribe((fetchedGroup) => {
+          if (!fetchedGroup.permissions) {
+            fetchedGroup.permissions = new Permissions();
+          }
+          this.form.reset(fetchedGroup);
+          this.form.enable();
+          this.isLoading = false;
+        });
       }
-      this.form.reset(fetchedGroup);
-      this.form.enable();
-      this.isLoading = false;
     });
   }
 
-  saveGroup() {
+  saveGroup(): Subscription {
     let observer: Observable<Group>;
     const group = this.form.value;
 
@@ -102,31 +120,15 @@ export class GroupComponent implements OnInit {
     }
 
     // send request and handle error
-    observer.subscribe(
-      () => {
-        this.isNewGroup = false;
-        this.fetchGroups()
-          .pipe(tap(() => this.form.markAsPristine()))
-          .subscribe();
-      },
-      (err: any) => {
-        if (err.status === 406) {
-          if (this.isNewGroup) {
-            this.modalService.showJavascriptError(
-              "Es existiert bereits ein Benutzer mit dem Login: " +
-                this.form.get("name")
-            );
-          } else {
-            this.modalService.showJavascriptError(
-              "Es existiert kein Benutzer mit dem Login: " +
-                this.form.get("name")
-            );
-          }
-        } else {
-          throw err;
-        }
+    return observer.subscribe((group) => {
+      if (group) {
+        this.selectedGroup = group;
       }
-    );
+      this.isNewGroup = false;
+      this.fetchGroups()
+        .pipe(tap(() => this.form.markAsPristine()))
+        .subscribe();
+    });
   }
 
   async deleteGroup(id: string) {
@@ -182,5 +184,30 @@ export class GroupComponent implements OnInit {
           : "Möchten Sie die Gruppe wirklich löschen?",
       list: users.map((user) => user.login),
     };
+  }
+
+  private dirtyFormHandled(): Observable<boolean> {
+    if (this.form.dirty) {
+      return this.dialog
+        .open(ConfirmDialogComponent, {
+          data: (<ConfirmDialogData>{
+            title: "Änderungen verwerfen?",
+            message: "Wollen Sie die Änderungen verwerfen?",
+            buttons: [
+              { text: "Abbrechen" },
+              {
+                text: "Verwerfen",
+                id: "discard",
+                alignRight: true,
+                emphasize: true,
+              },
+            ],
+          }) as ConfirmDialogData,
+        })
+        .afterClosed()
+        .pipe(map((response) => response === "discard"));
+    }
+
+    return of(true);
   }
 }

@@ -15,7 +15,17 @@
                     <span class="save-buttons">
                         <button
                             mat-stroked-button
-                            *ngIf="(selectedUser || isNewUser) && !isLoading"
+                            [mat-menu-trigger-for]="userAddMenu"
+                            data-cy="toolbar_add_user"
+                            matTooltip="Nutzer hinzufügen"
+                            [matTooltipShowDelay]="1000"
+                        >
+                            <mat-icon>person_add</mat-icon> Hinzufügen
+                        </button>
+                        <button
+                            class="btnSave"
+                            mat-flat-button
+                            color="primary"
                             data-cy="toolbar_save_user"
                             matTooltip="Speichern"
                             [matTooltipShowDelay]="1000"
@@ -23,17 +33,6 @@
                             [disabled]="form?.invalid || !form?.dirty"
                         >
                             Speichern
-                        </button>
-                        <button
-                            class="btnAddNew"
-                            mat-flat-button
-                            color="primary"
-                            [mat-menu-trigger-for]="userAddMenu"
-                            data-cy="toolbar_add_user"
-                            matTooltip="Nutzer hinzufügen"
-                            [matTooltipShowDelay]="1000"
-                        >
-                            <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
                         <mat-menu #userAddMenu="matMenu">
                             <button

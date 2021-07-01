@@ -36,7 +36,7 @@ class GroupService @Autowired constructor(
     private val log = logger()
 
     @Transactional
-    fun create(catalogId: String, group: Group) {
+    fun create(catalogId: String, group: Group): Group {
         group.catalog = catalogRepo.findByIdentifier(catalogId)
         group.data = group.data ?: GroupData()
         group.data?.creationDate = Date()
@@ -44,7 +44,7 @@ class GroupService @Autowired constructor(
 
         updateAcl(group)
 
-        groupRepo.save(group)
+        return groupRepo.save(group)
 
         /*group.permissions?.documents?.forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())

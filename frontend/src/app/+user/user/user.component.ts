@@ -166,12 +166,25 @@ export class UserComponent implements OnInit, AfterContentChecked {
       },
       (err: any) => {
         this.enableForm();
-        if (err.status === 406) {
+        if (err.status === 409) {
           if (this.isNewUser) {
-            this.modalService.showJavascriptError(
-              "Es existiert bereits ein Benutzer mit dem Login: " +
-                this.form.value.login
-            );
+            const errorText: string = err.error.errorText;
+            if (errorText.includes("User already Exists with login")) {
+              const login = errorText.split(" ").pop();
+              this.modalService.showJavascriptError(
+                "Es existiert bereits ein Benutzer mit dem Login: " + login
+              );
+            } else if (
+              errorText.includes(
+                "New user cannot be created, because another user might have the same email address"
+              )
+            ) {
+              this.modalService.showJavascriptError(
+                "Es existiert bereits ein Benutzer mit dieser Mailadresse"
+              );
+            } else {
+              throw err;
+            }
           } else {
             this.modalService.showJavascriptError(
               "Es existiert kein Benutzer mit dem Login: " +
@@ -228,8 +241,7 @@ export class UserComponent implements OnInit, AfterContentChecked {
 
   private addUser(initial: any) {
     this.isLoading = true;
-    const newUser: User = initial.user ?? {};
-    if (initial.userLogin) newUser.login = initial.userLogin;
+    const newUser: User = initial.user ?? initial;
     newUser.role = initial.role ?? "";
     this.isNewUser = true;
     this.form.reset(newUser);

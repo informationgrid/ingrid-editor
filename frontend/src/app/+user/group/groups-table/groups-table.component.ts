@@ -13,6 +13,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
+import { User } from "../../user";
 
 @Component({
   selector: "groups-table",
@@ -49,6 +50,11 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     this.selection.changed.subscribe((selection) => {
       this.onGroupSelect.emit(selection.source.selected[0]);
     });
+    this.dataSource.filterPredicate = (group: Group, filterValue: string) => {
+      let searchIn =
+        (group.name ?? "") + (group.description ?? "").trim().toLowerCase();
+      return searchIn.includes(filterValue.trim().toLowerCase());
+    };
   }
 
   ngOnInit() {}
