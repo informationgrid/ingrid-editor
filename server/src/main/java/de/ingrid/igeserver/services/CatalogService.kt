@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -205,7 +204,7 @@ class CatalogService @Autowired constructor(
         userRepo.save(user)
 
     }
-    
+
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
@@ -217,7 +216,10 @@ class CatalogService @Autowired constructor(
                 Permissions.manage_catalog.name
             )
         } else {
-            listOf()
+            listOf(
+                Permissions.can_import.name,
+                Permissions.can_export.name,
+            )
         }
     }
 

@@ -26,7 +26,7 @@ export class ImportComponent implements OnInit {
   step1Complete: any;
   optionsFormGroup = new FormGroup({
     importer: new FormControl("", Validators.required),
-    option: new FormControl("", Validators.required),
+    option: new FormControl("overwrite_identical", Validators.required),
   });
   analyzedData: any;
   importFileErrorMessage: any;

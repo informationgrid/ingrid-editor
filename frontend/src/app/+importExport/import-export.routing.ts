@@ -18,10 +18,18 @@ export const routing = RouterModule.forChild([
       {
         path: "import",
         component: ImportComponent,
+        canActivate: [AuthGuard],
+        data: {
+          permission: ["can_import"],
+        },
       },
       {
         path: "export",
         component: ExportComponent,
+        canActivate: [AuthGuard],
+        data: {
+          permission: ["can_export"],
+        },
       },
     ],
   },
