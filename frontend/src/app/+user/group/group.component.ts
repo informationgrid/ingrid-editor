@@ -165,6 +165,17 @@ export class GroupComponent implements OnInit {
   private createDeleteDialogData(users: User[]): ConfirmDialogData {
     return {
       title: "Gruppe löschen",
+      buttons: [
+        {
+          text: "Abbrechen",
+        },
+        {
+          text: "Gruppe löschen",
+          alignRight: true,
+          id: "confirm",
+          emphasize: true,
+        },
+      ],
       message:
         users.length > 0
           ? `Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von ${users.length} Nutzer(n) verwendet:`
