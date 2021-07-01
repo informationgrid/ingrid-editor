@@ -53,7 +53,11 @@
             *ngIf="numDocs > 5"
             class="show-all-link link-text extra-large-spacing"
         >
-            <a href="#" (click)="openResearchPage($event)">
+            <a
+                href="#"
+                (click)="openResearchPage($event)"
+                data-cy="all-link-data"
+            >
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>
@@ -72,7 +76,11 @@
             *ngIf="numAddresses > 5"
             class="show-all-link link-text extra-large-spacing"
         >
-            <a href="#" (click)="openResearchPage($event, true)">
+            <a
+                href="#"
+                (click)="openResearchPage($event, true)"
+                data-cy="all-link-address"
+            >
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>

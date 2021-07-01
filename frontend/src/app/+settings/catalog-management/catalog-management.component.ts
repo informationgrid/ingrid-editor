@@ -46,7 +46,7 @@ export class CatalogManagementComponent implements OnInit {
   showSpinner = false;
   currentCatalog: string;
   private currentUserID: string;
-  private profiles: Profile[];
+  profiles: Profile[];
   trackByCatalogId = (index, item: Catalog) => {
     return item.id;
   };
@@ -72,6 +72,7 @@ export class CatalogManagementComponent implements OnInit {
     this.dialog
       .open(NewCatalogDialogComponent, {
         minWidth: 400,
+        hasBackdrop: true,
         disableClose: true,
         data: this.profiles,
       })

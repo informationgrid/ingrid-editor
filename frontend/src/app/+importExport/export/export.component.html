@@ -24,10 +24,10 @@
                 <form [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
 
-                    <div class="ige-label">Ort</div>
+                    <div class="section-title">Ort</div>
                     <ige-breadcrumb [path]="path"></ige-breadcrumb>
 
-                    <div class="ige-label space">Export</div>
+                    <div class="section-title space">Export</div>
 
                     <mat-radio-group
                         class="radio-vertical"
@@ -47,7 +47,7 @@
                         </mat-radio-button>
                     </mat-radio-group>
 
-                    <div class="ige-label space">Datensätze</div>
+                    <div class="section-title space">Datensätze</div>
                     <mat-checkbox
                         formControlName="drafts"
                         style="margin-top: 12px; display: block"
@@ -55,7 +55,7 @@
                         Auch Entwürfe exportieren
                     </mat-checkbox>
 
-                    <div class="ige-label space">Format</div>
+                    <div class="section-title space">Format</div>
                     <mat-form-field appearance="outline" style="width: 300px">
                         <mat-label>Format</mat-label>
                         <mat-select formControlName="format">
