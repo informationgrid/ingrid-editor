@@ -139,7 +139,7 @@ export class UserComponent implements OnInit, AfterContentChecked {
   }
 
   saveUser(user?: User): void {
-    let observer: Observable<User>;
+    let createUserObserver: Observable<User>;
 
     // convert roles to numbers
     // user.roles = user.roles.map(role => +role);
@@ -147,17 +147,21 @@ export class UserComponent implements OnInit, AfterContentChecked {
 
     user = user ?? this.model;
     if (this.isNewUser) {
-      observer = this.userService.createUser(user, this.isNewExternalUser);
+      createUserObserver = this.userService.createUser(
+        user,
+        this.isNewExternalUser
+      );
     } else {
-      observer = this.userService.updateUser(user);
+      createUserObserver = this.userService.updateUser(user);
     }
 
     // send request and handle error
-    observer.subscribe(
+    createUserObserver.subscribe(
       () => {
         this.isNewUser = false;
         this.fetchUsers();
         this.enableForm();
+        this.form.markAsPristine();
         this.loadUser(user.login);
       },
       (err: any) => {

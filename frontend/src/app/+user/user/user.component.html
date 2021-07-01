@@ -20,7 +20,7 @@
                             matTooltip="Speichern"
                             [matTooltipShowDelay]="1000"
                             (click)="saveUser()"
-                            [disabled]="form?.invalid"
+                            [disabled]="form?.invalid || !form?.dirty"
                         >
                             Speichern
                         </button>
