@@ -60,7 +60,8 @@ export class MainHeaderComponent implements OnInit {
   }
 
   getInitials(user: UserInfo) {
-    return user.firstName[0] + user.lastName[0];
+    const initials = user.firstName[0] ?? "" + user.lastName[0] ?? "";
+    return initials.length === 0 ? "??" : initials;
   }
 
   userIsCatAdmin() {
