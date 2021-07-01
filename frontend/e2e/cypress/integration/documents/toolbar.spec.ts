@@ -9,7 +9,7 @@ describe('Toolbar behavior', () => {
   });
 
   afterEach(() => {
-    //cy.kcLogout();
+    cy.kcLogout();
   });
 
   it('initially only create folder and create doc are enabled', () => {
@@ -22,21 +22,21 @@ describe('Toolbar behavior', () => {
     DocumentPage.createFolder(testFolder);
 
     // Empty folder
-    Tree.openNode([testFolder]);
+    Tree.openNode(['checkDisabledBtn']);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
     cy.get(DocumentPage.Toolbar.Copy).click();
-    cy.get("[aria-disabled='false']").contains('Kopieren');
-    cy.get("[aria-disabled='true']").contains('Kopieren mit Teilbaum');
-    cy.get("[aria-disabled='false']").contains('Verschieben (inkl. Teilbaum)');
+    cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled');
+    cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
 
     // Non Empty folder
     cy.get('body').type('{esc}');
     Tree.openNode(['Testdokumente']);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
     cy.get(DocumentPage.Toolbar.Copy).click();
-    cy.get('[data-cy=copyMenu_COPY]').contains('Kopieren');
-    cy.get('[data-cy=copyMenu_COPYTREE]').contains('Kopieren mit Teilbaum');
-    cy.get('[data-cy=copyMenu_CUT]').contains('Verschieben (inkl. Teilbaum)');
+    cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
   });
 
   it('should activate specific buttons when a document is loaded', () => {
@@ -52,20 +52,27 @@ describe('Toolbar behavior', () => {
       'Previous'
     ]);
     cy.get(DocumentPage.Toolbar.Copy).click();
-    cy.get('[data-cy=copyMenu_COPY]').contains('Kopieren');
-    cy.get('[data-cy=copyMenu_COPYTREE]').contains('Kopieren mit Teilbaum');
-    cy.get('[data-cy=copyMenu_CUT]').contains('Verschieben (inkl. Teilbaum)');
+    cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
     // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
   it('should activate specific buttons when a published document is loaded', () => {
-
-    Tree.openNode(['Neue Testdokumente', "Published_mCloudDoc_Indextest"]);
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous']);
+    Tree.openNode(['Neue Testdokumente', 'Published_mCloudDoc_Indextest']);
+    DocumentPage.checkOnlyActiveToolbarButtons([
+      'NewDoc',
+      'NewFolder',
+      'Copy',
+      'Delete',
+      'Save',
+      'Publish',
+      'Previous'
+    ]);
     cy.get(DocumentPage.Toolbar.Copy).click();
-    cy.get('[data-cy=copyMenu_COPY]').contains('Kopieren');
-    cy.get('[data-cy=copyMenu_COPYTREE]').contains('Kopieren mit Teilbaum');
-    cy.get('[data-cy=copyMenu_CUT]').contains('Verschieben (inkl. Teilbaum)');
+    cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
   });
 
   xit('should activate specific buttons when a published document with draft is loaded', () => {
