@@ -1,0 +1,37 @@
+<mat-slide-toggle
+    (change)="toggleLinkType($event.checked)"
+    [checked]="upload.asLink"
+    >Als Verweis
+</mat-slide-toggle>
+<div class="container">
+    <mat-form-field
+        *ngIf="upload.asLink"
+        class="width-100"
+        appearance="outline"
+    >
+        <mat-label>{{ to.label }}</mat-label>
+        <input
+            matInput
+            placeholder="https://..."
+            [(ngModel)]="upload.value"
+            (keyup)="formControl.setValue(upload)"
+        />
+    </mat-form-field>
+    <div
+        *ngIf="!upload.asLink"
+        fxLayout="row"
+        fxLayoutAlign="center baseline"
+        class="upload-wrapper"
+    >
+        <div fxFlex>
+            {{ upload.value ? upload.value : "Nichts ausgewählt" }}
+        </div>
+        <ige-file-upload
+            [multiple]="false"
+            [targetAnalyze]="null"
+            target="/api/upload"
+            (chosenFiles)="selectedUploads = $event"
+            (complete)="uploadComplete($event)"
+        ></ige-file-upload>
+    </div>
+</div>

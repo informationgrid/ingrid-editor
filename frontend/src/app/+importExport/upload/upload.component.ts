@@ -46,25 +46,30 @@ export class UploadComponent implements OnInit {
   /** File extension that accepted, same as 'accept' of <input type="file" />.
    By the default, it's set to 'image/*'. */
   @Input() accept = "*.*";
+
+  /** Allow multiple files to be uploaded */
+  @Input() multiple = true;
+
   @Output() analyzed = new EventEmitter<UploadAnalysis>();
   @Output() complete = new EventEmitter<string>();
   @Output() chosenFiles = new EventEmitter<FileUploadModel[]>();
-  private _files: FileUploadModel[] = [];
-  get files(): FileUploadModel[] {
-    return this._files;
-  }
-
-  set files(value: FileUploadModel[]) {
-    this._files = value;
-    this.chosenFiles.emit(this._files);
-  }
-
   @ViewChild("fileUploadInput") htmlFileUpload: ElementRef;
 
   constructor(
     private uploadService: UploadService,
     private modalService: ModalService
   ) {}
+
+  private _files: FileUploadModel[] = [];
+
+  get files(): FileUploadModel[] {
+    return this._files;
+  }
+
+  set files(value: FileUploadModel[]) {
+    this._files = value;
+    this.chosenFiles.emit([...this._files]);
+  }
 
   /** Allow you to add handler after its completion. Bubble up response text from remote. */
 
@@ -78,18 +83,25 @@ export class UploadComponent implements OnInit {
   onClick() {
     const fileUpload = this.htmlFileUpload.nativeElement;
     fileUpload.onchange = () => {
-      for (let index = 0; index < fileUpload._files.length; index++) {
-        const file = fileUpload._files[index];
-        this.files.push({
-          data: file,
-          state: "in",
-          inProgress: false,
-          progress: 0,
-          canRetry: false,
-          canCancel: true,
-        });
+      for (let index = 0; index < fileUpload.files.length; index++) {
+        const file = fileUpload.files[index];
+        this.files = [
+          ...this.files,
+          {
+            data: file,
+            state: "in",
+            inProgress: false,
+            progress: 0,
+            canRetry: false,
+            canCancel: true,
+          },
+        ];
       }
-      this.analyzeFiles();
+      if (this.targetAnalyze) {
+        this.analyzeFiles();
+      } else {
+        this.uploadFiles();
+      }
     };
     fileUpload.click();
   }

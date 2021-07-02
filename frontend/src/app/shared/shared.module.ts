@@ -23,6 +23,7 @@ import { AddButtonModule } from "./add-button/add-button.module";
 import { AddButtonComponent } from "./add-button/add-button.component";
 import { CardBoxModule } from "./card-box/card-box.module";
 import { CardBoxComponent } from "./card-box/card-box.component";
+import { UploadComponent } from "../+importExport/upload/upload.component";
 
 @NgModule({
   imports: [
@@ -50,6 +51,7 @@ import { CardBoxComponent } from "./card-box/card-box.component";
     EmptyNavigationComponent,
     TreeHeaderComponent,
     OptionListComponent,
+    UploadComponent,
   ],
   exports: [
     TreeComponent,
@@ -60,6 +62,7 @@ import { CardBoxComponent } from "./card-box/card-box.component";
     OptionListComponent,
     SharedDocumentItemModule,
     AddButtonComponent,
+    UploadComponent,
   ],
 })
 export class SharedModule {}

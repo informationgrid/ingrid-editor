@@ -12,16 +12,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Upload", description = "the upload API")
 interface UploadApi {
-    @RequestMapping(value = ["/upload"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
+    @PostMapping(value = ["/upload"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(description = "Upload a file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully uploaded"), ApiResponse(responseCode = "500", description = "An error occurred during upload")])
     fun uploadFile(
             @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile): ResponseEntity<Void>
+    
+    @GetMapping(value = ["/upload/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(description = "Get an uploaded file")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
+    fun getFile(
+            @Parameter(description = "The file to be downloaded", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
 }

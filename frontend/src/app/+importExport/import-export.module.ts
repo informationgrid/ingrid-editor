@@ -16,7 +16,6 @@ import { MatInputModule } from "@angular/material/input";
 import { SharedModule } from "../shared/shared.module";
 import { MatSelectModule } from "@angular/material/select";
 import { OverviewComponent } from "./overview.component";
-import { UploadComponent } from "./upload/upload.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
@@ -48,7 +47,6 @@ import { FormSharedModule } from "../+form/form-shared/form-shared.module";
     OverviewComponent,
     ImportComponent,
     ExportComponent,
-    UploadComponent,
     DndDirective,
   ],
   providers: [ImportExportService],

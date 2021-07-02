@@ -17,6 +17,14 @@ export class McloudDoctype extends BaseDoctype {
 
   iconClass = "Fachaufgabe";
 
+  constructor(
+    codelistService: CodelistService,
+    codelistStore: CodelistStore,
+    codelistQuery?: CodelistQuery
+  ) {
+    super(codelistService, codelistQuery);
+  }
+
   documentFields = () =>
     <FormlyFieldConfig[]>[
       {
@@ -140,15 +148,20 @@ export class McloudDoctype extends BaseDoctype {
                 },
                 {
                   key: "link",
-                  type: "input",
+                  type: "upload",
                   label: "Link",
                   class: "flex-2",
                   templateOptions: {
                     label: "Link",
                     appearance: "outline",
                     required: true,
-                    formatter: (text) =>
-                      `<a href="${text}" target="_blank" class="no-text-transform">${text}</a>`,
+                    formatter: (link: any) => {
+                      if (link instanceof Object) {
+                        return `<a href="/api/upload/${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                      } else {
+                        return `<a href="${link}" target="_blank" class="no-text-transform">${link}</a>`;
+                      }
+                    },
                   },
                 },
                 {
@@ -351,12 +364,4 @@ export class McloudDoctype extends BaseDoctype {
         ],
       },
     ];
-
-  constructor(
-    codelistService: CodelistService,
-    codelistStore: CodelistStore,
-    codelistQuery?: CodelistQuery
-  ) {
-    super(codelistService, codelistQuery);
-  }
 }

@@ -92,6 +92,8 @@ export class TableTypeComponent
     const newEntry = index === null;
     this.dialog
       .open(FormDialogComponent, {
+        hasBackdrop: true,
+        minWidth: 400,
         data: {
           fields: this.to.columns,
           model: newEntry

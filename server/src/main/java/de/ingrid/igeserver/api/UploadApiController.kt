@@ -17,4 +17,8 @@ class UploadApiController : UploadApi {
         logger.info("Receiving file: " + file.name)
         return ResponseEntity(HttpStatus.OK)
     }
+
+    override fun getFile(id: String): ResponseEntity<Void> {
+        TODO("Not yet implemented")
+    }
 }

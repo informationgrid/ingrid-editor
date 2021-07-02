@@ -57,6 +57,8 @@ import { MatRadioModule } from "@angular/material/radio";
 import { RepeatDetailListComponent } from "./types/repeat-detail-list/repeat-detail-list.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CloseScrollStrategy, Overlay } from "@angular/cdk/overlay";
+import { UploadTypeComponent } from "./types/upload-type/upload-type.component";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
@@ -123,6 +125,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "date-range",
           component: DateRangeTypeComponent,
         },
+        {
+          name: "upload",
+          component: UploadTypeComponent,
+        },
       ],
       validators: [{ name: "ip", validation: IpValidator }],
       validationMessages: [
@@ -140,6 +146,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatDatepickerModule,
     MatRadioModule,
     DragDropModule,
+    MatSlideToggleModule,
   ],
   providers: [
     {
@@ -177,6 +184,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ChipDialogComponent,
     DateRangeTypeComponent,
     RepeatDetailListComponent,
+    UploadTypeComponent,
   ],
   exports: [
     ReactiveFormsModule,
