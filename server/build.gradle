@@ -129,6 +129,8 @@ configurations {
     all {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
+        exclude group: 'com.sun.mail', module: 'javax.mail'
+        exclude group: 'javax.mail', module: 'mailapi'
         resolutionStrategy {
             force "org.apache.logging.log4j:log4j-api:$log4j2_version"
             force "org.apache.logging.log4j:log4j-core:$log4j2_version"
