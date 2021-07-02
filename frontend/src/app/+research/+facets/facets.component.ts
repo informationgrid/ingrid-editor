@@ -66,9 +66,6 @@ export class FacetsComponent implements AfterViewInit {
   private allFacets: Facets;
   private spatialFilterId = "";
   private fieldsWithParameters: { [x: string]: any[] } = {};
-
-  showSpatialFilter = false;
-
   leafletReference: L.Map;
   notExpanded: any = {};
   location: SpatialLocation;
@@ -173,7 +170,10 @@ export class FacetsComponent implements AfterViewInit {
   private updateSpatial(location: SpatialLocation) {
     this.location = location;
 
-    if (!location) return;
+    if (!location) {
+      this.removeSpatialFromMap();
+      return;
+    }
 
     this._model.spatial = {};
     this._model.spatial[this.spatialFilterId] = [];
@@ -196,12 +196,7 @@ export class FacetsComponent implements AfterViewInit {
       return;
     }
 
-    if (this.boxes) {
-      this.leafletService.removeDrawnBoundingBoxes(
-        this.leafletReference,
-        this.boxes
-      );
-    }
+    this.removeSpatialFromMap();
     this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [
       {
         value: location.value,
@@ -211,6 +206,15 @@ export class FacetsComponent implements AfterViewInit {
         indexNumber: 0,
       },
     ]);
+  }
+
+  private removeSpatialFromMap() {
+    if (!this.boxes) return;
+
+    this.leafletService.removeDrawnBoundingBoxes(
+      this.leafletReference,
+      this.boxes
+    );
   }
 
   removeLocation() {

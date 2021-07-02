@@ -15,7 +15,6 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../services/document/document.service";
-import { QueryState, QueryStore } from "../store/query/query.store";
 import { ShortResultInfo } from "./result-table/result-table.component";
 import { logAction } from "@datorama/akita";
 
@@ -29,8 +28,6 @@ export class ResearchComponent implements OnInit {
   selectedIndex = this.queryQuery.select((state) => state.ui.currentTabIndex);
 
   query = new FormControl("");
-
-  totalHits: number = 0;
 
   searchClass: "selectDocuments" | "selectAddresses";
 
@@ -47,17 +44,17 @@ export class ResearchComponent implements OnInit {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private documentService: DocumentService,
-    private queryStore: QueryStore,
     private queryQuery: QueryQuery
   ) {}
 
   ngOnInit() {
     let state = this.queryQuery.getValue();
-    this.updateControlsFromState(
-      state,
-      this.route.snapshot.params.q,
-      this.route.snapshot.params.type
-    );
+    const query = this.route.snapshot.params.q ?? state.ui.search.query;
+    const type = this.route.snapshot.params.type ?? state.ui.search.category;
+    this.researchService.updateUIState({
+      search: { query: query, category: type },
+    });
+    this.updateControlsFromState();
 
     this.researchService.fetchQueries();
 
@@ -65,18 +62,9 @@ export class ResearchComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         debounceTime(300),
-        tap((value) => {
-          logAction("query changed");
-          this.queryStore.update((state) => ({
-            ui: {
-              ...state.ui,
-              search: {
-                ...state.ui.search,
-                query: value,
-              },
-            },
-          }));
-        })
+        tap((value) =>
+          this.researchService.updateUIState({ search: { query: value } })
+        )
       )
       .subscribe();
 
@@ -90,23 +78,14 @@ export class ResearchComponent implements OnInit {
   }
 
   updateFilter(info: FacetUpdate) {
-    logAction("Update filter");
-    this.queryStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        search: {
-          ...state.ui.search,
-          facets: info,
-        },
-      },
-    }));
+    this.researchService.updateUIState({ search: { facets: info } });
   }
 
   startSearch() {
     const state = this.queryQuery.getValue();
 
     // complete model with other parameters
-    const model = this.prepareFacetModel(state);
+    const model = this.researchService.prepareFacetModel(state);
 
     setTimeout(() => {
       // this.applyImplicitFilter(this.model);
@@ -134,8 +113,32 @@ export class ResearchComponent implements OnInit {
     );
   }
 
-  private updateHits(result: ResearchResponse) {
-    this.result = result;
+  loadQuery(id: string) {
+    let entity: SqlQuery | FacetQuery = JSON.parse(
+      JSON.stringify(this.queryQuery.getEntity(id))
+    );
+
+    logAction("Load query");
+    if (entity.type === "facet") {
+      this.researchService.updateUIState({
+        currentTab: 0,
+        search: {
+          category: (<FacetQuery>entity).model.type,
+          query: (<FacetQuery>entity).term,
+          facets: {
+            model: { ...this.getFacetModel(), ...(<FacetQuery>entity).model },
+            fieldsWithParameters: (<FacetQuery>entity).parameter,
+          },
+        },
+      });
+    } else {
+      this.researchService.updateUIState({
+        currentTab: 1,
+        sqlSearch: { query: (<SqlQuery>entity).sql },
+      });
+    }
+
+    this.updateControlsFromState();
   }
 
   /*
@@ -152,48 +155,6 @@ export class ResearchComponent implements OnInit {
     }
   */
 
-  loadQuery(id: string) {
-    let entity: SqlQuery | FacetQuery = JSON.parse(
-      JSON.stringify(this.queryQuery.getEntity(id))
-    );
-
-    logAction("Load query");
-    if (entity.type === "facet") {
-      this.queryStore.update((state) => ({
-        ui: {
-          ...state.ui,
-          currentTabIndex: 0,
-          search: {
-            category: (<FacetQuery>entity).model.type,
-            query: (<FacetQuery>entity).term,
-            facets: {
-              model: { ...this.getFacetModel(), ...(<FacetQuery>entity).model },
-              fieldsWithParameters: (<FacetQuery>entity).parameter,
-            },
-          },
-        },
-      }));
-    } else {
-      this.queryStore.update((state) => ({
-        ui: {
-          ...state.ui,
-          currentTabIndex: 1,
-          sql: {
-            query: (<SqlQuery>entity).sql,
-          },
-        },
-      }));
-    }
-
-    this.updateControlsFromState(this.queryQuery.getValue());
-  }
-
-  private getFacetModel(): any {
-    return this.searchClass === "selectDocuments"
-      ? this.researchService.facetModel.documents
-      : this.researchService.facetModel.addresses;
-  }
-
   saveQuery(asSql = false) {
     this.dialog
       .open(SaveQueryDialogComponent, {
@@ -201,10 +162,10 @@ export class ResearchComponent implements OnInit {
         maxWidth: 600,
       })
       .afterClosed()
-      .subscribe((response) => {
-        if (response) {
+      .subscribe((dialogOptions) => {
+        if (dialogOptions) {
           this.researchService
-            .saveQuery(this.prepareQuery(response, asSql))
+            .saveQuery(this.queryQuery.getValue(), dialogOptions, asSql)
             .subscribe();
         }
       });
@@ -220,42 +181,9 @@ export class ResearchComponent implements OnInit {
   changeSearchClass(value: string) {
     this.filter.model = {};
 
-    logAction("Change search class");
-    this.queryStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        search: {
-          ...state.ui.search,
-          category: value,
-        },
-      },
-    }));
-  }
-
-  private prepareQuery(response: any, asSql: boolean): SqlQuery | FacetQuery {
-    const state = this.queryQuery.getValue();
-    let base = {
-      id: null,
-      name: response.name,
-      description: response.description,
-    };
-
-    if (asSql) {
-      return {
-        ...base,
-        sql: state.ui.sql.query,
-        type: "sql",
-      };
-    } else {
-      const model = this.prepareFacetModel(state);
-      return {
-        ...base,
-        type: "facet",
-        term: state.ui.search.query,
-        model: model,
-        parameter: state.ui.search.facets.fieldsWithParameters,
-      };
-    }
+    this.researchService.updateUIState({
+      search: { category: value },
+    });
   }
 
   removeDataset(hit: any) {
@@ -286,53 +214,22 @@ export class ResearchComponent implements OnInit {
       });
   }
 
-  private isAddress(hit: any): boolean {
-    return hit._category === "address";
-  }
-
   updateSqlQueryState(value: string) {
     logAction("SQL Query");
-    this.queryStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        sql: {
-          ...state.ui.sql,
-          query: value,
-        },
-      },
-    }));
+
+    this.researchService.updateUIState({
+      sqlSearch: { query: value },
+    });
   }
 
   handleTabChange(index: number) {
     logAction("Tab change");
-    this.queryStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        currentTabIndex: index,
-      },
-    }));
+    this.researchService.updateUIState({
+      currentTab: index,
+    });
     if (index === 0) {
       this.facetViewRefresher.emit();
     }
-  }
-
-  private prepareFacetModel(state: QueryState) {
-    return {
-      ...state.ui.search.facets.model,
-      type: state.ui.search.category,
-    };
-  }
-
-  private updateControlsFromState(
-    state: QueryState,
-    queryOverride?: string,
-    typeOverride?: "selectDocuments" | "selectAddresses"
-  ) {
-    this.query.setValue(queryOverride ?? state.ui.search.query, {
-      emitEvent: false,
-    });
-    this.searchClass = typeOverride ?? state.ui.search.category;
-    this.filter = JSON.parse(JSON.stringify(state.ui.search.facets));
   }
 
   startSearchByTab(index: number) {
@@ -341,5 +238,28 @@ export class ResearchComponent implements OnInit {
     } else if (index === 1) {
       this.queryBySQL();
     }
+  }
+
+  private updateHits(result: ResearchResponse) {
+    this.result = result;
+  }
+
+  private getFacetModel(): any {
+    return this.searchClass === "selectDocuments"
+      ? this.researchService.facetModel.documents
+      : this.researchService.facetModel.addresses;
+  }
+
+  private isAddress(hit: any): boolean {
+    return hit._category === "address";
+  }
+
+  private updateControlsFromState() {
+    let state = this.queryQuery.getValue();
+    this.query.setValue(state.ui.search.query, {
+      emitEvent: false,
+    });
+    this.searchClass = state.ui.search.category;
+    this.filter = JSON.parse(JSON.stringify(state.ui.search.facets));
   }
 }

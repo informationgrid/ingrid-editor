@@ -6,7 +6,7 @@ import {
 } from "../services/config/config.service";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
-import { QueryStore } from "../store/query/query.store";
+import { QueryState, QueryStore } from "../store/query/query.store";
 import { FacetQuery, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
 import { BackendStoreQuery } from "./backend-store-query.model";
@@ -40,9 +40,9 @@ export class ResearchResponse {
   providedIn: "root",
 })
 export class ResearchService {
+  facetModel: any;
   private configuration: Configuration;
   private filters: Facets;
-  facetModel: any;
 
   constructor(
     private http: HttpClient,
@@ -60,19 +60,6 @@ export class ResearchService {
         tap((filters) => (this.filters = filters)),
         tap((filters) => this.createFacetModel(filters))
       );
-  }
-
-  private createFacetModel(filters: Facets) {
-    this.facetModel = {
-      addresses: {},
-      documents: {},
-    };
-    filters.addresses.forEach((group) => {
-      this.facetModel.addresses[group.id] = {};
-    });
-    filters.documents.forEach((group) => {
-      this.facetModel.documents[group.id] = {};
-    });
   }
 
   search(
@@ -109,12 +96,15 @@ export class ResearchService {
   }
 
   saveQuery(
-    newQuery: SqlQuery | FacetQuery
+    state: QueryState,
+    dialogOptions: any,
+    asSql: boolean
   ): Observable<SqlQuery | FacetQuery> {
+    const preparedQuery = this.prepareQuery(state, dialogOptions, asSql);
     return this.http
       .post<BackendStoreQuery>(
         `${this.configuration.backendUrl}search`,
-        this.convertToBackendQuery(newQuery)
+        this.convertToBackendQuery(preparedQuery)
       )
       .pipe(
         map((response) => this.convertToFrontendQuery(response)),
@@ -156,6 +146,49 @@ export class ResearchService {
     };
   }
 
+  removeQuery(id: string) {
+    return this.http
+      .delete(`${this.configuration.backendUrl}search/query/${id}`)
+      .pipe(tap(() => this.queryStore.remove(id)));
+  }
+
+  updateUIState(partialState: {
+    currentTab?: number;
+    search?: any;
+    sqlSearch?: any;
+  }) {
+    this.queryStore.update((state) => {
+      const newState: QueryState = {
+        ui: {
+          ...state.ui,
+        },
+      };
+      if (partialState.currentTab !== undefined) {
+        newState.ui.currentTabIndex = partialState.currentTab;
+      }
+      if (partialState.search) {
+        newState.ui.search = { ...state.ui.search, ...partialState.search };
+      }
+      if (partialState.sqlSearch) {
+        newState.ui.sql = { ...state.ui.sql, ...partialState.sqlSearch };
+      }
+      return newState;
+    });
+  }
+
+  private createFacetModel(filters: Facets) {
+    this.facetModel = {
+      addresses: {},
+      documents: {},
+    };
+    filters.addresses.forEach((group) => {
+      this.facetModel.addresses[group.id] = {};
+    });
+    filters.documents.forEach((group) => {
+      this.facetModel.documents[group.id] = {};
+    });
+  }
+
   private createSettings(query: SqlQuery | FacetQuery) {
     return query.type === "facet"
       ? {
@@ -175,9 +208,39 @@ export class ResearchService {
     return data;
   }
 
-  removeQuery(id: string) {
-    return this.http
-      .delete(`${this.configuration.backendUrl}search/query/${id}`)
-      .pipe(tap(() => this.queryStore.remove(id)));
+  private prepareQuery(
+    state: QueryState,
+    response: any,
+    asSql: boolean
+  ): SqlQuery | FacetQuery {
+    let base = {
+      id: null,
+      name: response.name,
+      description: response.description,
+    };
+
+    if (asSql) {
+      return {
+        ...base,
+        sql: state.ui.sql.query,
+        type: "sql",
+      };
+    } else {
+      const model = this.prepareFacetModel(state);
+      return {
+        ...base,
+        type: "facet",
+        term: state.ui.search.query,
+        model: model,
+        parameter: state.ui.search.facets.fieldsWithParameters,
+      };
+    }
+  }
+
+  prepareFacetModel(state: QueryState) {
+    return {
+      ...state.ui.search.facets.model,
+      type: state.ui.search.category,
+    };
   }
 }
