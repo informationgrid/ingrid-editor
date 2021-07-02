@@ -25,7 +25,7 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle);
   });
 
-  it('should modify an existing dialog', () => {
+  it('should modify an existing catalog', () => {
     const catalogTitle = '_modified_title';
 
     cy.get('[data-cy=header-info-button]').click();
@@ -41,7 +41,7 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle);
   });
 
-  it('should delete an existing dialog', () => {
+  it('should delete an existing catalog', () => {
     const catalogTitle = 'ng-universe';
 
     cy.get('[data-cy=header-info-button]').click();
