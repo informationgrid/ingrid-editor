@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
@@ -52,10 +53,15 @@ class UsersApiController : UsersApi {
     @Autowired(required = false)
     private var gitInfo: GitProperties? = null
 
+    @Autowired
+    private lateinit var email: EmailServiceImpl
+
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
+        email.sendWelcomeEmail()
+        
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val userExists = keycloakService.userExists(principal, user.login)

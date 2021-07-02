@@ -69,6 +69,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
