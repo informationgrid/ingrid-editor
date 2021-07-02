@@ -53,9 +53,8 @@ describe('Toolbar behavior', () => {
     ]);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
-    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders
     cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
-    // TODO: copy with subtree should be disabled, but copy and cut enabled
   });
 
   it('should activate specific buttons when a published document is loaded', () => {
@@ -71,7 +70,7 @@ describe('Toolbar behavior', () => {
     ]);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
-    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders
     cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
   });
 

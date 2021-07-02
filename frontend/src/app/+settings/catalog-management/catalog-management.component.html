@@ -24,6 +24,7 @@
             <div fxFlex="25" class="catalog-wrapper">
                 <mat-card
                     class="hover-elevate selected"
+                    [attr.data-cy]="catalog.label"
                     *ngIf="activeCatalog | async as catalog"
                 >
                     <div class="card-header">
@@ -66,6 +67,7 @@
             >
                 <mat-card
                     class="hover-elevate"
+                    [attr.data-cy]="cat.label"
                     [class.selected]="cat.id === currentCatalog"
                 >
                     <div class="card-header">
