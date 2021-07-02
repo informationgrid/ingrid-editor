@@ -26,19 +26,26 @@ describe('Catalog management', () => {
   });
 
   it('should modify an existing catalog', () => {
-    const catalogTitle = '_modified_title';
+    const catalogTitle = 'Umbenannter Katalog';
+    const catalogTitleModified = '-Modified';
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
 
-    ManageSpec.openCatalogCardMenu('Test');
+    // first create a new catalog
+    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
+    cy.get('mat-dialog-container input').type(catalogTitle);
+    cy.get('mat-dialog-actions button').contains('Anlegen').click();
+    cy.wait(300);
+
+    ManageSpec.openCatalogCardMenu(catalogTitle);
 
     cy.get('button').contains('Bearbeiten').click();
-    cy.get('mat-form-field:nth-child(1)').type(catalogTitle);
+    cy.get('mat-form-field:nth-child(1)').type(catalogTitleModified);
     cy.get('button').contains('Aktualisieren').click();
     cy.wait(300);
 
-    cy.get('ige-catalog-management mat-card').contains(catalogTitle);
+    cy.get('[data-cy="' + catalogTitle + catalogTitleModified + '"]').contains(catalogTitle);
   });
 
   it('should delete an existing catalog', () => {
