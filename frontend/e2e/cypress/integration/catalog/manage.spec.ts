@@ -112,6 +112,6 @@ describe('Catalog management', () => {
 
 class ManageSpec {
   static openCatalogCardMenu(title: string) {
-    cy.get(`[data-cy=${title}]`).trigger('mouseover').parent().find('button.mat-menu-trigger').click({ force: true });
+    cy.get(`[data-cy="${title}"]`).trigger('mouseover').parent().find('button.mat-menu-trigger').click({ force: true });
   }
 }
