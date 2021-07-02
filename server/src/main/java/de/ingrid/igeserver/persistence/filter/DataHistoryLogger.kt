@@ -4,7 +4,7 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.services.AuditLogger
-import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -25,6 +25,9 @@ class DataHistoryLogger : Filter<PostPersistencePayload> {
     @Autowired
     private lateinit var auditLogger: AuditLogger
 
+    @Autowired
+    private lateinit var documentService: DocumentService
+
     override val profiles: Array<String>?
         get() = PROFILES
 
@@ -33,11 +36,11 @@ class DataHistoryLogger : Filter<PostPersistencePayload> {
 
         context.addMessage(Message(this, "Log document data '$docId' after persistence"))
         auditLogger.log(
-                category = LOG_CATEGORY,
-                action = payload.action.name.toLowerCase(),
-                target = docId,
-                data = null, // TODO: payload.document,
-                logger = LOGGER_NAME
+            category = LOG_CATEGORY,
+            action = payload.action.name.lowercase(),
+            target = docId,
+            data = documentService.convertToJsonNode(payload.document),
+            logger = LOGGER_NAME
         )
         return payload
     }

@@ -33,7 +33,7 @@
     {% for download in model.data.downloads %}
         {
             "format": ["{{ download.type }}"],
-            "accessURL": "{{ download.link }}",
+            "accessURL": "{{ download.link.value }}",
             "title": "{{ download.title }}",
             "type": "{{ download.format }}"
         }{% if not loop.last %},{% endif %}
