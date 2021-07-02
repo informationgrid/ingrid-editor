@@ -21,7 +21,11 @@ interface UserManagementService {
 
     fun getCurrentPrincipal(): Principal?
     fun userExists(principal: Principal, userId: String): Boolean
-    fun createUser(principal: Principal, user: User)
+
+    /**
+     * Returns the temporary password for the new user
+     */
+    fun createUser(principal: Principal, user: User): String
     fun updateUser(principal: Principal?, user: User)
     fun requestPasswordChange(principal: Principal?, id: String)
 

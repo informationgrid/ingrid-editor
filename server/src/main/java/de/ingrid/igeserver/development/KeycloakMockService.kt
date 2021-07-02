@@ -78,7 +78,7 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
-    override fun createUser(principal: Principal, user: User) {
+    override fun createUser(principal: Principal, user: User): String {
         TODO("Not yet implemented")
     }
 

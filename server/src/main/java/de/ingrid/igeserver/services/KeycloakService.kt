@@ -16,6 +16,7 @@ import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
 import org.keycloak.admin.client.resource.RolesResource
+import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
@@ -194,11 +195,17 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun createUser(principal: Principal, user: User) {
+    override fun createUser(principal: Principal, user: User): String {
 
         initClient(principal).use {
             val keycloakUser = mapToKeycloakUser(user)
             val usersResource = it.realm().users()
+            val password = "12345"
+            keycloakUser.requiredActions = listOf("UPDATE_PASSWORD")
+            keycloakUser.credentials = listOf(CredentialRepresentation().apply { 
+                isTemporary = true
+                credentialData = password
+            })
             val createResponse = usersResource.create(keycloakUser)
             
             handleReponseErrors(createResponse) // will throw on error
@@ -209,12 +216,15 @@ class KeycloakService : UserManagementService {
                 roles().realmLevel().add(listOf( it.realm().roles().get("ige-user").toRepresentation()))
                 
                 // send an email to the user to set a password
-                try {
+                // This is done with the welcome mail now
+                /*try {
                     executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
                 } catch (ex: Exception) {
                     log.error("Could not send eMail to user: ${user.login}")
-                }
+                }*/
             }
+            
+            return password
         }
 
     }

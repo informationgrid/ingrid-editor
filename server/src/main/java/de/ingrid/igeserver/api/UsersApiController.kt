@@ -60,8 +60,7 @@ class UsersApiController : UsersApi {
     private val developmentMode = false
 
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
-        email.sendWelcomeEmail()
-        
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val userExists = keycloakService.userExists(principal, user.login)
@@ -69,12 +68,15 @@ class UsersApiController : UsersApi {
             throw ConflictException.withReason("User already Exists with login ${user.login}")
         }
 
-        when (userExists) {
-            true -> keycloakService.addRoles(principal, user.login, listOf(user.role))
-            false -> keycloakService.createUser(principal, user)
+        if (userExists) {
+            keycloakService.addRoles(principal, user.login, listOf(user.role))
+            catalogService.createUser(catalogId, user)
+            email.sendWelcomeEmail(user.email)
+        } else {
+            val password = keycloakService.createUser(principal, user)
+            catalogService.createUser(catalogId, user)
+            email.sendWelcomeEmailWithPassword(user.email, password)
         }
-
-        catalogService.createUser(catalogId, user)
 
         return ResponseEntity.ok().build()
     }
