@@ -91,10 +91,14 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private fun getUsersWithRole(roles: RolesResource, roleName: String, ignoreUsers: Set<User> = emptySet()): List<User> {
+    private fun getUsersWithRole(
+        roles: RolesResource,
+        roleName: String,
+        ignoreUsers: Set<User> = emptySet()
+    ): List<User> {
         try {
             val users = roles[roleName].roleUserMembers
-                .filter {user -> ignoreUsers.none {ignore -> user.username == ignore.login } }
+                .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
             return users
@@ -107,24 +111,24 @@ class KeycloakService : UserManagementService {
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
         var client: Keycloak
         val durationStart = Date()
-            val keycloakPrincipal = principal as KeycloakAuthenticationToken?
-            val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
+        val keycloakPrincipal = principal as KeycloakAuthenticationToken?
+        val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
 
-            client = KeycloakBuilder.builder()
-                .serverUrl(keycloakUrl)
-                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .realm(keycloakRealm)
-                .clientId(keycloakClientId)
-                .clientSecret(keycloakSecret)
-                .authorization(tokenString)
-                .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
-                .build()
-            
+        client = KeycloakBuilder.builder()
+            .serverUrl(keycloakUrl)
+            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+            .realm(keycloakRealm)
+            .clientId(keycloakClientId)
+            .clientSecret(keycloakSecret)
+            .authorization(tokenString)
+            .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
+            .build()
+
         val end = Date()
         log.info("Client init: ${end.time - durationStart.time}")
         return KeycloakCloseableClient(client, keycloakRealm)
     }
-    
+
     override fun getClient(principal: Principal?): KeycloakCloseableClient {
         return initClient(principal)
     }
@@ -148,9 +152,9 @@ class KeycloakService : UserManagementService {
         try {
             val userId = getKeycloakUser(client, login).id
             val userSessions = (client as KeycloakCloseableClient).realm().users()[userId].userSessions
-            return if (userSessions.isEmpty()){
+            return if (userSessions.isEmpty()) {
                 null
-            } else{
+            } else {
                 Date(userSessions.last().start)
             }
         } catch (e: Exception) {
@@ -198,32 +202,33 @@ class KeycloakService : UserManagementService {
     override fun createUser(principal: Principal, user: User): String {
 
         initClient(principal).use {
-            val keycloakUser = mapToKeycloakUser(user)
             val usersResource = it.realm().users()
-            val password = "12345"
-            keycloakUser.requiredActions = listOf("UPDATE_PASSWORD")
-            keycloakUser.credentials = listOf(CredentialRepresentation().apply { 
-                isTemporary = true
-                credentialData = password
-            })
+            val password = generatePassword()
+
+            val keycloakUser = mapToKeycloakUser(user).apply {
+                requiredActions = listOf("UPDATE_PASSWORD")
+                credentials = listOf(CredentialRepresentation().apply {
+                    type = CredentialRepresentation.PASSWORD
+                    isTemporary = true
+                    value = password
+                })
+            }
             val createResponse = usersResource.create(keycloakUser)
-            
+
             handleReponseErrors(createResponse) // will throw on error
-            
+
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
             usersResource.get(userId).apply {
-                roles().realmLevel().add(listOf( it.realm().roles().get("ige-user").toRepresentation()))
-                
-                // send an email to the user to set a password
-                // This is done with the welcome mail now
-                /*try {
-                    executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
-                } catch (ex: Exception) {
-                    log.error("Could not send eMail to user: ${user.login}")
-                }*/
+                val roles = it.realm().roles()
+                val userRoles = listOf(
+                    roles.get("ige-user").toRepresentation(),
+                    // TODO: add ige-role specific realm-management roles view-users or manage-users and/or manage-realm 
+//                    roles.get("view-users").toRepresentation()
+                )
+                roles().realmLevel().add(userRoles)
             }
-            
+
             return password
         }
 
@@ -245,7 +250,7 @@ class KeycloakService : UserManagementService {
         when (createResponse.status) {
             409 -> throw ConflictException.withReason("New user cannot be created, because another user might have the same email address")
         }
-        
+
     }
 
     override fun requestPasswordChange(principal: Principal?, id: String) {
@@ -295,7 +300,7 @@ class KeycloakService : UserManagementService {
                 val rolesRepresentations = getRoleRepresentations(client, roles)
                 users[user.id].roles().realmLevel().add(rolesRepresentations)
             }
-            
+
         }
 
     }
@@ -310,13 +315,16 @@ class KeycloakService : UserManagementService {
     private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
 
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
-        
+
         return userRep.apply {
             username = user.login
             firstName = user.firstName
             lastName = user.lastName
             email = user.email
         }
-        
+
     }
+
+    private val chars = ('a'..'Z') + ('A'..'Z') + ('0'..'9')
+    private fun generatePassword(): String = List(16) { chars.random() }.joinToString("")
 }
