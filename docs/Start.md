@@ -11,11 +11,11 @@
 Several profiles can be activated via Spring. With each activated profile a separate configuration file can be used,
 which has the format `application-<profile>.properties` The following list explains each profile:
 
-|Profile|Description|
-|---|---|
-|dev|Contains configuration used during development for correct setup. It also disables Keycloak.|
-|elasticsearch|Activate export to Elasticsearch during publishing and indexing|
-|mcloud|Activates importer, exporter and datatypes for the mCLOUD-Profile|
+| Profile       | Description                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| dev           | Contains configuration used during development for correct setup. It also disables Keycloak. |
+| elasticsearch | Activate export to Elasticsearch during publishing and indexing                              |
+| mcloud        | Activates importer, exporter and datatypes for the mCLOUD-Profile                            |
 
 #### Dependency Injection
 
@@ -84,6 +84,7 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
   }
 }
 ```
+
 </details>
 
 ### Error Handling
@@ -106,25 +107,25 @@ IGE Server defines the following **exception hierarchy**:
 
   ```json
   {
-      "errorId":"d6c386c7-5c5e-4886-aac3-d8a9ddedf625",
-      "errorCode":"VALIDATION_ERROR",
-      "errorText":"One or more fields are invalid: title, description.",
-      "data":{
-          "fields":[
-              {
-                  "name":"title",
-                  "errorCode":"REQUIRED"
-              },
-              {
-                  "name":"description",
-                  "errorCode":"STRING_LENGTH",
-                  "data":{
-                      "min":50,
-                      "max":250
-                  }
-              }
-          ]
-      }
+    "errorId": "d6c386c7-5c5e-4886-aac3-d8a9ddedf625",
+    "errorCode": "VALIDATION_ERROR",
+    "errorText": "One or more fields are invalid: title, description.",
+    "data": {
+      "fields": [
+        {
+          "name": "title",
+          "errorCode": "REQUIRED"
+        },
+        {
+          "name": "description",
+          "errorCode": "STRING_LENGTH",
+          "data": {
+            "min": 50,
+            "max": 250
+          }
+        }
+      ]
+    }
   }
   ```
 
@@ -146,7 +147,7 @@ The following **guidelines** should be kept in mind when handling errors:
 
 - Exceptions should not be swallowed.
 - Only logging an exception is not a good practice, since it requires monitoring of the log files to discover them. It's better to let it pass to the client to signal that something went wrong.
-- Logging and rethrowing an exception is not necessary, since *all* exceptions are logged by the global exception handler (see above).
+- Logging and rethrowing an exception is not necessary, since _all_ exceptions are logged by the global exception handler (see above).
 - Exceptions should not be handled unless it's possible to handle them in a meaningful way at that point or it's necessary to add meaningful information.
 - Exceptions should be thrown instead of using `ResponseEntity.status(HttpStatus.XXX).build()` or `HttpServletResponse.sendError(HttpServletResponse.XXX, msg)`, because this will ensure the response body as described above.
 - Whenever possible, information should be added to the exception that helps to analyze the cause (e.g. which record was failed to update).
@@ -163,34 +164,40 @@ private val log = logger()
 
 #### Audit Log
 
-An audit log is written for the **documentation of changes** in the application data or to **record specific interactions** with the system. It consists of special records that answer the question *what* was done *when* and by *whom*.
+An audit log is written for the **documentation of changes** in the application data or to **record specific interactions** with the system. It consists of special records that answer the question _what_ was done _when_ and by _whom_.
 
 The `de.ingrid.igeserver.services.AuditLogger` component is used to create audit log records with it's `log()` method. It uses Log4j loggers that can be configured to log to different destinations. The default logger's name is `audit`.
 
 An **audit log record** consists of the following information:
 
-- A *Category* used to group records for filtering (e.g. *data-history*)
-- An *Action* specifying the kind of changes applied to the resource (e.g. *delete*)
-- An *Actor* executing the action (the value is usually retrieved automatically from `UserService.getCurrentPrincipal()`)
-- The *Time* when the action took place (the value is usually retrieved automatically from `DateService.now()`)
-- The *Target* of the action (e.g. the unique identifier of the data to which the changes were applied)
-- The *Data* defining the changes that were applied
+- A _Category_ used to group records for filtering (e.g. _data-history_)
+- An _Action_ specifying the kind of changes applied to the resource (e.g. _delete_)
+- An _Actor_ executing the action (the value is usually retrieved automatically from `UserService.getCurrentPrincipal()`)
+- The _Time_ when the action took place (the value is usually retrieved automatically from `DateService.now()`)
+- The _Target_ of the action (e.g. the unique identifier of the data to which the changes were applied)
+- The _Data_ defining the changes that were applied
 
 A typical audit log record looks like the following:
 
 ```json
 {
-    "cat":"data-history",
-    "action":"delete",
-    "actor":"user1",
-    "time":"2020-09-07T16:02:11.618768300+02:00",
-    "target":"dcf47072-d331-4a4c-bac1-3af64e9c1ea8",
-    "data":{
-        "_hasChildren":false,"_parent":null,"@rid":"#47:18","@class":"Document",
-        "_created":"2020-08-25T14:29:40.797511700+02:00","@version":1,"_type":"UvpDoc",
-        "_id":"dcf47072-d331-4a4c-bac1-3af64e9c1ea8","title":"Test",
-        "_modified":"2020-08-25T14:29:40.797511700+02:00"
-    }
+  "cat": "data-history",
+  "action": "delete",
+  "actor": "user1",
+  "time": "2020-09-07T16:02:11.618768300+02:00",
+  "target": "dcf47072-d331-4a4c-bac1-3af64e9c1ea8",
+  "data": {
+    "_hasChildren": false,
+    "_parent": null,
+    "@rid": "#47:18",
+    "@class": "Document",
+    "_created": "2020-08-25T14:29:40.797511700+02:00",
+    "@version": 1,
+    "_type": "UvpDoc",
+    "_id": "dcf47072-d331-4a4c-bac1-3af64e9c1ea8",
+    "title": "Test",
+    "_modified": "2020-08-25T14:29:40.797511700+02:00"
+  }
 }
 ```
 
@@ -223,14 +230,14 @@ If we need to **access the audit log** in the application, the audit log must be
 
 A convenient way to create an audit log record each time a method is called is to use the `@AuditLog` annotation. It creates a record with the following values:
 
-- *Category*: The value of the `category` parameter defined in the annotation (default: *empty string*)
-- *Action*: The value of the `action` parameter defined in the annotation (default: class name with the name of the annotated method appended)
-- *Target*: The value of the method parameter specified in the `target` parameter, e.g. if target is `id`, the value of the `id` method parameter will become the value of *Target* (default: *empty string*)
-- *Data* The value of the method parameter specified in the `data` parameter, e.g. if target is `document`, the value of the `document` method parameter will become the value of *Data* (default: parameter names and values of the annotated method call in JSON notation)
+- _Category_: The value of the `category` parameter defined in the annotation (default: _empty string_)
+- _Action_: The value of the `action` parameter defined in the annotation (default: class name with the name of the annotated method appended)
+- _Target_: The value of the method parameter specified in the `target` parameter, e.g. if target is `id`, the value of the `id` method parameter will become the value of _Target_ (default: _empty string_)
+- _Data_ The value of the method parameter specified in the `data` parameter, e.g. if target is `document`, the value of the `document` method parameter will become the value of _Data_ (default: parameter names and values of the annotated method call in JSON notation)
 
-*Actor* and *Time* are defined as usual.
+_Actor_ and _Time_ are defined as usual.
 
-NOTE: The audit log record is created **after** the method is executed which means that only *successful* method executions are recorded.
+NOTE: The audit log record is created **after** the method is executed which means that only _successful_ method executions are recorded.
 
 Using the annotation **without any parameters**
 
@@ -245,15 +252,16 @@ will result in records of the following form:
 
 ```json
 {
-    "cat":"",
-    "action":"de.ingrid.igeserver.services.DocumentService.updateDocument",
-    "actor":"user1",
-    "time":"2020-09-14T17:10:06.145049500+02:00",
-    "target":"",
-    "data":{
-        "data":"{\"title\":\"Test\",\"_id\":\"bd485713-0aba-4140-88cb-dd37675d5973\",\"_parent\":null,\"_type\":\"UvpDoc\",\"_created\":\"2020-09-14T17:04:48.733668500+02:00\",\"_version\":1,\"description\":\"Beschreibung\",\"_modified\":\"2020-09-14T17:10:06.101057900+02:00\"}",
-        "publish":"false","id":"bd485713-0aba-4140-88cb-dd37675d5973"
-    }
+  "cat": "",
+  "action": "de.ingrid.igeserver.services.DocumentService.updateDocument",
+  "actor": "user1",
+  "time": "2020-09-14T17:10:06.145049500+02:00",
+  "target": "",
+  "data": {
+    "data": "{\"title\":\"Test\",\"_id\":\"bd485713-0aba-4140-88cb-dd37675d5973\",\"_parent\":null,\"_type\":\"UvpDoc\",\"_created\":\"2020-09-14T17:04:48.733668500+02:00\",\"_version\":1,\"description\":\"Beschreibung\",\"_modified\":\"2020-09-14T17:10:06.101057900+02:00\"}",
+    "publish": "false",
+    "id": "bd485713-0aba-4140-88cb-dd37675d5973"
+  }
 }
 ```
 
@@ -272,10 +280,10 @@ A special category of audit log records are data history records. They are used 
 
 - The `de.ingrid.igeserver.persistence.filter.DataHistoryLogger` class that is implemented as an extension (`Filter`) of the `Pipe<PostPersistencePayload>` extension point and therefor invoked after each persistence operation
 - This class uses the following parameters when creating an audit log record:
-  - *Category*: Value of `audit.log.data-history-category` defined in `application.properties` (default: *data-history*)
-  - *Logger*: Value of `audit.log.data-history-logger` defined in `application.properties` (default: *audit.data-history*)
+  - _Category_: Value of `audit.log.data-history-category` defined in `application.properties` (default: _data-history_)
+  - _Logger_: Value of `audit.log.data-history-logger` defined in `application.properties` (default: _audit.data-history_)
 
-This means that data history records can be retrieved by filtering audit log records by a category value of *data-history*. Since the logger name *audit.data-history* is a descendent of the default audit log logger, it uses the same configuration by default (especially the same appender), but could be configured in a different way as well. The produced records look like the example mentioned in the audit log section.
+This means that data history records can be retrieved by filtering audit log records by a category value of _data-history_. Since the logger name _audit.data-history_ is a descendent of the default audit log logger, it uses the same configuration by default (especially the same appender), but could be configured in a different way as well. The produced records look like the example mentioned in the audit log section.
 
 ### Profiles
 
@@ -286,15 +294,15 @@ For each profile a `profile definiton file` must be implemented, which is a clas
 A profile definition file contains the configurations for a specific profile.
 This profile contains the following information:
 
-|Property|Description|
-|---|---|
-|identifier|unique identifier for a profile|
-|name|a proper name|
-|description|describes the profiles|
-|facet definition for documents|definition of filters for documents used on research page|
-|facet definition for addresses|definition of filters for addresses used on research page|
-|definiton of catalog codelists|additional codelists used in this profile|
-|definition of elasticsearch mappings and settings|used for index configuration|
+| Property                                          | Description                                               |
+| ------------------------------------------------- | --------------------------------------------------------- |
+| identifier                                        | unique identifier for a profile                           |
+| name                                              | a proper name                                             |
+| description                                       | describes the profiles                                    |
+| facet definition for documents                    | definition of filters for documents used on research page |
+| facet definition for addresses                    | definition of filters for addresses used on research page |
+| definiton of catalog codelists                    | additional codelists used in this profile                 |
+| definition of elasticsearch mappings and settings | used for index configuration                              |
 
 The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the
 presentation of the research page (facets / quick filters).
@@ -350,8 +358,7 @@ configuration for the index. This can be defined in the profile definition file.
 
 ### Export format
 
-The documentation of the export format is  here: [Definition Export format](./export_format.md).
-
+The documentation of the export format is here: [Definition Export format](./export_format.md).
 
 ## Database
 
@@ -384,9 +391,9 @@ can be active or inactive. It can also contain optional parameters for more flex
 Whenever it's neccessary to update the schema of the database or do some data modifications, you are in need of a migration.
 To create a new migration task you need to do the following:
 
-* create a new service in `de.ingrid.igeserver.migrations.tasks` which extends `MigrationBase`
-* set new version in `MigrationBase`-constructor
-* implement `exec()`-function to run migration for each database
+- create a new service in `de.ingrid.igeserver.migrations.tasks` which extends `MigrationBase`
+- set new version in `MigrationBase`-constructor
+- implement `exec()`-function to run migration for each database
 
 More information can be found in the FAQ.md.
 
@@ -405,7 +412,12 @@ class M017_TestMigration : MigrationBase("0.17") {
 
 }
 ```
+
 </details>
+
+# Permissions
+
+The topic about handling permissions can be found here: [Permission-Documentation](./permissions.md)
 
 ## Configuration
 
