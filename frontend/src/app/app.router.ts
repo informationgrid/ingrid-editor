@@ -39,7 +39,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       title: "Recherche",
-      featureFlag: "AP3",
       icon: "Recherche",
     },
   },
@@ -48,7 +47,6 @@ export const routes: Routes = [
     loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
     data: {
       title: "Nutzer & Rechte",
-      featureFlag: "AP3",
       onlyAdmin: true,
       permission: "manage_users",
       icon: "Nutzer",
@@ -64,6 +62,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: {
       title: "Import / Export",
+      onlyAdmin: true,
       permission: ["can_import", "can_export"],
       icon: "Im-Export",
     },
