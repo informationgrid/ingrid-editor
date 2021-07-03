@@ -133,7 +133,10 @@ export class UserComponent implements OnInit, AfterContentChecked {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.userService.deleteUser(login).subscribe(() => this.fetchUsers());
+          this.userService.deleteUser(login).subscribe(() => {
+            this.selectedUser = null;
+            this.fetchUsers();
+          });
         }
       });
   }
@@ -166,6 +169,8 @@ export class UserComponent implements OnInit, AfterContentChecked {
       },
       (err: any) => {
         this.enableForm();
+        this.isLoading = false;
+        this.selectedUser = null;
         if (err.status === 409) {
           if (this.isNewUser) {
             const errorText: string = err.error.errorText;

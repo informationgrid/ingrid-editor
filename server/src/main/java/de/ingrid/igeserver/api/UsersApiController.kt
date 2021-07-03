@@ -85,7 +85,8 @@ class UsersApiController : UsersApi {
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
 
         catalogService.deleteUser(userId)
-        keycloakService.removeRoles(principal, userId, listOf("cat-admin", "md-admin", "author"))
+        // TODO: remove special realm management roles
+//        keycloakService.removeRoles(principal, userId, listOf("view-users", "manage-users", "manage-realm"))
         return ResponseEntity.ok().build()
 
     }
