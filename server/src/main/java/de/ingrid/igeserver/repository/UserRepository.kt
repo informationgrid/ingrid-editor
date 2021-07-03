@@ -3,6 +3,7 @@ package de.ingrid.igeserver.repository
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface UserRepository : JpaRepository<UserInfo, Int> {
@@ -15,5 +16,7 @@ interface UserRepository : JpaRepository<UserInfo, Int> {
 
     fun findByGroups_Id(groups_id: Int): List<UserInfo>
     
+    @Modifying
+    @Query("DELETE FROM UserInfo u WHERE u.userId=?1")
     fun deleteByUserId(userId: String)
 }
