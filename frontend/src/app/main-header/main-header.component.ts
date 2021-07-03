@@ -22,6 +22,7 @@ export class MainHeaderComponent implements OnInit {
   currentCatalog$: Observable<string>;
   version: Version;
   timeout$ = this.session.select("sessionTimeoutIn");
+  initials: string;
 
   constructor(
     private apiService: ApiService,
@@ -31,7 +32,9 @@ export class MainHeaderComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.version = this.configService.$userInfo.getValue().version;
+    let userInfo = this.configService.$userInfo.getValue();
+    this.version = userInfo.version;
+    this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       map((userInfo) => userInfo.currentCatalog.label)
     );
@@ -50,15 +53,6 @@ export class MainHeaderComponent implements OnInit {
     });
   }
 
-  private getPageTitleFromRoute(url: string) {
-    const firstPart = url.split(";")[0].substring(1);
-
-    return (
-      this.router.config.find((route) => route.path === firstPart)?.data
-        ?.title ?? ""
-    );
-  }
-
   getInitials(user: UserInfo) {
     const initials = (user.firstName[0] ?? "") + (user.lastName[0] ?? "");
     return initials.length === 0 ? "??" : initials;
@@ -71,6 +65,15 @@ export class MainHeaderComponent implements OnInit {
         return true;
         // return userInfo.roles.includes("cat-admin")
       })
+    );
+  }
+
+  private getPageTitleFromRoute(url: string) {
+    const firstPart = url.split(";")[0].substring(1);
+
+    return (
+      this.router.config.find((route) => route.path === firstPart)?.data
+        ?.title ?? ""
     );
   }
 }
