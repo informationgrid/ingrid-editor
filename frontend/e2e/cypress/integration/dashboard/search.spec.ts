@@ -100,6 +100,8 @@ describe('Search', function () {
     DashboardPage.visit();
     cy.get('.btn-search').click();
     cy.wait('@query');
+    // wait until result is updated on page
+    cy.wait(500);
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
@@ -121,6 +123,8 @@ describe('Search', function () {
     DashboardPage.visit();
     cy.get('.btn-search').click();
     cy.wait('@query');
+    // wait until result is updated on page
+    cy.wait(500);
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();

@@ -124,7 +124,7 @@ export class DocumentPage extends BasePage {
       usage: 'Nutzungshinweise',
       mCloudCategories: ['roads'],
       openDataCategories: ['TRAN'],
-      downloads: [{ link: 'link.link', type: 'linktyp' }],
+      downloads: [{ link: { value: 'link.link', asLink: true }, type: 'linktyp' }],
       license: 'Andere offene Lizenz',
       origin: 'Vermerk',
       mfundProject: 'Projekt',

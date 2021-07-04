@@ -58,7 +58,11 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a published document is loaded', () => {
-    Tree.openNode(['Neue Testdokumente', 'Published_mCloudDoc_Indextest']);
+    const docTitle = 'Published_mCloudDoc_ToolbarTest';
+    // create a published doc to be checked
+    DocumentPage.CreateFullMcloudDocumentWithAPI(docTitle, true);
+
+    Tree.openNode(['Neue Testdokumente', docTitle]);
     DocumentPage.checkOnlyActiveToolbarButtons([
       'NewDoc',
       'NewFolder',
