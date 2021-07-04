@@ -40,5 +40,10 @@
         <div>Anzahl Adressen: {{ log.numAddresses }}</div>
     </ng-template>
 
-    <div *ngIf="log.errors?.length > 0">{{log.errors.join('<br />')}}</div>
+    <div *ngIf="log.errors?.length > 0">
+        Fehler: {{ log.errors.length }}
+        <ul>
+            <li *ngFor="let error of log.errors">{{ error }}</li>
+        </ul>
+    </div>
 </div>

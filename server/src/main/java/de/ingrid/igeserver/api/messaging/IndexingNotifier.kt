@@ -14,7 +14,7 @@ data class IndexMessage(
     var progressDocuments: Int = 0,
     var progressAddresses: Int = 0,
     var message: String = "",
-    var errors: List<String> = emptyList()
+    var errors: MutableList<String> = mutableListOf()
 )
 
 @Service

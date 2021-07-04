@@ -106,11 +106,17 @@ class IndexingTask @Autowired constructor(
 
                 docsToPublish.content
                     .onEachIndexed { index, _ -> sendNotification(category, message, index + (page * 10)) }
-                    .map {
-                        log.debug("export ${it.uuid}")
-                        exporter.run(it)
+                    .mapIndexedNotNull { index, doc ->
+                        log.debug("export ${doc.uuid}")
+                        try {
+                            exporter.run(doc)
+                        } catch (ex: Exception) {
+                            message.errors.add("Error exporting document ${doc.uuid}: ${ex.message}")
+                            sendNotification(category, message, index + (page * 10))
+                            null
+                        }
                     }
-                    .onEach {
+                    .onEach { 
                         indexManager.update(indexInfo, convertToElasticDocument(it), false)
                     }
             } while (!docsToPublish.isLast)
@@ -219,7 +225,7 @@ class IndexingTask @Autowired constructor(
             val auth: Authentication =
                 UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
             SecurityContextHolder.getContext().authentication = auth
-            
+
             startIndexing(config.catalogId, "portal")
         }, trigger)
     }
