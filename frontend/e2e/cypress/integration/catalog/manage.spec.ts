@@ -68,7 +68,27 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle).should('not.exist');
   });
 
-  xit('should add a catalog administrator', () => {});
+  it.only('should add a catalog administrator', () => {
+    const catalogTitle = 'new Catalog';
+
+    cy.get('[data-cy=header-info-button]').click();
+    cy.get('button').contains('Katalogverwaltung').click();
+
+    ManageSpec.openCatalogCardMenu(catalogTitle);
+    cy.get('button').contains('Bearbeiten').click();
+
+    cy.get('mat-list').contains('Andre Wallat');
+    cy.get('mat-dialog-content button').contains('Hinzufügen').click();
+    cy.get('mat-list-option').contains('Majid Ercan').click();
+    cy.get('.mat-button-wrapper').contains('Ok').click().wait(100);
+    cy.get('.mat-button-wrapper').contains('Aktualisieren').click().wait(100);
+
+    ManageSpec.openCatalogCardMenu(catalogTitle);
+    cy.get('button').contains('Bearbeiten').click();
+
+    // check 'Majid Ercan' is listed as cat-admin
+    cy.get('mat-list').contains('Majid Ercan');
+  });
 
   it('should switch between two catalogs', () => {
     const catalogTitle = 'new Catalog';
