@@ -68,7 +68,7 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle).should('not.exist');
   });
 
-  it.only('should add a catalog administrator', () => {
+  it('should add a catalog administrator', () => {
     const catalogTitle = 'new Catalog';
 
     cy.get('[data-cy=header-info-button]').click();
