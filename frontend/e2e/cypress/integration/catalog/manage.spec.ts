@@ -99,9 +99,10 @@ describe('Catalog management', () => {
     ManageSpec.openCatalogCardMenu(catalogTitle);
     // use "Verwenden" button on catalog to switch to new catalog
     cy.get('button').contains('Verwenden').click();
+    cy.wait(100);
 
     // check if new created catalog is active
-    cy.get('div.header-info').contains(catalogTitle);
+    cy.get('.catalog-title').contains(catalogTitle);
 
     // check dataset are different
     // check if search only gets documents from the correct catalog
@@ -120,12 +121,34 @@ describe('Catalog management', () => {
     cy.wait(100);
 
     // check if 'Test' catalog is active
-    cy.get('.header-info').contains('Test');
+    cy.get('.catalog-title').contains('Test');
 
     cy.get(DocumentPage.Sidemenu.Uebersicht).click();
     DashboardPage.search('a');
     cy.get('button').contains('Suchen').click();
     cy.get('div.result').should('not.have.text', '0 Ergebnisse gefunden');
+  });
+
+  it('test the right catalog is selected, switch if necessary', () => {
+    // when we use the wrong catalog, it could happen that some tests fail, because pre-created objects are missing
+    cy.get('.catalog-title').then($info => {
+      const headerInfo = $info.text();
+
+      if (headerInfo === 'Test') {
+        cy.get('.catalog-title').contains('Test');
+      } else {
+        cy.get('[data-cy=header-info-button]').click();
+        cy.get('button').contains('Katalogverwaltung').click();
+        cy.wait(300);
+
+        ManageSpec.openCatalogCardMenu('Test');
+        // use "Verwenden" button on catalog to switch to new catalog
+        cy.get('button').contains('Verwenden').click();
+        cy.wait(100);
+
+        cy.get('.catalog-title').contains('Test');
+      }
+    });
   });
 });
 
