@@ -2,6 +2,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 import {
   AfterContentChecked,
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   OnInit,
@@ -20,6 +21,8 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { map, tap } from "rxjs/operators";
+import { UserManagementService } from "../user-management.service";
+import { SessionQuery } from "../../store/session.query";
 
 @UntilDestroy()
 @Component({
@@ -27,14 +30,15 @@ import { map, tap } from "rxjs/operators";
   templateUrl: "./user.component.html",
   styleUrls: ["../user.styles.scss"],
 })
-export class UserComponent implements OnInit, AfterContentChecked {
+export class UserComponent
+  implements OnInit, AfterViewInit, AfterContentChecked
+{
   users: User[];
   admins: User[];
   ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "ige-super-admin"];
   currentTab: string;
   form = new FormGroup({});
 
-  isNewUser = false;
   roles = this.userService.availableRoles;
   groups = this.groupService.getGroups();
   selectedUserForm = new FormControl();
@@ -44,7 +48,7 @@ export class UserComponent implements OnInit, AfterContentChecked {
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
   model: User;
-  private isNewExternalUser = false;
+  tableWidth: number;
 
   constructor(
     private modalService: ModalService,
@@ -52,11 +56,18 @@ export class UserComponent implements OnInit, AfterContentChecked {
     private dialog: MatDialog,
     private userService: UserService,
     private groupService: GroupService,
+    public userManagementService: UserManagementService,
+    private session: SessionQuery,
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
     this.searchQuery = "";
     this.formlyFieldConfig = this.userService.getUserFormFields();
+    this.tableWidth = this.session.getValue().ui.userTableWidth;
+  }
+
+  ngAfterViewInit(): void {
+    this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 
   ngAfterContentChecked(): void {
@@ -97,7 +108,6 @@ export class UserComponent implements OnInit, AfterContentChecked {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.isLoading = true;
-        this.isNewUser = false;
         this.form.disable();
         this.userService.getUser(login).subscribe((user) => {
           this.selectedUser = user;
@@ -108,16 +118,14 @@ export class UserComponent implements OnInit, AfterContentChecked {
     });
   }
 
-  showAddUsersDialog(importExternal: boolean) {
+  showAddUsersDialog() {
     this.dialog
-      .open(NewUserDialogComponent, {
-        data: { importExternal: importExternal },
-      })
+      .open(NewUserDialogComponent)
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.isNewExternalUser = !importExternal;
-          this.addUser(result);
+          this.fetchUsers();
+          this.loadUser(result.login);
         }
       });
   }
@@ -149,19 +157,11 @@ export class UserComponent implements OnInit, AfterContentChecked {
     this.form.disable();
 
     user = user ?? this.model;
-    if (this.isNewUser) {
-      createUserObserver = this.userService.createUser(
-        user,
-        this.isNewExternalUser
-      );
-    } else {
-      createUserObserver = this.userService.updateUser(user);
-    }
+    createUserObserver = this.userService.updateUser(user);
 
     // send request and handle error
     createUserObserver.subscribe(
       () => {
-        this.isNewUser = false;
         this.fetchUsers();
         this.enableForm();
         this.form.markAsPristine();
@@ -172,30 +172,9 @@ export class UserComponent implements OnInit, AfterContentChecked {
         this.isLoading = false;
         this.selectedUser = null;
         if (err.status === 409) {
-          if (this.isNewUser) {
-            const errorText: string = err.error.errorText;
-            if (errorText.includes("User already Exists with login")) {
-              const login = errorText.split(" ").pop();
-              this.modalService.showJavascriptError(
-                "Es existiert bereits ein Benutzer mit dem Login: " + login
-              );
-            } else if (
-              errorText.includes(
-                "New user cannot be created, because another user might have the same email address"
-              )
-            ) {
-              this.modalService.showJavascriptError(
-                "Es existiert bereits ein Benutzer mit dieser Mailadresse"
-              );
-            } else {
-              throw err;
-            }
-          } else {
-            this.modalService.showJavascriptError(
-              "Es existiert kein Benutzer mit dem Login: " +
-                this.form.value.login
-            );
-          }
+          this.modalService.showJavascriptError(
+            "Es existiert kein Benutzer mit dem Login: " + this.form.value.login
+          );
         } else {
           throw err;
         }
@@ -242,15 +221,6 @@ export class UserComponent implements OnInit, AfterContentChecked {
     this.enableForm();
     this.form.reset(mergedUser);
     this.isLoading = false;
-  }
-
-  private addUser(initial: any) {
-    this.isLoading = true;
-    const newUser: User = initial.user ?? initial;
-    newUser.role = initial.role ?? "";
-    this.isNewUser = true;
-    this.form.reset(newUser);
-    this.saveUser(newUser);
   }
 
   private dirtyFormHandled(): Observable<boolean> {

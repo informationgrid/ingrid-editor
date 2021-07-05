@@ -15,10 +15,10 @@
                     <span class="save-buttons">
                         <button
                             mat-stroked-button
-                            [mat-menu-trigger-for]="userAddMenu"
                             data-cy="toolbar_add_user"
                             matTooltip="Nutzer hinzufügen"
                             [matTooltipShowDelay]="1000"
+                            (click)="showAddUsersDialog()"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
@@ -34,30 +34,14 @@
                         >
                             Speichern
                         </button>
-                        <mat-menu #userAddMenu="matMenu">
-                            <button
-                                type="button"
-                                mat-menu-item
-                                (click)="showAddUsersDialog(true)"
-                            >
-                                Benutzer importieren
-                            </button>
-                            <button
-                                type="button"
-                                mat-menu-item
-                                (click)="showAddUsersDialog(false)"
-                            >
-                                Neuen Benutzer anlegen
-                            </button>
-                        </mat-menu>
                     </span>
                 </mat-toolbar-row>
             </mat-toolbar>
         </div>
     </div>
-    <as-split>
+    <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <as-split-area
-            [size]="50"
+            [size]="tableWidth"
             id="sidebarUser"
             class="split-pane-content-primary container"
         >
@@ -68,16 +52,13 @@
             ></user-table>
         </as-split-area>
         <as-split-area
-            [size]="50"
+            [size]="100 - tableWidth"
             id="formUser"
             class="split-pane-content-secondary container-fluid"
         >
             <div
                 class="detail-user"
-                *ngIf="
-                    (selectedUser || isNewUser) && !isLoading;
-                    else noUserOrLoading
-                "
+                *ngIf="selectedUser && !isLoading; else noUserOrLoading"
             >
                 <div class="user-title">
                     <div class="document-type">

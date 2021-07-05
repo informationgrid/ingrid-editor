@@ -6,7 +6,10 @@
     [selectedIndex]="currentTab"
 >
     <mat-tab label="Nutzer">
-        <ige-user-manager #user></ige-user-manager>
+        <!-- Lazy load tab content to correctly initialize split component -->
+        <ng-template matTabContent>
+            <ige-user-manager #user></ige-user-manager>
+        </ng-template>
     </mat-tab>
 
     <mat-tab label="Gruppen">

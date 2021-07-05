@@ -38,12 +38,12 @@
             </mat-toolbar>
         </div>
     </div>
-    <as-split>
+    <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
 
         <!-- GROUP LIST -->
         <as-split-area
-            [size]="35"
+            [size]="tableWidth"
             id="sidebarRoles"
             class="split-pane-content-primary container"
         >
@@ -57,7 +57,7 @@
 
         <!-- GROUP DETAIL -->
         <as-split-area
-            [size]="65"
+            [size]="100 - tableWidth"
             id="formRoles"
             class="split-pane-content-secondary container-fluid"
             style="display: block"
@@ -90,8 +90,8 @@
                         (click)="this.showMore = !this.showMore"
                     >
                         <mat-icon class="rotating animated"
-                            >keyboard_arrow_down</mat-icon
-                        >
+                            >keyboard_arrow_down
+                        </mat-icon>
                     </button>
                     <button
                         mat-icon-button

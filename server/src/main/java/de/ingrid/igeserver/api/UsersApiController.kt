@@ -69,14 +69,18 @@ class UsersApiController : UsersApi {
         }
 
         if (userExists) {
+            keycloakService.updateUser(principal, user);
             keycloakService.addRoles(principal, user.login, listOf(user.role))
             catalogService.createUser(catalogId, user)
-            email.sendWelcomeEmail(user.email)
+            if (!developmentMode) email.sendWelcomeEmail(user.email)
+
         } else {
             val password = keycloakService.createUser(principal, user)
             catalogService.createUser(catalogId, user)
-            email.sendWelcomeEmailWithPassword(user.email, password)
+            if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, password)
+
         }
+        if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
         return ResponseEntity.ok().build()
     }

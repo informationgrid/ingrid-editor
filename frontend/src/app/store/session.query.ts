@@ -7,6 +7,7 @@ import { DocumentAbstract } from "./document/document.model";
 export class SessionQuery extends Query<SessionState> {
   isSidebarExpanded$ = this.select((state) => state.ui.sidebarExpanded);
   sidebarWidth$ = this.select((state) => state.ui.sidebarWidth);
+  userTableWidth$ = this.select((state) => state.ui.userTableWidth);
   latestDocuments$ = this.select((state) => state.latestDocuments);
   recentAddresses$ = this.select((state) => state.recentAddresses);
   showJSONView$ = this.select((state) => state.ui.showJSONView);

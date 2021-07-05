@@ -7,6 +7,7 @@ import { SelectOption } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
+import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 
 @Injectable({
   providedIn: "root",
@@ -63,6 +64,19 @@ export class UserService {
     return getUserFormFields(
       this.availableRoles,
       this.groupService.getGroups()
+    );
+  }
+
+  getNewUserFormFields(): FormlyFieldConfig[] {
+    return getNewUserFormFields(
+      this.availableRoles,
+      this.getExternalUsers().pipe(
+        map((users) =>
+          users.map((user) => {
+            return { label: user.login, value: user.login };
+          })
+        )
+      )
     );
   }
 }

@@ -77,7 +77,7 @@ class GroupService @Autowired constructor(
             this.id = oldGroup?.id
             catalog = oldGroup?.catalog
         }
-        group.data = group.data ?: GroupData()
+        group.data = oldGroup?.data ?: GroupData()
         group.data?.modificationDate = Date()
 
         updateAcl(group)

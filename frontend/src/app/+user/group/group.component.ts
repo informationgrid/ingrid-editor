@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
@@ -20,6 +20,8 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
 import { Subscription } from "rxjs/Subscription";
+import { UserManagementService } from "../user-management.service";
+import { SessionQuery } from "../../store/session.query";
 
 @UntilDestroy()
 @Component({
@@ -27,7 +29,7 @@ import { Subscription } from "rxjs/Subscription";
   templateUrl: "./group.component.html",
   styleUrls: ["../user.styles.scss"],
 })
-export class GroupComponent implements OnInit {
+export class GroupComponent implements OnInit, AfterViewInit {
   groups: Group[] = [];
   searchQuery: string;
 
@@ -38,14 +40,22 @@ export class GroupComponent implements OnInit {
   selectedGroup: Group;
   isLoading = false;
   showMore = false;
+  tableWidth: number;
 
   constructor(
     private modalService: ModalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private groupService: GroupService
+    private groupService: GroupService,
+    public userManagementService: UserManagementService,
+    private session: SessionQuery
   ) {
     this.searchQuery = "";
+    this.tableWidth = this.session.getValue().ui.userTableWidth;
+  }
+
+  ngAfterViewInit(): void {
+    this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 
   ngOnInit() {
@@ -123,6 +133,8 @@ export class GroupComponent implements OnInit {
     return observer.subscribe((group) => {
       if (group) {
         this.selectedGroup = group;
+        this.form.markAsPristine();
+        this.loadGroup(group.id);
       }
       this.isNewGroup = false;
       this.fetchGroups()

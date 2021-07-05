@@ -3,52 +3,18 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">{{
-            importExternal ? "Benutzer importieren" : "Benutzer anlegen"
-        }}</span>
+        <span class="text">Benutzer anlegen</span>
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
-    <mat-form-field style="width: 100%">
-        <mat-label>Rolle wählen</mat-label>
-        <mat-select formControlName="role">
-            <mat-option *ngFor="let role of roles" [value]="role.value">
-                {{ role.label }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field
-        *ngIf="importExternal"
-        style="width: 100%"
-        [class.hide]="noAvailableUsers"
-    >
-        <mat-label>Benutzer auswählen</mat-label>
-        <mat-select formControlName="user">
-            <mat-option *ngFor="let user of users | async" [value]="user">
-                {{ user.firstName }} {{ user.lastName }} ({{ user.login }})
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <div *ngIf="noAvailableUsers && importExternal">
-        Es gibt keine verfügbaren Nutzer in Keycloak
-    </div>
-    <ng-container *ngIf="!importExternal">
-        <mat-form-field style="width: 100%">
-            <mat-label>Login</mat-label>
-            <input matInput formControlName="login" />
-        </mat-form-field>
-        <mat-form-field style="width: 50%">
-            <mat-label>Vorname</mat-label>
-            <input matInput formControlName="firstName" />
-        </mat-form-field>
-        <mat-form-field style="width: 50%">
-            <mat-label>Nachname</mat-label>
-            <input matInput formControlName="lastName" />
-        </mat-form-field>
-        <mat-form-field style="width: 100%">
-            <mat-label>E-Mail</mat-label>
-            <input matInput formControlName="email" />
-        </mat-form-field>
+    <ng-container>
+        <formly-form
+            id="newUserForm"
+            [form]="form"
+            [fields]="formlyFieldConfig"
+            [model]="model"
+        >
+        </formly-form>
     </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions>
@@ -58,7 +24,7 @@
         mat-button
         color="primary"
         [disabled]="form.invalid"
-        [mat-dialog-close]="form.value"
+        (click)="this.createUser()"
     >
         Ok
     </button>
