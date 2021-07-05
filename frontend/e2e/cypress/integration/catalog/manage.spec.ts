@@ -93,7 +93,7 @@ describe('Catalog management', () => {
     cy.get('button').contains('Verwenden').click();
 
     // check if new created catalog is active
-    cy.get('.section-title').contains('Aktiver Katalog').next().should('contain', catalogTitle);
+    cy.get('div.header-info').contains(catalogTitle);
 
     // check dataset are different
     // check if search only gets documents from the correct catalog
@@ -109,6 +109,9 @@ describe('Catalog management', () => {
     ManageSpec.openCatalogCardMenu('Test');
     // use "Verwenden" button on catalog to switch to new catalog
     cy.get('button').contains('Verwenden').click();
+
+    // check if 'Test' catalog is active
+    cy.get('.header-info').contains('Test');
 
     cy.get(DocumentPage.Sidemenu.Uebersicht).click();
     DashboardPage.search('a');
