@@ -26,17 +26,11 @@ describe('Catalog management', () => {
   });
 
   it('should modify an existing catalog', () => {
-    const catalogTitle = 'Umbenannter Katalog';
+    const catalogTitle = 'ng-universe';
     const catalogTitleModified = '-Modified';
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
-
-    // first create a new catalog
-    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
-    cy.get('mat-dialog-container input').type(catalogTitle);
-    cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait(300);
 
     ManageSpec.openCatalogCardMenu(catalogTitle);
 
@@ -49,7 +43,7 @@ describe('Catalog management', () => {
   });
 
   it('should delete an existing catalog', () => {
-    const catalogTitle = 'ng-universe';
+    const catalogTitle = 'ng-universe-Modified';
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
@@ -77,16 +71,10 @@ describe('Catalog management', () => {
   xit('should add a catalog administrator', () => {});
 
   it('should switch between two catalogs', () => {
-    const catalogTitle = 'ng-universe 2.0';
+    const catalogTitle = 'new Catalog';
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
-
-    // create new catalog to switch to it
-    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
-    cy.get('mat-dialog-container input').type(catalogTitle);
-    cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait(300);
 
     ManageSpec.openCatalogCardMenu(catalogTitle);
     // use "Verwenden" button on catalog to switch to new catalog
@@ -109,6 +97,7 @@ describe('Catalog management', () => {
     ManageSpec.openCatalogCardMenu('Test');
     // use "Verwenden" button on catalog to switch to new catalog
     cy.get('button').contains('Verwenden').click();
+    cy.wait(100);
 
     // check if 'Test' catalog is active
     cy.get('.header-info').contains('Test');
