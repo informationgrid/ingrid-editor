@@ -31,7 +31,7 @@ export function createInitialState(): SessionState {
       sidebarExpanded: true,
       sidebarWidth: 30,
       showJSONView: false,
-      userTableWidth: 30,
+      userTableWidth: 35,
     },
     latestDocuments: [],
     recentAddresses: [],

@@ -30,7 +30,7 @@ export class DeactivateGuard implements CanDeactivate<UserManagementComponent> {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    const isDirty = component.user.form.dirty || component.group?.form?.dirty;
+    const isDirty = component.user?.form?.dirty || component.group?.form?.dirty;
 
     if (!isDirty) {
       return true;

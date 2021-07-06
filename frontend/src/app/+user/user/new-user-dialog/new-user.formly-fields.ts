@@ -8,17 +8,6 @@ export const getNewUserFormFields = (
   logins: Observable<SelectOption[]>
 ): FormlyFieldConfig[] => {
   return [
-    /*    {
-      key: "login",
-      type: "input",
-      wrappers: ["panel", "form-field"],
-      templateOptions: {
-        externalLabel: "Login",
-        appearance: "outline",
-        required: true,
-        disabled: true,
-      },
-    },*/
     {
       key: "login",
       type: "autocomplete",
@@ -60,6 +49,7 @@ export const getNewUserFormFields = (
               templateOptions: {
                 label: "Vorname",
                 appearance: "outline",
+                required: true,
               },
             },
             {
@@ -69,6 +59,7 @@ export const getNewUserFormFields = (
               templateOptions: {
                 label: "Nachname",
                 appearance: "outline",
+                required: true,
               },
             },
           ],

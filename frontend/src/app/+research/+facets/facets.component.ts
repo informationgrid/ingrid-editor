@@ -109,15 +109,17 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   initLeaflet() {
-    this.leaflet.nativeElement.style.minWidth = "200px";
-    this.leaflet.nativeElement.style.height = "200px";
-    this.leafletReference = this.leafletService.initMap(
-      this.leaflet.nativeElement,
-      {}
-    );
-    this.leafletService.zoomToInitialBox(this.leafletReference);
-    // @ts-ignore
-    setTimeout(() => (<Map>this.leafletReference)._onResize());
+    if (this.leaflet) {
+      this.leaflet.nativeElement.style.height = "200px";
+      this.leaflet.nativeElement.style.minWidth = "200px";
+      this.leafletReference = this.leafletService.initMap(
+        this.leaflet.nativeElement,
+        {}
+      );
+      this.leafletService.zoomToInitialBox(this.leafletReference);
+      // @ts-ignore
+      setTimeout(() => (<Map>this.leafletReference)._onResize());
+    }
   }
 
   private setDefaultModel(filters: FacetGroup[]) {

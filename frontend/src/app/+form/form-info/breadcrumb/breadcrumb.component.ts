@@ -9,6 +9,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 export class BreadcrumbComponent implements OnInit {
   @Input() path: ShortTreeNode[];
   @Input() hideLastSeparator = true;
+  @Input() simplePath = false;
   @Input() showRoot = true;
   @Input() rootName = "Daten";
   @Input() emphasize = false;

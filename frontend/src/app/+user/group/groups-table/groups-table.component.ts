@@ -13,7 +13,6 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
-import { User } from "../../user";
 
 @Component({
   selector: "groups-table",

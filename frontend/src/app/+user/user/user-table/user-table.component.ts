@@ -20,7 +20,6 @@ import { SelectionModel } from "@angular/cdk/collections";
   styleUrls: ["../../user.styles.scss"],
 })
 export class UserTableComponent implements OnInit, AfterViewInit {
-  // @Input() users: User[];
   @Input()
   set users(val: User[]) {
     this.dataSource.data = val ?? [];
@@ -35,9 +34,9 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   @Input() selectedUserForm: FormControl;
   displayedColumns: string[] = [
     "role-icon",
+    "login",
     "firstName",
     "organisation",
-    // "settings",
   ];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<User>;
@@ -56,6 +55,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     });
     this.dataSource.filterPredicate = (user: User, filterValue: string) => {
       let searchIn =
+        (user.login ?? "") +
         (user.firstName ?? "") +
         (user.lastName ?? "") +
         (user.email ?? "") +

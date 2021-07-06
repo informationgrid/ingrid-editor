@@ -11,9 +11,10 @@
             (click)="!disableRoot && onSelect(null)"
             >{{ rootName }}</span
         >
-        <mat-icon *ngIf="path.length > 0 || !hideLastSeparator"
-            >chevron_right</mat-icon
-        >
+        <ng-container *ngIf="path.length > 0 || !hideLastSeparator">
+            <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
+            <span *ngIf="simplePath">/</span>
+        </ng-container>
     </span>
 
     <span *ngFor="let item of path; let last = last">
@@ -28,6 +29,9 @@
             (click)="!item.disabled && onSelect(item.id)"
             >{{ item.title }}</span
         >
-        <mat-icon *ngIf="!last || !hideLastSeparator">chevron_right</mat-icon>
+        <ng-container *ngIf="!last || !hideLastSeparator">
+            <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
+            <span *ngIf="simplePath">/</span>
+        </ng-container>
     </span>
 </span>
