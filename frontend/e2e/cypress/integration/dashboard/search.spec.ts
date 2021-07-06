@@ -93,15 +93,9 @@ describe('Search', function () {
   });
 
   it('should switch to research page and filter by all documents', () => {
-    //make sure test waits for query results
-    cy.intercept('**/api/search/query').as('query');
-
     //go to Dashboard, do empty search and thus retrieve sum of all documents
     DashboardPage.visit();
     cy.get('.btn-search').click();
-    cy.wait('@query');
-    // wait until result is updated on page
-    cy.wait(500);
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
@@ -109,22 +103,15 @@ describe('Search', function () {
       DashboardPage.search('te');
       // First button for datasets
       cy.get('[data-cy=all-link-data]').click();
-      cy.wait('@query');
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
     });
   });
 
   it('should switch to research page and filter by all addresses', () => {
-    //make sure test waits for query results
-    cy.intercept('**/api/search/query').as('query');
-
     //go to Dashboard, do empty search and thus retrieve sum of all documents
     DashboardPage.visit();
     cy.get('.btn-search').click();
-    cy.wait('@query');
-    // wait until result is updated on page
-    cy.wait(500);
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
@@ -132,7 +119,6 @@ describe('Search', function () {
       DashboardPage.search('te');
       // Second button for addresses
       cy.get('[data-cy=all-link-address]').click();
-      cy.wait('@query');
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
     });
