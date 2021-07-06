@@ -93,15 +93,13 @@ describe('Search', function () {
   });
 
   it('should switch to research page and filter by all documents', () => {
-    //go to Dashboard, do empty search and thus retrieve sum of all documents
-    DashboardPage.visit();
-    cy.get('.btn-search').click();
+    // get all number of 'Dokumente'
+    ResearchPage.visit();
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
       // must have more than 5 results for the 'Alle' Button to show up
       DashboardPage.search('te');
-      // First button for datasets
       cy.get('[data-cy=all-link-data]').click();
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
@@ -109,18 +107,15 @@ describe('Search', function () {
   });
 
   it('should switch to research page and filter by all addresses', () => {
-    //go to Research page and retrieve number of all addresses by choosing 'Adressen' within search filter
+    // get number off 'Adressen'
     ResearchPage.visit();
     ResearchPage.toggleSearchFilter('Adressen');
-    //without the wait, retrieved number is not correct
-    cy.wait(500);
-    //extract actual number
+
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
       // must have more than 5 results for the 'Alle' Button to show up
       DashboardPage.search('te');
-      // Second button for addresses
       cy.get('[data-cy=all-link-address]').click();
 
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);

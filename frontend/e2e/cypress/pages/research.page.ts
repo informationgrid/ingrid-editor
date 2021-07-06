@@ -1,5 +1,4 @@
 import Chainable = Cypress.Chainable;
-import { Subject } from 'rxjs';
 
 export class ResearchPage {
   static url = '/research';
@@ -21,10 +20,11 @@ export class ResearchPage {
       });
   }
 
-  static toggleSearchFilter(docType: string): Chainable<any> {
+  static toggleSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
-    return docType === 'Adressen'
-      ? cy.get('.mat-option-text').contains('Adressen').click()
-      : cy.get('.mat-option-test').contains('Dokumente').click();
+    cy.get('.mat-option-text').contains(docType).click();
+    // wait For request to complete
+    cy.intercept('**/api/search/query').as('query');
+    cy.wait('@query');
   }
 }
