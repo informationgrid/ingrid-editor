@@ -1,3 +1,6 @@
+import { BasePage, UserAndRights } from '../../pages/base.page';
+import { AdminPage } from '../../pages/administration.page';
+
 describe('User', () => {
   beforeEach(() => {
     cy.kcLogin('user');
@@ -8,7 +11,9 @@ describe('User', () => {
     cy.kcLogout();
   });
 
-  xit('create a group', () => {});
+  xit('create a group', () => {
+    AdminPage.goToTabmenu(UserAndRights.Group);
+  });
 
   xit('should be possible to modiefy groupname and description', () => {});
 
