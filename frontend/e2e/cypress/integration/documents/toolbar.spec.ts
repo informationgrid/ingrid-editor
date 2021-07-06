@@ -78,8 +78,13 @@ describe('Toolbar behavior', () => {
     cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
   });
 
-  xit('should activate specific buttons when a published document with draft is loaded', () => {
-    Tree.openNode(['published with working']);
+  it('should activate specific buttons when a published document with draft is loaded', () => {
+    const docTitle = 'Veröffentlichter Datensatz mit Bearbeitungsversion';
+    Tree.openNode([docTitle]);
     DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish']);
+    cy.get(DocumentPage.Toolbar.Copy).click();
+    cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
+    cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders
+    cy.get('[data-cy=copyMenu_CUT]').should('be.enabled');
   });
 });
