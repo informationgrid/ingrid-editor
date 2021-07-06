@@ -109,9 +109,12 @@ describe('Search', function () {
   });
 
   it('should switch to research page and filter by all addresses', () => {
-    //go to Dashboard, do empty search and thus retrieve sum of all documents
-    DashboardPage.visit();
-    cy.get('.btn-search').click();
+    //go to Research page and retrieve number of all addresses by choosing 'Adressen' within search filter
+    ResearchPage.visit();
+    ResearchPage.toggleSearchFilter('Adressen');
+    //without the wait, retrieved number is not correct
+    cy.wait(500);
+    //extract actual number
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
       DashboardPage.visit();
