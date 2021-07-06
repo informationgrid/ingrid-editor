@@ -32,4 +32,9 @@ export enum CodelistSubMenu {
   Bearbeiten = 1,
   Defaultwert,
   Loeschen
-};
+}
+
+export enum UserAndRights {
+  User = 1,
+  Group
+}
