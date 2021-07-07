@@ -223,7 +223,7 @@ export class UserComponent
     this.isLoading = false;
   }
 
-  private dirtyFormHandled(): Observable<boolean> {
+  dirtyFormHandled(): Observable<boolean> {
     if (this.form.dirty) {
       return this.dialog
         .open(ConfirmDialogComponent, {
@@ -240,6 +240,7 @@ export class UserComponent
               },
             ],
           }) as ConfirmDialogData,
+          hasBackdrop: true,
         })
         .afterClosed()
         .pipe(map((response) => response === "discard"));

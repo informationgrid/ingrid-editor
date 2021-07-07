@@ -52,6 +52,7 @@ export class DeactivateGuard implements CanDeactivate<UserManagementComponent> {
             },
           ],
         }) as ConfirmDialogData,
+        hasBackdrop: true,
       })
       .afterClosed()
       .pipe(map((response) => response === "discard"));

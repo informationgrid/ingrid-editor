@@ -198,7 +198,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     };
   }
 
-  private dirtyFormHandled(): Observable<boolean> {
+  dirtyFormHandled(): Observable<boolean> {
     if (this.form.dirty) {
       return this.dialog
         .open(ConfirmDialogComponent, {
@@ -215,6 +215,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
               },
             ],
           }) as ConfirmDialogData,
+          hasBackdrop: true,
         })
         .afterClosed()
         .pipe(map((response) => response === "discard"));
