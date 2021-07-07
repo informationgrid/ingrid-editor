@@ -7,6 +7,11 @@ export class ResearchPage {
     cy.visit('/research');
   }
 
+  static search(query: string) {
+    //return cy.get('ige-quick-search input', { timeout: 10000 }).type(query).wait(300);
+    return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
+  }
+
   /**
    * Returns the searchresultcount. Fails if searchresultcount is 0
    */
@@ -27,4 +32,16 @@ export class ResearchPage {
     cy.intercept('**/api/search/query').as('query');
     cy.wait('@query');
   }
+
+  static checkboxSearchFilter(FilterType: FilterExtendedSearch): void {
+    //without forcing cypress to click it doesn't find checkbox
+    cy.get(FilterType).click({ force: true });
+  }
+}
+
+export enum FilterExtendedSearch {
+  OnlyPublished = '.mat-checkbox-inner-container > input[name="selectPublished"]',
+  NoFolders = '.mat-checkbox-inner-container > input[name="exceptFolders"]',
+  mCloud = '.mat-checkbox-inner-container > input[name="selectDocMCloud"]',
+  Test = '.mat-checkbox-inner-container > input[name="selectDocTest"]'
 }
