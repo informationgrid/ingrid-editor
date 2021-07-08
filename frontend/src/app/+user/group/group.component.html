@@ -63,10 +63,7 @@
             style="display: block"
         >
             <form
-                *ngIf="
-                    selectedGroup || (isNewGroup && !isLoading);
-                    else noGroupOrLoading
-                "
+                *ngIf="selectedGroup; else noGroupOrLoading"
                 fxLayout="column"
                 fxFill
                 [formGroup]="form"

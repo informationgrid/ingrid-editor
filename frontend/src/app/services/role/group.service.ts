@@ -30,7 +30,7 @@ export class GroupService {
     return this.dataService.saveGroup(group);
   }
 
-  createGroup(group: Group): Observable<any> {
+  createGroup(group: Group): Observable<Group> {
     return this.dataService.createGroup(group);
   }
 

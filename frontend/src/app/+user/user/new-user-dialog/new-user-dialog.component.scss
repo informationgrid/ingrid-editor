@@ -9,4 +9,8 @@ mat-dialog-content ::ng-deep {
   formly-group {
     flex: 2;
   }
+
+  .no-selection-text {
+    padding-bottom: 6px;
+  }
 }

@@ -11,7 +11,7 @@ import { FrontendUser, User } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { tap } from "rxjs/operators";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 
@@ -34,7 +34,6 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   loginValue = "";
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
     private userService: UserService,
     private configService: ConfigService,
@@ -82,7 +81,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
-        this.model = potentialMatch.pop();
+        this.model = new FrontendUser(potentialMatch[0]);
         // reset role as keycloak role (ige-user) is not applicable
         this.model.role = "";
         this.form.reset(this.model);

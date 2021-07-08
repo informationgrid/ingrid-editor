@@ -464,6 +464,15 @@ svg {
   }
 }
 
+.no-selection-text {
+  color: $ige-comment-color;
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
+
 ige-side-menu {
   .coloring {
     fill: #ffffff;

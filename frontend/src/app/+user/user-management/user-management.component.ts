@@ -1,4 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  ViewChild,
+} from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { MatTabGroup } from "@angular/material/tabs";
@@ -17,6 +22,12 @@ export class UserManagementComponent implements AfterViewInit {
   @ViewChild(MatTabGroup) tabs: MatTabGroup;
 
   constructor() {}
+
+  @HostListener("window:beforeunload", ["$event"])
+  unloadHandler(event: Event) {
+    const component = this.currentTab === 0 ? this.user : this.group;
+    if (component.form?.dirty) return false;
+  }
 
   ngAfterViewInit(): void {
     if (!this.tabs) {

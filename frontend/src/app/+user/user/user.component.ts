@@ -119,15 +119,17 @@ export class UserComponent
   }
 
   showAddUsersDialog() {
-    this.dialog
-      .open(NewUserDialogComponent)
-      .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.fetchUsers();
-          this.loadUser(result.login);
-        }
-      });
+    this.dirtyFormHandled().subscribe((allClear) => {
+      this.dialog
+        .open(NewUserDialogComponent, { hasBackdrop: true })
+        .afterClosed()
+        .subscribe((result) => {
+          if (result) {
+            this.fetchUsers();
+            this.loadUser(result.login);
+          }
+        });
+    });
   }
 
   deleteUser(login: string) {

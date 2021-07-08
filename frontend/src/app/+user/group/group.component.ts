@@ -19,7 +19,6 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
-import { Subscription } from "rxjs/Subscription";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 
@@ -33,7 +32,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
   groups: Group[] = [];
   searchQuery: string;
 
-  isNewGroup = false;
   form: FormGroup;
 
   selectedGroupForm = new FormControl();
@@ -79,33 +77,25 @@ export class GroupComponent implements OnInit, AfterViewInit {
   }
 
   openAddGroupDialog() {
-    this.dialog
-      .open(NewGroupDialogComponent)
-      .afterClosed()
-      .subscribe((result) => {
-        if (result?.name) {
-          this.addGroup(result.name);
-          this.saveGroup();
-        }
-      });
-  }
-
-  addGroup(name: string) {
-    this.isNewGroup = true;
-    const initialValue = {
-      id: null,
-      name: name,
-      description: "",
-      permissions: new Permissions(),
-    };
-    this.form.setValue(initialValue);
+    this.dirtyFormHandled().subscribe((allClear) => {
+      this.dialog
+        .open(NewGroupDialogComponent, { hasBackdrop: true })
+        .afterClosed()
+        .subscribe((group) => {
+          if (group?.id) {
+            this.selectedGroup = group;
+            this.form.markAsPristine();
+            this.loadGroup(group.id);
+            this.fetchGroups().subscribe();
+          }
+        });
+    });
   }
 
   loadGroup(id: string) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.isLoading = true;
-        this.isNewGroup = false;
         this.form.disable();
         this.groupService.getGroup(id).subscribe((fetchedGroup) => {
           if (!fetchedGroup.permissions) {
@@ -119,24 +109,14 @@ export class GroupComponent implements OnInit, AfterViewInit {
     });
   }
 
-  saveGroup(): Subscription {
-    let observer: Observable<Group>;
+  saveGroup(): void {
     const group = this.form.value;
-
-    if (this.isNewGroup) {
-      observer = this.groupService.createGroup(group);
-    } else {
-      observer = this.groupService.updateGroup(group);
-    }
-
-    // send request and handle error
-    return observer.subscribe((group) => {
+    this.groupService.updateGroup(group).subscribe((group) => {
       if (group) {
         this.selectedGroup = group;
         this.form.markAsPristine();
         this.loadGroup(group.id);
       }
-      this.isNewGroup = false;
       this.fetchGroups()
         .pipe(tap(() => this.form.markAsPristine()))
         .subscribe();

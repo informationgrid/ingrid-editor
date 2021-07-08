@@ -23,8 +23,11 @@ export class GroupDataService {
     );
   }
 
-  createGroup(role: Group): Observable<any> {
-    return this.http.post(this.configuration.backendUrl + "groups", role);
+  createGroup(role: Group): Observable<Group> {
+    return this.http.post<Group>(
+      this.configuration.backendUrl + "groups",
+      role
+    );
   }
 
   // delete group metadata from backend
