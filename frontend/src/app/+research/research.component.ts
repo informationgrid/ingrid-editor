@@ -182,7 +182,12 @@ export class ResearchComponent implements OnInit {
     this.filter.model = {};
 
     this.researchService.updateUIState({
-      search: { category: value },
+      search: {
+        category: value,
+        facets: {
+          model: { ...this.getFacetModel() },
+        },
+      },
     });
   }
 
