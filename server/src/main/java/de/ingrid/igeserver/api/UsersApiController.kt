@@ -4,8 +4,11 @@ import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AssignmentKey
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogManagerAssignment
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.repository.ManagerRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
@@ -39,6 +42,9 @@ class UsersApiController : UsersApi {
     private lateinit var userRepo: UserRepository
 
     @Autowired
+    private lateinit var managerRepo: ManagerRepository
+
+    @Autowired
     private lateinit var keycloakService: UserManagementService
 
     @Autowired
@@ -67,20 +73,22 @@ class UsersApiController : UsersApi {
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already Exists with login ${user.login}")
         }
-
+        val createdUser: UserInfo
         if (userExists) {
             keycloakService.updateUser(principal, user);
             keycloakService.addRoles(principal, user.login, listOf(user.role))
-            catalogService.createUser(catalogId, user)
+            createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) email.sendWelcomeEmail(user.email)
 
         } else {
             val password = keycloakService.createUser(principal, user)
-            catalogService.createUser(catalogId, user)
+            createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, password)
 
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
+
+        this.setManager(createdUser.userId, authUtils.getUsernameFromPrincipal(principal), principal)
 
         return ResponseEntity.ok().build()
     }
@@ -117,8 +125,12 @@ class UsersApiController : UsersApi {
                 user.role = frontendUser.role?.name ?: ""
                 user.organisation = frontendUser.data?.organisation ?: ""
 
+                user.manager = managerRepo.findByUserAndCatalogIdentifier(
+                    frontendUser,
+                    catalogService.getCurrentCatalogForPrincipal(principal)
+                )?.manager?.userId ?: ""
+
                 // TODO implement manager and standin
-                //user.manager = "ige"
                 //user.standin = "herbert"
 
                 logger.info("getUser: $durationGetUser")
@@ -184,6 +196,23 @@ class UsersApiController : UsersApi {
             )
             return ResponseEntity.ok(userInfo)
         }
+    }
+
+    private fun setManager(userId: String, managerId: String, principal: Principal) {
+        val catalog = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal))
+        val user = userRepo.findByUserId(userId)
+        val manager = userRepo.findByUserId(managerId)
+        managerRepo.save(CatalogManagerAssignment().apply {
+            id = AssignmentKey().apply {
+                this.catalogId = catalog.id as Int
+                this.managerId = manager?.id as Int
+                this.userId = user?.id as Int
+            }
+            this.catalog = catalog
+            this.user = user
+            this.manager = manager
+        })
+
     }
 
     private fun getLastLogin(principal: Principal, userIdent: String, roles: Set<String>?): Date? {
