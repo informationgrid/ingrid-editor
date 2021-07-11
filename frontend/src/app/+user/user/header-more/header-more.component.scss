@@ -5,28 +5,22 @@
 }
 
 .more-info {
-  padding: 10px 0 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
   overflow: hidden;
   line-height: 22px;
+  background: $ige-background;
+  border-radius: 8px;
+  //font-size: 14px;
+  font-weight: 400;
+  color: $ige-text-color;
 
   > div > div:nth-child(1) {
     width: 296px;
-    color: $ige-text-color;
+    color: $ige-hint-color;
   }
 
   .padding-below {
     padding-bottom: 10px;
-  }
-
-  .section {
-    padding-top: 10px;
-  }
-
-  .state {
-    font-weight: 400;
-
-    &.working {
-      color: $state-working-color;
-    }
   }
 }

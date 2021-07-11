@@ -21,12 +21,4 @@
   .section {
     padding-top: 10px;
   }
-
-  .state {
-    font-weight: 400;
-
-    &.working {
-      color: $state-working-color;
-    }
-  }
 }
