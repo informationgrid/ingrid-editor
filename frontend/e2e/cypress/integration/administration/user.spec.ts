@@ -69,7 +69,7 @@ describe('User', () => {
     cy.get('#formUser').should('be.visible');
 
     cy.get('[data-cy=Name] .firstName').click().clear();
-    // TODO: BUG --> discuss with Benny ##2595
+    // TODO: BUG --> discuss with Benny #2595
   });
 
   it('discard dialog must be appear, when changes on users were not saved', () => {
@@ -112,7 +112,7 @@ describe('User', () => {
     AdminPage.addNewUserEmail('nb@wemove.com');
     AdminPage.addNewUserRole(1);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
-    AdminPage.addNewUserClickSave();
+    AdminPage.applyDialog();
 
     // error-message
     cy.get('[data-cy=error-dialog-title]').should('be.visible');

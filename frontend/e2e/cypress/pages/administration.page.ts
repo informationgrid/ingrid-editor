@@ -27,11 +27,11 @@ export class AdminPage extends BasePage {
   }
 
   static addNewUserApplyWithoutError() {
-    this.addNewUserClickSave();
+    this.applyDialog();
     cy.get('error-dialog').should('not.exist');
   }
 
-  static addNewUserClickSave() {
+  static applyDialog() {
     cy.get('button').contains('Anlegen').click();
     cy.wait(100);
   }
@@ -44,6 +44,7 @@ export class AdminPage extends BasePage {
   static selectUserGroupConnection(groupName: string) {
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('mat-option').contains(groupName).click();
+    cy.wait(100);
   }
 
   static removeUserGroupConnection(groupName: string) {
@@ -53,5 +54,12 @@ export class AdminPage extends BasePage {
       .parent()
       .find('[data-mat-icon-name=Entfernen]')
       .click({ force: true });
+  }
+
+  static addNewGroup(groupname: string) {
+    cy.get('mat-toolbar button').contains('Hinzufügen').click();
+    cy.get('ige-new-group-dialog').contains('Gruppe hinzufügen').should('be.visible');
+    cy.get('ige-new-group-dialog mat-form-field input').click().clear().type(groupname);
+    this.applyDialog();
   }
 }
