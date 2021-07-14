@@ -6,19 +6,19 @@ export class AdminPage extends BasePage {
   }
 
   static addNewUserLogin(login: string) {
-    cy.get('ige-new-user-dialog input:first').type(login);
+    cy.get('ige-new-user-dialog input:first').click({ force: true }).clear().type(login);
   }
 
   static addNewUserFirstname(firstname: string) {
-    cy.get('ige-new-user-dialog formly-field .firstName').type(firstname);
+    cy.get('ige-new-user-dialog formly-field .firstName input').click({ force: true }).clear().type(firstname);
   }
 
   static addNewUserLastname(lastname: string) {
-    cy.get('ige-new-user-dialog formly-field .lastName').type(lastname);
+    cy.get('ige-new-user-dialog formly-field .lastName input').click({ force: true }).clear().type(lastname);
   }
 
   static addNewUserEmail(email: string) {
-    cy.get('ige-new-user-dialog input:last').type(email);
+    cy.get('ige-new-user-dialog input:last').click({ force: true }).clear().type(email);
   }
 
   static addNewUserRole(roleIndex: UserRoles) {

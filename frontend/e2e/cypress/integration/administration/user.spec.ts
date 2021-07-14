@@ -45,16 +45,16 @@ describe('User', () => {
     cy.get('#formUser').should('be.visible');
 
     // modify name of a user
-    cy.get('[data-cy=Name] .firstName').type(' SV');
-    cy.get('[data-cy=Name] .lastName').type(' W');
+    cy.get('[data-cy=Name] .firstName').click().clear().type('Martin');
+    cy.get('[data-cy=Name] .lastName').click().clear().type('Engel');
     AdminPage.toolbarSaveUser();
 
     // check modiefied entries were saved
     cy.get('tbody').should('not.contain', 'Majid Ercan');
-    cy.get('tbody').should('contain', 'Majid SV Ercan W');
+    cy.get('tbody').should('contain', 'Martin Engel');
 
     // return changes
-    cy.get('tbody').contains('Majid SV Ercan W').click();
+    cy.get('tbody').contains('Martin Engel').click();
     cy.get('#formUser').should('be.visible');
     cy.get('[data-cy=Name] .firstName').click().clear().type('Majid');
     cy.get('[data-cy=Name] .lastName').click().clear().type('Ercan');
@@ -151,8 +151,18 @@ describe('User', () => {
     cy.get('.label').contains(loginEntry);
   });
 
-  xit('should be possible to delete a user', () => {
-    // keyclock-db new user
+  it('should be possible to delete a user', () => {
+    const toDelete = 'Meins Deins';
+
+    cy.get('.page-title').contains('Nutzer');
+    cy.get('tbody').contains(toDelete).click();
+    cy.get('#formUser').should('be.visible');
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('button').contains('Löschen').click();
+    cy.get('mat-dialog-content').contains('löschen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-ok]').click();
+
+    cy.get('tbody').should('not.contain', toDelete);
   });
 
   it('only names, emails, logins or organisations can be user search results (#2551)', () => {
