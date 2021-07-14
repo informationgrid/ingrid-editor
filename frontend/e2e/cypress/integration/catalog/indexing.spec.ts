@@ -47,7 +47,7 @@ describe('Indexing', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
 
     cy.get('mat-chip').contains('Alle 30 Minuten').click();
-
+    cy.wait(100);
     cy.get('mat-hint').contains('Alle 30 Minuten');
   });
 
