@@ -1,7 +1,7 @@
 import { BasePage, UserAndRights } from '../../pages/base.page';
 import { AdminPage } from '../../pages/administration.page';
 
-describe('User', () => {
+describe('Group', () => {
   beforeEach(() => {
     cy.kcLogin('user');
     cy.visit('user');
