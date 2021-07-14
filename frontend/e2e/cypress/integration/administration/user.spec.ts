@@ -196,36 +196,41 @@ describe('User', () => {
   });
 
   it('should be possible to add and remove a group (or different groups) to a user', () => {
+    const groupName = 'Gruppe 42';
+    const groupName2 = 'Testgruppe';
+
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#formUser').should('be.visible');
 
     // check no group connected
-    cy.get('[data-cy=Gruppen]').should('not.contain', 'Gruppe 42');
+    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
 
     // select group and save
-    cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('mat-option').contains('Gruppe 42').click();
+    AdminPage.selectUserGroupConnection(groupName);
+    AdminPage.selectUserGroupConnection(groupName2);
     AdminPage.toolbarSaveUser();
 
-    // check group 'Gruppe 42' was connected
-    cy.get('[data-cy=Gruppen]').should('contain', 'Gruppe 42');
+    // check groups were connected
+    cy.get('[data-cy=Gruppen]').should('contain', groupName);
+    cy.get('[data-cy=Gruppen]').should('contain', groupName2);
 
     // remove group-connection from user
-    cy.get('[data-cy=Gruppen] [data-mat-icon-name=Entfernen]').click({ force: true });
+    AdminPage.removeUserGroupConnection(groupName);
+    AdminPage.removeUserGroupConnection(groupName2);
     AdminPage.toolbarSaveUser();
 
-    // check group 'Gruppe 42' is not connected anymore
-    cy.get('[data-cy=Gruppen]').should('not.contain', 'Gruppe 42');
+    // check groups are not connected anymore
+    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
+    cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
   });
 
   it('should not possible to add a group twice to one user', () => {
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#formUser').should('be.visible');
     cy.get('[data-cy=Gruppen]').should('not.contain', 'Gruppe 42');
-    cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('mat-option').contains('Gruppe 42').click();
+    AdminPage.selectUserGroupConnection('Gruppe 42');
 
-    // check if 'Gruppe 42' is not select twice
+    // check if 'Gruppe 42' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').should('not.be.enabled');
   });
 

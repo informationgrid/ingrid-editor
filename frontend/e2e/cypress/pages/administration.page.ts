@@ -40,4 +40,18 @@ export class AdminPage extends BasePage {
     cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait(100);
   }
+
+  static selectUserGroupConnection(groupName: string) {
+    cy.get('[data-cy=Gruppen] mat-select').click();
+    cy.get('mat-option').contains(groupName).click();
+  }
+
+  static removeUserGroupConnection(groupName: string) {
+    cy.get('[data-cy=Gruppen] div.clickable')
+      .contains(groupName)
+      .trigger('mouseover')
+      .parent()
+      .find('[data-mat-icon-name=Entfernen]')
+      .click({ force: true });
+  }
 }
