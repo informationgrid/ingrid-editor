@@ -175,6 +175,16 @@ describe('User', () => {
     cy.get('tbody').should('not.contain', 'ige');
   });
 
+  it('selected user must be active and all informations to it must be shown (#2551)', () => {
+    cy.get('tbody').contains('Majid Ercan').click();
+
+    // check user 'Majid Ercan' was selected
+    cy.get('td.selected').contains('Majid Ercan');
+
+    // check user informations were loaded
+    cy.get('#formUser').should('be.visible');
+  });
+
   it('should be possible to add and remove a group (or different groups) to a user', () => {
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#formUser').should('be.visible');
