@@ -54,12 +54,16 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       this.onUserSelect.emit(selection.source.selected[0]);
     });
     this.dataSource.filterPredicate = (user: User, filterValue: string) => {
-      let searchIn =
-        (user.login ?? "") +
-        (user.firstName ?? "") +
-        (user.lastName ?? "") +
-        (user.email ?? "") +
-        (user.organisation ?? "").trim().toLowerCase();
+      let searchIn = [
+        user.login ?? "",
+        user.firstName ?? "",
+        user.lastName ?? "",
+        user.email ?? "",
+        user.organisation ?? "",
+      ]
+        .join(" ")
+        .trim()
+        .toLowerCase();
       return searchIn.includes(filterValue.trim().toLowerCase());
     };
   }

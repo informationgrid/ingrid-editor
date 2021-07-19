@@ -48,6 +48,7 @@ export const getUserFormFields = (
               className: "flex-1 firstName",
               type: "input",
               templateOptions: {
+                required: true,
                 label: "Vorname",
                 appearance: "outline",
               },
@@ -57,6 +58,7 @@ export const getUserFormFields = (
               className: "flex-1 lastName",
               type: "input",
               templateOptions: {
+                required: true,
                 label: "Nachname",
                 appearance: "outline",
               },

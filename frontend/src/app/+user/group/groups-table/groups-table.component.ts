@@ -50,8 +50,10 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
       this.onGroupSelect.emit(selection.source.selected[0]);
     });
     this.dataSource.filterPredicate = (group: Group, filterValue: string) => {
-      let searchIn =
-        (group.name ?? "") + (group.description ?? "").trim().toLowerCase();
+      let searchIn = [group.name ?? "", group.description ?? ""]
+        .join(" ")
+        .trim()
+        .toLowerCase();
       return searchIn.includes(filterValue.trim().toLowerCase());
     };
   }
