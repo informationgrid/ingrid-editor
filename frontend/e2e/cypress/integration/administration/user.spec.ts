@@ -64,12 +64,18 @@ describe('User', () => {
     cy.get('tbody').should('contain', 'Majid Ercan');
   });
 
-  xit('should not possible to empty a mandatory field and save', () => {
+  it('should not possible to empty a mandatory field and save (#2595)', () => {
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#formUser').should('be.visible');
 
+    cy.get('[data-cy=E-Mail]  formly-field-mat-input').click().clear();
     cy.get('[data-cy=Name] .firstName').click().clear();
-    // TODO: BUG --> discuss with Benny #2595
+    cy.get('[data-cy=Name] .lastName').click().clear();
+    cy.get('[data-cy=E-Mail]  formly-field-mat-input').click();
+
+    cy.get('mat-error').contains('Dieses Feld muss ausgefüllt sein').should('be.visible');
+    cy.get('mat-error').should('have.length', 3);
+    cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
   });
 
   it('discard dialog must be appear, when changes on users were not saved', () => {
@@ -183,6 +189,13 @@ describe('User', () => {
 
     cy.get('ige-search-field').type('ige2');
     cy.get('tbody').should('not.contain', 'ige');
+  });
+
+  it('a user can be found with his first- and lastname (#2596)', () => {
+    cy.get('ige-search-field').type('Andre Wallat');
+    cy.get('tbody').should('not.contain', 'Majid');
+
+    cy.get('tbody').should('contain', 'Andre Wallat');
   });
 
   it('selected user must be active and all informations to it must be shown (#2551)', () => {
