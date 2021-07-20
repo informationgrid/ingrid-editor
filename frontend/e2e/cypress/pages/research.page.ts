@@ -3,8 +3,8 @@ import Chainable = Cypress.Chainable;
 export class ResearchPage {
   static url = '/research';
 
-  static visit() {
-    cy.visit('/research');
+  static visit(): Chainable {
+    return cy.visit('/research');
   }
 
   static search(query: string) {
@@ -38,22 +38,22 @@ export class ResearchPage {
     cy.get(FilterType).click({ force: true });
   }
 
-  static openSearchOptionTab(option: SearchOptionTabs) {
+  static openSearchOptionTab(option: SearchOptionTabs): void {
     cy.get('.mat-ripple.mat-tab-label:nth-child(' + option + ')').click();
   }
 
-  static openContextMenuSpatialReference(action: contextActionSpatial) {
+  static openContextMenuSpatialReference(action: contextActionSpatial): void {
     cy.get('div.location').find('button').click();
     cy.get('div.mat-menu-content > button:nth-child(' + action + ')').click();
   }
 
-  static openContextMenuOfSearchResult(name: string, action: contextActionSearchResult) {
+  static openContextMenuOfSearchResult(name: string, action: contextActionSearchResult): void {
     cy.contains('td', name).parent().find('button').click();
     cy.get('div.mat-menu-content > button').eq(action).click();
   }
 
   //check first radio button, only if a list with suggestions is offered
-  static chooseLocationSuggestionByRadioButton() {
+  static chooseLocationSuggestionByRadioButton(): void {
     //wait for the list of suggestions to appear
     cy.intercept({
       method: 'GET',
@@ -69,47 +69,43 @@ export class ResearchPage {
   }
 
   //when the dropdown menu will contain more than one option: TODO use parameter "type" to choose
-  static createSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef') {
+  static createSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef'): void {
     cy.get('ige-facets').find('.btn-title').should('contain', 'Hinzufügen').click(); //click "Hinzufügen"
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(`${location}`); //search term
+    cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
     this.chooseLocationSuggestionByRadioButton();
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(`${title}`); //title
+    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
     cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click(); //close editing window
   }
 
-  static editSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef') {
+  static editSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(`${location}`); //search term
+    cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
     this.chooseLocationSuggestionByRadioButton();
     cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click(); //close editing window
   }
 
-  static deleteSpatialReference() {
+  static deleteSpatialReference(): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Delete);
   }
 
-  static saveSearchProfile(title: string, description: string) {
+  static saveSearchProfile(title: string, description: string): void {
     cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
-    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(`${title}`);
-    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(2).type(`${description}`);
+    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(title);
+    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(2).type(description);
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
   }
 
-  static checkExistenceOfSavedSearch(title: string) {
+  static checkExistenceOfSavedSearch(title: string): void {
     //following lines: alternative containing iterating over individual list elements
     //cy.get('mat-selection-list.mat-selection-list')
     //.find('mat-list-option.mat-list-item')
     //.each(function ($el, index, $list) {
     //console.log($el.text());
 
-    cy.get('mat-selection-list.mat-selection-list')
-      .invoke('text')
-      .then(wholeText => {
-        expect(wholeText).to.include(title);
-      });
+    cy.get('mat-selection-list.mat-selection-list').contains(title);
   }
 
-  static deleteSavedSearch(title: string) {
+  static deleteSavedSearch(title: string): void {
     cy.contains('mat-list-option.mat-list-item', title).find('button').click();
     cy.get('div.mat-menu-content > button').click();
     cy.get('mat-dialog-actions.mat-dialog-actions > button:contains("Löschen")').click();
