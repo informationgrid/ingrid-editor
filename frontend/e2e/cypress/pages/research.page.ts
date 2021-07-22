@@ -25,7 +25,17 @@ export class ResearchPage {
       });
   }
 
-  static toggleSearchFilter(docType: string): void {
+  static getSearchResultCountZeroIncluded(): Chainable<number> {
+    return cy
+      .get('.result')
+      .contains(/[0-9]+ Ergebnisse gefunden/)
+      .then($node => {
+        // extract number from string like '12 Ergebnisse gefunden'
+        return parseInt($node.text().split(' ')[0]);
+      });
+  }
+
+  static setDocumentTypeSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
     cy.get('.mat-option-text').contains(docType).click();
     // wait For request to complete
@@ -33,9 +43,11 @@ export class ResearchPage {
     cy.wait('@query');
   }
 
-  static checkboxSearchFilter(FilterType: FilterExtendedSearch): void {
+  static activateCheckboxSearchFilter(FilterType: FilterExtendedSearch): void {
     //without forcing cypress to click it doesn't find checkbox
     cy.get(FilterType).click({ force: true });
+    cy.intercept('/api/search/query').as('filterRequest');
+    cy.wait('@filterRequest');
   }
 
   static openSearchOptionTab(option: SearchOptionTabs): void {
@@ -53,35 +65,69 @@ export class ResearchPage {
   }
 
   //check first radio button, only if a list with suggestions is offered
-  static chooseLocationSuggestionByRadioButton(): void {
-    //wait for the list of suggestions to appear
-    cy.intercept({
-      method: 'GET',
-      path: '/search/*'
-    }).as('waitForSuggestions');
-    cy.wait('@waitForSuggestions');
-    //check if there are result suggestions in the corresponding field, if so: click the first suggestion
-    cy.get('mat-list.mat-list-base').then(resultField => {
-      if (resultField.find('mat-list-item.mat-list-item').length > 0) {
-        cy.get('mat-list.mat-list-base:nth-child(1)').click();
-      }
-    });
+  static chooseFirstLocationSuggestionByRadioButton(): void {
+    cy.get('mat-list.mat-list-base:nth-child(1)').click();
   }
 
-  //when the dropdown menu will contain more than one option: TODO use parameter "type" to choose
-  static createSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef'): void {
-    cy.get('ige-facets').find('.btn-title').should('contain', 'Hinzufügen').click(); //click "Hinzufügen"
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
-    this.chooseLocationSuggestionByRadioButton();
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
-    cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click(); //close editing window
+  static createSpatialReference(location?: string, title?: string): void {
+    cy.get('ige-facets').find('.btn-title').contains('Hinzufügen').click();
+    if (location !== undefined && title !== undefined) {
+      this.addTitleAndLocationForSpatialReference(location, title);
+    }
+    if (location === undefined && title !== undefined) {
+      this.addTitleAndLocationForSpatialReference(undefined, title);
+    }
+    if (location !== undefined && title === undefined) {
+      this.addTitleAndLocationForSpatialReference(location);
+    }
+    if (location === undefined && title === undefined) {
+      this.addTitleAndLocationForSpatialReference();
+    }
   }
 
-  static editSpatialReference(location: string, title = 'testSpatial', type = 'freeSpatialRef'): void {
+  static editSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
+    ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
+    if (location !== undefined && title !== undefined) {
+      this.addTitleAndLocationForSpatialReference(location, title);
+    }
+    if (location === undefined && title !== undefined) {
+      this.addTitleAndLocationForSpatialReference(undefined, title);
+    }
+    if (location !== undefined && title === undefined) {
+      this.addTitleAndLocationForSpatialReference(location);
+    }
+    if (location === undefined && title === undefined) {
+      this.addTitleAndLocationForSpatialReference();
+    }
+  }
+
+  static addTitleAndLocationForSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
+    if (location !== undefined) {
+      cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
+      //wait for the list of suggestions to appear
+      //cy.intercept('/search/*').as('waitForSuggestions');
+      cy.intercept('/search/' + location + '*').as('waitForSuggestions');
+      cy.wait('@waitForSuggestions');
+      this.chooseFirstLocationSuggestionByRadioButton();
+    }
+    if (title !== undefined) {
+      cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
+    }
+    cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click();
+    //wait for the application of the filtering
+    cy.intercept('/api/search/query').as('filterRequest');
+    cy.wait('@filterRequest');
+  }
+
+  static interruptEditingSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
-    this.chooseLocationSuggestionByRadioButton();
-    cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click(); //close editing window
+    //wait for the list of suggestions to appear
+    cy.intercept('/search/*').as('waitForSuggestions');
+    cy.wait('@waitForSuggestions');
+    this.chooseFirstLocationSuggestionByRadioButton();
+    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
+    cy.get('button').contains('Abbrechen').click();
   }
 
   static deleteSpatialReference(): void {
@@ -95,23 +141,25 @@ export class ResearchPage {
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
   }
 
-  static checkExistenceOfSavedSearch(title: string): void {
-    //following lines: alternative containing iterating over individual list elements
-    //cy.get('mat-selection-list.mat-selection-list')
-    //.find('mat-list-option.mat-list-item')
-    //.each(function ($el, index, $list) {
-    //console.log($el.text());
+  static chooseListItemFromSavedSearches(name: string): void {
+    cy.contains('mat-list-option.mat-list-item', name).click();
+    //wait for the chosen saved search to apply
+    cy.intercept('/api/search/query').as('filterRequest');
+    cy.wait('@filterRequest');
+  }
 
+  static checkExistenceOfSavedSearch(title: string, description: string): void {
     cy.get('mat-selection-list.mat-selection-list').contains(title);
+    cy.get('mat-selection-list.mat-selection-list').contains(description);
   }
 
   static deleteSavedSearch(title: string): void {
     cy.contains('mat-list-option.mat-list-item', title).find('button').click();
-    cy.get('div.mat-menu-content > button').click();
-    cy.get('mat-dialog-actions.mat-dialog-actions > button:contains("Löschen")').click();
+    cy.get('.mat-menu-content > button').contains('Löschen').click();
+    cy.get('mat-dialog-actions.mat-dialog-actions > button').contains('Löschen').click();
   }
 
-  static SQLField = 'textarea';
+  static SQLField = '[data-cy="sql-query-field"]';
 }
 
 export enum FilterExtendedSearch {
