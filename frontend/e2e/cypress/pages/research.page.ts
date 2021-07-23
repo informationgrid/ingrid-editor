@@ -8,8 +8,10 @@ export class ResearchPage {
   }
 
   static search(query: string) {
-    //return cy.get('ige-quick-search input', { timeout: 10000 }).type(query).wait(300);
-    return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
+    cy.intercept('POST', '/api/search/query').as('q');
+    //return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
+    cy.get('.mat-form-field-infix > .mat-input-element').type(query);
+    cy.wait('@q');
   }
 
   /**
@@ -48,6 +50,11 @@ export class ResearchPage {
     cy.get(FilterType).click({ force: true });
     cy.intercept('/api/search/query').as('filterRequest');
     cy.wait('@filterRequest');
+  }
+
+  static changeViewNumberDocuments(): void {
+    cy.contains('.mat-paginator-page-size', 'Anzeige').click();
+    cy.contains('.mat-select-panel-wrap span', '50').parent().click();
   }
 
   static openSearchOptionTab(option: SearchOptionTabs): void {
@@ -132,6 +139,8 @@ export class ResearchPage {
 
   static deleteSpatialReference(): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Delete);
+    cy.intercept('/api/search/query').as('waitForDelete');
+    cy.wait('@waitForDelete');
   }
 
   static saveSearchProfile(title: string, description: string): void {
@@ -144,8 +153,10 @@ export class ResearchPage {
   static chooseListItemFromSavedSearches(name: string): void {
     cy.contains('mat-list-option.mat-list-item', name).click();
     //wait for the chosen saved search to apply
-    cy.intercept('/api/search/query').as('filterRequest');
-    cy.wait('@filterRequest');
+    //cy.intercept('/api/search/query').as('filterRequest');
+    //cy.wait('@filterRequest');
+    //I chose the wait instead of intercept because intercept didn't wait for the right server request
+    cy.wait(500);
   }
 
   static checkExistenceOfSavedSearch(title: string, description: string): void {

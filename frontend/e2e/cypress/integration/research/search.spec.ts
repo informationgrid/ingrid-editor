@@ -58,6 +58,7 @@ describe('Research Page', () => {
   });
 
   xit('should start new search for documents after editing spatial reference', () => {
+    cy.pause();
     ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
@@ -74,8 +75,8 @@ describe('Research Page', () => {
     ResearchPage.checkExistenceOfSavedSearch('savedProfileForTesting', 'save description to test existence later');
   });
 
-  xit('should start new search for documents after deleting spatial reference', () => {
-    ResearchPage.createSpatialReference('Mainz');
+  it('should start new search for documents after deleting spatial reference', () => {
+    ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(spatiallyFiltered => {
       ResearchPage.deleteSpatialReference();
       ResearchPage.getSearchResultCount().should('be.greaterThan', spatiallyFiltered);
@@ -100,6 +101,7 @@ describe('Research Page', () => {
 
   it('should open respective document/address when clicking on search result', () => {
     ResearchPage.search('Test');
+    ResearchPage.changeViewNumberDocuments();
     cy.contains('td', 'Test mCLOUD Dokument').click();
     cy.get('ige-header-title-row').find('span > span').should('have.text', 'Test mCLOUD Dokument');
     //DocumentPage.checkSpatialEntryExists('Test mCLOUD Dokument');
@@ -107,6 +109,7 @@ describe('Research Page', () => {
 
   it('should delete document/address via the dialogue accessible from the search result list', () => {
     DocumentPage.visit();
+    cy.pause();
     DocumentPage.createDocument('testToDeleteFromResearchPage');
     ResearchPage.visit();
     ResearchPage.search('test');
@@ -114,6 +117,8 @@ describe('Research Page', () => {
     cy.get('button').contains('Löschen').click();
     ResearchPage.visit();
     ResearchPage.search('test');
+    ResearchPage.changeViewNumberDocuments();
+    cy.pause();
     cy.contains('td', 'testToDeleteFromResearchPage').should('not.exist');
   });
 
