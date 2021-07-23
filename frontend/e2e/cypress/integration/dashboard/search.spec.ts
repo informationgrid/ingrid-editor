@@ -109,7 +109,7 @@ describe('Search', function () {
   it('should switch to research page and filter by all addresses', () => {
     // get number off 'Adressen'
     ResearchPage.visit();
-    ResearchPage.toggleSearchFilter('Adressen');
+    ResearchPage.setDocumentTypeSearchFilter('Adressen');
 
     ResearchPage.getSearchResultCount().then(allCount => {
       // go back to Dashboard to start non-empty search
