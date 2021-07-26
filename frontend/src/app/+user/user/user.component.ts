@@ -10,7 +10,7 @@ import {
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, of } from "rxjs";
+import { config, Observable, of } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
@@ -23,6 +23,7 @@ import {
 import { map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -58,6 +59,7 @@ export class UserComponent
     private groupService: GroupService,
     public userManagementService: UserManagementService,
     private session: SessionQuery,
+    private snackBar: MatSnackBar,
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
@@ -127,6 +129,9 @@ export class UserComponent
           if (result) {
             this.fetchUsers();
             this.loadUser(result.login);
+            this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
+              panelClass: "green",
+            });
           }
         });
     });

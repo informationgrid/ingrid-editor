@@ -2,7 +2,6 @@ import {
   AfterContentChecked,
   ChangeDetectorRef,
   Component,
-  Inject,
   OnInit,
 } from "@angular/core";
 import { Observable } from "rxjs";

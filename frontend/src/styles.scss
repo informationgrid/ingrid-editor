@@ -464,6 +464,10 @@ svg {
   }
 }
 
+.green {
+  background: $ige-check-color !important;
+}
+
 .no-selection-text {
   color: $ige-comment-color;
   user-select: none;

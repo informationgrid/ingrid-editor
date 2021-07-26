@@ -35,6 +35,7 @@ import { PermissionAddDialogComponent } from "./permissions/permission-add-dialo
 import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
 import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
   imports: [
@@ -58,6 +59,7 @@ import { UserManagementService } from "./user-management.service";
     MatSortModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   declarations: [
     UserComponent,

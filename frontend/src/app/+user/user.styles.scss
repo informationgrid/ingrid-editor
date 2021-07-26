@@ -36,13 +36,9 @@ as-split-area {
     color: $ige-primary;
   }
 }
-
-#formRoles form {
-  padding: 20px;
-}
-
-.detail-user {
-  padding: 20px 20px 20px 56px;
+.detail-user,
+.detail-role {
+  padding: 20px 20px 20px 26px;
   flex: 1;
 }
 
