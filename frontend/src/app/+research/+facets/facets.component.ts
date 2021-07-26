@@ -150,16 +150,18 @@ export class FacetsComponent implements AfterViewInit {
 
   showSpatialDialog(location: SpatialLocation = null) {
     const data: Partial<SpatialLocation> = location ?? {
-      limitTypes: ["free"],
       type: "free",
     };
+    data.limitTypes = ["free"];
 
     this.dialog
       .open(SpatialDialogComponent, {
         data: data,
       })
       .afterClosed()
-      .subscribe((result) => this.updateSpatial(result));
+      .subscribe((result) => {
+        if (result) this.updateSpatial(result);
+      });
   }
 
   toggleSection(id: string) {

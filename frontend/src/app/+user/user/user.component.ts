@@ -122,18 +122,19 @@ export class UserComponent
 
   showAddUsersDialog() {
     this.dirtyFormHandled().subscribe((allClear) => {
-      this.dialog
-        .open(NewUserDialogComponent, { hasBackdrop: true })
-        .afterClosed()
-        .subscribe((result) => {
-          if (result) {
-            this.fetchUsers();
-            this.loadUser(result.login);
-            this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
-              panelClass: "green",
-            });
-          }
-        });
+      if (allClear)
+        this.dialog
+          .open(NewUserDialogComponent, { hasBackdrop: true })
+          .afterClosed()
+          .subscribe((result) => {
+            if (result) {
+              this.fetchUsers();
+              this.loadUser(result.login);
+              this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
+                panelClass: "green",
+              });
+            }
+          });
     });
   }
 

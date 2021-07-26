@@ -78,17 +78,18 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   openAddGroupDialog() {
     this.dirtyFormHandled().subscribe((allClear) => {
-      this.dialog
-        .open(NewGroupDialogComponent, { hasBackdrop: true })
-        .afterClosed()
-        .subscribe((group) => {
-          if (group?.id) {
-            this.selectedGroup = group;
-            this.form.markAsPristine();
-            this.loadGroup(group.id);
-            this.fetchGroups().subscribe();
-          }
-        });
+      if (allClear)
+        this.dialog
+          .open(NewGroupDialogComponent, { hasBackdrop: true })
+          .afterClosed()
+          .subscribe((group) => {
+            if (group?.id) {
+              this.selectedGroup = group;
+              this.form.markAsPristine();
+              this.loadGroup(group.id);
+              this.fetchGroups().subscribe();
+            }
+          });
     });
   }
 
