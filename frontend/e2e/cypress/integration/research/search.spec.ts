@@ -92,11 +92,6 @@ describe('Research Page', () => {
     });
   });
 
-  //save for later
-  xit('should open Download-Dialogue when requesting CSV-file of search', () => {
-    cy.get('ige-result-table').find('button > span:contains("CSV")').click(); //open up CSV dialogue
-  });
-
   it('should open respective document/address when clicking on search result', () => {
     ResearchPage.search('Test');
     ResearchPage.changeViewNumberDocuments();
@@ -126,8 +121,19 @@ describe('Research Page', () => {
     ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
   });
 
-  //if possible:
-  xit('should make sure CSV-file of search has been downloaded', () => {});
+  it('should make sure CSV-file of search has been downloaded', () => {
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    cy.intercept('153-es2015.87cc53934ab68e612d9e.js').as('csvRequest');
+    ResearchPage.getCSVFile();
+    cy.wait('@csvRequest')
+      .its('request')
+      .then(req => {
+        cy.request(req).then(({ body, headers, status }) => {
+          expect(headers).to.have.property('content-type', 'application/javascript');
+          expect(status).to.eq(200);
+        });
+      });
+  });
 
   //SQL-Suche
   it('should do search with example SQL-query executed by button', () => {

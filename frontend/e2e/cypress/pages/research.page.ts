@@ -124,6 +124,10 @@ export class ResearchPage {
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
   }
 
+  static getCSVFile(): void {
+    cy.get('ige-result-table').find('button > span:contains("CSV")').click(); //open up save dialogue
+  }
+
   static chooseListItemFromSavedSearches(name: string): void {
     cy.contains('mat-list-option.mat-list-item', name).click();
     //wait for the chosen saved search to apply
