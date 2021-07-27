@@ -69,7 +69,9 @@ export class ResearchPage {
   }
 
   //check first radio button, only if a list with suggestions is offered
-  static chooseFirstLocationSuggestionByRadioButton(): void {
+  static chooseFirstLocationSuggestionByRadioButton(location: string): void {
+    cy.intercept('/search/' + location + '*').as('waitForSuggestions');
+    cy.wait('@waitForSuggestions');
     cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
   }
 
@@ -86,10 +88,7 @@ export class ResearchPage {
   static addTitleAndLocationForSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     if (location !== undefined) {
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
-      //wait for the list of suggestions to appear
-      cy.intercept('/search/' + location + '*').as('waitForSuggestions');
-      cy.wait('@waitForSuggestions');
-      this.chooseFirstLocationSuggestionByRadioButton();
+      this.chooseFirstLocationSuggestionByRadioButton(location);
     }
     if (title !== undefined) {
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
@@ -103,10 +102,7 @@ export class ResearchPage {
   static interruptEditingSpatialReference(location = 'Stuttgart', title = 'testSpatial'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
-    //wait for the list of suggestions to appear
-    cy.intercept('/search/*').as('waitForSuggestions');
-    cy.wait('@waitForSuggestions');
-    this.chooseFirstLocationSuggestionByRadioButton();
+    this.chooseFirstLocationSuggestionByRadioButton(location);
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //enter title
     cy.get('button').contains('Abbrechen').click();
   }
