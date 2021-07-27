@@ -97,7 +97,6 @@ describe('Research Page', () => {
     ResearchPage.changeViewNumberDocuments();
     cy.contains('td', 'Test mCLOUD Dokument').click();
     cy.get('ige-header-title-row').find('span > span').should('have.text', 'Test mCLOUD Dokument');
-    //DocumentPage.checkSpatialEntryExists('Test mCLOUD Dokument');
   });
 
   it('should delete document/address via the dialogue accessible from the search result list', () => {
@@ -114,10 +113,17 @@ describe('Research Page', () => {
     cy.contains('td', 'testToDeleteFromResearchPage').should('not.exist');
   });
 
-  //will fail as long as "feldbezogene Suche" is not possible
+  // #3403
   xit('should do search by using feldbezogene Suche', () => {
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     ResearchPage.search('title:Testorganisation');
+    ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
+  });
+
+  // #3432
+  xit('should do search by using document ID', () => {
+    ResearchPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
+    cy.contains('td', 'TestDocResearch1');
     ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
   });
 
