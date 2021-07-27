@@ -216,4 +216,16 @@ describe('Research Page', () => {
     ResearchPage.interruptEditingSpatialReference('Berlin');
     cy.get('div.location').contains('Hamburg');
   });
+
+  // test for naughty strings
+  xit('should be able to deal with search term "\'" and "{"', () => {
+    DocumentPage.visit();
+    DocumentPage.createDocument("What's{This");
+    ResearchPage.visit();
+    ResearchPage.search("What's{");
+    ResearchPage.changeViewNumberDocuments();
+    // make sure there's an exact match (-> no substring match)
+    cy.contains('td', "What's{This").should('have.text', " What's{This ");
+    ResearchPage.getSearchResultCountZeroIncluded().should('eq', 1);
+  });
 });
