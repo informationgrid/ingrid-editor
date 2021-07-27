@@ -57,12 +57,11 @@ describe('Research Page', () => {
     });
   });
 
-  xit('should start new search for documents after editing spatial reference', () => {
+  it('should start new search for documents after editing spatial reference', () => {
     ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
       ResearchPage.editSpatialReference('Mainz');
-      //Problem: new search result after editing is not necessarily smaller than the former result
       ResearchPage.getSearchResultCount().should('be.lessThan', filteredResult).and('be.greaterThan', 0);
     });
   });
@@ -111,6 +110,7 @@ describe('Research Page', () => {
     DocumentPage.createDocument('testToDeleteFromResearchPage');
     ResearchPage.visit();
     ResearchPage.search('test');
+    ResearchPage.changeViewNumberDocuments();
     ResearchPage.openContextMenuOfSearchResult('testToDeleteFromResearchPage', contextActionSearchResult.Delete);
     cy.get('button').contains('Löschen').click();
     ResearchPage.visit();
@@ -178,7 +178,6 @@ describe('Research Page', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
     ResearchPage.chooseListItemFromSavedSearches('testProfileBackToSearch');
     //make sure you're in the 'Erweiterte Suche'-tab: this tab should be selected
-    //cy.get('div.mat-tab-labels > div.mat-ripple:nth-child(1)').invoke('attr', 'aria-selected').should('eq', 'true');
     cy.contains('.mat-tab-label-content', 'Erweiterte Suche')
       .parent()
       .invoke('attr', 'aria-selected')
@@ -200,11 +199,9 @@ describe('Research Page', () => {
     });
   });
 
-  xit('should return to state of originally saved search when editing search is discontinued', () => {
-    ResearchPage.createSpatialReference('Deutschland', 'search to interrupt editing');
+  it('should return to state of originally saved search when editing search is discontinued', () => {
+    ResearchPage.createSpatialReference('Hamburg', 'search to interrupt editing');
     ResearchPage.interruptEditingSpatialReference('Berlin');
-    //following wait can be adjusted once the bug is removed
-    cy.wait(200);
-    cy.get('div.location').contains('Deutschland');
+    cy.get('div.location').contains('Hamburg');
   });
 });

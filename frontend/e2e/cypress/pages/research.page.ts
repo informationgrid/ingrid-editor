@@ -8,10 +8,7 @@ export class ResearchPage {
   }
 
   static search(query: string) {
-    cy.intercept('POST', '/api/search/query').as('q');
-    //return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
-    cy.get('.mat-form-field-infix > .mat-input-element').type(query);
-    cy.wait('@q');
+    return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
   }
 
   /**
@@ -73,46 +70,23 @@ export class ResearchPage {
 
   //check first radio button, only if a list with suggestions is offered
   static chooseFirstLocationSuggestionByRadioButton(): void {
-    cy.get('mat-list.mat-list-base:nth-child(1)').click();
+    cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
   }
 
   static createSpatialReference(location?: string, title?: string): void {
     cy.get('ige-facets').find('.btn-title').contains('Hinzufügen').click();
-    if (location !== undefined && title !== undefined) {
-      this.addTitleAndLocationForSpatialReference(location, title);
-    }
-    if (location === undefined && title !== undefined) {
-      this.addTitleAndLocationForSpatialReference(undefined, title);
-    }
-    if (location !== undefined && title === undefined) {
-      this.addTitleAndLocationForSpatialReference(location);
-    }
-    if (location === undefined && title === undefined) {
-      this.addTitleAndLocationForSpatialReference();
-    }
+    this.addTitleAndLocationForSpatialReference(location, title);
   }
 
   static editSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
-    if (location !== undefined && title !== undefined) {
-      this.addTitleAndLocationForSpatialReference(location, title);
-    }
-    if (location === undefined && title !== undefined) {
-      this.addTitleAndLocationForSpatialReference(undefined, title);
-    }
-    if (location !== undefined && title === undefined) {
-      this.addTitleAndLocationForSpatialReference(location);
-    }
-    if (location === undefined && title === undefined) {
-      this.addTitleAndLocationForSpatialReference();
-    }
+    this.addTitleAndLocationForSpatialReference(location, title);
   }
 
   static addTitleAndLocationForSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     if (location !== undefined) {
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
       //wait for the list of suggestions to appear
-      //cy.intercept('/search/*').as('waitForSuggestions');
       cy.intercept('/search/' + location + '*').as('waitForSuggestions');
       cy.wait('@waitForSuggestions');
       this.chooseFirstLocationSuggestionByRadioButton();
@@ -126,14 +100,14 @@ export class ResearchPage {
     cy.wait('@filterRequest');
   }
 
-  static interruptEditingSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
+  static interruptEditingSpatialReference(location = 'Stuttgart', title = 'testSpatial'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
     //wait for the list of suggestions to appear
     cy.intercept('/search/*').as('waitForSuggestions');
     cy.wait('@waitForSuggestions');
     this.chooseFirstLocationSuggestionByRadioButton();
-    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
+    cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //enter title
     cy.get('button').contains('Abbrechen').click();
   }
 
