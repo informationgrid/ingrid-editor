@@ -107,7 +107,7 @@ class ResearchService {
         val catalogAndPermissionFilter = catalogFilter + permissionFilter
 
         val termSearch =
-            if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%')"
+            if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%' OR document_wrapper.uuid ILIKE '${query.term}')"
 
         val filter = convertQuery(query.clauses)
 

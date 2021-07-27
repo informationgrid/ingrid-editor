@@ -22,7 +22,7 @@
 </div>
 
 <div *ngIf="(childDocs$ | async)?.length">
-    <ige-card-box fxFlex label="Zuletzt bearbeit" data-cy="card-latest-docs">
+    <ige-card-box fxFlex label="Zuletzt bearbeitet" data-cy="card-latest-docs">
         <ige-document-list-item
             [docs]="childDocs$"
             [hideDate]="false"
