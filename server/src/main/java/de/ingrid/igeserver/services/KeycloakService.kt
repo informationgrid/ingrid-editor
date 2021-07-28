@@ -16,6 +16,7 @@ import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
 import org.keycloak.admin.client.resource.RolesResource
+import org.keycloak.representations.idm.ClientRepresentation
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
@@ -221,15 +222,15 @@ class KeycloakService : UserManagementService {
 
             usersResource.get(userId).apply {
                 val roles = it.realm().roles()
-                val userRoles = listOf(
+                val userRoles = mutableListOf(
                     roles.get("ige-user").toRepresentation(),
-                    // TODO: add ige-role specific realm-management roles view-users or manage-users and/or manage-realm 
-//                    roles.get("view-users").toRepresentation()
                 )
+                if (userHasAdminRole(user)) userRoles.add(roles.get("ige-user-manager").toRepresentation())
                 roles().realmLevel().add(userRoles)
+
+                return password
             }
 
-            return password
         }
 
     }
@@ -240,9 +241,20 @@ class KeycloakService : UserManagementService {
             val kcUser = getKeycloakUser(client, user.login)
             mapToKeycloakUser(user, kcUser)
 
-            client.realm().users().get(kcUser.id).update(kcUser)
+            val userResource = client.realm().users().get(kcUser.id)
+            userResource.update(kcUser)
+            if (userHasAdminRole(user)) {
+                userResource.apply {
+                    val roles = client.realm().roles()
+                    roles().realmLevel().add(mutableListOf(roles.get("ige-user-manager").toRepresentation()))
+                }
+            }
         }
 
+    }
+
+    private fun userHasAdminRole(user: User): Boolean {
+        return user.role.contains("ige-super-admin") || user.role.contains("cat-admin") || user.role.contains("md-admin")
     }
 
     private fun handleReponseErrors(createResponse: Response) {
