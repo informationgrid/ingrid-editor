@@ -5,7 +5,6 @@ import {
   MatDialog,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { AddUserDialogComponent } from "./add-user-dialog/add-user-dialog.component";
 import { Catalog } from "../../../+catalog/services/catalog.model";
 import { User } from "../../../+user/user";
 import { UserService } from "../../../services/user/user.service";
@@ -57,7 +56,6 @@ export class CatalogDetailComponent implements OnInit {
   submit() {
     const response: CatalogDetailResponse = {
       settings: this.catalog,
-      adminUsers: this.assignedUsers,
     };
     this.dialogRef.close(response);
   }
@@ -90,28 +88,11 @@ export class CatalogDetailComponent implements OnInit {
       });
   }
 
-  chooseUserForAdmin() {
-    this.dialog
-      .open(AddUserDialogComponent, {
-        data: {
-          excludeUserIDs: this.assignedUsers,
-        },
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        this.assignedUsers.push(...result);
-        this.setCatAdminsFromAssignedUsers();
-      });
-  }
-
   private setCatAdminsFromAssignedUsers() {
     this.catAdmins = this.users.filter(
-      (user) => this.assignedUsers.indexOf(user.login) !== -1
+      (user) =>
+        this.assignedUsers.indexOf(user.login) !== -1 &&
+        ["ige-super-admin", "cat-admin"].indexOf(user.role) !== -1
     );
-  }
-
-  removeCatAdmin(login: string) {
-    this.assignedUsers = this.assignedUsers.filter((user) => user !== login);
-    this.setCatAdminsFromAssignedUsers();
   }
 }

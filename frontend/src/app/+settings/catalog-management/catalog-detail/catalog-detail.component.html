@@ -22,19 +22,8 @@
             <h4 mat-line>
                 {{ admin.firstName }} {{ admin.lastName }} ({{ admin.login }})
             </h4>
-            <button mat-icon-button (click)="removeCatAdmin(admin.login)">
-                <mat-icon mat-list-icon>delete</mat-icon>
-            </button>
         </mat-list-item>
     </mat-list>
-
-    <button
-        mat-stroked-button
-        (click)="chooseUserForAdmin()"
-        style="float: right"
-    >
-        Hinzufügen
-    </button>
 </mat-dialog-content>
 
 <mat-dialog-actions>
