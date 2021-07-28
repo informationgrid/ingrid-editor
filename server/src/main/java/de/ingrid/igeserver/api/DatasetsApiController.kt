@@ -284,6 +284,15 @@ class DatasetsApiController @Autowired constructor(
         forAddress: Boolean
     ): ResponseEntity<SearchResult<JsonNode>> {
 
+        val isAdmin = authUtils.isAdmin(principal)
+        val userName = authUtils.getUsernameFromPrincipal(principal)
+        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
+
+        // if a user has no groups then user is not allowed anything
+        if (userGroups.isEmpty() && !isAdmin) {
+            return ResponseEntity.ok(SearchResult<JsonNode>().apply { totalHits = 0; hits = emptyList()})
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val category = if (forAddress) "address" else "data"
@@ -301,7 +310,8 @@ class DatasetsApiController @Autowired constructor(
                 0,
                 size
 //                Sort.by(sortDirection, sortColumn)
-            )
+            ),
+            userGroups
         )
 
         val searchResult = SearchResult<JsonNode>()

@@ -25,11 +25,14 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndCategory(catalog_identifier: String, category: String): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.draft IS NOT NULL AND d.type != 'FOLDER'")
     fun findAllDrafts(catalogId: String): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.published IS NOT NULL AND d.type != 'FOLDER'")
     fun findAllPublished(catalogId: String): List<DocumentWrapper>
 

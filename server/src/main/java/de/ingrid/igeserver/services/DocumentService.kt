@@ -16,6 +16,7 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -415,10 +416,11 @@ class DocumentService @Autowired constructor(
         catalogId: String,
         category: String = "data",
         query: List<QueryField> = emptyList(),
-        pageRequest: PageRequest = PageRequest.of(0, 10)
+        pageRequest: PageRequest = PageRequest.of(0, 10),
+        userGroups: Set<Group> = emptySet()
     ): Page<DocumentWrapper> {
 
-        val specification = getSearchSpecification(catalogId, category, query)
+        val specification = getSearchSpecification(catalogId, category, query, userGroups)
         return docWrapperRepo.findAll(specification, pageRequest)
 
     }
@@ -426,7 +428,8 @@ class DocumentService @Autowired constructor(
     fun getSearchSpecification(
         catalog: String,
         category: String,
-        queryFields: List<QueryField>
+        queryFields: List<QueryField>,
+        userGroups: Set<Group> = emptySet()
     ): Specification<DocumentWrapper> {
         return Specification<DocumentWrapper> { wrapper, cq, cb ->
             val catalogWrapper = wrapper.join<DocumentWrapper, Catalog>("catalog")
@@ -444,7 +447,7 @@ class DocumentService @Autowired constructor(
             val preds = queryFields
                 .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
 
-            val result = cb.and(
+            var result = cb.and(
                 cb.equal(catalogWrapper.get<String>("identifier"), catalog),
                 cb.equal(wrapper.get<String>("category"), category),
                 cb.and(
@@ -452,11 +455,12 @@ class DocumentService @Autowired constructor(
                 )
             )
 
-            val userGroups = userRepo.findByUserId("")?.groups
-            if (userGroups != null) {
+            if (userGroups.isNotEmpty()) {
                 val isAddress = category == "address"
                 val datasetUuidsFromGroups = aclService.getDatasetUuidsFromGroups(userGroups, isAddress)
-                cb.equal(wrapper.get<String>("uuid"), datasetUuidsFromGroups)
+                val exp: Expression<String> = wrapper.get<String>("id")
+                val predicate: Predicate = exp.`in`(datasetUuidsFromGroups)
+                result = cb.and(predicate, result)
             }
             
             result
