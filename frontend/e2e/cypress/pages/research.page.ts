@@ -113,6 +113,12 @@ export class ResearchPage {
     cy.wait('@waitForDelete');
   }
 
+  static deleteObjectFromSearchResultList(): void {
+    cy.get('button').contains('Löschen').click();
+    cy.intercept('DELETE', '/api/datasets/*').as('deleteRequest');
+    cy.wait('@deleteRequest');
+  }
+
   static saveSearchProfile(title: string, description: string): void {
     cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
     cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(title);

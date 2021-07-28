@@ -106,7 +106,7 @@ describe('Research Page', () => {
     ResearchPage.search('test');
     ResearchPage.changeViewNumberDocuments();
     ResearchPage.openContextMenuOfSearchResult('testToDeleteFromResearchPage', contextActionSearchResult.Delete);
-    cy.get('button').contains('Löschen').click();
+    ResearchPage.deleteObjectFromSearchResultList();
     ResearchPage.visit();
     ResearchPage.search('test');
     ResearchPage.changeViewNumberDocuments();
