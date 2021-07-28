@@ -12,7 +12,7 @@ describe('Load addresses', () => {
   });
 
   it('should show a dashboard view when no address is selected or in root element', () => {
-    cy.get('ige-address-dashboard').should('contain', 'Adressen').should('contain', 'Neue Adresse');
+    cy.get('ige-address-dashboard', { timeout: 7000 }).should('contain', 'Adressen').should('contain', 'Neue Adresse');
     // expect(cy.get('ige-address-dashboard')).to.contain('text');
     cy.visit('/address;id=4ff589e1-d83c-4856-8bae-2ae783f69da6');
     cy.get('ige-form-info ige-breadcrumb .selectable').click();
