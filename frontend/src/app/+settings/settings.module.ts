@@ -15,7 +15,6 @@ import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { FilterSelectModule } from "../shared/filter-select/filter-select.module";
 import { CatalogManagementComponent } from "./catalog-management/catalog-management.component";
-import { AddUserDialogComponent } from "./catalog-management/catalog-detail/add-user-dialog/add-user-dialog.component";
 import { CatalogDetailComponent } from "./catalog-management/catalog-detail/catalog-detail.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -35,7 +34,6 @@ import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-p
     CodelistsComponent,
     CatalogManagementComponent,
     CatalogDetailComponent,
-    AddUserDialogComponent,
   ],
   imports: [
     CommonModule,
