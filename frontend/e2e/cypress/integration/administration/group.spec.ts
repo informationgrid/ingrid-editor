@@ -107,7 +107,10 @@ describe('Group', () => {
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#formUser').should('be.visible');
     AdminPage.selectUserGroupConnection(groupName);
+    cy.intercept('GET', '/api/users/ige2').as('completeEditingRequest');
     AdminPage.toolbarSaveUser();
+    // wait for the request that reports back the actualized data so that the editing procedure is completed
+    cy.wait('@completeEditingRequest');
 
     // go back to groups
     AdminPage.goToTabmenu(UserAndRights.Group);
