@@ -45,10 +45,14 @@ describe('Indexing', () => {
 
   it('Set cron expression via example buttons', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
+    const cronExampleText = 'Alle 30 Minuten';
 
-    cy.get('mat-chip').contains('Alle 30 Minuten').click();
-    cy.wait(500);
-    cy.get('mat-hint').contains('Alle 30 Minuten');
+    cy.get('mat-hint').should('not.contain', cronExampleText);
+    cy.wait(300);
+    cy.get('mat-chip').contains(cronExampleText).click();
+    cy.get('mat-hint').contains(cronExampleText);
+    cy.get('button').contains('Übernehmen').click();
+    cy.get('mat-hint').contains(cronExampleText);
   });
 
   it('Only index published documents', () => {
