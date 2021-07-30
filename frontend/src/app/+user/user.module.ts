@@ -12,7 +12,6 @@ import { UserManagementComponent } from "./user-management/user-management.compo
 import { PermissionsComponent } from "./permissions/permissions.component";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
-import { PermissionsShowComponent } from "./user/permissions-show/permissions-show.component";
 import { TreePermissionComponent } from "./permissions/tree-permission/tree-permission.component";
 import { MatMenuModule } from "@angular/material/menu";
 import { PermissionsDialogComponent } from "./permissions/permissions-dialog.component";
@@ -67,7 +66,6 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
     UserManagementComponent,
     PermissionsDialogComponent,
     PermissionsComponent,
-    PermissionsShowComponent,
     TreePermissionComponent,
     NewUserDialogComponent,
     NewGroupDialogComponent,
