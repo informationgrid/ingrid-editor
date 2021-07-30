@@ -3,21 +3,16 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.repository.GroupRepository
-import de.ingrid.igeserver.repository.RoleRepository
-import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.repository.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.model.AclService
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
@@ -28,6 +23,7 @@ class CatalogService @Autowired constructor(
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
+    private val managerRepo: ManagerRepository,
     private val authUtils: AuthUtils,
     private val aclService: AclService,
     private val catalogProfiles: List<CatalogProfile>
@@ -151,9 +147,10 @@ class CatalogService @Autowired constructor(
         user.data?.creationDate = Date()
         user.data?.modificationDate = Date()
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
-        //        user.catalogs = if (user.catalogs)  user.catalogs.add(this.getCatalogById(catalogId)) else mutableSetOf(this.getCatalogById(catalogId))
+        val createdUser = userRepo.save(user)
+        setManager(userModel.login, userModel.manager, catalogId)
 
-        return userRepo.save(user)
+        return createdUser
 
     }
 
@@ -202,7 +199,29 @@ class CatalogService @Autowired constructor(
 
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
+        setManager(userModel.login, userModel.manager, catalogId)
+    }
 
+    fun setManager(userId: String, managerId: String, catalogId: String) {
+        val catalog = getCatalogById(catalogId)
+        val user = userRepo.findByUserId(userId)
+        val manager = userRepo.findByUserId(managerId)
+
+        val managerAssignment = managerRepo.findByUser_UserIdAndCatalogIdentifier(userId,catalogId)
+        if (managerAssignment != null) {
+            managerRepo.delete(managerAssignment)
+            managerRepo.flush()
+        }
+        managerRepo.save(CatalogManagerAssignment().apply {
+            id = AssignmentKey().apply {
+                this.catalogId = catalog.id as Int
+                this.managerId = manager?.id as Int
+                this.userId = user?.id as Int
+            }
+            this.catalog = catalog
+            this.user = user
+            this.manager = manager
+        })
     }
 
     fun getPermissions(principal: Authentication): List<String> {

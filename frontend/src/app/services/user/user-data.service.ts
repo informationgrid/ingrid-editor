@@ -20,6 +20,18 @@ export class UserDataService {
     );
   }
 
+  getCatAdmins(): Observable<BackendUser[]> {
+    return this.http.get<BackendUser[]>(
+      this.configuration.backendUrl + "users/admins"
+    );
+  }
+
+  getUsersForUser(forUser: String): Observable<BackendUser[]> {
+    return this.http.get<BackendUser[]>(
+      `${this.configuration.backendUrl}users?fromUser=${forUser}`
+    );
+  }
+
   saveUser(user: User): Observable<BackendUser> {
     return this.http.put<BackendUser>(
       this.configuration.backendUrl + "users/" + user.login,

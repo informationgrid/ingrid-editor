@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FrontendUser, User } from "../../+user/user";
-import { Observable } from "rxjs";
+import { combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
 import { SelectOption } from "../codelist/codelist.service";
@@ -28,6 +28,59 @@ export class UserService {
     return this.dataService
       .getUsers()
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
+  }
+
+  getCatAdmins(): Observable<FrontendUser[]> {
+    return this.dataService
+      .getUsers()
+      .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
+  }
+
+  /**
+   * Get potential Managers for User
+   *
+   * These are all Catalog Admins + all MD-Admins visible by the editing admin.
+   * Minus the User forUser himself and minus all Users underneath the User forUser
+   * @param forUser
+   */
+  getPotentialMangers(forUser: User): Observable<FrontendUser[]> {
+    const forUserId = forUser.login;
+    const allUsers$ = this.getUsers();
+    const catAdmins$ = this.getCatAdmins();
+    const childrenOfUser$ = this.dataService
+      .getUsersForUser(forUserId)
+      .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
+
+    return combineLatest(
+      allUsers$,
+      childrenOfUser$,
+      catAdmins$,
+      (allUsers, childrenOfUser, catAdmins) => ({
+        allUsers,
+        childrenOfUser,
+        catAdmins,
+      })
+    ).pipe(
+      map((pair) => {
+        // all visible MD-Admins - target itself - target's children
+        // + all Cat-Admins except if in targets children
+
+        // allUsers + catAdmins without duplicates
+        const eligibleManagers = pair.allUsers.concat(
+          pair.catAdmins.filter(
+            (admin) => !pair.allUsers.find((u) => admin.login == u.login)
+          )
+        );
+
+        // filter out children, self and non admins
+        return eligibleManagers.filter(
+          (user) =>
+            ["md-admin", "cat-admin"].includes(user.role) &&
+            user.login !== forUserId &&
+            !pair.childrenOfUser.find((u) => user.login == u.login)
+        );
+      })
+    );
   }
 
   getUser(login: string): Observable<FrontendUser> {

@@ -69,26 +69,26 @@ class UsersApiController : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
+        // if user has no manager, set it to creating user
+        if (user.manager.isNullOrEmpty()) user.manager = authUtils.getUsernameFromPrincipal(principal)
+
         val userExists = keycloakService.userExists(principal, user.login)
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already Exists with login ${user.login}")
         }
-        val createdUser: UserInfo
         if (userExists) {
             keycloakService.updateUser(principal, user);
             keycloakService.addRoles(principal, user.login, listOf(user.role))
-            createdUser = catalogService.createUser(catalogId, user)
+            catalogService.createUser(catalogId, user)
             if (!developmentMode) email.sendWelcomeEmail(user.email)
 
         } else {
             val password = keycloakService.createUser(principal, user)
-            createdUser = catalogService.createUser(catalogId, user)
+            catalogService.createUser(catalogId, user)
             if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, password)
 
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
-
-        this.setManager(createdUser.userId, authUtils.getUsernameFromPrincipal(principal), principal)
 
         return ResponseEntity.ok().build()
     }
@@ -143,8 +143,29 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun list(principal: Principal): ResponseEntity<List<User>> {
+    override fun list(principal: Principal, fromUser: String?): ResponseEntity<List<User>> {
 
+        var filteredUsers = getAllCatalogUsers(principal)
+
+        val isCatAdmin = authUtils.isAdmin(principal)
+        // return all users for katadmins
+        if (isCatAdmin && fromUser.isNullOrEmpty()) {
+            return ResponseEntity.ok(filteredUsers)
+        }
+
+        // filter for fromUser children. if not set filter for principal children
+        val userName = fromUser.orEmpty().ifEmpty { authUtils.getUsernameFromPrincipal(principal) }
+        filteredUsers = filterUsersForUser(filteredUsers.toSet(), userName).toList()
+
+        return ResponseEntity.ok(filteredUsers)
+    }
+
+    override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
+        val filteredUsers = getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
+        return ResponseEntity.ok(filteredUsers)
+    }
+
+    private fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
@@ -152,12 +173,24 @@ class UsersApiController : UsersApi {
         val filteredUsers = keyCloakUsers
             .filter { user -> catalogUsers.any { it.userId == user.login } }
             .onEach { user ->
-                val catUser = catalogUsers.find { it.userId == user.login }
-                user.role = catUser?.role?.name ?: ""
-                user.organisation = catUser?.data?.organisation ?: ""
+                val catUser = catalogUsers.find { it.userId == user.login }!!
+                user.role = catUser.role?.name ?: ""
+                user.organisation = catUser.data?.organisation ?: ""
+                user.manager = managerRepo.findByUserAndCatalogIdentifier(catUser, catalogId)?.manager?.userId ?: ""
             }
+        return filteredUsers
+    }
 
-        return ResponseEntity.ok(filteredUsers)
+    private fun filterUsersForUser(users: Set<User>, userLogin: String): Set<User> {
+        val filtered = users.filter { user -> user.manager == userLogin }.toSet()
+        if (filtered.isEmpty()) {
+            return filtered
+        } else {
+            val collectedUsers = mutableSetOf<User>()
+            collectedUsers.addAll(filtered)
+            filtered.forEach { user -> collectedUsers.addAll(filterUsersForUser(users, user.login)) }
+            return collectedUsers
+        }
     }
 
     override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
@@ -196,23 +229,6 @@ class UsersApiController : UsersApi {
             )
             return ResponseEntity.ok(userInfo)
         }
-    }
-
-    private fun setManager(userId: String, managerId: String, principal: Principal) {
-        val catalog = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal))
-        val user = userRepo.findByUserId(userId)
-        val manager = userRepo.findByUserId(managerId)
-        managerRepo.save(CatalogManagerAssignment().apply {
-            id = AssignmentKey().apply {
-                this.catalogId = catalog.id as Int
-                this.managerId = manager?.id as Int
-                this.userId = user?.id as Int
-            }
-            this.catalog = catalog
-            this.user = user
-            this.manager = manager
-        })
-
     }
 
     private fun getLastLogin(principal: Principal, userIdent: String, roles: Set<String>?): Date? {

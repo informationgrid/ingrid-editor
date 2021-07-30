@@ -13,5 +13,7 @@ import org.springframework.data.jpa.repository.Query
 interface ManagerRepository : JpaRepository<CatalogManagerAssignment, Int> {
     fun findByUserAndCatalogIdentifier(user: UserInfo, catalog_identifier: String): CatalogManagerAssignment?
 
+    fun findByUser_UserIdAndCatalogIdentifier(userId: String, catalog_identifier: String): CatalogManagerAssignment?
+
 
 }

@@ -24,6 +24,7 @@ import { map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { EditManagerDialogComponent } from "./edit-manager-dialog/edit-manager-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -255,5 +256,24 @@ export class UserComponent
     }
 
     return of(true);
+  }
+
+  openChangeManagerDialog(): void {
+    this.dirtyFormHandled().subscribe((allClear) => {
+      if (allClear) {
+        this.dialog
+          .open(EditManagerDialogComponent, {
+            data: { user: this.selectedUser },
+            hasBackdrop: true,
+          })
+          .afterClosed()
+          .subscribe((result) => {
+            if (result) {
+              this.saveUser(result);
+              this.selectedUser = result;
+            }
+          });
+      }
+    });
   }
 }

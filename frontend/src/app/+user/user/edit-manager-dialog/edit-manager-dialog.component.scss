@@ -1,0 +1,15 @@
+mat-dialog-content ::ng-deep {
+  width: 450px;
+  .label-wrapper {
+    min-width: 70px;
+  }
+  formly-wrapper-mat-form-field,
+  ige-formly-autocomplete-type,
+  formly-group {
+    flex: 2;
+  }
+
+  .no-selection-text {
+    padding-bottom: 6px;
+  }
+}

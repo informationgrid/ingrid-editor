@@ -81,8 +81,30 @@ interface UsersApi {
 
     @RequestMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of users registered in IGE")])
-    fun list(principal: Principal): ResponseEntity<List<User>>
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Returns the list of users registered in IGE"
+        )]
+    )
+    fun list(
+        principal: Principal, @Parameter(description = "With this option an external user is tried to be created")
+        @RequestParam(value = "fromUser", required = false) fromUser: String?
+    ): ResponseEntity<List<User>>
+
+    @RequestMapping(
+        value = ["/users/admins"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.GET]
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Returns the list of users who are Catalog-Admins"
+        )]
+    )
+    fun listCatAdmins(principal: Principal): ResponseEntity<List<User>>
 
     @RequestMapping(
         value = ["/users/{id}"],
@@ -170,18 +192,38 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun refreshSession(): ResponseEntity<Void>
 
-    @RequestMapping(value = ["/externalUsers"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    @RequestMapping(
+        value = ["/externalUsers"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.GET]
+    )
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of external users (keycloak)")])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Returns the list of external users (keycloak)"
+        )]
+    )
     fun listExternal(principal: Principal): ResponseEntity<List<User>>
 
-    @RequestMapping(value = ["/externalUsers/requestPasswordChange/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
+    @RequestMapping(
+        value = ["/externalUsers/requestPasswordChange/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.POST]
+    )
     @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Sends an email to a user for changing its password")])
-    fun requestPasswordChange(principal: Principal,
-                              @Parameter(
-                                  description = "The user login the password change request shall be initiated.",
-                                  required = true
-                              ) @PathVariable("id") id: String): ResponseEntity<Void>
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Sends an email to a user for changing its password"
+        )]
+    )
+    fun requestPasswordChange(
+        principal: Principal,
+        @Parameter(
+            description = "The user login the password change request shall be initiated.",
+            required = true
+        ) @PathVariable("id") id: String
+    ): ResponseEntity<Void>
 
 }
