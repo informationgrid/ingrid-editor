@@ -68,7 +68,8 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle).should('not.exist');
   });
 
-  it('should add a catalog administrator', () => {
+  xit('should add a catalog administrator', () => {
+    // TODO cat admin is now only set in user management. rewrite test accordingly
     const catalogTitle = 'new Catalog';
 
     cy.get('[data-cy=header-info-button]').click();

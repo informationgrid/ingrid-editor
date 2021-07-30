@@ -29,7 +29,7 @@ describe('Group', () => {
     cy.get('error-dialog').contains('Fehler');
   });
 
-  it('should be possible to modiefy groupname and description', () => {
+  it('should be possible to modify groupname and description', () => {
     const groupName = 'Testgruppe';
     const modifiedGroupName = 'Foodgroup';
     const description = 'Eine Essensgruppe?';
@@ -92,7 +92,7 @@ describe('Group', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
   });
 
-  it('delete a group and all user conncetions must be deleted automatically', () => {
+  it('delete a group and all user connections must be deleted automatically', () => {
     const groupName = 'removable';
 
     cy.get('.page-title').contains('Gruppen');

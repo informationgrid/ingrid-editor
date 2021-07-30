@@ -28,7 +28,7 @@ describe('User', () => {
     AdminPage.addNewUserApplyWithoutError();
   });
 
-  it('the correct role symbol are shown at user list view', () => {
+  it('the correct role symbol should be in user list', () => {
     cy.get('tbody').contains('Majid Ercan').click();
     cy.get('#sidebarUser tr')
       .contains('Majid Ercan')
