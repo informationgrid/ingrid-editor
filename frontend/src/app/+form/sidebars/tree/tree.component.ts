@@ -70,6 +70,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   treeControl: FlatTreeControl<TreeNode>;
 
   dataSource: DynamicDataSource;
+  hasData: Observable<Boolean>;
 
   dragManager: DragNDropUtils;
   isDragging = false;
@@ -101,6 +102,9 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.treeControl,
       database,
       treeService
+    );
+    this.hasData = this.dataSource.dataChange.pipe(
+      map((data) => data?.length > 0)
     );
 
     this.dragManager = new DragNDropUtils(this.treeControl);

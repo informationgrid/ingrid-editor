@@ -1,4 +1,4 @@
-<ng-container *ngIf="dataSource.data?.length > 0; else emptyNavigation">
+<ng-container *ngIf="hasData | async; else emptyNavigation">
     <div class="header-wrapper">
         <ige-tree-header
             *ngIf="showHeader"
