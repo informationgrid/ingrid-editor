@@ -199,7 +199,7 @@ class CatalogService @Autowired constructor(
 
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
-        setManager(userModel.login, userModel.manager, catalogId)
+        if (userModel.manager.isNullOrEmpty()) setManager(userModel.login, userModel.manager, catalogId)
     }
 
     fun setManager(userId: String, managerId: String, catalogId: String) {
@@ -207,7 +207,7 @@ class CatalogService @Autowired constructor(
         val user = userRepo.findByUserId(userId)
         val manager = userRepo.findByUserId(managerId)
 
-        val managerAssignment = managerRepo.findByUser_UserIdAndCatalogIdentifier(userId,catalogId)
+        val managerAssignment = managerRepo.findByUser_UserIdAndCatalogIdentifier(userId, catalogId)
         if (managerAssignment != null) {
             managerRepo.delete(managerAssignment)
             managerRepo.flush()

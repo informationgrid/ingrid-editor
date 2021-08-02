@@ -25,6 +25,7 @@ import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { EditManagerDialogComponent } from "./edit-manager-dialog/edit-manager-dialog.component";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -36,8 +37,6 @@ export class UserComponent
   implements OnInit, AfterViewInit, AfterContentChecked
 {
   users: User[];
-  admins: User[];
-  ADMIN_ROLES = ["cat-admin", "md-admin", "admin", "ige-super-admin"];
   currentTab: string;
   form = new FormGroup({});
 
@@ -58,6 +57,7 @@ export class UserComponent
     private dialog: MatDialog,
     private userService: UserService,
     private groupService: GroupService,
+    private configService: ConfigService,
     public userManagementService: UserManagementService,
     private session: SessionQuery,
     private snackBar: MatSnackBar,
@@ -85,21 +85,18 @@ export class UserComponent
 
   fetchUsers() {
     const currentValue = this.selectedUserForm.value;
-
     this.userService
       .getUsers()
-      // .pipe(tap(users => users.filter(u => u.login === this.selectedUser.value.login)))
       .pipe(
         map((users: FrontendUser[]) =>
-          users.sort((a, b) => a.login.localeCompare(b.login))
+          users
+            .filter(
+              // remove current user from list
+              (u) => u.login !== this.configService.$userInfo.getValue().userId
+            )
+            .sort((a, b) => a.login.localeCompare(b.login))
         ),
         tap((users) => (this.users = users ? users : [])),
-        tap(
-          () =>
-            (this.admins = this.users.filter((u) =>
-              u.role ? this.ADMIN_ROLES.includes(u.role) : false
-            ))
-        ),
         tap(() =>
           setTimeout(() => this.selectedUserForm.setValue(currentValue))
         )

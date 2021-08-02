@@ -32,7 +32,6 @@ import { FormGroup } from "@angular/forms";
 export class HeaderMoreComponent implements OnInit {
   @Input() user: FrontendUser;
   @Input() allUsers: FrontendUser[];
-  @Input() admins: FrontendUser[];
   @Input() form: FormGroup;
   @Input() showMore = false;
   standinUsers: String[];
