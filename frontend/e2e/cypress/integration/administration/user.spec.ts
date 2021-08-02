@@ -1,4 +1,7 @@
 import { AdminPage } from '../../pages/administration.page';
+import { DocumentPage } from '../../pages/document.page';
+import { UserAndRights } from '../../pages/base.page';
+import { catchError } from 'rxjs/operators';
 
 describe('User', () => {
   beforeEach(() => {
@@ -21,7 +24,7 @@ describe('User', () => {
     cy.get('button').contains('Anlegen').parent().should('have.class', 'mat-button-disabled');
 
     // all mandatory fields must be filled
-    AdminPage.addNewUserEmail('nb@wemove.com');
+    AdminPage.addNewUserEmail('test@wemove.com');
     AdminPage.addNewUserRole(1);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
 
@@ -109,13 +112,49 @@ describe('User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
   });
 
+  it('after discard dialog appears no other dialog may appear after it (#2574)', () => {
+    const entry = 'Tralala';
+
+    // change something (name) and try to click on anthother user --> discard dialog appears
+    cy.get('tbody').contains('Majid Ercan').click();
+    cy.get('#formUser').should('be.visible');
+
+    // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
+    cy.get('[data-cy=Name] .firstName').click().clear().type(entry);
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-cancel]').click();
+    // new user dialog may not appear
+    cy.get('ige-new-user-dialog').should('not.exist');
+
+    // click on other tabmenu --> discard dialog must appear --> decline
+    AdminPage.goToTabmenu(UserAndRights.Group);
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-cancel]').click();
+  });
+
+  it('should not be possible to change menupage without appearing discard dialog (#2619)', () => {
+    const entry = 'Tralala';
+
+    // change something (name) and try to click on anthother user --> discard dialog appears
+    cy.get('tbody').contains('Majid Ercan').click();
+    cy.get('#formUser').should('be.visible');
+    // adapt user entry
+    cy.get('[data-cy=Name] .firstName').click().clear().type(entry);
+
+    // click on other menu page --> discard dialog must appear --> decline
+    cy.get(DocumentPage.Sidemenu.Adressen).click();
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-cancel]').click();
+  });
+
   it('should not possible to have equal logins', () => {
     cy.get('.page-title').contains('Nutzer');
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminPage.addNewUserLogin('ige');
     AdminPage.addNewUserFirstname('Son');
     AdminPage.addNewUserLastname('Goku');
-    AdminPage.addNewUserEmail('nb@wemove.com');
+    AdminPage.addNewUserEmail('test@wemove.com');
     AdminPage.addNewUserRole(1);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminPage.applyDialog();
@@ -151,7 +190,8 @@ describe('User', () => {
     cy.get('.more-info > div:nth-child(1)').contains('Zuletzt eingeloggt');
     cy.get('.more-info > div:nth-child(2)').contains('Erstellt am');
     cy.get('.more-info > div:nth-child(3)').contains('Geändert am');
-    cy.get('.more-info > div:nth-child(4)').contains(loginEntry);
+    cy.get('.more-info > div:nth-child(4)').contains('Verantwortlich');
+    cy.get('.more-info > div:nth-child(5)').contains(loginEntry);
 
     // compare the entry in ID/login with the Login- field
     cy.get('.label').contains(loginEntry);
