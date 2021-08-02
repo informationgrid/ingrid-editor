@@ -1,6 +1,6 @@
-import { BasePage, UserAndRights, UserRoles } from './base.page';
+import { BasePage, UserAndRights } from './base.page';
 
-export class AdminPage extends BasePage {
+export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
     cy.get('mat-tab-header .mat-tab-label:nth-child(' + tabmenu + '', { timeout: 10000 }).click();
   }
@@ -21,12 +21,12 @@ export class AdminPage extends BasePage {
     cy.get('ige-new-user-dialog input:last').click({ force: true }).clear().type(email);
   }
 
-  static addNewUserRole(roleIndex: UserRoles) {
+  static addNewUserRole(roleTitle: string) {
     cy.get('mat-select').click();
-    cy.get('mat-option:nth-child(' + roleIndex + '').click();
+    cy.get('mat-option').contains(roleTitle).click();
   }
 
-  static addNewUserApplyWithoutError() {
+  static confirmAddUserDialog() {
     this.applyDialog();
     cy.get('error-dialog').should('not.exist');
   }
@@ -41,13 +41,13 @@ export class AdminPage extends BasePage {
     cy.wait(100);
   }
 
-  static selectUserGroupConnection(groupName: string) {
+  static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('mat-option').contains(groupName).click();
     cy.wait(100);
   }
 
-  static removeUserGroupConnection(groupName: string) {
+  static removeGroupFromUser(groupName: string) {
     cy.get('[data-cy=Gruppen] div.clickable')
       .contains(groupName)
       .trigger('mouseover')
@@ -61,5 +61,24 @@ export class AdminPage extends BasePage {
     cy.get('ige-new-group-dialog').contains('Gruppe hinzufügen').should('be.visible');
     cy.get('ige-new-group-dialog mat-form-field input').click().clear().type(groupname);
     this.applyDialog();
+  }
+
+  static selectUser(name: string) {
+    cy.get('user-table').contains(name).click();
+    cy.get('#formUser').should('be.visible');
+  }
+
+  static checkRoleSymbol(username: string, iconname: string) {
+    cy.get('#sidebarUser tr').contains(username).parent().parent().find(iconname).should('be.visible');
+  }
+
+  static discardChanges() {
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-discard]').click();
+  }
+
+  static cancelChanges() {
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-cancel]').click();
   }
 }

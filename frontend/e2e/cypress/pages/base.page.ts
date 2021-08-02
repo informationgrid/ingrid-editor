@@ -38,9 +38,3 @@ export enum UserAndRights {
   User = 1,
   Group
 }
-
-export enum UserRoles {
-  KatalogAdmin = 1,
-  MetadatenAdmin,
-  Autor
-}
