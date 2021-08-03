@@ -349,7 +349,7 @@ describe('User', () => {
 
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('.mat-option-disabled').should('have.length', 1);
+    cy.get('.mat-option-disabled').should('contain', groupName);
   });
 
   //TODO: Verification emails for user!

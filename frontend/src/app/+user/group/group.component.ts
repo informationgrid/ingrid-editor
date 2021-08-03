@@ -173,7 +173,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
       ],
       message:
         users.length > 0
-          ? `Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von ${users.length} Nutzer(n) verwendet:`
+          ? `Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von ${
+              users.length === 1 ? "einem Nutzer" : users.length + " Nutzern"
+            } verwendet:`
           : "Möchten Sie die Gruppe wirklich löschen?",
       list: users.map((user) => user.login),
     };

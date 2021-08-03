@@ -15,14 +15,14 @@ describe('Group', () => {
     cy.kcLogout();
   });
 
-  it('should create a new group', () => {
+  it.only('should create a new group', () => {
     const newGroup = 'neue Gruppe';
     const description = 'Eine Beschreibung';
 
     AdminGroupPage.addNewGroup(newGroup);
     cy.get('groups-table').should('contain', newGroup);
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.toolbarSaveUser();
+    AdminGroupPage.toolbarSaveGroup();
 
     cy.get('groups-table').should('contain', description);
   });
@@ -47,7 +47,7 @@ describe('Group', () => {
     // modify groupname, add description and save
     cy.get('#formRoles mat-form-field input').click().clear().type(modifiedGroupName);
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.toolbarSaveUser();
+    AdminGroupPage.toolbarSaveGroup();
 
     // check groupname has changed
     cy.get('groups-table').should('not.contain', groupName);
@@ -56,7 +56,7 @@ describe('Group', () => {
     // revert changes and check
     cy.get('#formRoles mat-form-field input').click().clear().type(groupName);
     cy.get('textarea').click().clear();
-    AdminGroupPage.toolbarSaveUser();
+    AdminGroupPage.toolbarSaveGroup();
     cy.get('groups-table').should('not.contain', modifiedGroupName);
     cy.get('groups-table').should('contain', groupName);
   });
@@ -106,7 +106,6 @@ describe('Group', () => {
 
     AdminUserPage.selectUser(username);
     AdminUserPage.addGroupToUser(groupName);
-    cy.intercept('GET', '/api/users/ige2').as('completeEditingRequest');
     AdminGroupPage.toolbarSaveUser();
 
     // go back to groups

@@ -10,9 +10,16 @@ export class AdminGroupPage extends BasePage {
     cy.wait(100);
   }
 
+  static toolbarSaveGroup() {
+    cy.get('[data-cy=toolbar_save_group]').click();
+    cy.intercept('GET', '/api/groups/**').as('completeEditingRequest');
+    cy.wait('@completeEditingRequest');
+  }
+
   static toolbarSaveUser() {
     cy.get('[data-cy=toolbar_save_user]').click();
-    cy.wait(100);
+    cy.intercept('GET', '/api/users/**').as('completeEditingRequest');
+    cy.wait('@completeEditingRequest');
   }
 
   static addNewGroup(groupname: string) {
