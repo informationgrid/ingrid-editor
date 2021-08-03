@@ -101,6 +101,12 @@
                     <mat-menu #groupMoreMenu="matMenu">
                         <button
                             mat-menu-item
+                            (click)="openChangeManagerDialog()"
+                        >
+                            Verantwortlichen ändern
+                        </button>
+                        <button
+                            mat-menu-item
                             (click)="deleteGroup(selectedGroup.id)"
                         >
                             Löschen

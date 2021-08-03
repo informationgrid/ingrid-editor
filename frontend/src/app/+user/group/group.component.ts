@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
-import { Group } from "../../models/user-group";
+import { FrontendGroup, Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
 import {
   AbstractControl,
@@ -10,7 +10,7 @@ import {
   FormGroup,
   ValidatorFn,
 } from "@angular/forms";
-import { Permissions, User } from "../user";
+import { BackendUser, Permissions, User } from "../user";
 import { map, tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import {
@@ -21,6 +21,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
+import { EditManagerDialogComponent } from "../user/edit-manager-dialog/edit-manager-dialog.component";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -35,7 +37,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
   form: FormGroup;
 
   selectedGroupForm = new FormControl();
-  selectedGroup: Group;
+  selectedGroup: FrontendGroup;
   isLoading = false;
   showMore = false;
   tableWidth: number;
@@ -45,6 +47,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private groupService: GroupService,
+    private configService: ConfigService,
     public userManagementService: UserManagementService,
     private session: SessionQuery
   ) {
@@ -106,6 +109,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
           this.form.enable();
           this.isLoading = false;
         });
+        this.groupService
+          .getGroupManager(id)
+          .subscribe((manager) => (this.selectedGroup.manager = manager.login));
       }
     });
   }
@@ -205,5 +211,39 @@ export class GroupComponent implements OnInit, AfterViewInit {
     }
 
     return of(true);
+  }
+
+  openChangeManagerDialog(): void {
+    this.dirtyFormHandled().subscribe((allClear) => {
+      if (allClear) {
+        this.groupService
+          .getGroupManager(this.selectedGroup.id)
+          .subscribe((manager) => {
+            this.dialog
+              .open(EditManagerDialogComponent, {
+                data: {
+                  user: new BackendUser({
+                    // current user who is editing
+                    login: this.configService.$userInfo.getValue().userId,
+                    // current group manager
+                    manager: manager.login,
+                  }),
+                  group: this.selectedGroup,
+                },
+                hasBackdrop: true,
+              })
+              .afterClosed()
+              .subscribe((result) => {
+                if (result?.manager) {
+                  this.groupService
+                    .updateGroupManager(this.selectedGroup.id, result.manager)
+                    .subscribe(
+                      () => (this.selectedGroup.manager = result.manager)
+                    );
+                }
+              });
+          });
+      }
+    });
   }
 }

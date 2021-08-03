@@ -22,7 +22,8 @@ class GroupsApiController @Autowired constructor(
 
     override fun createGroup(principal: Principal, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        return ResponseEntity.ok(groupService.create(catalogId, group))
+        val manager = catalogService.getUser(authUtils.getUsernameFromPrincipal(principal))
+        return ResponseEntity.ok(groupService.create(catalogId, group, manager))
     }
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
@@ -44,10 +45,26 @@ class GroupsApiController @Autowired constructor(
 
     override fun listGroups(principal: Principal): ResponseEntity<List<Group>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        var groups = groupService.getAll(catalogId)
 
-        val groups = groupService.getAll(catalogId)
+        val isCatAdmin = authUtils.isAdmin(principal)
+        if (isCatAdmin) {
+            return ResponseEntity.ok(groups)
+        }
+
+        // filter groups for user
+        var possibleGroupManagers = mutableListOf<String>(userId)
+        possibleGroupManagers.addAll(
+            catalogService.filterUsersForUser(
+                catalogService.getAllCatalogUsers(principal).toSet(), userId
+            ).map { user -> user.login })
+
+        groups = groups.filter { possibleGroupManagers.contains(it.manager?.userId) }
+
         return ResponseEntity.ok(groups)
     }
+
 
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -62,5 +79,26 @@ class GroupsApiController @Autowired constructor(
             .map { User(it.userId) }
         return ResponseEntity.ok(users)
 
+    }
+
+    override fun getManagerOfGroup(principal: Principal, id: Int): ResponseEntity<User> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        return when (val manager = groupService.get(catalogId, id)?.manager) {
+            null -> ResponseEntity.notFound().build()
+            else -> ResponseEntity.ok(User(manager.userId))
+        }
+
+    }
+
+    override fun updateManager(principal: Principal, id: Int, userId: String): ResponseEntity<Group> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        var group = groupService.get(catalogId, id)
+        var newManager = catalogService.getUser(userId)
+        if (group != null && newManager != null) {
+            group.manager = newManager
+            return ResponseEntity.ok(groupService.update(catalogId, id, group))
+        } else {
+            return ResponseEntity.notFound().build()
+        }
     }
 }

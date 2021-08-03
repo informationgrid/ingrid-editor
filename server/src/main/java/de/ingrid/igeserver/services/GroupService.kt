@@ -36,11 +36,12 @@ class GroupService @Autowired constructor(
     private val log = logger()
 
     @Transactional
-    fun create(catalogId: String, group: Group): Group {
+    fun create(catalogId: String, group: Group, manager: UserInfo?): Group {
         group.catalog = catalogRepo.findByIdentifier(catalogId)
         group.data = group.data ?: GroupData()
         group.data?.creationDate = Date()
         group.data?.modificationDate = Date()
+        group.manager = manager
 
         updateAcl(group)
 
@@ -76,6 +77,7 @@ class GroupService @Autowired constructor(
         group.apply {
             this.id = oldGroup?.id
             catalog = oldGroup?.catalog
+            manager = group.manager ?: oldGroup?.manager
         }
         group.data = oldGroup?.data ?: GroupData()
         group.data?.modificationDate = Date()
@@ -108,7 +110,7 @@ class GroupService @Autowired constructor(
 
     private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
         // write complete new acl entries for this object with this sid
-        deleteAce(sid, acl)        
+        deleteAce(sid, acl)
 
         determinePermission(docPermission)
             .forEach {
@@ -145,8 +147,8 @@ class GroupService @Autowired constructor(
         groupRepo.deleteById(id)
 
     }
-    
-    fun getUsersOfGroup(id: Int) : List<UserInfo> {
+
+    fun getUsersOfGroup(id: Int): List<UserInfo> {
         return userRepo.findByGroups_Id(id);
     }
 

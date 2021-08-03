@@ -21,6 +21,14 @@ export class GroupService {
       .pipe(map((json) => this.prepareGroup([json])[0]));
   }
 
+  getGroupManager(id: string): Observable<User> {
+    return this.dataService.getGroupManager(id);
+  }
+
+  updateGroupManager(id: string, managerId: string): Observable<User> {
+    return this.dataService.updateGroupManager(id, managerId);
+  }
+
   prepareGroup(groups: any[]) {
     return groups.map((group) => new Group(group));
   }

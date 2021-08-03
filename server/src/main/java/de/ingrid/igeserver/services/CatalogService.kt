@@ -26,6 +26,7 @@ class CatalogService @Autowired constructor(
     private val managerRepo: ManagerRepository,
     private val authUtils: AuthUtils,
     private val aclService: AclService,
+    private val keycloakService: KeycloakService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
@@ -239,6 +240,35 @@ class CatalogService @Autowired constructor(
                 Permissions.can_import.name,
                 Permissions.can_export.name,
             )
+        }
+    }
+
+    fun getAllCatalogUsers(principal: Principal): List<User> {
+        val catalogId = getCurrentCatalogForPrincipal(principal)
+
+        val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
+        val catalogUsers = getUserOfCatalog(catalogId)
+        val filteredUsers = keyCloakUsers
+            .filter { user -> catalogUsers.any { it.userId == user.login } }
+            .onEach { user ->
+                val catUser = catalogUsers.find { it.userId == user.login }!!
+                user.role = catUser.role?.name ?: ""
+                user.organisation = catUser.data?.organisation ?: ""
+                user.manager = managerRepo.findByUserAndCatalogIdentifier(catUser, catalogId)?.manager?.userId ?: ""
+            }
+        return filteredUsers
+    }
+
+
+    fun filterUsersForUser(users: Set<User>, userLogin: String): Set<User> {
+        val filtered = users.filter { user -> user.manager == userLogin }.toSet()
+        if (filtered.isEmpty()) {
+            return filtered
+        } else {
+            val collectedUsers = mutableSetOf<User>()
+            collectedUsers.addAll(filtered)
+            filtered.forEach { user -> collectedUsers.addAll(filterUsersForUser(users, user.login)) }
+            return collectedUsers
         }
     }
 

@@ -1,16 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-} from "@angular/core";
-import { DocumentState, IgeDocument } from "../../../models/ige-document";
+import { Component, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { DocumentUtils } from "../../../services/document.utils";
-import { ProfileQuery } from "../../../store/profile/profile.query";
-import { FrontendUser } from "../../user";
-import { FormGroup } from "@angular/forms";
-import { Group } from "../../../models/user-group";
+import { FrontendGroup } from "../../../models/user-group";
 
 @Component({
   selector: "group-header-more",
@@ -28,10 +18,9 @@ import { Group } from "../../../models/user-group";
       ]),
     ]),
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupHeaderMoreComponent implements OnInit {
-  @Input() group: Group;
+  @Input() group: FrontendGroup;
   @Input() showMore = false;
 
   constructor() {}

@@ -41,9 +41,15 @@ export class UserService {
    *
    * These are all Catalog Admins + all MD-Admins visible by the editing admin.
    * Minus the User forUser himself and minus all Users underneath the User forUser
+   *
+   * If forGroup is True, the children and the User himself are not filtered out, as they are valid options.
    * @param forUser
+   * @param forGroup
    */
-  getPotentialMangers(forUser: User): Observable<FrontendUser[]> {
+  getPotentialManagers(
+    forUser: User,
+    forGroup: boolean = false
+  ): Observable<FrontendUser[]> {
     const forUserId = forUser.login;
     const allUsers$ = this.getUsers();
     const catAdmins$ = this.getCatAdmins();
@@ -76,8 +82,9 @@ export class UserService {
         return eligibleManagers.filter(
           (user) =>
             ["md-admin", "cat-admin"].includes(user.role) &&
-            user.login !== forUserId &&
-            !pair.childrenOfUser.find((u) => user.login == u.login)
+            (forGroup || user.login !== forUserId) &&
+            (forGroup ||
+              !pair.childrenOfUser.find((u) => user.login == u.login))
         );
       })
     );

@@ -107,4 +107,23 @@ interface GroupsApi {
         principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
     ): ResponseEntity<List<User>>
+
+    @GetMapping(
+        value = ["/groups/{id}/manager"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun getManagerOfGroup(
+        principal: Principal,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
+    ): ResponseEntity<User>
+
+    @PostMapping(
+        value = ["/groups/{id}/manager"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun updateManager(
+        principal: Principal,
+        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
+        @Parameter(description = "The id of the manager", required = true) @RequestBody userId: String
+    ): ResponseEntity<Group>
 }

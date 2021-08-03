@@ -17,6 +17,10 @@ export class Group {
   }
 }
 
+export class FrontendGroup extends Group {
+  manager: string;
+}
+
 export class GroupData {
   creationDate: Date;
   modificationDate: Date;

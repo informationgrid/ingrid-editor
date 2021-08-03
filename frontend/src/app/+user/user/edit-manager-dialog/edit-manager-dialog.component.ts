@@ -6,6 +6,8 @@ import { getManagerFormFields } from "./manager.formly-fields";
 import { UserService } from "../../../services/user/user.service";
 import { map } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { Group } from "../../../models/user-group";
+import { GroupService } from "../../../services/role/group.service";
 
 @Component({
   selector: "ige-edit-manager-dialog",
@@ -20,12 +22,20 @@ export class EditManagerDialogComponent implements OnInit {
   ) {}
 
   user: FrontendUser;
+  group: Group;
   form: FormGroup;
   formlyFieldConfig: FormlyFieldConfig[];
+  forGroup: boolean;
 
   ngOnInit(): void {
+    if (this.data.group) this.forGroup = true;
     this.user = this.data.user;
-    const potentialManagers = this.userService.getPotentialMangers(this.user);
+    this.group = this.data.group;
+    console.log(this.user, this.group);
+    const potentialManagers = this.userService.getPotentialManagers(
+      this.user,
+      this.forGroup
+    );
     this.formlyFieldConfig = getManagerFormFields(
       potentialManagers.pipe(
         map((users) =>
