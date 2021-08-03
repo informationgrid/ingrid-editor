@@ -119,6 +119,39 @@ export class ResearchPage {
     cy.wait('@deleteRequest');
   }
 
+  static getResultListItems(): Chainable<String[]> {
+    return cy
+      .get('ige-result-table')
+      .find('td.mat-cell:nth-child(2)')
+      .then(element => {
+        let arr: String[] = [];
+        element.each((index, el) => {
+          arr.push(el.innerText.trim());
+        });
+        return arr;
+      });
+  }
+
+  static getSearchResultItemsFromCSV(): Chainable<String[]> {
+    let res_arr: String[] = [];
+    return cy.readFile('cypress/downloads/research.csv').then(content => {
+      let raw_content = content.split('\n');
+      // delete string with column names
+      raw_content.shift();
+      // separate elements of single records
+      let new_arr = raw_content.map(function (el: string) {
+        return el.split(',');
+      });
+      // retrieve the part of the records that is relevant: the file name
+      res_arr = new_arr.map(function (el: string) {
+        return el[1];
+      });
+      //remove empty string at the end
+      res_arr.pop();
+      return res_arr;
+    });
+  }
+
   static saveSearchProfile(title: string, description: string): void {
     cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
     cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(title);

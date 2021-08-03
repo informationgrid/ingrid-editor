@@ -129,16 +129,11 @@ describe('Research Page', () => {
 
   it('should make sure CSV-file of search has been downloaded', () => {
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
-    cy.intercept('153-es2015.87cc53934ab68e612d9e.js').as('csvRequest');
+    cy.intercept('GET', /192.168.0.223\/.+\.js$/).as('csvRequest');
     ResearchPage.getCSVFile();
-    cy.wait('@csvRequest')
-      .its('request')
-      .then(req => {
-        cy.request(req).then(({ body, headers, status }) => {
-          expect(headers).to.have.property('content-type', 'application/javascript');
-          expect(status).to.eq(200);
-        });
-      });
+    cy.wait('@csvRequest');
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.readFile(downloadsFolder + '/research.csv').should('exist');
   });
 
   //SQL-Suche
@@ -227,5 +222,16 @@ describe('Research Page', () => {
     // make sure there's an exact match (-> no substring match)
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
     ResearchPage.getSearchResultCountZeroIncluded().should('eq', 1);
+  });
+
+  it('should verify content of downloaded CSV file', () => {
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    ResearchPage.changeViewNumberDocuments();
+    ResearchPage.getResultListItems().then(arr1 => {
+      ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
+        // compare the content of the two arrays
+        assert(arr2.length === arr1.length && arr2.every((value, index) => value === arr1[index]));
+      });
+    });
   });
 });
