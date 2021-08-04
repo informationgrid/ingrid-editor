@@ -129,7 +129,7 @@ describe('Research Page', () => {
 
   it('should make sure CSV-file of search has been downloaded', () => {
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
-    cy.intercept('GET', /192.168.0.223\/.+\.js$/).as('csvRequest');
+    cy.intercept('GET', /192.168.0.[0-9]{3}\/.+\.js$/).as('csvRequest');
     ResearchPage.getCSVFile();
     cy.wait('@csvRequest');
     const downloadsFolder = Cypress.config('downloadsFolder');
