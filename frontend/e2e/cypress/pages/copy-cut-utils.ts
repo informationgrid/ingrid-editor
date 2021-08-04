@@ -1,4 +1,5 @@
 import { Tree } from './tree.partial';
+import { timeout } from 'rxjs/operators';
 
 enum CopyOption {
   COPY = '[data-cy="copyMenu_COPY"]',
@@ -49,7 +50,7 @@ export class CopyCutUtils {
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
-        cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')');
+        cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')', { timeout: 500 });
       }
     });
 
