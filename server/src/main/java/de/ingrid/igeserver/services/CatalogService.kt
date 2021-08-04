@@ -200,7 +200,7 @@ class CatalogService @Autowired constructor(
 
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
-        if (userModel.manager.isNullOrEmpty()) setManager(userModel.login, userModel.manager, catalogId)
+        if (userModel.manager.isNotEmpty()) setManager(userModel.login, userModel.manager, catalogId)
     }
 
     fun setManager(userId: String, managerId: String, catalogId: String) {

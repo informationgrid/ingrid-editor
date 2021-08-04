@@ -69,7 +69,7 @@ class Migration : ApplicationRunner {
 
     private fun setVersionSafe(lastSuccessfulMigration: Version?) {
         if (lastSuccessfulMigration != null) {
-            setVersion(lastSuccessfulMigration!!.version)
+            setVersion(lastSuccessfulMigration.version)
         }
     }
 
