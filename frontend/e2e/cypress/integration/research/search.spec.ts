@@ -128,7 +128,7 @@ describe('Research Page', () => {
   });
 
   it('should make sure CSV-file of search has been downloaded', () => {
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
     cy.intercept('GET', /192.168.0.[0-9]{3}\/.+\.js$/).as('csvRequest');
     ResearchPage.getCSVFile();
     cy.wait('@csvRequest');
@@ -225,7 +225,7 @@ describe('Research Page', () => {
   });
 
   it('should verify content of downloaded CSV file', () => {
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
     ResearchPage.changeViewNumberDocuments();
     ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
