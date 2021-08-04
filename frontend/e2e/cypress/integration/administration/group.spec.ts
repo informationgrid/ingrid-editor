@@ -15,7 +15,7 @@ describe('Group', () => {
     cy.kcLogout();
   });
 
-  it.only('should create a new group', () => {
+  it('should create a new group', () => {
     const newGroup = 'neue Gruppe';
     const description = 'Eine Beschreibung';
 
