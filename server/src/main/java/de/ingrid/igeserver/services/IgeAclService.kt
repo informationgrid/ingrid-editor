@@ -1,8 +1,11 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.repository.GroupRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.ObjectIdentityImpl
@@ -20,8 +23,38 @@ data class PermissionInfo(
 @Service
 class IgeAclService @Autowired constructor(
     val aclService: AclService,
+    val groupRepo: GroupRepository,
     val docWrapperRepo: DocumentWrapperRepository
 ) {
+
+    fun hasRightsForGroup(authentication: Authentication, group: Group): Boolean {
+        if (hasAdminRole(authentication)) {
+            return true
+        }
+        val permissionLevels = listOf<String>("writeTree", "ReadTree", "writeTreeExceptParent")
+        val sids = SidRetrievalStrategyImpl().getSids(authentication)
+
+
+        permissionLevels.forEach {
+            val uuids = getAllDatasetUuidsFromGroups(listOf(group), it)
+            uuids.map { uuid ->
+                val acl = this.aclService.readAclById(
+                    ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+                )
+                var isAllowed: Boolean;
+                when (it) {
+                    "writeTree" -> isAllowed = isAllowed(acl, BasePermission.WRITE, sids)
+                    "ReadTree" -> isAllowed = isAllowed(acl, BasePermission.READ, sids)
+                    "writeTreeExceptParent" -> isAllowed = isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
+                    else -> {
+                        throw error("this is impossible and must not happen.")
+                    }
+                }
+                if (!isAllowed) return false
+            }
+        }
+        return true
+    }
 
     fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
         if (hasAdminRole(authentication)) {
@@ -43,11 +76,28 @@ class IgeAclService @Autowired constructor(
             PermissionInfo()
         }
     }
-    
+
     fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<String> {
         return groups
-            .map {group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
+            .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
+            .flatten()
+    }
+
+    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String): List<String> {
+        return groups
+            .map { group ->
+                mutableListOf<JsonNode>().apply {
+                    addAll(group.permissions?.addresses ?: emptyList())
+                    addAll(group.permissions?.documents ?: emptyList())
+                }
+            }
+            .map { permissions ->
+                permissions.filter { permission ->
+                    permission.get("permission").asText() == permissionLevel
+                }
+            }
+            .map { permissions -> permissions.mapNotNull { permission -> permission.get("uuid").asText() } }
             .flatten()
     }
 

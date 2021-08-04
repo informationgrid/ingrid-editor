@@ -4,10 +4,12 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -17,6 +19,7 @@ import java.security.Principal
 class GroupsApiController @Autowired constructor(
     private val catalogService: CatalogService,
     private val groupService: GroupService,
+    private val igeAclService: IgeAclService,
     private val authUtils: AuthUtils
 ) : GroupsApi {
 
@@ -53,6 +56,9 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups)
         }
 
+        groups = groups.filter { igeAclService.hasRightsForGroup(principal as Authentication, it) }
+/*
+
         // filter groups for user
         var possibleGroupManagers = mutableListOf<String>(userId)
         possibleGroupManagers.addAll(
@@ -61,6 +67,7 @@ class GroupsApiController @Autowired constructor(
             ).map { user -> user.login })
 
         groups = groups.filter { possibleGroupManagers.contains(it.manager?.userId) }
+*/
 
         return ResponseEntity.ok(groups)
     }
