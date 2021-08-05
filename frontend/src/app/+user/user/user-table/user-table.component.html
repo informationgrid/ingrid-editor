@@ -16,7 +16,7 @@
         <td
             mat-cell
             *matCellDef="let element"
-            (click)="selection.select(element)"
+            (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
             <mat-icon [svgIcon]="getRoleIcon(element.role)"></mat-icon>
@@ -29,7 +29,7 @@
         <td
             mat-cell
             *matCellDef="let element"
-            (click)="selection.select(element)"
+            (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
             {{ element.login }}
@@ -42,7 +42,7 @@
         <td
             mat-cell
             *matCellDef="let element"
-            (click)="selection.select(element)"
+            (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
             <div>{{ element.firstName + " " + element.lastName }}</div>
@@ -56,7 +56,7 @@
         <td
             mat-cell
             *matCellDef="let element"
-            (click)="selection.select(element)"
+            (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
             {{ element.organisation }}
@@ -74,7 +74,7 @@
             mat-cell
             class="thin-column"
             *matCellDef="let element"
-            (click)="selection.select(element)"
+            (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
             <button

@@ -8,11 +8,11 @@ import {
   ViewChild,
 } from "@angular/core";
 import { User } from "../../user";
-import { FormControl } from "@angular/forms";
-import { MatSort, Sort } from "@angular/material/sort";
+import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "user-table",
@@ -30,8 +30,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filter;
   }
 
-  @Input() selectedUser: User;
-  @Input() selectedUserForm: FormControl;
+  @Input() selectedUser: Subject<User>;
   displayedColumns: string[] = [
     "role-icon",
     "login",
@@ -50,9 +49,6 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       allowMultiSelect,
       initialSelection
     );
-    this.selection.changed.subscribe((selection) => {
-      this.onUserSelect.emit(selection.source.selected[0]);
-    });
     this.dataSource.filterPredicate = (user: User, filterValue: string) => {
       let searchIn = [
         user.login ?? "",
@@ -68,7 +64,13 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     };
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.selectedUser.subscribe((user) =>
+      this.selection.select(
+        this.dataSource.data.find((d) => d.login == user?.login)
+      )
+    );
+  }
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -76,33 +78,6 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-  }
-
-  sortedData: User[];
-
-  sortData(sort: Sort) {
-    const data = this.dataSource.data.slice();
-    if (!sort.active || sort.direction === "") {
-      this.sortedData = data;
-      return;
-    }
-
-    this.sortedData = data.sort((a, b) => {
-      const isAsc = sort.direction === "asc";
-      switch (sort.active) {
-        case "login":
-          return compare(a.login, b.login, isAsc);
-        case "organisation":
-          console.log(a.firstName, b.firstName);
-          return compare(a.login, b.login, isAsc);
-        default:
-          return 0;
-      }
-
-      function compare(a: number | string, b: number | string, isAsc: boolean) {
-        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-      }
-    });
   }
 
   getRoleIcon(role: string) {
@@ -115,5 +90,10 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       default:
         return "author";
     }
+  }
+
+  trySelect(element) {
+    this.selection.select(element);
+    this.onUserSelect.emit(element);
   }
 }

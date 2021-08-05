@@ -7,12 +7,12 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { MatSort, Sort } from "@angular/material/sort";
+import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "groups-table",
@@ -30,8 +30,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filter;
   }
 
-  @Input() selectedGroup: Group;
-  @Input() selectedGroupForm: FormControl;
+  @Input() selectedGroup: Subject<Group>;
   displayedColumns: string[] = ["role-icon", "name", "settings"];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
@@ -46,9 +45,6 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
       allowMultiSelect,
       initialSelection
     );
-    this.selection.changed.subscribe((selection) => {
-      this.onGroupSelect.emit(selection.source.selected[0]);
-    });
     this.dataSource.filterPredicate = (group: Group, filterValue: string) => {
       let searchIn = [group.name ?? "", group.description ?? ""]
         .join(" ")
@@ -58,7 +54,14 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     };
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.selectedGroup.subscribe((group) => {
+      console.log(group, this.dataSource.data);
+      this.selection.select(
+        this.dataSource.data.find((d) => d.id == group?.id)
+      );
+    });
+  }
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -68,30 +71,8 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  sortedData: Group[];
-
-  sortData(sort: Sort) {
-    const data = this.dataSource.data.slice();
-    if (!sort.active || sort.direction === "") {
-      this.sortedData = data;
-      return;
-    }
-
-    this.sortedData = data.sort((a, b) => {
-      const isAsc = sort.direction === "asc";
-      switch (sort.active) {
-        case "login":
-          return compare(a.login, b.login, isAsc);
-        case "organisation":
-          console.log(a.firstName, b.firstName);
-          return compare(a.login, b.login, isAsc);
-        default:
-          return 0;
-      }
-
-      function compare(a: number | string, b: number | string, isAsc: boolean) {
-        return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-      }
-    });
+  trySelect(element) {
+    this.selection.select(element);
+    this.onGroupSelect.emit(element);
   }
 }

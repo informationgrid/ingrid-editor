@@ -51,7 +51,8 @@
             <groups-table
                 [query]="searchQuery"
                 [groups]="groups"
-                (onGroupSelect)="selectedGroup = $event; loadGroup($event.id)"
+                [selectedGroup]="selectedGroup$"
+                (onGroupSelect)="loadGroup($event.id)"
                 (onDelete)="deleteGroup($event)"
             ></groups-table>
         </as-split-area>

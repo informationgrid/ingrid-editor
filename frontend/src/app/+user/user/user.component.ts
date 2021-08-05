@@ -10,7 +10,7 @@ import {
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { config, Observable, of } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
@@ -44,6 +44,7 @@ export class UserComponent
   groups = this.groupService.getGroups();
   selectedUserForm = new FormControl();
   selectedUser: User;
+  selectedUser$: Subject<User>;
   showMore = false;
   searchQuery: string;
   isLoading = false;
@@ -67,6 +68,7 @@ export class UserComponent
     this.searchQuery = "";
     this.formlyFieldConfig = this.userService.getUserFormFields();
     this.tableWidth = this.session.getValue().ui.userTableWidth;
+    this.selectedUser$ = new Subject<User>();
   }
 
   ngAfterViewInit(): void {
@@ -81,6 +83,9 @@ export class UserComponent
     this.currentTab = "users";
 
     this.fetchUsers();
+    this.selectedUser$
+      .pipe(tap((user) => (this.selectedUser = user)))
+      .subscribe();
   }
 
   fetchUsers() {
@@ -110,10 +115,12 @@ export class UserComponent
         this.isLoading = true;
         this.form.disable();
         this.userService.getUser(login).subscribe((user) => {
-          this.selectedUser = user;
+          this.selectedUser$.next(user);
           this.model = user;
           this.updateUserForm(user);
         });
+      } else {
+        this.selectedUser$.next(this.selectedUser);
       }
     });
   }
@@ -148,7 +155,7 @@ export class UserComponent
       .subscribe((result) => {
         if (result) {
           this.userService.deleteUser(login).subscribe(() => {
-            this.selectedUser = null;
+            this.selectedUser$.next(null);
             this.fetchUsers();
           });
         }
@@ -176,7 +183,7 @@ export class UserComponent
       (err: any) => {
         this.enableForm();
         this.isLoading = false;
-        this.selectedUser = null;
+        this.selectedUser$.next(null);
         if (err.status === 409) {
           this.modalService.showJavascriptError(
             "Es existiert kein Benutzer mit dem Login: " + this.form.value.login
@@ -267,7 +274,7 @@ export class UserComponent
           .subscribe((result) => {
             if (result) {
               this.saveUser(result);
-              this.selectedUser = result;
+              this.selectedUser$.next(result);
             }
           });
       }
