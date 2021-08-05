@@ -83,7 +83,7 @@ describe('User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
   });
 
-  it('when changes on user entries were not saved, discard dialog must appear', () => {
+  it('when changes on user entries were not saved, discard dialog must appear (#2675)', () => {
     const username = 'Meins Deins';
     const newEntry = 'Majid';
     const modifiedName = 'Tralala';
