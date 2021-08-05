@@ -352,5 +352,54 @@ describe('User', () => {
     cy.get('.mat-option-disabled').should('contain', groupName);
   });
 
+  it('should be enable save button, when user entries changed (#2569)', () => {
+    const username = 'Meins Deins';
+    const modified = 'Vorname';
+
+    AdminUserPage.selectUser(username);
+    cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
+
+    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
+  });
+
+  it('should not be possible to click on another object, while discard dialog is open (#2569)', () => {
+    const username = 'Meins Deins';
+    const username2 = 'Meta Admin';
+    const modified = 'Vorname';
+
+    AdminUserPage.selectUser(username);
+    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+
+    AdminUserPage.selectUser(username2);
+    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+
+    // when overlay is findable, other entries are not clickable
+    cy.get('mat-dialog-container').parent().parent().parent().find('.cdk-overlay-dark-backdrop');
+  });
+
+  it('should not leave the page after changes are canceled and do not save the changes by discarding (#2569)', () => {
+    const username = 'Meins Deins';
+    const username2 = 'Meta Admin';
+    const user2login = 'meta';
+    const modified = 'Vorname';
+
+    AdminUserPage.selectUser(username);
+    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    AdminUserPage.selectUser(username2);
+
+    // when save-button is disabled all changes were reverted
+    AdminUserPage.discardChanges();
+    cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
+    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
+
+    // when changes were canceled, save-button may be enabled
+    AdminUserPage.selectUser(username);
+    AdminUserPage.cancelChanges();
+    cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
+    cy.get('.user-title').contains(user2login);
+  });
+
   //TODO: Verification emails for user!
 });

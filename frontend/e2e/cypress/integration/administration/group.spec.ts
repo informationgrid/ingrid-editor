@@ -163,4 +163,15 @@ describe('Group', () => {
     // check if group connection was deleted
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
   });
+
+  it('should be enable save button, when group entries changed (#2569)', () => {
+    const group = 'Testgruppe';
+    const description = 'eine Beschreibung';
+
+    AdminGroupPage.selectGroup(group);
+    cy.get('[data-cy=toolbar_save_group]').should('be.disabled');
+
+    cy.get('textarea').click().clear().type(description);
+    cy.get('[data-cy=toolbar_save_group]').should('be.enabled');
+  });
 });
