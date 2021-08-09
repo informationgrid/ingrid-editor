@@ -1,7 +1,7 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
-import { DocumentPage } from '../../pages/document.page';
-import { UserAndRights } from '../../pages/base.page';
-import { catchError } from 'rxjs/operators';
+import {AdminUserPage} from '../../pages/administration-user.page';
+import {DocumentPage} from '../../pages/document.page';
+import {UserAndRights} from '../../pages/base.page';
+import {catchError} from 'rxjs/operators';
 
 describe('User', () => {
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('loginZ');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -122,7 +122,7 @@ describe('User', () => {
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -149,7 +149,7 @@ describe('User', () => {
 
   it('should not possible to have equal logins', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('ige');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -165,7 +165,7 @@ describe('User', () => {
 
   it('should not possible to have equal email addresses', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('logingt');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goten');
@@ -399,6 +399,28 @@ describe('User', () => {
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(user2login);
+  });
+
+  xit('should show to a user her managed and sub users (#2671)', () => {
+  });
+
+  xit('should show to a user the users she represents (#2671)', () => {
+    //  ("gestelltvertretet")
+  });
+
+  xit('should show to a user the subusers of the user she represents (#2671)', () => {
+  });
+
+  xit('should show all the users to a catalogue admin (#2671)', () => {
+  });
+
+  xit('should show no users to a catalogue admin (#2671)', () => {
+  });
+
+  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+  });
+
+  xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
   });
 
   //TODO: Verification emails for user!
