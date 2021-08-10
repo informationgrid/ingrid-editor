@@ -1,8 +1,8 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
-import { DocumentPage } from '../../pages/document.page';
-import { UserAndRights } from '../../pages/base.page';
-import { catchError } from 'rxjs/operators';
-import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
+import {AdminUserPage} from '../../pages/administration-user.page';
+import {DocumentPage} from '../../pages/document.page';
+import {UserAndRights} from '../../pages/base.page';
+import {ResearchPage, SearchOptionTabs} from '../../pages/research.page';
+import {AddressPage} from '../../pages/address.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -16,12 +16,12 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('loginZ');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
 
-    // check "OK"-button not clickable, when not all mandatory fields are filled
+    // check "OK"-button not clickable, when mandatory fields are not filled
     cy.get('button').contains('Anlegen').parent().should('have.class', 'mat-button-disabled');
 
     // all mandatory fields must be filled
@@ -32,7 +32,7 @@ describe('User', () => {
     AdminUserPage.confirmAddUserDialog();
   });
 
-  it('the correct role symbol should be in user list', () => {
+  it('should display the correct role symbol in the user list', () => {
     const username = 'Majid Ercan';
 
     AdminUserPage.selectUser(username);
@@ -42,7 +42,7 @@ describe('User', () => {
     cy.get('#formUser [data-mat-icon-name=catalog-admin]').should('be.visible');
   });
 
-  it('should be possible to rename user', () => {
+  it('should be possible to rename a user', () => {
     const firstname = 'Meta';
     const modified = 'Mario';
 
@@ -84,10 +84,11 @@ describe('User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
   });
 
-  it('when changes on user entries were not saved, discard dialog must appear (#2675)', () => {
+  it('should display the discard dialog, when changes on user entries are not saved (#2675)', () => {
     const username = 'Meins Deins';
     const newEntry = 'Majid';
     const modifiedName = 'Tralala';
+    const logInUser = 'eins';
 
     AdminUserPage.selectUser(username);
 
@@ -102,8 +103,8 @@ describe('User', () => {
 
     // check right and same user is clicked on user-list and #formUser
     // 'eins' is the login of user 'Meins Deins'
-    cy.get('.user-title').contains('eins');
-    cy.get('user-table .selected').contains('eins');
+    cy.get('.user-title').contains(logInUser);
+    cy.get('user-table .selected').contains(logInUser);
 
     // after discard, all unsaved entries were undone
     cy.get('user-table').contains(newEntry).click();
@@ -114,16 +115,16 @@ describe('User', () => {
     cy.get('[data-cy=Name] .lastName').contains('Deins');
   });
 
-  it('after discard dialog appears no other dialog may appear after it (#2574)', () => {
+  it('should not display any dialog after the discard dialog has appeared (#2574)', () => {
     const username = 'Meins Deins';
     const newEntry = 'Tristan';
 
-    // change something (name) and try to click on anthother user --> discard dialog appears
+    // change something (name) and try to click on another user --> discard dialog appears
     AdminUserPage.selectUser(username);
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -133,11 +134,11 @@ describe('User', () => {
     AdminUserPage.cancelChanges();
   });
 
-  it('should not be possible to change menupage without appearing discard dialog (#2619)', () => {
+  it('should display the discard dialog when the menu-page is changed with unsaved changes (#2619)', () => {
     const newEntry = 'Tralala';
     const username = 'Meins Deins';
 
-    // change something (name) and try to click on anthother user --> discard dialog appears
+    // change something and try to click on another user --> discard dialog appears
     AdminUserPage.selectUser(username);
 
     // adapt user entry
@@ -148,9 +149,9 @@ describe('User', () => {
     AdminUserPage.cancelChanges();
   });
 
-  it('should not possible to have equal logins', () => {
+  it('should not be possible for two users to have equal logins', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('ige');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -164,9 +165,9 @@ describe('User', () => {
     cy.get('[data-cy=error-dialog-content]').contains('Es existiert bereits ein Benutzer mit dem Login: ige');
   });
 
-  it('should not possible to have equal email addresses', () => {
+  it('should not be possible for two users to have equal email addresses', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('logingt');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goten');
@@ -180,7 +181,7 @@ describe('User', () => {
     cy.get('[data-cy=error-dialog-content]').contains('Es existiert bereits ein Benutzer mit dieser Mailadresse');
   });
 
-  it('should not possible to change login or role after user is created', () => {
+  it('should not be possible to change the login or the role after a user is created', () => {
     const username = 'Meins Deins';
     const username2 = 'Meta Admin';
     const username3 = 'toDelete inTest';
@@ -201,7 +202,7 @@ describe('User', () => {
     cy.get('[data-cy=Rolle]').should('not.be.enabled');
   });
 
-  it('organisation name must be shown at user list view', () => {
+  it('should display the organisation name in the user list view', () => {
     const username = 'Majid Ercan';
 
     AdminUserPage.selectUser(username);
@@ -209,7 +210,7 @@ describe('User', () => {
     cy.get('#sidebarUser tr').contains('wemove digital solutions');
   });
 
-  it('show login- and creation information', () => {
+  it('should show login and creation information', () => {
     const loginEntry = 'meta';
     const username = 'Meta Admin';
 
@@ -240,7 +241,7 @@ describe('User', () => {
     cy.get('user-table').should('not.contain', toDelete);
   });
 
-  it('only names, emails, logins or organisations can be user search results (#2551)', () => {
+  it('should show only the names, emails, logins and organisations as result of a user search (#2551)', () => {
     cy.get('user-table').should('contain', 'Meins');
     cy.get('user-table').should('contain', 'Majid');
 
@@ -265,14 +266,14 @@ describe('User', () => {
     cy.get('user-table').should('contain', 'ige2');
   });
 
-  it('a user can be found with his first- and lastname (#2596)', () => {
+  it('should find a user using her first- and lastname as search terms (#2596)', () => {
     cy.get('ige-search-field').type('Meins Deins');
     cy.get('user-table').should('not.contain', 'Majid');
 
     cy.get('user-table').should('contain', 'Meins Deins');
   });
 
-  it('selected user must be active and all informations of it must be shown (#2551)', () => {
+  it('should display all information of a selected user and mark her as active (#2551)', () => {
     const username = 'Meta Admin';
     const username2 = 'Meins Deins';
     const username3 = 'autor test';
@@ -305,7 +306,7 @@ describe('User', () => {
     AdminUserPage.checkRoleSymbol(username3, '[data-mat-icon-name=author]');
   });
 
-  it('should be possible to add and remove a group (or different groups) to an user', () => {
+  it('should add and remove one or more groups to a user', () => {
     const groupName = 'Gruppe 42';
     const groupName2 = 'Testgruppe';
     const username = 'Meins Deins';
@@ -338,7 +339,7 @@ describe('User', () => {
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
   });
 
-  it('should not be possible to add the same group twice to one user', () => {
+  it('should not be able to add the same group twice to a user', () => {
     const username = 'Meins Deins';
     const groupName = 'Testgruppe';
 
@@ -353,7 +354,7 @@ describe('User', () => {
     cy.get('.mat-option-disabled').should('contain', groupName);
   });
 
-  it('should be enable save button, when user entries changed (#2569)', () => {
+  it('should enable save button, when a user`s entries have changed (#2569)', () => {
     const username = 'Meins Deins';
     const modified = 'Vorname';
 
@@ -364,7 +365,7 @@ describe('User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
   });
 
-  it('should not be possible to click on another object, while discard dialog is open (#2569)', () => {
+  it('should not be possible to click on another object, while the discard dialog is open (#2569)', () => {
     const username = 'Meins Deins';
     const username2 = 'Meta Admin';
     const modified = 'Vorname';
@@ -379,7 +380,7 @@ describe('User', () => {
     cy.get('mat-dialog-container').parent().parent().parent().find('.cdk-overlay-dark-backdrop');
   });
 
-  it('should not leave the page after changes are canceled and do not save the changes by discarding (#2569)', () => {
+  it('should not leave the page after changes are canceled and the changes are not saved by discarding (#2569)', () => {
     const username = 'Meins Deins';
     const username2 = 'Meta Admin';
     const user2login = 'meta';
@@ -389,32 +390,37 @@ describe('User', () => {
     cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
     AdminUserPage.selectUser(username2);
 
-    // when save-button is disabled all changes were reverted
+    // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
     cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
 
-    // when changes were canceled, save-button may be enabled
+    // when changes are canceled, save-button is enabled
     AdminUserPage.selectUser(username);
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(user2login);
   });
 
-  xit('should show to a user her managed and sub users (#2671)', () => {});
+  xit('should show to a user her managed and sub users (#2671)', () => {
+  });
 
   xit('should show to a user the users she represents (#2671)', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show to a user the subusers of the user she represents (#2671)', () => {});
+  xit('should show to a user the subusers of the user she represents (#2671)', () => {
+  });
 
-  xit('should show all the users to a catalogue admin (#2671)', () => {});
+  xit('should show all the users to a catalogue admin (#2671)', () => {
+  });
 
-  xit('should show no users to a catalogue admin (#2671)', () => {});
+  xit('should show no users to a catalogue admin (#2671)', () => {
+  });
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});
+  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+  });
 
   xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
     // Go to data section and make sure no single data is displayed
@@ -424,7 +430,7 @@ describe('User', () => {
     cy.get('ige-tree').contains('Leer');
 
     // Go to address section and make sure no single address is displayed
-    AdressPage.visit();
+    AddressPage.visit();
     cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
     // Also: make sure no address is displayed in the address list
     cy.get('ige-tree').contains('Leer');
