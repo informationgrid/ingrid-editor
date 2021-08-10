@@ -34,14 +34,13 @@ class IgeAclService @Autowired constructor(
         val permissionLevels = listOf<String>("writeTree", "ReadTree", "writeTreeExceptParent")
         val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
-
+        var isAllowed  = false
         permissionLevels.forEach {
             val uuids = getAllDatasetUuidsFromGroups(listOf(group), it)
             uuids.map { uuid ->
                 val acl = this.aclService.readAclById(
                     ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
                 )
-                var isAllowed: Boolean;
                 when (it) {
                     "writeTree" -> isAllowed = isAllowed(acl, BasePermission.WRITE, sids)
                     "ReadTree" -> isAllowed = isAllowed(acl, BasePermission.READ, sids)
@@ -53,7 +52,7 @@ class IgeAclService @Autowired constructor(
                 if (!isAllowed) return false
             }
         }
-        return true
+        return isAllowed
     }
 
     fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {

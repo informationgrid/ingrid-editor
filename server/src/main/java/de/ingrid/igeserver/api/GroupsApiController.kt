@@ -56,7 +56,7 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups)
         }
 
-        groups = groups.filter { igeAclService.hasRightsForGroup(principal as Authentication, it) }
+        groups = groups.filter { it.manager?.userId == userId || igeAclService.hasRightsForGroup(principal as Authentication, it) }
 /*
 
         // filter groups for user
