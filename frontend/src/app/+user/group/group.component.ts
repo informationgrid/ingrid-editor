@@ -63,7 +63,14 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.fetchGroups().subscribe();
-    this.selectedGroup$.subscribe((group) => (this.selectedGroup = group));
+    this.selectedGroup$.subscribe((group) => {
+      const previousId = this.selectedGroup?.id;
+      this.selectedGroup = group;
+      if (previousId !== group.id) {
+        this.form.reset(group);
+        this.form.markAsPristine();
+      }
+    });
 
     this.form = this.fb.group({
       id: [],
@@ -106,13 +113,12 @@ export class GroupComponent implements OnInit, AfterViewInit {
           if (!fetchedGroup.permissions) {
             fetchedGroup.permissions = new Permissions();
           }
-          this.form.reset(fetchedGroup);
+          this.selectedGroup$.next(fetchedGroup);
           this.form.enable();
           this.isLoading = false;
-          this.selectedGroup$.next(this.form.value);
-        });
-        this.groupService.getGroupManager(id).subscribe((manager) => {
-          this.selectedGroup.manager = manager.login;
+          this.groupService.getGroupManager(id).subscribe((manager) => {
+            if (this.selectedGroup) this.selectedGroup.manager = manager.login;
+          });
         });
       } else {
         this.selectedGroup$.next(this.selectedGroup);
