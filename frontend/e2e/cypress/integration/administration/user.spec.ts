@@ -1,7 +1,8 @@
-import {AdminUserPage} from '../../pages/administration-user.page';
-import {DocumentPage} from '../../pages/document.page';
-import {UserAndRights} from '../../pages/base.page';
-import {catchError} from 'rxjs/operators';
+import { AdminUserPage } from '../../pages/administration-user.page';
+import { DocumentPage } from '../../pages/document.page';
+import { UserAndRights } from '../../pages/base.page';
+import { catchError } from 'rxjs/operators';
+import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -15,7 +16,7 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('loginZ');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -122,7 +123,7 @@ describe('User', () => {
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -149,7 +150,7 @@ describe('User', () => {
 
   it('should not possible to have equal logins', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('ige');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -165,7 +166,7 @@ describe('User', () => {
 
   it('should not possible to have equal email addresses', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('logingt');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goten');
@@ -401,26 +402,53 @@ describe('User', () => {
     cy.get('.user-title').contains(user2login);
   });
 
-  xit('should show to a user her managed and sub users (#2671)', () => {
-  });
+  xit('should show to a user her managed and sub users (#2671)', () => {});
 
   xit('should show to a user the users she represents (#2671)', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show to a user the subusers of the user she represents (#2671)', () => {
-  });
+  xit('should show to a user the subusers of the user she represents (#2671)', () => {});
 
-  xit('should show all the users to a catalogue admin (#2671)', () => {
-  });
+  xit('should show all the users to a catalogue admin (#2671)', () => {});
 
-  xit('should show no users to a catalogue admin (#2671)', () => {
-  });
+  xit('should show no users to a catalogue admin (#2671)', () => {});
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
-  });
+  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});
 
   xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
+    // Go to data section and make sure no single data is displayed
+    DocumentPage.visit();
+    cy.get('ige-form-dashboard').contains('Kein Ordner oder Datensatz vorhanden');
+    // Also: make sure no data is displayed in the data list
+    cy.get('ige-tree').contains('Leer');
+
+    // Go to address section and make sure no single address is displayed
+    AdressPage.visit();
+    cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
+    // Also: make sure no address is displayed in the address list
+    cy.get('ige-tree').contains('Leer');
+  });
+
+  xit('Section "Nutzer und Rechte" should not be visible to an author', () => {
+    cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+  });
+
+  // Research Page
+  xit('user without authorization should be able to prompt SQL search by button but should not be shown any results', () => {
+    ResearchPage.visit();
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
+    cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
+    ResearchPage.getSearchResultCount().should('be', 0);
+  });
+
+  xit('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
+    // Make sure search page shows no data when visiting
+    ResearchPage.visit();
+    cy.get('.result').contains('0 Ergebnisse gefunden');
+    // Make sure triggering search doesn't deliver search results
+    ResearchPage.search('test');
+    ResearchPage.getSearchResultCount().should('be', 0);
   });
 
   //TODO: Verification emails for user!
