@@ -37,7 +37,7 @@ describe('Tree', () => {
     DocumentPage.getSearchResults().contains('Tiefes Dokument');
   });
 
-  it('should show empty search input field when clicking on x-button', () => {
+  it('should display empty search input field when clicking on x-button', () => {
     DocumentPage.search('Test');
     DocumentPage.getSearchResults().contains('Test');
     cy.get('[data-cy=clear-tree-search-field]').click();
@@ -111,7 +111,6 @@ describe('Tree', () => {
       Tree.openNode([dragAndDropFolder, docName]);
 
       CopyCutUtils.dragdrop(docName, [dropFolder, dropFolder2], true);
-
       // check if document is moved
       Tree.openNode([dragAndDropFolder, dropFolder, dropFolder2, docName]);
     });
