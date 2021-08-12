@@ -1,8 +1,8 @@
-import {AdminUserPage} from '../../pages/administration-user.page';
-import {DocumentPage} from '../../pages/document.page';
-import {UserAndRights} from '../../pages/base.page';
-import {ResearchPage, SearchOptionTabs} from '../../pages/research.page';
-import {AddressPage} from '../../pages/address.page';
+import { AdminUserPage } from '../../pages/administration-user.page';
+import { DocumentPage } from '../../pages/document.page';
+import { UserAndRights } from '../../pages/base.page';
+import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
+import { AddressPage } from '../../pages/address.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('loginZ');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -85,34 +85,33 @@ describe('User', () => {
   });
 
   it('should display the discard dialog, when changes on user entries are not saved (#2675)', () => {
-    const username = 'Meins Deins';
-    const newEntry = 'Majid';
-    const modifiedName = 'Tralala';
-    const logInUser = 'eins';
+    const UserLogin = 'eins';
 
-    AdminUserPage.selectUser(username);
-
-    // after cancel, we are still in edit mode
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modifiedName);
-    cy.get('user-table').contains(newEntry).click();
+    AdminUserPage.selectUser('Meins Deins');
+    // change name, then interrupt editing by trying to switch to another user
+    // after canceling the prompt to discard changes, we are still in editing mode
+    cy.get('.firstName').click().clear().type('Tralala');
+    cy.get('user-table').contains('Majid').click();
     AdminUserPage.cancelChanges();
-
-    // check firstname-Entry is not changed to the value before
-    cy.get('[data-cy=Name] .firstName').invoke('text').should('not.equal', 'Meins');
+    // check that firstname-Entry is not changed to the original value and that user is still selected
+    cy.get('.firstName input').should('not.have.value', 'Meins');
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
+    cy.get('.user-title').contains(UserLogin);
+    //wait for new user being selected is reversed (no network request involved to intercept)
+    cy.wait(2000);
+    cy.get('user-table .selected').contains(UserLogin);
 
-    // check right and same user is clicked on user-list and #formUser
-    // 'eins' is the login of user 'Meins Deins'
-    cy.get('.user-title').contains(logInUser);
-    cy.get('user-table .selected').contains(logInUser);
-
-    // after discard, all unsaved entries were undone
-    cy.get('user-table').contains(newEntry).click();
+    // try to switch to another user, this time discarding all changes -> changes are undone, new user can be selected
+    cy.get('user-table').contains('Majid').click();
     AdminUserPage.discardChanges();
+    cy.intercept('GET', '/api/users/ige2').as('fetchInformationRequest');
+    // wait for the request that prepares switching to new user
+    cy.wait('@fetchInformationRequest');
 
-    AdminUserPage.selectUser(username);
-    cy.get('[data-cy=Name] .firstName').contains('Meins');
-    cy.get('[data-cy=Name] .lastName').contains('Deins');
+    // go back to original user profile and make sure data is unchanged
+    AdminUserPage.selectUser('Meins Deins');
+    cy.get('.firstName input').should('have.value', 'Meins');
+    cy.get('.lastName input').should('have.value', 'Deins');
   });
 
   it('should not display any dialog after the discard dialog has appeared (#2574)', () => {
@@ -124,7 +123,7 @@ describe('User', () => {
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -151,7 +150,7 @@ describe('User', () => {
 
   it('should not be possible for two users to have equal logins', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('ige');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
@@ -167,7 +166,7 @@ describe('User', () => {
 
   it('should not be possible for two users to have equal email addresses', () => {
     cy.get('.page-title').contains('Nutzer');
-    cy.get('button', {timeout: 5000}).contains('Hinzufügen').click();
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('logingt');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goten');
@@ -403,24 +402,19 @@ describe('User', () => {
     cy.get('.user-title').contains(user2login);
   });
 
-  xit('should show to a user her managed and sub users (#2671)', () => {
-  });
+  xit('should show to a user her managed and sub users (#2671)', () => {});
 
   xit('should show to a user the users she represents (#2671)', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show to a user the subusers of the user she represents (#2671)', () => {
-  });
+  xit('should show to a user the subusers of the user she represents (#2671)', () => {});
 
-  xit('should show all the users to a catalogue admin (#2671)', () => {
-  });
+  xit('should show all the users to a catalogue admin (#2671)', () => {});
 
-  xit('should show no users to a catalogue admin (#2671)', () => {
-  });
+  xit('should show no users to a catalogue admin (#2671)', () => {});
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
-  });
+  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});
 
   xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
     // Go to data section and make sure no single data is displayed
