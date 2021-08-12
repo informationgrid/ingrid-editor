@@ -13,7 +13,7 @@
         mat-icon-button
         matSuffix
         class="close"
-        (click)="onSearchChange('')"
+        (click)="onSearchChange(''); searchField.value = ''"
     >
         <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
     </button>

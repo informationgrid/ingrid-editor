@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, EventEmitter, Output, ViewChild } from "@angular/core";
+import { MatInput } from "@angular/material/input";
 
 @Component({
   selector: "ige-search-field",
@@ -6,6 +7,8 @@ import { Component, EventEmitter, Output } from "@angular/core";
 })
 export class IgeSearchField {
   @Output() queryUpdate = new EventEmitter<string>();
+
+  @ViewChild(MatInput) searchField: MatInput;
 
   searchQuery: string;
 
