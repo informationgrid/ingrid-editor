@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
@@ -95,8 +96,13 @@ class UsersApiController : UsersApi {
 
     @Transactional
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
-
-        catalogService.deleteUser(userId)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        if (catalogService.getManagedUserIds(userId, catalogId).isEmpty()) {
+            catalogService.deleteUser(userId)
+        } else {
+            throw ConflictException.withReason("User still has manager assignments and can't be deleted")
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
         // TODO: remove special realm management roles
 //        keycloakService.removeRoles(principal, userId, listOf("view-users", "manage-users", "manage-realm"))
         return ResponseEntity.ok().build()
@@ -164,7 +170,6 @@ class UsersApiController : UsersApi {
         val filteredUsers = catalogService.getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
-
 
 
     override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
@@ -334,5 +339,10 @@ class UsersApiController : UsersApi {
         keycloakService.requestPasswordChange(principal, id)
         return ResponseEntity.ok().build()
 
+    }
+
+    override fun getManagedUsers(principal: Principal, userId: String): ResponseEntity<List<String>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        return ResponseEntity.ok(catalogService.getManagedUserIds(userId, catalogId))
     }
 }

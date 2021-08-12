@@ -225,6 +225,10 @@ class CatalogService @Autowired constructor(
         })
     }
 
+    fun getManagedUserIds(managerId: String, catalogId: String): List<String>{
+        return managerRepo.findAllByManager_UserIdAndCatalogIdentifier(managerId, catalogId).map { it.user!!.userId }
+    }
+
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }

@@ -32,7 +32,7 @@ export class UserService {
 
   getCatAdmins(): Observable<FrontendUser[]> {
     return this.dataService
-      .getUsers()
+      .getCatAdmins()
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
@@ -88,6 +88,10 @@ export class UserService {
         );
       })
     );
+  }
+
+  getManagedUsers(login: string): Observable<String[]> {
+    return this.dataService.getManagedUserIds(login);
   }
 
   getUser(login: string): Observable<FrontendUser> {

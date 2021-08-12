@@ -15,5 +15,5 @@ interface ManagerRepository : JpaRepository<CatalogManagerAssignment, Int> {
 
     fun findByUser_UserIdAndCatalogIdentifier(userId: String, catalog_identifier: String): CatalogManagerAssignment?
 
-
+    fun findAllByManager_UserIdAndCatalogIdentifier(userId: String, catalog_identifier: String): List<CatalogManagerAssignment>
 }

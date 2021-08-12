@@ -32,6 +32,12 @@ export class UserDataService {
     );
   }
 
+  getManagedUserIds(managerId: string): Observable<String[]> {
+    return this.http.get<String[]>(
+      this.configuration.backendUrl + "users/" + managerId + "/managed"
+    );
+  }
+
   saveUser(user: User): Observable<BackendUser> {
     return this.http.put<BackendUser>(
       this.configuration.backendUrl + "users/" + user.login,
