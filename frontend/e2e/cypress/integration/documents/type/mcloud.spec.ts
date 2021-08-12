@@ -16,7 +16,7 @@ describe('mCLOUD documents', function () {
   describe('Publish documents', () => {
     const PUBLISHED_ADDRESS = 'Published Testorganization';
 
-    it('should show a validation error when a required field is not filled', () => {
+    it('should display a validation error when a required field is not filled', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
 
       DocumentPage.createDocument('New mCLOUD Document');
