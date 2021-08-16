@@ -143,4 +143,8 @@ export class UserService {
       )
     );
   }
+
+  updateManager(userId: String, managerId: String): Observable<any> {
+    return this.dataService.setManagerForUser(userId, managerId);
+  }
 }

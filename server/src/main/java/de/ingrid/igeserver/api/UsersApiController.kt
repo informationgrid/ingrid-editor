@@ -345,4 +345,9 @@ class UsersApiController : UsersApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return ResponseEntity.ok(catalogService.getManagedUserIds(userId, catalogId))
     }
+
+    override fun setManager(principal: Principal, userId: String, managerId: String) {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        this.catalogService.setManager(userId, managerId, catalogId)
+    }
 }

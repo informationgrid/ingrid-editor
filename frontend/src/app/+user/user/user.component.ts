@@ -148,13 +148,49 @@ export class UserComponent
   deleteUser(login: string) {
     this.userService.getManagedUsers(login).subscribe((managedUsers) => {
       if (managedUsers?.length) {
-        this.dialog.open(ErrorDialogComponent, {
-          data: new IgeError(
-            "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
-              managedUsers.join("\n") +
-              "\n\nBitte ändern Sie zunächst den Verantwortlichen der betroffenen Benutzer."
-          ),
-        });
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: "Benutzer löschen",
+              message:
+                "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
+                managedUsers.join("\n") +
+                "\n\nBitte ändern Sie zunächst den Verantwortlichen der betroffenen Benutzer.",
+              buttons: [
+                { text: "Abbrechen" },
+                {
+                  text: "Verantwortlichen ändern",
+                  alignRight: true,
+                  id: "confirm",
+                  emphasize: true,
+                },
+              ],
+            } as ConfirmDialogData,
+          })
+          .afterClosed()
+          .subscribe((result) => {
+            if (!result) return;
+            this.dialog
+              .open(EditManagerDialogComponent, {
+                data: { user: this.selectedUser },
+                hasBackdrop: true,
+              })
+              .afterClosed()
+              .subscribe((result) => {
+                if (result) {
+                  const newManagerId = result.manager;
+                  const promises = [];
+                  managedUsers.forEach((userId) => {
+                    promises.push(
+                      this.userService
+                        .updateManager(userId, newManagerId)
+                        .toPromise()
+                    );
+                  });
+                  Promise.all(promises).then(() => this.deleteUser(login));
+                }
+              });
+          });
       } else {
         this.dialog
           .open(ConfirmDialogComponent, {

@@ -73,4 +73,11 @@ export class UserDataService {
       this.configuration.backendUrl + "externalUsers"
     );
   }
+
+  setManagerForUser(userId: String, managerId: String): Observable<any> {
+    return this.http.post<String[]>(
+      this.configuration.backendUrl + "users/" + userId + "/manager",
+      managerId
+    );
+  }
 }

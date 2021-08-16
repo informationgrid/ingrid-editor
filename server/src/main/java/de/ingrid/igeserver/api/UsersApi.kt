@@ -89,6 +89,21 @@ interface UsersApi {
         @Parameter(description = "The unique id of the manager.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<List<String>>
 
+
+    @PostMapping(
+        value = ["/users/{id}/manager"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Get userIds of all users managed by the user with the given ID.")
+    fun setManager(
+        principal: Principal,
+        @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") userId: String,
+        @Parameter(
+            description = "The unique id of the manager.",
+            required = true
+        ) @RequestBody managerId: @Valid String
+    )
+
     @RequestMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @Operation
     @ApiResponses(
