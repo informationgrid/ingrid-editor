@@ -16,7 +16,7 @@ describe('Group', () => {
   });
 
   it('should create a new group', () => {
-    const newGroup = 'neue Gruppe';
+    const newGroup = 'neue_Gruppe';
     const description = 'Eine Beschreibung';
 
     AdminGroupPage.addNewGroup(newGroup);
@@ -28,8 +28,8 @@ describe('Group', () => {
   });
 
   it('should not be possible to give equal groupnames', () => {
-    const groupName = 'Marvel';
-    const groupName2 = 'Gruppe 42';
+    const groupName = 'test_gruppe_1';
+    const groupName2 = 'test_gruppe_2';
 
     cy.get('groups-table').should('contain', groupName);
     AdminGroupPage.addNewGroup(groupName);
@@ -52,7 +52,7 @@ describe('Group', () => {
   });
 
   it('should be possible to modify groupname and description', () => {
-    const groupName = 'Testgruppe';
+    const groupName = 'test_gruppe_1';
     const modifiedGroupName = 'Foodgroup';
     const description = 'Eine Essensgruppe?';
 
@@ -76,8 +76,8 @@ describe('Group', () => {
   });
 
   it('should show discard dialog after changes and another group was selected', () => {
-    const groupName = 'Testgruppe';
-    const groupName2 = 'Gruppe 42';
+    const groupName = 'test_gruppe_1';
+    const groupName2 = 'test_gruppe_2';
     const description = 'Irgendeine Änderung';
 
     AdminGroupPage.selectGroup(groupName);
@@ -89,8 +89,8 @@ describe('Group', () => {
   });
 
   it('should change a selected group after discard changes', () => {
-    const groupName = 'Testgruppe';
-    const groupName2 = 'Gruppe 42';
+    const groupName = 'test_gruppe_1';
+    const groupName2 = 'test_gruppe_2';
     const description = 'Irgendeine Änderung';
 
     // change something (name) and try to click on another user --> discard dialog appears
@@ -107,8 +107,8 @@ describe('Group', () => {
   });
 
   it('should not change a selected group after cancel changes (#2675)', () => {
-    const groupName = 'Testgruppe';
-    const groupName2 = 'Gruppe 42';
+    const groupName = 'test_gruppe_1';
+    const groupName2 = 'test_gruppe_2';
     const description = 'Noch eine Änderung';
 
     AdminGroupPage.selectGroup(groupName);
@@ -125,7 +125,7 @@ describe('Group', () => {
   });
 
   it('should delete a group and all user connections must be deleted automatically', () => {
-    const groupName = 'to Delete';
+    const groupName = 'neue_Gruppe';
     const username = 'Meins Deins';
 
     AdminGroupPage.selectGroup(groupName);
@@ -166,7 +166,7 @@ describe('Group', () => {
   });
 
   it('should be enable save button, when group entries changed (#2569)', () => {
-    const group = 'Testgruppe';
+    const group = 'test_gruppe_1';
     const description = 'eine Beschreibung';
 
     AdminGroupPage.selectGroup(group);
