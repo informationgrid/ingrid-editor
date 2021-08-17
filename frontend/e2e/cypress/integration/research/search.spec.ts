@@ -121,10 +121,10 @@ describe('Research Page', () => {
   });
 
   // #3432
-  xit('should do search by using document ID', () => {
+  it('should do search by using document ID', () => {
     ResearchPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
     cy.contains('td', 'TestDocResearch1');
-    ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
+    ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
   it('should make sure CSV-file of search has been downloaded', () => {
@@ -213,7 +213,7 @@ describe('Research Page', () => {
   });
 
   // test for naughty strings
-  xit('should be able to deal with search term "\'" and "{"', () => {
+  it('should be able to deal with search term "\'" and "{"', () => {
     DocumentPage.visit();
     DocumentPage.createDocument("What's{This");
     ResearchPage.visit();
