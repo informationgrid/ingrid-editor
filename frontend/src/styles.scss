@@ -816,7 +816,9 @@ mat-selection-list.with-menu .mat-list-text {
 }
 
 .legend {
-  color: $ige-comment-color;
+  color: $ige-text-color;
+  opacity: 0.38;
+  font-size: 14px;
 
   mat-icon {
     padding-left: 10px;
@@ -828,7 +830,8 @@ mat-selection-list.with-menu .mat-list-text {
   }
 
   svg path {
-    fill: $ige-comment-color;
+    fill: $ige-text-color;
+    opacity: 0.38;
   }
 }
 

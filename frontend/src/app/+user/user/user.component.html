@@ -72,7 +72,10 @@
                     </div>
 
                     <span fxFlex class="label">
-                        <span>{{ model.login || "Kein Titel" }}</span>
+                        <span>{{
+                            model.firstName + " " + model.lastName ||
+                                "Kein Titel"
+                        }}</span>
                     </span>
 
                     <button
@@ -124,7 +127,7 @@
             <ng-template #noUserOrLoading>
                 <div
                     *ngIf="!isLoading; else loading"
-                    class="detail-user"
+                    class="detail-user no-selection-placeholder"
                     fxFlex
                     fxLayout="column"
                     fxLayoutAlign="center center"

@@ -103,6 +103,7 @@ export const getUserFormFields = (
             });
           })
         ),
+        elementIcon: "group",
         asSelect: true,
       },
     },

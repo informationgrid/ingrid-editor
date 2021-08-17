@@ -45,3 +45,13 @@
     top: 0.125em;
   }
 }
+
+.list-display-element {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    padding-right: 12px;
+    line-height: 16px;
+  }
+}

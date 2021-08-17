@@ -4,6 +4,7 @@ import { MatInput } from "@angular/material/input";
 @Component({
   selector: "ige-search-field",
   templateUrl: "./ige-search-field.component.html",
+  styleUrls: ["./ige-search-field.component.scss"],
 })
 export class IgeSearchField {
   @Output() queryUpdate = new EventEmitter<string>();

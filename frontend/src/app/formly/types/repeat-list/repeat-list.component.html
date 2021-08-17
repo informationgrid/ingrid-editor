@@ -10,13 +10,19 @@
         cdkDrag
         class="clickable list-item"
     >
-        <!--        {{model[i] | selectOption:to.options | async}}-->
-        <span *ngIf="to.codelistId">{{
-            model[i] | codelist: to.codelistId | async
-        }}</span>
-        <span *ngIf="!to.codelistId">{{
-            model[i] | selectOption: to.options | async
-        }}</span>
+        <span class="list-display-element">
+            <mat-icon
+                *ngIf="this.to.elementIcon"
+                [svgIcon]="this.to.elementIcon"
+            ></mat-icon>
+            <!--        {{model[i] | selectOption:to.options | async}}-->
+            <span *ngIf="to.codelistId">{{
+                model[i] | codelist: to.codelistId | async
+            }}</span>
+            <span *ngIf="!to.codelistId">{{
+                model[i] | selectOption: to.options | async
+            }}</span>
+        </span>
         <button
             type="button"
             mat-icon-button
