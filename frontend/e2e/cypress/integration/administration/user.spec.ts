@@ -3,6 +3,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { AddressPage } from '../../pages/address.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -295,7 +296,7 @@ describe('User', () => {
     // check user role
     AdminUserPage.checkRoleSymbol(username2, '[data-mat-icon-name=catalog-admin]');
 
-    //authtor
+    //author
     AdminUserPage.selectUser(username3);
     // check user was selected
     cy.get('td.selected').contains(username3);
@@ -306,9 +307,9 @@ describe('User', () => {
   });
 
   it('should add and remove one or more groups to a user', () => {
-    const groupName = 'Gruppe 42';
-    const groupName2 = 'Testgruppe';
-    const username = 'Meins Deins';
+    const groupName = 'test_gruppe_1';
+    const groupName2 = 'gruppe_mit_datenrechten';
+    const username = 'autor test';
 
     AdminUserPage.selectUser(username);
 
@@ -339,8 +340,8 @@ describe('User', () => {
   });
 
   it('should not be able to add the same group twice to a user', () => {
-    const username = 'Meins Deins';
-    const groupName = 'Testgruppe';
+    const username = 'autor test';
+    const groupName = 'test_gruppe_1';
 
     AdminUserPage.selectUser(username);
 
@@ -413,6 +414,18 @@ describe('User', () => {
   xit('should show all the users to a catalogue admin (#2671)', () => {});
 
   xit('should show no users to a catalogue admin (#2671)', () => {});
+
+  xit('catalogue admin should be able to see everything', () => {
+    //Dashboard should give overview of data
+    DashboardPage.visit();
+    cy.contains('In Bearbeitung').parent().should('not.contain', 0);
+    cy.contains('Veröffentlicht').parent().should('not.contain', 0);
+    cy.get('text.text').should('not.contain', 0);
+
+    //Documents should be present
+    //Addresses should be present
+    //Users and groups should be present
+  });
 
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});
 
