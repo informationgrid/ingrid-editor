@@ -4,10 +4,6 @@ table {
   background: $ige-background;
 }
 
-.selected {
-  background: $ige-mark-color;
-}
-
 .thin-column {
   width: 36px;
 }
@@ -15,6 +11,13 @@ table {
 td {
   font-size: 16px;
   font-weight: 400;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.mat-row .menu-button {
+  margin-right: 7px;
+  background: $ige-background;
 }
 
 mat-button {
@@ -23,10 +26,16 @@ mat-button {
   margin: 1px;
   padding: 6px;
   color: $ige-hint-color;
+  background: $ige-background-bar;
   ::ng-deep svg path {
     fill: $ige-hint-color;
   }
-  background: $ige-background-bar;
+
+  &:hover {
+    color: darken($ige-hint-color, 5%);
+    background: darken($ige-background-bar, 5%);
+  }
+
   vertical-align: middle;
 
   &.active {
@@ -34,6 +43,10 @@ mat-button {
     background: $ige-check-color;
     ::ng-deep svg path {
       fill: white;
+    }
+    &:hover {
+      color: darken(white, 5%);
+      background: darken($ige-check-color, 5%);
     }
   }
 

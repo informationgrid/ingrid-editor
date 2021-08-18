@@ -145,7 +145,7 @@ ngx-skeleton-loader {
 td {
   font-size: 16px;
   font-weight: 400;
-  padding-right: 24px !important;
+  padding: 10px 12px !important;
 
   div {
     font-weight: 500;
@@ -163,6 +163,10 @@ table {
 
   td.mat-cell:last-of-type {
     text-align: left;
+    padding-right: 24px !important;
+  }
+  td.mat-cell:first-of-type {
+    padding-left: 24px !important;
   }
 }
 
