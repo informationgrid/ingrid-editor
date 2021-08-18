@@ -1,8 +1,8 @@
-import {BehavioursPage} from "../../pages/behaviours.page";
-import {DocumentPage} from "../../pages/document.page";
-import {Tree} from "../../pages/tree.partial";
-import {Address, AddressPage} from "../../pages/address.page";
-import {CatalogsTabmenu} from "../../pages/base.page";
+import { BehavioursPage } from '../../pages/behaviours.page';
+import { DocumentPage } from '../../pages/document.page';
+import { Tree } from '../../pages/tree.partial';
+import { Address, AddressPage } from '../../pages/address.page';
+import { CatalogsTabmenu } from '../../pages/base.page';
 
 describe('Behaviours', () => {
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('Behaviours', () => {
     it('should change the session timeout behaviour', () => {
       BehavioursPage.checkTimeoutIs('30');
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSettingInput('Session Timeout Dauer','600');
+      BehavioursPage.setCatalogSettingInput('Session Timeout Dauer', '600');
       BehavioursPage.checkTimeoutIs('10');
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
       BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
@@ -54,7 +54,7 @@ describe('Behaviours', () => {
       BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
-      Tree.openNode(['Neue Testdokumente',lastDoc]);
+      Tree.openNode(['Neue Testdokumente', lastDoc]);
       // check first element contains ZZZ after changing sorting of the tree
       cy.get('mat-tree-node> div > span').first().contains(lastDoc);
 
@@ -72,16 +72,21 @@ describe('Behaviours', () => {
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
       AddressPage.createAddress(new Address(firstName, lastName, organizationName));
-      cy.get(DocumentPage.title).should('have.text',organizationName + ', ' + lastName + ', ' + firstName);
+      cy.get(DocumentPage.title).should('have.text', organizationName + ', ' + lastName + ', ' + firstName);
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels','firstName');
+      BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels', 'firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
+      cy.intercept('GET', /api\/datasets\/[0-9a-z-]+\?address=false/).as('setAddress');
       AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
-      cy.get(DocumentPage.title).should('have.text', firstName2).should('not.contain', organizationName2 + ', ' + lastName2);
+      cy.wait('@setAddress');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten)
+      cy.get(DocumentPage.title)
+        .should('have.text', firstName2)
+        .should('not.contain', organizationName2 + ', ' + lastName2);
+
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
       BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);
     });
   });
@@ -91,13 +96,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get('[data-cy=toolbar_SHOW_JSON]').should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Anzeige JSON Formular',true);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Anzeige JSON Formular', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get('[data-cy=toolbar_SHOW_JSON]').should('be.visible');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Anzeige JSON Formular', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -109,13 +114,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get('[data-cy=toolbar_publish_now]').should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Publish Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Publish Plugin', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get('[data-cy=toolbar_publish_now]').should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Publish Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -126,13 +131,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.NewDoc).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Neues Dokument Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Neues Dokument Plugin', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.NewDoc).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Neues Dokument Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -143,13 +148,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Save).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Save Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Save Plugin', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Save).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Save Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -160,13 +165,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Folder Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Folder Plugin', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.NewFolder).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Folder Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -177,13 +182,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Copy).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Copy Cut Paste',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Copy Cut Paste', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Copy).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Copy Cut Paste', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -194,13 +199,13 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Delete Docs Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Delete Docs Plugin', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Delete).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Delete Docs Plugin', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
@@ -212,15 +217,15 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.Previous).should('exist');
       cy.get(DocumentPage.Toolbar.Next).should('exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('History Plugin',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('History Plugin', false);
 
       // check button disappears when behaviour disabled
       cy.get(DocumentPage.Sidemenu.Daten).click();
       cy.get(DocumentPage.Toolbar.Previous).should('not.exist');
       cy.get(DocumentPage.Toolbar.Next).should('not.exist');
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('History Plugin', true);
     });
 
@@ -273,21 +278,21 @@ describe('Behaviours', () => {
       Tree.openNode([node]);
       Tree.checkNodeHasChildren(node);
       cy.get(DocumentPage.Toolbar['Delete']).click();
-      cy.get('[data-cy=error-dialog-content]').contains('Um Ordner zu löschen, müssen diese leer sein')
+      cy.get('[data-cy=error-dialog-content]').contains('Um Ordner zu löschen, müssen diese leer sein');
       cy.get('[data-cy=error-dialog-close]').click();
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen',false);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen', false);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       Tree.openNode([node]);
       Tree.checkNodeHasChildren(node);
       cy.get(DocumentPage.Toolbar['Delete']).click();
-      cy.get('[data-cy=error-dialog-content]').should('not.exist')
+      cy.get('[data-cy=error-dialog-content]').should('not.exist');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
 
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare)
-      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen',true);
+      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
+      BehavioursPage.setCatalogSetting('Nur leere Ordner löschen', true);
     });
   });
 });
