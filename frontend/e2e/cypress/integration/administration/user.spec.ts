@@ -226,7 +226,7 @@ describe('User', () => {
     cy.get('.more-info').contains(loginEntry);
 
     // compare the entry in ID/login with the Login- field
-    cy.get('.user-title').contains(loginEntry);
+    cy.get('.user-title').contains(username);
   });
 
   it('should be possible to delete a user', () => {
@@ -349,6 +349,10 @@ describe('User', () => {
     AdminUserPage.addGroupToUser(groupName);
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
 
+    //sometimes '[data-cy=Gruppen] mat-select' is hidden because the list from the previous adding group action
+    // is still expanded; therefore the additional wait
+    cy.wait(500);
+
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
@@ -383,7 +387,6 @@ describe('User', () => {
   it('should not leave the page after changes are canceled and the changes are not saved by discarding (#2569)', () => {
     const username = 'Meins Deins';
     const username2 = 'Meta Admin';
-    const user2login = 'meta';
     const modified = 'Vorname';
 
     AdminUserPage.selectUser(username);
@@ -400,7 +403,7 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
-    cy.get('.user-title').contains(user2login);
+    cy.get('.user-title').contains(modified + ' ' + 'Admin');
   });
 
   xit('should show to a user her managed and sub users (#2671)', () => {});

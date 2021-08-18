@@ -52,7 +52,8 @@ export class AdminUserPage extends BasePage {
       .contains(groupName)
       .trigger('mouseover')
       .parent()
-      .find('[data-mat-icon-name=Entfernen]')
+      .parent()
+      .find('[data-mat-icon-name="Entfernen"]')
       .click({ force: true });
   }
 
