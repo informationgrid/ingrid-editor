@@ -4,10 +4,7 @@ import {
   Input,
   OnInit,
 } from "@angular/core";
-import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { DocumentUtils } from "../../../services/document.utils";
-import { ProfileQuery } from "../../../store/profile/profile.query";
 import { FrontendUser } from "../../user";
 import { FormGroup } from "@angular/forms";
 
@@ -36,7 +33,7 @@ export class HeaderMoreComponent implements OnInit {
   @Input() showMore = false;
   standinUsers: String[];
 
-  constructor(private profileQuery: ProfileQuery) {}
+  constructor() {}
 
   ngOnInit() {
     this.standinUsers = this.getStandinUsers();
@@ -45,5 +42,17 @@ export class HeaderMoreComponent implements OnInit {
   getStandinUsers(): String[] {
     // TODO implement
     return [];
+  }
+
+  getManagerInfo(managerLogin: string): string {
+    const manager = this.allUsers.find((u) => u.login == managerLogin);
+    if (manager) {
+      return (
+        `${manager.firstName} ${manager.lastName}` +
+        (manager.organisation ? ` (${manager.organisation})` : "")
+      );
+    } else {
+      return managerLogin;
+    }
   }
 }

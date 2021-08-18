@@ -24,9 +24,13 @@
             }}</span>
         </div>
     </div>
+    <div fxLayout="row">
+        <div>ID/login</div>
+        <div>{{ user.login }}</div>
+    </div>
     <div *ngIf="user.manager" fxLayout="row">
         <div>Verantwortlich</div>
-        <div>{{ user.manager }}</div>
+        <div>{{ getManagerInfo(user.manager) }}</div>
     </div>
     <div *ngIf="standinUsers?.length" fxLayout="row">
         <div>Vertritt</div>
@@ -42,8 +46,5 @@
         <div>Wird vertreten von</div>
         <div>{{ user.standin }}</div>
     </div>
-    <div fxLayout="row" class="padding-below">
-        <div>ID/login</div>
-        <div>{{ user.login }}</div>
-    </div>
+    <div class="padding-below"></div>
 </div>
