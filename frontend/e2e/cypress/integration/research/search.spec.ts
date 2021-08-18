@@ -213,7 +213,7 @@ describe('Research Page', () => {
   });
 
   // test for naughty strings
-  xit('should be able to deal with search term "\'" and "{"', () => {
+  xit('should be able to deal with potentially problematic search terms (#3457)', () => {
     //check if document with problematic strings in title can be found
     DocumentPage.visit();
     DocumentPage.createDocument("What's{This");
