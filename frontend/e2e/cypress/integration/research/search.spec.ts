@@ -213,15 +213,45 @@ describe('Research Page', () => {
   });
 
   // test for naughty strings
-  it('should be able to deal with search term "\'" and "{"', () => {
+  xit('should be able to deal with search term "\'" and "{"', () => {
+    //check if document with problematic strings in title can be found
     DocumentPage.visit();
     DocumentPage.createDocument("What's{This");
     ResearchPage.visit();
     ResearchPage.search("What's{");
+    cy.get('.error').should('not.exist');
     ResearchPage.changeViewNumberDocuments();
     // make sure there's an exact match (-> no substring match)
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
     ResearchPage.getSearchResultCountZeroIncluded().should('eq', 1);
+
+    //check if search accepts potentially problematic strings
+    ResearchPage.search(',./;\'[]\\-=\n <>?:"{}|_+\n!@#$%^&*()`~');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('1.00$1.001/21E21E02');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('Ω≈ç√∫˜µ≤≥÷åß∂ƒ©˙∆˚¬…æœ∑´®†¥¨ˆøπ“‘¡™£¢∞§¶•ªº–≠');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('ÅÍÎÏ˝ÓÔÒÚÆ☃Œ„´‰ˇÁ¨ˆØ∏”’`⁄€‹›ﬁﬂ‡°·‚—±⅛⅜⅝⅞');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('ЁЂЃЄЅІЇЈЉЊЋЌЍЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('田中さんにあげて下さいパーティーへ行かないか');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('和製漢語部落格𠜎𠜱𠝹𠱓𠱸𠲖𠳏');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('사회과학원 어학연구소찦차를 타고 온 펲시맨과 쑛다리 똠방각하');
+    cy.get('.error').should('not.exist');
+
+    ResearchPage.search('社會科學院語學研究所울란바토르\n');
+    cy.get('.error').should('not.exist');
   });
 
   it('should verify content of downloaded CSV file', () => {
