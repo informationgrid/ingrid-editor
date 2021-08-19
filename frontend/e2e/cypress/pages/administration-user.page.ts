@@ -1,4 +1,5 @@
 import { BasePage, UserAndRights } from './base.page';
+import Chainable = Cypress.Chainable;
 
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
@@ -81,5 +82,39 @@ export class AdminUserPage extends BasePage {
   static cancelChanges() {
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
+  }
+
+  static getNumberOfUsers(): Chainable<number> {
+    return cy
+      .get('.user-management-header .page-title')
+      .contains(/Nutzer \([0-9]+\)/)
+      .then($node => {
+        // extract number from string
+        return parseInt(
+          $node
+            .text()
+            .split(' ')[2]
+            .split('')
+            .filter(str => !str.includes('(') && !str.includes(')'))
+            .join('')
+        );
+      });
+  }
+
+  static getNumberOfGroups(): Chainable<number> {
+    return cy
+      .get('.user-management-header .page-title')
+      .contains(/Gruppen \([0-9]+\)/)
+      .then($node => {
+        // extract number from string
+        return parseInt(
+          $node
+            .text()
+            .split(' ')[2]
+            .split('')
+            .filter(str => !str.includes('(') && !str.includes(')'))
+            .join('')
+        );
+      });
   }
 }
