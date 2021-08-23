@@ -75,8 +75,7 @@ export class ConfigService {
       }
 
       this.isAdministrator =
-        userInfo.groups?.indexOf("ige-super-admin") !== -1 ||
-        userInfo.role === "cat-admin";
+        userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
 
       this.$userInfo.next(userInfo);
       return userInfo;
