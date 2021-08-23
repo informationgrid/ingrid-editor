@@ -1,9 +1,12 @@
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { DocumentPage } from '../../pages/document.page';
+import { DocumentPage, ROOT } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
+import { Utils } from '../../pages/utils';
+import { Tree } from '../../pages/tree.partial';
 
 // user without authorizations (author)
 describe('User without authorizations', () => {
@@ -52,13 +55,71 @@ describe('User without authorizations', () => {
     cy.get('ige-tree').children().should('have.length', 1);
   });
 
-  xit('author without authorizations should not be able to create a data folder', () => {});
+  it('author without authorizations should not be able to create a data folder', () => {
+    DocumentPage.visit();
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
+    // try to create piece of data as root document
+    cy.get('[data-cy=create-title]').type('try_new_folder');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Daten');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+  });
 
-  xit('author without authorizations should not be able to create a data document', () => {});
+  it('author without authorizations should not be able to create a data document', () => {
+    DocumentPage.visit();
+    cy.get(DocumentPage.Toolbar.NewDoc).click();
+    // try to create piece of data as root document
+    cy.get('[data-cy=create-title]').type('try_new_doc');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Daten');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+  });
 
-  xit('author without authorizations should not be able to create an address folder', () => {});
+  it('author without authorizations should not be able to create an address folder', () => {
+    AddressPage.visit();
+    cy.get(AddressPage.Toolbar.NewFolder).click();
+    // try to create piece of data as root document
+    cy.get('[data-cy=create-title]').type('try_new_folder');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Adressen');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+  });
 
-  xit('author without authorizations should not be able to create an address document', () => {});
+  it('author without authorizations should not be able to create an address document', () => {
+    AddressPage.visit();
+    cy.get(DocumentPage.Toolbar.NewDoc).click();
+    // try to create piece of data as root document
+    AddressPage.type('create-address-firstName', 'some first name');
+    AddressPage.type('create-address-lastName', 'some last name');
+    AddressPage.type('create-address-organization', 'some organization');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Adressen');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+  });
 });
 
 // meta data administrator without groups
@@ -85,6 +146,7 @@ describe('Meta data administrator without groups', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     cy.get('.user-management-header').contains('Gruppen (0)');
   });
+  //evtl neuer Test: Nutzerverwaltung ist zugänglich, aber keine Gruppen/User
 });
 
 // meta data administrator with groups
