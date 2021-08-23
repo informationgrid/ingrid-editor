@@ -26,7 +26,7 @@ class CatalogService @Autowired constructor(
     private val managerRepo: ManagerRepository,
     private val authUtils: AuthUtils,
     private val aclService: AclService,
-    private val keycloakService: KeycloakService,
+    private val keycloakService: UserManagementService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
