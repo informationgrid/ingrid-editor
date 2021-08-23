@@ -22,6 +22,7 @@ describe("ProfileService", () => {
           name: "x",
           firstName: "x",
           lastName: "x",
+          email: "x",
           role: "",
           groups: [],
           userId: "y",
