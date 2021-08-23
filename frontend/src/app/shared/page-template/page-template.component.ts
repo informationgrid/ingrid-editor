@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class PageTemplateComponent implements OnInit {
   @Input() label = "";
+  @Input() subLabel = "";
 
   constructor() {}
 

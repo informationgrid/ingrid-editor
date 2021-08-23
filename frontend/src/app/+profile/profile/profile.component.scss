@@ -1,0 +1,60 @@
+@import "src/variables";
+
+:host {
+  height: 100%;
+}
+
+section {
+  padding: 0 56px;
+  background: white;
+}
+
+h3 {
+  color: $ige-primary;
+  font-weight: normal;
+  font-size: 24px;
+  margin: 46px 0;
+}
+
+.side-title {
+  color: $ige-placeholder-color;
+  text-transform: uppercase;
+  padding-top: 20px;
+}
+
+.side-item {
+  display: flex;
+  align-items: center;
+  padding-top: 6px;
+
+  mat-icon {
+    padding-right: 10px;
+  }
+}
+
+.info-row {
+  padding-bottom: 24px;
+}
+
+.info-row,
+.info-header-row {
+  align-items: center;
+
+  > div:nth-child(1) {
+    width: 296px;
+  }
+
+  > div:nth-child(2) {
+    font-weight: 500;
+  }
+
+  button {
+    margin-left: auto;
+  }
+
+  .subtitle {
+    color: $ige-hint-color;
+    font-weight: 400;
+    margin-top: -30px;
+  }
+}

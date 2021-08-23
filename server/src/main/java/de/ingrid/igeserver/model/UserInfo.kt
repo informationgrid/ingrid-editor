@@ -8,6 +8,7 @@ data class UserInfo(
     val name: String,
     val firstName: String,
     val lastName: String,
+    val email: String,
     val assignedCatalogs: List<Catalog>,
     val role: String?,
     val groups: Set<String>?,

@@ -13,6 +13,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Subject } from "rxjs";
+import { UserService } from "../../../services/user/user.service";
 
 @Component({
   selector: "user-table",
@@ -42,7 +43,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
 
   @Output() onUserSelect = new EventEmitter<User>();
 
-  constructor() {
+  constructor(private userService: UserService) {
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<User>(
@@ -78,18 +79,6 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-  }
-
-  getRoleIcon(role: string) {
-    switch (true) {
-      case role === "ige-super-admin":
-      case role === "cat-admin":
-        return "catalog-admin";
-      case role.includes("admin"):
-        return "meta-admin";
-      default:
-        return "author";
-    }
   }
 
   trySelect(element) {

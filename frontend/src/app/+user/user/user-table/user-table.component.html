@@ -19,7 +19,9 @@
             (click)="trySelect(element)"
             [class.selected]="selection.isSelected(element)"
         >
-            <mat-icon [svgIcon]="getRoleIcon(element.role)"></mat-icon>
+            <mat-icon
+                [svgIcon]="userService.getRoleIcon(element.role)"
+            ></mat-icon>
         </td>
     </ng-container>
 

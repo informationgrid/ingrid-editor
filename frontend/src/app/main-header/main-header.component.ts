@@ -9,6 +9,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { ShortResultInfo } from "../+research/result-table/result-table.component";
 
 @Component({
   selector: "ige-main-header",
@@ -58,16 +59,6 @@ export class MainHeaderComponent implements OnInit {
     return initials.length === 0 ? "??" : initials;
   }
 
-  userIsCatAdmin() {
-    return this.userInfo$.pipe(
-      map((userInfo) => {
-        // TODO change when roles are fully implemented. Right now everybody is cat-admin
-        return true;
-        // return userInfo.roles.includes("cat-admin")
-      })
-    );
-  }
-
   private getPageTitleFromRoute(url: string) {
     const firstPart = url.split(";")[0].substring(1);
 
@@ -75,5 +66,9 @@ export class MainHeaderComponent implements OnInit {
       this.router.config.find((route) => route.path === firstPart)?.data
         ?.title ?? ""
     );
+  }
+
+  openProfileSettings() {
+    this.router.navigate(["/profile"]);
   }
 }

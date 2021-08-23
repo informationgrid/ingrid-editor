@@ -61,9 +61,8 @@
                 </span>
                 <span
                     mat-menu-item
-                    disabled
                     [disableRipple]="true"
-                    (click)="$event.stopPropagation()"
+                    (click)="openProfileSettings()"
                 >
                     <mat-icon svgIcon="perm_identity-24px"></mat-icon>
                     Profil verwalten
@@ -105,7 +104,7 @@
                         ><strong>INGRID</strong> EDITOR</mat-card-title
                     >
                 </div>
-                <span *ngIf="userIsCatAdmin() | async">
+                <span *ngIf="this.configService.isAdmin()">
                     <span mat-menu-item disabled class="category-item"
                         >Einstellungen</span
                     >

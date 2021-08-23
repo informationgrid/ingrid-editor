@@ -147,4 +147,16 @@ export class UserService {
   updateManager(userId: String, managerId: String): Observable<any> {
     return this.dataService.setManagerForUser(userId, managerId);
   }
+
+  getRoleIcon(role: string) {
+    switch (true) {
+      case role === "ige-super-admin":
+      case role === "cat-admin":
+        return "catalog-admin";
+      case role.includes("admin"):
+        return "meta-admin";
+      default:
+        return "author";
+    }
+  }
 }

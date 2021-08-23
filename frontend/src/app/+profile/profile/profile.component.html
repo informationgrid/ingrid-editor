@@ -1,0 +1,55 @@
+<page-template
+    *ngIf="userInfo$ | async as userInfo"
+    [label]="userInfo.firstName"
+    [subLabel]="userInfo.lastName"
+>
+    <div left-side>
+        <div class="side-title">Rolle</div>
+        <div class="side-item">
+            <mat-icon
+                [svgIcon]="this.userService.getRoleIcon(userInfo.role)"
+            ></mat-icon>
+            {{ getRoleLabel(userInfo.role) }}
+        </div>
+        <div class="side-title">Gruppen</div>
+        <div>
+            <div *ngFor="let group of userInfo.groups" class="side-item">
+                <mat-icon svgIcon="group"></mat-icon>{{ group }}
+            </div>
+            <div *ngIf="!userInfo.groups.length" class="side-item">
+                - Keine -
+            </div>
+        </div>
+    </div>
+
+    <section main-content fxFlex>
+        <div class="info-header-row" fxLayout="row">
+            <h3>Persönliche Daten</h3>
+            <button mat-button color="primary">Ändern</button>
+        </div>
+        <div class="info-row" fxLayout="row">
+            <div>Vorname</div>
+            <div>{{ userInfo.firstName }}</div>
+        </div>
+        <div class="info-row" fxLayout="row">
+            <div>Nachname</div>
+            <div>{{ userInfo.lastName }}</div>
+        </div>
+        <h3>Kontakt</h3>
+        <div class="info-row" fxLayout="row">
+            <div>E-Mail Adresse</div>
+            <div>{{ userInfo.email }}</div>
+            <button mat-button color="primary">Ändern</button>
+        </div>
+        <h3>Sicherheit</h3>
+        <div class="info-row" fxLayout="row">
+            <div>Passwort</div>
+            <div>••••••</div>
+            <button mat-button color="primary">Ändern</button>
+        </div>
+        <div class="info-row" fxLayout="row">
+            <div></div>
+            <div class="subtitle">Letzte Änderung: 01.01.0101</div>
+        </div>
+    </section>
+</page-template>

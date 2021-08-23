@@ -29,6 +29,7 @@ export class ConfigDataService {
             name: json.name,
             firstName: json.firstName,
             lastName: json.lastName,
+            email: json.email,
             role: json.role,
             groups: json.groups,
             userId: json.userId,
@@ -50,7 +51,7 @@ export class ConfigDataService {
               );
               return null;
             } else if (
-              e.indexOf("Error occured while trying to proxy to") !== -1
+              e.indexOf("Error occurred while trying to proxy to") !== -1
             ) {
               console.error("No running backend");
               throw new Error("Backend does not seem to run");
@@ -65,6 +66,7 @@ export class ConfigDataService {
             name: undefined,
             firstName: undefined,
             lastName: undefined,
+            email: undefined,
             role: "",
             groups: [],
             userId: undefined,

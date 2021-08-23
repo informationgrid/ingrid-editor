@@ -90,6 +90,16 @@ export const routes: Routes = [
     },
   },
   {
+    path: "profile",
+    loadChildren: () =>
+      import("./+profile/profile.module").then((m) => m.ProfileModule),
+    data: {
+      title: "Profil verwalten",
+      icon: "",
+      hideFromMenu: true,
+    },
+  },
+  {
     path: "",
     redirectTo: "/dashboard",
     pathMatch: "full",
