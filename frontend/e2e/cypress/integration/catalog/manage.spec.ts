@@ -19,9 +19,9 @@ describe('Catalog management', () => {
 
     cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
     cy.get('mat-dialog-container input').type(catalogTitle);
+    cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait(300);
-
+    cy.wait('@setNewCatalogue');
     cy.get('ige-catalog-management mat-card').contains(catalogTitle);
   });
 
