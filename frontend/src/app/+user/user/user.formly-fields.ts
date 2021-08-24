@@ -76,6 +76,9 @@ export const getUserFormFields = (
         appearance: "outline",
         required: true,
       },
+      validators: {
+        validation: ["email"],
+      },
     },
     {
       key: "organisation",

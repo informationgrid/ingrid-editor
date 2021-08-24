@@ -64,6 +64,12 @@ export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
 }
 
+export function EmailValidator(control: FormControl): ValidationErrors {
+  return /^[^@\s]+@[^@\s\.]+\.[^@\.\s]+$/.test(control.value)
+    ? null
+    : { email: true };
+}
+
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
 }
@@ -130,9 +136,16 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: UploadTypeComponent,
         },
       ],
-      validators: [{ name: "ip", validation: IpValidator }],
+      validators: [
+        { name: "ip", validation: IpValidator },
+        { name: "email", validation: EmailValidator },
+      ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
+        {
+          name: "email",
+          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
+        },
       ] /*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },

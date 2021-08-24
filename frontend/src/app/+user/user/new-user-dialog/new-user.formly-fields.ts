@@ -1,6 +1,5 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
 import { SelectOption } from "../../../services/codelist/codelist.service";
 
 export const getNewUserFormFields = (
@@ -74,6 +73,9 @@ export const getNewUserFormFields = (
         externalLabel: "E-Mail",
         appearance: "outline",
         required: true,
+      },
+      validators: {
+        validation: ["email"],
       },
     },
   ];
