@@ -44,7 +44,7 @@ export class AdminUserPage extends BasePage {
 
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('mat-option').contains(groupName).click();
+    cy.get('mat-option', { timeout: 7000 }).contains(groupName).click();
     cy.wait(100);
   }
 
