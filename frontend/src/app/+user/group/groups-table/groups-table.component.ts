@@ -56,7 +56,6 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.selectedGroup.subscribe((group) => {
-      console.log(group, this.dataSource.data);
       this.selection.select(
         this.dataSource.data.find((d) => d.id == group?.id)
       );

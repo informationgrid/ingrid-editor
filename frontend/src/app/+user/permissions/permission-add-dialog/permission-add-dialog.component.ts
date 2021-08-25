@@ -1,4 +1,4 @@
-import { Component, forwardRef, Inject, Input } from "@angular/core";
+import { Component, forwardRef, Inject, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { Subject } from "rxjs";
 import { MatListOption, MatSelectionListChange } from "@angular/material/list";
@@ -12,7 +12,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
   templateUrl: "./permission-add-dialog.component.html",
   styleUrls: ["./permission-add-dialog.component.scss"],
 })
-export class PermissionAddDialogComponent {
+export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;
 
   val = [];
@@ -20,12 +20,13 @@ export class PermissionAddDialogComponent {
   private onTouch: (x: any) => {};
   selection: string[] = [];
   activeNodeSetter = new Subject();
-  selectedGroup: string;
-  groups: any[];
 
   disableTreeNodes = (node: TreeNode) => {
     return this.val.some((v) => v.uuid === node._id);
   };
+
+  isExpandable = (node: TreeNode) =>
+    !this.val.some((v) => v.uuid === node._id) && node.hasChildren;
 
   set value(val) {
     // TODO: fetch titles from tree nodes
@@ -44,6 +45,10 @@ export class PermissionAddDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PermissionAddDialogComponent>
   ) {
+    this.value = this.data?.value ?? [];
+  }
+
+  ngOnInit(): void {
     this.value = this.data?.value ?? [];
   }
 

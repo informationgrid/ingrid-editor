@@ -50,7 +50,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       .open(PermissionAddDialogComponent, {
         minWidth: 500,
         hasBackdrop: true,
-        data: { forAddress: this.forAddress, value: this.value },
+        data: { forAddress: this.forAddress, value: this.val },
       })
       .afterClosed()
       .subscribe((data) => {

@@ -78,10 +78,7 @@
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #permissionMoreMenu="matMenu">
-                <button
-                    mat-menu-item
-                    (click)="callRemovePermissionDialog(element.uuid)"
-                >
+                <button mat-menu-item (click)="removePermission(element.uuid)">
                     Entfernen
                 </button>
             </mat-menu>
