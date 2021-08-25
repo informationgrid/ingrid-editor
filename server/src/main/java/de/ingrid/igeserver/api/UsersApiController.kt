@@ -4,8 +4,6 @@ import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AssignmentKey
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogManagerAssignment
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.ManagerRepository
@@ -181,6 +179,24 @@ class UsersApiController : UsersApi {
 
     }
 
+
+    override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
+        // TODO set access rights so users can update their own info, but nothing else. especially not other users.
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        keycloakService.getClient(principal).use { client ->
+            var kcUser = keycloakService.getUser(client, userId)
+
+            user.apply {
+                login = userId
+                firstName = if (user.firstName == "") kcUser.firstName else user.firstName
+                lastName = if (user.lastName == "") kcUser.lastName else user.lastName
+                email = if (user.email == "") kcUser.email else user.email
+            }
+            keycloakService.updateUser(principal, user)
+        }
+        return ResponseEntity.ok().build()
+    }
+
     override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -200,7 +216,7 @@ class UsersApiController : UsersApi {
                 email = user.email,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
-                groups =  dbUser?.groups?.map { it.name!! }?.toSet(),
+                groups = dbUser?.groups?.map { it.name!! }?.toSet(),
                 currentCatalog = dbUser?.curCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
@@ -351,4 +367,5 @@ class UsersApiController : UsersApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         this.catalogService.setManager(userId, managerId, catalogId)
     }
+
 }

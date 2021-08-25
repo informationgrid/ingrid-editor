@@ -6,10 +6,10 @@ import java.util.*
  * User
  */
 data class User(
-    val login: String,
-    val firstName: String = "",
-    val lastName: String = "",
-    val email: String = "",
+    var login: String,
+    var firstName: String = "",
+    var lastName: String = "",
+    var email: String = "",
     var role: String = "",
     var organisation: String = "",
     var manager: String = "",

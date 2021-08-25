@@ -25,7 +25,9 @@
     <section main-content fxFlex>
         <div class="info-header-row" fxLayout="row">
             <h3>Persönliche Daten</h3>
-            <button mat-button color="primary">Ändern</button>
+            <button mat-button color="primary" (click)="openChangeNameDialog()">
+                Ändern
+            </button>
         </div>
         <div class="info-row" fxLayout="row">
             <div>Vorname</div>
@@ -39,17 +41,25 @@
         <div class="info-row" fxLayout="row">
             <div>E-Mail Adresse</div>
             <div>{{ userInfo.email }}</div>
-            <button mat-button color="primary">Ändern</button>
+            <button
+                mat-button
+                color="primary"
+                (click)="openChangeEmailDialog()"
+            >
+                Ändern
+            </button>
         </div>
         <h3>Sicherheit</h3>
         <div class="info-row" fxLayout="row">
             <div>Passwort</div>
             <div>••••••</div>
-            <button mat-button color="primary">Ändern</button>
-        </div>
-        <div class="info-row" fxLayout="row">
-            <div></div>
-            <div class="subtitle">Letzte Änderung: 01.01.0101</div>
+            <button
+                mat-button
+                color="primary"
+                (click)="openResetPasswordDialog()"
+            >
+                Ändern
+            </button>
         </div>
     </section>
 </page-template>

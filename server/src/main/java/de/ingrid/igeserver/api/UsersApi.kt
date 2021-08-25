@@ -153,6 +153,26 @@ interface UsersApi {
     ): ResponseEntity<Void>
 
     @RequestMapping(
+        value = ["/users/currentUser"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        method = [RequestMethod.PUT]
+    )
+    @Operation(description = "Updates the current user with the given values. If the user does not exist an error will be returned.")
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "User was successfully updated"
+        )]
+    )
+    fun updateCurrentUser(
+        principal: Principal,
+        @Parameter(
+            description = "Partial or complete Userdata. Empty fields will be ignored",
+            required = true
+        ) @RequestBody user: User
+    ): ResponseEntity<Void>
+
+    @RequestMapping(
         value = ["/info/currentUser"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
         method = [RequestMethod.GET]

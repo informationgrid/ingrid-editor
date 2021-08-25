@@ -1,0 +1,28 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text" style="padding-right: 20px"
+            >E-Mail Adresse ändern</span
+        >
+    </h2>
+</div>
+<mat-dialog-content [formGroup]="form">
+    <mat-form-field style="width: 100%">
+        <mat-label>E-Mail Adresse</mat-label>
+        <input matInput formControlName="email" />
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close color="primary">Abbrechen</button>
+    <div fxFlex></div>
+    <button
+        mat-stroked-button
+        color="primary"
+        [disabled]="form.invalid"
+        (click)="changeMailAddress()"
+    >
+        Ändern
+    </button>
+</mat-dialog-actions>

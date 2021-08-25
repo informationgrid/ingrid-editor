@@ -106,6 +106,12 @@ export class UserService {
       .pipe(map((u) => new FrontendUser(u)));
   }
 
+  updateCurrentUser(user: User): Observable<FrontendUser> {
+    return this.dataService
+      .saveCurrentUser(user)
+      .pipe(map((u) => new FrontendUser(u)));
+  }
+
   createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {
     return this.dataService
       .createUser(user, isNewExternalUser)
@@ -146,6 +152,10 @@ export class UserService {
 
   updateManager(userId: String, managerId: String): Observable<any> {
     return this.dataService.setManagerForUser(userId, managerId);
+  }
+
+  sendPasswordChangeRequest(login: string) {
+    return this.dataService.sendPasswordChangeRequest(login);
   }
 
   getRoleIcon(role: string) {
