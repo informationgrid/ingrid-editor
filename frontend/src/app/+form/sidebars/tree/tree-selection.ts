@@ -44,7 +44,7 @@ export class TreeSelection {
     this.model.select(node);
     this.activeNode = this.model.selected[0];
 
-    if (node.hasChildren) {
+    if (this.treeControl.isExpandable(node)) {
       this.treeControl.toggle(node);
     }
 

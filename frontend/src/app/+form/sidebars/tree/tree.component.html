@@ -101,11 +101,11 @@
                         mat-icon-button
                         matTreeNodeToggle
                         class="toggle"
-                        [disabled]="!node.hasChildren"
+                        [disabled]="!isExpandable(node)"
                         [attr.aria-label]="'toggle ' + node.title"
                     >
                         <mat-icon
-                            *ngIf="node.hasChildren"
+                            *ngIf="isExpandable(node)"
                             class="mat-icon-rtl-mirror expander animated"
                         >
                             {{

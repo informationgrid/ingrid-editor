@@ -55,7 +55,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** The node selection must be kept local */
   selection: TreeSelection;
 
-  @Output() selected;
+  @Output() selected = new Observable<String[]>();
   @Output() activate = new EventEmitter<string[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
@@ -86,7 +86,16 @@ export class TreeComponent implements OnInit, OnDestroy {
     private database: DynamicDatabase,
     public treeService: TreeService,
     private cdr: ChangeDetectorRef
-  ) {
+  ) {}
+
+  getLevel = (node: TreeNode) => node.level;
+
+  /**
+   * A function to determine if a tree node can be expanded.
+   */
+  @Input() isExpandable = (node: TreeNode) => node.hasChildren;
+
+  ngOnInit(): void {
     this.treeControl = new FlatTreeControl<TreeNode>(
       this.getLevel,
       this.isExpandable
@@ -100,21 +109,16 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     this.dataSource = new DynamicDataSource(
       this.treeControl,
-      database,
-      treeService
+      this.database,
+      this.treeService
     );
     this.hasData = this.dataSource.dataChange.pipe(
       map((data) => data?.length > 0)
     );
 
     this.dragManager = new DragNDropUtils(this.treeControl);
-  }
+    //previous code used to be in constructor
 
-  getLevel = (node: TreeNode) => node.level;
-
-  isExpandable = (node: TreeNode) => node.hasChildren;
-
-  ngOnInit(): void {
     this.database.hideReadOnly = this.hideReadOnly;
     this.dataSource.setForAddress(this.forAddresses);
 
@@ -517,7 +521,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   handleFolderClick(node: TreeNode, $event: MouseEvent) {
     // only toggle children if node is disabled
     if (this.disabledCondition(node)) {
-      if (node.hasChildren) {
+      if (this.isExpandable(node)) {
         this.treeControl.toggle(node);
       }
     } else {
