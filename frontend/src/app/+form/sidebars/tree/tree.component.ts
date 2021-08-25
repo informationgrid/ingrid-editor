@@ -55,7 +55,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** The node selection must be kept local */
   selection: TreeSelection;
 
-  @Output() selected = new Observable<String[]>();
+  @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
@@ -103,9 +103,13 @@ export class TreeComponent implements OnInit, OnDestroy {
 
     this.selection = new TreeSelection(this.treeControl);
 
-    this.selected = this.selection.model.changed.pipe(
-      map((data) => data.source.selected.map((item) => item._id))
-    );
+    this.selection.model.changed
+      .pipe(
+        untilDestroyed(this),
+        map((data) => data.source.selected.map((item) => item._id)),
+        tap((data) => this.selected.emit(data))
+      )
+      .subscribe();
 
     this.dataSource = new DynamicDataSource(
       this.treeControl,
