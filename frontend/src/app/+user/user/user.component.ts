@@ -148,18 +148,52 @@ export class UserComponent
   deleteUser(login: string) {
     this.userService.getManagedUsers(login).subscribe((managedUsers) => {
       if (managedUsers?.length) {
+        this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: "Benutzer löschen",
+            message:
+              "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
+              managedUsers.join("\n") +
+              "\n\nBitte ändern Sie zunächst den Verantwortlichen der betroffenen Benutzer.",
+          } as ConfirmDialogData,
+        });
+      } else {
         this.dialog
           .open(ConfirmDialogComponent, {
             data: {
               title: "Benutzer löschen",
               message:
-                "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
+                "Möchten Sie den Benutzer " + login + " wirklich löschen?",
+            } as ConfirmDialogData,
+          })
+          .afterClosed()
+          .subscribe((result) => {
+            if (result) {
+              this.userService.deleteUser(login).subscribe(() => {
+                this.selectedUser$.next(null);
+                this.fetchUsers();
+              });
+            }
+          });
+      }
+    });
+  }
+
+  changeManagerForManagedUsers(login: string) {
+    this.userService.getManagedUsers(login).subscribe((managedUsers) => {
+      if (managedUsers?.length) {
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: "Verantwortung abgeben",
+              message:
+                "Der Benutzer ist aktuell für folgende Nutzer verantwortlich ist:\n\n" +
                 managedUsers.join("\n") +
-                "\n\nBitte ändern Sie zunächst den Verantwortlichen der betroffenen Benutzer.",
+                "\n\nBitte wählen Sie im Nächsten Schritt einen neuen Verantwortlichen",
               buttons: [
                 { text: "Abbrechen" },
                 {
-                  text: "Verantwortlichen ändern",
+                  text: "Verantwortlichen auswählen",
                   alignRight: true,
                   id: "confirm",
                   emphasize: true,
@@ -187,28 +221,22 @@ export class UserComponent
                         .toPromise()
                     );
                   });
-                  Promise.all(promises).then(() => this.deleteUser(login));
+                  Promise.all(promises).then(() =>
+                    this.snackBar.open("Verantwortung geändert", "", {
+                      panelClass: "green",
+                    })
+                  );
                 }
               });
           });
       } else {
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: "Benutzer löschen",
-              message:
-                "Möchten Sie den Benutzer " + login + " wirklich löschen?",
-            } as ConfirmDialogData,
-          })
-          .afterClosed()
-          .subscribe((result) => {
-            if (result) {
-              this.userService.deleteUser(login).subscribe(() => {
-                this.selectedUser$.next(null);
-                this.fetchUsers();
-              });
-            }
-          });
+        this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: "Verantwortung abgeben",
+            message:
+              "Der ausgewählte Benutzer ist für keine anderen Nutzer verantwortlich",
+          } as ConfirmDialogData,
+        });
       }
     });
   }

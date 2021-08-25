@@ -104,6 +104,14 @@
                         </button>
                         <button
                             mat-menu-item
+                            (click)="
+                                changeManagerForManagedUsers(selectedUser.login)
+                            "
+                        >
+                            Verantwortung abgeben
+                        </button>
+                        <button
+                            mat-menu-item
                             (click)="deleteUser(selectedUser.login)"
                         >
                             Löschen
