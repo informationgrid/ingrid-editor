@@ -22,9 +22,9 @@ export class SelectOptionPipe implements PipeTransform {
 
   private mapValue(value: string, options: SelectOption[]) {
     const result = options
-      .filter((option) => option.value === value)
+      ?.filter((option) => option.value === value)
       .map((option) => option.label);
 
-    return result.length === 0 ? value : result[0];
+    return result?.length > 0 ? result[0] : value;
   }
 }
