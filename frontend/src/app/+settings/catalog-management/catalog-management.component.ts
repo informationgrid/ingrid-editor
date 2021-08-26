@@ -117,11 +117,6 @@ export class CatalogManagementComponent implements OnInit {
           if (response.deleted) {
             this.catalogService.deleteCatalog(catalog.id).subscribe();
           } else {
-            // get this user again to update internal user info to update webapp
-            this.catalogService
-              .setCatalogAdmin(response.settings.id, response.adminUsers)
-              .subscribe(() => this.configService.getCurrentUserInfo());
-
             this.catalogService.updateCatalog(response.settings).subscribe();
           }
         }
