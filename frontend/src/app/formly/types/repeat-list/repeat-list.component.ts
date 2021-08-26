@@ -1,16 +1,8 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnChanges,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
 import { filter, map, startWith, take, tap } from "rxjs/operators";
-import { merge, Observable, Subject } from "rxjs";
+import { merge, Observable, of, Subject } from "rxjs";
 import { SelectOption } from "../../../services/codelist/codelist.service";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -29,6 +21,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   filteredOptions: Observable<SelectOption[]>;
   parameterOptions: SelectOption[];
+  parameterOptions$: Observable<SelectOption[]>;
   inputControl = new FormControl();
   private manualUpdate = new Subject<string>();
 
@@ -53,6 +46,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private initInputListener(options: SelectOption[]) {
     this.parameterOptions = options;
+    this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();

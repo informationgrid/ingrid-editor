@@ -106,6 +106,7 @@ export const getUserFormFields = (
             });
           })
         ),
+        noDrag: true,
         elementIcon: "group",
         asSelect: true,
       },

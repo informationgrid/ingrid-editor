@@ -8,6 +8,7 @@
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
+        [cdkDragDisabled]="to.noDrag"
         class="clickable list-item"
     >
         <span class="list-display-element">
@@ -20,7 +21,7 @@
                 model[i] | codelist: to.codelistId | async
             }}</span>
             <span *ngIf="!to.codelistId">{{
-                model[i] | selectOption: to.options | async
+                model[i] | selectOption: parameterOptions$ | async
             }}</span>
         </span>
         <button
