@@ -12,7 +12,7 @@ describe('Catalog management', () => {
   });
 
   it('should create a new catalog', () => {
-    const catalogTitle = 'ng-universe';
+    const catalogTitle = 'ng-universe_cat';
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
@@ -23,6 +23,26 @@ describe('Catalog management', () => {
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
     cy.wait('@setNewCatalogue');
     cy.get('ige-catalog-management mat-card').contains(catalogTitle);
+  });
+
+  xit('should not be able to create a new dialogue with an existing name (#3463)', () => {
+    const catalogTitle = 'no_duplicates';
+    cy.get('[data-cy=header-info-button]').click();
+    cy.get('button').contains('Katalogverwaltung').click();
+    // create catalogue
+    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
+    cy.get('mat-dialog-container input').type(catalogTitle);
+    cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
+    cy.get('mat-dialog-actions button').contains('Anlegen').click();
+    cy.wait('@setNewCatalogue');
+    cy.get('ige-catalog-management mat-card').contains(catalogTitle);
+
+    // try to create new catalogue with existing name
+    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
+    cy.get('mat-dialog-container input').type(catalogTitle);
+    cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
+    cy.get('mat-dialog-actions button').contains('Anlegen').click();
+    cy.wait('@setNewCatalogue').its('response.statusCode').should('eq', 400);
   });
 
   it('should modify an existing catalog', () => {
