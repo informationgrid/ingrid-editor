@@ -235,7 +235,12 @@ class DatasetsApiController @Autowired constructor(
             emptyList()
         } else {
             docs.hits
-                .flatMap { doc -> if (doc.countChildren > 0) getAllDescendantIds(catalogId, doc.id) + doc.id else listOf(doc.id) }
+                .flatMap { doc ->
+                    if (doc.countChildren > 0) getAllDescendantIds(
+                        catalogId,
+                        doc.id
+                    ) + doc.id else listOf(doc.id)
+                }
         }
     }
 
@@ -250,7 +255,7 @@ class DatasetsApiController @Autowired constructor(
         val children = if (!isCatAdmin && parentId == null) {
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups
-            getRootDocsFromGroup(userGroups, isAddress)
+            getRootDocsFromGroup(userGroups, dbId, isAddress)
         } else {
             documentService.findChildrenDocs(dbId, parentId, isAddress).hits
         }
@@ -267,12 +272,36 @@ class DatasetsApiController @Autowired constructor(
 
     private fun getRootDocsFromGroup(
         userGroups: MutableSet<Group>?,
+        dbId: String,
         isAddress: Boolean,
     ): List<DocumentWrapper> {
 
-        return aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress)
-            .map { uuid -> documentService.getWrapperByDocumentId(uuid) }
+        val actualRootIds = mutableListOf<String>()
+        val potentialRootIds = aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress)
 
+        for (currentId in potentialRootIds) {
+            var isRoot = true
+            for (potentialParent in potentialRootIds) {
+                if (currentId == potentialParent) continue
+                if (isChildOf(currentId, potentialParent, dbId, isAddress)) {
+                    isRoot = false
+                    break
+                }
+            }
+            if (isRoot) actualRootIds.add(currentId)
+        }
+
+        return actualRootIds.map { uuid -> documentService.getWrapperByDocumentId(uuid) }
+
+    }
+
+    private fun isChildOf(childId: String, parentId: String, dbId: String, isAddress: Boolean): Boolean {
+
+        val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.map { it.id }
+        if (childrenIds.contains(childId)) return true;
+
+        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, dbId, isAddress)) return true }
+        return false
     }
 
     override fun find(
@@ -290,7 +319,7 @@ class DatasetsApiController @Autowired constructor(
 
         // if a user has no groups then user is not allowed anything
         if (userGroups.isEmpty() && !isAdmin) {
-            return ResponseEntity.ok(SearchResult<JsonNode>().apply { totalHits = 0; hits = emptyList()})
+            return ResponseEntity.ok(SearchResult<JsonNode>().apply { totalHits = 0; hits = emptyList() })
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -349,7 +378,7 @@ class DatasetsApiController @Autowired constructor(
 
         val wrapper = documentService.getWrapperByDocumentId(id)
         val path = wrapper.path
-        
+
         val response = path.map { uuid ->
             val title = documentService.getTitleFromDocumentId(uuid)
             val permission = aclService.getPermissionInfo(principal as Authentication, uuid)

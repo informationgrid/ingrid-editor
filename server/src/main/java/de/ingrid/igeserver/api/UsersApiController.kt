@@ -123,7 +123,7 @@ class UsersApiController : UsersApi {
                 val durationGetLatestLoginDate = measureTime {
                     user.latestLogin = keycloakService.getLatestLoginDate(client, userId)
                 }
-                user.groups = frontendUser.groups.map { it.id!! }
+                user.groups = frontendUser.groups.sortedBy { it.name }.map { it.id!! }
                 user.creationDate = frontendUser.data?.creationDate ?: Date(0)
                 user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
                 user.role = frontendUser.role?.name ?: ""

@@ -80,7 +80,7 @@ class IgeAclService @Autowired constructor(
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
-            .flatten()
+            .flatten().toSet().toList()
     }
 
     fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String): List<String> {
