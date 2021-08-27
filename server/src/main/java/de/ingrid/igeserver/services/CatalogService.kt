@@ -103,22 +103,27 @@ class CatalogService @Autowired constructor(
     }
 
     fun createCatalog(catalog: Catalog): Catalog {
-        catalog.identifier = catalog.name.toLowerCase().replace(" ".toRegex(), "_")
-        // slash not valid as it makes problems in URLs
-        catalog.identifier = catalog.identifier.replace("/".toRegex(), "_")
+        catalog.identifier = transformNameToIdentifier(catalog.name)
+
         if (!catalogExists(catalog.identifier)) {
             return catalogRepo.save(catalog)
         }
         return getCatalogById(catalog.identifier)
     }
 
-    private fun catalogExists(name: String): Boolean {
-        return try {
-            getCatalogById(name)
-            true
-        } catch (e: Exception) {
-            false
-        }
+    private fun transformNameToIdentifier(name: String): String{
+        var identifier = name.lowercase().replace(" ".toRegex(), "_")
+        // slash not valid as it makes problems in URLs
+        identifier = identifier.replace("/".toRegex(), "_")
+        return  identifier
+    }
+
+    fun catalogWithNameExists(name: String): Boolean {
+        return catalogExists(transformNameToIdentifier(name))
+    }
+
+    fun catalogExists(id: String): Boolean {
+        return catalogRepo.existsByIdentifier(id)
     }
 
     fun updateCatalog(updatedCatalog: Catalog) {

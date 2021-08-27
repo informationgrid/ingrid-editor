@@ -16,6 +16,8 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findById(uuid: String): DocumentWrapper
 
+    fun existsById(uuid: String): Boolean
+
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
         catalog_identifier: String, parentUuid: String?, category: String

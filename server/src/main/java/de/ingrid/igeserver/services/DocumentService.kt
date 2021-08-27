@@ -70,7 +70,7 @@ class DocumentService @Autowired constructor(
 
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
-    
+
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
         DRAFT("W")
@@ -80,7 +80,15 @@ class DocumentService @Autowired constructor(
      * Get the DocumentWrapper with the given document uuid
      */
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
-    
+
+    fun documentExistsNot(id: String): Boolean {
+        return !documentExists(id)
+    }
+
+    fun documentExists(id: String): Boolean {
+        return docWrapperRepo.existsById(id)
+    }
+
     fun getTitleFromDocumentId(id: String): String {
         val wrapper = docWrapperRepo.findByDraftUuidOrPublishedUuid(id, id)
         return wrapper.draft?.title ?: wrapper.published?.title ?: "???!"
@@ -211,7 +219,15 @@ class DocumentService @Autowired constructor(
     }
 
     private fun removeInternalFields(node: ObjectNode): ObjectNode {
-        listOf(FIELD_VERSION, FIELD_CREATED, FIELD_MODIFIED, FIELD_ID, FIELD_DOCUMENT_TYPE, "title", "hasWritePermission")
+        listOf(
+            FIELD_VERSION,
+            FIELD_CREATED,
+            FIELD_MODIFIED,
+            FIELD_ID,
+            FIELD_DOCUMENT_TYPE,
+            "title",
+            "hasWritePermission"
+        )
             .forEach { node.remove(it) }
         return node
     }
@@ -462,7 +478,7 @@ class DocumentService @Autowired constructor(
                 val predicate: Predicate = exp.`in`(datasetUuidsFromGroups)
                 result = cb.and(predicate, result)
             }
-            
+
             result
 
         }
@@ -511,7 +527,7 @@ class DocumentService @Autowired constructor(
         queryField: QueryField,
         docJoin: Join<DocumentWrapper, Document>
     ): Predicate? {
-        val value = queryField.value?.toLowerCase()
+        val value = queryField.value?.lowercase()
         return when (queryField.queryType) {
             QueryType.EXACT -> cb.equal(cb.lower(docJoin.get(queryField.field)), value)
             else -> cb.like(cb.lower(docJoin.get(queryField.field)), "%$value%")
@@ -523,7 +539,7 @@ class DocumentService @Autowired constructor(
         queryField: QueryField,
         docJoin: Join<DocumentWrapper, Document>
     ): Predicate? {
-        val value = queryField.value?.toLowerCase()
+        val value = queryField.value?.lowercase()
         return when (queryField.queryType) {
             QueryType.EXACT -> cb.equal(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), value)
             else -> cb.like(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), "%$value%")

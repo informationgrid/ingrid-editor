@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface CatalogRepository: JpaRepository<Catalog, Int> {
     @Cacheable(value = ["catalog"])
     fun findByIdentifier(identifier: String) : Catalog
+
+    fun existsByIdentifier(identifier: String) : Boolean
 }

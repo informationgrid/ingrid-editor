@@ -49,6 +49,7 @@ class CatalogApiController : CatalogApi {
 
     @AuditLog(action = "create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<Catalog> {
+        if (catalogService.catalogWithNameExists(settings.name))  throw ConflictException.withReason("Catalog '${settings.name}' already exists")
         val catalog = catalogService.createCatalog(settings)
 
         catalogService.initializeCodelists(catalog.identifier, settings.type)

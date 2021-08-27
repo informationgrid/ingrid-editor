@@ -356,6 +356,7 @@ class DatasetsApiController @Autowired constructor(
         id: String,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
+        if (documentService.documentExistsNot(id))  return ResponseEntity.notFound().build()
 
         try {
             val wrapper = documentService.getWrapperByDocumentId(id);
@@ -375,6 +376,7 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         id: String
     ): ResponseEntity<List<PathResponse>> {
+        if (documentService.documentExistsNot(id))  return ResponseEntity.notFound().build()
 
         val wrapper = documentService.getWrapperByDocumentId(id)
         val path = wrapper.path
