@@ -47,16 +47,16 @@ describe('Behaviours', () => {
       cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
       Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente']);
       cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
-      // check first element contains AAA before changing sorting of the tree
-      cy.get('mat-tree-node> div > span').first().contains(firstDoc);
+      // check second element contains AAA before changing sorting of the tree
+      cy.get('mat-tree-node> div > span:nth-child(2)').contains(firstDoc);
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
       BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
 
       cy.get(DocumentPage.Sidemenu.Daten).click();
       Tree.openNode(['Neue Testdokumente', lastDoc]);
-      // check first element contains ZZZ after changing sorting of the tree
-      cy.get('mat-tree-node> div > span').first().contains(lastDoc);
+      // check second element contains ZZZ after changing sorting of the tree
+      cy.get('mat-tree-node> div > span:nth-child(2)').contains(lastDoc);
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
       BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
