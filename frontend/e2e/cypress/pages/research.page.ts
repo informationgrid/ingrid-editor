@@ -152,6 +152,10 @@ export class ResearchPage {
     });
   }
 
+  static downloadCSVFile(): void {
+    cy.get('button.mat-button:nth-child(3) > span:nth-child(1)').click();
+  }
+
   static saveSearchProfile(title: string, description: string): void {
     cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
     cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(title);

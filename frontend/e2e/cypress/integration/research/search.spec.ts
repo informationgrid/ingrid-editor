@@ -257,10 +257,12 @@ describe('Research Page', () => {
   it('should verify content of downloaded CSV file', () => {
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
     ResearchPage.changeViewNumberDocuments();
+    ResearchPage.downloadCSVFile();
     ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
         // compare the content of the two arrays
-        assert(arr2.length === arr1.length && arr2.every((value, index) => value === arr1[index]));
+        //assert(arr2.length === arr1.length && arr2.every((value, index) => value === arr1[index]));
+        expect(arr2).to.deep.eq(arr1);
       });
     });
   });
