@@ -22,7 +22,7 @@ describe('Catalog management', () => {
     cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
     cy.wait('@setNewCatalogue');
-    cy.get('ige-catalog-management mat-card', { timeout: 6000 }).contains(catalogTitle);
+    cy.contains('ige-catalog-management mat-card', catalogTitle);
   });
 
   xit('should not be able to create a new dialogue with an existing name (#3463)', () => {
