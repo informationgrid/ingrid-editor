@@ -184,5 +184,5 @@ describe('Group', () => {
 
   xit('should show all the groups to a catalogue admin (#2670)', () => {});
 
-  xit('should show no groups to an author (#2670)', () => {});
+  xit('should show no groups to an author (#2670)', () => {}); //übernommen
 });

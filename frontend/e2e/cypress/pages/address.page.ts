@@ -30,12 +30,12 @@ export class AddressPage extends DocumentPage {
     cy.visit('address');
   }
 
-  static addContact(chooseContact: string, connectionField: string = 'Verbindung') {
+  static addContact(chooseContact: string = 'Telefon', connection: string = '123456789') {
     cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
-    cy.get('[data-cy=Kontakt]').contains('mat-select-arrow').click();
+    cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').click();
     cy.get('mat-option').contains(chooseContact).click();
-    cy.get('[data-cy=Kontakt] input').type(connectionField);
+    cy.get('[data-cy=Kontakt] input').type(connection);
   }
 
   static createAddress(address: Address, targetTreePath?: string[]) {
@@ -87,5 +87,10 @@ export class AddressPage extends DocumentPage {
   static publishRevert() {
     cy.get(DocumentPage.Toolbar.Publish).click();
     cy.get('[data-cy=toolbar_publish_revert]').click();
+  }
+
+  static addTitleToProfile(title: string) {
+    cy.get('.mat-form-field-outline.mat-form-field-outline').eq(11).next().find('.mat-select-arrow-wrapper').click();
+    cy.get('[role="listbox"]').contains(title).click();
   }
 }

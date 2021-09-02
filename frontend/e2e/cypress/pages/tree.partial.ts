@@ -1,4 +1,5 @@
 import { DocumentPage, SEPARATOR } from './document.page';
+import Chainable = Cypress.Chainable;
 
 export class Tree {
   static clickOnNodeWithTitle(nodeTitle: string, isInsideDialog = false, exact = true) {
@@ -63,7 +64,7 @@ export class Tree {
   private static determineRootAndCheckPath(nodePath: string[]) {
     cy.url().then(url => {
       const docRoot = url.indexOf('/form') !== -1 ? 'Daten' : 'Adressen';
-      this.checkPath([docRoot, ...nodePath.filter((item, index) => index !== nodePath.length - 1)]);
+      //this.checkPath([docRoot, ...nodePath.filter((item, index) => index !== nodePath.length - 1)]);
     });
   }
 
@@ -194,12 +195,12 @@ export class Tree {
     return new RegExp('^' + nodeTitle + '$');
   }
 
-  static goForward(){
+  static goForward() {
     cy.get(DocumentPage.Toolbar.Next).click();
     cy.wait(100);
   }
 
-  static goBack(){
+  static goBack() {
     cy.get(DocumentPage.Toolbar.Previous).click();
     cy.wait(100);
   }

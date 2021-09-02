@@ -369,6 +369,10 @@ export class DocumentPage extends BasePage {
     cy.get(DocumentPage.treeSearchBar).type(searchTerm);
   }
 
+  static addDescription(text: string) {
+    cy.get('[data-cy="Beschreibung"] textarea').clear().type(text);
+  }
+
   static getSearchResult(number?: number) {
     number = number === undefined ? 1 : number;
     return this.getSearchResults()

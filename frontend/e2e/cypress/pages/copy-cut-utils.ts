@@ -82,4 +82,17 @@ export class CopyCutUtils {
       cy.get('[data-cy=confirm-dialog-cancel]').click();
     }
   }
+
+  static simpleDragdropWithoutAutoExpand(dragnode: string, targetNode: string) {
+    cy.get('#sidebar').contains(dragnode).trigger('dragstart', { dataTransfer: new DataTransfer() });
+    cy.get('#sidebar').findByText(targetNode).eq(0).trigger('drop');
+  }
+
+  static differentDragDrop(dragnode: string) {
+    cy.get('#sidebar').contains(dragnode).trigger('dragstart', { dataTransfer: new DataTransfer() });
+    cy.wait(3000);
+    cy.get('ige-tree-header').should('have.class', 'invisible');
+    // cy.get('#sidebar').findByText(targetNode).eq(0).trigger('drop');
+    cy.get('.drop-root .ng-star-inserted .hover').contains('Ablegen unter').trigger('drop');
+  }
 }

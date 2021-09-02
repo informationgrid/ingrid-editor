@@ -33,8 +33,9 @@ export class AdminUserPage extends BasePage {
   }
 
   static applyDialog() {
+    cy.intercept('POST', '/api/users?newExternalUser=*').as('correctAttempt');
     cy.get('button').contains('Anlegen').click();
-    cy.wait(100);
+    cy.wait('@correctAttempt').its('response.statusCode').should('eq', 200);
   }
 
   static toolbarSaveUser() {
