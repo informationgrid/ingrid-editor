@@ -46,7 +46,15 @@ describe('Codelist', () => {
     CodelistPage.checkCodelistEntry(newEntry, true);
 
     // set a new entry as default
+    cy.intercept('PUT', /api\/codelist\/manage/, {
+      statusCode: 200,
+      body: {
+        defaultEntry: 'TEST'
+      }
+    }).as('applyDefault');
     CodelistPage.openContextMenu(newEntry, CodelistSubMenu.Defaultwert);
+    // intercept the setting as new default to give the application time to adjust to new state
+    cy.wait('@applyDefault');
     cy.get('mat-panel-description').should('contain', 'Defaultwert');
 
     // remove default value
