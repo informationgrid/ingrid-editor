@@ -152,4 +152,14 @@ class GroupService @Autowired constructor(
         return userRepo.findByGroups_Id(id);
     }
 
+    fun removeDocFromGroups(catalogId: String, docId: String) {
+        this.getAll(catalogId).forEach { group ->
+            group.permissions?.apply {
+                documents = group.permissions?.documents?.filter { it.get("uuid").asText() != docId } ?: emptyList()
+                addresses = group.permissions?.addresses?.filter { it.get("uuid").asText() != docId } ?: emptyList()
+            }
+            update(catalogId, group.id!!, group)
+        }
+    }
+
 }

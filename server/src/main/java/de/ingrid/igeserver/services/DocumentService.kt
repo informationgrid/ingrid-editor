@@ -37,7 +37,8 @@ class DocumentService @Autowired constructor(
     var userRepo: UserRepository,
     var docWrapperRepo: DocumentWrapperRepository,
     var catalogRepo: CatalogRepository,
-    var aclService: IgeAclService
+    var aclService: IgeAclService,
+    var groupService: GroupService
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -327,6 +328,9 @@ class DocumentService @Autowired constructor(
 
         // remove the wrapper
         docWrapperRepo.deleteById(id)
+
+        // remove references in groups
+        groupService.removeDocFromGroups(catalogId, id)
 
         // run post-delete pipe(s)
         val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)

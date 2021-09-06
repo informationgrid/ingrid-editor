@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 data class PermissionsData(
     val pages: JsonNode? = null,
     val actions: JsonNode? = null,
-    val documents: List<JsonNode>? = null,
-    val addresses: List<JsonNode>? = null
+    var documents: List<JsonNode>? = null,
+    var addresses: List<JsonNode>? = null
 )
