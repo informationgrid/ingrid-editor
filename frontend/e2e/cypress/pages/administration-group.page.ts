@@ -58,7 +58,7 @@ export class AdminGroupPage extends BasePage {
         cy.get('[svgicon="Mehr"]').click();
       });
     cy.contains('button', 'Entfernen').click();
-    this.confirmDeletingIntention();
+    //this.confirmDeletingIntention();
   }
 
   static deleteGroup(groupName: string) {
@@ -99,7 +99,7 @@ export class AdminGroupPage extends BasePage {
   static tryIllegitimateAddToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');
-    cy.contains('mat-tree-node', docName).should('be.disabled');
-    cy.get('mat-dialog-actions button').contains('Hinzufügen').should('be.disabled');
+    cy.contains('mat-tree-node', docName).should('have.class', 'disabled');
+    cy.get('mat-dialog-actions button').contains('Hinzufügen').parent().should('have.class', 'mat-button-disabled');
   }
 }

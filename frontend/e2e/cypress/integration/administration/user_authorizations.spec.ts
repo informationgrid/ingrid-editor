@@ -150,9 +150,58 @@ describe('Meta data administrator without groups', () => {
     cy.get('.user-management-header').contains('Gruppen (0)');
   });
 
-  it('metadata admin without groups should be able to create group of his own, but not add documents', () => {});
+  it('metadata admin without groups should be able to create group of his own, but not add documents', () => {
+    // create group
+    const newGroup = 'new_empty_group';
+    const description = 'group for metadata-admin without groups';
 
-  it('metadata admin without groups should not be able to change responsible person of groups', () => {});
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.addNewGroup(newGroup);
+    AdminGroupPage.addGroupDescription(description);
+    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
+    // try to add documents
+    AdminGroupPage.selectGroup(newGroup);
+    AdminGroupPage.openAddDocumentsDialog('Adressen');
+    cy.get('permission-add-dialog').should('contain', 'Leer');
+  });
+
+  it('metadata admin without groups should not be able to create documents', () => {
+    // data documents
+    DocumentPage.visit();
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
+    cy.get('.root .disabled');
+    // try to create data folder
+    cy.get('[data-cy=create-title]').type('letsTypeSomething');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Daten');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+
+    // addresses
+    AddressPage.visit();
+    cy.get(AddressPage.Toolbar.NewFolder).click();
+    cy.get('.root .disabled');
+    // try to create an address folder
+    cy.get('[data-cy=create-title]').type('letsTypeSomething');
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+    // try to create piece of data as part of a tree hierarchy
+    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Adressen');
+    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
+    UserAuthorizationPage.tryIllegitimateCreate();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    UserAuthorizationPage.closeErrorBox();
+  });
+
+  xit('metadata admin without groups should not be able to change responsible person of groups', () => {});
 });
 
 // meta data administrator with groups
@@ -176,7 +225,7 @@ describe('Meta data administrator with a group', () => {
     ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
-  xit('meta data administrator with group should be able to see the data of his group and search for it', () => {
+  it('meta data administrator with group should be able to see the data of his group and search for it', () => {
     DocumentPage.visit();
     // Look for a document that belongs to the admin's group
     Tree.openNode(['Ordner_Ebene_2A', 'Datum_Ebene_3_3']);
@@ -201,13 +250,14 @@ describe('Meta data administrator with a group', () => {
     cy.contains('ige-header-title-row', 'test_c, test_c');
   });
 
-  xit('meta data admin should be able to edit an address of his assigned groups', () => {
+  it('meta data admin should be able to edit an address of his assigned groups', () => {
     AddressPage.visit();
     Tree.openNode(['Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
     AddressPage.addContact();
     AddressPage.addTitleToProfile('Dr.');
     cy.wait(500);
-    cy.get('[data-cy="toolbar_SAVE"]').click();
+    AddressPage.saveChangesOfProfile('Pays-Basque, Adresse');
+
     // open a random address
     Tree.openNode(['Aquitanien, Adresse']);
     // come back to initial, edited address and make sure it has been changed
@@ -308,27 +358,24 @@ describe('Meta data administrator with a group', () => {
     cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'Franken, Adresse');
   });
 
-  xit('when "nur Unterordner" is activated, the overarching folder should not be able to be deleted (#2785)', () => {
+  it('when "nur Unterordner" is activated, the overarching folder should not be able to be deleted (#2785)', () => {
     // set access right to "nur Unterordner"
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
-    UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_3.Ebene_C', 'Daten');
+    UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_3.Ebene_C', 'Adressen');
     // open document
     AddressPage.visit();
     Tree.openNode(['Ordner_3.Ebene_C']);
     UserAuthorizationPage.verifyDocumentTitle('Ordner_3.Ebene_C');
-    // try to delete
     // first delete documents present in the folder
     cy.get('mat-tree-node[aria-level="2"]').each(element => {
       cy.wrap(element).click();
-      AddressPage.deleteLoadedNode();
+      DocumentPage.deleteLoadedNode();
     });
-    // try to delete the folder itself
-    cy.get(AddressPage.Toolbar['Save']).click();
-    // expect error
-    cy.get('error-dialog').contains('keine Berechtigung');
-    UserAuthorizationPage.closeErrorBox();
+    // try to delete the folder: expect delete button to be disabled
+    Tree.openNode(['Ordner_3.Ebene_C']);
+    cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
   });
 
   xit('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed', () => {
@@ -350,12 +397,14 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.closeErrorBox();
   });
 
+  // kann leider noch verschoben werden
   xit('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
     // set access right to "nur Unterordner"
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
     // open document
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2C']);
@@ -474,7 +523,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
   });
 
-  xit('if a meta data admin deletes a document from one of his groups, he cannot access this document anymore (neither write nor read)', () => {
+  it('if a meta data admin deletes a document from one of his groups, he cannot access this document anymore (neither write nor read)', () => {
     // delete address from group and check existence
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -513,7 +562,25 @@ describe('Catalogue admin', () => {
     cy.kcLogout();
   });
 
-  xit('catalogue admin should be able to create root documents', () => {
+  // eigentlich egal, welcher User -> nur Recht, Gruppen Dokumente zuzuweisen nötig
+  it('it should not be possible to add a piece of data twice to a group (#3461)', () => {
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    // grant authorization for an address
+    AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
+    cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_c, test_c');
+    // try to grant authorizations for addresses twice
+    AdminGroupPage.tryIllegitimateAddToGroup('test_j, test_j', 'Adressen');
+    cy.contains('button', 'Abbrechen').click();
+    // grant authorization for a piece of data
+    AdminGroupPage.addDocumentToGroup('TestDocResearch4', 'Daten');
+    cy.get('permission-table[label="Berechtigungen Daten"]').should('contain', 'TestDocResearch4');
+    // try to grant authorization for data twice
+    AdminGroupPage.tryIllegitimateAddToGroup('TestDocResearch4', 'Daten');
+  });
+
+  it('catalogue admin should be able to create root documents', () => {
     // create root document
     DocumentPage.visit();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
@@ -559,23 +626,6 @@ describe('Catalogue admin', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     cy.wait('@loadingGroups');
     AdminUserPage.getNumberOfGroups().should('be.greaterThan', 0);
-  });
-
-  // eigentlich egal, welcher User -> nur Recht, Gruppen Dokumente zuzuweisen nötig
-  xit('it should not be possible to add a piece of data twice to a group (#3461)', () => {
-    cy.visit('user');
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
-    // grant authorization for an address
-    AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
-    cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_c, test_c');
-    // try to grant authorizations for addresses twice
-    AdminGroupPage.tryIllegitimateAddToGroup('test_c, test_c', 'Adressen');
-    // grant authorization for a piece of data
-    AdminGroupPage.addDocumentToGroup('TestDocResearch4', 'Daten');
-    cy.get('permission-table[label="Berechtigungen Daten"]').should('contain', 'TestDocResearch4');
-    // try to grant authorization for data twice
-    AdminGroupPage.tryIllegitimateAddToGroup('TestDocResearch4', 'Daten');
   });
 
   it('catalogue admin can see empty groups', () => {

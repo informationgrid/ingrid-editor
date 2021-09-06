@@ -53,6 +53,12 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=confirm-dialog-save]').click();
   }
 
+  static saveChangesOfProfile(docTitle: string) {
+    cy.intercept('PUT', /api\/datasets/).as('saveChanges');
+    cy.get('[data-cy="toolbar_SAVE"]').click();
+    cy.wait('@saveChanges').its('response.body.title').should('eq', docTitle);
+  }
+
   static discardSaveChanges() {
     cy.get('.mat-dialog-title').contains('Änderungen speichern?');
     cy.get('[data-cy=confirm-dialog-discard]').click();
