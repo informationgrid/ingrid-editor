@@ -158,7 +158,7 @@ describe('User', () => {
     AdminUserPage.addNewUserEmail('test@wemove.com');
     AdminUserPage.addNewUserRole('Katalog-Administrator');
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
-    AdminUserPage.applyDialog();
+    AdminUserPage.attemptIllegitimateApplyDialog();
 
     // error-message
     cy.get('[data-cy=error-dialog-title]').should('be.visible');
@@ -174,7 +174,7 @@ describe('User', () => {
     AdminUserPage.addNewUserEmail('me@wemove.com');
     AdminUserPage.addNewUserRole('Autor');
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
-    AdminUserPage.applyDialog();
+    AdminUserPage.attemptIllegitimateApplyDialog();
 
     // error-message
     cy.get('[data-cy=error-dialog-title]').should('be.visible');

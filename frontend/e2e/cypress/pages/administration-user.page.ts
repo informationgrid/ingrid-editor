@@ -38,6 +38,12 @@ export class AdminUserPage extends BasePage {
     cy.wait('@correctAttempt').its('response.statusCode').should('eq', 200);
   }
 
+  static attemptIllegitimateApplyDialog() {
+    cy.intercept('POST', '/api/users?newExternalUser=*').as('failingAttempt');
+    cy.get('button').contains('Anlegen').click();
+    cy.wait('@failingAttempt').its('response.statusCode').should('eq', 409);
+  }
+
   static toolbarSaveUser() {
     cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait(100);
