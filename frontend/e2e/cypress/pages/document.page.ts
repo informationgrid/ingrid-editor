@@ -421,4 +421,10 @@ export class DocumentPage extends BasePage {
   static checkURL(text: string) {
     cy.url().should('include', text);
   }
+
+  static saveProfile(docTitle: string) {
+    cy.intercept('PUT', /api\/datasets/).as('saveChanges');
+    cy.get(DocumentPage.Toolbar.Save).click();
+    cy.wait('@saveChanges').its('response.body.title').should('eq', docTitle);
+  }
 }

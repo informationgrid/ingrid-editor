@@ -270,7 +270,7 @@ describe('Meta data administrator with a group', () => {
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
     DocumentPage.addDescription(description);
-    cy.get('[data-cy="toolbar_SAVE"]').click();
+    DocumentPage.saveProfile('Datum_Ebene_4_1');
     // open a random document
     Tree.openNode(['Ordner_Ebene_2A', 'Datum_Ebene_3_3']);
     // come back to initial, edited document and make sure it has been changed
@@ -569,7 +569,7 @@ describe('Catalogue admin', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     // grant authorization for an address
     AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
-    cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_c, test_c');
+    cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_j, test_j');
     // try to grant authorizations for addresses twice
     AdminGroupPage.tryIllegitimateAddToGroup('test_j, test_j', 'Adressen');
     cy.contains('button', 'Abbrechen').click();
