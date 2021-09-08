@@ -77,6 +77,25 @@ export class AdminUserPage extends BasePage {
     cy.get('#formUser').should('be.visible');
   }
 
+  static changeManager(name: string) {
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('.mat-menu-content').children().first().click();
+    cy.get('ige-edit-manager-dialog').find('.mat-select-arrow').click();
+    cy.get('[role="listbox"]').contains('mat-option', name).click();
+    cy.intercept('GET', /api\/users\//).as('setManager');
+    cy.contains('.mat-button-wrapper', 'Zuweisen').click();
+    cy.wait('@setManager').its('response.body.manager').should('eq', name);
+  }
+
+  static verifyInfoInHeader(key: keysInHeader, value: string) {
+    // open up header
+    cy.get('.user-title .menu-button').eq(0).click();
+    // verify information
+    cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
+      cy.get('div').eq(1).should('have.text', value);
+    });
+  }
+
   static checkRoleSymbol(username: string, iconname: string) {
     cy.get('#sidebarUser tr').contains(username).parent().parent().find(iconname).should('be.visible');
   }
@@ -124,4 +143,12 @@ export class AdminUserPage extends BasePage {
         );
       });
   }
+}
+
+export enum keysInHeader {
+  LastLogin = 1,
+  CreationDate,
+  EditDate,
+  Login,
+  Manager
 }

@@ -1,4 +1,4 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
+import { AdminUserPage, keysInHeader } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
@@ -404,6 +404,15 @@ describe('User', () => {
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(modified + ' ' + 'Admin');
+  });
+
+  it('should be possible to change manager of a user', () => {
+    const login = 'drei';
+    const managerName = 'Test Verantwortlicher';
+    cy.visit('user');
+    AdminUserPage.selectUser('autor test');
+    AdminUserPage.changeManager(login);
+    AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, managerName);
   });
 
   xit('should show to a user her managed and sub users (#2671)', () => {});

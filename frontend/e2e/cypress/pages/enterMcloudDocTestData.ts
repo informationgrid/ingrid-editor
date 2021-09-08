@@ -88,7 +88,9 @@ export class enterMcloudDocTestData {
       .clear()
       .type(locationText)
       .then(() => {
-        cy.contains('.result-wrapper mat-list', locationText).click();
+        cy.intercept('/search/' + locationText + '*').as('waitForSuggestions');
+        cy.wait('@waitForSuggestions', { timeout: 8000 });
+        cy.contains('.result-wrapper mat-list mat-list-item', locationText, { timeout: 8000 }).click();
       });
     cy.get('[data-cy=confirm-dialog-save]').click();
     // give some time to close dialog and update list

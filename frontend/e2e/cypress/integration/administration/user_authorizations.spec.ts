@@ -1,4 +1,4 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
+import { AdminUserPage, keysInHeader } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
@@ -7,9 +7,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { AdminGroupPage } from '../../pages/administration-group.page';
-import { User } from '../../../../src/app/+user/user';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import Doc = Mocha.reporters.Doc;
 
 // user without authorizations (author)
 describe('User without authorizations', () => {
@@ -201,7 +199,7 @@ describe('Meta data administrator without groups', () => {
     UserAuthorizationPage.closeErrorBox();
   });
 
-  xit('metadata admin without groups should not be able to change responsible person of groups', () => {});
+  xit('metadata admin without groups should be able to change responsible person of userse', () => {});
 });
 
 // meta data administrator with groups
@@ -507,7 +505,9 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogout();
   });
 
-  xit('meta data admin should be able to see the groups and users of metadata admins he has created (and so on recursively)', () => {});
+  xit('meta data admin should be able to see the groups and users of metadata admins he has created (and so on recursively)', () => {
+    // create a user, assign groups, let this user assign groups, then check access to documents
+  });
 
   xit('meta data admin should have the same access right to documents further down in the tree as the users to which the access rights were granted', () => {});
 
