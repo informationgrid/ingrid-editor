@@ -63,17 +63,17 @@ export class DeleteDocsPlugin extends Plugin {
         }
       }),
 
-      this.treeQuery.selectActiveId().subscribe((data) => {
+      this.treeQuery.selectActive().subscribe((data) => {
         this.formToolbarService.setButtonState(
           "toolBtnRemove",
-          data && data.length > 0
+          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission)
         );
       }),
 
-      this.addressTreeQuery.selectActiveId().subscribe((data) => {
+      this.addressTreeQuery.selectActive().subscribe((data) => {
         this.formToolbarService.setButtonState(
           "toolBtnRemove",
-          data && data.length > 0
+          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission)
         );
       })
     );

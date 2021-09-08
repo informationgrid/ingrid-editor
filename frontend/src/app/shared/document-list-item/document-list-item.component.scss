@@ -4,6 +4,10 @@
   visibility: hidden;
 }
 
+.disabled .card-title {
+  color: $ige-comment-color;
+}
+
 .doc-item {
   display: flex;
   align-items: flex-start;
