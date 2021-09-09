@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
@@ -19,10 +17,14 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun existsById(uuid: String): Boolean
 
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @Query("SELECT d FROM DocumentWrapper d")
+    fun getAll(): List<DocumentWrapper?>
+
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
-    
+
     fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>

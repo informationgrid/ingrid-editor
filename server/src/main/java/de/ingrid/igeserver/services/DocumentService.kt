@@ -475,13 +475,12 @@ class DocumentService @Autowired constructor(
                 )
             )
 
-            if (userGroups.isNotEmpty()) {
-                val isAddress = category == "address"
-                val datasetUuidsFromGroups = aclService.getDatasetUuidsFromGroups(userGroups, isAddress)
-                val exp: Expression<String> = wrapper.get<String>("id")
-                val predicate: Predicate = exp.`in`(datasetUuidsFromGroups)
-                result = cb.and(predicate, result)
-            }
+            // TODO probably performance bottle neck. Analyze and Adapt.
+            // necessary for rights management
+            val datasetUuids = docWrapperRepo.getAll().map { it?.id }
+            val exp: Expression<String> = wrapper.get<String>("id")
+            val predicate: Predicate = exp.`in`(datasetUuids)
+            result = cb.and(predicate, result)
 
             result
 
