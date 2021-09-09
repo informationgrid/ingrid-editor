@@ -134,9 +134,9 @@ describe('author with groups', () => {
     cy.kcLogout();
   });
 
-  xit('search by search field in sidebar should search for the assigned data documents, be they expanded or not', () => {
+  it('search by search field in sidebar should search for the assigned data documents, be they expanded or not', () => {
     const searchTerm_1 = 'Neue Testdokumente';
-    const searchTerm_2 = '';
+    const searchTerm_2 = 'Datum_Ebene_4_4';
 
     DocumentPage.visit();
     // make sure the not-expanded folder is found
@@ -151,8 +151,8 @@ describe('author with groups', () => {
   });
 
   xit('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
-    const searchTerm_1 = '';
-    const searchTerm_2 = '';
+    const searchTerm_1 = 'Ordner 2.Ebene';
+    const searchTerm_2 = 'Rheinland, Adresse';
 
     AddressPage.visit();
     // make sure the not-expanded folder is found
@@ -164,11 +164,36 @@ describe('author with groups', () => {
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
     cy.contains('mat-option .doc-item', searchTerm_2).click();
     cy.contains('.title .label', searchTerm_2);
+
+    // also: make sure the suggestions don't contain forbidden documents
   });
 
-  xit('Section "Nutzer und Rechte" should not be visible to author with groups', () => {
+  it('Section "Nutzer und Rechte" should not be visible to author with groups', () => {
     cy.visit('user');
     cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+  });
+
+  it('author with groups should be able to jump to documents via the "last edited"-section of the dashboard, addresses and data page', () => {
+    // from dashboard page
+    DashboardPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
+    // from data page
+    DocumentPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.url().should('include', '/form;id=');
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
+    // from addresses page
+    AddressPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.url().should('include', '/address;id=');
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
   });
 
   xit('author with groups should be able to create new address documents within the structure of his assigned documents', () => {});
@@ -255,7 +280,7 @@ describe('Meta data administrator without groups', () => {
     UserAuthorizationPage.closeErrorBox();
   });
 
-  xit('metadata admin without groups should be able to change responsible person of userse', () => {});
+  xit('metadata admin without groups should be able to change manager of users', () => {});
 });
 
 // meta data administrator with groups
@@ -606,6 +631,31 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     cy.contains('mat-tree.mat-tree', 'test_z, test_z').should('not.exist');
   });
+
+  it('meta data administrator should be able to jump to documents via the "last edited"-section of the dashboard, addresses and data page', () => {
+    // from dashboard page
+    DashboardPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
+    // from data page
+    DocumentPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.url().should('include', '/form;id=');
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
+    // from addresses page
+    AddressPage.visit();
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      DashboardPage.clickOnLatestDoc(1);
+      cy.url().should('include', '/address;id=');
+      cy.get(DocumentPage.title).should('have.text', text);
+    });
+  });
+
+  xit('metadata admin should not be able to see the users other metadata admins created', () => {});
 });
 
 // catalogue admin
@@ -702,5 +752,6 @@ describe('Catalogue admin', () => {
     AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, 'Meta Admin');
   });
 
+  // maybe additional to the test that checks if number of users is greater than 0?
   xit('should show all the groups to a catalogue admin (#2670)', () => {});
 });
