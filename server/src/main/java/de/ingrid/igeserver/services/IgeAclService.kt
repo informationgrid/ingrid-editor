@@ -83,7 +83,7 @@ class IgeAclService @Autowired constructor(
             .flatten().toSet().toList()
     }
 
-    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String): List<String> {
+    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String =""): List<String> {
         return groups
             .map { group ->
                 mutableListOf<JsonNode>().apply {
@@ -93,11 +93,11 @@ class IgeAclService @Autowired constructor(
             }
             .map { permissions ->
                 permissions.filter { permission ->
-                    permission.get("permission").asText() == permissionLevel
+                    permissionLevel.isEmpty() ||permission.get("permission").asText() == permissionLevel
                 }
             }
             .map { permissions -> permissions.mapNotNull { permission -> permission.get("uuid").asText() } }
-            .flatten()
+            .flatten().toSet().toList()
     }
 
     private fun isAllowed(acl: Acl, permission: Permission, sids: List<Sid>): Boolean {

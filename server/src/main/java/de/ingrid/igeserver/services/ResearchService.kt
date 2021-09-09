@@ -9,6 +9,7 @@ import de.ingrid.igeserver.utils.AuthUtils
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
@@ -56,7 +57,7 @@ class ResearchService {
     fun query(principal: Principal, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
-        val groupIds = if (isAdmin) emptyList() else aclService.getDatasetUuidsFromGroups(groups, false)
+        val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetUuidsFromGroups(groups)
         
         // if a user has no groups then user is not allowed anything
         if (groupIds.isEmpty() && !isAdmin) {
@@ -67,7 +68,7 @@ class ResearchService {
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
-        val map = mapResult(result, isAdmin)
+        val map = mapResult(result, isAdmin, principal)
 
         return ResearchResponse(result.size, map)
     }
@@ -215,7 +216,7 @@ class ResearchService {
             .resultList as List<Array<Any>>
     }
 
-    private fun mapResult(result: List<Any>, isAdmin: Boolean): List<Result> {
+    private fun mapResult(result: List<Any>, isAdmin: Boolean, principal: Principal): List<Result> {
         return result.map {
             val item = it as Array<out Any>
             Result(
@@ -226,7 +227,7 @@ class ResearchService {
                 _modified = item[5] as? Date,
                 _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
                 _category = (item[7] as? String),
-                hasWritePermission = if (isAdmin) true else false // TODO: check for permission in query or post processing
+                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canWrite
             )
         }
     }
@@ -238,7 +239,7 @@ class ResearchService {
             val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
             val result = sendQuery(catalogQuery, emptyList())
 
-            return ResearchResponse(result.size, mapResult(result, isAdmin))
+            return ResearchResponse(result.size, mapResult(result, isAdmin, principal))
         } catch (error: Exception) {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
