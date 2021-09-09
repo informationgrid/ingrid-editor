@@ -415,6 +415,16 @@ describe('User', () => {
     AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, managerName);
   });
 
+  it('should not be possible to take responsibility from a user without responsibility', () => {
+    // go to user
+    cy.visit('user');
+    AdminUserPage.selectUser('autor2');
+    // try to execute action "Verantwortung abgeben"
+    AdminUserPage.cedeResponsibility();
+    // expect error
+    cy.contains('mat-dialog-container', 'Der ausgewählte Benutzer ist für keine anderen Nutzer verantwortlich');
+  });
+
   xit('should show to a user her managed and sub users (#2671)', () => {});
 
   xit('should show to a user the users she represents (#2671)', () => {

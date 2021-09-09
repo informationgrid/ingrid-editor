@@ -102,4 +102,20 @@ export class AdminGroupPage extends BasePage {
     cy.contains('mat-tree-node', docName).should('have.class', 'disabled');
     cy.get('mat-dialog-actions button').contains('Hinzufügen').parent().should('have.class', 'mat-button-disabled');
   }
+
+  static verifyInfoInHeader(key: headerKeys, value: string) {
+    // open up header
+    cy.get('.user-title .menu-button').eq(0).click();
+    // verify information
+    cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
+      cy.get('div').eq(1).should('have.text', value);
+    });
+  }
+}
+
+export enum headerKeys {
+  Manager = 1,
+  CreationDate,
+  EditDate,
+  identification
 }

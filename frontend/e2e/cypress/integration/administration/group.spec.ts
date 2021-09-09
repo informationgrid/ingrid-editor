@@ -176,13 +176,5 @@ describe('Group', () => {
     cy.get('[data-cy=toolbar_save_group]').should('be.enabled');
   });
 
-  xit('should show a user only the groups assigned to her (#2670)', () => {});
-
-  xit('should show to a user the groups of the users she represents (#2670)', () => {});
-
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
-
-  xit('should show all the groups to a catalogue admin (#2670)', () => {});
-
-  xit('should show no groups to an author (#2670)', () => {}); //übernommen
 });

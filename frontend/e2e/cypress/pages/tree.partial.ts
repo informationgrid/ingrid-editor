@@ -88,11 +88,10 @@ export class Tree {
           const treeNodeParent = node.parent().parent().parent();
           if (forceClick || !treeNodeParent.hasClass('expanded')) {
             cy.log('Clicking on node: ' + nodeTitle);
-            cy.intercept('GET', /address=false/).as('openNode');
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
             if (!isInsideDialog) {
-              cy.wait('@openNode').its('response.body.title').should('eq', nodeTitle);
+              cy.contains('.title .label', nodeTitle).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
           }

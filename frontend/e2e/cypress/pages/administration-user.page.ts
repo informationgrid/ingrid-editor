@@ -87,6 +87,27 @@ export class AdminUserPage extends BasePage {
     cy.wait('@setManager').its('response.body.manager').should('eq', name);
   }
 
+  static cedeResponsibility(manager?: string) {
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('.mat-menu-content').children().eq(1).click();
+    if (manager === undefined) {
+      return;
+    }
+    // when parameter manager is there, the action is not expected to fail
+    cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich ist');
+    cy.contains('button', 'Verantwortlichen auswählen').click();
+    cy.get('mat-dialog-container .mat-select-arrow').click();
+    //cy.intercept('POST', /api\/users\//).as('setManager');
+    cy.contains('[role="listbox"] mat-option', manager, { timeout: 6000 }).click();
+    cy.intercept('POST', '/api/users/' + '*' + '/manager' + '*').as('waitForSelection');
+    cy.contains('mat-dialog-container button', 'Zuweisen').click();
+    cy.wait('@waitForSelection');
+  }
+
+  static closeBox() {
+    cy.get('mat-dialog-container').find('button').eq(1).click();
+  }
+
   static verifyInfoInHeader(key: keysInHeader, value: string) {
     // open up header
     cy.get('.user-title .menu-button').eq(0).click();

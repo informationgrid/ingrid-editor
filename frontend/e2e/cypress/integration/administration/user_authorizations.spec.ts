@@ -6,8 +6,9 @@ import { AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
-import { AdminGroupPage } from '../../pages/administration-group.page';
+import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import Doc = Mocha.reporters.Doc;
 
 // user without authorizations (author)
 describe('User without authorizations', () => {
@@ -123,6 +124,60 @@ describe('User without authorizations', () => {
   });
 });
 
+// user with some limited authorizations (test_gruppe_3: Neue Testdokumente/ Ordner_2.Ebene)
+describe('author with groups', () => {
+  beforeEach(() => {
+    cy.kcLogin('autor2');
+  });
+
+  afterEach(() => {
+    cy.kcLogout();
+  });
+
+  xit('search by search field in sidebar should search for the assigned data documents, be they expanded or not', () => {
+    const searchTerm_1 = 'Neue Testdokumente';
+    const searchTerm_2 = '';
+
+    DocumentPage.visit();
+    // make sure the not-expanded folder is found
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_1);
+    cy.contains('mat-option .doc-item', searchTerm_1).click();
+    cy.contains('.title .label', searchTerm_1);
+
+    // make sure the nested documents are found as well
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
+    cy.contains('mat-option .doc-item', searchTerm_2).click();
+    cy.contains('.title .label', searchTerm_2);
+  });
+
+  xit('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
+    const searchTerm_1 = '';
+    const searchTerm_2 = '';
+
+    AddressPage.visit();
+    // make sure the not-expanded folder is found
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_1);
+    cy.contains('mat-option .doc-item', searchTerm_1).click();
+    cy.contains('.title .label', searchTerm_1);
+
+    // make sure the nested documents are found as well
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
+    cy.contains('mat-option .doc-item', searchTerm_2).click();
+    cy.contains('.title .label', searchTerm_2);
+  });
+
+  xit('Section "Nutzer und Rechte" should not be visible to author with groups', () => {
+    cy.visit('user');
+    cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+  });
+
+  xit('author with groups should be able to create new address documents within the structure of his assigned documents', () => {});
+
+  xit('author with groups should not be able to create new data documents within the structure of his assigned documents', () => {});
+
+  xit('author with groups should be able to create groups, but only add his assigned documents', () => {});
+});
+
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
   beforeEach(() => {
@@ -148,7 +203,7 @@ describe('Meta data administrator without groups', () => {
     cy.get('.user-management-header').contains('Gruppen (0)');
   });
 
-  it('metadata admin without groups should be able to create group of his own, but not add documents', () => {
+  it('metadata admin without groups should be able to create groups of his own, but not add documents', () => {
     // create group
     const newGroup = 'new_empty_group';
     const description = 'group for metadata-admin without groups';
@@ -159,6 +214,7 @@ describe('Meta data administrator without groups', () => {
     AdminGroupPage.addGroupDescription(description);
     AdminGroupPage.toolbarSaveGroup();
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
+    AdminGroupPage.verifyInfoInHeader(headerKeys.Manager, 'meta');
     // try to add documents
     AdminGroupPage.selectGroup(newGroup);
     AdminGroupPage.openAddDocumentsDialog('Adressen');
@@ -634,4 +690,17 @@ describe('Catalogue admin', () => {
     AdminGroupPage.selectGroup('leere_Gruppe');
     cy.get('.user-title').contains('leere_Gruppe');
   });
+
+  it('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
+    const login = 'meta';
+    cy.visit('user');
+    AdminUserPage.selectUser('Test Verantwortlicher');
+    // take responsibility away from a user
+    AdminUserPage.cedeResponsibility('Meta Admin');
+    // check if users of the old manager now belong to the new manager
+    AdminUserPage.selectUser('autor2');
+    AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, 'Meta Admin');
+  });
+
+  xit('should show all the groups to a catalogue admin (#2670)', () => {});
 });
