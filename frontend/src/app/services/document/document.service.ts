@@ -506,7 +506,7 @@ export class DocumentService {
         title: doc.title || "-Ohne Titel-",
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: doc._parent,
+        _parent: parentId,
         _type: doc._type,
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
