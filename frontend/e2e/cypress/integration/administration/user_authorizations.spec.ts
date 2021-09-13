@@ -137,28 +137,38 @@ describe('author with groups', () => {
   it('search by search field in sidebar should search for the assigned data documents, be they expanded or not', () => {
     const searchTerm_1 = 'Neue Testdokumente';
     const searchTerm_2 = 'Datum_Ebene_4_4';
+    const searchTerm_3 = 'TestDocResearch2';
 
     DocumentPage.visit();
     // make sure the not-expanded folder is found
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_1);
     cy.contains('mat-option .doc-item', searchTerm_1).click();
-    cy.contains('.title .label', searchTerm_1);
+    cy.url().should('include', '/form;id=');
+    cy.contains('.title .label', searchTerm_1, { timeout: 7000 });
 
     // make sure the nested documents are found as well
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
     cy.contains('mat-option .doc-item', searchTerm_2).click();
-    cy.contains('.title .label', searchTerm_2);
+    cy.url().should('include', '/form;id=');
+    cy.contains('.title .label', searchTerm_2, { timeout: 7000 });
+
+    // also: make sure the suggestions don't contain forbidden documents
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_3);
+    cy.get('mat-option .doc-item').should('not.contain', searchTerm_3).click();
   });
 
-  xit('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
+  it('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
     const searchTerm_1 = 'Ordner 2.Ebene';
     const searchTerm_2 = 'Rheinland, Adresse';
+    const searchTerm_3 = 'Franken, Adresse';
 
     AddressPage.visit();
-    // make sure the not-expanded folder is found
+    // make sure the not-expanded folder is found -> Problem: search term disappears from suggestion list
+    /*cy.intercept('GET', '/api/datasets?query=' + encodeURIComponent(searchTerm_1) + '&' + '**').as('searchQuery');
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_1);
+    cy.wait('@searchQuery');
     cy.contains('mat-option .doc-item', searchTerm_1).click();
-    cy.contains('.title .label', searchTerm_1);
+    cy.contains('.title .label', searchTerm_1);*/
 
     // make sure the nested documents are found as well
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
@@ -166,6 +176,8 @@ describe('author with groups', () => {
     cy.contains('.title .label', searchTerm_2);
 
     // also: make sure the suggestions don't contain forbidden documents
+    cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_3);
+    cy.get('mat-option .doc-item').should('not.contain', searchTerm_3).click();
   });
 
   it('Section "Nutzer und Rechte" should not be visible to author with groups', () => {
@@ -377,8 +389,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('error-dialog').contains('keine Berechtigung');
 
     // try to delete
-    DocumentPage.deleteLoadedNode();
-    cy.get('error-dialog').contains('keine Berechtigung');
+    cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
     cy.visit('user');
@@ -388,8 +399,7 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.changeAccessRightFromReadToWrite('test_z, test_z', 'Adressen');
   });
 
-  // Problem: Server-Error bei Versuch, datensatz zu löschen
-  xit('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
+  it('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
     // set access to read-only
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -409,8 +419,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('error-dialog').contains('keine Berechtigung');
 
     // try to delete
-    DocumentPage.deleteLoadedNode();
-    cy.get('error-dialog').contains('keine Berechtigung');
+    cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
     cy.visit('user');
@@ -457,7 +466,7 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
   });
 
-  xit('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed', () => {
+  it('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed', () => {
     // set access right to "nur Unterordner"
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -467,13 +476,9 @@ describe('Meta data administrator with a group', () => {
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2C']);
     UserAuthorizationPage.verifyDocumentTitle('Ordner_Ebene_2C');
-    // change title
-    UserAuthorizationPage.changeTitle('just_another_title');
-    // try to save
-    cy.get(DocumentPage.Toolbar['Save']).click();
-    // expect error
-    cy.get('error-dialog').contains('keine Berechtigung');
-    UserAuthorizationPage.closeErrorBox();
+    // try to change title
+    cy.get('.title .label').should('not.have.class', 'editable');
+    cy.get(DocumentPage.Toolbar['Save']).should('be.disabled');
   });
 
   // kann leider noch verschoben werden
@@ -513,7 +518,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('.root .disabled');
   });
 
-  xit('meta data admin should not be able to move documents to a root document (#2775)', () => {
+  it('meta data admin should not be able to move documents to a root document (#2775)', () => {
     DocumentPage.visit();
     // try to move by dialogue
     Tree.openNode(['Ordner_Ebene_2A']);

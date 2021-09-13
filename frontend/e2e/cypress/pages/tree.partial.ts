@@ -91,7 +91,7 @@ export class Tree {
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
             if (!isInsideDialog) {
-              cy.contains('.title .label', nodeTitle).should('be.visible');
+              cy.contains('.title .label', nodeTitle, { timeout: 10000 }).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
           }
