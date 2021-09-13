@@ -2,7 +2,7 @@ import { AdminUserPage, keysInHeader } from '../../pages/administration-user.pag
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
-import { AddressPage } from '../../pages/address.page';
+import { Address, AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
@@ -144,7 +144,7 @@ describe('author with groups', () => {
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_1);
     cy.contains('mat-option .doc-item', searchTerm_1).click();
     cy.url().should('include', '/form;id=');
-    cy.contains('.title .label', searchTerm_1, { timeout: 7000 });
+    cy.contains('.title .label', searchTerm_1, { timeout: 10000 });
 
     // make sure the nested documents are found as well
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_2);
@@ -208,11 +208,40 @@ describe('author with groups', () => {
     });
   });
 
-  xit('author with groups should be able to create new address documents within the structure of his assigned documents', () => {});
+  it('author with groups should be able to create new address documents within the structure of his assigned documents', () => {
+    // create new document
+    AddressPage.visit();
+    cy.get(DocumentPage.Toolbar.NewDoc).click();
+    // make sure that Anlegen is disabled
+    cy.get('[data-cy=create-action]').should('be.disabled');
+    AddressPage.type('create-address-firstName', 'Adresse');
+    AddressPage.type('create-address-lastName', 'Galizien');
+    // make sure that forbidden folder can not be chosen
+    cy.get('[data-cy="create-changeLocation"]').click();
+    cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');
+    // change Folder
+    Tree.openNode(['Ordner 2. Ebene', 'Ordner_3.Ebene_A'], true);
+    cy.get('[data-cy=create-applyLocation]').click();
+  });
 
-  xit('author with groups should not be able to create new data documents within the structure of his assigned documents', () => {});
+  it('author with groups should be able to create new data documents within the structure of his assigned documents', () => {
+    // create new document
+    DocumentPage.visit();
+    cy.get(DocumentPage.Toolbar.NewDoc).click();
+    // make sure that Anlegen is disabled
+    cy.get('[data-cy=create-action]').should('be.disabled');
+    cy.get('[data-cy=create-title]').type('Author_Doc');
+    // make sure that forbidden folder can not be chosen
+    cy.get('[data-cy="create-changeLocation"]').click();
+    cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');
+    // change Folder
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C'], true);
+    cy.get('[data-cy=create-applyLocation]').click();
+  });
 
-  xit('author with groups should be able to create groups, but only add his assigned documents', () => {});
+  xit('Author with groups can see his own user profile', () => {
+    cy.get('[data-cy="header-profile-button"]').click();
+  });
 });
 
 // meta data administrator without groups
@@ -305,8 +334,7 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogout();
   });
 
-  // functionality not yet working
-  xit('meta data administrator with group should be able to see the addresses of his group and search for it', () => {
+  it('meta data administrator with group should be able to see the addresses of his group and search for it', () => {
     AddressPage.visit();
     // Look for a document that belongs to the admin's group
     Tree.openNode(['Ordner_2.Ebene_C', 'Harz, Adresse']);
@@ -481,6 +509,18 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Save']).should('be.disabled');
   });
 
+  xit('meta data admin should not be able to move documents to a root document (#2775)', () => {
+    DocumentPage.visit();
+    // try to move by dialogue
+    Tree.openNode(['Ordner_Ebene_2A']);
+    CopyCutUtils.move();
+    //expect error
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+
+    // todo: try to move via drag and drop
+    // problem: item can not simply be dragged from origin to destination, because destination only becomes visible after starting to drag
+  });
+
   // kann leider noch verschoben werden
   xit('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
     // set access right to "nur Unterordner"
@@ -516,18 +556,6 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     cy.get(AddressPage.Toolbar.NewFolder).click();
     cy.get('.root .disabled');
-  });
-
-  it('meta data admin should not be able to move documents to a root document (#2775)', () => {
-    DocumentPage.visit();
-    // try to move by dialogue
-    Tree.openNode(['Ordner_Ebene_2A']);
-    CopyCutUtils.move();
-    //expect error
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-
-    // todo: try to move via drag and drop
-    // problem: item can not simply be dragged from origin to destination, because destination only becomes visible after starting to drag
   });
 
   it('meta data admin should only be able to create documents or folders as children of folders he is entitled to', () => {
@@ -677,7 +705,7 @@ describe('Catalogue admin', () => {
   it('it should not be possible to add a piece of data twice to a group (#3461)', () => {
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup('test_gruppe_5');
     // grant authorization for an address
     AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
     cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_j, test_j');
