@@ -18,6 +18,7 @@
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.2.0",
+    "smtp-tester": "^1.2.0",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
