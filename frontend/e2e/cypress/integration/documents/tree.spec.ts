@@ -545,5 +545,15 @@ describe('Tree', () => {
       cy.get('mat-tree').contains(title).should('not.exist');
       cy.get('mat-tree').contains(title2).should('not.exist');
     });
+
+    it('should not be able to move a tree into a node that is part of its own hierarchy', () => {
+      const title = 'Ordner_Ebene_2A';
+      const title2 = 'Ordner_Ebene_3A';
+
+      Tree.openNode(['Neue Testdokumente', title]);
+      CopyCutUtils.move(['Neue Testdokumente', title, title2]);
+      // expect the error
+      cy.contains('[data-cy="error-dialog-content"]', 'Cannot copy');
+    });
   });
 });
