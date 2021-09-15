@@ -24,7 +24,7 @@ import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ShortTreeNode } from "./tree.types";
-import { ConfigService } from "src/app/services/config/config.service";
+import { ConfigService } from "../../../services/config/config.service";
 
 export enum TreeActionType {
   ADD,
