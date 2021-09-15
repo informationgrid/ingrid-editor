@@ -40,6 +40,7 @@ import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { ConfigService } from "../../../services/config/config.service";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -60,6 +61,7 @@ function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
 describe("TreeComponent", () => {
   let spectator: Spectator<TreeComponent>;
   let db: SpyObject<DynamicDatabase>;
+  let config: SpyObject<ConfigService>;
   const createHost = createComponentFactory({
     component: TreeComponent,
     imports: [
@@ -76,7 +78,7 @@ describe("TreeComponent", () => {
     ],
     declarations: [TreeHeaderComponent, EmptyNavigationComponent],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
-    componentMocks: [DynamicDatabase],
+    componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
   });
 
@@ -89,6 +91,8 @@ describe("TreeComponent", () => {
     db.mapDocumentsToTreeNodes.andCallFake(mapDocumentsToTreeNodes);
     // by default return no children when requested (can be overridden)
     db.getChildren.and.returnValue(of([]));
+    config = spectator.inject(ConfigService, true);
+    config.isAdmin.and.returnValue(true);
   });
 
   it("should create component", () => {
