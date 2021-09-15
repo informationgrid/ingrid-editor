@@ -21,10 +21,13 @@ export class ChangeEmailDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data
   ) {}
 
+  oldMailAddress: string;
+
   ngOnInit(): void {
     this.form.setValue({
       email: this.data?.email ?? "",
     });
+    this.oldMailAddress = this.data?.email ?? "";
   }
 
   changeMailAddress() {

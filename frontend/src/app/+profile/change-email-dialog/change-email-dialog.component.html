@@ -10,7 +10,11 @@
 </div>
 <mat-dialog-content [formGroup]="form">
     <mat-form-field style="width: 100%">
-        <mat-label>E-Mail Adresse</mat-label>
+        <mat-label>Alte E-Mail Adresse</mat-label>
+        <input matInput disabled [value]="this.oldMailAddress" />
+    </mat-form-field>
+    <mat-form-field style="width: 100%">
+        <mat-label>Neue E-Mail Adresse</mat-label>
         <input matInput formControlName="email" />
     </mat-form-field>
 </mat-dialog-content>
