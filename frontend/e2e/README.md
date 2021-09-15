@@ -52,12 +52,26 @@ npm run cypress:run -- --record --spec "cypress/integration/documents/type/mclou
 - For each topic write a spec-file.
 - Multiple describe blocks can be defined within a spec-file for better organization.
 
+
+# Email - Test
+
+Email tests are required to assess the email sending functionality of the software.
+A smtp-server is created through the 'smtp-tester' package to accept connections to a given port, receives mails and else.
+The server is configured in the `/plugins/index.js` file and initiated at the given port.
+By means of cypress tasks the last email can be fetched and the inbox cleaned.
+
+The "cromeWebSecurity" options in the `cypress.json` is set to false, since in the same test it is necessary to log-out and log-in again (e.g. to test an email sent password). Otherwise, a cross-origin error is fired.
+
+To test locally the email receiving functions set the spring.mail.host address (inside `\conf\application-postgresql.properties` of the container) to the ip-address of your own machine (on Windows run `ipconfig` from the console).
+In case you wish to change the server's port, act similarly and set the same port number inside of the /plugins/index.js file.
+
+
 # Monkey Testing - gremlins.js
 
 Monkey Testing is used to check the robustness of web applications by unleashing a horde of undisciplined gremlins.
 Gremlins.js is a monkey testing libary written in Javascript for Node.js and the browser.
 
-_At the moment we only have dumb monkeys, which try to crash our application with random inputs.
+At the moment we only have dumb monkeys, which try to crash our application with random inputs.
 Also their attacks are not repeatable, but in the future they will (it's possible).
 Finally we will implement smart monkeys, which have basic informations about our application and then they will attack specific._
 
