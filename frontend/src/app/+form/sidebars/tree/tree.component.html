@@ -2,7 +2,7 @@
     <div class="header-wrapper">
         <ige-tree-header
             *ngIf="showHeader"
-            [class.invisible]="isDragging"
+            [class.invisible]="isDragging && isAdmin"
             (reload)="reloadTree(true).subscribe()"
             [isAddress]="forAddresses"
             [showOptions]="showHeaderOptions"
@@ -20,7 +20,7 @@
         ></ige-tree-header>
 
         <div
-            *ngIf="isDragging"
+            *ngIf="isDragging && isAdmin"
             class="drop-root"
             [class.hover]="dragManager.dragNodeExpandOverNode === null"
             (dragover)="dragManager.handleDragOver($event, null)"

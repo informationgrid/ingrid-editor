@@ -49,6 +49,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       const currentId = this.formStateService.getForm().value._id;
       return this.dialog
         .open(ConfirmDialogComponent, {
+          hasBackdrop: true,
           disableClose: true,
           data: {
             title: "Änderungen speichern?",

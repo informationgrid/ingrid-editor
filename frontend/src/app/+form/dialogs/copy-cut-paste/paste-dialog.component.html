@@ -9,6 +9,7 @@
 
 <mat-dialog-content class="hide-tab-header create-dlg-content">
     <ige-destination-selection
+        [disableRoot]="!isAdmin"
         [forAddress]="data.forAddress"
         (choice)="handleSelected($event)"
     ></ige-destination-selection>

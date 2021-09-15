@@ -49,6 +49,7 @@ export class FormUtils {
     return dialog
       .open(ConfirmDialogComponent, {
         disableClose: true,
+        hasBackdrop: true,
         data: (<ConfirmDialogData>{
           title: "Änderungen speichern?",
           message:

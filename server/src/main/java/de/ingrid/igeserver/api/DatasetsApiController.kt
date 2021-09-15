@@ -92,6 +92,10 @@ class DatasetsApiController @Autowired constructor(
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
+        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal as Authentication, it ?: "").canRead }.all { it }
+        if(!(destCanWrite && sourceCanRead))throw ForbiddenException.withAccessRights("No access to referenced datasets")
+
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val results = ids.map { id -> handleCopy(catalogId, id, options) }
@@ -103,6 +107,9 @@ class DatasetsApiController @Autowired constructor(
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<Void> {
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
+        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal as Authentication, it ?: "").canWrite }.all { it }
+        if(!(destCanWrite && sourceCanWrite))throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         ids.forEach { id -> handleMove(catalogId, id, options) }

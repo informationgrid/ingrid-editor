@@ -24,6 +24,7 @@ import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ShortTreeNode } from "./tree.types";
+import { ConfigService } from "src/app/services/config/config.service";
 
 export enum TreeActionType {
   ADD,
@@ -74,6 +75,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   dragManager: DragNDropUtils;
   isDragging = false;
+  isAdmin = this.configService.isAdmin();
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -85,6 +87,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   constructor(
     private database: DynamicDatabase,
     public treeService: TreeService,
+    public configService: ConfigService,
     private cdr: ChangeDetectorRef
   ) {}
 
