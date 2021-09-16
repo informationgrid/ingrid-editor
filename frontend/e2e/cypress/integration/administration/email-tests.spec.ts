@@ -9,11 +9,7 @@ describe('Email-tests', () => {
 
     cy.task('resetEmails')
   });
-
-  afterEach(() => {
-    cy.kcLogout();
-  });
-
+  
   it('should register a user, get her password per email and log in', () => {
     let userLogIn = 'email-test'
     let userEmail = 'email-test@wemove.com'
