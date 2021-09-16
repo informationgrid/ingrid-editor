@@ -11,6 +11,7 @@ import { FacetQuery, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
 import { BackendStoreQuery } from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
+import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
 
 export interface QuickFilter {
   id: string;
@@ -97,13 +98,13 @@ export class ResearchService {
 
   saveQuery(
     state: QueryState,
-    dialogOptions: any,
+    dialogOptions: SaveQueryDialogResponse,
     asSql: boolean
   ): Observable<SqlQuery | FacetQuery> {
     const preparedQuery = this.prepareQuery(state, dialogOptions, asSql);
     return this.http
       .post<BackendStoreQuery>(
-        `${this.configuration.backendUrl}search`,
+        `${this.configuration.backendUrl}search?forCatalog=${dialogOptions.forCatalog}`,
         this.convertToBackendQuery(preparedQuery)
       )
       .pipe(
@@ -210,7 +211,7 @@ export class ResearchService {
 
   private prepareQuery(
     state: QueryState,
-    response: any,
+    response: SaveQueryDialogResponse,
     asSql: boolean
   ): SqlQuery | FacetQuery {
     let base = {

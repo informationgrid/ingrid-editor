@@ -23,9 +23,11 @@ class QueryService @Autowired constructor(
 
     }
 
-    fun saveQueryForUser(userId: String, catalogId: String, data: Query): Query {
+    fun saveQuery(userId: String?, catalogId: String, data: Query): Query {
 
-        data.user = user.findByUserId(userId)
+        if (userId != null) {
+            data.user = user.findByUserId(userId)
+        }
         data.catalog = catalog.findByIdentifier(catalogId)
         data.modified = dateService.now()
 

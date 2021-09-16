@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { SaveQueryDialogResponse } from "./save-query-dialog.response";
 
 @Component({
   selector: "ige-save-query-dialog",
@@ -6,7 +7,9 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./save-query-dialog.component.scss"],
 })
 export class SaveQueryDialogComponent implements OnInit {
-  model: any = {};
+  model: SaveQueryDialogResponse = {
+    forCatalog: false,
+  };
 
   constructor() {}
 

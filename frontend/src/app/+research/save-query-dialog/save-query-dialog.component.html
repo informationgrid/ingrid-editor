@@ -19,6 +19,9 @@
         <mat-label>Beschreibung</mat-label>
         <input matInput [(ngModel)]="model.description" autocomplete="off" />
     </mat-form-field>
+    <mat-checkbox [(ngModel)]="model.forCatalog"
+        >Für alle sichtbar
+    </mat-checkbox>
 </mat-dialog-content>
 
 <mat-dialog-actions>

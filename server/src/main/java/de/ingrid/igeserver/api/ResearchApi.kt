@@ -26,26 +26,35 @@ interface ResearchApi {
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun save(principal: Principal,
-             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query): ResponseEntity<Query>
+    fun save(
+        principal: Principal,
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query,
+        @Parameter(description = "Should this query be seen by all users of the catalog") @RequestParam forCatalog: Boolean = false
+    ): ResponseEntity<Query>
 
     @Operation
     @DeleteMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun delete(principal: Principal,
-    @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int): ResponseEntity<Void>
+    fun delete(
+        principal: Principal,
+        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int
+    ): ResponseEntity<Void>
 
     @Operation
     @PostMapping(value = ["/query"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun search(principal: Principal,
-               @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery): ResponseEntity<ResearchResponse>
-    
+    fun search(
+        principal: Principal,
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery
+    ): ResponseEntity<ResearchResponse>
+
     @Operation
     @PostMapping(value = ["/querySql"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun searchSql(principal: Principal,
-               @Parameter(description = "the sql query") @RequestBody sqlQuery: String): ResponseEntity<ResearchResponse>
+    fun searchSql(
+        principal: Principal,
+        @Parameter(description = "the sql query") @RequestBody sqlQuery: String
+    ): ResponseEntity<ResearchResponse>
 
     @Operation
     @GetMapping(value = ["/quickFilter"], produces = [MediaType.APPLICATION_JSON_VALUE])
