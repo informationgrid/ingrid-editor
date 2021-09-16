@@ -33,7 +33,7 @@ export class FacetsComponent implements AfterViewInit {
     this._model = JSON.parse(JSON.stringify(value));
   }
 
-  _parameter: any;
+  _parameter: any = {};
   @Input() set parameter(value: any) {
     this._parameter = value;
     if (this.isInitialized) {

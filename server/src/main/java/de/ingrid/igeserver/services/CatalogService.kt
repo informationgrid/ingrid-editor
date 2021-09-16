@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.model.AclService
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
@@ -92,10 +91,20 @@ class CatalogService @Autowired constructor(
         return this.catalogProfiles
             .find { it.identifier == id }!!
     }
+    
+    fun initializeCatalog(catalogId: String, type: String) {
+        initializeCodelists(catalogId, type)
+        initializeQueries(catalogId, type)
+    }
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
         this.getCatalogProfile(type)
             .initCatalogCodelists(catalogId, codelistId)
+    }
+
+    fun initializeQueries(catalogId: String, type: String) {
+        this.getCatalogProfile(type)
+            .initCatalogQueries(catalogId)
     }
 
     fun getCatalogs(): List<Catalog> {

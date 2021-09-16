@@ -18,6 +18,9 @@ interface CatalogProfile {
     
     @JsonIgnore
     fun initCatalogCodelists(catalogId: String, codelistId: String? = null)
+        
+    @JsonIgnore
+    fun initCatalogQueries(catalogId: String)
     
     @JsonIgnore
     fun getElasticsearchMapping(format: String): String

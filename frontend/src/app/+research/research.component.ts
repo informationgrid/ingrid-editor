@@ -93,7 +93,7 @@ export class ResearchComponent implements OnInit {
         .search(
           state.ui.search.query,
           model,
-          state.ui.search.facets.fieldsWithParameters
+          state.ui.search.facets.fieldsWithParameters ?? {}
         )
         .subscribe((result) => this.updateHits(result));
     });
@@ -127,7 +127,7 @@ export class ResearchComponent implements OnInit {
           query: (<FacetQuery>entity).term,
           facets: {
             model: { ...this.getFacetModel(), ...(<FacetQuery>entity).model },
-            fieldsWithParameters: (<FacetQuery>entity).parameter,
+            fieldsWithParameters: (<FacetQuery>entity).parameter ?? {},
           },
         },
       });

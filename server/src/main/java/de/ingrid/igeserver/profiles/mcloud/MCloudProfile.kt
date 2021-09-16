@@ -2,21 +2,25 @@ package de.ingrid.igeserver.profiles.mcloud
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.DocMCloud
 import de.ingrid.igeserver.research.quickfilter.DocTest
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
+import de.ingrid.igeserver.services.DateService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -32,6 +36,14 @@ class MCloudProfile : CatalogProfile {
     @Autowired
     @JsonIgnore
     lateinit var catalogRepo: CatalogRepository
+
+    @Autowired
+    @JsonIgnore
+    lateinit var query: QueryRepository
+
+    @Autowired
+    @JsonIgnore
+    lateinit var dateService: DateService
 
     override val identifier: String = "mcloud"
     override val title: String = "mCLOUD Katalog"
@@ -128,6 +140,26 @@ class MCloudProfile : CatalogProfile {
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
+    }
+
+    override fun initCatalogQueries(catalogId: String) {
+        val querymCloud = Query().apply {
+            this.catalog = catalogRepo.findByIdentifier(catalogId)
+            category = "facet"
+            name = "Alle mCloud-Dokumente"
+            description = "Zeigt alle Dokumente vom Typ mCloud"
+            data = jacksonObjectMapper().createObjectNode().apply {
+                val model = jacksonObjectMapper().createObjectNode().apply {
+                    put("type", "selectDocuments")
+                    set<ObjectNode>("docType", jacksonObjectMapper().createObjectNode().apply {
+                        put("selectDocMCloud", true)
+                    })
+                }
+                set<ObjectNode>("model", model)
+            }
+            modified = dateService.now()
+        }
+        query.save(querymCloud)
     }
 
     override fun getElasticsearchMapping(format: String): String {
