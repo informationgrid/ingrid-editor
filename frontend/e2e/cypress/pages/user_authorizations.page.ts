@@ -67,4 +67,14 @@ export class UserAuthorizationPage extends BasePage {
         cy.get('[mattooltip="Nur Unterordner"]').click();
       });
   }
+
+  static ProfileElements: Record<string, string> = {
+    Title: '.page-title.left-side',
+    Role: 'div.side-item:nth-child(2)',
+    Groups: 'div.side-item:nth-child(1)',
+    FirstName: 'div.info-row:nth-child(2) > div:nth-child(2)',
+    LastName: 'div.info-row:nth-child(3) > div:nth-child(2)',
+    Email: 'div.info-row:nth-child(5) > div:nth-child(2)',
+    Password: 'div.info-row:nth-child(7) > div:nth-child(2)'
+  };
 }

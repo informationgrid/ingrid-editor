@@ -44,6 +44,12 @@ export class AdminUserPage extends BasePage {
     cy.wait('@failingAttempt').its('response.statusCode').should('eq', 409);
   }
 
+  static attemptIllegitimateMove() {
+    cy.intercept('POST', '**/move').as('failingAttempt');
+    cy.get('button').contains('Verschieben').click();
+    cy.wait('@failingAttempt').its('response.statusCode').should('eq', 403);
+  }
+
   static toolbarSaveUser() {
     cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait(100);

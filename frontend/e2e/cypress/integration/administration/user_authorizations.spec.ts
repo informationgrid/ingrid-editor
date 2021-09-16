@@ -222,25 +222,39 @@ describe('author with groups', () => {
     // change Folder
     Tree.openNode(['Ordner 2. Ebene', 'Ordner_3.Ebene_A'], true);
     cy.get('[data-cy=create-applyLocation]').click();
+    DocumentPage.CreateDialog.execute();
   });
 
-  it('author with groups should be able to create new data documents within the structure of his assigned documents', () => {
+  xit('author with groups should be able to create new data documents within the structure of his assigned documents', () => {
     // create new document
     DocumentPage.visit();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     // make sure that Anlegen is disabled
     cy.get('[data-cy=create-action]').should('be.disabled');
-    cy.get('[data-cy=create-title]').type('Author_Doc');
+    cy.get('[data-cy=create-title]').type('Some_Newly_Created_Doc');
     // make sure that forbidden folder can not be chosen
     cy.get('[data-cy="create-changeLocation"]').click();
     cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');
     // change Folder
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C'], true);
     cy.get('[data-cy=create-applyLocation]').click();
+
+    // search for the newly created document
+    ResearchPage.visit();
+    ResearchPage.search('Some_Newly_Created_Doc');
+    //ResearchPage.setDocumentTypeSearchFilter('Adressen');
+    ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
-  xit('Author with groups can see his own user profile', () => {
+  it('Author with groups can see his own user profile', () => {
+    DashboardPage.visit();
     cy.get('[data-cy="header-profile-button"]').click();
+    cy.contains('[role="menuitem"]', 'Profil verwalten').click();
+    cy.get(UserAuthorizationPage.ProfileElements.Title).should('have.text', 'Autor_mitGruppen');
+    cy.get(UserAuthorizationPage.ProfileElements.Groups).should('have.text', ' test_gruppe_3 ');
+    cy.get(UserAuthorizationPage.ProfileElements.FirstName).should('have.text', 'Autor_mit');
+    cy.get(UserAuthorizationPage.ProfileElements.LastName).should('have.text', 'Gruppen');
+    cy.get(UserAuthorizationPage.ProfileElements.Email).should('have.text', 'autormitgruppen@random.com');
   });
 });
 
@@ -457,6 +471,104 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.changeAccessRightFromReadToWrite('Ordner_Ebene_2C', 'Daten');
   });
 
+  it('meta data admin with groups should not be able to move a data document to a read-only folder', () => {
+    const readOnlyFolder = 'Ordner_Ebene_2C';
+    const folderToMove = 'Ordner_Ebene_3A';
+    const documentToMove = 'Datum_Ebene_3_3';
+
+    // set access to read-only
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('test_gruppe_1');
+    cy.get('.user-title').contains('test_gruppe_1');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+
+    // try to move a folder to the read-only folder
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', folderToMove]);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_COPYTREE"]').click();
+    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+
+    // try to move this folder via drag and drop to read-only folder
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(folderToMove, readOnlyFolder);
+    AdminUserPage.attemptIllegitimateMove();
+    // expect error
+    cy.get('error-dialog').contains('keine Berechtigung');
+    UserAuthorizationPage.closeErrorBox();
+
+    // try to move a document to the read-only folder
+    Tree.openNode(['Ordner_Ebene_2A', documentToMove]);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_COPY"]').click();
+    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+
+    // try to move this document via drag and drop to read-only folder
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(documentToMove, readOnlyFolder);
+    AdminUserPage.attemptIllegitimateMove();
+    // expect error
+    cy.get('error-dialog').contains('keine Berechtigung');
+    UserAuthorizationPage.closeErrorBox();
+
+    // set access right back to 'write'
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('test_gruppe_1');
+    cy.get('.user-title').contains('test_gruppe_1');
+    UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+  });
+
+  it('meta data admin with groups should not be able to move an address document to a read-only folder', () => {
+    const readOnlyFolder = 'Ordner_3.Ebene_C';
+    const folderToMove = 'Ordner_2.Ebene_C';
+    const documentToMove = 'Aquitanien, Adresse';
+
+    // set access to read-only
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    cy.get('.user-title').contains('gruppe_mit_ortsrechten');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
+
+    // try to move a folder to the read-only folder
+    AddressPage.visit();
+    Tree.openNode([folderToMove]);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_COPYTREE"]').click();
+    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+
+    // try to move this folder via drag and drop to read-only folder
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(folderToMove, readOnlyFolder);
+    AdminUserPage.attemptIllegitimateMove();
+    // expect error
+    cy.get('error-dialog').contains('keine Berechtigung');
+    UserAuthorizationPage.closeErrorBox();
+
+    // try to move a document to the read-only folder
+    Tree.openNode([documentToMove]);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_COPY"]').click();
+    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+
+    // try to move document via drag and drop to read-only folder
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(documentToMove, readOnlyFolder);
+    AdminUserPage.attemptIllegitimateMove();
+    // expect error
+    cy.get('error-dialog').contains('keine Berechtigung');
+    UserAuthorizationPage.closeErrorBox();
+
+    // set access right back to 'write'
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    cy.get('.user-title').contains('gruppe_mit_ortsrechten');
+    UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
+  });
+
   it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -509,20 +621,27 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Save']).should('be.disabled');
   });
 
-  xit('meta data admin should not be able to move documents to a root document (#2775)', () => {
+  it('meta data admin should not be able to move documents to a root document (#2775)', () => {
+    // I. Daten
+    const rootFolder_1 = 'Daten';
     DocumentPage.visit();
-    // try to move by dialogue
+    // try to move
     Tree.openNode(['Ordner_Ebene_2A']);
-    CopyCutUtils.move();
-    //expect error
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_CUT"]').click();
+    cy.contains('mat-dialog-content mat-tree-node', rootFolder_1).should('not.exist');
 
-    // todo: try to move via drag and drop
-    // problem: item can not simply be dragged from origin to destination, because destination only becomes visible after starting to drag
+    // II. Adressen
+    const rootFolder_2 = 'Daten';
+    AddressPage.visit();
+    // try to move
+    Tree.openNode(['Ordner_2.Ebene_C']);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get('[data-cy="copyMenu_CUT"]').click();
+    cy.contains('mat-dialog-content mat-tree-node', rootFolder_2).should('not.exist');
   });
 
-  // kann leider noch verschoben werden
-  xit('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
+  it('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
     // set access right to "nur Unterordner"
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -542,6 +661,7 @@ describe('Meta data administrator with a group', () => {
 
     // try to move via drag and drop
     CopyCutUtils.simpleDragdropWithoutAutoExpand('Ordner_Ebene_2C', 'Ordner_Ebene_2A');
+    AdminUserPage.attemptIllegitimateMove();
     // expect error
     cy.get('error-dialog').contains('keine Berechtigung');
   });

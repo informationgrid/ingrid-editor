@@ -71,7 +71,7 @@ export class ResearchPage {
   //check first radio button, only if a list with suggestions is offered
   static chooseFirstLocationSuggestionByRadioButton(location: string): void {
     cy.intercept('/search/' + location + '*').as('waitForSuggestions');
-    cy.wait('@waitForSuggestions', { timeout: 8000 });
+    cy.wait('@waitForSuggestions', { timeout: 10000 });
     cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
   }
 

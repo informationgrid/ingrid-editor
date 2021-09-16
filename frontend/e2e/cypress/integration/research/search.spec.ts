@@ -133,7 +133,7 @@ describe('Research Page', () => {
     ResearchPage.getCSVFile();
     cy.wait('@csvRequest');
     const downloadsFolder = Cypress.config('downloadsFolder');
-    cy.readFile(downloadsFolder + '/research.csv').should('exist');
+    cy.readFile(downloadsFolder + '/research.csv', { timeout: 10000 }).should('exist');
   });
 
   //SQL-Suche
