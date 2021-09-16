@@ -14,7 +14,8 @@
         <div class="side-title">Gruppen</div>
         <div>
             <div *ngFor="let group of userInfo.groups" class="side-item">
-                <mat-icon svgIcon="group"></mat-icon>{{ group }}
+                <mat-icon svgIcon="group"></mat-icon>
+                {{ group }}
             </div>
             <div *ngIf="!userInfo.groups.length" class="side-item">
                 - Keine -
@@ -38,6 +39,7 @@
             <div>{{ userInfo.lastName }}</div>
         </div>
         <h3>Kontakt</h3>
+
         <div class="info-row" fxLayout="row">
             <div>E-Mail Adresse</div>
             <div>{{ userInfo.email }}</div>
@@ -49,6 +51,28 @@
                 Ändern
             </button>
         </div>
+
+        <h3>Kontakt</h3>
+
+        <div class="info-row" fxLayout="row">
+            <div>E-Mail Adresse</div>
+            <ige-emailform
+                *ngIf="editMode"
+                [email]="userInfo.email"
+                (onClose)="editMode = false; this.userInfo.email = $event"
+            >
+            </ige-emailform>
+            <div *ngIf="!editMode">{{ userInfo.email }}</div>
+            <button
+                *ngIf="!editMode"
+                mat-button
+                color="primary"
+                (click)="editMode = true"
+            >
+                Ändern
+            </button>
+        </div>
+
         <h3>Sicherheit</h3>
         <div class="info-row" fxLayout="row">
             <div>Passwort</div>

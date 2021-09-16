@@ -9,12 +9,14 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { ChangeNameDialogComponent } from "./change-name-dialog/change-name-dialog.component";
+import { EmailformComponent } from "../emailform/emailform.component";
 
 @NgModule({
   declarations: [
     ProfileComponent,
     ChangeEmailDialogComponent,
     ChangeNameDialogComponent,
+    EmailformComponent,
   ],
   imports: [
     MatSnackBarModule,

@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
 
   userInfo$ = this.configService.$userInfo;
 
+  editMode = false;
   getRoleLabel(role: string): string {
     return (
       this.userService.availableRoles.find((r) => r.value == role)?.label ??
