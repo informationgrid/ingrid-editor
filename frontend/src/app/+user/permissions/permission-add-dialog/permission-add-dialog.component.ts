@@ -1,11 +1,20 @@
-import { Component, forwardRef, Inject, Input, OnInit } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { Subject } from "rxjs";
-import { MatListOption, MatSelectionListChange } from "@angular/material/list";
+import { Component, Inject, Input, OnInit } from "@angular/core";
+import { Observable, Subject } from "rxjs";
+import { MatListOption } from "@angular/material/list";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from "@angular/material/dialog";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { map } from "rxjs/operators";
+import { TreePermission } from "../../user";
 
 @Component({
   selector: "permission-add-dialog",
@@ -29,53 +38,84 @@ export class PermissionAddDialogComponent implements OnInit {
     !this.val.some((v) => v.uuid === node._id) && node.hasChildren;
 
   set value(val) {
-    // TODO: fetch titles from tree nodes
     this.val = val ?? [];
-    if (this.onChange) {
-      this.onChange(val);
-    }
-    if (this.onTouch) {
-      this.onTouch(val);
-    }
   }
 
   constructor(
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<PermissionAddDialogComponent>
-  ) {
-    this.value = this.data?.value ?? [];
-  }
+    public dialogRef: MatDialogRef<PermissionAddDialogComponent>,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.value = this.data?.value ?? [];
   }
 
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouch = fn;
-  }
-
-  writeValue(value: any): void {
-    this.value = value;
-  }
-
   addPermission(option: string) {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const entity = query.getEntity(this.selection[0]);
-    this.dialogRef.close({
-      uuid: this.selection[0],
-      title: entity.title,
-      permission: option,
+    const uuidToAdd = this.selection[0];
+
+    // check if permission is an ancestor of an existing permission
+    let descendants = [];
+    this.val.forEach((permission) => {
+      this.data?.breadcrumb[permission.uuid]?.forEach((crumb) => {
+        if (uuidToAdd === crumb.id) descendants.push(permission);
+      });
     });
+
+    if (descendants.length) {
+      this.openConfirmPermissionUpdateDialog(descendants).subscribe(
+        (confirmed) => (confirmed ? this.addPermission(option) : undefined)
+      );
+    } else {
+      this.dialogRef.close([
+        ...this.val,
+        {
+          uuid: uuidToAdd,
+          title: entity.title,
+          permission: option,
+        },
+      ]);
+    }
   }
 
-  jumpToTreeNode($event: MatSelectionListChange) {
-    this.activeNodeSetter.next($event.options[0].value);
+  openConfirmPermissionUpdateDialog(
+    descendants: TreePermission[]
+  ): Observable<boolean> {
+    return this.dialog
+      .open(ConfirmDialogComponent, {
+        data: (<ConfirmDialogData>{
+          title: "Rechte ändern",
+          message: "Achtung! Überschreibt folgende Unterrechte:",
+          list: descendants.map((d) => d.title),
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Rechte ändern",
+              id: "confirm",
+              alignRight: true,
+              emphasize: true,
+            },
+          ],
+        }) as ConfirmDialogData,
+        hasBackdrop: true,
+      })
+      .afterClosed()
+      .pipe(
+        map((response) => {
+          if (response === "confirm") {
+            this.value = this.val.filter(
+              (p) => !descendants.map((d) => d.uuid).includes(p.uuid)
+            );
+            return true;
+          } else {
+            return false;
+          }
+        })
+      );
   }
 
   shouldDisableAddButton() {

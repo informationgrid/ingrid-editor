@@ -8,8 +8,6 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { DocumentService } from "../../../services/document/document.service";
 import { map } from "rxjs/operators";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
@@ -50,12 +48,16 @@ export class PermissionTableComponent implements ControlValueAccessor {
       .open(PermissionAddDialogComponent, {
         minWidth: 500,
         hasBackdrop: true,
-        data: { forAddress: this.forAddress, value: this.val },
+        data: {
+          forAddress: this.forAddress,
+          value: this.val,
+          breadcrumb: this.breadcrumb,
+        },
       })
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.value = [...this.val, data];
+          this.value = data;
         }
       });
   }
