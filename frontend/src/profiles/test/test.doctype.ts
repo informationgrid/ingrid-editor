@@ -73,8 +73,35 @@ export class TestDoctype extends BaseDoctype {
               externalLabel: "Selectbox",
               placeholder: "Bitte wählen",
               appearance: "outline",
-              options: this.getCodelistForSelect(8000),
+              options: this.getCodelistForSelect(8000, "select"),
               required: true,
+            },
+          },
+          {
+            key: "selectWithEmpty",
+            type: "select",
+            wrappers: ["panel", "form-field"],
+            templateOptions: {
+              externalLabel: "Selectbox mit leerer Option",
+              placeholder: "Bitte wählen",
+              appearance: "outline",
+              options: this.getCodelistForSelectWithEmtpyOption(
+                8000,
+                "selectWithEmpty"
+              ),
+              required: true,
+            },
+          },
+          {
+            key: "autocomplete",
+            type: "autocomplete",
+            wrappers: ["panel"],
+            templateOptions: {
+              externalLabel: "Combobox/Autocomplete",
+              placeholder: "Bitte wählen",
+              appearance: "outline",
+              required: true,
+              options: this.getCodelistForSelect(6500, "autocomplete"),
             },
           },
           {
@@ -113,7 +140,7 @@ export class TestDoctype extends BaseDoctype {
               externalLabel: "Chips (Dialog)",
               required: true,
               useDialog: true,
-              options: this.getCodelistForSelect(100),
+              options: this.getCodelistForSelect(100, "multiChips"),
               codelistId: 100,
             },
           },
@@ -215,7 +242,7 @@ export class TestDoctype extends BaseDoctype {
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Codelist)",
               placeholder: "Raumbezugscode eingeben...",
-              options: this.getCodelistForSelect(100),
+              options: this.getCodelistForSelect(100, "repeatListCodelist"),
               codelistId: 100,
             },
           },

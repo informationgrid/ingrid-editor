@@ -110,7 +110,7 @@ export class McloudDoctype extends BaseDoctype {
               appearance: "outline",
               required: true,
               useDialog: true,
-              options: this.getCodelistForSelect(20000),
+              options: this.getCodelistForSelect(20000, "mCloudCategories"),
               codelistId: 20000,
             },
           },
@@ -124,7 +124,7 @@ export class McloudDoctype extends BaseDoctype {
               appearance: "outline",
               required: true,
               useDialog: true,
-              options: this.getCodelistForSelect(20001),
+              options: this.getCodelistForSelect(20001, "openDataCategories"),
               codelistId: 20001,
             },
           },
@@ -195,7 +195,7 @@ export class McloudDoctype extends BaseDoctype {
               placeholder: "Bitte wählen",
               appearance: "outline",
               required: true,
-              options: this.getCodelistForSelect(6500),
+              options: this.getCodelistForSelect(6500, "license"),
             },
           },
           {
@@ -293,7 +293,7 @@ export class McloudDoctype extends BaseDoctype {
                     label: "Typ",
                     appearance: "outline",
                     required: true,
-                    options: this.getCodelistForSelect(502).pipe(
+                    options: this.getCodelistForSelect(502, "text").pipe(
                       map((items) => items.filter((it) => it.value !== "2"))
                     ),
                   },
@@ -358,7 +358,11 @@ export class McloudDoctype extends BaseDoctype {
             templateOptions: {
               externalLabel: "Periodizität",
               appearance: "outline",
-              options: this.getCodelistForSelect(518),
+              placeholder: "Wählen...",
+              options: this.getCodelistForSelectWithEmtpyOption(
+                518,
+                "periodicity"
+              ),
             },
           },
         ],

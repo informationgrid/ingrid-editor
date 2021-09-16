@@ -42,10 +42,6 @@ export class CodelistService {
       .sort((a, b) => a.label?.localeCompare(b.label));
   };
 
-  /*static getLocalisedValue(locals: any) {
-    return locals.de || locals.name;
-  }*/
-
   constructor(
     private store: CodelistStore,
     private dataService: CodelistDataService

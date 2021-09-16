@@ -5,7 +5,7 @@ import {
   CodelistService,
   SelectOption,
 } from "../app/services/codelist/codelist.service";
-import { filter, map, tap } from "rxjs/operators";
+import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 
 export abstract class BaseDoctype implements Doctype {
@@ -51,6 +51,7 @@ export abstract class BaseDoctype implements Doctype {
   hasOptionalFields: boolean;
 
   fieldsMap: SelectOption[] = [];
+  fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
 
   constructor(
     private codelistService: CodelistService,
@@ -64,14 +65,20 @@ export abstract class BaseDoctype implements Doctype {
   }
 
   getCodelistForSelectWithEmtpyOption(
-    codelistId: number
+    codelistId: number,
+    field: string
   ): Observable<SelectOption[]> {
-    return this.getCodelistForSelect(codelistId).pipe(
+    return this.getCodelistForSelect(codelistId, field).pipe(
       map((cl) => [{ label: "", value: undefined }].concat(cl))
     );
   }
 
-  getCodelistForSelect(codelistId: number): Observable<SelectOption[]> {
+  getCodelistForSelect(
+    codelistId: number,
+    field: string
+  ): Observable<SelectOption[]> {
+    if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
+
     this.codelistService.byId(codelistId + "");
 
     return merge(
@@ -81,17 +88,15 @@ export abstract class BaseDoctype implements Doctype {
         .pipe(tap(console.log))
     ).pipe(
       filter((codelist) => codelist),
-      map(CodelistService.mapToSelectSorted)
+      map((codelist) => CodelistService.mapToSelectSorted(codelist))
     );
-    /*return this.codelistQuery.selectEntity(codelistId).pipe(
-      map(CodelistService.mapToSelectSorted)
-    );*/
   }
 
   init(help: string[]) {
     this.helpIds = help;
     this.fields.push(...this.documentFields());
     this.hasOptionalFields = this.hasOptionals(this.fields);
+    this.addCodelistDefaultValues(this.fields);
     this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
     console.log("Profile initialized");
@@ -139,6 +144,36 @@ export abstract class BaseDoctype implements Doctype {
             field.templateOptions?.externalLabel ||
             field.templateOptions?.label,
         });
+      }
+    });
+  }
+
+  private addCodelistDefaultValues(fields: FormlyFieldConfig[]) {
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.addCodelistDefaultValues(field.fieldGroup);
+      }
+      let codelistField = this.fieldWithCodelistMap.get(field.key as string);
+      if (codelistField !== undefined) {
+        this.codelistQuery
+          .selectEntity(codelistField)
+          .pipe(
+            filter((codelist) => codelist !== undefined),
+            take(1),
+            filter((codelist) => codelist.default && codelist.default != "-1"),
+            tap((codelist) => {
+              console.log(
+                `Setting default codelist value for: ${field.key} with: ${codelist.default}`
+              );
+              field.defaultValue =
+                field.type === "select"
+                  ? codelist.default
+                  : codelist.entries.find(
+                      (entry) => entry.id === codelist.default
+                    ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
+            })
+          )
+          .subscribe();
       }
     });
   }

@@ -97,7 +97,7 @@ export class AddressDoctype extends BaseDoctype {
                       hideDeleteButton: true,
                       label: "Anrede",
                       appearance: "outline",
-                      options: this.getCodelistForSelect(4300),
+                      options: this.getCodelistForSelect(4300, "salutation"),
                     },
                   },
                   {
@@ -107,7 +107,10 @@ export class AddressDoctype extends BaseDoctype {
                     templateOptions: {
                       label: "Titel",
                       appearance: "outline",
-                      options: this.getCodelistForSelectWithEmtpyOption(4305),
+                      options: this.getCodelistForSelectWithEmtpyOption(
+                        4305,
+                        "academic-title"
+                      ),
                     },
                   },
                 ],
@@ -180,7 +183,7 @@ export class AddressDoctype extends BaseDoctype {
                     label: "Art",
                     appearance: "outline",
                     required: true,
-                    options: this.getCodelistForSelect(4430).pipe(
+                    options: this.getCodelistForSelect(4430, "type").pipe(
                       map((items) =>
                         items.filter(
                           (item) => item.value !== "5" && item.value !== "6"
@@ -280,7 +283,10 @@ export class AddressDoctype extends BaseDoctype {
                       label: "Verwaltungsgebiet",
                       appearance: "outline",
                       placeholder: "Bitte wählen",
-                      options: this.getCodelistForSelectWithEmtpyOption(110),
+                      options: this.getCodelistForSelectWithEmtpyOption(
+                        110,
+                        "administrativeArea"
+                      ),
                     },
                   },
                   {
@@ -291,7 +297,10 @@ export class AddressDoctype extends BaseDoctype {
                       label: "Land",
                       appearance: "outline",
                       placeholder: "Bitte wählen",
-                      options: this.getCodelistForSelectWithEmtpyOption(6200),
+                      options: this.getCodelistForSelectWithEmtpyOption(
+                        6200,
+                        "country"
+                      ),
                     },
                   },
                 ],
