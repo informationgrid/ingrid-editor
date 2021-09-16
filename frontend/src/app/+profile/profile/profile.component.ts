@@ -9,6 +9,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ChangeEmailDialogComponent } from "../change-email-dialog/change-email-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ChangeNameDialogComponent } from "../change-name-dialog/change-name-dialog.component";
+import { FrontendUser } from "../../+user/user";
 
 @Component({
   selector: "ige-profile",
@@ -25,7 +26,8 @@ export class ProfileComponent implements OnInit {
 
   userInfo$ = this.configService.$userInfo;
 
-  editMode = false;
+  editingEmail = false;
+
   getRoleLabel(role: string): string {
     return (
       this.userService.availableRoles.find((r) => r.value == role)?.label ??
@@ -44,6 +46,33 @@ export class ProfileComponent implements OnInit {
         hasBackdrop: true,
       })
       .afterClosed()
+      .subscribe((user) => {
+        if (user)
+          this.configService.getCurrentUserInfo().then(() =>
+            this.snackBar.open("E-Mail Adresse wurde geändert.", "", {
+              panelClass: "green",
+            })
+          );
+      });
+  }
+
+  changeEmail(newMail: string): void {
+    if (!newMail) return;
+    newMail = newMail.trim();
+    this.userService
+      .updateCurrentUser(
+        new FrontendUser({
+          attributes: [],
+          creationDate: undefined,
+          firstName: "",
+          lastName: "",
+          login: "",
+          modificationDate: undefined,
+          organisation: "",
+          role: "",
+          email: newMail,
+        })
+      )
       .subscribe((user) => {
         if (user)
           this.configService.getCurrentUserInfo().then(() =>

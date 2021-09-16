@@ -11,11 +11,13 @@
     </mat-form-field>
 
     <p>
-        Ihre E-Mail Adresse wird für Zusendung von Benachirchtigungen oder zur
-        Passwortänderung verwerdet
+        Ihre E-Mail Adresse wird für Zusendung von Benachrichtigungen oder zur
+        Passwortänderung verwendet
     </p>
 
-    <button mat-button color="primary">{{ "abrechen" | uppercase }}</button>
+    <button type="button" mat-button color="primary" (click)="abortChange()">
+        {{ "abrechen" | uppercase }}
+    </button>
 
     <button
         [disabled]="emailForm.invalid"

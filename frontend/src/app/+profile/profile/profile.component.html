@@ -58,17 +58,17 @@
         <div class="info-row" fxLayout="row">
             <div>E-Mail Adresse</div>
             <ige-emailform
-                *ngIf="editMode"
-                [email]="userInfo.email"
-                (onClose)="editMode = false; this.userInfo.email = $event"
+                *ngIf="editingEmail"
+                [initialEmail]="userInfo.email"
+                (onClose)="editingEmail = false; changeEmail($event)"
             >
             </ige-emailform>
-            <div *ngIf="!editMode">{{ userInfo.email }}</div>
+            <div *ngIf="!editingEmail">{{ userInfo.email }}</div>
             <button
-                *ngIf="!editMode"
+                *ngIf="!editingEmail"
                 mat-button
                 color="primary"
-                (click)="editMode = true"
+                (click)="editingEmail = true"
             >
                 Ändern
             </button>
