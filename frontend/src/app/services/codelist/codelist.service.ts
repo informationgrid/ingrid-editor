@@ -12,9 +12,14 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { buffer, distinct, filter, map, switchMap, tap } from "rxjs/operators";
 import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
 
-export interface SelectOption {
+export class SelectOption {
   label: string;
   value: string;
+
+  constructor(value: string, label: string) {
+    this.label = label;
+    this.value = value;
+  }
 }
 
 export interface SelectOptionUi extends SelectOption {

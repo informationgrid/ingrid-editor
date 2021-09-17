@@ -16,13 +16,7 @@
                 *ngIf="this.to.elementIcon"
                 [svgIcon]="this.to.elementIcon"
             ></mat-icon>
-            <!--        {{model[i] | selectOption:to.options | async}}-->
-            <span *ngIf="to.codelistId">{{
-                model[i] | codelist: to.codelistId | async
-            }}</span>
-            <span *ngIf="!to.codelistId">{{
-                model[i] | selectOption: parameterOptions$ | async
-            }}</span>
+            {{ model[i].label }}
         </span>
         <button
             type="button"
@@ -47,7 +41,7 @@
     >
         <mat-option
             *ngFor="let option of filteredOptions | async"
-            [value]="option.value"
+            [value]="option"
             [disabled]="option.disabled"
         >
             {{ option.label }}
@@ -70,7 +64,9 @@
             matInput
             [formControl]="inputControl"
             [required]="to.required && formControl.invalid"
-            (keydown.enter)="addToList(repeatListInput.value)"
+            (keydown.enter)="
+                addToList({ value: null, label: repeatListInput.value })
+            "
             [matAutocomplete]="auto"
         />
         <mat-autocomplete
@@ -79,7 +75,7 @@
         >
             <mat-option
                 *ngFor="let option of filteredOptions | async"
-                [value]="option.value"
+                [value]="option"
                 [disabled]="option.disabled"
             >
                 {{ option.label }}

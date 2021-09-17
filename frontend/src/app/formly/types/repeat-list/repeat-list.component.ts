@@ -3,7 +3,10 @@ import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
 import { filter, map, startWith, take, tap } from "rxjs/operators";
 import { merge, Observable, of, Subject } from "rxjs";
-import { SelectOption } from "../../../services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
@@ -19,9 +22,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
 
-  filteredOptions: Observable<SelectOption[]>;
-  parameterOptions: SelectOption[];
-  parameterOptions$: Observable<SelectOption[]>;
+  filteredOptions: Observable<SelectOptionUi[]>;
+  parameterOptions: SelectOptionUi[];
+  parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new FormControl();
   private manualUpdate = new Subject<string>();
 
@@ -44,7 +47,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  private initInputListener(options: SelectOption[]) {
+  private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options;
     this.parameterOptions$ = of(this.parameterOptions);
 
@@ -64,13 +67,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     );
   }
 
-  addToList(value: any) {
+  addToList(option: SelectOptionUi) {
     // ignore duplicate entries
-    if (value === "" || this.model.indexOf(value) !== -1) {
+    if (option.value === "" || this.model.indexOf(option.value) !== -1) {
       return;
     }
 
-    this.add(null, value);
+    const prepared = new SelectOption(option.value, option.label);
+    this.add(null, prepared);
 
     this.inputControl.setValue(null);
 
@@ -80,27 +84,27 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       this.autoComplete.closePanel();
       setTimeout(() => this.autoCompleteEl.nativeElement.focus());
     } else {
-      if (this._filter("").length === 0) {
+      if (this._filter(null).length === 0) {
         this.inputControl.disable();
       }
       setTimeout(() => this.inputControl.setValue(""));
     }
   }
 
-  private _filter(value): SelectOption[] {
-    if (!value) {
+  private _filter(option: SelectOptionUi): SelectOptionUi[] {
+    if (!option) {
       return this.parameterOptions;
     }
-    return this.parameterOptions?.filter((option) => option.value !== value);
+    return this.parameterOptions?.filter(
+      (originOption) => originOption.value !== option.value
+    );
   }
 
-  private _markSelected(value: SelectOption[]): SelectOption[] {
+  private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      if (this.model.indexOf(option.value) !== -1) {
-        option.disabled = true;
-      } else {
-        option.disabled = false;
-      }
+      option.disabled = (<SelectOptionUi[]>this.model).some(
+        (modelOption) => modelOption.value === option.value
+      );
       return option;
     });
   }
