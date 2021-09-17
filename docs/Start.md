@@ -302,6 +302,7 @@ This profile contains the following information:
 | facet definition for documents                    | definition of filters for documents used on research page |
 | facet definition for addresses                    | definition of filters for addresses used on research page |
 | definiton of catalog codelists                    | additional codelists used in this profile                 |
+| definiton of catalog queries                      | catalog queries for research page accessible by all users |
 | definition of elasticsearch mappings and settings | used for index configuration                              |
 
 The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the

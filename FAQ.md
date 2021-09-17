@@ -88,6 +88,7 @@ class MCloudProfile : CatalogProfile {
   override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {}
 
   override fun initCatalogCodelists(catalogId: String) {}
+  override fun initCatalogQueries(catalogId: String) {}
 
   override fun getElasticsearchMapping(format: String): String
   override fun getElasticsearchSetting(format: String): String
