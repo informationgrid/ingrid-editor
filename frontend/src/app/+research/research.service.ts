@@ -7,7 +7,7 @@ import {
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { QueryState, QueryStore } from "../store/query/query.store";
-import { FacetQuery, SqlQuery } from "../store/query/query.model";
+import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
 import { BackendStoreQuery } from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
@@ -114,12 +114,13 @@ export class ResearchService {
   }
 
   convertToFrontendQuery(query: BackendStoreQuery): SqlQuery | FacetQuery {
-    const base = {
+    const base = <Query>{
       id: query.id,
       type: query.category,
       name: query.name,
       description: query.description,
       modified: query.modified,
+      isCatalogQuery: query.isSystemQuery,
     };
 
     if (query.category === "facet") {

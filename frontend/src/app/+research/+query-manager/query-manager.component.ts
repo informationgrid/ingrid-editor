@@ -7,6 +7,9 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { Query } from "../../store/query/query.model";
+import { ConfigService } from "../../services/config/config.service";
+import { Observable } from "rxjs";
+import { MatSelectionList } from "@angular/material/list";
 
 @Component({
   selector: "ige-query-manager",
@@ -16,13 +19,34 @@ import { Query } from "../../store/query/query.model";
 export class QueryManagerComponent implements OnInit {
   @Output() selection = new EventEmitter<string>();
 
-  userQueries = this.queryQuery.selectAll();
+  userQueries = this.queryQuery.userQueries$;
+  catalogQueries = this.queryQuery.catalogQueries$;
+
+  queryTypes: {
+    label: string;
+    queries: Observable<Query[]>;
+    canDelete: boolean;
+  }[];
 
   constructor(
     private queryQuery: QueryQuery,
     private dialog: MatDialog,
-    private researchService: ResearchService
-  ) {}
+    private researchService: ResearchService,
+    configService: ConfigService
+  ) {
+    this.queryTypes = [
+      {
+        label: "Globale Suchanfragen",
+        queries: this.catalogQueries,
+        canDelete: configService.isAdmin(),
+      },
+      {
+        label: "Ihre Suchanfragen",
+        queries: this.userQueries,
+        canDelete: true,
+      },
+    ];
+  }
 
   ngOnInit(): void {}
 
@@ -51,8 +75,11 @@ export class QueryManagerComponent implements OnInit {
       });
   }
 
-  load(id: string) {
+  load(id: string, list: MatSelectionList) {
     this.selection.emit(id);
+
+    // remove selection immediately
+    list.deselectAll();
   }
 
   getIdentifier(index, item: Query) {
