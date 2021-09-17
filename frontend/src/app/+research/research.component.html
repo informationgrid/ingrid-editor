@@ -10,8 +10,8 @@
         <page-template label="Erweiterte Suche">
             <ige-facets
                 left-side
-                [model]="filter.model"
-                [parameter]="filter.fieldsWithParameters"
+                [model]="facetModel"
+                [parameter]="facetParameters"
                 [forAddresses]="searchClass === 'selectAddresses'"
                 [refreshView]="facetViewRefresher"
                 (update)="updateFilter($event)"

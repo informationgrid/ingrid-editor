@@ -22,7 +22,7 @@
             fxLayoutGap="10px"
             [class.invisible]="notExpanded[group.id]"
             (ngModelChange)="sendUpdate()"
-            [(ngModel)]="_model[group.id]"
+            [(ngModel)]="model[group.id]"
         >
             <mat-radio-button
                 *ngFor="let filter of group.filter; let i = index"
@@ -43,7 +43,7 @@
             *ngFor="let filter of group.filter"
             [name]="filter.id"
             (ngModelChange)="sendUpdate()"
-            [(ngModel)]="_model[group.id][filter.id]"
+            [(ngModel)]="model[group.id][filter.id]"
             >{{ filter.label }}</mat-checkbox
         >
     </div>

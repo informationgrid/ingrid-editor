@@ -28,10 +28,7 @@ export interface FacetUpdate {
   styleUrls: ["./facets.component.scss"],
 })
 export class FacetsComponent implements AfterViewInit {
-  _model: any = {};
-  @Input() set model(value: any) {
-    this._model = JSON.parse(JSON.stringify(value));
-  }
+  @Input() model: any;
 
   _parameter: any = {};
   @Input() set parameter(value: any) {
@@ -124,14 +121,14 @@ export class FacetsComponent implements AfterViewInit {
 
   private setDefaultModel(filters: FacetGroup[]) {
     filters.forEach((group) => {
-      if (this._model[group.id]) {
+      if (this.model[group.id]) {
         // skip initialization, since it's already done for this field
         return;
       }
 
-      this._model[group.id] = {};
+      this.model[group.id] = {};
       if (group.selection === "RADIO") {
-        this._model[group.id] = group.filter[0].id;
+        this.model[group.id] = group.filter[0].id;
       }
     });
   }
@@ -142,9 +139,13 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   sendUpdate() {
-    this.update.emit({
-      model: this._model,
-      fieldsWithParameters: { ...this.fieldsWithParameters },
+    // important: delay update until model is updated
+    setTimeout(() => {
+      this.update.emit({
+        // send copy since this will be send to store and made immutable
+        model: JSON.parse(JSON.stringify(this.model)),
+        fieldsWithParameters: { ...this.fieldsWithParameters },
+      });
     });
   }
 
@@ -179,8 +180,8 @@ export class FacetsComponent implements AfterViewInit {
       return;
     }
 
-    this._model.spatial = {};
-    this._model.spatial[this.spatialFilterId] = [];
+    this.model.spatial = {};
+    this.model.spatial[this.spatialFilterId] = [];
     this.fieldsWithParameters[this.spatialFilterId] = [
       location.value.lat1,
       location.value.lon1,
@@ -224,7 +225,7 @@ export class FacetsComponent implements AfterViewInit {
   removeLocation() {
     this.location = null;
     delete this.fieldsWithParameters.spatial;
-    delete this._model.spatial[this.spatialFilterId];
+    delete this.model.spatial[this.spatialFilterId];
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
       this.boxes

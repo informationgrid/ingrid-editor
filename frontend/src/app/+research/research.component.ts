@@ -31,7 +31,8 @@ export class ResearchComponent implements OnInit {
 
   searchClass: "selectDocuments" | "selectAddresses";
 
-  filter: FacetUpdate;
+  facetModel: any;
+  facetParameters: any;
   result: ResearchResponse;
 
   error: string = null;
@@ -179,7 +180,7 @@ export class ResearchComponent implements OnInit {
   }
 
   changeSearchClass(value: string) {
-    this.filter.model = {};
+    this.facetModel = {};
 
     this.researchService.updateUIState({
       search: {
@@ -265,6 +266,8 @@ export class ResearchComponent implements OnInit {
       emitEvent: false,
     });
     this.searchClass = state.ui.search.category;
-    this.filter = JSON.parse(JSON.stringify(state.ui.search.facets));
+    const filter = JSON.parse(JSON.stringify(state.ui.search.facets));
+    this.facetModel = filter.model;
+    this.facetParameters = filter.fieldsWithParameters;
   }
 }
