@@ -1,11 +1,11 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
-import { SelectOption } from "../../services/codelist/codelist.service";
+import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
 
 export const getUserFormFields = (
-  roles: SelectOption[],
+  roles: SelectOptionUi[],
   groups: Observable<Group[]>
 ): FormlyFieldConfig[] => {
   return [

@@ -10,7 +10,7 @@ import {
 import { FormControl } from "@angular/forms";
 import { combineLatest, Observable } from "rxjs";
 import { filter, map, startWith } from "rxjs/operators";
-import { SelectOption } from "../../services/codelist/codelist.service";
+import { SelectOptionUi } from "../../services/codelist/codelist.service";
 
 @Component({
   selector: "ige-filter-select",
@@ -18,21 +18,21 @@ import { SelectOption } from "../../services/codelist/codelist.service";
   styleUrls: ["./filter-select.component.scss"],
 })
 export class FilterSelectComponent implements OnInit {
-  @Input() options: Observable<SelectOption[]>;
-  @Input() labelFormat: (value: SelectOption) => string = (value) =>
+  @Input() options: Observable<SelectOptionUi[]>;
+  @Input() labelFormat: (value: SelectOptionUi) => string = (value) =>
     value.label;
   @Input() placeholder: string;
   @Input() hintText: string;
 
-  @Output() optionSelect = new EventEmitter<SelectOption>();
+  @Output() optionSelect = new EventEmitter<SelectOptionUi>();
   @Output() reset = new EventEmitter<string>();
 
   @ViewChild("filter") filter: ElementRef;
 
   control = new FormControl();
 
-  filteredOptions: Observable<SelectOption[]>;
-  private selectedValue: SelectOption;
+  filteredOptions: Observable<SelectOptionUi[]>;
+  private selectedValue: SelectOptionUi;
 
   constructor() {}
 
@@ -47,7 +47,10 @@ export class FilterSelectComponent implements OnInit {
     );
   }
 
-  private _filter(value: string, allCodelists: SelectOption[]): SelectOption[] {
+  private _filter(
+    value: string,
+    allCodelists: SelectOptionUi[]
+  ): SelectOptionUi[] {
     const filterValue = value.toLowerCase();
 
     return allCodelists.filter((option) =>
@@ -61,7 +64,7 @@ export class FilterSelectComponent implements OnInit {
     setTimeout(() => this.filter.nativeElement.blur());
   }
 
-  updateSelection(value: SelectOption) {
+  updateSelection(value: SelectOptionUi) {
     this.control.setValue(this.labelFormat(value));
     // TODO: blur control html element for easier selection?
     this.selectedValue = value;

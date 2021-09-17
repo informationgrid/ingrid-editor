@@ -2,7 +2,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { DocumentService } from "../../app/services/document/document.service";
 import {
   CodelistService,
-  SelectOption,
+  SelectOptionUi,
 } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
@@ -253,7 +253,7 @@ export class TestDoctype extends BaseDoctype {
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Statisch)",
               placeholder: "Begriff eingeben...",
-              options: of(<SelectOption[]>[
+              options: of(<SelectOptionUi[]>[
                 { label: "Wert 1", value: "1" },
                 { label: "Wert 2", value: "2" },
                 { label: "Wert 3", value: "3" },
@@ -267,7 +267,7 @@ export class TestDoctype extends BaseDoctype {
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Select)",
               placeholder: "Wert wählen...",
-              options: of(<SelectOption[]>[
+              options: of(<SelectOptionUi[]>[
                 { label: "Wert 1", value: "1" },
                 { label: "Wert 2", value: "2" },
                 { label: "Wert 3", value: "3" },

@@ -3,7 +3,7 @@ import { Doctype } from "../app/services/formular/doctype";
 import { merge, Observable } from "rxjs";
 import {
   CodelistService,
-  SelectOption,
+  SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
@@ -50,7 +50,7 @@ export abstract class BaseDoctype implements Doctype {
 
   hasOptionalFields: boolean;
 
-  fieldsMap: SelectOption[] = [];
+  fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
 
   constructor(
@@ -67,7 +67,7 @@ export abstract class BaseDoctype implements Doctype {
   getCodelistForSelectWithEmtpyOption(
     codelistId: number,
     field: string
-  ): Observable<SelectOption[]> {
+  ): Observable<SelectOptionUi[]> {
     return this.getCodelistForSelect(codelistId, field).pipe(
       map((cl) => [{ label: "", value: undefined }].concat(cl))
     );
@@ -76,7 +76,7 @@ export abstract class BaseDoctype implements Doctype {
   getCodelistForSelect(
     codelistId: number,
     field: string
-  ): Observable<SelectOption[]> {
+  ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
 
     this.codelistService.byId(codelistId + "");

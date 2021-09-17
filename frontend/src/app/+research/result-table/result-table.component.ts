@@ -11,7 +11,7 @@ import { ResearchResponse } from "../research.service";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
-import { SelectOption } from "../../services/codelist/codelist.service";
+import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 
 export interface ShortResultInfo {
@@ -48,7 +48,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   dataSource = new MatTableDataSource([]);
   displayedColumns: string[] = [];
-  columnsMap: SelectOption[];
+  columnsMap: SelectOptionUi[];
 
   totalHits = 0;
   profileIconsMap: {};

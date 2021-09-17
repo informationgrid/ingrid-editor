@@ -3,7 +3,7 @@ import { FrontendUser, User } from "../../+user/user";
 import { combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
-import { SelectOption } from "../codelist/codelist.service";
+import { SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
@@ -13,7 +13,7 @@ import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.
   providedIn: "root",
 })
 export class UserService {
-  availableRoles: SelectOption[] = [
+  availableRoles: SelectOptionUi[] = [
     { label: "Katalog-Administrator", value: "cat-admin" },
     { label: "Metadaten-Administrator", value: "md-admin" },
     { label: "Autor", value: "author" },

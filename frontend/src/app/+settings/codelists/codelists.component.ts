@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   CodelistService,
-  SelectOption,
+  SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
@@ -67,7 +67,7 @@ export class CodelistsComponent implements OnInit {
     return throwError(e);
   }
 
-  updateCodelistTable(option: SelectOption) {
+  updateCodelistTable(option: SelectOptionUi) {
     if (!option) {
       this.selectedCodelist = null;
       return;
@@ -80,7 +80,7 @@ export class CodelistsComponent implements OnInit {
     this.updateCodelistTable(null);
   }
 
-  codelistLabelFormat(option: SelectOption) {
+  codelistLabelFormat(option: SelectOptionUi) {
     return `${option.value} - ${option.label}`;
   }
 }

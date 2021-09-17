@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import {
   CodelistService,
-  SelectOption,
+  SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import { delay, filter, map, tap } from "rxjs/operators";
@@ -29,7 +29,7 @@ export class CatalogCodelistsComponent implements OnInit {
   );
 
   selectedCodelist: Codelist;
-  initialValue: SelectOption;
+  initialValue: SelectOptionUi;
   descriptionCtrl = new FormControl();
 
   constructor(
@@ -93,7 +93,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .subscribe();
   }
 
-  selectCodelist(option: SelectOption) {
+  selectCodelist(option: SelectOptionUi) {
     this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
     const other = JSON.parse(JSON.stringify(this.selectedCodelist));
     this.sortCodelist(other);
@@ -167,7 +167,7 @@ export class CatalogCodelistsComponent implements OnInit {
     codelist.entries.sort((a, b) => a.id.localeCompare(b.id));
   }
 
-  private setInitialValue(options: SelectOption[]) {
+  private setInitialValue(options: SelectOptionUi[]) {
     if (options?.length > 0) {
       if (this.selectedCodelist) {
         this.initialValue = options.find(

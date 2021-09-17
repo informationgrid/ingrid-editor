@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { SelectOption } from "../services/codelist/codelist.service";
+import { SelectOptionUi } from "../services/codelist/codelist.service";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -11,7 +11,7 @@ export class SelectOptionPipe implements PipeTransform {
 
   transform(
     value: string,
-    options: Observable<SelectOption[]>
+    options: Observable<SelectOptionUi[]>
   ): Observable<string> {
     if (!options) {
       return of(value);
@@ -20,7 +20,7 @@ export class SelectOptionPipe implements PipeTransform {
     return options.pipe(map((opts) => this.mapValue(value, opts)));
   }
 
-  private mapValue(value: string, options: SelectOption[]) {
+  private mapValue(value: string, options: SelectOptionUi[]) {
     const result = options
       ?.filter((option) => option.value === value)
       .map((option) => option.label);

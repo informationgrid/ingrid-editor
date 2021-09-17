@@ -15,6 +15,9 @@ import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
 export interface SelectOption {
   label: string;
   value: string;
+}
+
+export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
 }
 
@@ -26,7 +29,7 @@ export class CodelistService {
   private requestedCodelists = new ReplaySubject<string>(100);
   private collector = new Subject();
 
-  static mapToSelectSorted = (codelist: Codelist): SelectOption[] => {
+  static mapToSelectSorted = (codelist: Codelist): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
@@ -37,7 +40,7 @@ export class CodelistService {
           ({
             label: entry.fields["de"] ?? entry.fields["name"],
             value: entry.id,
-          } as SelectOption)
+          } as SelectOptionUi)
       )
       .sort((a, b) => a.label?.localeCompare(b.label));
   };
@@ -110,7 +113,7 @@ export class CodelistService {
       .subscribe();
   }
 
-  mapToOptions(codelists: Codelist[]): SelectOption[] {
+  mapToOptions(codelists: Codelist[]): SelectOptionUi[] {
     return codelists
       .map((cl) => ({
         value: cl.id,

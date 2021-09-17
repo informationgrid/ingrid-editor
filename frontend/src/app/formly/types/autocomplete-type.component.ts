@@ -5,7 +5,7 @@ import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
 import { Observable } from "rxjs";
 import { filter, map, startWith, take, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { SelectOption } from "../../services/codelist/codelist.service";
+import { SelectOptionUi } from "../../services/codelist/codelist.service";
 
 @UntilDestroy()
 @Component({
@@ -21,8 +21,8 @@ export class AutocompleteTypeComponent
   @ViewChild(MatAutocompleteTrigger, { static: true })
   autocomplete: MatAutocompleteTrigger;
 
-  private parameterOptions: SelectOption[] = [];
-  filteredOptions: Observable<SelectOption[]>;
+  private parameterOptions: SelectOptionUi[] = [];
+  filteredOptions: Observable<SelectOptionUi[]>;
 
   ngOnInit() {
     super.ngOnInit();
@@ -41,7 +41,7 @@ export class AutocompleteTypeComponent
     }
   }
 
-  private initInputListener(options: SelectOption[]) {
+  private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options;
 
     this.filteredOptions = this.formControl.valueChanges.pipe(
@@ -51,7 +51,7 @@ export class AutocompleteTypeComponent
     );
   }
 
-  _filter(value: string): SelectOption[] {
+  _filter(value: string): SelectOptionUi[] {
     if (value === undefined || value === null || this.to.doNotFilter)
       return this.parameterOptions;
     const filterValue = value.toLowerCase();
