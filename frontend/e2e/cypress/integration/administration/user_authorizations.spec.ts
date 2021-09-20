@@ -250,7 +250,7 @@ describe('author with groups', () => {
     DashboardPage.visit();
     cy.get('[data-cy="header-profile-button"]').click();
     cy.contains('[role="menuitem"]', 'Profil verwalten').click();
-    cy.get(UserAuthorizationPage.ProfileElements.Title).should('have.text', 'Autor_mitGruppen');
+    cy.get(UserAuthorizationPage.ProfileElements.Title).should('have.text', ' Autor_mitGruppen ');
     cy.get(UserAuthorizationPage.ProfileElements.Groups).should('have.text', ' test_gruppe_3 ');
     cy.get(UserAuthorizationPage.ProfileElements.FirstName).should('have.text', 'Autor_mit');
     cy.get(UserAuthorizationPage.ProfileElements.LastName).should('have.text', 'Gruppen');
@@ -427,7 +427,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('mat-form-field.mat-form-field-disabled');
 
     // try to move the address
-    CopyCutUtils.move();
+    CopyCutUtils.move(['Ordner_2.Ebene_C']);
     cy.get('error-dialog').contains('keine Berechtigung');
 
     // try to delete
@@ -457,7 +457,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('mat-form-field.mat-form-field-disabled');
 
     // try to move
-    CopyCutUtils.move();
+    CopyCutUtils.move(['Ordner_Ebene_2A']);
     cy.get('error-dialog').contains('keine Berechtigung');
 
     // try to delete
