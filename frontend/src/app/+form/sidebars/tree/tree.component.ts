@@ -590,6 +590,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   handleDragStart($event: DragEvent, node: any) {
     // set flag delayed to correctly initiate dragging of a node
+    if (this.enableDrag) $event.dataTransfer.effectAllowed = "move";
     setTimeout(() => (this.isDragging = true));
     this.dragManager.handleDragStart($event, node);
   }
