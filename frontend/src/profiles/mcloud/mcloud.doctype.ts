@@ -318,6 +318,7 @@ export class McloudDoctype extends BaseDoctype {
                   placeholder: "Wählen...",
                   appearance: "outline",
                   options: [
+                    { label: "", value: undefined },
                     { label: "am", value: "at" },
                     { label: "seit", value: "since" },
                     { label: "bis", value: "till" },
