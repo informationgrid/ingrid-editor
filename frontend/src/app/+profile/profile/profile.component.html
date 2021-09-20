@@ -53,26 +53,26 @@
             </button>
         </div>
 
-        <h3>Kontakt</h3>
+        <!--        <h3>Kontakt</h3>-->
 
-        <div class="info-row" fxLayout="row">
-            <div>E-Mail Adresse</div>
-            <ige-emailform
-                *ngIf="editingEmail"
-                [initialEmail]="userInfo.email"
-                (onClose)="editingEmail = false; changeEmail($event)"
-            >
-            </ige-emailform>
-            <div *ngIf="!editingEmail">{{ userInfo.email }}</div>
-            <button
-                *ngIf="!editingEmail"
-                mat-button
-                color="primary"
-                (click)="editingEmail = true"
-            >
-                Ändern
-            </button>
-        </div>
+        <!--        <div class="info-row" fxLayout="row">-->
+        <!--            <div>E-Mail Adresse</div>-->
+        <!--            <ige-emailform-->
+        <!--                *ngIf="editingEmail"-->
+        <!--                [initialEmail]="userInfo.email"-->
+        <!--                (onClose)="editingEmail = false; changeEmail($event)"-->
+        <!--            >-->
+        <!--            </ige-emailform>-->
+        <!--            <div *ngIf="!editingEmail">{{ userInfo.email }}</div>-->
+        <!--            <button-->
+        <!--                *ngIf="!editingEmail"-->
+        <!--                mat-button-->
+        <!--                color="primary"-->
+        <!--                (click)="editingEmail = true"-->
+        <!--            >-->
+        <!--                Ändern-->
+        <!--            </button>-->
+        <!--        </div>-->
 
         <h3>Sicherheit</h3>
         <div class="info-row" fxLayout="row">
