@@ -10,7 +10,7 @@ export class DragNDropUtils {
   dragNodeExpandOverNode: TreeNode;
   private dragNodeExpandOverTime: number;
   private dragNodeExpandOverWaitTimeMs = 1000;
-  private dragNode: TreeNode;
+  dragNode: TreeNode;
 
   constructor(private treeControl: TreeControl<any>) {}
 

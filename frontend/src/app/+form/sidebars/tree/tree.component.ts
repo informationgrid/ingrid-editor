@@ -572,12 +572,16 @@ export class TreeComponent implements OnInit, OnDestroy {
    */
   drop(event: DragEvent, droppedNode: TreeNode) {
     event.preventDefault();
-
     const dropInfo = this.dragManager.getDropInfo(droppedNode);
 
     if (dropInfo.allow) {
+      // if dragNode is part of selection all selected ids are srcIds, else only dragNode is sourceId
       this.dropped.next({
-        srcIds: this.selection.model.selected.map((node) => node._id),
+        srcIds: this.selection.model.selected.some(
+          (node) => node._id === this.dragManager.dragNode._id
+        )
+          ? this.selection.model.selected.map((node) => node._id)
+          : [this.dragManager.dragNode._id],
         destination: droppedNode === null ? null : droppedNode._id,
       });
 
