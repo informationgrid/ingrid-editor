@@ -196,7 +196,7 @@ export class DynamicDataSource {
       destNodeIndex = this.data.findIndex((item) => item._id === dest);
 
       // if parent node cannot be found (e.g. no read access)
-      if (destNodeIndex === -1) {
+      if (destNodeIndex !== -1) {
         const destNode = this.data[destNodeIndex];
         destNodeLevel = destNode.level;
 
