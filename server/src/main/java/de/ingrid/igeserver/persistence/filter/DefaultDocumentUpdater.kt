@@ -9,6 +9,7 @@ import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Component
 
 /**
@@ -48,6 +49,8 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
             } catch (ex: EmptyResultDataAccessException) {
                 // in case of no permission just log information
                 log.warn("Parent Wrapper not found, possibly to read permission on parent?")
+            } catch (ex: AccessDeniedException) {
+                log.debug("Parent cannot be accessed due to permissions, so reference will not be updated")
             }
         }
         
