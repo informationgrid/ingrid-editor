@@ -2,12 +2,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, merge, Observable } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import {
-  CollectionViewer,
-  SelectionChange,
-  SelectionModel,
-} from "@angular/cdk/collections";
-import { map, tap } from "rxjs/operators";
+import { CollectionViewer, SelectionChange } from "@angular/cdk/collections";
+import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DynamicDatabase } from "./dynamic.database";
 import { TreeService } from "./tree.service";
@@ -193,22 +189,26 @@ export class DynamicDataSource {
 
     node.parent = dest;
 
-    let destNodeLevel;
-    let destNodeIndex;
+    let destNodeLevel = -1;
+    let destNodeIndex = -1;
 
-    if (dest === null) {
-      destNodeLevel = -1;
-      destNodeIndex = -1;
-    } else {
+    if (dest !== null) {
       destNodeIndex = this.data.findIndex((item) => item._id === dest);
 
-      const destNode = this.data[destNodeIndex];
-      destNodeLevel = destNode.level;
+      // if parent node cannot be found (e.g. no read access)
+      if (destNodeIndex === -1) {
+        const destNode = this.data[destNodeIndex];
+        destNodeLevel = destNode.level;
 
-      if (!destNode.isExpanded) {
-        // TODO: we should expand with update from server here!
-        this.expandNode(destNode);
-        return;
+        if (!destNode.isExpanded) {
+          // TODO: we should expand with update from server here!
+          this.expandNode(destNode);
+          return;
+        }
+      } else {
+        console.warn(
+          `Could not find parent node "${dest}". Maybe no read access?`
+        );
       }
     }
     node.level = destNodeLevel + 1;
