@@ -197,7 +197,8 @@ class DatasetsApiController @Autowired constructor(
         val published = doc.state == DocumentService.DocumentState.PUBLISHED.value
 
         // update document which includes updating the wrapper
-        documentService.updateDocument(catalogId, id, doc, published)
+        // TODO Evaluate if "republish" wanted and necessary here?
+        documentService.updateDocument(catalogId, id, doc, publish = published)
 
         // get new parent path
         val newPath = if (options.destId == null) emptyList() else {
@@ -228,7 +229,7 @@ class DatasetsApiController @Autowired constructor(
     private fun validateCopyOperation(catalogId: String, sourceId: String, destinationId: String?) {
         // check destination is not part of source
         val descIds = getAllDescendantIds(catalogId, sourceId)
-        if (descIds.contains(destinationId)) {
+        if (descIds.contains(destinationId) || sourceId == destinationId) {
             throw ConflictException.withReason("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
         }
     }

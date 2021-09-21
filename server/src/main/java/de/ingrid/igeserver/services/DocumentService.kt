@@ -248,11 +248,11 @@ class DocumentService @Autowired constructor(
         }
 
         // save document with same ID or new one, if no draft version exists (because the last version is published)
-        val dbId = preUpdatePayload.wrapper.draft?.id
+        val draftId = preUpdatePayload.wrapper.draft?.id
         val createdDate = preUpdatePayload.wrapper.draft?.created ?: preUpdatePayload.wrapper.published?.created
 
         // set server side fields from previous document version
-        preUpdatePayload.document.id = dbId
+        preUpdatePayload.document.id = preUpdatePayload.document.id ?: draftId
         preUpdatePayload.document.created = createdDate
 
         val updatedDoc = docRepo.save(preUpdatePayload.document)
