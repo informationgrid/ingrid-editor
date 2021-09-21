@@ -72,7 +72,7 @@
         mat-stroked-button
         color="primary"
         data-cy="choose-address-confirm"
-        [disabled]="!selection || !selectedType"
+        [disabled]="!selection || !selectedType || selection._type === 'FOLDER'"
         (click)="getResult()"
     >
         Übernehmen
