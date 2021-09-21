@@ -8,8 +8,15 @@ export class enterMcloudDocTestData {
 
   static setAddress(addressText: string, addressType: string = 'Herausgeber') {
     cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
-    DocumentPage.AddAddressDialog.searchAndAdd(addressText, addressType);
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText, addressType);
+    cy.get('[data-cy="choose-address-confirm"]').click();
     cy.get('[data-cy=Adressen]').contains(addressText);
+  }
+
+  static checkAddressSelectable(addressText: string, shouldBeSelectable: boolean) {
+    cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText, 'Herausgeber');
+    cy.get('[data-cy="choose-address-confirm"]').should(shouldBeSelectable ? 'be.enabled' : 'be.disabled');
   }
 
   static getAddress() {

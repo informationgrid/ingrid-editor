@@ -43,6 +43,20 @@ describe('mCLOUD documents', function () {
       DocumentPage.publishNow();
     });
 
+    it('should not be able to choose address folder as address', () => {
+      const addressName = 'testordner_1';
+      const docName = 'mCloudfullDoc1';
+
+      // is needed for setTimeReference, because svgicon='Entfernen' is not in view
+      cy.get(DocumentPage.Sidemenu.Skalieren).click();
+      DocumentPage.createDocument(docName);
+
+      // check if created document is a mCloud-Document
+      cy.get('ige-header-navigation').contains('mCLOUD');
+
+      enterMcloudDocTestData.checkAddressSelectable(addressName, false);
+    });
+
     it('should create a complete mcloud document', () => {
       const docName = 'mCloudfullDoc1';
       const dateNow = new Date();
