@@ -6,7 +6,7 @@ import {
 } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
-import { FrontendUser, User } from "../../user";
+import { BackendUser, FrontendUser, User } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { tap } from "rxjs/operators";
@@ -20,11 +20,11 @@ import { ModalService } from "../../../services/modal/modal.service";
   styleUrls: ["./new-user-dialog.component.scss"],
 })
 export class NewUserDialogComponent implements OnInit, AfterContentChecked {
-  users$: Observable<FrontendUser[]> = this.userService.getExternalUsers().pipe(
+  users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
     tap((users) => (this.externalUsers = users))
   );
-  externalUsers: FrontendUser[];
+  externalUsers: BackendUser[];
   form: FormGroup;
   noAvailableUsers = true;
   importExternal: boolean;

@@ -1,3 +1,6 @@
+import { SelectOption } from "../services/codelist/codelist.service";
+import { Group } from "../models/user-group";
+
 export abstract class User {
   login: string;
   firstName: string;
@@ -20,22 +23,22 @@ export abstract class User {
 
 export class FrontendUser extends User {
   permissions?: Permissions;
+  groups?: SelectOption[];
 
-  constructor(user?: BackendUser) {
+  constructor(user?: BackendUser, igeGroups?: Group[]) {
     super(user);
 
-    /*const perms = user?.permissions;
-    this.permissions = {
-      pages: perms?.pages ?? {},
-      actions: perms?.actions ?? {},
-      documents: perms?.documents ?? [],
-      addresses: perms?.addresses ?? []
-    };*/
+    if (user) {
+      this.groups = user.groups?.map(
+        (groupId) => new SelectOption(groupId + "", null)
+      );
+    }
   }
 }
 
 export class BackendUser extends User {
   permissions?: Permissions;
+  groups?: number[];
 }
 
 export class Permissions {

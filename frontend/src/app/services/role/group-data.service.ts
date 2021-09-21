@@ -31,7 +31,7 @@ export class GroupDataService {
   }
 
   // delete group metadata from backend
-  deleteGroup(id: string): Observable<any> {
+  deleteGroup(id: number): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + "groups/" + id);
   }
 
@@ -44,24 +44,24 @@ export class GroupDataService {
     }
   }
 
-  getGroup(id: string): Observable<Group> {
+  getGroup(id: number): Observable<Group> {
     return this.http.get<Group>(this.configuration.backendUrl + "groups/" + id);
   }
 
-  getGroupManager(id: string): Observable<User> {
+  getGroupManager(id: number): Observable<User> {
     return this.http.get<User>(
       this.configuration.backendUrl + "groups/" + id + "/manager"
     );
   }
 
-  updateGroupManager(id: string, managerId: string): Observable<User> {
+  updateGroupManager(id: number, managerId: string): Observable<User> {
     return this.http.post<User>(
       this.configuration.backendUrl + "groups/" + id + "/manager",
       managerId
     );
   }
 
-  getUsersOfGroup(id: string): Observable<User[]> {
+  getUsersOfGroup(id: number): Observable<User[]> {
     return this.http.get<User[]>(
       this.configuration.backendUrl + "groups/" + id + "/users"
     );

@@ -104,7 +104,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadGroup(id: string) {
+  loadGroup(id: number) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.isLoading = true;
@@ -140,7 +140,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     });
   }
 
-  async deleteGroup(id: string) {
+  async deleteGroup(id: number) {
     this.groupService.getUsersOfGroup(id).subscribe((users) => {
       const data = GroupComponent.createDeleteDialogData(users);
 

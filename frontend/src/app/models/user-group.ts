@@ -1,7 +1,7 @@
 import { Permissions } from "../+user/user";
 
 export class Group {
-  id: string;
+  id: number;
   name: string;
   description: string;
   permissions: Permissions;

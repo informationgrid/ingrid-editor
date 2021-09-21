@@ -16,7 +16,7 @@
                 *ngIf="this.to.elementIcon"
                 [svgIcon]="this.to.elementIcon"
             ></mat-icon>
-            {{ model[i].label }}
+            {{ getParameter(model[i]) }}
         </span>
         <button
             type="button"

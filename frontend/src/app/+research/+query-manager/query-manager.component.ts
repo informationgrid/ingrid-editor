@@ -10,6 +10,7 @@ import { Query } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
 import { MatSelectionList } from "@angular/material/list";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "ige-query-manager",
@@ -68,11 +69,8 @@ export class QueryManagerComponent implements OnInit {
         },
       })
       .afterClosed()
-      .subscribe((result) => {
-        if (!result) return;
-
-        this.researchService.removeQuery(id).subscribe();
-      });
+      .pipe(filter((result) => result))
+      .subscribe((result) => this.researchService.removeQuery(id).subscribe());
   }
 
   load(id: string, list: MatSelectionList) {

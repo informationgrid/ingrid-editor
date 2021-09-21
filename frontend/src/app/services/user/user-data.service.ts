@@ -38,7 +38,7 @@ export class UserDataService {
     );
   }
 
-  saveUser(user: User): Observable<BackendUser> {
+  saveUser(user: BackendUser): Observable<BackendUser> {
     return this.http.put<BackendUser>(
       this.configuration.backendUrl + "users/" + user.login,
       user

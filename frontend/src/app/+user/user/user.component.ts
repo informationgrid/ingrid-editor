@@ -26,8 +26,6 @@ import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { EditManagerDialogComponent } from "./edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
-import { ErrorDialogComponent } from "../../dialogs/error/error-dialog.component";
-import { IgeError } from "../../models/ige-error";
 
 @UntilDestroy()
 @Component({
@@ -43,7 +41,6 @@ export class UserComponent
   form = new FormGroup({});
 
   roles = this.userService.availableRoles;
-  groups = this.groupService.getGroups();
   selectedUserForm = new FormControl();
   selectedUser: User;
   selectedUser$: Subject<User>;

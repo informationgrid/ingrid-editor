@@ -15,17 +15,17 @@ export class GroupService {
     return this.dataService.getGroups();
   }
 
-  getGroup(id: string): Observable<Group> {
+  getGroup(id: number): Observable<Group> {
     return this.dataService
       .getGroup(id)
       .pipe(map((json) => this.prepareGroup([json])[0]));
   }
 
-  getGroupManager(id: string): Observable<User> {
+  getGroupManager(id: number): Observable<User> {
     return this.dataService.getGroupManager(id);
   }
 
-  updateGroupManager(id: string, managerId: string): Observable<User> {
+  updateGroupManager(id: number, managerId: string): Observable<User> {
     return this.dataService.updateGroupManager(id, managerId);
   }
 
@@ -43,11 +43,11 @@ export class GroupService {
   }
 
   // delete group metadata from backend
-  deleteGroup(id: string): Observable<any> {
+  deleteGroup(id: number): Observable<any> {
     return this.dataService.deleteGroup(id);
   }
 
-  getUsersOfGroup(id: string): Observable<User[]> {
+  getUsersOfGroup(id: number): Observable<User[]> {
     return this.dataService.getUsersOfGroup(id);
   }
 }

@@ -123,4 +123,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.remove(event.previousIndex);
     this.add(event.currentIndex, item);
   }
+
+  // TODO: do not use template function!
+  getParameter(option: SelectOption) {
+    return (
+      this.parameterOptions?.find((param) => param.value + "" === option.value)
+        ?.label ?? option.label
+    );
+  }
 }

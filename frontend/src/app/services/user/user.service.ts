@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FrontendUser, User } from "../../+user/user";
+import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
@@ -100,9 +100,14 @@ export class UserService {
       .pipe(map((user) => new FrontendUser(user)));
   }
 
-  updateUser(user: User): Observable<FrontendUser> {
+  updateUser(user: FrontendUser): Observable<FrontendUser> {
+    const userForBackend = <BackendUser>{
+      ...user,
+      groups: user.groups.map((group) => +group.value),
+    };
+
     return this.dataService
-      .saveUser(user)
+      .saveUser(userForBackend)
       .pipe(map((u) => new FrontendUser(u)));
   }
 
@@ -126,7 +131,7 @@ export class UserService {
     return this.dataService.getAssignedUsers(dbId);
   }
 
-  getExternalUsers(): Observable<FrontendUser[]> {
+  getExternalUsers(): Observable<BackendUser[]> {
     return this.dataService.getExternalUsers();
   }
 
