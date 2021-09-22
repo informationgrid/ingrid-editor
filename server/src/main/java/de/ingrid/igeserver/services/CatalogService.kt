@@ -91,7 +91,7 @@ class CatalogService @Autowired constructor(
         return this.catalogProfiles
             .find { it.identifier == id }!!
     }
-    
+
     fun initializeCatalog(catalogId: String, type: String) {
         initializeCodelists(catalogId, type)
         initializeQueries(catalogId, type)
@@ -120,11 +120,11 @@ class CatalogService @Autowired constructor(
         return getCatalogById(catalog.identifier)
     }
 
-    private fun transformNameToIdentifier(name: String): String{
+    private fun transformNameToIdentifier(name: String): String {
         var identifier = name.lowercase().replace(" ".toRegex(), "_")
         // slash not valid as it makes problems in URLs
         identifier = identifier.replace("/".toRegex(), "_")
-        return  identifier
+        return identifier
     }
 
     fun catalogWithNameExists(name: String): Boolean {
@@ -239,19 +239,25 @@ class CatalogService @Autowired constructor(
         })
     }
 
-    fun getManagedUserIds(managerId: String, catalogId: String): List<String>{
+    fun getManagedUserIds(managerId: String, catalogId: String): List<String> {
         return managerRepo.findAllByManager_UserIdAndCatalogIdentifier(managerId, catalogId).map { it.user!!.userId }
     }
 
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
-        return if (isMdAdmin || isCatAdmin) {
+        return if (isCatAdmin) {
             listOf(
                 Permissions.manage_users.name,
                 Permissions.can_export.name,
                 Permissions.can_import.name,
                 Permissions.manage_catalog.name
+            )
+        } else if (isMdAdmin) {
+            listOf(
+                Permissions.manage_users.name,
+                Permissions.can_export.name,
+                Permissions.can_import.name,
             )
         } else {
             listOf(
