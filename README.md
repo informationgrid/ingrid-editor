@@ -25,20 +25,8 @@ A Docker container to be used in development can be created by running the follo
 
 See also `postgres/.env` for further configuration.
 
-For Jenkins we build a special image which contains database layout, since it's more difficult to configure
-a docker image, which itself is in a docker container. To build the image execute the script in postgres folder:
-`build-test-postgres-docker-image.sh` and push it to the repository:
-
-> docker push docker-registry.wemove.com/postgres-ige-ng-test
-
-The schema and some example data can be generated automatically by editing the file 
-`server/src/develop/resources/application-dev.properties` setting the property:
-```properties
-spring.jpa.hibernate.ddl-auto=create
-```
-When starting the server the schema should be created and the file `import.sql` should be imported.
-Afterwards you should set the property back to `none`, to prevent recreation of the schema, which removes
-all data from the database.
+You need to manually create an empty database with the name 'ige' .
+The database gets initialized on startup. Afterwards you can map your db data directory in the docker-compose file to make it persistent.
 
 ### Start the client and server
 For IntelliJ configuration see the section below.
