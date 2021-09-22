@@ -197,11 +197,22 @@ export class enterMcloudDocTestData {
 
   static setPeriodOfTime(choose: string = 'am', date: Date = new Date(2020, 1, 11), until?: Date) {
     cy.get('[data-cy=Zeitspanne]').contains('Wählen').click();
-    cy.get('.mat-option-text').contains(choose).click();
+    if (choose === '') {
+      cy.get('.mat-option-text:empty').parent().click();
+    } else {
+      cy.get('.mat-option-text').contains(choose).click();
+    }
     cy.wait(0);
     this.selectDate('[data-cy="Zeitspanne"]', date, choose, until);
   }
 
+  static checkPeriodOfTimeSelectedValue(option: string) {
+    if (option === '') {
+      cy.get('.mat-select-value').should('have.value', option);
+    } else {
+      cy.get('.mat-select-value').contains(option);
+    }
+  }
   static setPeriodicity(chooseOption: string = 'einmalig') {
     cy.get('[data-cy=Periodizität').find('mat-form-field').click();
     cy.get('mat-option').contains(chooseOption).click();

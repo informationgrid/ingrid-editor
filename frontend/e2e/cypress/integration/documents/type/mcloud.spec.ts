@@ -89,6 +89,25 @@ describe('mCLOUD documents', function () {
       DocumentPage.saveDocument();
     });
 
+    it('should check if "Zeitspanne" dropdown contains an option ', () => {
+      const docName = 'mCloudfullDoc1';
+      const dateNow = new Date();
+      const previousDate = new Date(2020, 1, 11);
+      const option = '';
+
+      // is needed for setTimeReference, because svgicon='Entfernen' is not in view
+      cy.get(DocumentPage.Sidemenu.Skalieren).click();
+      DocumentPage.createDocument(docName);
+
+      // check if created document is a mCloud-Document
+      cy.get('ige-header-navigation').contains('mCLOUD');
+      enterMcloudDocTestData.setPeriodOfTime(option, previousDate, dateNow);
+      DocumentPage.saveDocument();
+      cy.reload();
+
+      enterMcloudDocTestData.checkPeriodOfTimeSelectedValue(option);
+    });
+
     it('should create a published address with an API-Call', () => {
       const json = {
         firstName: 'vor',
