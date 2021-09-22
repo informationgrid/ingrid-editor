@@ -8,6 +8,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
+import { ConfigService } from "../config/config.service";
 
 @Injectable({
   providedIn: "root",
@@ -21,8 +22,14 @@ export class UserService {
 
   constructor(
     private dataService: UserDataService,
-    private groupService: GroupService
-  ) {}
+    private groupService: GroupService,
+    private configService: ConfigService
+  ) {
+    if (!this.configService.isAdmin())
+      this.availableRoles = this.availableRoles.filter(
+        (o) => o.value != "cat-admin"
+      );
+  }
 
   getUsers(): Observable<FrontendUser[]> {
     return this.dataService

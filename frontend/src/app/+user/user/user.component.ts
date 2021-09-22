@@ -40,7 +40,6 @@ export class UserComponent
   currentTab: string;
   form = new FormGroup({});
 
-  roles = this.userService.availableRoles;
   selectedUserForm = new FormControl();
   selectedUser: User;
   selectedUser$: Subject<User>;
