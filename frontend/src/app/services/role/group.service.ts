@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Group } from "../../models/user-group";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
 import { map } from "rxjs/operators";
 import { User } from "../../+user/user";
@@ -9,7 +9,11 @@ import { User } from "../../+user/user";
   providedIn: "root",
 })
 export class GroupService {
-  constructor(private dataService: GroupDataService) {}
+  selectedGroup$: BehaviorSubject<Group>;
+
+  constructor(private dataService: GroupDataService) {
+    this.selectedGroup$ = new BehaviorSubject<Group>(null);
+  }
 
   getGroups(): Observable<Group[]> {
     return this.dataService.getGroups();

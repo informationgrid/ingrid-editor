@@ -10,8 +10,8 @@ import {
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, of, Subject } from "rxjs";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { Observable, of } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -20,7 +20,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -42,19 +42,19 @@ export class UserComponent
 
   selectedUserForm = new FormControl();
   selectedUser: User;
-  selectedUser$: Subject<User>;
   showMore = false;
   searchQuery: string;
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
   model: User;
   tableWidth: number;
+  selectedUserRole: string;
 
   constructor(
     private modalService: ModalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private userService: UserService,
+    public userService: UserService,
     private groupService: GroupService,
     private configService: ConfigService,
     public userManagementService: UserManagementService,
@@ -64,9 +64,43 @@ export class UserComponent
   ) {
     this.model = new FrontendUser();
     this.searchQuery = "";
-    this.formlyFieldConfig = this.userService.getUserFormFields();
+    this.formlyFieldConfig = this.userService.getUserFormFields(
+      (field, $event) => {
+        // user can only be downgraded to author if he is not a manager of any other users
+        if ($event.value === "author") {
+          this.userService
+            .getManagedUsers(this.selectedUser.login)
+            .subscribe((managedUsers) => {
+              if (managedUsers.length > 0) {
+                // reset role change as user is still a manager
+                this.form.get("role").setValue(this.selectedUserRole);
+
+                this.dialog.open(ConfirmDialogComponent, {
+                  data: {
+                    title: "Benutzer Rolle ändern",
+                    message:
+                      "Die Rolle des Nutzers kann nicht geändert werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
+                      managedUsers.join("\n") +
+                      "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
+                    buttons: [
+                      {
+                        text: "Schließen",
+                        alignRight: true,
+                        emphasize: true,
+                      },
+                    ],
+                  } as ConfirmDialogData,
+                  hasBackdrop: true,
+                });
+              }
+              this.selectedUserRole = this.form.get("role").value;
+            });
+        } else {
+          this.selectedUserRole = this.form.get("role").value;
+        }
+      }
+    );
     this.tableWidth = this.session.getValue().ui.userTableWidth;
-    this.selectedUser$ = new Subject<User>();
   }
 
   ngAfterViewInit(): void {
@@ -81,13 +115,23 @@ export class UserComponent
     this.currentTab = "users";
 
     this.fetchUsers();
-    this.selectedUser$
-      .pipe(tap((user) => (this.selectedUser = user)))
+    if (this.userService.selectedUser$.value) {
+      this.loadUser(this.userService.selectedUser$.value.login);
+    }
+    this.userService.selectedUser$
+      .pipe(
+        filter((user) => !!user),
+        tap((user) => {
+          this.selectedUser = user;
+          this.selectedUserRole = user.role;
+        }),
+        untilDestroyed(this)
+      )
       .subscribe();
   }
 
   fetchUsers() {
-    const currentValue = this.selectedUserForm.value;
+    // const currentValue = this.selectedUserForm.value;
     this.userService
       .getUsers()
       .pipe(
@@ -100,9 +144,10 @@ export class UserComponent
             .sort((a, b) => a.login.localeCompare(b.login))
         ),
         tap((users) => (this.users = users ? users : [])),
-        tap(() =>
-          setTimeout(() => this.selectedUserForm.setValue(currentValue))
-        )
+        // tap(() =>
+        //   setTimeout(() => this.selectedUserForm.setValue(currentValue))
+        // )
+        untilDestroyed(this)
       )
       .subscribe();
   }
@@ -113,12 +158,12 @@ export class UserComponent
         this.isLoading = true;
         this.form.disable();
         this.userService.getUser(login).subscribe((user) => {
-          this.selectedUser$.next(user);
+          this.userService.selectedUser$.next(user);
           this.model = user;
           this.updateUserForm(user);
         });
       } else {
-        this.selectedUser$.next(this.selectedUser);
+        this.userService.selectedUser$.next(this.selectedUser);
       }
     });
   }
@@ -150,8 +195,9 @@ export class UserComponent
             message:
               "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
               managedUsers.join("\n") +
-              "\n\nBitte ändern Sie zunächst den Verantwortlichen der betroffenen Benutzer.",
+              "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
           } as ConfirmDialogData,
+          hasBackdrop: true,
         });
       } else {
         this.dialog
@@ -160,13 +206,20 @@ export class UserComponent
               title: "Benutzer löschen",
               message:
                 "Möchten Sie den Benutzer " + login + " wirklich löschen?",
+              buttons: [
+                {
+                  text: "Schließen",
+                  alignRight: true,
+                  emphasize: true,
+                },
+              ],
             } as ConfirmDialogData,
           })
           .afterClosed()
           .subscribe((result) => {
             if (result) {
               this.userService.deleteUser(login).subscribe(() => {
-                this.selectedUser$.next(null);
+                this.userService.selectedUser$.next(null);
                 this.fetchUsers();
               });
             }
@@ -258,7 +311,7 @@ export class UserComponent
       (err: any) => {
         this.enableForm();
         this.isLoading = false;
-        this.selectedUser$.next(null);
+        this.userService.selectedUser$.next(null);
         if (err.status === 409) {
           this.modalService.showJavascriptError(
             "Es existiert kein Benutzer mit dem Login: " + this.form.value.login
@@ -294,7 +347,6 @@ export class UserComponent
   enableForm() {
     this.form.enable();
     this.form.get("login")?.disable();
-    this.form.get("role")?.disable();
   }
 
   private updateUserForm(user: FrontendUser) {
@@ -349,7 +401,7 @@ export class UserComponent
           .subscribe((result) => {
             if (result) {
               this.saveUser(result);
-              this.selectedUser$.next(result);
+              this.userService.selectedUser$.next(result);
             }
           });
       }

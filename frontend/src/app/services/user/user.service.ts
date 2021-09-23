@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
-import { combineLatest, Observable } from "rxjs";
+import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { map } from "rxjs/operators";
 import { SelectOptionUi } from "../codelist/codelist.service";
@@ -9,6 +9,7 @@ import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 
 @Injectable({
   providedIn: "root",
@@ -20,6 +21,8 @@ export class UserService {
     { label: "Autor", value: "author" },
   ];
 
+  selectedUser$: BehaviorSubject<User>;
+
   constructor(
     private dataService: UserDataService,
     private groupService: GroupService,
@@ -29,6 +32,7 @@ export class UserService {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin"
       );
+    this.selectedUser$ = new BehaviorSubject<User>(null);
   }
 
   getUsers(): Observable<FrontendUser[]> {
@@ -150,10 +154,13 @@ export class UserService {
     return this.dataService.getExternalUsers();
   }
 
-  getUserFormFields(): FormlyFieldConfig[] {
+  getUserFormFields(
+    roleChangeCallback: FormlyAttributeEvent = undefined
+  ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
-      this.groupService.getGroups()
+      this.groupService.getGroups(),
+      roleChangeCallback
     );
   }
 

@@ -2,7 +2,12 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Nutzer {{ users ? "(" + users.length + ")" : "" }}
+                Nutzer
+                {{
+                    users && users.length !== undefined
+                        ? "(" + users.length + ")"
+                        : ""
+                }}
             </div>
             <mat-toolbar>
                 <mat-toolbar-row>
@@ -49,7 +54,7 @@
             <user-table
                 [query]="searchQuery"
                 [users]="users"
-                [selectedUser]="selectedUser$"
+                [selectedUser]="userService.selectedUser$"
                 (onUserSelect)="loadUser($event.login)"
             ></user-table>
         </as-split-area>

@@ -51,7 +51,7 @@
             <groups-table
                 [query]="searchQuery"
                 [groups]="groups"
-                [selectedGroup]="selectedGroup$"
+                [selectedGroup]="groupService.selectedGroup$"
                 (onGroupSelect)="loadGroup($event.id)"
                 (onDelete)="deleteGroup($event)"
             ></groups-table>

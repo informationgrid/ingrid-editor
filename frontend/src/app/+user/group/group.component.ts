@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { FrontendGroup, Group } from "../../models/user-group";
-import { Observable, of, Subject } from "rxjs";
+import { Observable, of } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
@@ -38,7 +38,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   selectedGroupForm = new FormControl();
   selectedGroup: FrontendGroup;
-  selectedGroup$: Subject<FrontendGroup>;
   isLoading = false;
   showMore = false;
   tableWidth: number;
@@ -47,14 +46,13 @@ export class GroupComponent implements OnInit, AfterViewInit {
     private modalService: ModalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private groupService: GroupService,
+    public groupService: GroupService,
     private configService: ConfigService,
     public userManagementService: UserManagementService,
     private session: SessionQuery
   ) {
     this.searchQuery = "";
     this.tableWidth = this.session.getValue().ui.userTableWidth;
-    this.selectedGroup$ = new Subject<FrontendGroup>();
   }
 
   ngAfterViewInit(): void {
@@ -63,20 +61,24 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.fetchGroups().subscribe();
-    this.selectedGroup$.subscribe((group) => {
-      const previousId = this.selectedGroup?.id;
-      this.selectedGroup = group;
-      if (group && previousId !== group.id) {
-        this.form.reset(group);
-        this.form.markAsPristine();
-      }
-    });
 
     this.form = this.fb.group({
       id: [],
       name: ["", this.forbiddenNameValidator()],
       description: [],
       permissions: [],
+    });
+
+    if (this.groupService.selectedGroup$.value)
+      this.loadGroup(this.groupService.selectedGroup$.value.id);
+
+    this.groupService.selectedGroup$.subscribe((group) => {
+      const previousId = this.selectedGroup?.id;
+      this.selectedGroup = group;
+      if (group && previousId !== group.id) {
+        this.form.reset(group);
+        this.form.markAsPristine();
+      }
     });
   }
 
@@ -113,7 +115,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           if (!fetchedGroup.permissions) {
             fetchedGroup.permissions = new Permissions();
           }
-          this.selectedGroup$.next(fetchedGroup);
+          this.groupService.selectedGroup$.next(fetchedGroup);
           this.form.enable();
           this.isLoading = false;
           this.groupService.getGroupManager(id).subscribe((manager) => {
@@ -121,7 +123,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           });
         });
       } else {
-        this.selectedGroup$.next(this.selectedGroup);
+        this.groupService.selectedGroup$.next(this.selectedGroup);
       }
     });
   }
@@ -130,7 +132,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     const group = this.form.value;
     this.groupService.updateGroup(group).subscribe((group) => {
       if (group) {
-        this.selectedGroup$.next(group);
+        this.groupService.selectedGroup$.next(group);
         this.form.markAsPristine();
         this.loadGroup(group.id);
       }
@@ -153,7 +155,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           if (result) {
             this.groupService.deleteGroup(id).subscribe(() => {
               this.fetchGroups()
-                .pipe(tap(() => this.selectedGroup$.next(null)))
+                .pipe(tap(() => this.groupService.selectedGroup$.next(null)))
                 .subscribe();
             });
           }
