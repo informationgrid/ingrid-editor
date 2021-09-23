@@ -46,7 +46,7 @@ export class UserService {
   /**
    * Get potential Managers for User
    *
-   * These are all Catalog Admins + all MD-Admins visible by the editing admin.
+   * These are all Catalog Admins + all MD-Admins visible by the editing admin + the editing admin.
    * Minus the User forUser himself and minus all Users underneath the User forUser
    *
    * If forGroup is True, the children and the User himself are not filtered out, as they are valid options.
@@ -60,6 +60,9 @@ export class UserService {
     const forUserId = forUser.login;
     const allUsers$ = this.getUsers();
     const catAdmins$ = this.getCatAdmins();
+    const editingUser$ = this.getUser(
+      this.configService.$userInfo.getValue().userId
+    );
     const childrenOfUser$ = this.dataService
       .getUsersForUser(forUserId)
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
@@ -68,15 +71,18 @@ export class UserService {
       allUsers$,
       childrenOfUser$,
       catAdmins$,
-      (allUsers, childrenOfUser, catAdmins) => ({
+      editingUser$,
+      (allUsers, childrenOfUser, catAdmins, editingUser) => ({
         allUsers,
         childrenOfUser,
         catAdmins,
+        editingUser,
       })
     ).pipe(
       map((pair) => {
         // all visible MD-Admins - target itself - target's children
         // + all Cat-Admins except if in targets children
+        // + editing user (current user)
 
         // allUsers + catAdmins without duplicates
         const eligibleManagers = pair.allUsers.concat(
@@ -84,6 +90,8 @@ export class UserService {
             (admin) => !pair.allUsers.find((u) => admin.login == u.login)
           )
         );
+        // add editing user
+        eligibleManagers.push(pair.editingUser);
 
         // filter out children, self and non admins
         return eligibleManagers.filter(
