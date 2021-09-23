@@ -62,11 +62,10 @@ export class AdminUserPage extends BasePage {
   }
 
   static removeGroupFromUser(groupName: string) {
-    cy.get('[data-cy=Gruppen] div.clickable')
-      .contains(groupName)
+    cy.contains('[data-cy=Gruppen] div.clickable', groupName)
       .trigger('mouseover')
-      .parent()
-      .parent()
+      /*.parent()
+      .parent()*/
       .find('[data-mat-icon-name="Entfernen"]')
       .click({ force: true });
   }

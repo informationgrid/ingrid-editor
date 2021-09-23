@@ -439,6 +439,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite('test_z, test_z', 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
   });
 
   it('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
@@ -469,6 +470,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
     UserAuthorizationPage.changeAccessRightFromReadToWrite('Ordner_Ebene_2C', 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
   });
 
   it('meta data admin with groups should not be able to move a data document to a read-only folder', () => {

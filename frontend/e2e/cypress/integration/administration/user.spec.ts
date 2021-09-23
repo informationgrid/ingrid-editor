@@ -330,6 +330,7 @@ describe('User', () => {
 
     // remove group-connection from user
     AdminUserPage.removeGroupFromUser(groupName);
+    AdminUserPage.toolbarSaveUser();
     cy.get('[data-cy=Gruppen]').should('contain', groupName2);
     AdminUserPage.removeGroupFromUser(groupName2);
     AdminUserPage.toolbarSaveUser();

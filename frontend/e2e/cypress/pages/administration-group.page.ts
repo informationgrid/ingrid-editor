@@ -17,8 +17,8 @@ export class AdminGroupPage extends BasePage {
   }
 
   static toolbarSaveUser() {
-    cy.get('[data-cy=toolbar_save_user]').click();
     cy.intercept('PUT', '/api/users/**').as('completeEditingRequest');
+    cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait('@completeEditingRequest');
   }
 
