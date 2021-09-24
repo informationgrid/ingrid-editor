@@ -66,11 +66,28 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.selectedUser.subscribe((user) =>
+    this.selectedUser.subscribe((user) => {
       this.selection.select(
         this.dataSource.data.find((d) => d.login == user?.login)
-      )
-    );
+      );
+
+      if (this.paginator) {
+        const pageNumber = Math.max(
+          0,
+          Math.floor(
+            this.dataSource.data.findIndex((d) => d.login === user?.login) /
+              this.paginator.pageSize
+          )
+        );
+
+        this.paginator.pageIndex = pageNumber;
+        this.paginator.page.next({
+          pageIndex: pageNumber,
+          pageSize: this.paginator.pageSize,
+          length: this.paginator.length,
+        });
+      }
+    });
   }
 
   @ViewChild(MatSort) sort: MatSort;
