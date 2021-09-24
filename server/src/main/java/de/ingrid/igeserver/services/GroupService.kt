@@ -153,12 +153,26 @@ class GroupService @Autowired constructor(
     }
 
     fun removeDocFromGroups(catalogId: String, docId: String) {
+        var wasUpdated = false
+        
         this.getAll(catalogId).forEach { group ->
+            val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
+
             group.permissions?.apply {
                 documents = group.permissions?.documents?.filter { it.get("uuid").asText() != docId } ?: emptyList()
                 addresses = group.permissions?.addresses?.filter { it.get("uuid").asText() != docId } ?: emptyList()
             }
-            update(catalogId, group.id!!, group)
+            val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
+
+            if (countDocsBefore > countDocsAfter) {
+                update(catalogId, group.id!!, group)
+                log.debug("Group ${group.id} must be updated after document '${docId}' was deleted")
+                wasUpdated = true
+            }
+        }
+        
+        if (!wasUpdated) {
+            log.debug("No group had to be updated after deleting document '${docId}'")
         }
     }
 
