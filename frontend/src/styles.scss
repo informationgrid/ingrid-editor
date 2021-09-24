@@ -303,6 +303,10 @@ dynamic-form textarea {
   width: 100%;
 }
 
+::placeholder {
+  color: $ige-placeholder-color !important;
+}
+
 .fieldContainer {
   display: inline-block;
   vertical-align: top;
@@ -413,7 +417,8 @@ ige-root .mat-drawer-container {
 
 .mat-icon {
   &.passive {
-    color: $ige-background-bar;
+    color: #000;
+    opacity: 0.6;
   }
 
   &.document-icon {
@@ -469,7 +474,7 @@ svg {
 }
 
 .no-selection-text {
-  color: $ige-comment-color;
+  color: $ige-hint-color;
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -816,8 +821,7 @@ mat-selection-list.with-menu .mat-list-text {
 }
 
 .legend {
-  color: $ige-text-color;
-  opacity: 0.38;
+  color: $ige-placeholder-color;
   font-size: 14px;
 
   mat-icon {
@@ -830,8 +834,7 @@ mat-selection-list.with-menu .mat-list-text {
   }
 
   svg path {
-    fill: $ige-text-color;
-    opacity: 0.38;
+    fill: $ige-placeholder-color;
   }
 }
 
