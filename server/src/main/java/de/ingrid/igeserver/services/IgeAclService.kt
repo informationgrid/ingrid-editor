@@ -120,6 +120,11 @@ class IgeAclService @Autowired constructor(
             (aclService as JdbcMutableAclService).updateAcl(acl)
         }
     }
+    
+    fun removeAclForDocument(uuid: String) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+        (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
+    }
 
     private fun hasAdminRole(authentication: Authentication): Boolean {
         val roles = authentication.authorities.map { it.authority }

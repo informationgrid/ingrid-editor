@@ -19,7 +19,6 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.model.AclService
 import org.springframework.security.acls.model.MutableAcl
 import org.springframework.security.acls.model.Permission
-import org.springframework.security.acls.model.Sid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -43,7 +42,7 @@ class GroupService @Autowired constructor(
         group.data?.modificationDate = Date()
         group.manager = manager
 
-        updateAcl(group)
+        updateAcl(group, true)
 
         return groupRepo.save(group)
 
@@ -73,73 +72,86 @@ class GroupService @Autowired constructor(
     @Transactional
     fun update(catalogId: String, id: Int, group: Group): Group {
 
-        val oldGroup = get(catalogId, id)
+        val oldGroup = get(catalogId, id)!!
         group.apply {
-            this.id = oldGroup?.id
-            catalog = oldGroup?.catalog
-            manager = group.manager ?: oldGroup?.manager
+            this.id = oldGroup.id
+            catalog = oldGroup.catalog
+            manager = group.manager ?: oldGroup.manager
         }
-        group.data = oldGroup?.data ?: GroupData()
+        group.data = oldGroup.data ?: GroupData()
         group.data?.modificationDate = Date()
 
+        removeAllPermissionsFromGroup(oldGroup)
         updateAcl(group)
 
         return groupRepo.save(group)
 
     }
 
-    private fun updateAcl(group: Group) {
+    private fun removeAllPermissionsFromGroup(group: Group) {
         aclService as JdbcMutableAclService
 
+        getAllDocPermissions(group).forEach {
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val acl = aclService.readAclById(objIdentity) as MutableAcl
+
+            // remove all permission entries except Administration (otherwise entry cannot be modified by a user who did not create it)
+            // new permissions will be added later
+            for (index in acl.entries.size - 1 downTo 0) {
+                if (acl.entries[index].permission != BasePermission.ADMINISTRATION) {
+                    acl.deleteAce(index)
+                }
+            }
+            aclService.updateAcl(acl)
+        }
+    }
+
+    private fun getAllDocPermissions(group: Group): List<JsonNode> {
         val docs = group.permissions?.documents ?: emptyList()
         val addresses = group.permissions?.addresses ?: emptyList()
-        (docs + addresses).forEach {
+
+        return docs + addresses
+    }
+
+    private fun updateAcl(group: Group, withAdministerPermission: Boolean = false) {
+        aclService as JdbcMutableAclService
+
+        getAllDocPermissions(group).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
             } catch (ex: org.springframework.security.acls.model.NotFoundException) {
+                log.warn("Created new ACL for already existing group: ${group.id}")
                 aclService.createAcl(objIdentity)
             }
 
             val sid = GrantedAuthoritySid("GROUP_${group.name}")
 
-            addACEs(acl, it, sid)
+            addACEs(acl, it, sid, withAdministerPermission)
             aclService.updateAcl(acl)
         }
     }
 
-    private fun addACEs(acl: MutableAcl, docPermission: JsonNode, sid: GrantedAuthoritySid) {
-        // write complete new acl entries for this object with this sid
-        deleteAce(sid, acl)
-
-        determinePermission(docPermission)
+    private fun addACEs(
+        acl: MutableAcl,
+        docPermission: JsonNode,
+        sid: GrantedAuthoritySid,
+        withAdministerPermission: Boolean
+    ) {
+        determinePermission(docPermission, withAdministerPermission)
             .forEach {
                 acl.insertAce(acl.entries.size, it, sid, true)
             }
     }
 
-    private fun deleteAce(sid: Sid, acl: MutableAcl) {
-        val nrEntries = acl.entries.size
-        var updated = false
-        for (i in nrEntries - 1 downTo 0) {
-            val accessControlEntry = acl.entries[i]
-            if (accessControlEntry.sid == sid) {
-                acl.deleteAce(i)
-                updated = true
-            }
-        }
-        if (updated) {
-            (aclService as JdbcMutableAclService).updateAcl(acl)
-        }
-    }
-
-    private fun determinePermission(docPermission: JsonNode): List<Permission> {
-        return when (docPermission.get("permission").asText()) {
+    private fun determinePermission(docPermission: JsonNode, includeAdministration: Boolean): List<Permission> {
+        val permission = when (docPermission.get("permission").asText()) {
             "writeTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
             "writeTreeExceptParent" -> listOf(BasePermission.READ, CustomPermission.WRITE_ONLY_SUBTREE)
             "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }
+        return if (includeAdministration) listOf(BasePermission.ADMINISTRATION) + permission else permission
     }
 
     fun remove(catalogId: String, id: Int) {
@@ -149,7 +161,7 @@ class GroupService @Autowired constructor(
     }
 
     fun getUsersOfGroup(id: Int): List<UserInfo> {
-        return userRepo.findByGroups_Id(id);
+        return userRepo.findByGroups_Id(id)
     }
 
     fun removeDocFromGroups(catalogId: String, docId: String) {

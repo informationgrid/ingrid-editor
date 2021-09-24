@@ -331,6 +331,9 @@ class DocumentService @Autowired constructor(
 
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
+        
+        // remove ACL from document
+        aclService.removeAclForDocument(id)
 
         // run post-delete pipe(s)
         val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
