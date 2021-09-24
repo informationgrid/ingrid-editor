@@ -105,6 +105,29 @@ export class TestDoctype extends BaseDoctype {
             },
           },
           {
+            key: "date",
+            type: "datepicker",
+            className: "flex-1",
+            wrappers: ["panel", "form-field"],
+            templateOptions: {
+              externalLabel: "Date",
+              placeholder: "Bitte wählen",
+              appearance: "outline",
+              required: true,
+            },
+          },
+          {
+            key: "range",
+            type: "date-range",
+            wrappers: ["panel", "form-field"],
+            templateOptions: {
+              externalLabel: "Date-Range",
+              placeholder: "Bitte wählen",
+              appearance: "outline",
+              required: true,
+            },
+          },
+          {
             key: "checkbox",
             type: "checkbox",
             wrappers: ["panel", "form-field", "inline-help"],
