@@ -16,6 +16,7 @@ import javax.persistence.Table
     name = "list-array",
     typeClass = ListArrayType::class
 )
+@Where(clause = "deleted = 0")
 class DocumentWrapper {
 
     @Id
@@ -152,6 +153,9 @@ class DocumentWrapper {
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id)")
     var countChildren: Int = 0
 
+    @Column(name = "deleted")
+    var deleted = 0
+    
     @Transient
     fun getState(): String {
         val hasDraft = draft != null

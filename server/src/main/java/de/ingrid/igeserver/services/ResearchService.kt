@@ -105,7 +105,9 @@ class ResearchService {
             """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
                     OR ('{$groupDocUuidsString}') && document_wrapper.path)
             """.trimIndent()
-        val catalogAndPermissionFilter = catalogFilter + permissionFilter
+        
+        val deletedFilter = "document_wrapper.deleted = 0 AND "
+        val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
         val termSearch =
             if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%' OR document_wrapper.uuid ILIKE '${query.term}')"

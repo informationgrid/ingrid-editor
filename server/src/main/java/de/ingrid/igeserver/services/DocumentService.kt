@@ -325,12 +325,19 @@ class DocumentService @Autowired constructor(
             deleteRecursively(catalogId, it.id)
         }
 
-        // remove all document versions which have the same ID
-        docRepo.deleteAllByUuid(id)
+        if (generalProperties.markInsteadOfDelete) {
+            markDocumentAsDeleted(id)
+        } else {
+            // remove all document versions which have the same ID
+            docRepo.deleteAllByUuid(id)
 
-        // remove the wrapper
-        docWrapperRepo.deleteById(id)
-
+            // remove the wrapper
+            docWrapperRepo.deleteById(id)
+            
+            // remove ACL from document
+            aclService.removeAclForDocument(id)
+        }
+        
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
 
