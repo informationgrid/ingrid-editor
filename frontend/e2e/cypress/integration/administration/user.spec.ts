@@ -231,13 +231,8 @@ describe('User', () => {
 
   it('should be possible to delete a user', () => {
     const toDelete = 'toDelete inTest';
-
     AdminUserPage.selectUser(toDelete);
-    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
-    cy.get('button').contains('Löschen').click();
-    cy.get('mat-dialog-content').contains('löschen').should('be.visible');
-    cy.get('[data-cy=confirm-dialog-ok]').click();
-
+    AdminUserPage.deleteUser();
     cy.get('user-table').should('not.contain', toDelete);
   });
 

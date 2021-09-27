@@ -70,6 +70,13 @@ export class AdminUserPage extends BasePage {
       .click({ force: true });
   }
 
+  static deleteUser() {
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('button').contains('Löschen').click();
+    cy.get('mat-dialog-content').contains('löschen').should('be.visible');
+    cy.get('[data-cy=confirm-dialog-ok]').click();
+  }
+
   static addNewGroup(groupname: string) {
     cy.get('mat-toolbar button').contains('Hinzufügen').click();
     cy.get('ige-new-group-dialog').contains('Gruppe hinzufügen').should('be.visible');

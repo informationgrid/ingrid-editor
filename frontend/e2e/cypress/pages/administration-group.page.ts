@@ -10,6 +10,11 @@ export class AdminGroupPage extends BasePage {
     cy.wait(100);
   }
 
+  static getNextPage() {
+    cy.get('.mat-paginator-navigation-next').click();
+    cy.wait(100);
+  }
+
   static toolbarSaveGroup() {
     cy.intercept('GET', '/api/groups/**').as('completeEditingRequest');
     cy.get('[data-cy=toolbar_save_group]').click();

@@ -614,6 +614,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
     // open document
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2C']);
@@ -827,6 +828,8 @@ describe('Catalogue admin', () => {
   it('it should not be possible to add a piece of data twice to a group (#3461)', () => {
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
+    // it might be necessary to turn the page, if there are too many group entries to be displayed at once:
+    AdminGroupPage.getNextPage();
     AdminGroupPage.selectGroup('test_gruppe_5');
     // grant authorization for an address
     AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
