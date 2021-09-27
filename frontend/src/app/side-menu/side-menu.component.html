@@ -8,7 +8,7 @@
         [matTooltipDisabled]="menuIsExpanded"
         [matTooltipShowDelay]="1000"
         [class.light]="!item.data?.onlyAdmin"
-        [class.active]="item.path === currentRoute"
+        [class.active]="currentRoute?.indexOf(item.path) === 0"
     >
         <mat-icon mat-list-icon [svgIcon]="item.data?.icon"> </mat-icon>
         <p mat-line>{{ item.data?.title }}</p>
