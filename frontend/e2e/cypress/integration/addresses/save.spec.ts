@@ -114,7 +114,13 @@ describe('General create addresses/folders', () => {
       // -> error
     });
 
-    xit('should create an organization', () => {});
+    it.only('should create an organization', () => {
+      AddressPage.createAddress(new Address('', '', 'NewOrg'));
+      cy.reload();
+      cy.get(DocumentPage.title).should('have.text', 'NewOrg');
+      // check Organisation input
+      cy.get('.organization input').should('have.value', 'NewOrg');
+    });
   });
 
   describe('Publish addresses', () => {
