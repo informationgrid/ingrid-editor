@@ -42,7 +42,7 @@ class GroupService @Autowired constructor(
         group.data?.modificationDate = Date()
         group.manager = manager
 
-        updateAcl(group, true)
+        updateAcl(group)
 
         return groupRepo.save(group)
 
@@ -70,7 +70,7 @@ class GroupService @Autowired constructor(
     }
 
     @Transactional
-    fun update(catalogId: String, id: Int, group: Group): Group {
+    fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
 
         val oldGroup = get(catalogId, id)!!
         group.apply {
@@ -81,8 +81,10 @@ class GroupService @Autowired constructor(
         group.data = oldGroup.data ?: GroupData()
         group.data?.modificationDate = Date()
 
-        removeAllPermissionsFromGroup(oldGroup)
-        updateAcl(group)
+        if (updateAcls) {
+            removeAllPermissionsFromGroup(oldGroup)
+            updateAcl(group)
+        }
 
         return groupRepo.save(group)
 
@@ -113,7 +115,7 @@ class GroupService @Autowired constructor(
         return docs + addresses
     }
 
-    private fun updateAcl(group: Group, withAdministerPermission: Boolean = false) {
+    private fun updateAcl(group: Group) {
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
@@ -127,7 +129,7 @@ class GroupService @Autowired constructor(
 
             val sid = GrantedAuthoritySid("GROUP_${group.name}")
 
-            addACEs(acl, it, sid, withAdministerPermission)
+            addACEs(acl, it, sid)
             aclService.updateAcl(acl)
         }
     }
@@ -135,23 +137,21 @@ class GroupService @Autowired constructor(
     private fun addACEs(
         acl: MutableAcl,
         docPermission: JsonNode,
-        sid: GrantedAuthoritySid,
-        withAdministerPermission: Boolean
+        sid: GrantedAuthoritySid
     ) {
-        determinePermission(docPermission, withAdministerPermission)
+        determinePermission(docPermission)
             .forEach {
                 acl.insertAce(acl.entries.size, it, sid, true)
             }
     }
 
-    private fun determinePermission(docPermission: JsonNode, includeAdministration: Boolean): List<Permission> {
-        val permission = when (docPermission.get("permission").asText()) {
+    private fun determinePermission(docPermission: JsonNode): List<Permission> {
+        return when (docPermission.get("permission").asText()) {
             "writeTree" -> listOf(BasePermission.READ, BasePermission.WRITE)
             "writeTreeExceptParent" -> listOf(BasePermission.READ, CustomPermission.WRITE_ONLY_SUBTREE)
             "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }
-        return if (includeAdministration) listOf(BasePermission.ADMINISTRATION) + permission else permission
     }
 
     fun remove(catalogId: String, id: Int) {
@@ -177,7 +177,7 @@ class GroupService @Autowired constructor(
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
             if (countDocsBefore > countDocsAfter) {
-                update(catalogId, group.id!!, group)
+                update(catalogId, group.id!!, group, false)
                 log.debug("Group ${group.id} must be updated after document '${docId}' was deleted")
                 wasUpdated = true
             }

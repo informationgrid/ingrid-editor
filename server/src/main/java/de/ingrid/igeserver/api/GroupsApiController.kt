@@ -76,7 +76,7 @@ class GroupsApiController @Autowired constructor(
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val updatedGroup = groupService.update(catalogId, id, group)
+        val updatedGroup = groupService.update(catalogId, id, group, true)
         return ResponseEntity.ok(updatedGroup)
     }
 
@@ -103,7 +103,7 @@ class GroupsApiController @Autowired constructor(
         var newManager = catalogService.getUser(userId)
         if (group != null && newManager != null) {
             group.manager = newManager
-            return ResponseEntity.ok(groupService.update(catalogId, id, group))
+            return ResponseEntity.ok(groupService.update(catalogId, id, group, false))
         } else {
             return ResponseEntity.notFound().build()
         }
