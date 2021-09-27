@@ -1,15 +1,15 @@
 import { Component, Input } from "@angular/core";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { map, tap } from "rxjs/operators";
 import { FormUtils } from "../../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
 import { IgeDocument } from "../../../models/ige-document";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 
 @Component({
   selector: "ige-folder-dashboard",
@@ -25,38 +25,43 @@ export class FolderDashboardComponent {
 
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
+  private subscription: Subscription;
+  private query: TreeQuery | AddressTreeQuery;
 
   constructor(
-    private treeQuery: TreeQuery,
+    treeQuery: TreeQuery,
+    addressTreeQuery: AddressTreeQuery,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.query = this.isAddress ? addressTreeQuery : treeQuery;
+  }
 
   updateChildren(model) {
+    if (this.subscription) this.subscription.unsubscribe();
+
     if (!model._hasChildren) {
       this.numChildren = 0;
       return;
     }
 
     // TODO switch to user specific query
-    this.docService
-      .getChildren(model._id, this.isAddress)
-      .pipe(
-        tap((children) => (this.numChildren = children.length)),
-        map((children) =>
-          children
-            .sort(
-              (c1, c2) =>
-                new Date(c2._modified).getTime() -
-                new Date(c1._modified).getTime()
-            )
-            .slice(0, 5)
+
+    // wait for store changes to get children of node
+    this.subscription = this.query.selectAll().subscribe(() => {
+      const childrenFromStore = this.query.getChildren(model._id);
+      this.numChildren = childrenFromStore.length;
+      const latestChildren = childrenFromStore
+        .sort(
+          (c1, c2) =>
+            new Date(c2._modified).getTime() - new Date(c1._modified).getTime()
         )
-      )
-      .subscribe((result) => this.childDocs$.next(result));
+        .slice(0, 5);
+      this.childDocs$.next(latestChildren);
+    });
   }
 
   createNewFolder() {
