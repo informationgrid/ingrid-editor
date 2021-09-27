@@ -63,14 +63,7 @@ export class DeleteDocsPlugin extends Plugin {
         }
       }),
 
-      this.treeQuery.selectActive().subscribe((data) => {
-        this.formToolbarService.setButtonState(
-          "toolBtnRemove",
-          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission)
-        );
-      }),
-
-      this.addressTreeQuery.selectActive().subscribe((data) => {
+      this.tree.selectActive().subscribe((data) => {
         this.formToolbarService.setButtonState(
           "toolBtnRemove",
           data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission)
@@ -137,7 +130,9 @@ export class DeleteDocsPlugin extends Plugin {
     const route = this.forAddress ? "/address" : "/form";
     const parent = currentDoc._parent;
 
-    if (parent) {
+    const parentEntity = this.tree.getEntity(parent);
+
+    if (parent && parentEntity) {
       this.router.navigate([route, { id: currentDoc._parent }]);
     } else {
       this.router.navigate([route]);
