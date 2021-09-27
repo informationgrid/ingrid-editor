@@ -18,7 +18,8 @@
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer",
-    "prepare": "cd .. && husky install frontend/.husky"
+    "prepare": "cd .. && husky install frontend/.husky",
+    "stop-only": "stop-only"
   },
   "private": true,
   "dependencies": {
@@ -83,7 +84,8 @@
     "lint-staged": "^11.0.0",
     "prettier": "2.3.1",
     "source-map-explorer": "^2.5.2",
-    "typescript": "~4.2.4"
+    "typescript": "~4.2.4",
+    "stop-only": "^3.1.2"
   },
   "engines": {
     "npm": "please-use-yarn",
@@ -91,6 +93,7 @@
     "node": ">= 10.0.0"
   },
   "lint-staged": {
-    "*.{ts,scss,js,css,html,md}": "prettier --check"
+    "*.{ts,scss,js,css,html,md}": "prettier --check",
+    "*.spec.ts": "yarn stop-only --folder"
   }
 }
