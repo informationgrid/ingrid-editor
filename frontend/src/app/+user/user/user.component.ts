@@ -206,13 +206,6 @@ export class UserComponent
               title: "Benutzer löschen",
               message:
                 "Möchten Sie den Benutzer " + login + " wirklich löschen?",
-              buttons: [
-                {
-                  text: "Schließen",
-                  alignRight: true,
-                  emphasize: true,
-                },
-              ],
             } as ConfirmDialogData,
           })
           .afterClosed()
