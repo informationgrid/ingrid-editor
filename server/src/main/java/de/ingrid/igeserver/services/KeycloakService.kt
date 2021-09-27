@@ -110,8 +110,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
-        var client: Keycloak
-        val durationStart = Date()
+        val client: Keycloak
         val keycloakPrincipal = principal as KeycloakAuthenticationToken?
         val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
 
@@ -125,8 +124,6 @@ class KeycloakService : UserManagementService {
             .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
             .build()
 
-        val end = Date()
-        log.info("Client init: ${end.time - durationStart.time}")
         return KeycloakCloseableClient(client, keycloakRealm)
     }
 
