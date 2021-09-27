@@ -57,6 +57,7 @@ server/logs
 frontend/cypress/mochawesome-reports/
 /frontend/e2e/cypress/mochawesome-reports/
 /frontend/e2e/cypress/downloads
+frontend/target/surefire-reports/
 /server/.gradle/
 server/src/main/resources/static/
 server/server/build/tmp/
