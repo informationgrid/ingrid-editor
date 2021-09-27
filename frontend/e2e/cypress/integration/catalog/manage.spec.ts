@@ -25,14 +25,14 @@ describe('Catalog management', () => {
     cy.contains('ige-catalog-management mat-card', catalogTitle);
   });
 
-  xit('should not be able to create a new dialogue with an existing name (#3463)', () => {
+  it('should not be able to create a new catalogue with an existing name (#3463)', () => {
     const catalogTitle = 'no_duplicates';
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
     // create catalogue
     cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
     cy.get('mat-dialog-container input').type(catalogTitle);
-    cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
+    cy.intercept('POST', '/api/catalogs').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
     cy.wait('@setNewCatalogue');
     cy.get('ige-catalog-management mat-card').contains(catalogTitle);
