@@ -9,6 +9,6 @@ export const routing = RouterModule.forChild([
     component: UserManagementComponent,
     canActivate: [AuthGuard],
     canDeactivate: [DeactivateGuard],
-    data: { roles: ["admin"] },
+    data: { roles: ["admin"], permission: "manage_users" },
   },
 ]);

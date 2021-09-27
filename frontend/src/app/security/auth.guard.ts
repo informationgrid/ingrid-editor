@@ -34,7 +34,14 @@ export class AuthGuard implements CanActivate {
     }
 
     let neededPermission = route.data.permission;
-    return this.configService.hasPermission(neededPermission);
+    const isAllowed = this.configService.hasPermission(neededPermission);
+    if (isAllowed) {
+      return true;
+    }
+
+    console.warn("User is not allowed to access this resource: " + path);
+    this.router.navigate([""]);
+    return false;
   }
 
   private containsValidPage(validPages: string[], page: string) {
