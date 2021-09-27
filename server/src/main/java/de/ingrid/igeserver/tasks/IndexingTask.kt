@@ -6,6 +6,7 @@ import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -52,8 +53,8 @@ class IndexingTask @Autowired constructor(
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
 
-    @Value("\${app.uuid}")
-    private lateinit var uuid: String
+    @Autowired
+    lateinit var generalProperties: GeneralProperties
 
     /**
      * Indexing of all published documents into an Elasticsearch index.
@@ -175,8 +176,8 @@ class IndexingTask @Autowired constructor(
     private fun indexPrePhase(alias: String, catalogType: String, format: String): Pair<String, String> {
         val catalogProfile = catalogService.getCatalogProfile(catalogType)
 
-        val oldIndex = indexManager.getIndexNameFromAliasName(alias, uuid)
-        val newIndex = IndexManager.getNextIndexName(alias, uuid, "ige-ng-test")
+        val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
+        val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, "ige-ng-test")
         indexManager.createIndex(
             newIndex,
             "base",

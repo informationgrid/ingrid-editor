@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
@@ -38,7 +39,8 @@ class DocumentService @Autowired constructor(
     var docWrapperRepo: DocumentWrapperRepository,
     var catalogRepo: CatalogRepository,
     var aclService: IgeAclService,
-    var groupService: GroupService
+    var groupService: GroupService,
+    var generalProperties: GeneralProperties
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -331,14 +333,16 @@ class DocumentService @Autowired constructor(
 
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
-        
-        // remove ACL from document
-        aclService.removeAclForDocument(id)
 
         // run post-delete pipe(s)
         val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
         postDeletePipe.runFilters(postDeletePayload, filterContext)
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
+    }
+
+    private fun markDocumentAsDeleted(id: String) {
+        val markedDoc = getWrapperByDocumentId(id).apply { deleted = 1 }
+        docWrapperRepo.save(markedDoc)
     }
 
     fun revertDocument(catalogId: String, id: String): Document {

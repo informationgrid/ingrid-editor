@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -44,11 +45,11 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
 
+    @Autowired
+    lateinit var generalProperties: GeneralProperties
+
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
-
-    @Value("\${app.uuid}")
-    private lateinit var uuid: String
 
     override val profiles: Array<String>?
         get() = arrayOf("mcloud")
@@ -90,9 +91,9 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
         context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
         // TODO: Refactor
-        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, uuid)
+        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
         if (oldIndex == null) {
-            oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, uuid, "ige-ng-test")
+            oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, generalProperties.uuid, "ige-ng-test")
             indexManager.createIndex(oldIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
             indexManager.addToAlias(elasticsearchAlias, oldIndex)
         }

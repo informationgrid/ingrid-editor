@@ -35,14 +35,8 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     val log = logger()
 
-    @Value("\${app.enable-csrf:false}")
-    var csrfEnabled = false
-
-    @Value("\${app.enable-cors:false}")
-    private val corsEnabled = false
-
-    @Value("\${app.enable-https:false}")
-    private val httpsEnabled = false
+    @Autowired
+    lateinit var generalProperties: GeneralProperties
 
     inner class RequestResponseLoggingFilter : Filter {
         override fun doFilter(
@@ -131,17 +125,17 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         var http = httpSec
         super.configure(http)
 
-        http = if (csrfEnabled) {
+        http = if (generalProperties.enableCsrf) {
             http.csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and() // make cookies readable within JS
         } else {
             http.csrf().disable()
         }
-        if (!corsEnabled) {
+        if (!generalProperties.enableCors) {
             http = http.cors().disable()
         }
-        if (!httpsEnabled) {
+        if (!generalProperties.enableHttps) {
             http = http.requiresChannel()
                 .anyRequest()
                 .requiresSecure()
