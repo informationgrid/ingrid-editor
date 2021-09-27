@@ -480,19 +480,23 @@ class DocumentService @Autowired constructor(
 
             val preds = queryFields
                 .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
-
+            
+            val combindPreds = if (queryFields.isNotEmpty() && queryFields[0].operator == "OR") {
+                cb.or(*preds.toTypedArray())
+            } else {
+                cb.and(*preds.toTypedArray())
+            }
+            
             var result = cb.and(
                 cb.equal(catalogWrapper.get<String>("identifier"), catalog),
                 cb.equal(wrapper.get<String>("category"), category),
-                cb.and(
-                    *preds.toTypedArray()
-                )
+                combindPreds
             )
 
             // TODO probably performance bottle neck. Analyze and Adapt.
             // necessary for rights management
             val datasetUuids = docWrapperRepo.getAll().map { it?.id }
-            val exp: Expression<String> = wrapper.get<String>("id")
+            val exp: Expression<String> = wrapper.get("id")
             val predicate: Predicate = exp.`in`(datasetUuids)
             result = cb.and(predicate, result)
 

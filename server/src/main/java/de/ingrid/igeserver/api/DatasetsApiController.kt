@@ -14,7 +14,6 @@ import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -93,7 +92,7 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
-        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal as Authentication, it ?: "").canRead }.all { it }
+        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
         if(!(destCanWrite && sourceCanRead))throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
 
@@ -108,7 +107,7 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions
     ): ResponseEntity<Void> {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
-        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal as Authentication, it ?: "").canWrite }.all { it }
+        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it).canWrite }.all { it }
         if(!(destCanWrite && sourceCanWrite))throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -306,7 +305,7 @@ class DatasetsApiController @Autowired constructor(
     private fun isChildOf(childId: String, parentId: String, dbId: String, isAddress: Boolean): Boolean {
 
         val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.map { it.id }
-        if (childrenIds.contains(childId)) return true;
+        if (childrenIds.contains(childId)) return true
 
         childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, dbId, isAddress)) return true }
         return false
@@ -334,10 +333,13 @@ class DatasetsApiController @Autowired constructor(
 
         val category = if (forAddress) "address" else "data"
 
-        val sortDirection = if (sortOrder == "asc") Sort.Direction.ASC else Sort.Direction.DESC
-        val sortColumn = "draft.$sort"
+//        val sortDirection = if (sortOrder == "asc") Sort.Direction.ASC else Sort.Direction.DESC
+//        val sortColumn = "draft.$sort"
         val theQuery = if (query == null) emptyList() else {
-            listOf(QueryField("title", null, QueryType.LIKE, query))
+            listOf(
+                QueryField("title", "OR", QueryType.LIKE, query),
+                QueryField("uuid", "OR", QueryType.LIKE, query)
+            )
         }
         val docs = documentService.find(
             catalogId,
@@ -367,7 +369,7 @@ class DatasetsApiController @Autowired constructor(
         if (documentService.documentExistsNot(id))  return ResponseEntity.notFound().build()
 
         try {
-            val wrapper = documentService.getWrapperByDocumentId(id);
+            val wrapper = documentService.getWrapperByDocumentId(id)
 
             val doc = documentService.getLatestDocument(wrapper)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
