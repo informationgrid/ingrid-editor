@@ -1,140 +1,127 @@
-<ng-container *ngIf="hasData | async; else emptyNavigation">
-    <div class="header-wrapper">
-        <ige-tree-header
-            *ngIf="showHeader"
-            [class.invisible]="isDragging && isAdmin"
-            (reload)="reloadTree(true).subscribe()"
-            [isAddress]="forAddresses"
-            [showOptions]="showHeaderOptions"
-            [showOnlyFolders]="showOnlyFolders"
-            [showMultiSelectButton]="showMultiSelectButton"
-            [checkToggleAll]="selection.allNodesSelected()"
-            [indeterminateToggleAll]="
-                selection.atLeastOneButNotAllNodesSelected()
-            "
-            [multiSelectionModeEnabled]="selection.multiSelectionModeEnabled"
-            (toggleAllSelection)="selection.toggleAllSelection($event)"
-            (toggleView)="toggleView($event)"
-            (edit)="toggleSelectionMode($event)"
-            (open)="handleSelection($event)"
-        ></ige-tree-header>
+<div class="header-wrapper">
+    <ige-tree-header
+        *ngIf="showHeader"
+        [class.invisible]="isDragging && isAdmin"
+        (reload)="reloadTree(true).subscribe()"
+        [isAddress]="forAddresses"
+        [showOptions]="showHeaderOptions"
+        [showOnlyFolders]="showOnlyFolders"
+        [showMultiSelectButton]="hasData && showMultiSelectButton"
+        [showSearch]="hasData"
+        [checkToggleAll]="selection.allNodesSelected()"
+        [indeterminateToggleAll]="selection.atLeastOneButNotAllNodesSelected()"
+        [multiSelectionModeEnabled]="selection.multiSelectionModeEnabled"
+        (toggleAllSelection)="selection.toggleAllSelection($event)"
+        (toggleView)="toggleView($event)"
+        (edit)="toggleSelectionMode($event)"
+        (open)="handleSelection($event)"
+    ></ige-tree-header>
 
-        <div
-            *ngIf="isDragging && isAdmin"
-            class="drop-root"
-            [class.hover]="dragManager.dragNodeExpandOverNode === null"
-            (dragover)="dragManager.handleDragOver($event, null)"
-            (drop)="drop($event, null)"
-        >
-            <div class="zone">
-                <span
-                    >Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
-                    {{ forAddresses ? "Adressen" : "Daten" }}</span
-                >
-            </div>
+    <div
+        *ngIf="isDragging && isAdmin"
+        class="drop-root"
+        [class.hover]="dragManager.dragNodeExpandOverNode === null"
+        (dragover)="dragManager.handleDragOver($event, null)"
+        (drop)="drop($event, null)"
+    >
+        <div class="zone">
+            <span
+                >Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
+                {{ forAddresses ? "Adressen" : "Daten" }}</span
+            >
         </div>
     </div>
+</div>
 
-    <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
-    <mat-tree
-        #treeComponent
-        [dataSource]="dataSource"
-        [treeControl]="treeControl"
+<!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
+<mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl">
+    <!-- cdkDropList (cdkDropListDropped)="drop($event)">-->
+
+    <!-- This is the tree node template for leaf nodes -->
+    <mat-tree-node
+        *matTreeNodeDef="let node"
+        [draggable]="enableDrag"
+        (drop)="drop($event, node)"
+        (dragstart)="handleDragStart($event, node)"
+        (dragend)="handleDragEnd()"
+        matTreeNodePadding
+        matTreeNodePaddingIndent="24"
+        (click)="!disabledCondition(node) && selectNode(node, $event)"
+        [class.active]="node._id === activeNodeId"
+        [class.hide]="showOnlyFolders"
+        [class.readonly]="!node.hasWritePermission"
+        [class.rootNode]="node.level === 0"
+        [class.afterExpanded]="node.afterExpanded"
+        [class.disabled]="disabledCondition(node)"
     >
-        <!-- cdkDropList (cdkDropListDropped)="drop($event)">-->
+        <div class="label">
+            <mat-checkbox
+                *ngIf="selection.multiSelectionModeEnabled"
+                [checked]="selection.isSelected(node)"
+                (click)="$event.stopImmediatePropagation()"
+                (change)="selection.nodeSelectionToggle(node, $event)"
+            ></mat-checkbox>
+            <mat-icon
+                [svgIcon]="node.iconClass"
+                [ngClass]="['document-icon', getStateClass(node)]"
+            ></mat-icon>
+            <span>{{ node.title }}</span>
+        </div>
+    </mat-tree-node>
 
-        <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node
-            *matTreeNodeDef="let node"
-            [draggable]="enableDrag"
-            (drop)="drop($event, node)"
-            (dragstart)="handleDragStart($event, node)"
-            (dragend)="handleDragEnd()"
-            matTreeNodePadding
-            matTreeNodePaddingIndent="24"
-            (click)="!disabledCondition(node) && selectNode(node, $event)"
-            [class.active]="node._id === activeNodeId"
-            [class.hide]="showOnlyFolders"
-            [class.readonly]="!node.hasWritePermission"
-            [class.rootNode]="node.level === 0"
-            [class.afterExpanded]="node.afterExpanded"
-            [class.disabled]="disabledCondition(node)"
-        >
+    <!-- This is the tree node template for expandable nodes -->
+    <mat-tree-node
+        *matTreeNodeDef="let node; when: isFolder"
+        [draggable]="enableDrag"
+        (drop)="drop($event, node)"
+        (dragstart)="handleDragStart($event, node)"
+        (dragover)="dragManager.handleDragOver($event, node)"
+        (dragend)="handleDragEnd()"
+        matTreeNodePadding
+        matTreeNodePaddingIndent="24"
+        (click)="handleFolderClick(node, $event)"
+        [class.drop]="dragManager.dragNodeExpandOverNode === node"
+        [class.active]="node._id === activeNodeId"
+        [class.expanded]="treeControl.isExpanded(node)"
+        [class.readonly]="!node.hasWritePermission"
+        [class.rootNode]="node.level === 0"
+        [class.afterExpanded]="node.afterExpanded"
+        [class.disabled]="disabledCondition(node)"
+        [class.folder]="node.type === 'FOLDER'"
+    >
+        <div style="width: 100%">
+            <div fxLayout="row">
+                <button
+                    mat-icon-button
+                    matTreeNodeToggle
+                    class="toggle"
+                    [disabled]="!isExpandable(node)"
+                    [attr.aria-label]="'toggle ' + node.title"
+                >
+                    <mat-icon
+                        *ngIf="isExpandable(node)"
+                        class="mat-icon-rtl-mirror expander animated"
+                    >
+                        {{ isLoading === node ? "autorenew" : "chevron_right" }}
+                    </mat-icon>
+                </button>
+            </div>
+
             <div class="label">
                 <mat-checkbox
-                    *ngIf="selection.multiSelectionModeEnabled"
-                    [checked]="selection.isSelected(node)"
-                    (click)="$event.stopImmediatePropagation()"
+                    *ngIf="selection.showFolderCheckbox()"
                     (change)="selection.nodeSelectionToggle(node, $event)"
+                    (click)="$event.stopImmediatePropagation()"
+                    [checked]="selection.isSelected(node)"
                 ></mat-checkbox>
-                <mat-icon
-                    [svgIcon]="node.iconClass"
-                    [ngClass]="['document-icon', getStateClass(node)]"
-                ></mat-icon>
+
                 <span>{{ node.title }}</span>
+                <ng-container *ngIf="node.isLoading">
+                    <mat-spinner diameter="18"></mat-spinner>
+                </ng-container>
             </div>
-        </mat-tree-node>
+        </div>
+    </mat-tree-node>
+</mat-tree>
 
-        <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node
-            *matTreeNodeDef="let node; when: isFolder"
-            [draggable]="enableDrag"
-            (drop)="drop($event, node)"
-            (dragstart)="handleDragStart($event, node)"
-            (dragover)="dragManager.handleDragOver($event, node)"
-            (dragend)="handleDragEnd()"
-            matTreeNodePadding
-            matTreeNodePaddingIndent="24"
-            (click)="handleFolderClick(node, $event)"
-            [class.drop]="dragManager.dragNodeExpandOverNode === node"
-            [class.active]="node._id === activeNodeId"
-            [class.expanded]="treeControl.isExpanded(node)"
-            [class.readonly]="!node.hasWritePermission"
-            [class.rootNode]="node.level === 0"
-            [class.afterExpanded]="node.afterExpanded"
-            [class.disabled]="disabledCondition(node)"
-            [class.folder]="node.type === 'FOLDER'"
-        >
-            <div style="width: 100%">
-                <div fxLayout="row">
-                    <button
-                        mat-icon-button
-                        matTreeNodeToggle
-                        class="toggle"
-                        [disabled]="!isExpandable(node)"
-                        [attr.aria-label]="'toggle ' + node.title"
-                    >
-                        <mat-icon
-                            *ngIf="isExpandable(node)"
-                            class="mat-icon-rtl-mirror expander animated"
-                        >
-                            {{
-                                isLoading === node
-                                    ? "autorenew"
-                                    : "chevron_right"
-                            }}
-                        </mat-icon>
-                    </button>
-                </div>
-
-                <div class="label">
-                    <mat-checkbox
-                        *ngIf="selection.showFolderCheckbox()"
-                        (change)="selection.nodeSelectionToggle(node, $event)"
-                        (click)="$event.stopImmediatePropagation()"
-                        [checked]="selection.isSelected(node)"
-                    ></mat-checkbox>
-
-                    <span>{{ node.title }}</span>
-                    <ng-container *ngIf="node.isLoading">
-                        <mat-spinner diameter="18"></mat-spinner>
-                    </ng-container>
-                </div>
-            </div>
-        </mat-tree-node>
-    </mat-tree>
-</ng-container>
-
-<ng-template #emptyNavigation>
-    <ige-empty-navigation></ige-empty-navigation>
-</ng-template>
+<ige-empty-navigation *ngIf="!hasData"></ige-empty-navigation>

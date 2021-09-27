@@ -19,6 +19,7 @@ export class TreeHeaderComponent implements OnInit {
   @Input() showOnlyFolders = false;
   @Input() showMultiSelectButton = true;
   @Input() multiSelectionModeEnabled = false;
+  @Input() showSearch = true;
 
   @Input() checkToggleAll = false;
   @Input() indeterminateToggleAll = false;

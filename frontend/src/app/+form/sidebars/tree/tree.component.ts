@@ -5,7 +5,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -23,7 +22,6 @@ import { TreeService } from "./tree.service";
 import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
-import { ShortTreeNode } from "./tree.types";
 import { ConfigService } from "../../../services/config/config.service";
 
 export enum TreeActionType {
@@ -40,7 +38,7 @@ export enum TreeActionType {
   providers: [DynamicDatabase],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TreeComponent implements OnInit, OnDestroy {
+export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;
   @Input() expandNodeIds: Subject<string[]>;
   @Input() showHeader = true;
@@ -71,7 +69,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   treeControl: FlatTreeControl<TreeNode>;
 
   dataSource: DynamicDataSource;
-  hasData: Observable<Boolean>;
+  hasData: boolean;
 
   dragManager: DragNDropUtils;
   isDragging = false;
@@ -103,6 +101,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.getLevel,
       this.isExpandable
     );
+    this.treeControl.dataNodes = [];
 
     this.selection = new TreeSelection(this.treeControl);
 
@@ -119,9 +118,13 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.database,
       this.treeService
     );
-    this.hasData = this.dataSource.dataChange.pipe(
-      map((data) => data?.length > 0)
-    );
+    this.dataSource.dataChange
+      .pipe(
+        untilDestroyed(this),
+        map((data) => data?.length > 0),
+        tap((notEmpty) => (this.hasData = notEmpty))
+      )
+      .subscribe();
 
     this.dragManager = new DragNDropUtils(this.treeControl);
     //previous code used to be in constructor
@@ -197,20 +200,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     // return node.hasChildren;
     return node.type === "FOLDER";
   };
-
-  private getTitlesFromNodePath(node: TreeNode): ShortTreeNode[] {
-    if (!node) {
-      return null;
-    }
-    const path = [new ShortTreeNode(node._id, node.title)];
-    let parent = node.parent;
-    while (parent !== null && parent !== undefined) {
-      const parentNode = this.dataSource.getNode(parent);
-      parent = parentNode.parent;
-      path.push(new ShortTreeNode(parentNode._id, parentNode.title));
-    }
-    return path.reverse();
-  }
 
   private getParentNode(node: TreeNode): { node: TreeNode; parent: TreeNode } {
     const nodeIndex = this.dataSource.data.indexOf(node);
@@ -502,8 +491,6 @@ export class TreeComponent implements OnInit, OnDestroy {
     });
     return pos === null ? [] : ids.slice(pos, ids.length);
   }
-
-  ngOnDestroy(): void {}
 
   private handleTreeExpandToInitialNode() {
     if (this.expandNodeIds) {

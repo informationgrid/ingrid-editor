@@ -7,6 +7,7 @@ import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DynamicDatabase } from "./dynamic.database";
 import { TreeService } from "./tree.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -15,6 +16,7 @@ import { TreeService } from "./tree.service";
  * The input will be a json object string, and the output is a list of `FileNode` with nested
  * structure.
  */
+@UntilDestroy()
 @Injectable()
 export class DynamicDataSource {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
@@ -37,14 +39,16 @@ export class DynamicDataSource {
   ) {}
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
-    this._treeControl.expansionModel.changed.subscribe((change) => {
-      if (
-        (change as SelectionChange<TreeNode>).added ||
-        (change as SelectionChange<TreeNode>).removed
-      ) {
-        this.handleTreeControl(change as SelectionChange<TreeNode>);
-      }
-    });
+    this._treeControl.expansionModel.changed
+      .pipe(untilDestroyed(this))
+      .subscribe((change) => {
+        if (
+          (change as SelectionChange<TreeNode>).added ||
+          (change as SelectionChange<TreeNode>).removed
+        ) {
+          this.handleTreeControl(change as SelectionChange<TreeNode>);
+        }
+      });
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(
       map(() => this.data)
