@@ -114,7 +114,7 @@ describe('General create addresses/folders', () => {
       // -> error
     });
 
-    it.only('should create an organization', () => {
+    it('should create an organization', () => {
       AddressPage.createAddress(new Address('', '', 'NewOrg'));
       cy.reload();
       cy.get(DocumentPage.title).should('have.text', 'NewOrg');

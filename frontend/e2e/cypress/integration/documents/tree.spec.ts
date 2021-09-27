@@ -21,10 +21,7 @@ describe('Tree', () => {
 
     cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').should('not.be.visible');
     cy.get('.navigation-header').contains('Zeitbezüge').click();
-    // needs to check up that the screen is on point Zeitbezüge
-    // added a wait to  give cypress a time to change the DOM
-    cy.wait(1000);
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').should('be.visible');
+    cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button', { timeout: 1000 }).should('be.visible');
   });
 
   it('should expand and select the same node when reloading page', () => {
