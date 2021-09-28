@@ -102,7 +102,7 @@ export class CopyCutPastePlugin extends Plugin {
           this.toolbarService.setMenuItemStateOfButton(
             "toolBtnCopy",
             "CUT",
-            true
+            this.query.getActive().every((active) => active?.hasWritePermission)
           );
 
           const parentWithChildrenSelected =
