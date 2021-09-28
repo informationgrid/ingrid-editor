@@ -219,6 +219,21 @@ export class DocumentService {
 
     return this.dataService
       .publish(data)
+      .pipe(
+        catchError((error) => {
+          if (
+            error?.error?.errorText?.indexOf(
+              "No connection to Elasticsearch"
+            ) === 0
+          ) {
+            console.error(error?.error?.errorText);
+            this.messageService.sendError(
+              "Problem beim Veröffentlichen: " + error?.error?.errorText
+            );
+            return this.load(data._id);
+          }
+        })
+      )
       .toPromise()
       .then((json) => {
         const info = this.mapToDocumentAbstracts([json], json._parent)[0];

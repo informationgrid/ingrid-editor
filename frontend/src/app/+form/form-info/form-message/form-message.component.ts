@@ -28,9 +28,7 @@ export interface FormMessageType {
   ],
 })
 export class FormMessageComponent implements OnInit {
-  type: FormMessageType;
-
-  private timer;
+  types: FormMessageType[] = [];
 
   private defaultDuration = 3000;
 
@@ -46,21 +44,19 @@ export class FormMessageComponent implements OnInit {
   }
 
   private handleMessage(type: FormMessageType) {
-    clearTimeout(this.timer);
-
-    this.type = type;
+    this.types.push(type);
 
     if (type.severity === "info") {
-      this.timer = setTimeout(
-        () => this.resetMessage(),
+      setTimeout(
+        () => this.resetMessage(type),
         type.duration || this.defaultDuration
       );
     }
     this.cdr.markForCheck();
   }
 
-  private resetMessage() {
-    this.type = null;
+  resetMessage(type: FormMessageType) {
+    this.types = this.types.filter((t) => t !== type);
     this.cdr.markForCheck();
   }
 

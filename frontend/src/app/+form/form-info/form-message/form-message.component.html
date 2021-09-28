@@ -1,6 +1,6 @@
 <div
     class="wrapper"
-    *ngIf="type"
+    *ngFor="let type of types"
     [ngClass]="type.severity"
     [@slideDown]
     data-cy="form-message"
@@ -11,7 +11,7 @@
     </span>
     <ng-container *ngIf="type.severity === 'error'">
         <div fxFlex></div>
-        <button mat-icon-button>
+        <button mat-icon-button (click)="resetMessage(type)">
             <mat-icon>close</mat-icon>
         </button>
     </ng-container>
