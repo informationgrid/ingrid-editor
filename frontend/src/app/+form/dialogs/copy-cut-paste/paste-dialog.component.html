@@ -21,6 +21,7 @@
         mat-stroked-button
         color="primary"
         data-cy="create-applyLocation"
+        [disabled]="!isAdmin && selection === null"
         [mat-dialog-close]="{ selection: selection, path: path }"
     >
         {{ data.buttonText }}

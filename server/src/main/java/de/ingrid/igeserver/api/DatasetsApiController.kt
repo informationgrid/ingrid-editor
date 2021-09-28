@@ -148,7 +148,7 @@ class DatasetsApiController @Autowired constructor(
         // also copied docs need new ID
         listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
 
-        val copiedParent = documentService.createDocument(catalogId, doc, origParentId, isAddress, false) as ObjectNode
+        val copiedParent = documentService.createDocument(catalogId, doc, options.destId, isAddress, false) as ObjectNode
 
         if (options.includeTree) {
             val count = handleCopySubTree(catalogId, copiedParent, origParentId, options, isAddress)
