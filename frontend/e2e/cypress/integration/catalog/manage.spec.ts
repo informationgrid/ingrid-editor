@@ -35,14 +35,15 @@ describe('Catalog management', () => {
     cy.intercept('POST', '/api/catalogs').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
     cy.wait('@setNewCatalogue');
-    cy.get('ige-catalog-management mat-card').contains(catalogTitle);
+    cy.contains('ige-catalog-management mat-card', catalogTitle);
 
     // try to create new catalogue with existing name
     cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
     cy.get('mat-dialog-container input').type(catalogTitle);
     cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait('@setNewCatalogue').its('response.statusCode').should('eq', 400);
+    // except failing server communication
+    cy.wait('@setNewCatalogue').its('response.statusCode').should('not.eq', 200);
   });
 
   it('should modify an existing catalog', () => {

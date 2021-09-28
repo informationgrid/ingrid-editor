@@ -50,11 +50,11 @@ describe('User without authorizations', () => {
 
   it('Author should see neither documents nor addresses', () => {
     DocumentPage.visit();
-    // if there are data to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+    // check if no documents are listed
+    cy.get('ige-tree ige-empty-navigation');
     AddressPage.visit();
-    // if there are addresses to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+    // check if no data are listed
+    cy.get('ige-tree ige-empty-navigation');
   });
 
   it('author without authorizations should not be able to create a data folder', () => {
@@ -270,11 +270,11 @@ describe('Meta data administrator without groups', () => {
 
   it('meta data administrator without groups should see neither documents nor addresses (#2635)', () => {
     DocumentPage.visit();
-    // if there are data to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+    // check if no documents are listed
+    cy.get('ige-tree ige-empty-navigation');
     AddressPage.visit();
-    // if there are addresses to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+    // check if no data are listed
+    cy.get('ige-tree ige-empty-navigation');
   });
 
   it('should show no groups to a metadata-administrator without groups', () => {
@@ -821,6 +821,15 @@ describe('Meta data administrator with a group', () => {
     cy.get('[data-cy="Rolle"]').click();
     // make sure option role = catalog administrator is not available
     cy.contains('.mat-option', 'Katalog-Administrator').should('not.exist');
+  });
+
+  it('meta data admin should not be able to access catalog management (#2874)', () => {
+    DashboardPage.visit();
+    // check if url of catalog management is accessible
+    // check for catalog management in side bar
+    cy.contains('ige-side-menu .mat-list-item', 'Katalog').should('not.exist');
+    // check for catalog management in header menu
+    cy.contains('.mat-menu-panel .mat-menu-item', 'Katalogverwaltung').should('not.exist');
   });
 });
 

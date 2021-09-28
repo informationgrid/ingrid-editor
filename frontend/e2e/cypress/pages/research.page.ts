@@ -4,11 +4,23 @@ export class ResearchPage {
   static url = '/research';
 
   static visit(): Chainable {
-    return cy.visit('/research');
+    return cy.visit('research');
   }
 
   static search(query: string) {
+    // version without checking server request:
     return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(500);
+
+    /*//Alternative to make sure the search term has been typed in completely
+    cy.intercept('POST', '/api/search/query', req => {
+      expect(req.body.term).to.equal(query);
+    }).as('waitForFullSearchTerm');
+    cy.get('.mat-form-field-infix > .mat-input-element')
+      .type(query)
+      .should(el => {
+        cy.wait('@waitForFullSearchTerm');
+        return el;
+      });*/
   }
 
   /**
