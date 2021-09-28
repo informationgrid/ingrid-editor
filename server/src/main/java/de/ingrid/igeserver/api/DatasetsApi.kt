@@ -45,6 +45,7 @@ interface DatasetsApi {
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
+            @Parameter(description = "If we want to unpublish a document then this parameter has to be set to true.") @RequestParam(value = "unpublish", required = false) unpublish: Boolean,
             @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) revert: Boolean): ResponseEntity<JsonNode>
 
     @Operation(description = "Copy a dataset or tree under another dataset")

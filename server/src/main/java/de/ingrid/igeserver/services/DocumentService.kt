@@ -3,6 +3,9 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.GeneralProperties
@@ -22,7 +25,9 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.repository.UserRepository
+import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
@@ -73,6 +78,12 @@ class DocumentService @Autowired constructor(
 
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
+
+    @Autowired
+    private lateinit var indexManager: IndexManager
+
+    @Value("\${elastic.alias}")
+    private lateinit var elasticsearchAlias: String
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
@@ -281,8 +292,7 @@ class DocumentService @Autowired constructor(
         }
 
         // save wrapper
-        val updatedWrapper = docWrapperRepo.save(preUpdatePayload.wrapper)
-
+        val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
         val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish)
         return getLatestDocument(postWrapper)
     }
@@ -367,6 +377,39 @@ class DocumentService @Autowired constructor(
         publishedDoc.state = DocumentState.PUBLISHED.value
 
         return publishedDoc
+    }
+
+    fun unpublishDocument(catalogId: String, id: String): Document {
+        // remove publish
+        val wrapper = getWrapperByDocumentId(id)
+        assert(wrapper.published != null)
+        
+        // if no draft version exists, move published version to draft
+        if (wrapper.draft == null) {
+            wrapper.draft = wrapper.published
+            wrapper.published = null
+        } else {
+            // else delete published version which automatically sets published version in wrapper to null
+            docRepo.delete(wrapper.published!!)
+        }
+        docWrapperRepo.save(wrapper)
+        
+        // remove from index
+        try {
+            val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+            val info = IndexInfo().apply { 
+                realIndexName = oldIndex
+                toType = "base"
+                toAlias = elasticsearchAlias
+            }
+            indexManager.delete(info, id, true)
+        } catch (ex: NoNodeAvailableException) {
+            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+        }
+
+        // update state
+        wrapper.draft!!.state = DocumentState.DRAFT.value
+        return wrapper.draft!!
     }
 
     fun getDocumentStatistic(catalogId: String): StatisticResponse {

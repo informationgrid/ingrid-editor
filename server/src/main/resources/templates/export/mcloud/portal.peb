@@ -77,6 +77,8 @@
             {% if not model.hasSingleSpatial %}
                 ]
             }
+            {% else %}
+              null
             {% endif %}
         ,
         "spatial_text": "{{ model.spatialTitels | join(',') }}",

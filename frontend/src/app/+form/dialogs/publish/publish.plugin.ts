@@ -24,6 +24,7 @@ import { SessionStore } from "../../../store/session.store";
 import { ServerValidation } from "../../../server-validation.util";
 import { FormStateService } from "../../form-state.service";
 import { AbstractControl, FormGroup } from "@angular/forms";
+import { filter } from "rxjs/operators";
 
 @Injectable()
 export class PublishPlugin extends Plugin {
@@ -97,10 +98,12 @@ export class PublishPlugin extends Plugin {
     // add event handler for revert
     const toolbarEventSubscription =
       this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === "REVERT") {
+        if (eventId === this.eventRevertId) {
           this.revert();
-        } else if (eventId === "PUBLISH") {
+        } else if (eventId === this.eventPublishId) {
           this.publish();
+        } else if (eventId === this.eventUnpublishId) {
+          this.showUnpublishDialog();
         }
       });
 
@@ -147,6 +150,34 @@ export class PublishPlugin extends Plugin {
         "Es müssen alle Felder korrekt ausgefüllt werden."
       );
     }
+  }
+
+  private showUnpublishDialog() {
+    const message =
+      "Wollen Sie die Veröffentlichung von diesem Datensatz wirklich zurückziehen?";
+
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Veröffentlichung zurückziehen",
+          message,
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Zurückziehen",
+              id: "confirm",
+              emphasize: true,
+              alignRight: true,
+            },
+          ],
+        },
+        maxWidth: 700,
+      })
+      .afterClosed()
+      .pipe(filter((confirmed) => confirmed))
+      .subscribe(() => {
+        this.unpublish(this.getIdFromFormData());
+      });
   }
 
   private calculateErrors(controls: { [p: string]: AbstractControl }) {
@@ -233,6 +264,12 @@ export class PublishPlugin extends Plugin {
         this.eventRevertId,
         loadedDocument !== null && loadedDocument._state === "PW"
       );
+      this.formToolbarService.setMenuItemStateOfButton(
+        "toolBtnPublish",
+        this.eventUnpublishId,
+        loadedDocument !== null &&
+          (loadedDocument._state === "PW" || loadedDocument._state === "P")
+      );
     });
   }
 
@@ -296,5 +333,9 @@ export class PublishPlugin extends Plugin {
 
   private getIdFromFormData() {
     return this.getFormValue()["_id"];
+  }
+
+  private unpublish(id: string) {
+    this.storageService.unpublish(id).subscribe();
   }
 }

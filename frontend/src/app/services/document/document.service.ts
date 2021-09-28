@@ -250,6 +250,29 @@ export class DocumentService {
       });
   }
 
+  unpublish(id: string): Observable<any> {
+    return this.dataService.unpublish(id).pipe(
+      catchError((error) => {
+        if (
+          error?.error?.errorText?.indexOf("No connection to Elasticsearch") ===
+          0
+        ) {
+          console.error(error?.error?.errorText);
+          this.messageService.sendError(
+            "Problem beim Entziehen der Veröffentlichung: " +
+              error?.error?.errorText
+          );
+          return this.load(id);
+        }
+      }),
+      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      tap((json) =>
+        this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
+      ),
+      tap(() => this.reload$.next(id))
+    );
+  }
+
   delete(ids: string[], isAddress: boolean): Promise<void> {
     return new Promise((resolve) => {
       this.dataService.delete(ids).subscribe((res) => {
@@ -282,7 +305,7 @@ export class DocumentService {
       ),
       // tap(json => this.treeStore.update(id, json[0])),
       // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
-      tap((json) => this.reload$.next(id))
+      tap(() => this.reload$.next(id))
       // catchError( err => this.errorService.handle( err ) )
     );
   }

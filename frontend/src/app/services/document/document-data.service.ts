@@ -62,14 +62,21 @@ export class DocumentDataService {
     }
   }
 
+  unpublish(id: string): Observable<any> {
+    return this.http.put(
+      this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
+      {}
+    );
+  }
+
   delete(ids: string[]): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids, {
       responseType: "text",
     });
   }
 
-  revert(id: string): Observable<any> {
-    return this.http.put(
+  revert(id: string): Observable<IgeDocument> {
+    return this.http.put<IgeDocument>(
       this.configuration.backendUrl + "datasets/" + id + "?revert=true",
       {}
     );

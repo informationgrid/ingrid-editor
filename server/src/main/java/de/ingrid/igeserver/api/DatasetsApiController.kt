@@ -60,15 +60,18 @@ class DatasetsApiController @Autowired constructor(
         id: String,
         data: JsonNode,
         publish: Boolean,
+        unpublish: Boolean,
         revert: Boolean
     ): ResponseEntity<JsonNode> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val resultDoc = if (revert) {
-            documentService.revertDocument(dbId, id)
+            documentService.revertDocument(catalogId, id)
+        } else if (unpublish){
+            documentService.unpublishDocument(catalogId, id)
         } else {
             val doc = documentService.convertToDocument(data)
-            documentService.updateDocument(dbId, id, doc, publish)
+            documentService.updateDocument(catalogId, id, doc, publish)
         }
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)

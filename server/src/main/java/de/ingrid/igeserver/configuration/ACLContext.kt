@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.configuration.acl.CustomPermissionFactory
+import de.ingrid.igeserver.configuration.acl.IgeAclPermissionCacheOptimizer
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -69,7 +70,7 @@ class ACLContext {
         val expressionHandler = DefaultMethodSecurityExpressionHandler()
         val permissionEvaluator = IgeAclPermissionEvaluator(aclService())
         expressionHandler.setPermissionEvaluator(permissionEvaluator)
-        expressionHandler.setPermissionCacheOptimizer(AclPermissionCacheOptimizer(aclService()))
+        expressionHandler.setPermissionCacheOptimizer(IgeAclPermissionCacheOptimizer(aclService()))
         return expressionHandler
     }
 
