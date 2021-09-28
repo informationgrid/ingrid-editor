@@ -54,7 +54,12 @@ export interface StickyHeaderInfo {
 export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() form: FormGroup;
 
-  @Input() model: IgeDocument;
+  _model: IgeDocument;
+  @Input() set model(value: IgeDocument) {
+    this._model = value;
+    this.docIcon = this.profileService.getDocumentIcon(value);
+    this.state = DocumentUtils.getStateClass(value._state, value._type);
+  }
 
   @Input() sections: string[] = [];
   @Input() parentContainer: HTMLElement;
@@ -69,6 +74,8 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
   showScrollHeader = false;
   rootName: string;
+  docIcon: string;
+  state: string;
   private initialHeaderOffset: number;
   private store: AddressTreeStore | TreeStore;
   private query: AddressTreeQuery | TreeQuery;
@@ -166,15 +173,6 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     this.store.update({
       scrollPosition: top,
     });
-  }
-
-  getIcon() {
-    return this.profileService.getDocumentIcon(this.form.value);
-  }
-
-  // TODO: refactor since it's used in tree-component also
-  getStateClass() {
-    return DocumentUtils.getStateClass(this.model._state, this.model._type);
   }
 
   async scrollToTreeNode(nodeId: string) {

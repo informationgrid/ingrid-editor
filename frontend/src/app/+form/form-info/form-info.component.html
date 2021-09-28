@@ -10,7 +10,7 @@
 
         <ige-header-title-row
             [form]="form"
-            [model]="model"
+            [model]="_model"
             [sections]="sections"
             [disableEdit]="forAddress"
         ></ige-header-title-row>
@@ -26,9 +26,9 @@
     <div>
         <div class="document-type">
             <mat-icon
-                [svgIcon]="getIcon()"
+                [svgIcon]="docIcon"
                 [title]="form?.get('title')?.value"
-                [ngClass]="['document-icon', getStateClass()]"
+                [ngClass]="['document-icon', state]"
             ></mat-icon>
         </div>
 
