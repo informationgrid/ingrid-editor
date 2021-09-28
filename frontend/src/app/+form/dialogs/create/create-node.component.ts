@@ -57,7 +57,7 @@ export class CreateNodeComponent implements OnInit {
   );
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.isAdmin();
-  selectedLocation: string;
+  selectedLocation: string = null;
   pathWithWritePermission = false;
   private query: TreeQuery | AddressTreeQuery;
 
@@ -160,7 +160,7 @@ export class CreateNodeComponent implements OnInit {
 
   jumpToTree(id: string) {
     this.selectedPage = 1;
-    if (id !== null && !this.pathWithWritePermission) {
+    if (id !== null && this.pathWithWritePermission) {
       this.jumpedTreeNodeId = id;
     }
   }
