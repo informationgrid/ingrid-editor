@@ -824,8 +824,13 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin should not be able to access catalog management (#2874)', () => {
-    DashboardPage.visit();
-    // check if url of catalog management is accessible
+    DocumentPage.visit();
+    // check if url of catalog management is accessible illegally
+    let link = '/catalogs';
+    cy.request(link, { failOnStatusCode: false }).then(response => {
+      expect(response.status).not.to.eq(200);
+    });
+
     // check for catalog management in side bar
     cy.contains('ige-side-menu .mat-list-item', 'Katalog').should('not.exist');
     // check for catalog management in header menu
@@ -918,7 +923,28 @@ describe('Catalogue admin', () => {
     cy.get('.user-title').contains('leere_Gruppe');
   });
 
-  it.only('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
+  it('catalogue admin is warned when assigning groups different rights in the same hierarchy tree (#2764)', () => {
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('leere_Gruppe');
+    cy.get('.user-title').contains('leere_Gruppe');
+    AdminGroupPage.openAddDocumentsDialog('Daten');
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], true);
+    cy.get('mat-dialog-actions button').eq(1).click();
+    AdminGroupPage.toolbarSaveGroup();
+
+    // add folder higher up in the hierarchy
+    AdminGroupPage.openAddDocumentsDialog('Daten');
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A'], true);
+    cy.get('mat-dialog-actions button').eq(1).click();
+    cy.contains('mat-dialog-container', 'Achtung! Überschreibt folgende Unterrechte:');
+    // close warning box
+    cy.get('mat-dialog-actions button').eq(2).click();
+    // close box for adding documents
+    cy.contains('mat-dialog-actions button', 'Abbrechen').click;
+  });
+
+  it('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
     const login = 'meta';
     cy.visit('user');
     AdminUserPage.selectUser('Test Verantwortlicher');
