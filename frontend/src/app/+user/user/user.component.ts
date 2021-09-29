@@ -229,9 +229,9 @@ export class UserComponent
             data: {
               title: "Verantwortung abgeben",
               message:
-                "Der Benutzer ist aktuell für folgende Nutzer verantwortlich ist:\n\n" +
+                "Der Benutzer ist aktuell für folgende Nutzer verantwortlich:\n\n" +
                 managedUsers.join("\n") +
-                "\n\nBitte wählen Sie im Nächsten Schritt einen neuen Verantwortlichen",
+                "\n\nBitte wählen Sie im nächsten Schritt einen neuen Verantwortlichen",
               buttons: [
                 { text: "Abbrechen" },
                 {
