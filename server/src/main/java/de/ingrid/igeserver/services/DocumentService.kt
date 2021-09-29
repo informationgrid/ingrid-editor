@@ -79,8 +79,8 @@ class DocumentService @Autowired constructor(
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
 
-    @Autowired
-    private lateinit var indexManager: IndexManager
+    @Autowired(required = false)
+    private var indexManager: IndexManager? = null
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -395,21 +395,27 @@ class DocumentService @Autowired constructor(
         docWrapperRepo.save(wrapper)
         
         // remove from index
-        try {
-            val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
-            val info = IndexInfo().apply { 
-                realIndexName = oldIndex
-                toType = "base"
-                toAlias = elasticsearchAlias
-            }
-            indexManager.delete(info, id, true)
-        } catch (ex: NoNodeAvailableException) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
-        }
+        removeFromIndex(id)
 
         // update state
         wrapper.draft!!.state = DocumentState.DRAFT.value
         return wrapper.draft!!
+    }
+
+    private fun removeFromIndex(id: String) {
+        try {
+            if (indexManager != null) {
+                val oldIndex = indexManager!!.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+                val info = IndexInfo().apply {
+                    realIndexName = oldIndex
+                    toType = "base"
+                    toAlias = elasticsearchAlias
+                }
+                indexManager!!.delete(info, id, true)
+            }
+        } catch (ex: NoNodeAvailableException) {
+            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+        }
     }
 
     fun getDocumentStatistic(catalogId: String): StatisticResponse {
