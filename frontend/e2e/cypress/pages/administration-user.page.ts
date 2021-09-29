@@ -93,7 +93,7 @@ export class AdminUserPage extends BasePage {
     cy.get('#formUser [data-mat-icon-name=Mehr]').click();
     cy.get('.mat-menu-content').children().first().click();
     cy.get('ige-edit-manager-dialog').find('.mat-select-arrow').click();
-    cy.get('[role="listbox"]').contains('mat-option', name).click();
+    cy.get('[role="listbox"]').should('be.visible').contains('mat-option', name).click();
     cy.intercept('GET', /api\/users\//).as('setManager');
     cy.contains('.mat-button-wrapper', 'Zuweisen').click();
     cy.wait('@setManager').its('response.body.manager').should('eq', name);
@@ -106,11 +106,11 @@ export class AdminUserPage extends BasePage {
       return;
     }
     // when parameter manager is there, the action is not expected to fail
-    cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich ist');
+    cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich');
     cy.contains('button', 'Verantwortlichen auswählen').click();
     cy.get('mat-dialog-container .mat-select-arrow').click();
     //cy.intercept('POST', /api\/users\//).as('setManager');
-    cy.contains('[role="listbox"] mat-option', manager, { timeout: 6000 }).click();
+    cy.contains('[role="listbox"] mat-option', manager, { timeout: 10000 }).click();
     cy.intercept('POST', '/api/users/' + '*' + '/manager' + '*').as('waitForSelection');
     cy.contains('mat-dialog-container button', 'Zuweisen').click();
     cy.wait('@waitForSelection');

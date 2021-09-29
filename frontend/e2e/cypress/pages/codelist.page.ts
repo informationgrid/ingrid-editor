@@ -60,6 +60,6 @@ export class CodelistPage {
       .parent()
       .find('[data-mat-icon-name=Mehr]')
       .click({ force: true });
-    cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')').click();
+    cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
   }
 }
