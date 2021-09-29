@@ -11,6 +11,8 @@
         *ngIf="!showTitleInput"
         fxFlex
         class="label"
+        matTooltip="Der Titel der Adresse ergibt sich aus den Feldern Organisation und Name/Vorname."
+        [matTooltipDisabled]="!disableEdit"
         [class.editable]="!disableEdit && form.enabled"
         (click)="!disableEdit && form.enabled && editTitle()"
     >

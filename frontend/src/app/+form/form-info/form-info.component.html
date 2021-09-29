@@ -12,7 +12,7 @@
             [form]="form"
             [model]="_model"
             [sections]="sections"
-            [disableEdit]="forAddress"
+            [disableEdit]="forAddress && _model._type !== 'FOLDER'"
         ></ige-header-title-row>
     </div>
 </div>
