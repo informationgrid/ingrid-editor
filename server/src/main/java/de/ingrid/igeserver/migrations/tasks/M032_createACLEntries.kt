@@ -49,7 +49,9 @@ class M032_createACLEntries : MigrationBase("0.32") {
         ALTER SEQUENCE acl_sid_id_seq RESTART WITH 2;
     """.trimIndent()
 
-    override fun exec() {
+    override fun exec() {}
+    
+    override fun postExec() {
         ClosableTransaction(transactionManager).use {
 
             entityManager.createNativeQuery(
