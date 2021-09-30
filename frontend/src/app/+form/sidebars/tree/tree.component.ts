@@ -51,9 +51,6 @@ export class TreeComponent implements OnInit {
   @Input() enableDrag = false;
   @Input() hideReadOnly = false;
 
-  /** The node selection must be kept local */
-  selection: TreeSelection;
-
   @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
   @Output() dropped = new EventEmitter<any>();
@@ -62,11 +59,31 @@ export class TreeComponent implements OnInit {
   @ViewChild("treeComponent", { read: ElementRef })
   treeContainerElement: ElementRef;
 
+  /**
+   * A function to determine if a tree node should be disabled.
+   */
+  @Input() disabledCondition: (TreeNode) => boolean = () => {
+    return false;
+  };
+
+  /**
+   * A function to determine if a tree node can be expanded.
+   */
+  @Input() isExpandable = (node: TreeNode) => node.hasChildren;
+
+  getLevel = (node: TreeNode) => node.level;
+
+  treeControl: FlatTreeControl<TreeNode> = new FlatTreeControl<TreeNode>(
+    this.getLevel,
+    this.isExpandable
+  );
+
+  /** The node selection must be kept local */
+  selection: TreeSelection = new TreeSelection(this.treeControl);
+
   // signal to show that a tree node is loading
   isLoading: TreeNode;
   activeNodeId: string = null;
-
-  treeControl: FlatTreeControl<TreeNode>;
 
   dataSource: DynamicDataSource;
   hasData: boolean;
@@ -75,36 +92,16 @@ export class TreeComponent implements OnInit {
   isDragging = false;
   isAdmin = this.configService.isAdmin();
 
-  /**
-   * A function to determine if a tree node should be disabled.
-   */
-  @Input() disabledCondition: (TreeNode) => boolean = () => {
-    return false;
-  };
-
   constructor(
     private database: DynamicDatabase,
     public treeService: TreeService,
     public configService: ConfigService,
     private cdr: ChangeDetectorRef
-  ) {}
-
-  getLevel = (node: TreeNode) => node.level;
-
-  /**
-   * A function to determine if a tree node can be expanded.
-   */
-  @Input() isExpandable = (node: TreeNode) => node.hasChildren;
+  ) {
+    this.treeControl.dataNodes = [];
+  }
 
   ngOnInit(): void {
-    this.treeControl = new FlatTreeControl<TreeNode>(
-      this.getLevel,
-      this.isExpandable
-    );
-    this.treeControl.dataNodes = [];
-
-    this.selection = new TreeSelection(this.treeControl);
-
     this.selection.model.changed
       .pipe(
         untilDestroyed(this),
