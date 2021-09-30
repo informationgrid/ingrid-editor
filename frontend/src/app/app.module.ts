@@ -79,7 +79,11 @@ export function ConfigLoader(configService: ConfigService) {
   return () => {
     return configService
       .load(environment.configFile)
-      .then(() => configService.dummyLoginForDevelopment())
+      .then(
+        () =>
+          // login to backend for creating a development principal
+          !environment.production && configService.dummyLoginForDevelopment()
+      )
       .then(() => configService.getCurrentUserInfo())
       .then((userInfo) => {
         // an admin role has no constraints

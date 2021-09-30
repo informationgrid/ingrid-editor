@@ -44,27 +44,17 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
             response: ServletResponse,
             chain: FilterChain
         ) {
-            val req = request as HttpServletRequest
-            val res = response as HttpServletResponse
-
-            // only react on API-calls
-            if (req.requestURI.startsWith("/api/")) {
-                checkAndModifyResponse(res)
-            } else if (req.requestURI == "/error") {
-                // after setting error of api-request, another filter is ordering a redirect
-                // to the /error page. This we must handle explicitly in order to return our
-                // wanted return code
-                checkAndModifyResponse(res)
+            request as HttpServletRequest
+            response as HttpServletResponse
+            
+            if (request.requestURI == "/error") {
+                // redirect to login-resource, which redirects to keycloak or extract authentication
+                // information from response
+                if (SecurityContextHolder.getContext().authentication == null) {
+                    response.sendRedirect("/sso/login")
+                }
             }
             chain.doFilter(request, response)
-        }
-
-        private fun checkAndModifyResponse(res: HttpServletResponse) {
-            if (SecurityContextHolder.getContext().authentication == null) {
-                val msg = "We seem to be logged out. Throwing exception in order to notify frontend correctly"
-                log.info(msg)
-                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg)
-            }
         }
     }
 

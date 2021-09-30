@@ -1,6 +1,7 @@
 import { Configuration, UserInfo } from "./config.service";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { IgeException } from "../../server-validation.util";
+import { environment } from "../../../environments/environment";
 
 export class ConfigDataService {
   config: Configuration;
@@ -49,6 +50,9 @@ export class ConfigDataService {
               console.error(
                 "Not logged in to keycloak. Please login first from IgeServer (localhost:8550)"
               );
+              if (!environment.production) {
+                window.location.href = "http://localhost:8550";
+              }
               return null;
             } else if (
               e.indexOf("Error occurred while trying to proxy to") !== -1

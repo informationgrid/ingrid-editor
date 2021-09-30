@@ -11,6 +11,7 @@ import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ModalService } from "../../services/modal/modal.service";
 import { IgeError } from "../../models/ige-error";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -35,12 +36,19 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 403) {
           // TODO: redirect?
           this.showError(this.getMessage(error));
-        } else if (error.status === 401) {
+        } else if (
+          error.status === 401 ||
+          (error.status === 404 && error.url.indexOf("/sso/login") !== -1)
+        ) {
           const message =
             "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
           this.showError(message);
           console.error(error);
-          setTimeout(() => window.location.reload(), 5000);
+          setTimeout(() => {
+            environment.production
+              ? window.location.reload()
+              : (window.location.href = "http://localhost:8550");
+          }, 5000);
         }
         // intercept the response error and displace it to the console
         console.log("Error Occurred", error);
