@@ -24,7 +24,8 @@ data class Result(
     val _modified: Date?,
     val _state: String?,
     val _category: String?,
-    var hasWritePermission: Boolean?
+    var hasWritePermission: Boolean?,
+    var hasOnlySubtreeWritePermission: Boolean?
 )
 
 @Service
@@ -229,7 +230,8 @@ class ResearchService {
                 _modified = item[5] as? Date,
                 _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
                 _category = (item[7] as? String),
-                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canWrite
+                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canWrite,
+                hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canOnlyWriteSubtree,
             )
         }
     }

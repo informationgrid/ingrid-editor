@@ -89,4 +89,7 @@ class Document {
 
     @Transient
     var hasWritePermission: Boolean = true
+
+    @Transient
+    var hasOnlySubtreeWritePermission: Boolean = false
 }

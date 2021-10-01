@@ -548,6 +548,8 @@ export class DocumentService {
         _type: doc._type,
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
+        hasOnlySubtreeWritePermission:
+          doc.hasOnlySubtreeWritePermission ?? false,
       };
     });
   }

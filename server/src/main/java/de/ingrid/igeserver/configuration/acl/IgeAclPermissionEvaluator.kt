@@ -80,6 +80,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
         var acl: Acl? = null
         try {
+            // TODO ADAPT FOR SUBTREE RIGHTS
             // Lookup only ACLs for SIDs we're interested in
             acl = this.aclService.readAclById(oid, sids)
             if (acl.isGranted(requiredPermission, sids, false)) {

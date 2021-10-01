@@ -465,6 +465,7 @@ class DocumentService @Autowired constructor(
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
+        objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
 
         return objectNode
     }

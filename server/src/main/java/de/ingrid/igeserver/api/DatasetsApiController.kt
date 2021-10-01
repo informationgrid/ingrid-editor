@@ -94,7 +94,7 @@ class DatasetsApiController @Autowired constructor(
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
-        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").let { it.canWrite || it.canOnlyWriteSubtree }
         val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
         if(!(destCanWrite && sourceCanRead))throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
@@ -109,7 +109,7 @@ class DatasetsApiController @Autowired constructor(
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<Void> {
-        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").canWrite
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "").let { it.canWrite || it.canOnlyWriteSubtree }
         val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it).canWrite }.all { it }
         if(!(destCanWrite && sourceCanWrite))throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
@@ -404,7 +404,7 @@ class DatasetsApiController @Autowired constructor(
             response + PathResponse(
                 id,
                 wrapper.draft?.title ?: wrapper.published?.title ?: "???",
-                PermissionInfo(true, wrapper.hasWritePermission)
+                PermissionInfo(true, wrapper.hasWritePermission, wrapper.hasOnlySubtreeWritePermission)
             )
         )
 

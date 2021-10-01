@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service
 
 data class PermissionInfo(
     val canRead: Boolean = false,
-    val canWrite: Boolean = false
+    val canWrite: Boolean = false,
+    val canOnlyWriteSubtree: Boolean = false
 )
 
 @Service
@@ -57,7 +58,7 @@ class IgeAclService @Autowired constructor(
 
     fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
         if (hasAdminRole(authentication)) {
-            return PermissionInfo(true, true)
+            return PermissionInfo(true, true, false)
         }
 
         return try {
@@ -69,7 +70,8 @@ class IgeAclService @Autowired constructor(
 
             PermissionInfo(
                 isAllowed(acl, BasePermission.READ, sids),
-                isAllowed(acl, BasePermission.WRITE, sids)
+                isAllowed(acl, BasePermission.WRITE, sids),
+                isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
             )
         } catch (nfe: NotFoundException) {
             PermissionInfo()

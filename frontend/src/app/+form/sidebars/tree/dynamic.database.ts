@@ -38,7 +38,11 @@ export class DynamicDatabase {
     const children = this.getChildren(null, forceFromServer, isAddress);
     if (this.hideReadOnly) {
       return children.pipe(
-        map((docs) => docs.filter((doc) => doc.hasWritePermission))
+        map((docs) =>
+          docs.filter(
+            (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
+          )
+        )
       );
     } else {
       return children;
@@ -68,7 +72,11 @@ export class DynamicDatabase {
     const moreChildren = this.docService.getChildren(parentId, isAddress);
     if (this.hideReadOnly) {
       return moreChildren.pipe(
-        map((docs) => docs.filter((doc) => doc.hasWritePermission))
+        map((docs) =>
+          docs.filter(
+            (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
+          )
+        )
       );
     } else {
       return moreChildren;
@@ -99,7 +107,8 @@ export class DynamicDatabase {
           doc._parent,
           doc.icon,
           false,
-          doc.hasWritePermission
+          doc.hasWritePermission,
+          doc.hasOnlySubtreeWritePermission
         )
     );
   }

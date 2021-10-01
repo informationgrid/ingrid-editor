@@ -14,6 +14,7 @@ export class TreeNode {
     public parent: string = null,
     public iconClass: string = "Fachaufgabe",
     public isLoading = false,
-    public hasWritePermission = false
+    public hasWritePermission = false,
+    public hasOnlySubtreeWritePermission = false
   ) {}
 }

@@ -27,6 +27,8 @@ export class IgeDocument {
 
   hasWritePermission?: boolean;
 
+  hasOnlySubtreeWritePermission?: boolean;
+
   // profile specific fields
   [x: string]: any;
 

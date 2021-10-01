@@ -171,4 +171,7 @@ class DocumentWrapper {
 
     @Transient
     var hasWritePermission: Boolean = true
+
+    @Transient
+    var hasOnlySubtreeWritePermission: Boolean = false
 }
