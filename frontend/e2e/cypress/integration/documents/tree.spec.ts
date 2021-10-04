@@ -59,6 +59,16 @@ describe('Tree', () => {
       Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente']);
     });
 
+    it('should move a published document from root path into an opened folder', () => {
+      const docName = 'TestForPublish';
+
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
+
+      CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Neue Testdokumente', true);
+
+      Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente']);
+    });
+
     it('should move a document into a deeply nested folder with hovered node', () => {
       const docName = 'drag&drop to a deep folder';
       const deepFolder = 'Folder';
