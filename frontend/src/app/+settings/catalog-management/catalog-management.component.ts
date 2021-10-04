@@ -79,21 +79,32 @@ export class CatalogManagementComponent implements OnInit {
       .afterClosed()
       .subscribe((catalog: Catalog) => {
         if (catalog) {
-          this.showSpinner = true;
-          this.catalogService
-            .createCatalog(catalog)
-            .subscribe((catResponse: Catalog) => {
-              this.configService.getCurrentUserInfo().then((info) => {
-                if (!info.currentCatalog?.id) {
-                  this.chooseCatalog(catResponse.id);
-                }
-              });
-              this.catalogService
-                .setCatalogAdmin(catResponse.id, [this.currentUserID])
-                .subscribe(() => {
-                  this.showSpinner = false;
+          try {
+            this.showSpinner = true;
+            this.catalogService
+              .createCatalog(catalog)
+              .subscribe((catResponse: Catalog) => {
+                this.configService.getCurrentUserInfo().then((info) => {
+                  if (!info.currentCatalog?.id) {
+                    this.chooseCatalog(catResponse.id);
+                  }
                 });
-            });
+
+                this.catalogService
+                  .setCatalogAdmin(catResponse.id, [this.currentUserID])
+                  .subscribe(
+                    (res) => (this.showSpinner = false),
+                    (err) => (this.showSpinner = false),
+                    () => (this.showSpinner = false)
+                  );
+              });
+          } catch (error) {
+            // handle error, only executed in case of error
+            this.showSpinner = false;
+            console.log(error);
+          } finally {
+            this.showSpinner = false;
+          }
         }
       });
   }
