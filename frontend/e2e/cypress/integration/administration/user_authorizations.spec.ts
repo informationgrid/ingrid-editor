@@ -13,7 +13,12 @@ import Doc = Mocha.reporters.Doc;
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
   beforeEach(() => {
-    cy.kcLogin('meta');
+    try {
+      cy.kcLogout();
+      cy.kcLogin('meta');
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   afterEach(() => {
