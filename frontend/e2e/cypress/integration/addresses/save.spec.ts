@@ -106,12 +106,24 @@ describe('General create addresses/folders', () => {
       Tree.containsNodeWithFolderTitle('Meine Organisation, Riese, Anton');
     });
 
-    xit('should apply initially selected item when switching location for a new folder', () => {
+    it('should apply initially selected item when switching location for a new folder', () => {
       // #1687
+
+      let folderName = 'newFolder';
       // create a new folder/doc/address
+      Tree.openNode(['Neue Testadressen']);
+      cy.get(DocumentPage.Toolbar.NewFolder).click();
+      createDialog.checkPath(['Adressen', 'Neue Testadressen']);
+
       // switch location
+      cy.get('[data-cy=create-changeLocation]').click();
+
       // click 'Übernehmen' without changing the location
-      // -> error
+      cy.get('[data-cy=create-applyLocation]').click();
+
+      // create the folder
+      cy.get('[data-cy=create-title]').type(folderName);
+      cy.get('[data-cy=create-action]').click();
     });
 
     it('should create an organization', () => {
