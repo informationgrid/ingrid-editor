@@ -4,6 +4,7 @@ export class ShortTreeNode {
   constructor(
     public id: string,
     public title: string,
+    public hasOnlySubtreeWritePermission = false,
     public disabled = false
   ) {}
 }

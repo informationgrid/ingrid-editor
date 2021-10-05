@@ -4,5 +4,6 @@ export interface PathResponse {
   permission: {
     canRead: boolean;
     canWrite: boolean;
+    canOnlyWriteSubtree: boolean;
   };
 }

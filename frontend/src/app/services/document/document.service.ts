@@ -676,7 +676,8 @@ export class DocumentService {
         new ShortTreeNode(
           pathItem.id,
           pathItem.title,
-          !pathItem.permission.canWrite
+          !pathItem.permission.canWrite,
+          pathItem.permission.canOnlyWriteSubtree
         )
     );
   }

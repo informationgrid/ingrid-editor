@@ -8,6 +8,9 @@ import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 
 @Injectable({ providedIn: "root" })
 export class AddressTreeQuery extends QueryEntity<TreeState> {
+  rootDocuments$: Observable<DocumentAbstract[]> = this.selectAll({
+    filterBy: (entity) => entity._parent === null,
+  });
   openedDocument$: Observable<DocumentAbstract> = this.select(
     (state) => state.openedDocument
   );

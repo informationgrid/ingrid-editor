@@ -12,6 +12,8 @@ import { filter, take } from "rxjs/operators";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
+import { GroupService } from "../../../services/role/group.service";
+import { UserService } from "../../../services/user/user.service";
 
 export interface DocType {
   id: string;
@@ -34,6 +36,7 @@ export class CreateDocumentPlugin extends Plugin {
     private formularService: FormularService,
     private documentService: DocumentService,
     private messageService: MessageService,
+    private userService: UserService,
     private formStateService: FormStateService,
     private dialog: MatDialog
   ) {
@@ -65,6 +68,23 @@ export class CreateDocumentPlugin extends Plugin {
           this.newDoc();
         }
       });
+    // add disabled condition based on groups
+    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+    query.rootDocuments$.subscribe((data) => {
+      const hasAnyWritePermission = data.some(
+        (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
+      );
+      this.toolbarService.setButtonState("toolBtnNew", hasAnyWritePermission);
+    });
+    query.rootDocuments$.subscribe((data) => {
+      const hasAnyWritePermission = data.some(
+        (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
+      );
+      this.toolbarService.setButtonState(
+        "toolBtnFolder",
+        hasAnyWritePermission
+      );
+    });
 
     this.subscriptions.push(toolbarEventSubscription);
   }

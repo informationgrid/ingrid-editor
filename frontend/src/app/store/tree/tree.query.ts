@@ -9,6 +9,9 @@ import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
   providedIn: "root",
 })
 export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
+  rootDocuments$: Observable<DocumentAbstract[]> = this.selectAll({
+    filterBy: (entity) => entity._parent === null,
+  });
   openedDocument$: Observable<DocumentAbstract> = this.select(
     (state) => state.openedDocument
   );
