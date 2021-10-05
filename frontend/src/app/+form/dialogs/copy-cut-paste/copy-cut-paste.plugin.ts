@@ -194,6 +194,7 @@ export class CopyCutPastePlugin extends Plugin {
       .open(PasteDialogComponent, {
         minWidth: "400px",
         maxWidth: "600px",
+        hasBackdrop: true,
         data: {
           titleText: title,
           buttonText: "Einfügen",

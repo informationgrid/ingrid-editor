@@ -92,6 +92,7 @@ export class DeleteDocsPlugin extends Plugin {
       .subscribe((docs) => {
         this.dialog
           .open(ConfirmDialogComponent, {
+            hasBackdrop: true,
             data: <ConfirmDialogData>{
               message: "Möchten Sie wirklich diese Datensätze löschen:",
               title: "Löschen",

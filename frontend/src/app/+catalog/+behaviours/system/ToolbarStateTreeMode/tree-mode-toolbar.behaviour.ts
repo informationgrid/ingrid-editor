@@ -14,7 +14,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
   id = "plugin.tree.mode.toolbar";
   name = "Toolbar Zustände wenn Mehrfachauswahl im Baum";
   description =
-    "Abhängig vom Auswahlmodus im Baum, werden die Toolbar-Buttons aktivier bzw. deaktiviert";
+    "Abhängig vom Auswahlmodus im Baum, werden die Toolbar-Buttons aktiviert bzw. deaktiviert";
   defaultActive = true;
 
   private activeToolbarItemsInMultiSelect = ["toolBtnCopy", "toolBtnRemove"];
