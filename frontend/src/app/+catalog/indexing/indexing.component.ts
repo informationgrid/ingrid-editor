@@ -69,6 +69,7 @@ export class IndexingComponent implements OnInit {
 
   updatePattern(value: string) {
     this.indexService.setCronPattern(value).subscribe();
+    if (value) this.snackBar.open("Cron-Ausdruck aktualisiert");
   }
 
   translateCronExpression(value: string): { valid: boolean; message: string } {
