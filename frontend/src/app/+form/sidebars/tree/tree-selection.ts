@@ -10,6 +10,8 @@ export class TreeSelection {
 
   multiSelectionModeEnabled = false;
 
+  allowMultiSelectionMode = true;
+
   activeNode: TreeNode = null;
 
   constructor(private treeControl: FlatTreeControl<TreeNode>) {}
@@ -20,6 +22,9 @@ export class TreeSelection {
    * @param $event
    */
   selectNode(node: TreeNode, $event?: MouseEvent) {
+    if (!this.allowMultiSelectionMode) {
+      return this.handleSingleSelection(node);
+    }
     if (this.multiSelectionModeEnabled) {
       this.nodeSelectionToggle(node, $event);
     } else {

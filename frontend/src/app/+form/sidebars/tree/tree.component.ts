@@ -71,6 +71,8 @@ export class TreeComponent implements OnInit {
    */
   @Input() isExpandable = (node: TreeNode) => node.hasChildren;
 
+  @Input() allowMultiSelectionMode = true;
+
   getLevel = (node: TreeNode) => node.level;
 
   treeControl: FlatTreeControl<TreeNode> = new FlatTreeControl<TreeNode>(
@@ -102,6 +104,7 @@ export class TreeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(
         untilDestroyed(this),
