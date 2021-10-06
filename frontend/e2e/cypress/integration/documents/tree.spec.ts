@@ -60,13 +60,17 @@ describe('Tree', () => {
     });
 
     it('should move a published document from root path into an opened folder', () => {
-      const docName = 'TestForPublish';
+      const docName = 'TestDocResearch4';
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
       CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Neue Testdokumente', true);
 
       Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente']);
+
+      CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Daten', true);
+
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
 
     it('should move a document into a deeply nested folder with hovered node', () => {
