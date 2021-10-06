@@ -95,8 +95,8 @@
                         (mousedown)="dragDisabled = false"
                         (mouseup)="dragDisabled = true"
                     >
-                        drag_indicator</mat-icon
-                    >
+                        drag_indicator
+                    </mat-icon>
                 </mat-cell>
             </ng-container>
 
@@ -140,16 +140,16 @@
                     {{ to.columns[batchMode ? i - 1 : i].label }}
                 </mat-header-cell>
                 <mat-cell
-                    *matCellDef="let element"
+                    *matCellDef="let element; let rowIndex = index"
                     [class]="to.columns[batchMode ? i - 1 : i].class"
                 >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     <span
                         [innerHTML]="
-                            formatCell(
-                                to.columns[batchMode ? i - 1 : i],
-                                element[column]
-                            )
+                            formattedCell[rowIndex]
+                                ? formattedCell[rowIndex][column] ??
+                                  element[column]
+                                : element[column]
                         "
                     ></span>
 

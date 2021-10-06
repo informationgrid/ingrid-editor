@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { distinctUntilChanged } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -31,6 +31,7 @@ export class TableTypeComponent
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
   dragDisabled = false;
+  formattedCell: Array<any> = [];
 
   private profile: string;
   private docType: string;
@@ -53,7 +54,11 @@ export class TableTypeComponent
     this.displayedColumnsReadOnly = this.displayedColumns.slice(0, -1);
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), distinctUntilChanged())
+      .pipe(
+        untilDestroyed(this),
+        // distinctUntilChanged(),
+        tap((value) => this.prepareFormattedValues(value))
+      )
       .subscribe(
         (value) => (this.dataSource = new MatTableDataSource<any>(value || []))
       );
@@ -162,12 +167,6 @@ export class TableTypeComponent
     }
   }
 
-  formatCell(column: any, text: string) {
-    return column.templateOptions.formatter
-      ? column.templateOptions.formatter(text)
-      : text;
-  }
-
   drop(event: CdkDragDrop<any, any>) {
     moveItemInArray(
       this.dataSource.data,
@@ -175,5 +174,23 @@ export class TableTypeComponent
       event.currentIndex
     );
     this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+  }
+
+  private prepareFormattedValues(value: any[]) {
+    this.formattedCell = [];
+
+    if (value === null) {
+      return;
+    }
+
+    this.to.columns
+      .filter((column) => column.templateOptions.formatter)
+      .forEach((column) =>
+        value.forEach((row, index) => {
+          this.formattedCell.push({});
+          this.formattedCell[index][column.key] =
+            column.templateOptions.formatter(value[index][column.key]);
+        })
+      );
   }
 }
