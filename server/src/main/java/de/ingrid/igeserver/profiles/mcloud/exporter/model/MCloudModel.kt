@@ -36,7 +36,7 @@ data class MCloudModel(
         }
 
     val hasSingleSpatial: Boolean
-        get() = data.spatials?.size == 1
+        get() = realSpatials?.size == 1
 
     val spatialTitels: List<String>?
         get() = data.spatials?.map { it.title }?.filterNotNull()
