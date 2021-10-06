@@ -385,7 +385,11 @@ export class DocumentPage extends BasePage {
 
   static deleteLoadedNode() {
     cy.get(DocumentPage.Toolbar['Delete']).click();
+    cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');
+    cy.intercept('GET', /api\/info\/refreshSession/).as('actualizeRequest');
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
+    cy.wait('@deleteRequest', { timeout: 10000 });
+    cy.wait('@actualizeRequest', { timeout: 10000 });
   }
 
   static refreshDashboard() {
