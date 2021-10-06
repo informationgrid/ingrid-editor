@@ -19,17 +19,8 @@ class MCloudComponent {
     address: AddressDoctype
   ) {
     const types = [mcloud, folder, test, address];
+
     service.registerProfiles(types);
-
-    /*const helpIdsObservables = types.map(type => contextHelpService.getAvailableHelpFieldIds('mcloud', type.id));
-
-    forkJoin(helpIdsObservables)
-      .pipe(
-        delay(5000),
-        tap(results => results.forEach( (result, index) => types[index].init(result))),
-        tap(() => service.finishProfileInitialization())
-      )
-      .subscribe();*/
   }
 }
 

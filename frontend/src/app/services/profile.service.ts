@@ -78,7 +78,11 @@ export class ProfileService {
 
   registerProfiles(doctypes: Doctype[]) {
     console.log("Registering profile");
-    this.doctypes = doctypes;
+    const notForDemo =
+      this.configService.getConfiguration().featureFlags["NotForDemo"];
+    this.doctypes = notForDemo
+      ? doctypes
+      : doctypes.filter((type) => type.id !== "TestDoc");
 
     // TODO: get ContextHelpIDs of all document types at once to improve speed
     const profile = this.configService.$userInfo.value.currentCatalog.type;
