@@ -77,8 +77,9 @@
             {% if not model.hasSingleSpatial %}
                 ]
             }
-            {% else %}
-              null
+            {% endif %}
+            {% if model.realSpatials is empty %}
+            null
             {% endif %}
         ,
         "spatial_text": "{{ model.spatialTitels | join(',') }}",
