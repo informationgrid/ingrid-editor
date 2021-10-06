@@ -180,7 +180,7 @@ jib {
     }
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'openjdk:11-jre-slim-buster'
+        image = 'openjdk:11-jre-slim'
     }
     to {
         image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
