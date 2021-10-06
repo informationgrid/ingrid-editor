@@ -11,7 +11,7 @@ import {
   MatAutocompleteModule,
 } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
-import { MAT_DATE_LOCALE } from "@angular/material/core";
+import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
@@ -59,6 +59,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CloseScrollStrategy, Overlay } from "@angular/cdk/overlay";
 import { UploadTypeComponent } from "./types/upload-type/upload-type.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { GermanDateAdapter } from "../services/german-date.adapter";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
@@ -165,6 +166,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     {
       provide: MAT_DATE_LOCALE,
       useValue: "de-DE",
+    },
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
     },
     {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
