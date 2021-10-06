@@ -1,8 +1,10 @@
 <page-template [label]="title">
     <ng-container left-side>
-        Sie haben hier die Möglichkeit das Formular anzupassen. Es können
-        diverse Funktionen (de-)aktiviert werden. Die Einstellungen gelten
-        Katalogweit.
+        {{
+            type === "form"
+                ? "Sie haben hier die Möglichkeit das Formular anzupassen. Es können diverse Funktionen (de-)aktiviert werden. Die Einstellungen gelten Katalogweit."
+                : "Hier können katalogspetifische Verhalten angepasst werden."
+        }}
     </ng-container>
 
     <div main-header fxLayout="column" fxFlex fxLayoutAlign="center start">
