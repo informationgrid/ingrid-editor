@@ -80,68 +80,31 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
         var acl: Acl? = null
         try {
-            // TODO ADAPT FOR SUBTREE RIGHTS
+
             // Lookup only ACLs for SIDs we're interested in
             acl = this.aclService.readAclById(oid, sids)
             if (acl.isGranted(requiredPermission, sids, false)) {
                 logger.debug("Access is granted")
-                if (domainObject is DocumentWrapper) {
-                    // TODO: set true, if already checked permission is WRITE
 
-                    if (acl.parentAcl != null) {
-                        // parent: implicit permission. special case: parent has onlySubTree -> then child has write
-                        domainObject.hasWritePermission = try {
-                            acl.parentAcl.isGranted(
-                                listOf(BasePermission.WRITE, CustomPermission.WRITE_ONLY_SUBTREE),
-                                sids,
-                                false
-                            )
-                        } catch (nfe: NotFoundException) {
-                            false
-                        }
-                    } else {
-                        // no parent: needs explicit permissions
-                        domainObject.hasWritePermission = try {
-                            acl.isGranted(listOf(BasePermission.WRITE), sids, false)
-                        } catch (nfe: NotFoundException) {
-                            false
-                        }
-                        domainObject.hasOnlySubtreeWritePermission = try {
-                            acl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
-                        } catch (nfe: NotFoundException) {
-                            false
-                        }
-                    }
-
-                    // set hasOnlySubtreeWritePermission
-                    domainObject.hasOnlySubtreeWritePermission = try {
-                        acl.isGranted(
-                            listOf(CustomPermission.WRITE_ONLY_SUBTREE),
-                            sids,
-                            false
-                        )
-                    } catch (nfe: NotFoundException) {
-                        false
-                    }
-                    // make sure state is valid (hasOnlySubtreeWritePermission and hasWritePermission cannot both be true)
-                    domainObject.hasOnlySubtreeWritePermission =
-                        domainObject.hasOnlySubtreeWritePermission && !domainObject.hasWritePermission
-                }
+                addWritePermissionInfo(domainObject, acl, sids)
                 return true
             }
 
             logger.debug("Returning false - ACLs returned, but insufficient permissions for this principal")
         } catch (nfe: NotFoundException) {
+            // no permission found for the node
+            // try special permission WRITE_ONLY_SUBTREE if we want to write
+            // but make sure we don't want to write on the top node where we only have read access
+            // so we check for the permission on the parent node to make sure we definitely have write
+            // permission being a child of a node with WRITE_ONLY_SUBTREE permission
             try {
                 // check if WRITE_ONLY_SUBTREE Permission was used
                 if (acl != null && permission == "WRITE"
-                    && acl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+                    && acl.parentAcl != null
+                    && acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
                 ) {
-                    // check that it's not the root node, where we only have read access
-                    if (acl.parentAcl != null) {
-                        logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
-                        return true
-                    }
+                    logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
+                    return true
                 }
             } catch (nfe: NotFoundException) {
                 logger.debug("WRITE_ONLY_SUBTREE permission also not found")
@@ -150,6 +113,46 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             logger.debug("Returning false - no ACLs apply for this principal")
         }
         return false
+    }
+
+    private fun addWritePermissionInfo(
+        domainObject: Any?,
+        acl: Acl,
+        sids: List<Sid>?
+    ) {
+        if (domainObject is DocumentWrapper) {
+            // check for simple write permission
+            domainObject.hasWritePermission = try {
+                acl.isGranted(listOf(BasePermission.WRITE), sids, false)
+            } catch (nfe: NotFoundException) {
+                // in case parent has WRITE_ONLY_SUBTREE permission, children can still have write-permission
+                // so check parent ACL if it has the permission
+                try {
+                    acl.parentAcl != null && acl.parentAcl.isGranted(
+                        listOf(CustomPermission.WRITE_ONLY_SUBTREE),
+                        sids,
+                        false
+                    )
+                } catch (nfe: NotFoundException) {
+                    false
+                }
+            }
+
+            // This permission can only occur if we don't have write permission.
+            // Since isGranted also checks parents, the function returns true for child nodes
+            // who actually have write permission.
+            // So only when we don't have write permission and WRITE_ONLY_SUBTREE permission was found
+            // then we can be sure to be on the top node with that permission.
+            domainObject.hasOnlySubtreeWritePermission = try {
+                !domainObject.hasWritePermission && acl.isGranted(
+                    listOf(CustomPermission.WRITE_ONLY_SUBTREE),
+                    sids,
+                    false
+                )
+            } catch (nfe: NotFoundException) {
+                false
+            }
+        }
     }
 
     fun resolvePermission(permission: Any): List<Permission?> {

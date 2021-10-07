@@ -2,10 +2,11 @@ package de.ingrid.igeserver.acl
 
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.GroupService
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.spring.SpringListener
 import org.apache.http.auth.BasicUserPrincipal
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,12 +31,17 @@ class WritePermissionTests: AnnotationSpec() {
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository
+    
+    @Autowired
+    private lateinit var groupService: GroupService
 
     private val GROUP_WRITE_PERMISSION: String = "GROUP_WRITETREE"
 
-    private val rootUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
-    private val childUuid = "8f891e4e-161e-4d2c-6869-03f02ab352dc"
-    private val excludedUuid = "d7cee1a0-5326-44d8-a840-a5f7bde43ab9"
+    private val rootUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
+    private val childUuid = "3fae0d5e-087f-4c26-a580-f59e54296b38"
+    private val childUuidNoParentRead = "7a97b378-b01c-4da7-88e3-623a092d83c1"
+    private val subChildUuidNoParentRead = "0516d6de-9043-4439-a1e6-6b5b9c7bd6d5"
+    private val excludedUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
 
 
     @BeforeEach
@@ -45,7 +51,10 @@ class WritePermissionTests: AnnotationSpec() {
     
     @Test
     fun readAllowedToRootDocumentInGroup() {
-        assertNotNull(docWrapperRepo.findById(rootUuid))
+        val doc = docWrapperRepo.findById(rootUuid)
+        assertNotNull(doc)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
     }
 
     /**
@@ -53,7 +62,10 @@ class WritePermissionTests: AnnotationSpec() {
      */
     @Test
     fun readAllowedToSubDocumentInGroup() {
-        assertNotNull(docWrapperRepo.findById(childUuid))
+        val doc = docWrapperRepo.findById(childUuid)
+        assertNotNull(doc)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
     }
 
     @Test(expected = AccessDeniedException::class)
@@ -64,25 +76,49 @@ class WritePermissionTests: AnnotationSpec() {
     @Test
     fun writeAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findById(rootUuid)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
         docWrapperRepo.save(doc)
     }
 
     @Test
     fun writeAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findById(childUuid)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
         docWrapperRepo.save(doc)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun writeNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findById(excludedUuid)
+        assertFalse(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
         docWrapperRepo.save(doc)
     }
 
+    @Test
+    fun writeAllowedToDocumentInGroupButNoReadToParent() {
+        val doc = docWrapperRepo.findById(childUuidNoParentRead)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
+        docWrapperRepo.save(doc)
+    }
+    
+    @Test
+    fun writeAllowedToSubDocumentInGroupButNoReadToParent() {
+        val doc = docWrapperRepo.findById(subChildUuidNoParentRead)
+        assertTrue(doc.hasWritePermission)
+        assertFalse(doc.hasOnlySubtreeWritePermission)
+        docWrapperRepo.save(doc)
+    }
+    
     @Test(expected = EmptyResultDataAccessException::class)
     @Transactional
     fun deleteAllowedToDocumentInGroup() {
         docWrapperRepo.deleteById(rootUuid)
+        groupService.removeDocFromGroups("test_catalog", rootUuid)
+
         docWrapperRepo.findById(rootUuid)
     }
 

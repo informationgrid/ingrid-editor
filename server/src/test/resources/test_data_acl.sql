@@ -59,21 +59,52 @@ INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 
 INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data',
     NULL, NULL, 0
 );
-
-INSERT INTO document_wrapper VALUES (2100, 100, NULL, 'd7cee1a0-5326-44d8-a840-a5f7bde43ab9', 'FOLDER', 'data',
+INSERT INTO document_wrapper VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2100, 100, NULL, 'c689240d-e7a9-45cc-b761-44eda0cda1f1', 'FOLDER', 'data',
     NULL, NULL, 0
 );
 
-INSERT INTO document_wrapper VALUES (2001, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address',
+INSERT INTO document_wrapper VALUES (2110, 100, 2100, '3fae0d5e-087f-4c26-a580-f59e54296b38', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2200, 100, NULL, 'e80b856b-dbea-4f88-99e6-c554bf18480e', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2210, 100, 2200, 'e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2300, 100, NULL, '3ce4cf2e-2baf-4ec9-9439-9a9b7afee087', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2310, 100, 2300, '7289c68d-f036-4d61-932c-855ac408bde1', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2320, 100, 2310, '5c065bb7-ec46-4cab-bb02-8de2a814230b', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2400, 100, NULL, 'a211c074-6952-41ed-846c-824ed630a4e9', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2410, 100, 2400, '7a97b378-b01c-4da7-88e3-623a092d83c1', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2420, 100, 2410, '0516d6de-9043-4439-a1e6-6b5b9c7bd6d5', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2500, 100, NULL, '96c339ea-5caa-487a-a35d-4129f2fb9e06', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2510, 100, 2500, 'b304f85d-b8ff-470c-828c-700f384e3bcd', 'FOLDER', 'data',
+    NULL, NULL, 0
+);
+INSERT INTO document_wrapper VALUES (2520, 100, 2510, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 'FOLDER', 'data',
     NULL, NULL, 0
 );
 
-INSERT INTO document_wrapper VALUES (2002, 100, 2001, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
+INSERT INTO document_wrapper VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
     1000, 1001, 0
-);
-
-INSERT INTO document_wrapper VALUES (2003, 100, 2001, 'e8f891e4-c4d2-61e1-8669-b350203fadc2', 'AddressDoc', 'address',
-    NULL, NULL, 0
 );
 
 INSERT INTO document_archive VALUES (2002, 1002);
@@ -127,6 +158,25 @@ INSERT INTO audit_log VALUES (302, 'AuditLog', '{
 );
 
 
+-- PERMISSIONS
+
+-- Folder (5d2ff598-45fd-4516-b843-0b1787bd8264)        READ
+--   Folder (8f891e4e-161e-4d2c-6869-03f02ab352dc)      READ (implicit)
+-- Folder (c689240d-e7a9-45cc-b761-44eda0cda1f1)        WRITE
+--   Folder (3fae0d5e-087f-4c26-a580-f59e54296b38)      WRITE (implicit)
+-- Folder (e80b856b-dbea-4f88-99e6-c554bf18480e)        WRITESUBTREE
+--   Folder (e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d)      WRITE (implicit)
+-- Folder (3ce4cf2e-2baf-4ec9-9439-9a9b7afee087)
+--   Folder (7289c68d-f036-4d61-932c-855ac408bde1)      READ
+--     Folder (5c065bb7-ec46-4cab-bb02-8de2a814230b)    READ (implicit)
+-- Folder (a211c074-6952-41ed-846c-824ed630a4e9)
+--   Folder (7a97b378-b01c-4da7-88e3-623a092d83c1)      WRITE
+--     Folder (0516d6de-9043-4439-a1e6-6b5b9c7bd6d5)    WRITE (implicit)
+-- Folder (96c339ea-5caa-487a-a35d-4129f2fb9e06)
+--   Folder (b304f85d-b8ff-470c-828c-700f384e3bcd)      WRITESUBTREE
+--     Folder (17cafb6e-3356-4225-8040-a62b11a5a8eb)    WRITE (implicit)
+
+
 -- add permission groups
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (1, false, 'GROUP_READTREE');
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (2, false, 'GROUP_WRITETREE');
@@ -138,18 +188,35 @@ INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.ig
 -- add documents for protection
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (1, 1, '5d2ff598-45fd-4516-b843-0b1787bd8264', null, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (2, 1, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 1, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (3, 1, 'c689240d-e7a9-45cc-b761-44eda0cda1f1', null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (4, 1, '3fae0d5e-087f-4c26-a580-f59e54296b38', 3, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (5, 1, 'e80b856b-dbea-4f88-99e6-c554bf18480e', null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (6, 1, 'e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d', 5, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (7, 1, '3ce4cf2e-2baf-4ec9-9439-9a9b7afee087', null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (8, 1, '7289c68d-f036-4d61-932c-855ac408bde1', 7, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (9, 1, '5c065bb7-ec46-4cab-bb02-8de2a814230b', 8, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (10, 1, 'a211c074-6952-41ed-846c-824ed630a4e9', null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (11, 1, '7a97b378-b01c-4da7-88e3-623a092d83c1', 10, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (12, 1, '0516d6de-9043-4439-a1e6-6b5b9c7bd6d5', 11, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (13, 1, '96c339ea-5caa-487a-a35d-4129f2fb9e06', null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (14, 1, 'b304f85d-b8ff-470c-828c-700f384e3bcd', 13, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (15, 1, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 14, 1, true);
 
 -- connect documents with permission groups
 -- read access for GROUP_READTREE
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (1, 1, 1, 1, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (2, 8, 1, 1, 1, true, true, true);
 
--- read access for GROUP_WRITETREE
-INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (2, 1, 2, 2, 1, true, true, true);
--- write access for GROUP_WRITETREE
-INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (3, 1, 3, 2, 2, true, true, true);
+-- read and write access for GROUP_WRITETREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (3, 3, 1, 2, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (4, 3, 2, 2, 2, true, true, true);
+-- write access to sub folder with no read access to parent
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (5, 11, 1, 2, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (6, 11, 2, 2, 2, true, true, true);
 
--- read access for GROUP_WRITESUBTREE
-INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (4, 1, 4, 3, 1, true, true, true);
--- write access only to children for GROUP_WRITESUBTREE
-INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (5, 1, 5, 3, 32, true, true, true);
--- INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (5, 1, 5, 3, 1, false, true, true);
+-- read and write (only for children) access for GROUP_WRITESUBTREE
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (7, 5, 1, 3, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (8, 5, 2, 3, 32, true, true, true);
+-- write subtree permission with no read access to parent
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (9, 14, 1, 3, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (10, 14, 2, 3, 32, true, true, true);
