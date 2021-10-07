@@ -42,12 +42,12 @@
 
         <div fxFlex fxLayout="row">
             <div fxFlex="3 1 auto"></div>
-            <mat-slide-toggle
+            <!--            <mat-slide-toggle
                 class="show-all"
                 checked
                 (change)="toggleView.emit($event.checked)"
-                >Alle anzeigen</mat-slide-toggle
-            >
+                >Alle anzeigen
+            </mat-slide-toggle>-->
 
             <button
                 *ngIf="showReloadButton"
@@ -69,8 +69,8 @@
         data-cy="tree-search-field"
     >
         <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix
-            >search</mat-icon
-        >
+            >search
+        </mat-icon>
         <input
             matInput
             placeholder="Suchen"
