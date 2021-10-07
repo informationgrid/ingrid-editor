@@ -63,6 +63,9 @@
         "harvested_data": null,
         "subsection": null,
         "spatial":
+        {% if model.realSpatials is empty %}
+        null
+        {% else %}
             {% if not model.hasSingleSpatial %}
             {
                 "type": "geometrycollection",
@@ -78,9 +81,7 @@
                 ]
             }
             {% endif %}
-            {% if model.realSpatials is empty %}
-            null
-            {% endif %}
+        {% endif %}
         ,
         "spatial_text": "{{ model.spatialTitels | join(',') }}",
         "temporal": [{
