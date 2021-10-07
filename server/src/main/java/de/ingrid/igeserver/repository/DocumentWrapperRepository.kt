@@ -47,5 +47,8 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
     fun save(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
+    
+    @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
+    fun saveAndFlush(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
 
 }
