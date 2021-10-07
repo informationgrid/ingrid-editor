@@ -9,14 +9,20 @@ import { MatDialog } from "@angular/material/dialog";
 import { FormGroup } from "@angular/forms";
 
 export class FormUtils {
-  static addHotkeys(event: KeyboardEvent, service: FormToolbarService) {
+  static addHotkeys(
+    event: KeyboardEvent,
+    service: FormToolbarService,
+    readonly: boolean
+  ) {
     if (event.ctrlKey && event.key === "s") {
       // CTRL + S (Save)
       console.log("SAVE");
       event.stopImmediatePropagation();
       event.stopPropagation();
       event.preventDefault();
-      service.sendEvent("SAVE");
+      if (!readonly) {
+        service.sendEvent("SAVE");
+      }
     }
   }
 

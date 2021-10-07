@@ -23,7 +23,7 @@ import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { debounceTime, filter, map } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { combineLatest, merge } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
@@ -83,6 +83,7 @@ export class DynamicFormComponent
   private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
   showJson = false;
+  private readonly: boolean;
 
   constructor(
     private formularService: FormularService,
@@ -232,7 +233,7 @@ export class DynamicFormComponent
 
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
-    FormUtils.addHotkeys(event, this.formToolbarService);
+    FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
   }
 
   ngAfterContentChecked() {
@@ -258,7 +259,10 @@ export class DynamicFormComponent
 
     this.documentService
       .load(id, this.address)
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        tap((doc) => (this.readonly = !doc.hasWritePermission))
+      )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
         (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
