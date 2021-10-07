@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
 import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
-import { BehaviorSubject, Observable, of, Subject } from "rxjs";
+import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
 import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
@@ -506,10 +506,10 @@ export class DocumentService {
     id: string,
     query: TreeQuery | AddressTreeQuery,
     isAddress = false
-  ) {
+  ): Subscription {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    this.getPath(id)
+    return this.getPath(id)
       .pipe(
         tap((path) =>
           store.update({

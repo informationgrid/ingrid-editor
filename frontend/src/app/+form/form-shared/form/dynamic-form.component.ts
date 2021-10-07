@@ -25,7 +25,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { combineLatest, merge } from "rxjs";
+import { combineLatest, merge, Subscription } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { AuthService } from "../../../services/security/auth.service";
@@ -84,6 +84,7 @@ export class DynamicFormComponent
   isLoading = true;
   showJson = false;
   private readonly: boolean;
+  private loadSubscription: Subscription[] = [];
 
   constructor(
     private formularService: FormularService,
@@ -257,7 +258,14 @@ export class DynamicFormComponent
 
     let previousDocId = this.form.value._id;
 
-    this.documentService
+    if (this.loadSubscription.length > 0) {
+      this.loadSubscription.forEach((subscription) =>
+        subscription.unsubscribe()
+      );
+      this.loadSubscription = [];
+    }
+
+    const loadSubscription = this.documentService
       .load(id, this.address)
       .pipe(
         untilDestroyed(this),
@@ -268,7 +276,12 @@ export class DynamicFormComponent
         (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
       );
 
-    this.documentService.updateBreadcrumb(id, this.query, this.address);
+    const updateBreadcrumbSubscription = this.documentService.updateBreadcrumb(
+      id,
+      this.query,
+      this.address
+    );
+    this.loadSubscription = [loadSubscription, updateBreadcrumbSubscription];
   }
 
   private handleLoadError(error: HttpErrorResponse, previousDocId) {
