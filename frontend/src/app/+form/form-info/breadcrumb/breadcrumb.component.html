@@ -20,13 +20,20 @@
     <span *ngFor="let item of path; let last = last">
         <span
             [matTooltip]="
-                item.disabled
+                item.disabled && !item.hasOnlySubtreeWritePermission
                     ? 'Sie haben keine Schreibberechtigung auf diesen Ordner'
                     : ''
             "
-            [class.selectable]="selectable && !item.disabled"
+            data-cy="{{ item.disabled ? 'yes' : 'no' }}"
+            [class.selectable]="
+                selectable &&
+                (!item.disabled || item.hasOnlySubtreeWritePermission)
+            "
             [class.disabled]="item.disabled"
-            (click)="!item.disabled && onSelect(item.id)"
+            (click)="
+                (!item.disabled || item.hasOnlySubtreeWritePermission) &&
+                    onSelect(item.id)
+            "
             >{{ item.title }}</span
         >
         <ng-container *ngIf="!last || !hideLastSeparator">
