@@ -79,6 +79,15 @@ export const routes: Routes = [
     },
   },
   {
+    path: "reports",
+    loadChildren: () =>
+      import("./+reports/reports.module").then((m) => m.ReportsModule),
+    data: {
+      title: "Reports",
+      icon: "Reports",
+    },
+  },
+  {
     path: "settings",
     loadChildren: () =>
       import("./+settings/settings.module").then((m) => m.SettingsModule),

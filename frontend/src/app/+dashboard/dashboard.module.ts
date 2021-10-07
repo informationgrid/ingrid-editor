@@ -13,7 +13,6 @@ import { MatCardModule } from "@angular/material/card";
 import { FlexModule } from "@angular/flex-layout";
 import { MatDividerModule } from "@angular/material/divider";
 import { FeatureFlagDirective } from "../directives/feature-flag.directive";
-import { ChartComponent } from "./chart/chart.component";
 import { SharedModule } from "../shared/shared.module";
 import { MatListModule } from "@angular/material/list";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
@@ -51,7 +50,6 @@ const routes: Routes = [
     ActionButtonComponent,
     DocumentTileComponent,
     FeatureFlagDirective,
-    ChartComponent,
     QuickSearchComponent,
   ],
 })

@@ -13,6 +13,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 })
 export class ChartComponent implements OnInit {
   @Input() data: Observable<number[]>;
+  @Input() showPercentages: boolean;
 
   total: number;
 

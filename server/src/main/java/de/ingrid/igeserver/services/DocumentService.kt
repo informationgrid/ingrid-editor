@@ -343,11 +343,11 @@ class DocumentService @Autowired constructor(
 
             // remove the wrapper
             docWrapperRepo.deleteById(id)
-            
+
             // remove ACL from document
             aclService.removeAclForDocument(id)
         }
-        
+
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
 
@@ -383,7 +383,7 @@ class DocumentService @Autowired constructor(
         // remove publish
         val wrapper = getWrapperByDocumentId(id)
         assert(wrapper.published != null)
-        
+
         // if no draft version exists, move published version to draft
         if (wrapper.draft == null) {
             wrapper.draft = wrapper.published
@@ -393,7 +393,7 @@ class DocumentService @Autowired constructor(
             docRepo.delete(wrapper.published!!)
         }
         docWrapperRepo.save(wrapper)
-        
+
         // remove from index
         removeFromIndex(id)
 
@@ -425,11 +425,22 @@ class DocumentService @Autowired constructor(
         val allData = docWrapperRepo.findAllByCatalog_IdentifierAndCategory(catalogId, DocumentCategory.DATA.value)
         val allDataDrafts = docWrapperRepo.findAllDrafts(catalogId)
         val allDataPublished = docWrapperRepo.findAllPublished(catalogId)
+        val statsPerType = mutableMapOf<String, StatisticResponse>()
+
+        documentTypes.forEach { type ->
+            statsPerType[type.className] = StatisticResponse(
+                totalNum = allData.filter { it.type == type.className }.size,
+                numDrafts = allDataDrafts.filter { it.type == type.className }.size,
+                numPublished = allDataPublished.filter { it.type == type.className }.size,
+                statsPerType = null
+            )
+        }
 
         return StatisticResponse(
             totalNum = allData.size,
             numDrafts = allDataDrafts.size,
-            numPublished = allDataPublished.size
+            numPublished = allDataPublished.size,
+            statsPerType = statsPerType
         )
     }
 
@@ -530,13 +541,13 @@ class DocumentService @Autowired constructor(
 
             val preds = queryFields
                 .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
-            
+
             val combindPreds = if (queryFields.isNotEmpty() && queryFields[0].operator == "OR") {
                 cb.or(*preds.toTypedArray())
             } else {
                 cb.and(*preds.toTypedArray())
             }
-            
+
             var result = cb.and(
                 cb.equal(catalogWrapper.get<String>("identifier"), catalog),
                 cb.equal(wrapper.get<String>("category"), category),

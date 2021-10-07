@@ -38,15 +38,27 @@
         </text>
     </svg>
 
-    <div class="wrapper" fxFlex fxLayout="row" fxLayoutAlign="space-between">
+    <div
+        class="wrapper"
+        fxFlex
+        fxLayout="row"
+        [class.inline]="showPercentages"
+        [fxLayoutAlign]="showPercentages ? 'space-around' : 'space-between'"
+    >
         <div class="box working">
             <div class="count">{{ dataSeq[0] }}</div>
             <div>In Bearbeitung</div>
+            <div *ngIf="showPercentages" class="count">
+                {{ (dataSeq[0] / total)?.toFixed(2) * 100 ?? 0 }}%
+            </div>
         </div>
 
         <div class="box">
             <div class="count">{{ dataSeq[1] }}</div>
             <div>Veröffentlicht</div>
+            <div *ngIf="showPercentages" class="count">
+                {{ (dataSeq[1] / total)?.toFixed(2) * 100 ?? 0 }}%
+            </div>
         </div>
     </div>
 </div>
