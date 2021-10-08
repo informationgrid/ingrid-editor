@@ -22,3 +22,22 @@
   background-color: #ffffff;
   padding-bottom: 50px;
 }
+
+.save-search-button {
+  margin-top: -20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.do-search-button {
+  .mat-button {
+    line-height: 41.3px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}

@@ -40,7 +40,10 @@
 
                     <mat-form-field
                         appearance="outline"
-                        class="width-100 straight-border-left"
+                        class="
+                            width-100
+                            straight-border-left straight-border-right
+                        "
                     >
                         <!--                        <mat-label>Suche</mat-label>-->
                         <input
@@ -55,6 +58,16 @@
                         </mat-hint>
                     -->
                     </mat-form-field>
+                    <div class="do-search-button">
+                        <button mat-flat-button mat-button color="primary">
+                            Suchen
+                        </button>
+                    </div>
+                </div>
+                <div class="save-search-button">
+                    <button mat-button color="primary" (click)="saveQuery()">
+                        Suche Speichern
+                    </button>
                 </div>
             </div>
 

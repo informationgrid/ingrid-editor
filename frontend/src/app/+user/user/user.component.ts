@@ -213,6 +213,7 @@ export class UserComponent
             if (result) {
               this.userService.deleteUser(login).subscribe(() => {
                 this.userService.selectedUser$.next(null);
+                this.selectedUser = null;
                 this.fetchUsers();
               });
             }
