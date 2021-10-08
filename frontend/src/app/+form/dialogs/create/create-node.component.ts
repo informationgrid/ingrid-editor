@@ -95,8 +95,10 @@ export class CreateNodeComponent implements OnInit {
   set path(value: ShortTreeNode[]) {
     this._path = value;
     this.pathWithWritePermission =
-      !value[value.length - 1]?.disabled ||
-      value[value.length - 1]?.hasOnlySubtreeWritePermission;
+      value.length === 0
+        ? this.isAdmin
+        : !value[value.length - 1].disabled ||
+          value[value.length - 1].hasOnlySubtreeWritePermission;
   }
 
   @ViewChild("title")
