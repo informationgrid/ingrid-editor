@@ -38,19 +38,20 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
     /**
      * Throw an exception if we want to save a draft version with a version number lower than
      * the current published version.
+     * TODO: Can this actually happen? Version number always is increased.
      */
     private fun checkForPublishedConcurrency(wrapper: DocumentWrapper, version: Int?) {
 
         val draft = wrapper.draft
-        val publishedDBID = wrapper.published?.id
+        val published = wrapper.published
 
-        if (draft == null && publishedDBID != null) {
+        if (draft == null && published != null) {
 //            val publishedDoc = dbService.find(DocumentType::class, publishedDBID)
-            val publishedDoc = documentRepo.findById(publishedDBID).get()
-            val publishedVersion = publishedDoc.version
+            val publishedVersion = published.version
             if (version != null && publishedVersion != null && publishedVersion > version) {
-                throw ConcurrentModificationException.withConflictingResource(publishedDBID.toString(),
-                    publishedDoc.version!!, version)
+                throw ConcurrentModificationException.withConflictingResource(
+                    published.id.toString(),
+                    published.version!!, version)
             }
         }
     }

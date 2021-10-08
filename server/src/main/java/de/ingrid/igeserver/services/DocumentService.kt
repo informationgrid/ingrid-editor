@@ -13,6 +13,7 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
+import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -268,33 +270,41 @@ class DocumentService @Autowired constructor(
         preUpdatePayload.document.id = preUpdatePayload.document.id ?: draftId
         preUpdatePayload.document.created = createdDate
 
-        val updatedDoc = docRepo.save(preUpdatePayload.document)
+        try {
+            val updatedDoc = docRepo.save(preUpdatePayload.document)
 
-        // update wrapper to document association
-        with(preUpdatePayload.wrapper) {
-            if (publish) {
-                // move published version to archive
-                if (published != null) {
-                    archive.add(published!!)
-                }
-                // set published version
-                published = updatedDoc
-                // remove draft version
-                draft = null
-            } else {
-                // update draft version
-                if (draft == null) {
-                    draft = updatedDoc
+            // update wrapper to document association
+            with(preUpdatePayload.wrapper) {
+                if (publish) {
+                    // move published version to archive
+                    if (published != null) {
+                        archive.add(published!!)
+                    }
+                    // set published version
+                    published = updatedDoc
+                    // remove draft version
+                    draft = null
                 } else {
-                    // 'if' must have both main and 'else' branches if used as an expression
+                    // update draft version
+                    if (draft == null) {
+                        draft = updatedDoc
+                    } else {
+                        // 'if' must have both main and 'else' branches if used as an expression
+                    }
                 }
             }
-        }
 
-        // save wrapper
-        val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
-        val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish)
-        return getLatestDocument(postWrapper)
+            // save wrapper
+            val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
+            val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish)
+            return getLatestDocument(postWrapper)
+        } catch (ex: ObjectOptimisticLockingFailureException) {
+            throw ConcurrentModificationException.withConflictingResource(
+                preUpdatePayload.document.id.toString(),
+                preUpdatePayload.wrapper.draft?.version ?: preUpdatePayload.wrapper.published?.version!!,
+                preUpdatePayload.document.version!!
+            )
+        }
     }
 
     private fun runPostUpdatePipes(
@@ -370,6 +380,10 @@ class DocumentService @Autowired constructor(
         // check if draft and published field are filled
         assert(wrapper.draft != null && wrapper.published != null)
 
+        // delete draft document
+        docRepo.delete(wrapper.draft!!)
+        
+        // update wrapper
         wrapper.draft = null
         val updatedWrapper = docWrapperRepo.save(wrapper)
 

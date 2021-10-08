@@ -121,7 +121,10 @@ export class SavePlugin extends Plugin {
         .open(VersionConflictDialogComponent)
         .afterClosed()
         .subscribe((choice) =>
-          this.handleAfterConflictChoice(choice, response.error)
+          this.handleAfterConflictChoice(
+            choice,
+            response.error.data.databaseVersion
+          )
         );
     } else {
       throw response;
