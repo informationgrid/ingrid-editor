@@ -58,4 +58,10 @@ export class IndexService {
       .pipe(tap((response) => this.lastLog$.next(response)))
       .subscribe();
   }
+
+  cancel() {
+    return this.http
+      .delete(this.configuration.backendUrl + "index/" + this.catalog.id)
+      .subscribe();
+  }
 }

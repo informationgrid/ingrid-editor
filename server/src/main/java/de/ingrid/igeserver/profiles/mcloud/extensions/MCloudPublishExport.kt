@@ -1,24 +1,17 @@
 package de.ingrid.igeserver.profiles.mcloud.extensions
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
-import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.utils.ElasticDocument
+import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
@@ -34,13 +27,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     lateinit var docWrapperRepo: DocumentWrapperRepository
 
     @Autowired
-    lateinit var indexService: IndexService
-
-    @Autowired
     lateinit var documentService: DocumentService
-
-    @Autowired
-    lateinit var indexManager: IndexManager
 
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
@@ -48,8 +35,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
-    @Value("\${elastic.alias}")
-    private lateinit var elasticsearchAlias: String
+    @Autowired
+    lateinit var indexingTask: IndexingTask
 
     override val profiles: Array<String>?
         get() = arrayOf("mcloud")
@@ -74,7 +61,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     }
 
     private fun indexReferencesMCloudDocs(context: Context, docId: String) {
-        context.addMessage(Message(this, "Index documents with referenced address ${docId} to Elasticsearch"))
+        context.addMessage(Message(this, "Index documents with referenced address $docId to Elasticsearch"))
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
@@ -87,38 +74,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
     private fun indexMCloudDoc(context: Context, docId: String) {
 
-        // TODO: use IndexingTask.updateDocument or service?
-
-        context.addMessage(Message(this, "Index document ${docId} to Elasticsearch"))
-        // TODO: Refactor
-        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
-        if (oldIndex == null) {
-            oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, generalProperties.uuid, "ige-ng-test")
-            indexManager.createIndex(oldIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
-            indexManager.addToAlias(elasticsearchAlias, oldIndex)
-        }
-        val indexInfo = IndexInfo()
-        indexInfo.realIndexName = oldIndex
-        indexInfo.toType = "base"
-        indexInfo.toAlias = elasticsearchAlias
-        indexInfo.docIdField = "uuid"
-
-        val exporter = indexService.getExporter(DocumentCategory.DATA, "portal")
-        val doc = indexService.getSinglePublishedDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
-        val export = exporter.run(doc)
-
-        log.debug("Exported document: " + export)
-        indexManager.update(indexInfo, convertToElasticDocument(export), false)
-
-    }
-
-
-    // TODO: Refactor to utility function
-    private fun convertToElasticDocument(doc: Any): ElasticDocument? {
-
-        return jacksonObjectMapper()
-            .enable(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS)
-            .readValue(doc as String, ElasticDocument::class.java)
+        context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
+        indexingTask.updateDocument(context.catalogId, "portal", docId)
 
     }
 }

@@ -23,9 +23,17 @@ class IndexApiController @Autowired constructor(
 ) : IndexApi {
     override fun startIndexing(principal: Principal, options: IndexRequestOptions): ResponseEntity<Void> {
 
-        indexingTask.startIndexing(options.catalogId, options.format)
+        indexingTask.indexByScheduler(options.catalogId, options.format)
 
         return ResponseEntity.ok().build()
+    }
+
+    override fun cancelIndexing(principal: Principal, catalogId: String): ResponseEntity<Void> {
+
+        indexingTask.cancelIndexing(catalogId)
+
+        return ResponseEntity.ok().build()
+
     }
 
     override fun setConfig(principal: Principal, config: IndexConfigOptions): ResponseEntity<Void> {

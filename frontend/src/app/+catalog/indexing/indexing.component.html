@@ -95,9 +95,19 @@
         <div fxFlex></div>
 
         <div>
-            <button mat-flat-button color="primary" (click)="index()">
+            <button
+                *ngIf="!indexingIsRunning; else indexing"
+                mat-flat-button
+                color="primary"
+                (click)="index()"
+            >
                 Indizieren
             </button>
+            <ng-template #indexing>
+                <button mat-flat-button (click)="cancelIndexing()">
+                    Indizierung abbrechen
+                </button>
+            </ng-template>
         </div>
     </div>
 

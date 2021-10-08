@@ -7,6 +7,7 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -49,12 +50,23 @@ class IndexingTask @Autowired constructor(
     val executor = Executors.newSingleThreadScheduledExecutor()
     private val scheduler: TaskScheduler = initScheduler()
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
+    private val cancellations = HashMap<String, Boolean>()
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
 
     @Autowired
     lateinit var generalProperties: GeneralProperties
+
+
+    fun indexByScheduler(catalogId: String, format: String) {
+        Timer("ManualIndexing", false).schedule(0) {
+            val auth: Authentication =
+                UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+            SecurityContextHolder.getContext().authentication = auth
+            startIndexing(catalogId, format)
+        }
+    }
 
     /**
      * Indexing of all published documents into an Elasticsearch index.
@@ -106,7 +118,11 @@ class IndexingTask @Autowired constructor(
                 }
 
                 docsToPublish.content
-                    .onEachIndexed { index, _ -> sendNotification(category, message, index + (page * 10)) }
+                    .onEachIndexed { index, _ ->
+                        Thread.sleep(1000)
+                        handleCancelation(catalogId, message)
+                        sendNotification(category, message, index + (page * 10))
+                    }
                     .mapIndexedNotNull { index, doc ->
                         log.debug("export ${doc.uuid}")
                         try {
@@ -117,7 +133,7 @@ class IndexingTask @Autowired constructor(
                             null
                         }
                     }
-                    .onEach { 
+                    .onEach {
                         indexManager.update(indexInfo, convertToElasticDocument(it), false)
                     }
             } while (!docsToPublish.isLast)
@@ -144,6 +160,19 @@ class IndexingTask @Autowired constructor(
         catalogRepo.save(catalog)
     }
 
+    private fun handleCancelation(catalogId: String, message: IndexMessage) {
+
+        if (this.cancellations[catalogId] == true) {
+            this.cancellations[catalogId] = false
+            notify.sendMessage(message.apply {
+                this.endTime = Date()
+                this.errors.add("Indexing cancelled")
+            })
+            throw IndexException.wasCancelled()
+        }
+
+    }
+
     private fun sendNotification(
         category: DocumentCategory,
         message: IndexMessage,
@@ -161,7 +190,24 @@ class IndexingTask @Autowired constructor(
      */
     // TODO: implement
     fun updateDocument(catalog: String, format: String, docId: String) {
+        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+        if (oldIndex == null) {
+            oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, generalProperties.uuid, "ige-ng-test")
+            indexManager.createIndex(oldIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
+            indexManager.addToAlias(elasticsearchAlias, oldIndex)
+        }
+        val indexInfo = IndexInfo()
+        indexInfo.realIndexName = oldIndex
+        indexInfo.toType = "base"
+        indexInfo.toAlias = elasticsearchAlias
+        indexInfo.docIdField = "uuid"
 
+        val exporter = indexService.getExporter(DocumentCategory.DATA, format)
+        val doc = indexService.getSinglePublishedDocument(catalog, DocumentCategory.DATA, format, docId)
+        val export = exporter.run(doc)
+
+        log.debug("Exported document: " + export)
+        indexManager.update(indexInfo, convertToElasticDocument(export), false)
     }
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
@@ -210,7 +256,7 @@ class IndexingTask @Autowired constructor(
         Timer("IgeTasks", false).schedule(10000) {
             // get index configurations from all catalogs
             getIndexConfigurations()
-                .filter { !it.cron.isEmpty() }
+                .filter { it.cron.isNotEmpty() }
                 .forEach { config ->
                     val future = addSchedule(config)
                     config.future = future
@@ -274,6 +320,10 @@ class IndexingTask @Autowired constructor(
         scheduler.poolSize = 10
         scheduler.afterPropertiesSet()
         return scheduler
+    }
+
+    fun cancelIndexing(catalogId: String) {
+        this.cancellations[catalogId] = true
     }
 }
 

@@ -27,6 +27,14 @@ interface IndexApi {
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @DeleteMapping(value = ["/index/{catalogId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun cancelIndexing(
+            principal: Principal,
+            @Parameter(description = "The catalog ID for which the indexing process should be started", required = true)
+            @PathVariable catalogId: String): ResponseEntity<Void>
+
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setConfig(
             principal: Principal,

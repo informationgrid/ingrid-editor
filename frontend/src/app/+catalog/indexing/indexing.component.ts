@@ -7,7 +7,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { RxStompService } from "@stomp/ng2-stompjs";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 
 @UntilDestroy()
@@ -25,12 +25,14 @@ export class IndexingComponent implements OnInit {
   valid = true;
   isActivated: boolean;
   showMore = false;
+  indexingIsRunning = false;
 
   liveImportMessage: Observable<LogResult> = merge(
     this.indexService.lastLog$,
-    this.rxStompService
-      .watch("/topic/indexStatus")
-      .pipe(map((msg) => JSON.parse(msg.body)))
+    this.rxStompService.watch("/topic/indexStatus").pipe(
+      map((msg) => JSON.parse(msg.body)),
+      tap((data) => (this.indexingIsRunning = !data.endTime))
+    )
   );
 
   constructor(
@@ -104,5 +106,9 @@ export class IndexingComponent implements OnInit {
   deactivateIndexing() {
     this.updatePattern("");
     this.cronField.setValue("");
+  }
+
+  cancelIndexing() {
+    this.indexService.cancel();
   }
 }
