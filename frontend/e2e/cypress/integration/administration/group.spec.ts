@@ -1,6 +1,8 @@
 import { BasePage, UserAndRights } from '../../pages/base.page';
 import { AdminGroupPage } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
+import { AddressPage } from '../../pages/address.page';
+import { ResearchPage } from '../../pages/research.page';
 
 describe('Group', () => {
   beforeEach(() => {
@@ -174,6 +176,29 @@ describe('Group', () => {
 
     cy.get('textarea').click().clear().type(description);
     cy.get('[data-cy=toolbar_save_group]').should('be.enabled');
+  });
+
+  it('should delete a document from a group when deleting action is performed and the save button is pressed (#3469)', () => {
+    // delete address from group
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup('test_gruppe_2');
+    AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
+
+    // try to switch to different group; because save button has not been pressed, the deletion has not taken place
+    AdminGroupPage.selectGroup('leere_Gruppe');
+    cy.contains('mat-dialog-content', 'Wollen Sie die Änderungen verwerfen?');
+    cy.contains('button', 'Verwerfen').click();
+    cy.contains('.label', 'leere_Gruppe');
+    // go back to group and delete document, this time with pushing save button
+    AdminGroupPage.selectGroup('test_gruppe_2');
+    AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
+
+    // Go to Research section and make sure search doesn't return removed document
+    ResearchPage.visit();
+    ResearchPage.search('Elsass, Adresse');
+    ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});

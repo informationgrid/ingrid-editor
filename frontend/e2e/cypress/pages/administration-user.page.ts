@@ -109,6 +109,7 @@ export class AdminUserPage extends BasePage {
     cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich');
     cy.contains('button', 'Verantwortlichen auswählen').click();
     cy.get('mat-dialog-container .mat-select-arrow').click();
+    cy.wait(5000);
     //cy.intercept('POST', /api\/users\//).as('setManager');
     cy.contains('[role="listbox"] mat-option', manager, { timeout: 10000 }).click();
     cy.intercept('POST', '/api/users/' + '*' + '/manager' + '*').as('waitForSelection');

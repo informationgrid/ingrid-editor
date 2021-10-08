@@ -2,6 +2,8 @@ import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
+import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { BasePage } from '../../pages/base.page';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
@@ -201,6 +203,30 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       cy.get(DocumentPage.title).should('not.exist');
+    });
+
+    it('should behave correctly after deleting subfolder (#2929)', () => {
+      // create folder
+      const folderName = 'folder_to_be_deleted';
+      AddressPage.visit();
+      AddressPage.createFolder(folderName);
+      Tree.openNode([folderName]);
+      cy.get(DocumentPage.title).should('have.text', folderName);
+
+      // move folder to another folder (as subfolder)
+      CopyCutUtils.dragdropWithoutAutoExpand(folderName, 'testordner_1', true);
+      // check if document is moved
+      Tree.openNode(['testordner_1', folderName]);
+
+      // delete the subfolder
+      AddressPage.deleteLoadedNode();
+
+      // reload page
+      cy.contains('.mat-button-wrapper', 'refresh').click({ force: true });
+
+      // check if parent folder is recognized as empty and can be deleted
+      Tree.openNode(['testordner_1']);
+      cy.get('[data-cy="toolbar_DELETE"]').should('be.enabled');
     });
   });
 });

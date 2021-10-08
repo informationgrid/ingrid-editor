@@ -99,4 +99,13 @@ export class AddressPage extends DocumentPage {
     cy.get('.mat-form-field-outline.mat-form-field-outline').eq(11).next().find('.mat-select-arrow-wrapper').click();
     cy.get('[role="listbox"]').contains(title).click();
   }
+
+  static deleteLoadedNode() {
+    cy.get(AddressPage.Toolbar['Delete']).click();
+    cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');
+    cy.intercept('GET', /api\/info\/refreshSession/).as('actualizeRequest');
+    cy.get('[data-cy="confirm-dialog-confirm"]').click();
+    cy.wait('@deleteRequest', { timeout: 10000 });
+    cy.wait('@actualizeRequest', { timeout: 10000 });
+  }
 }

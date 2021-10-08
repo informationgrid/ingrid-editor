@@ -334,6 +334,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_3.Ebene_C', 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
     // open document
     AddressPage.visit();
     Tree.openNode(['Ordner_3.Ebene_C']);
@@ -355,7 +356,7 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
   });
 
-  xit('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed (#2895)', () => {
+  it('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed (#2895)', () => {
     // set access right to "nur Unterordner"
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);

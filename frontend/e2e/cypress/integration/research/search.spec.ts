@@ -5,6 +5,8 @@ import {
   SearchOptionTabs
 } from '../../pages/research.page';
 import { DocumentPage } from '../../pages/document.page';
+import { DashboardPage } from '../../pages/dashboard.page';
+import { AddressPage } from '../../pages/address.page';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -210,6 +212,34 @@ describe('Research Page', () => {
     ResearchPage.createSpatialReference('Hamburg', 'search to interrupt editing');
     ResearchPage.interruptEditingSpatialReference('Berlin');
     cy.get('div.location').contains('Hamburg');
+  });
+
+  it('should do search via Schnellsuche by using document ID', () => {
+    // Schnellsuche in Dashboard:
+    DashboardPage.visit();
+    DashboardPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
+    cy.contains('button', 'Suchen').click();
+    cy.contains('td', 'TestDocResearch1');
+    ResearchPage.getSearchResultCount().should('equal', 1);
+
+    DashboardPage.visit();
+    DashboardPage.search('556c875e-d471-4a35-8203-0c750737d296');
+    cy.contains('button', 'Suchen').click();
+    ResearchPage.setDocumentTypeSearchFilter('Adressen');
+    cy.contains('td', 'Taunus, Adresse');
+    ResearchPage.getSearchResultCount().should('equal', 1);
+
+    // Schnellsuche in Address Page:
+    AddressPage.visit();
+    AddressPage.search('556c875e-d471-4a35-8203-0c750737d296');
+    cy.contains('mat-option .doc-item', 'Taunus').click();
+    cy.contains('.title', 'Taunus');
+
+    // Schnellsuche in Document Page:
+    DocumentPage.visit();
+    DocumentPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
+    cy.contains('mat-option .doc-item', 'TestDocResearch1').click();
+    cy.contains('.title', 'TestDocResearch');
   });
 
   // test for naughty strings

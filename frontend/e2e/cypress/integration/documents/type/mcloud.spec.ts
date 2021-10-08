@@ -63,7 +63,7 @@ describe('mCLOUD documents', function () {
       const previousDate = new Date(2020, 1, 11);
 
       // is needed for setTimeReference, because svgicon='Entfernen' is not in view
-      cy.get(DocumentPage.Sidemenu.Skalieren).click();
+      //cy.get(DocumentPage.Sidemenu.Skalieren).click();
       DocumentPage.createDocument(docName);
 
       // check if created document is a mCloud-Document
