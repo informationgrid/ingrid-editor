@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.model
 
 enum class Operator {
-    CHECKBOX, RADIO, SPATIAL
+    CHECKBOX, RADIO, SPATIAL, TIMESPAN
 }
 
 data class FacetGroup(val id: String,

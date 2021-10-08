@@ -6,5 +6,5 @@ data class BoolFilter(
     val op: String,
     val value: List<String>?,
     val clauses: List<BoolFilter>?,
-    val parameter: List<String>?
+    val parameter: List<String?>?
 )

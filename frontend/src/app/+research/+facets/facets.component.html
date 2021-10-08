@@ -91,5 +91,41 @@
         ></ige-add-button>
     </div>
 
-    <mat-divider></mat-divider>
+    <div
+        *ngIf="group.selection === 'TIMESPAN'"
+        [class.invisible]="notExpanded[group.id]"
+        fxLayout="column"
+        fxLayoutGap="10px"
+    >
+        <div *ngFor="let filter of group.filter" appearance="fill">
+            <mat-label>Zeitraum</mat-label>
+            <div>
+                <input
+                    (dateInput)="updateStartTimeSpan($event.value)"
+                    matInput
+                    placeholder="Von"
+                    [matDatepicker]="startDate"
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="startDate"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+            </div>
+            <div>
+                <input
+                    (dateInput)="updateEndTimeSpan($event.value)"
+                    matInput
+                    placeholder="Bis"
+                    [matDatepicker]="endDate"
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="endDate"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+    </div>
 </div>

@@ -62,6 +62,7 @@ export class FacetsComponent implements AfterViewInit {
   private _forAddresses = false;
   private allFacets: Facets;
   private spatialFilterId = "";
+  private timespanFilterId = "";
   private fieldsWithParameters: { [x: string]: any[] } = {};
   leafletReference: L.Map;
   notExpanded: any = {};
@@ -129,12 +130,19 @@ export class FacetsComponent implements AfterViewInit {
       this.model[group.id] = {};
       if (group.selection === "RADIO") {
         this.model[group.id] = group.filter[0].id;
+      } else if (group.selection === "TIMESPAN") {
+        this.model[group.id][this.timespanFilterId] = { start: "", end: "" };
       }
     });
   }
 
   private determineSpatialFilterId(filters: FacetGroup[]) {
     return filters.find((group) => group.selection === "SPATIAL")?.filter[0]
+      ?.id;
+  }
+
+  private determineTimeSpanFilterId(filters: FacetGroup[]) {
+    return filters.find((group) => group.selection === "TIMESPAN")?.filter[0]
       ?.id;
   }
 
@@ -194,6 +202,25 @@ export class FacetsComponent implements AfterViewInit {
     this.sendUpdate();
   }
 
+  updateStartTimeSpan(start: any) {
+    const startDate = new Date(start);
+    this.updateTime(startDate, 0);
+  }
+
+  updateEndTimeSpan(end: any) {
+    const endDate = new Date(end);
+    if (endDate) endDate.setDate(endDate.getDate() + 1);
+    this.updateTime(endDate, 1);
+  }
+
+  private updateTime(date: Date, position: number) {
+    if (!(this.fieldsWithParameters[this.timespanFilterId]?.length > 1)) {
+      this.fieldsWithParameters[this.timespanFilterId] = [null, null];
+    }
+    this.fieldsWithParameters[this.timespanFilterId][position] = date;
+    this.sendUpdate();
+  }
+
   private updateMap(location: SpatialLocation) {
     if (!this.leafletReference) {
       console.log("Map not initialized yet ... try again updating spatial");
@@ -239,6 +266,7 @@ export class FacetsComponent implements AfterViewInit {
     const filter =
       this.allFacets[this._forAddresses ? "addresses" : "documents"];
     this.spatialFilterId = this.determineSpatialFilterId(filter);
+    this.timespanFilterId = this.determineTimeSpanFilterId(filter);
     this.setDefaultModel(filter);
     this.filterGroup = filter;
 

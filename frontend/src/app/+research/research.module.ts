@@ -36,6 +36,7 @@ import { CardBoxModule } from "../shared/card-box/card-box.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { MatChipsModule } from "@angular/material/chips";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { MatChipsModule } from "@angular/material/chips";
     SharedPipesModule,
     PageTemplateModule,
     MatChipsModule,
+    MatDatepickerModule,
   ],
   providers: [
     {

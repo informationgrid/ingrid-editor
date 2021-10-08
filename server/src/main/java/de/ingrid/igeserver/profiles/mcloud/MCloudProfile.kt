@@ -14,10 +14,7 @@ import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
-import de.ingrid.igeserver.research.quickfilter.DocMCloud
-import de.ingrid.igeserver.research.quickfilter.DocTest
-import de.ingrid.igeserver.research.quickfilter.ExceptFolders
-import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.*
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
@@ -69,6 +66,12 @@ class MCloudProfile : CatalogProfile {
                     Spatial()
                 ),
                 selection = Operator.SPATIAL
+            ),
+            FacetGroup(
+                "timeRef", "Zeitbezug", arrayOf(
+                    TimeSpan()
+                ),
+                selection = Operator.TIMESPAN
             )
         )
     }

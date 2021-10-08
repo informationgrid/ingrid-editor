@@ -29,7 +29,7 @@ export interface FacetGroup {
   label: string;
   filter: QuickFilter[];
   combine: "AND" | "OR";
-  selection: "CHECKBOX" | "RADIO" | "DOC_ADDRESS" | "SPATIAL";
+  selection: "CHECKBOX" | "RADIO" | "DOC_ADDRESS" | "SPATIAL" | "TIMESPAN";
 }
 
 export class ResearchResponse {

@@ -77,7 +77,7 @@ class ResearchService {
     private fun getParameters(query: ResearchQuery): List<Any> {
         return query.clauses?.clauses
             ?.mapNotNull { it.parameter }
-            ?.map { it.map { it.toFloat() } }
+            ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it  } }
             ?.filter { it.isNotEmpty() }
             ?.flatten() ?: emptyList()
     }
@@ -153,7 +153,7 @@ class ResearchService {
             boolFilter.value
                 ?.filter { !specialFilter.contains(it) }
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                ?.map { it?.filter }
+                ?.map { it?.filter(boolFilter.parameter) }
         }
 
         return when (filterString?.size) {
