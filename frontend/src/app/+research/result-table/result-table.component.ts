@@ -13,6 +13,7 @@ import { MatSort } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
+import { ProfileQuery } from "../../store/profile/profile.query";
 
 export interface ShortResultInfo {
   uuid: string;
@@ -53,15 +54,22 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   totalHits = 0;
   profileIconsMap: {};
 
-  constructor(private profileService: ProfileService) {}
+  constructor(
+    private profileService: ProfileService,
+    private profileQuery: ProfileQuery
+  ) {}
 
   ngOnInit(): void {
-    let profiles = this.profileService.getProfiles();
-    this.profileIconsMap = profiles.reduce((acc, val) => {
-      acc[val.id] = val.iconClass;
-      return acc;
-    }, {});
-    this.columnsMap = profiles[0].fieldsMap;
+    this.profileQuery.selectLoading().subscribe((isLoading) => {
+      if (isLoading) return;
+
+      let profiles = this.profileService.getProfiles();
+      this.profileIconsMap = profiles.reduce((acc, val) => {
+        acc[val.id] = val.iconClass;
+        return acc;
+      }, {});
+      this.columnsMap = profiles[0].fieldsMap;
+    });
   }
 
   ngAfterViewInit(): void {

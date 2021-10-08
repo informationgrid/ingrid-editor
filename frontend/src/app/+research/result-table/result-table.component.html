@@ -19,6 +19,7 @@
         </button>
         <mat-divider [vertical]="true"></mat-divider>
         <button
+            *ngIf="columnsMap"
             mat-button
             color="primary"
             (click)="exporter.exportTable('csv', { fileName: 'research' })"
@@ -29,6 +30,7 @@
 </div>
 <mat-divider></mat-divider>
 <table
+    *ngIf="columnsMap"
     mat-table
     matTableExporter
     #exporter="matTableExporter"
