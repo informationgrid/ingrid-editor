@@ -14,7 +14,7 @@
         "
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
-        [class.disabled]="!doc.hasWritePermission"
+        [class.disabled]="doc.hasWritePermission === false"
     >
         <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
         <mat-icon
