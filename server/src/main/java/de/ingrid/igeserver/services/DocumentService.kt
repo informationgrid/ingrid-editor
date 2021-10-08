@@ -176,6 +176,9 @@ class DocumentService @Autowired constructor(
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
+        // create ACL before trying to save since we need the permission
+        aclService.createAclForDocument(document.uuid, preCreatePayload.wrapper.parent?.id)
+        
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
 
@@ -185,9 +188,6 @@ class DocumentService @Autowired constructor(
         } else {
             preCreatePayload.wrapper.draft = newDocument
         }
-
-        // handle ACL
-        aclService.createAclForDocument(document.uuid, preCreatePayload.wrapper.parent?.id)
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
