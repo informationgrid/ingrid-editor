@@ -12,9 +12,9 @@ class TimeSpan : QuickFilter() {
     override val parameters: List<String> = emptyList()
 
 
-    override fun filter(parameter: Any?): String {
+    override fun filter(parameter: List<*>?): String {
+        // returns true if the filter should not be applied. results in sql query ".. AND (true) AND"
         if (parameter == null) return "true"
-        parameter as List<*>
         val start = parameter[0]
         val end = parameter[1]
         if (start == null && end == null) {
