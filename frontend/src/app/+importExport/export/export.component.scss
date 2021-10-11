@@ -1,5 +1,13 @@
 @import "src/variables";
 
+mat-horizontal-stepper {
+  border-radius: 9px;
+}
+
+.action-bar {
+  padding-top: 20px;
+}
+
 .badge {
   padding-left: 15px;
   padding-right: 15px;
@@ -8,8 +16,20 @@
 
 form {
   background-color: $ige-background;
+  padding: 24px;
 }
 
 ige-tree {
   max-height: 500px;
+}
+
+.big-icon {
+  width: 128px;
+  height: 128px;
+  font-size: 128px;
+  margin: 24px;
+}
+
+.success-icon {
+  color: $ige-check-color;
 }

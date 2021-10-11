@@ -1,6 +1,21 @@
 <page-template label="Export">
     <div left-side>Hier können Sie ein oder mehrere Dateien exportieren.</div>
 
+    <section main-header fxLayoutAlign="center center">
+        <div>
+            Letzter Export erfolgt am xx.xx.xxxx, xx:xx:xx (xx Datensätze)
+
+            <button
+                mat-icon-button
+                class="dark menu-button"
+                [class.expanded]="showMore"
+                (click)="showMore = !showMore"
+            >
+                <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+            </button>
+        </div>
+    </section>
+
     <section main-content fxFlex>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="datasetSelected">
@@ -57,7 +72,6 @@
 
                     <div class="section-title space">Format</div>
                     <mat-form-field appearance="outline" style="width: 300px">
-                        <mat-label>Format</mat-label>
                         <mat-select formControlName="format">
                             <mat-option
                                 *ngFor="let format of exportFormats | async"
@@ -68,7 +82,7 @@
                         </mat-select>
                     </mat-form-field>
                 </form>
-                <div>
+                <div class="action-bar">
                     <button mat-button (click)="cancel()">Abbrechen</button>
                     <div fxFlex></div>
                     <button mat-button matStepperPrevious>Zurück</button>
@@ -76,6 +90,7 @@
                         mat-flat-button
                         color="primary"
                         matStepperNext
+                        (click)="runExport()"
                         [disabled]="optionsFormGroup.invalid"
                     >
                         Weiter
@@ -85,19 +100,49 @@
             <mat-step>
                 <ng-template matStepLabel>Vorschau</ng-template>
 
-                <div>
+                <div fxLayoutAlign="center center" fxLayout="column">
+                    <div class="section-title">Exportdatei erstellt:</div>
+                    <mat-icon
+                        class="big-icon gray"
+                        svgIcon="Fachaufgabe"
+                    ></mat-icon>
+                    <button mat-stroked-button (click)="showPreview()">
+                        Vorschau
+                    </button>
+                </div>
+
+                <div class="action-bar">
+                    <button mat-button (click)="cancel()">Abbrechen</button>
+                    <div fxFlex></div>
+                    <button mat-button matStepperPrevious>Zurück</button>
                     <button
                         mat-flat-button
                         color="primary"
                         matStepperNext
-                        (click)="runExport()"
+                        (click)="downloadExport()"
                     >
-                        Export starten
+                        Exportieren
                     </button>
                 </div>
             </mat-step>
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
+
+                <div fxLayoutAlign="center center" fxLayout="column">
+                    <div class="section-title">Datei exportiert</div>
+                    <mat-icon class="big-icon success-icon"
+                        >check_circle_outline</mat-icon
+                    >
+                    <div>
+                        Die Datei wurde in Ihrem Download-Ordner abgelegt.
+                    </div>
+                </div>
+                <div class="action-bar">
+                    <div fxFlex></div>
+                    <button mat-flat-button color="primary" (click)="cancel()">
+                        Neuer Export
+                    </button>
+                </div>
             </mat-step>
         </mat-horizontal-stepper>
     </section>

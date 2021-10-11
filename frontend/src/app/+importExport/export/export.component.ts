@@ -5,11 +5,16 @@ import {
   FormGroup,
   Validators,
 } from "@angular/forms";
-import { ExportTypeInfo, ImportExportService } from "../import-export-service";
+import { ImportExportService } from "../import-export-service";
 import { tap } from "rxjs/operators";
 import { MatStepper } from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "ige-export",
@@ -26,14 +31,17 @@ export class ExportComponent implements OnInit {
   exportResult: any;
   exportFormats = this.exportService
     .getExportTypes()
-    .pipe(tap((types) => (this.formatSelection = types[0])));
-  formatSelection: Partial<ExportTypeInfo>;
+    .pipe(
+      tap((types) => this.optionsFormGroup.get("format").setValue(types[0]))
+    );
   path: ShortTreeNode[];
+  showMore = false;
 
   constructor(
     private _formBuilder: FormBuilder,
     private exportService: ImportExportService,
-    private docService: DocumentService
+    private docService: DocumentService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -58,23 +66,32 @@ export class ExportComponent implements OnInit {
   }
 
   runExport() {
+    let model = this.optionsFormGroup.value;
     const options = ImportExportService.prepareExportInfo(
       this.selectedIds[0],
-      this.formatSelection.type,
-      this.optionsFormGroup.value
+      model.format.type,
+      model
     );
     this.exportService.export(options).subscribe((response) => {
       console.log("Export-Result:", response);
       response.text().then((text) => (this.exportResult = text));
-      this.downloadFile(
-        response,
-        this.formatSelection.dataType,
-        this.formatSelection.fileExtension
-      );
     });
   }
 
-  downloadFile(data: Blob, dataType: string, fileExtension: string = "json") {
+  downloadExport() {
+    let model = this.optionsFormGroup.value;
+    this.downloadFile(
+      this.exportResult,
+      model.format.dataType,
+      model.format.fileExtension
+    );
+  }
+
+  private downloadFile(
+    data: Blob,
+    dataType: string,
+    fileExtension: string = "json"
+  ) {
     const downloadLink = document.createElement("a");
     downloadLink.href = window.URL.createObjectURL(
       new Blob([data], { type: dataType })
@@ -88,5 +105,16 @@ export class ExportComponent implements OnInit {
   cancel() {
     this.stepper.selectedIndex = 0;
     this.datasetSelected = false;
+  }
+
+  showPreview() {
+    this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: 700,
+      data: {
+        title: "Vorschau",
+        message: this.exportResult,
+        buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
+      } as ConfirmDialogData,
+    });
   }
 }

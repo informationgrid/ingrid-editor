@@ -34,8 +34,9 @@ class ExportApiController : ExportApi {
         val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
         val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
-        val result = exporter.run(docVersion) as ObjectNode
-        return ResponseEntity.ok(result.toPrettyString())
+        val result = exporter.run(docVersion)
+        val stringResult = if (result is ObjectNode) result.toPrettyString() else result as String
+        return ResponseEntity.ok(stringResult)
     }
 
     override fun exportTypes(principal: Principal, profile: String): ResponseEntity<List<ExportTypeInfo>> {
