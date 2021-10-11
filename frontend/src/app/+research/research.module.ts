@@ -37,6 +37,8 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { DateAdapter } from "@angular/material/core";
+import { GermanDateAdapter } from "../services/german-date.adapter";
 
 @NgModule({
   declarations: [
@@ -82,6 +84,10 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     {
       provide: MatPaginatorIntl,
       useValue: new IgePagingIntl(),
+    },
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
     },
   ],
 })

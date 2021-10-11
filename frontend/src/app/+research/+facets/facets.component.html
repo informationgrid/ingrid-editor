@@ -97,9 +97,12 @@
         fxLayout="column"
         fxLayoutGap="10px"
     >
-        <div *ngFor="let filter of group.filter" appearance="fill">
-            <mat-label>Zeitraum</mat-label>
-            <div>
+        <div
+            *ngFor="let filter of group.filter"
+            appearance="fill"
+            style="display: flex"
+        >
+            <div style="display: flex">
                 <input
                     (dateInput)="updateStartTimeSpan($event.value)"
                     matInput
@@ -112,7 +115,7 @@
                 ></mat-datepicker-toggle>
                 <mat-datepicker #startDate></mat-datepicker>
             </div>
-            <div>
+            <div style="display: flex">
                 <input
                     (dateInput)="updateEndTimeSpan($event.value)"
                     matInput
