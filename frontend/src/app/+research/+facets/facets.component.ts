@@ -15,6 +15,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatInput } from "@angular/material/input";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 
 export interface FacetUpdate {
   model: any;
@@ -36,6 +38,7 @@ export class FacetsComponent implements AfterViewInit {
     if (this.isInitialized) {
       // delay update for other inputs to be present
       setTimeout(() => this.updateSpatialFromModel(value));
+      setTimeout(() => this.updateTimeSpanFromModel(value));
     }
   }
 
@@ -70,6 +73,11 @@ export class FacetsComponent implements AfterViewInit {
   private boxes: Rectangle[];
   private isInitialized = false;
 
+  timeSpanForm = new FormGroup({
+    startDate: new FormControl(),
+    endDate: new FormControl(),
+  });
+
   constructor(
     private dialog: MatDialog,
     private researchService: ResearchService,
@@ -85,6 +93,7 @@ export class FacetsComponent implements AfterViewInit {
         tap(() => {
           this.isInitialized = true;
           this.updateSpatialFromModel(this._parameter);
+          this.updateTimeSpanFromModel(this._parameter);
         })
       )
       .subscribe();
@@ -229,15 +238,17 @@ export class FacetsComponent implements AfterViewInit {
     }
 
     this.removeSpatialFromMap();
-    this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [
-      {
-        value: location.value,
-        type: location.type,
-        title: location.title,
-        color: this.leafletService.getColor(0),
-        indexNumber: 0,
-      },
-    ]);
+    if (location) {
+      this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [
+        {
+          value: location.value,
+          type: location.type,
+          title: location.title,
+          color: this.leafletService.getColor(0),
+          indexNumber: 0,
+        },
+      ]);
+    }
   }
 
   private removeSpatialFromMap() {
@@ -276,6 +287,9 @@ export class FacetsComponent implements AfterViewInit {
         this.updateSpatialFromModel(this._parameter);
       }, 200);
     }
+    if (filter.some((f) => f.selection === "TIMESPAN")) {
+      this.updateTimeSpanFromModel(this._parameter);
+    }
   }
 
   private updateSpatialFromModel(parameter: any) {
@@ -283,22 +297,33 @@ export class FacetsComponent implements AfterViewInit {
     this.updateSpatial(location);
   }
 
+  private updateTimeSpanFromModel(parameter: any) {
+    if (!parameter || !parameter[this.timespanFilterId]) {
+      console.log("RESET TIME");
+      this.timeSpanForm.reset();
+      return;
+    }
+    const timespan = parameter[this.timespanFilterId];
+    console.log("SET TIME", timespan);
+    this.timeSpanForm.setValue({
+      startDate: timespan[0],
+      endDate: timespan[1],
+    });
+  }
+
   private convertParameterToLocation(parameter: any): SpatialLocation {
-    if (!parameter || Object.keys(parameter).length === 0) {
+    if (!parameter || !parameter[this.spatialFilterId]) {
       return null;
     }
-
-    return Object.keys(parameter).map((key) => {
-      const coords = parameter[key];
-      return <SpatialLocation>{
-        type: "free",
-        value: {
-          lat1: coords[0],
-          lon1: coords[1],
-          lat2: coords[2],
-          lon2: coords[3],
-        },
-      };
-    })[0];
+    const coords = parameter[this.spatialFilterId];
+    return <SpatialLocation>{
+      type: "free",
+      value: {
+        lat1: coords[0],
+        lon1: coords[1],
+        lat2: coords[2],
+        lon2: coords[3],
+      },
+    };
   }
 }

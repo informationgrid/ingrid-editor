@@ -98,12 +98,15 @@
         fxLayoutGap="10px"
     >
         <div
+            [formGroup]="timeSpanForm"
             *ngFor="let filter of group.filter"
             appearance="fill"
             style="display: flex"
+            class="timespan"
         >
-            <div style="display: flex">
+            <mat-form-field>
                 <input
+                    formControlName="startDate"
                     (dateInput)="updateStartTimeSpan($event.value)"
                     matInput
                     placeholder="Von"
@@ -114,9 +117,10 @@
                     [for]="startDate"
                 ></mat-datepicker-toggle>
                 <mat-datepicker #startDate></mat-datepicker>
-            </div>
-            <div style="display: flex">
+            </mat-form-field>
+            <mat-form-field>
                 <input
+                    formControlName="endDate"
                     (dateInput)="updateEndTimeSpan($event.value)"
                     matInput
                     placeholder="Bis"
@@ -127,7 +131,7 @@
                     [for]="endDate"
                 ></mat-datepicker-toggle>
                 <mat-datepicker #endDate></mat-datepicker>
-            </div>
+            </mat-form-field>
         </div>
         <mat-divider></mat-divider>
     </div>
