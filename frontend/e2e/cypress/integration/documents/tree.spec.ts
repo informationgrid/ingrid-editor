@@ -68,7 +68,7 @@ describe('Tree', () => {
 
       Tree.selectNodeAndCheckPath(docName, ['Daten', 'Neue Testdokumente']);
 
-      CopyCutUtils.dragdropWithoutAutoExpand(docName, 'Daten', true);
+      CopyCutUtils.dragdrop(docName, ['Daten'], true);
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
