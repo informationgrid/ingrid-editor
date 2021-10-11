@@ -42,6 +42,7 @@ export type AddressTitleFn = (address: IgeDocument) => string;
 export class DocumentService {
   // TODO: check usefulness
   beforePublish$ = new Subject<any>();
+  beforeSave$ = new Subject<any>();
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
   afterProfileSwitch$ = new Subject<any>();
@@ -158,6 +159,8 @@ export class DocumentService {
       data.title = this.createAddressTitle(data);
     }
 
+    this.beforeSave$.next();
+
     return this.dataService
       .save(data, isAddress)
       .toPromise()
@@ -207,6 +210,7 @@ export class DocumentService {
     console.log("PUBLISHING");
     const errors: any = { errors: [] };
 
+    this.beforeSave$.next();
     this.beforePublish$.next(errors);
     console.log("After validation:", data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];

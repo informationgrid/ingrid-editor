@@ -85,6 +85,7 @@ export class DynamicFormComponent
   showJson = false;
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
+  showBlocker = false;
 
   constructor(
     private formularService: FormularService,
@@ -226,10 +227,19 @@ export class DynamicFormComponent
         message.errors.push({ invalid: this.form.invalid });
       });
 
+    // show blocker div to prevent user from modifying data or calling functions
+    // during save
+    this.documentService.beforeSave$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => (this.showBlocker = true));
+
     // reset dirty flag after save
     this.documentService.afterSave$
       .pipe(untilDestroyed(this))
-      .subscribe((data) => this.updateFormWithData(data));
+      .subscribe((data) => {
+        this.updateFormWithData(data);
+        this.showBlocker = false;
+      });
   }
 
   @HostListener("window: keydown", ["$event"])
