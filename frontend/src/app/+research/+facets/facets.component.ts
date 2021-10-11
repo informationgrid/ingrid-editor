@@ -299,12 +299,10 @@ export class FacetsComponent implements AfterViewInit {
 
   private updateTimeSpanFromModel(parameter: any) {
     if (!parameter || !parameter[this.timespanFilterId]) {
-      console.log("RESET TIME");
       this.timeSpanForm.reset();
       return;
     }
     const timespan = parameter[this.timespanFilterId];
-    console.log("SET TIME", timespan);
     this.timeSpanForm.setValue({
       startDate: timespan[0],
       endDate: timespan[1],
