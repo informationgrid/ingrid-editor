@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.mail
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.MailProperties
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.SimpleMailMessage
@@ -8,24 +9,28 @@ import org.springframework.stereotype.Component
 import java.text.MessageFormat
 
 @Component
-class EmailServiceImpl @Autowired constructor(val email: JavaMailSender, val mailProps: MailProperties) {
+class EmailServiceImpl @Autowired constructor(
+    val email: JavaMailSender,
+    val mailProps: MailProperties,
+    val appSettings: GeneralProperties
+) {
 
-    fun sendWelcomeEmail(to: String) {
+    fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
         val message = SimpleMailMessage().apply {
             from = mailProps.from
             setTo(to)
             subject = mailProps.subject
-            text = mailProps.body
+            text = MessageFormat.format(mailProps.body, firstName, lastName, appSettings.host)
         }
         email.send(message)
     }
-    
-    fun sendWelcomeEmailWithPassword(to: String, password: String) {
+
+    fun sendWelcomeEmailWithPassword(to: String, firstName: String, lastName: String, password: String) {
         val message = SimpleMailMessage().apply {
             from = mailProps.from
             setTo(to)
             subject = mailProps.subject
-            text = MessageFormat.format(mailProps.bodyWithPassword, password)
+            text = MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appSettings.host, password)
         }
         email.send(message)
     }

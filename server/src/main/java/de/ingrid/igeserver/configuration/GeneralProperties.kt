@@ -10,5 +10,6 @@ data class GeneralProperties(
     val enableCsrf: Boolean,
     val enableCors: Boolean,
     val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean
+    val markInsteadOfDelete: Boolean,
+    val host: String
 )

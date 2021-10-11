@@ -69,22 +69,22 @@ class UsersApiController : UsersApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // if user has no manager, set it to creating user
-        if (user.manager.isNullOrEmpty()) user.manager = authUtils.getUsernameFromPrincipal(principal)
+        if (user.manager.isEmpty()) user.manager = authUtils.getUsernameFromPrincipal(principal)
 
         val userExists = keycloakService.userExists(principal, user.login)
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already Exists with login ${user.login}")
         }
         if (userExists) {
-            keycloakService.updateUser(principal, user);
+            keycloakService.updateUser(principal, user)
             keycloakService.addRoles(principal, user.login, listOf(user.role))
             catalogService.createUser(catalogId, user)
-            if (!developmentMode) email.sendWelcomeEmail(user.email)
+            if (!developmentMode) email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
 
         } else {
             val password = keycloakService.createUser(principal, user)
             catalogService.createUser(catalogId, user)
-            if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, password)
+            if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, user.firstName, user.lastName, password)
 
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
@@ -184,7 +184,7 @@ class UsersApiController : UsersApi {
         // TODO set access rights so users can update their own info, but nothing else. especially not other users.
         val userId = authUtils.getUsernameFromPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
-            var kcUser = keycloakService.getUser(client, userId)
+            val kcUser = keycloakService.getUser(client, userId)
 
             user.apply {
                 login = userId
@@ -205,7 +205,7 @@ class UsersApiController : UsersApi {
 
             val roles = keycloakService.getRoles(principal as Authentication)
 
-            val lastLogin = this.getLastLogin(principal, user.login, roles)
+            val lastLogin = this.getLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
 
             val userInfo = UserInfo(
@@ -227,7 +227,7 @@ class UsersApiController : UsersApi {
         }
     }
 
-    private fun getLastLogin(principal: Principal, userIdent: String, roles: Set<String>?): Date? {
+    private fun getLastLogin(principal: Principal, userIdent: String): Date? {
         keycloakService.getClient(principal).use { client ->
             val lastLoginKeyCloak = keycloakService.getLatestLoginDate(client, userIdent)
             if (lastLoginKeyCloak != null) {
@@ -247,7 +247,7 @@ class UsersApiController : UsersApi {
                         }
                     }
                 }
-                var user = userRepo.findByUserId(userIdent)
+                val user = userRepo.findByUserId(userIdent)
                 if (user != null) {
                     catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
                 }
@@ -337,10 +337,6 @@ class UsersApiController : UsersApi {
     }
 
     override fun listExternal(principal: Principal): ResponseEntity<List<User>> {
-
-        if (principal == null && !developmentMode) {
-            throw UnauthenticatedException.withUser("")
-        }
 
         val users = keycloakService.getUsersWithIgeRoles(principal)
 
