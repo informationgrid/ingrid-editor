@@ -4,6 +4,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { Tree } from '../../pages/tree.partial';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
+import { Utils } from '../../pages/utils';
 
 // user without authorizations (author)
 describe('User without authorizations', () => {
@@ -20,11 +21,6 @@ describe('User without authorizations', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
     ResearchPage.getSearchResultCount().should('equal', 0);
-  });
-
-  it('Section "Nutzer und Rechte" should not be visible to author (#2670)', () => {
-    cy.visit('user');
-    cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
   });
 
   it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
@@ -45,77 +41,43 @@ describe('User without authorizations', () => {
 
   it('Author should see neither documents nor addresses', () => {
     DocumentPage.visit();
+    //cy.wait(1000);
     // if there are data to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+
+    // cy.get('ige-tree').children().should('have.length', 3);
+    cy.get('ige-empty-navigation', { timeout: 1000 }).should('be.visible');
+    // cy.get('ige-empty-navigation', { timeout: 1000 }).contains('Leer').should('be.visible');
+    // cy.get('ige-empty-navigation').should('exist');
+
+    // cy.wait(1000);
     AddressPage.visit();
     // if there are addresses to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 1);
+    cy.get('ige-tree').children().should('have.length', 3);
+    // cy.wait(100);
+    // cy.get('ige-empty-navigation').should('be.visible');
+    // cy.get('ige-empty-navigation').contains('Leer').should('be.visible');
+
+    // cy.get('ige-empty-navigation').should('exist');
   });
 
   it('author without authorizations should not be able to create a data folder', () => {
     DocumentPage.visit();
-    cy.get(DocumentPage.Toolbar.NewFolder).click();
-    // try to create piece of data as root document
-    cy.get('[data-cy=create-title]').type('try_new_folder');
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
-    // try to create piece of data as part of a tree hierarchy
-    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Daten');
-    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
+    cy.get(DocumentPage.Toolbar.NewFolder).should('be.disabled');
   });
 
   it('author without authorizations should not be able to create a data document', () => {
     DocumentPage.visit();
-    cy.get(DocumentPage.Toolbar.NewDoc).click();
-    // try to create piece of data as root document
-    cy.get('[data-cy=create-title]').type('try_new_doc');
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
-    // try to create piece of data as part of a tree hierarchy
-    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Daten');
-    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
+    cy.get(DocumentPage.Toolbar.NewDoc).should('be.disabled');
   });
 
   it('author without authorizations should not be able to create an address folder', () => {
     AddressPage.visit();
-    cy.get(AddressPage.Toolbar.NewFolder).click();
-    // try to create piece of data as root document
-    cy.get('[data-cy=create-title]').type('try_new_folder');
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
-    // try to create piece of data as part of a tree hierarchy
-    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Adressen');
-    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
+    cy.get(AddressPage.Toolbar.NewFolder).should('be.disabled');
   });
 
   it('author without authorizations should not be able to create an address document', () => {
     AddressPage.visit();
-    cy.get(DocumentPage.Toolbar.NewDoc).click();
-    // try to create piece of data as root document
-    AddressPage.type('create-address-firstName', 'some first name');
-    AddressPage.type('create-address-lastName', 'some last name');
-    AddressPage.type('create-address-organization', 'some organization');
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
-    // try to create piece of data as part of a tree hierarchy
-    cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText('Adressen');
-    UserAuthorizationPage.tryChangeFolderwithoutFoldersAccessible();
-    UserAuthorizationPage.tryIllegitimateCreate();
-    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion.');
-    UserAuthorizationPage.closeErrorBox();
+    cy.get(DocumentPage.Toolbar.NewDoc).should('be.disabled');
   });
 });
 
@@ -175,7 +137,7 @@ describe('author with groups', () => {
     cy.get('mat-option .doc-item').should('not.contain', searchTerm_3).click();
   });
 
-  it('Section "Nutzer und Rechte" should not be visible to an author', () => {
+  it('Section "Nutzer und Rechte" should not be visible to an author (#2670)', () => {
     cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
   });
 
@@ -219,7 +181,7 @@ describe('author with groups', () => {
     DocumentPage.CreateDialog.execute();
   });
 
-  it('author with groups should be able to create new data documents within the structure of his assigned documents', () => {
+  it('Author with groups should be able to create new data documents within the structure of his assigned documents', () => {
     // create new document
     DocumentPage.visit();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
