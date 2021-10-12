@@ -83,6 +83,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./+reports/reports.module").then((m) => m.ReportsModule),
     data: {
+      onlyAdmin: true,
       title: "Reports",
       icon: "Reports",
     },
