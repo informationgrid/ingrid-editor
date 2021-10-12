@@ -32,7 +32,11 @@
                 >
                     Bearbeiten
                 </button>
-                <button mat-menu-item (click)="gotoAddress.next()">
+                <button
+                    mat-menu-item
+                    (click)="gotoAddress.next()"
+                    [disabled]="address.ref._id === undefined"
+                >
                     Hinspringen
                 </button>
                 <button
