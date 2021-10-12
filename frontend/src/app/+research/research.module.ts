@@ -30,7 +30,6 @@ import { TabSqlComponent } from "./+tab-sql/tab-sql.component";
 import { ResultTableComponent } from "./result-table/result-table.component";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AddButtonModule } from "../shared/add-button/add-button.module";
-import { FacetsComponent } from "./+facets/facets.component";
 import { QueryManagerComponent } from "./+query-manager/query-manager.component";
 import { CardBoxModule } from "../shared/card-box/card-box.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
@@ -39,11 +38,11 @@ import { MatChipsModule } from "@angular/material/chips";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../services/german-date.adapter";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   declarations: [
     ResearchComponent,
-    FacetsComponent,
     QueryManagerComponent,
     SaveQueryDialogComponent,
     TabSqlComponent,
@@ -79,6 +78,7 @@ import { GermanDateAdapter } from "../services/german-date.adapter";
     PageTemplateModule,
     MatChipsModule,
     MatDatepickerModule,
+    SharedModule,
   ],
   providers: [
     {

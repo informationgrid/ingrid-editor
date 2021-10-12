@@ -1,8 +1,14 @@
 <mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs">
     <mat-tab label="Statistik">
         <page-template label="Statistik" [noHeader]="true">
-            <div left-side>switches</div>
-            <!--            <ige-facets left-side [model]="facetModel"></ige-facets>-->
+            <ige-facets
+                left-side
+                [model]="facetModel"
+                [parameter]="facetParameters"
+                [forAddresses]="searchClass === 'selectAddresses'"
+                [refreshView]="facetViewRefresher"
+                (update)="updateFilter($event)"
+            ></ige-facets>
             <div main-content fxLayout="column" fxLayoutGap="36px">
                 <ige-chart
                     [data]="chartDataPublished"

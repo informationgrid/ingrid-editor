@@ -131,6 +131,9 @@ export class FacetsComponent implements AfterViewInit {
 
   private setDefaultModel(filters: FacetGroup[]) {
     filters.forEach((group) => {
+      if (!this.model) {
+        this.model = {};
+      }
       if (this.model[group.id]) {
         // skip initialization, since it's already done for this field
         return;
@@ -315,6 +318,7 @@ export class FacetsComponent implements AfterViewInit {
     }
     const coords = parameter[this.spatialFilterId];
     return <SpatialLocation>{
+      title: null,
       type: "free",
       value: {
         lat1: coords[0],

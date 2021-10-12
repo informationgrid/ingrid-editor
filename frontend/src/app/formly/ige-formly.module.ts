@@ -37,7 +37,6 @@ import { MatCardModule } from "@angular/material/card";
 import { CodelistPipe } from "../directives/codelist.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
-import { SpatialListComponent } from "./types/map/spatial-list/spatial-list.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
 import { WktSpatialComponent } from "./types/map/spatial-dialog/wkt-spatial/wkt-spatial.component";
 import { DrawSpatialComponent } from "./types/map/spatial-dialog/draw-spatial/draw-spatial.component";
@@ -188,7 +187,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     AddressCardComponent,
     ChooseAddressDialogComponent,
     SpatialDialogComponent,
-    SpatialListComponent,
     FreeSpatialComponent,
     WktSpatialComponent,
     DrawSpatialComponent,

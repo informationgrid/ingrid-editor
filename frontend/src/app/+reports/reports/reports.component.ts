@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
 import { Subject } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
+import { FacetUpdate } from "../../+research/+facets/facets.component";
 
 @Component({
   selector: "ige-reports",
@@ -81,6 +82,13 @@ export class ReportsComponent implements OnInit {
     "working",
   ];
 
+  facetModel: any;
+  facetParameters: any;
+  searchClass: "selectDocuments" | "selectAddresses";
+  facetViewRefresher = new EventEmitter<void>();
+  updateFilter(info: FacetUpdate) {
+    console.log("FacetUpdate", info);
+  }
   constructor(private docService: DocumentService) {}
 
   ngAfterViewInit(): void {
@@ -94,7 +102,7 @@ export class ReportsComponent implements OnInit {
 
   fetchStatistic() {
     this.docService.getStatistic().subscribe((response) => {
-      this.chartDataPublished.next([response.numDrafts, response.numPublished]);
+      // this.chartDataPublished.next([response.numDrafts, response.numPublished]);
       this.prepareTableData(response);
     });
   }
@@ -102,30 +110,34 @@ export class ReportsComponent implements OnInit {
   prepareTableData(response: StatisticResponse) {
     var data = [];
     console.log(response);
+    var filteredTotal = 0;
+    var filteredDrafts = 0;
+    var filteredPublished = 0;
+    Object.keys(response.statsPerType).forEach((type) => {
+      if (!this.ignoredTypes.includes(type)) {
+        filteredTotal += response.statsPerType[type].totalNum;
+        filteredDrafts += response.statsPerType[type].numPublished;
+        filteredPublished += response.statsPerType[type].numDrafts;
+      }
+    });
     Object.keys(response.statsPerType).forEach((type) => {
       if (this.ignoredTypes.includes(type)) return;
       const stats = response.statsPerType[type];
       data.push({
         icon: this.getIcon(type) ?? type,
         title: type,
-        percentage: stats.totalNum + " / " + response.totalNum,
+        percentage:
+          filteredTotal > 0
+            ? Math.round((stats.totalNum / filteredTotal) * 100)
+            : 0,
         count: stats.totalNum,
         published: stats.numPublished,
         working: stats.numDrafts,
       });
     });
-    /*    response.statsPerType.forEach((stats, type) => {
-      data.push({
-        icon: this.getIcon(type) ?? type,
-        title: type,
-        percentage: stats.totalNum / response.totalNum,
-        count: stats.totalNum,
-        published: stats.numPublished,
-        working: stats.numDrafts,
-      });
-    });*/
 
     this.dataSource.data = data;
+    this.chartDataPublished.next([filteredDrafts, filteredPublished]);
   }
 
   getIcon(type: string): string {

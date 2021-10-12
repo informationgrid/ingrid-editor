@@ -26,6 +26,9 @@ import { CardBoxComponent } from "./card-box/card-box.component";
 import { UploadComponent } from "../+importExport/upload/upload.component";
 import { ChartComponent } from "../+dashboard/chart/chart.component";
 import { FocusDirective } from "../directives/focus.directive";
+import { FacetsComponent } from "../+research/+facets/facets.component";
+import { SpatialListComponent } from "../formly/types/map/spatial-list/spatial-list.component";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @NgModule({
   imports: [
@@ -47,6 +50,7 @@ import { FocusDirective } from "../directives/focus.directive";
     MatCheckboxModule,
     AddButtonModule,
     CardBoxModule,
+    MatDatepickerModule,
   ],
   declarations: [
     TreeComponent,
@@ -56,6 +60,8 @@ import { FocusDirective } from "../directives/focus.directive";
     UploadComponent,
     ChartComponent,
     FocusDirective,
+    FacetsComponent,
+    SpatialListComponent,
   ],
   exports: [
     TreeComponent,
@@ -69,6 +75,8 @@ import { FocusDirective } from "../directives/focus.directive";
     UploadComponent,
     ChartComponent,
     FocusDirective,
+    FacetsComponent,
+    SpatialListComponent,
   ],
 })
 export class SharedModule {}
