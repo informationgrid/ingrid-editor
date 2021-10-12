@@ -25,6 +25,7 @@ import { CardBoxModule } from "./card-box/card-box.module";
 import { CardBoxComponent } from "./card-box/card-box.component";
 import { UploadComponent } from "../+importExport/upload/upload.component";
 import { ChartComponent } from "../+dashboard/chart/chart.component";
+import { FocusDirective } from "../directives/focus.directive";
 
 @NgModule({
   imports: [
@@ -54,6 +55,7 @@ import { ChartComponent } from "../+dashboard/chart/chart.component";
     OptionListComponent,
     UploadComponent,
     ChartComponent,
+    FocusDirective,
   ],
   exports: [
     TreeComponent,
@@ -66,6 +68,7 @@ import { ChartComponent } from "../+dashboard/chart/chart.component";
     AddButtonComponent,
     UploadComponent,
     ChartComponent,
+    FocusDirective,
   ],
 })
 export class SharedModule {}

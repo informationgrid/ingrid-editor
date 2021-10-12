@@ -13,13 +13,18 @@ h3 {
   color: $ige-primary;
   font-weight: normal;
   font-size: 24px;
-  margin: 46px 0;
+  margin: 24px 0 24px;
+}
+
+h3:first-child {
+  margin-top: 0;
 }
 
 .side-title {
   color: $ige-placeholder-color;
   text-transform: uppercase;
-  padding-top: 20px;
+  padding-top: 24px;
+  font-size: 12px;
 }
 
 .side-item {
@@ -33,7 +38,8 @@ h3 {
 }
 
 .info-row {
-  padding-bottom: 24px;
+  line-height: 36px;
+  padding-bottom: 15px;
 }
 
 .info-row,

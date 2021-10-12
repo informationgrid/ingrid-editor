@@ -86,6 +86,7 @@ export class ProfileComponent implements OnInit {
   openResetPasswordDialog(): void {
     this.dialog
       .open(ConfirmDialogComponent, {
+        maxWidth: 700,
         data: (<ConfirmDialogData>{
           title: "Passwort ändern",
           message:

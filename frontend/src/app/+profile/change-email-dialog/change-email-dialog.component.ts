@@ -24,9 +24,6 @@ export class ChangeEmailDialogComponent implements OnInit {
   oldMailAddress: string;
 
   ngOnInit(): void {
-    this.form.setValue({
-      email: this.data?.email ?? "",
-    });
     this.oldMailAddress = this.data?.email ?? "";
   }
 

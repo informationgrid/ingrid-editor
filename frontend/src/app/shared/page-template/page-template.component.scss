@@ -5,11 +5,27 @@
   height: 100%;
 }
 
-.tab-padding {
-  padding: 40px 56px 26px;
+.tab-padding,
+.tab-padding-no-header {
   height: 100%;
   flex: 1;
   overflow: auto;
+}
+.tab-padding {
+  padding: 40px 56px 26px;
+}
+.tab-padding-no-header {
+  padding: 0 56px;
+
+  .left-side,
+  .main-content {
+    padding-top: 40px;
+    padding-bottom: 26px;
+  }
+
+  .main-content {
+    background-color: #ffffff;
+  }
 }
 
 .header {
@@ -23,7 +39,8 @@
   line-height: 22px;
   margin-right: 56px;
 
-  &.page-title {
+  &.page-title,
+  .page-title {
     margin-top: 0;
     font-size: 34px;
     letter-spacing: 0.25px;

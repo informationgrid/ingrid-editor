@@ -1,8 +1,7 @@
-<page-template
+<page-template-no-header
     *ngIf="userInfo$ | async as userInfo"
     [label]="userInfo.firstName"
     [subLabel]="userInfo.lastName"
-    [noHeader]="true"
 >
     <div left-side>
         <div class="side-title">Rolle</div>
@@ -87,4 +86,4 @@
             </button>
         </div>
     </section>
-</page-template>
+</page-template-no-header>

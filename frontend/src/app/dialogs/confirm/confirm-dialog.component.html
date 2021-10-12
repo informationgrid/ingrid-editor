@@ -46,7 +46,7 @@
         *ngFor="let button of rightAlignedButtons"
         mat-button
         color="primary"
-        [class.mat-stroked-button]="button.emphasize"
+        [class.mat-flat-button]="button.emphasize"
         [disabled]="
             button.disabledWhenNotConfirmed &&
             data.confirmText &&

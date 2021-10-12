@@ -7,16 +7,16 @@
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
-    <mat-form-field style="width: 100%">
-        <mat-label>Gruppenname eingeben...</mat-label>
-        <input matInput formControlName="name" />
+    <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Gruppenname</mat-label>
+        <input matInput placeholder="Eingeben..." formControlName="name" />
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button mat-dialog-close color="primary">Abbrechen</button>
     <div fxFlex></div>
     <button
-        mat-stroked-button
+        mat-flat-button
         color="primary"
         [disabled]="form.invalid"
         (click)="createGroup()"
