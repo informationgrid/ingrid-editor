@@ -100,12 +100,18 @@
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #groupMoreMenu="matMenu">
-                        <button
+                        <!--                        <button
                             disabled
                             mat-menu-item
                             (click)="openChangeManagerDialog()"
                         >
                             Verantwortlichen ändern
+                        </button>-->
+                        <button
+                            mat-menu-item
+                            (click)="showGroupUsers(selectedGroup.id)"
+                        >
+                            Nutzer anzeigen
                         </button>
                         <button
                             mat-menu-item

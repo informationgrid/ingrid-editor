@@ -180,6 +180,7 @@ class CatalogService @Autowired constructor(
                 )
             }
             data?.organisation = user.organisation
+            data?.modificationDate = user.modificationDate
 
             groups = mergeGroups(catalogId, groups, user)
             role = if (user.role.isNotEmpty()) roleRepo.findByName(user.role) else null
@@ -212,6 +213,7 @@ class CatalogService @Autowired constructor(
     @Transactional
     fun updateUser(catalogId: String, userModel: User) {
 
+        userModel.modificationDate = Date()
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
         if (userModel.manager.isNotEmpty()) setManager(userModel.login, userModel.manager, catalogId)

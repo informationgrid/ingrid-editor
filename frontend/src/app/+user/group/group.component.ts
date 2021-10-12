@@ -163,6 +163,28 @@ export class GroupComponent implements OnInit, AfterViewInit {
     });
   }
 
+  async showGroupUsers(id: number) {
+    this.groupService.getUsersOfGroup(id).subscribe((users) => {
+      this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: "Gruppennutzer",
+          message:
+            users.length > 0
+              ? `Aktuell ${
+                  users.length === 1
+                    ? "ist ein Nutzer"
+                    : "sind" + users.length + " Nutzer"
+                } der Gruppe zugeordnet:`
+              : "Es sind aktuell keine Nutzer der Gruppe zugeordnet",
+          list: users.map(
+            // (user) => `${user.firstName} ${user.lastName} (${user.login})`
+            (user) => user.login
+          ),
+        },
+      });
+    });
+  }
+
   forbiddenNameValidator(): ValidatorFn {
     return (control: AbstractControl) => {
       const forbidden =
