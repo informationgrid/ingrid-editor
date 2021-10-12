@@ -35,12 +35,12 @@
 .left-side {
   width: 350px;
   min-width: 350px;
-  height: 110px;
   line-height: 22px;
   margin-right: 56px;
 
   &.page-title,
   .page-title {
+    height: 110px;
     margin-top: 0;
     font-size: 34px;
     letter-spacing: 0.25px;
