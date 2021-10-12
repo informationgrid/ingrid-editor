@@ -21,6 +21,7 @@ export class WktSpatialComponent implements OnInit {
 
     if (this.wktString) {
       this.drawWkt(this.wktString);
+      setTimeout(() => this.result.next(this.wktString), 50);
     }
   }
 
