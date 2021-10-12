@@ -8,6 +8,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_ID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 
 @Component
@@ -57,7 +58,7 @@ class MCloudType : EntityType() {
                 val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
                 val latestDocumentJson = docService.convertToJsonNode(latestDocument)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
-            } catch (e: NotFoundException) {
+            } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
                 log.error("Referenced address was not found: $wrapperId -> Should we remove it?")
                 continue

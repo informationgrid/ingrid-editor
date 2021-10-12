@@ -95,7 +95,16 @@ class IndexingTask @Autowired constructor(
             }
 
             // pre phase
-            val info = indexPrePhase(categoryAlias, catalog.type, format)
+            val info = try {
+                indexPrePhase(categoryAlias, catalog.type, format)
+            } catch (ex: Exception) {
+                val errorMessage = "Error during Index Pre-Phase: ${ex.message}"
+                log.error(errorMessage, ex)
+                notify.sendMessage(message.apply {
+                    errors.add(errorMessage)
+                })
+                return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
+            }
 
             // TODO: dynamically get target to send exported documents
 
@@ -118,12 +127,9 @@ class IndexingTask @Autowired constructor(
                 }
 
                 docsToPublish.content
-                    .onEachIndexed { index, _ ->
-                        Thread.sleep(1000)
+                    .mapIndexedNotNull { index, doc ->
                         handleCancelation(catalogId, message)
                         sendNotification(category, message, index + (page * 10))
-                    }
-                    .mapIndexedNotNull { index, doc ->
                         log.debug("export ${doc.uuid}")
                         try {
                             exporter.run(doc)

@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional
 import javax.persistence.criteria.*
 
 @Service
-class DocumentService @Autowired constructor(
+open class DocumentService @Autowired constructor(
     var docRepo: DocumentRepository,
     var userRepo: UserRepository,
     var docWrapperRepo: DocumentWrapperRepository,
@@ -159,7 +159,7 @@ class DocumentService @Autowired constructor(
                 "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')"
     )
     @Transactional
-    fun createDocument(
+    open fun createDocument(
         catalogId: String,
         data: JsonNode,
         parentId: String?,
@@ -178,7 +178,7 @@ class DocumentService @Autowired constructor(
 
         // create ACL before trying to save since we need the permission
         aclService.createAclForDocument(document.uuid, preCreatePayload.wrapper.parent?.id)
-        
+
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
 
@@ -353,10 +353,11 @@ class DocumentService @Autowired constructor(
 
             // remove the wrapper
             docWrapperRepo.deleteById(id)
-
-            // remove ACL from document
-            aclService.removeAclForDocument(id)
         }
+
+        // always remove ACL from document
+        // if only marked for deletion, then we need to create ACL again after an undelete
+        aclService.removeAclForDocument(id)
 
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
@@ -382,7 +383,7 @@ class DocumentService @Autowired constructor(
 
         // delete draft document
         docRepo.delete(wrapper.draft!!)
-        
+
         // update wrapper
         wrapper.draft = null
         val updatedWrapper = docWrapperRepo.save(wrapper)

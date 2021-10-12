@@ -10,6 +10,7 @@ import { FileUploadModel } from "../upload/upload.component";
 import { MatStepper } from "@angular/material/stepper";
 import { tap } from "rxjs/operators";
 import { UploadService } from "../upload/upload.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "ige-import",
@@ -37,11 +38,13 @@ export class ImportComponent implements OnInit {
   locationAddress: string[] = [];
   readyForImport = false;
   chosenFiles: FileUploadModel[];
+  private importedDocId: string = null;
 
   constructor(
     private importExportService: ImportExportService,
     config: ConfigService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private router: Router
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
@@ -141,8 +144,16 @@ export class ImportComponent implements OnInit {
           "file",
           `api/import?importerId=${importer}&parentDoc=${this.locationDoc[0]}&parentAddress=${this.locationAddress[0]}&options=${option}`
         )
-        .pipe(tap((response) => console.log("File imported", response)))
+        .pipe(
+          tap((response) => console.log("File imported", response)),
+          // @ts-ignore
+          tap((response) => (this.importedDocId = response.body.result._id))
+        )
         .subscribe();
     });
+  }
+
+  openImportedDocument() {
+    this.router.navigate(["/form", { id: this.importedDocId }]);
   }
 }

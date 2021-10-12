@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.persistence.filter
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -8,7 +9,9 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.FIELD_HAS_CHILDREN
+import de.ingrid.igeserver.services.FIELD_PARENT
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -65,11 +68,18 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
     }
 
     protected fun initializeDocumentWrapper(payload: PreCreatePayload, context: Context, catalogRef: Catalog) {
-        val parentId = payload.document.data["_parent"]
-        val parentRef = when (parentId == null || parentId.isNull) {
-            true -> null
-            else -> docWrapperRepo.findById(parentId.asText())
+        val parentId = payload.document.data[FIELD_PARENT]
+        val parentRef = try {
+            when (parentId == null || parentId.isNull) {
+                true -> null
+                else -> docWrapperRepo.findById(parentId.asText())
+            }
+        } catch (ex: EmptyResultDataAccessException) {
+            // this can happen during import, when a document has a parent referenced
+            payload.document.data.put(FIELD_PARENT, null as String?)
+            null
         }
+
         val documentType = payload.document.type
         val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id
 

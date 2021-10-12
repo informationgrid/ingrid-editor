@@ -9,6 +9,7 @@ import de.ingrid.igeserver.services.FIELD_ID
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.acls.model.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -54,6 +55,8 @@ class ImportService {
             documentService.getWrapperByDocumentId(uuid.asText())
         } catch (ex: NotFoundException) {
             null
+        } catch (ex: EmptyResultDataAccessException) {
+            null
         }
 
         val createDocument = if (wrapper == null) {
@@ -90,7 +93,7 @@ class ImportService {
         if (documentAlreadyExists(doc)) {
             (doc as ObjectNode).remove(FIELD_ID)
         }
-        
+
         // TODO: use option if we want to publish it
         documentService.createDocument(doc, publish = false)*/
 

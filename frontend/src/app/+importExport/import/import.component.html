@@ -164,7 +164,12 @@
 
                 Datei importiert: Ort:
                 <ige-breadcrumb [path]="null"></ige-breadcrumb>
-                <button mat-button mat-stroked-button color="primary">
+                <button
+                    mat-button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="openImportedDocument()"
+                >
                     Öffnen
                 </button>
                 <pre>{{ analyzedData | json }}</pre>
