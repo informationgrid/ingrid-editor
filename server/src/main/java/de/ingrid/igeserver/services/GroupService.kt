@@ -25,7 +25,7 @@ import java.util.*
 
 
 @Service
-class GroupService @Autowired constructor(
+open class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
@@ -35,7 +35,7 @@ class GroupService @Autowired constructor(
     private val log = logger()
 
     @Transactional
-    fun create(catalogId: String, group: Group, manager: UserInfo?): Group {
+    open fun create(catalogId: String, group: Group, manager: UserInfo?): Group {
         group.catalog = catalogRepo.findByIdentifier(catalogId)
         group.data = group.data ?: GroupData()
         group.data?.creationDate = Date()
@@ -70,7 +70,7 @@ class GroupService @Autowired constructor(
     }
 
     @Transactional
-    fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
+    open fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
 
         val oldGroup = get(catalogId, id)!!
         group.apply {
@@ -93,14 +93,17 @@ class GroupService @Autowired constructor(
     private fun removeAllPermissionsFromGroup(group: Group) {
         aclService as JdbcMutableAclService
 
+        val sid = GrantedAuthoritySid("GROUP_${group.name}")
+
         getAllDocPermissions(group).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
             val acl = aclService.readAclById(objIdentity) as MutableAcl
 
-            // remove all permission entries except Administration (otherwise entry cannot be modified by a user who did not create it)
             // new permissions will be added later
             for (index in acl.entries.size - 1 downTo 0) {
-                if (acl.entries[index].permission != BasePermission.ADMINISTRATION) {
+                // only remove ACE from current SID (the readAclById-function can be called with SIDs,
+                // however it is not reliable and returns often ACEs from all SIDs!)
+                if (acl.entries[index].sid == sid) {
                     acl.deleteAce(index)
                 }
             }
@@ -166,7 +169,7 @@ class GroupService @Autowired constructor(
 
     fun removeDocFromGroups(catalogId: String, docId: String) {
         var wasUpdated = false
-        
+
         this.getAll(catalogId).forEach { group ->
             val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
@@ -182,7 +185,7 @@ class GroupService @Autowired constructor(
                 wasUpdated = true
             }
         }
-        
+
         if (!wasUpdated) {
             log.debug("No group had to be updated after deleting document '${docId}'")
         }
