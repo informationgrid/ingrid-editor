@@ -29,6 +29,7 @@ import { FocusDirective } from "../directives/focus.directive";
 import { FacetsComponent } from "../+research/+facets/facets.component";
 import { SpatialListComponent } from "../formly/types/map/spatial-list/spatial-list.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   imports: [
@@ -51,6 +52,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     AddButtonModule,
     CardBoxModule,
     MatDatepickerModule,
+    MatMenuModule,
   ],
   declarations: [
     TreeComponent,
