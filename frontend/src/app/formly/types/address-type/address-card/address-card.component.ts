@@ -68,6 +68,11 @@ export class AddressCardComponent implements OnInit {
       secondTitle: this.getSecondTitle(this.address.ref),
       emailOrPhone: this.getEmailOrTelephone(this.address.ref),
     };
+
+    if (typeof this.address.ref === "string") {
+      this.content.title = "Gelöschte Adresse";
+    }
+
     this.stateInfo = this.getAddressInfo();
   }
 
