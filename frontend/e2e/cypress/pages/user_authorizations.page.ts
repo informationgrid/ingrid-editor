@@ -24,6 +24,11 @@ export class UserAuthorizationPage extends BasePage {
     cy.contains('ige-header-title-row', title);
   }
 
+  static accessUserProfile() {
+    cy.get('[data-cy="header-profile-button"]').click();
+    cy.contains('[role="menuitem"]', 'Profil verwalten').click();
+  }
+
   static changeTitle(title: string) {
     cy.get('.title .label')
       .should('have.class', 'editable')
@@ -69,7 +74,7 @@ export class UserAuthorizationPage extends BasePage {
   }
 
   static ProfileElements: Record<string, string> = {
-    Title: '.page-title.left-side',
+    Title: '.left-side .page-title',
     Role: 'div.side-item:nth-child(2)',
     Groups: 'div.side-item:nth-child(1)',
     FirstName: 'div.info-row:nth-child(2) > div:nth-child(2)',

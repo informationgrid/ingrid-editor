@@ -45,7 +45,6 @@ describe('Meta data administrator without groups', () => {
     AdminGroupPage.addGroupDescription(description);
     AdminGroupPage.toolbarSaveGroup();
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
-    AdminGroupPage.verifyInfoInHeader(headerKeys.Manager, 'meta');
     // try to add documents
     AdminGroupPage.selectGroup(newGroup);
     AdminGroupPage.openAddDocumentsDialog('Adressen');
@@ -251,18 +250,7 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     Tree.openNode(['Ordner_3.Ebene_C']);
     UserAuthorizationPage.verifyDocumentTitle('Ordner_3.Ebene_C');
-    // first delete documents present in the folder
-    cy.get('mat-tree-node[aria-level="2"]')
-      .first()
-      .then(element => {
-        cy.wrap(element).click();
-        DocumentPage.deleteLoadedNode();
-        Tree.openNode(['Ordner_3.Ebene_C']);
-      });
-    cy.get('mat-tree-node[aria-level="2"]').then(element => {
-      cy.wrap(element).click();
-      DocumentPage.deleteLoadedNode();
-    });
+    Tree.deleteChildren('Ordner_3.Ebene_C');
     // try to delete the folder: expect delete button to be disabled
     Tree.openNode(['Ordner_3.Ebene_C']);
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
@@ -399,10 +387,6 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.selectGroup(groupName2);
     cy.kcLogout();
-  });
-
-  xit('meta data admin should be able to see the groups and users of metadata admins he has created (and so on recursively)', () => {
-    // create a user, assign groups, let this user assign groups, then check access to documents
   });
 
   xit('meta data admin should have the same access right to documents further down in the tree as the users to which the access rights were granted', () => {});

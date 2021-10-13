@@ -196,8 +196,7 @@ describe('author with groups', () => {
 
   it('Author with groups can see his own user profile', () => {
     DashboardPage.visit();
-    cy.get('[data-cy="header-profile-button"]').click();
-    cy.contains('[role="menuitem"]', 'Profil verwalten').click();
+    UserAuthorizationPage.accessUserProfile();
     cy.get(UserAuthorizationPage.ProfileElements.Title).should('have.text', ' Autor_mitGruppen ');
     cy.get(UserAuthorizationPage.ProfileElements.Groups).should('have.text', ' test_gruppe_3 ');
     cy.get(UserAuthorizationPage.ProfileElements.FirstName).should('have.text', 'Autor_mit');

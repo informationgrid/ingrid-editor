@@ -221,12 +221,10 @@ describe('General create addresses/folders', () => {
       // delete the subfolder
       AddressPage.deleteLoadedNode();
 
-      // reload page
-      cy.contains('.mat-button-wrapper', 'refresh').click({ force: true });
-
-      // check if parent folder is recognized as empty and can be deleted
+      // check if parent folder can be deleted
       Tree.openNode(['testordner_1']);
-      cy.get('[data-cy="toolbar_DELETE"]').should('be.enabled');
+      cy.get('[data-cy="toolbar_DELETE"]').should('be.enabled').click();
+      cy.contains('mat-dialog-container', 'Möchten Sie wirklich diese Datensätze löschen:');
     });
   });
 });

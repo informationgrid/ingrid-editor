@@ -63,6 +63,7 @@ export class AdminUserPage extends BasePage {
 
   static removeGroupFromUser(groupName: string) {
     cy.contains('[data-cy=Gruppen] div.clickable', groupName)
+      .should('be.visible')
       .trigger('mouseover')
       /*.parent()
       .parent()*/
