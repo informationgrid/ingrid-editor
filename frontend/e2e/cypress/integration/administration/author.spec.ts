@@ -40,24 +40,16 @@ describe('User without authorizations', () => {
   });
 
   it('Author should see neither documents nor addresses', () => {
+    // check if there is an empty tree for both adressen and daten
+    cy.intercept('GET', '/api/tree/children').as('treeCall');
     DocumentPage.visit();
-    //cy.wait(1000);
-    // if there are data to show, ige-tree has two children: the navigation board and the tree with the items
+    cy.wait('@treeCall');
+    cy.get('ige-empty-navigation').should('exist');
 
-    // cy.get('ige-tree').children().should('have.length', 3);
-    cy.get('ige-empty-navigation', { timeout: 1000 }).should('be.visible');
-    // cy.get('ige-empty-navigation', { timeout: 1000 }).contains('Leer').should('be.visible');
-    // cy.get('ige-empty-navigation').should('exist');
-
-    // cy.wait(1000);
+    cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     AddressPage.visit();
-    // if there are addresses to show, ige-tree has two children: the navigation board and the tree with the items
-    cy.get('ige-tree').children().should('have.length', 3);
-    // cy.wait(100);
-    // cy.get('ige-empty-navigation').should('be.visible');
-    // cy.get('ige-empty-navigation').contains('Leer').should('be.visible');
-
-    // cy.get('ige-empty-navigation').should('exist');
+    cy.wait('@treeCallAddress');
+    cy.get('ige-empty-navigation').should('exist');
   });
 
   it('author without authorizations should not be able to create a data folder', () => {
