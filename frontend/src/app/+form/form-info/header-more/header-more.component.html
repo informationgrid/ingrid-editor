@@ -7,10 +7,6 @@
     </div>
 
     <div fxLayout="row">
-        <div>Verantwortlich</div>
-        <div>???</div>
-    </div>
-    <div fxLayout="row">
         <div>Typ</div>
         <div>{{ mapDocumentType(model._type) }}</div>
     </div>
@@ -25,15 +21,14 @@
             <span [title]="model._created | date: 'long'">{{
                 model._created | date: "dd.MM.yyyy"
             }}</span>
-            von ???
         </div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
         <div>
             <span [title]="model._modified | date: 'long'"
-                >{{ model._modified | date: "dd.MM.yyyy" }} von ???</span
-            >
+                >{{ model._modified | date: "dd.MM.yyyy" }}
+            </span>
         </div>
     </div>
 </div>
