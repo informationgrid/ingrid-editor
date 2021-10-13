@@ -50,6 +50,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource([]);
   displayedColumns: string[] = [];
   columnsMap: SelectOptionUi[];
+  showSaveButton: boolean;
 
   totalHits = 0;
   profileIconsMap: {};
@@ -70,6 +71,8 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
       }, {});
       this.columnsMap = profiles[0].fieldsMap;
     });
+
+    this.showSaveButton = this.save.observers.length > 0;
   }
 
   ngAfterViewInit(): void {
