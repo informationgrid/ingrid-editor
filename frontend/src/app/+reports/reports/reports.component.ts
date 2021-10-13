@@ -66,7 +66,6 @@ export class ReportsComponent implements OnInit {
 
   prepareTableData(response: StatisticResponse) {
     var data = [];
-    console.log(response);
     var filteredTotal = 0;
     var filteredDrafts = 0;
     var filteredPublished = 0;

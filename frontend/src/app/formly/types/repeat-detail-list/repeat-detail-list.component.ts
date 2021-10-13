@@ -68,7 +68,6 @@ export class RepeatDetailListComponent
       })
       .afterClosed()
       .subscribe((response) => {
-        console.log(response);
         if (response) {
           if (index !== null) {
             this.remove(index);

@@ -38,7 +38,6 @@ export class RepeatChipComponent extends FieldArrayType {
       })
       .afterClosed()
       .subscribe((response) => {
-        console.log(response);
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
