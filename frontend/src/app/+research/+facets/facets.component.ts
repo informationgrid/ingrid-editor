@@ -31,6 +31,7 @@ export interface FacetUpdate {
 })
 export class FacetsComponent implements AfterViewInit {
   @Input() model: any;
+  @Input() forReports: boolean;
 
   _parameter: any = {};
   @Input() set parameter(value: any) {
@@ -49,6 +50,7 @@ export class FacetsComponent implements AfterViewInit {
     this._forAddresses = addresses;
     if (this.allFacets) {
       this.updateFilterGroup();
+      this.sendUpdate();
     }
   }
 
@@ -61,6 +63,7 @@ export class FacetsComponent implements AfterViewInit {
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
   filterGroup: FacetGroup[];
+  researchOnlyFilterIds = ["state"];
 
   private _forAddresses = false;
   private allFacets: Facets;
@@ -90,6 +93,7 @@ export class FacetsComponent implements AfterViewInit {
       .pipe(
         tap((filters) => (this.allFacets = filters)),
         tap(() => this.updateFilterGroup()),
+        tap(() => this.sendUpdate()),
         tap(() => {
           this.isInitialized = true;
           this.updateSpatialFromModel(this._parameter);
@@ -277,8 +281,11 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   private updateFilterGroup() {
-    const filter =
-      this.allFacets[this._forAddresses ? "addresses" : "documents"];
+    let filter = this.allFacets[this._forAddresses ? "addresses" : "documents"];
+    if (this.forReports)
+      filter = filter.filter(
+        (fg) => !this.researchOnlyFilterIds.includes(fg.id)
+      );
     this.spatialFilterId = this.determineSpatialFilterId(filter);
     this.timespanFilterId = this.determineTimeSpanFilterId(filter);
     this.setDefaultModel(filter);
