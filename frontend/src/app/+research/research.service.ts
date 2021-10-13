@@ -86,6 +86,17 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
+  searchStatistic(
+    model: any,
+    fieldsWithParameters: { [x: string]: any[] }
+  ): Observable<any> {
+    const backendQuery = new BackendQuery("", model, fieldsWithParameters);
+    return this.http.post<any>(
+      `${this.configuration.backendUrl}statistic/query`,
+      backendQuery.get()
+    );
+  }
+
   fetchQueries(): void {
     this.http
       .get<BackendStoreQuery[]>(`${this.configuration.backendUrl}search`)

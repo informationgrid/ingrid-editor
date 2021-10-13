@@ -8,6 +8,7 @@ import { SharedModule } from "../shared/shared.module";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [ReportsComponent],
@@ -20,6 +21,7 @@ import { MatSortModule } from "@angular/material/sort";
     DocumentIconModule,
     MatTableModule,
     MatSortModule,
+    MatButtonToggleModule,
   ],
 })
 export class ReportsModule {}

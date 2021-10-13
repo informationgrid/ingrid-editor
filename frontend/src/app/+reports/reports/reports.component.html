@@ -1,14 +1,29 @@
 <mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs">
     <mat-tab label="Statistik">
         <page-template-no-header label="Statistik">
-            <ige-facets
-                left-side
-                [model]="facetModel"
-                [parameter]="facetParameters"
-                [forAddresses]="searchClass === 'selectAddresses'"
-                [refreshView]="facetViewRefresher"
-                (update)="updateFilter($event)"
-            ></ige-facets>
+            <div left-side>
+                <mat-button-toggle-group
+                    value="selectDocuments"
+                    name="searchClass"
+                    aria-label="Typ"
+                    (valueChange)="updateSearchClass($event)"
+                >
+                    <mat-button-toggle value="selectDocuments"
+                        >Daten</mat-button-toggle
+                    >
+                    <mat-button-toggle value="selectAddresses"
+                        >Adressen</mat-button-toggle
+                    >
+                </mat-button-toggle-group>
+                <ige-facets
+                    [model]="facetModel"
+                    [parameter]="facetParameters"
+                    [forAddresses]="searchClass === 'selectAddresses'"
+                    [forReports]="true"
+                    [refreshView]="facetViewRefresher"
+                    (update)="updateFilter($event)"
+                ></ige-facets>
+            </div>
             <div main-content fxLayout="column" fxLayoutGap="36px">
                 <ige-chart
                     [data]="chartDataPublished"
@@ -37,7 +52,7 @@
                                 Typ
                             </th>
                             <td mat-cell *matCellDef="let element">
-                                {{ element.title }}
+                                {{ getTitle(element.title) }}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="percentage">

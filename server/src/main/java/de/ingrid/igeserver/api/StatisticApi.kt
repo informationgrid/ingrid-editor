@@ -5,16 +5,17 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @Tag(name = "Statistic", description = "the statistic API")
@@ -23,4 +24,12 @@ interface StatisticApi {
     @GetMapping(value = ["/statistic"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "200", description = "Unexpected error")])
     fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse>
+
+    @Operation
+    @PostMapping(value = ["/statistic/query"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun searchStatistic(
+        principal: Principal,
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery
+    ): ResponseEntity<StatisticResponse>
 }

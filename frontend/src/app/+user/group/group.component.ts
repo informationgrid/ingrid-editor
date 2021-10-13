@@ -173,7 +173,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
               ? `Aktuell ${
                   users.length === 1
                     ? "ist ein Nutzer"
-                    : "sind" + users.length + " Nutzer"
+                    : "sind " + users.length + " Nutzer"
                 } der Gruppe zugeordnet:`
               : "Es sind aktuell keine Nutzer der Gruppe zugeordnet",
           list: users.map(
