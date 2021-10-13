@@ -96,7 +96,7 @@ describe('mCLOUD documents', function () {
       const option = '';
 
       // is needed for setTimeReference, because svgicon='Entfernen' is not in view
-      cy.get(DocumentPage.Sidemenu.Skalieren).click();
+      cy.get('[data-cy="menu-scale"]').click();
       DocumentPage.createDocument(docName);
 
       // check if created document is a mCloud-Document
