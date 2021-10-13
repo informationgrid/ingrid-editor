@@ -116,22 +116,29 @@ describe('Spatial References', () => {
 
   it('should focus on a selected spatial reference and also reset view after pressing reset button', () => {
     // open document and navigate to spatial section
-    Tree.openNode(['TestDocResearch1']);
-    cy.get('[data-cy="spatialButton"]').should('not.be.visible');
+
+    const poly =
+      'POLYGON((-0.001536 -0.000099, 0.0 -0.001536, -0.000099 0.0, -0.001536 -0.000100, 0.0 -0.001536)(-0.000100 0.0, -0.000099 0.0, -0.001536 -0.000099, 0.0 -0.001536, -0.000099 0.0))';
+    const docNameBbox = 'TestDocResearch1';
+
+    Tree.openNode([docNameBbox]);
+
+    enterMcloudDocTestData.setSpatialWKT('create spatial reference, random', poly);
+    DocumentPage.checkSpatialEntryNumber(2);
+    DocumentPage.checkSpatialEntryExists('reference, random');
+
     cy.get('.navigation-header').contains('Raumbezüge').click();
     cy.get('[data-cy="spatialButton"]', { timeout: 1000 }).should('be.visible');
 
     // click on first Raumbezug
     cy.get('ige-spatial-list mat-list > mat-list-item', { timeout: 1000 }).eq(0).click();
 
-    // make sure that only the first one is visible and has blue color
-    cy.get('path.leaflet-interactive:nth-of-type(1)', { timeout: 1000 }).should('be.visible');
-    cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('not.be.visible');
-    cy.get('path.leaflet-interactive:nth-of-type(3)', { timeout: 1000 }).should('not.be.visible');
+    // make sure that only the first one is visible
+    cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');
+    cy.get('path.leaflet-interactive:nth-of-type(1)', { timeout: 1000 }).should('not.be.visible');
 
     DocumentPage.clickLeafletMapResetBtn();
     //  make sure that all others are visible
-    cy.get('path.leaflet-interactive:nth-of-type(3)', { timeout: 1000 }).should('be.visible');
     cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');
     cy.get('path.leaflet-interactive:nth-of-type(1)', { timeout: 1000 }).should('be.visible');
   });
