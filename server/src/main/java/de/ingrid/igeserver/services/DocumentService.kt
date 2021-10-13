@@ -154,11 +154,6 @@ open class DocumentService @Autowired constructor(
         return checkNotNull(documentTypes.find { it.className == docType })
     }
 
-    // TODO: make use of create action only, write is only temporary
-    @PreAuthorize(
-        "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper','CREATE') || " +
-                "hasPermission(#parentId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')"
-    )
     @Transactional
     open fun createDocument(
         catalogId: String,
