@@ -35,7 +35,7 @@ class IgeAclService @Autowired constructor(
         val permissionLevels = listOf<String>("writeTree", "ReadTree", "writeTreeExceptParent")
         val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
-        var isAllowed  = false
+        var isAllowed = false
         permissionLevels.forEach {
             val uuids = getAllDatasetUuidsFromGroups(listOf(group), it)
             uuids.map { uuid ->
@@ -85,7 +85,7 @@ class IgeAclService @Autowired constructor(
             .flatten().toSet().toList()
     }
 
-    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String =""): List<String> {
+    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<String> {
         return groups
             .map { group ->
                 mutableListOf<JsonNode>().apply {
@@ -95,7 +95,7 @@ class IgeAclService @Autowired constructor(
             }
             .map { permissions ->
                 permissions.filter { permission ->
-                    permissionLevel.isEmpty() ||permission.get("permission").asText() == permissionLevel
+                    permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
                 }
             }
             .map { permissions -> permissions.mapNotNull { permission -> permission.get("uuid").asText() } }
@@ -106,6 +106,12 @@ class IgeAclService @Autowired constructor(
         return try {
             acl.isGranted(listOf(permission), sids, false)
         } catch (nfe: NotFoundException) {
+            if (permission == BasePermission.WRITE
+                && acl.parentAcl != null
+                && acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+            ) {
+                return true
+            }
             false
         }
     }
@@ -122,7 +128,7 @@ class IgeAclService @Autowired constructor(
             (aclService as JdbcMutableAclService).updateAcl(acl)
         }
     }
-    
+
     fun removeAclForDocument(uuid: String) {
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)

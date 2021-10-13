@@ -11,7 +11,7 @@ export class DocumentUtils {
         return "published";
       default:
         console.error("State is not supported: " + state);
-        throw new Error("State is not supported: " + state);
+        return "";
     }
   }
 

@@ -38,6 +38,7 @@ export class AddressCardComponent implements OnInit {
     emailOrPhone: string;
   };
   invalidAddressReference = false;
+  stateInfo: String = "";
 
   constructor(private profileService: ProfileService) {}
 
@@ -67,6 +68,12 @@ export class AddressCardComponent implements OnInit {
       secondTitle: this.getSecondTitle(this.address.ref),
       emailOrPhone: this.getEmailOrTelephone(this.address.ref),
     };
+
+    if (typeof this.address.ref === "string") {
+      this.content.title = "Gelöschte Adresse";
+    }
+
+    this.stateInfo = this.getAddressInfo();
   }
 
   private getEmailOrTelephone(address: any) {
@@ -92,8 +99,8 @@ export class AddressCardComponent implements OnInit {
       : null;
   }
 
-  getAddressInfo() {
-    switch (this.content.iconState) {
+  private getAddressInfo() {
+    switch (this.content?.iconState) {
       case "working":
         return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
       case "workingWithPublished":

@@ -43,6 +43,16 @@ export const routes: Routes = [
     },
   },
   {
+    path: "reports",
+    loadChildren: () =>
+      import("./+reports/reports.module").then((m) => m.ReportsModule),
+    data: {
+      onlyAdmin: true,
+      title: "Reports",
+      icon: "Reports",
+    },
+  },
+  {
     path: "user",
     loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
     data: {
@@ -76,16 +86,6 @@ export const routes: Routes = [
       onlyAdmin: true,
       permission: "manage_catalog",
       icon: "Katalog",
-    },
-  },
-  {
-    path: "reports",
-    loadChildren: () =>
-      import("./+reports/reports.module").then((m) => m.ReportsModule),
-    data: {
-      onlyAdmin: true,
-      title: "Reports",
-      icon: "Reports",
     },
   },
   {

@@ -1,15 +1,12 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
-import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.utils.SpringContext
-import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -32,7 +29,7 @@ data class MCloudModel(
         get() {
             return data.addresses
                 ?.firstOrNull { it.type == "10" }
-                ?.ref;
+                ?.ref
         }
 
     val hasSingleSpatial: Boolean
@@ -76,10 +73,8 @@ data class MCloudModel(
     fun getLicenseData(): Any? {
         if(data.license != null) {
             val entryID = codeListService?.getCodeListEntryId("6500", data.license, "de")
-            var json_string = codeListService?.getCodeListEntry("6500", entryID)?.data;
-            val json_obj = JSONParser().parse(json_string)
-            //val url = (obj as HashMap<String, String>).get("url")
-            return json_obj
+            val jsonString = codeListService?.getCodeListEntry("6500", entryID)?.data
+            return if (jsonString.isNullOrEmpty()) null else JSONParser().parse(jsonString)
         }
         return null
     }
