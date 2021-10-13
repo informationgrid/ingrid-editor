@@ -147,7 +147,10 @@ export class FacetsComponent implements AfterViewInit {
       if (group.selection === "RADIO") {
         this.model[group.id] = group.filter[0].id;
       } else if (group.selection === "TIMESPAN") {
-        this.model[group.id][this.timespanFilterId] = { start: "", end: "" };
+        this.model[group.id][this.timespanFilterId] = {
+          start: null,
+          end: null,
+        };
       }
     });
   }
@@ -218,13 +221,13 @@ export class FacetsComponent implements AfterViewInit {
     this.sendUpdate();
   }
 
-  updateStartTimeSpan(start: any) {
-    const startDate = new Date(start);
+  updateStartTimeSpan(start: Date) {
+    const startDate = start ? new Date(start) : null;
     this.updateTime(startDate, 0);
   }
 
-  updateEndTimeSpan(end: any) {
-    const endDate = new Date(end);
+  updateEndTimeSpan(end: Date) {
+    const endDate = end ? new Date(end) : null;
     if (endDate) endDate.setDate(endDate.getDate() + 1);
     this.updateTime(endDate, 1);
   }

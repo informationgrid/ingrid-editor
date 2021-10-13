@@ -9,6 +9,8 @@ import { DocumentIconModule } from "../shared/document-icon/document-icon.module
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { DateAdapter } from "@angular/material/core";
+import { GermanDateAdapter } from "../services/german-date.adapter";
 
 @NgModule({
   declarations: [ReportsComponent],
@@ -22,6 +24,12 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
     MatTableModule,
     MatSortModule,
     MatButtonToggleModule,
+  ],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
+    },
   ],
 })
 export class ReportsModule {}

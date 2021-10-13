@@ -10,8 +10,6 @@ export class GermanDateAdapter extends NativeDateAdapter {
       const date = Number(str[0]);
 
       return new Date(year, month, date);
-    } else if (typeof value === "string" && value === "") {
-      return new Date();
     }
     const timestamp = typeof value === "number" ? value : Date.parse(value);
     return isNaN(timestamp) ? null : new Date(timestamp);
