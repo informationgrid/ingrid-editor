@@ -106,11 +106,15 @@ class IgeAclService @Autowired constructor(
         return try {
             acl.isGranted(listOf(permission), sids, false)
         } catch (nfe: NotFoundException) {
-            if (permission == BasePermission.WRITE
-                && acl.parentAcl != null
-                && acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
-            ) {
-                return true
+            try {
+                if (permission == BasePermission.WRITE
+                    && acl.parentAcl != null
+                    && acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+                ) {
+                    return true
+                }
+            } catch (_: NotFoundException) {
+                return false
             }
             false
         }
