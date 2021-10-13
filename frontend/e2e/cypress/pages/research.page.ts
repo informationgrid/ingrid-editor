@@ -170,8 +170,8 @@ export class ResearchPage {
 
   static saveSearchProfile(title: string, description: string): void {
     cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
-    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(1).type(title);
-    cy.get('div.mat-form-field-infix >input.mat-input-element').eq(2).type(description);
+    cy.get('[data-cy="search-name"]').type(title);
+    cy.get('[data-cy="search-description"]').type(description);
     cy.intercept('POST', /api\/search/).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
     cy.wait('@saveChanges').its('response.body.name').should('eq', title);

@@ -13,11 +13,22 @@
     </div>
     <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput igeFocus [(ngModel)]="model.name" autocomplete="off" />
+        <input
+            matInput
+            igeFocus
+            [(ngModel)]="model.name"
+            data-cy="search-name"
+            autocomplete="off"
+        />
     </mat-form-field>
     <mat-form-field appearance="outline">
         <mat-label>Beschreibung</mat-label>
-        <input matInput [(ngModel)]="model.description" autocomplete="off" />
+        <input
+            matInput
+            [(ngModel)]="model.description"
+            data-cy="search-description"
+            autocomplete="off"
+        />
     </mat-form-field>
     <mat-checkbox [(ngModel)]="model.forCatalog"
         >Für alle sichtbar
