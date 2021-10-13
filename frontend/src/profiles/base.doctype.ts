@@ -83,11 +83,9 @@ export abstract class BaseDoctype implements Doctype {
 
     return merge(
       this.codelistQuery.selectEntity(codelistId),
-      this.codelistQuery
-        .selectCatalogCodelist(codelistId + "")
-        .pipe(tap(console.log))
+      this.codelistQuery.selectCatalogCodelist(codelistId + "")
     ).pipe(
-      filter((codelist) => codelist),
+      filter((codelist) => !!codelist),
       map((codelist) => CodelistService.mapToSelectSorted(codelist))
     );
   }

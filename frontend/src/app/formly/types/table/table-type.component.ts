@@ -109,7 +109,6 @@ export class TableTypeComponent
       })
       .afterClosed()
       .subscribe((result) => {
-        console.log(result);
         if (result) {
           if (newEntry) {
             this.dataSource.data.push(result);
@@ -186,7 +185,7 @@ export class TableTypeComponent
     this.to.columns
       .filter((column) => column.templateOptions.formatter)
       .forEach((column) =>
-        value.forEach((row, index) => {
+        value?.forEach((row, index) => {
           this.formattedCell.push({});
           this.formattedCell[index][column.key] =
             column.templateOptions.formatter(value[index][column.key]);
