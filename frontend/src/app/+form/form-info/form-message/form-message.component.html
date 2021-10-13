@@ -5,9 +5,9 @@
     [@slideDown]
     data-cy="form-message"
 >
-    <span>
+    <span class="message-wrapper">
         <mat-icon>{{ getIconClass(type.severity) }}</mat-icon>
-        {{ type.message }}
+        <span>{{ type.message }}</span>
     </span>
     <ng-container *ngIf="type.severity === 'error'">
         <div fxFlex></div>

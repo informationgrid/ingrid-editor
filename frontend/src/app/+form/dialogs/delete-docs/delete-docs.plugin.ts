@@ -146,17 +146,22 @@ export class DeleteDocsPlugin extends Plugin {
       //   .filter(doc => docIdsToDelete.indexOf(doc.id.toString()) !== -1)
       //   .map(doc => doc._parent);
 
-      this.documentService.delete(docIdsToDelete, this.forAddress);
+      this.documentService
+        .delete(docIdsToDelete, this.forAddress)
+        .then(() => {
+          this.documentService.updateOpenedDocumentInTreestore(
+            null,
+            this.forAddress
+          );
 
-      this.documentService.updateOpenedDocumentInTreestore(
-        null,
-        this.forAddress
-      );
-
-      // find all parents in store who now have no children anymore
-      // parents
-      //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
-      //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
+          // find all parents in store who now have no children anymore
+          // parents
+          //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
+          //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
+        })
+        .catch((ex) => {
+          console.log("Error already handled");
+        });
     } catch (ex) {
       console.error("Could not delete", ex);
     }

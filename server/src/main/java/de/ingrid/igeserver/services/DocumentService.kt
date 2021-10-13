@@ -9,6 +9,7 @@ import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
@@ -314,17 +315,22 @@ open class DocumentService @Autowired constructor(
         filterContext: Context,
         publish: Boolean
     ): DocumentWrapper {
-        val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
-        postUpdatePipe.runFilters(postUpdatePayload, filterContext)
-        return if (publish) {
-            // run post-publish pipe(s)
-            val postPublishPayload = PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
-            postPublishPipe.runFilters(postPublishPayload, filterContext)
-            postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
-            postPublishPayload.wrapper
-        } else {
-            postPersistencePipe.runFilters(postUpdatePayload as PostPersistencePayload, filterContext)
-            postUpdatePayload.wrapper
+        try {
+            val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
+            postUpdatePipe.runFilters(postUpdatePayload, filterContext)
+            return if (publish) {
+                // run post-publish pipe(s)
+                val postPublishPayload =
+                    PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
+                postPublishPipe.runFilters(postPublishPayload, filterContext)
+                postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
+                postPublishPayload.wrapper
+            } else {
+                postPersistencePipe.runFilters(postUpdatePayload as PostPersistencePayload, filterContext)
+                postUpdatePayload.wrapper
+            }
+        } catch (ex: Exception) {
+            throw PostSaveException.withException(ex)
         }
     }
 
@@ -340,6 +346,9 @@ open class DocumentService @Autowired constructor(
 
         val preDeletePayload = PreDeletePayload(docType, data, wrapper)
         preDeletePipe.runFilters(preDeletePayload, filterContext)
+
+        // TODO: check if document is referenced by another one and handle
+        //       it somehow
 
         findChildrenDocs(catalogId, id, isAddress(wrapper)).hits.forEach {
             deleteRecursively(catalogId, it.id)

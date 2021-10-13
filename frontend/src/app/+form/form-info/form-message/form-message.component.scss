@@ -2,7 +2,7 @@
 
 :host {
   display: block;
-  line-height: 48px;
+  line-height: 24px;
 
   .wrapper {
     display: flex;
@@ -31,6 +31,10 @@
       .mat-icon {
         color: $error-color;
       }
+    }
+
+    .message-wrapper {
+      padding: 10px 0;
     }
   }
 }

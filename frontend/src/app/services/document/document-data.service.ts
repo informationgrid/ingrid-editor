@@ -70,9 +70,7 @@ export class DocumentDataService {
   }
 
   delete(ids: string[]): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + "datasets/" + ids, {
-      responseType: "text",
-    });
+    return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }
 
   revert(id: string): Observable<IgeDocument> {

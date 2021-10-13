@@ -42,7 +42,7 @@ class ResearchService {
 
     @Autowired
     private lateinit var aclService: IgeAclService
-    
+
     @Autowired
     private lateinit var authUtils: AuthUtils
 
@@ -59,12 +59,12 @@ class ResearchService {
 
         val isAdmin = authUtils.isAdmin(principal)
         val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetUuidsFromGroups(groups)
-        
+
         // if a user has no groups then user is not allowed anything
         if (groupIds.isEmpty() && !isAdmin) {
             return ResearchResponse(0, emptyList())
         }
-        
+
         val sql = createQuery(dbId, query, groupIds)
         val parameters = getParameters(query)
 
@@ -73,7 +73,7 @@ class ResearchService {
 
         return ResearchResponse(result.size, map)
     }
-    
+
     private fun getParameters(query: ResearchQuery): List<Any> {
         return query.clauses?.clauses
             ?.mapNotNull { it.parameter }
@@ -106,7 +106,7 @@ class ResearchService {
             """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
                     OR ('{$groupDocUuidsString}') && document_wrapper.path)
             """.trimIndent()
-        
+
         val deletedFilter = "document_wrapper.deleted = 0 AND "
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
@@ -198,7 +198,7 @@ class ResearchService {
 
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>): List<Array<Any>> {
+    private fun sendQuery(sql: String, parameter: List<Any>): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
         for ((index, it) in parameter.withIndex()) {
@@ -216,12 +216,11 @@ class ResearchService {
             .addScalar("modified")
             .addScalar("draft")
             .addScalar("category")
-            .resultList as List<Array<Any>>
+            .resultList as List<Array<out Any?>>
     }
 
-    private fun mapResult(result: List<Any>, isAdmin: Boolean, principal: Principal): List<Result> {
-        return result.map {
-            val item = it as Array<out Any>
+    private fun mapResult(result: List<Array<out Any?>>, isAdmin: Boolean, principal: Principal): List<Result> {
+        return result.map { item ->
             Result(
                 title = item[1] as? String,
                 uuid = item[2] as? String,

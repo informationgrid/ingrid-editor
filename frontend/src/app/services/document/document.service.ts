@@ -225,16 +225,14 @@ export class DocumentService {
       .publish(data)
       .pipe(
         catchError((error) => {
-          if (
-            error?.error?.errorText?.indexOf(
-              "No connection to Elasticsearch"
-            ) === 0
-          ) {
+          if (error?.error?.errorCode === "POST_SAVE_ERROR") {
             console.error(error?.error?.errorText);
             this.messageService.sendError(
               "Problem beim Veröffentlichen: " + error?.error?.errorText
             );
             return this.load(data._id);
+          } else {
+            this.afterSave$.next(null);
           }
         })
       )
@@ -257,10 +255,7 @@ export class DocumentService {
   unpublish(id: string): Observable<any> {
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
-        if (
-          error?.error?.errorText?.indexOf("No connection to Elasticsearch") ===
-          0
-        ) {
+        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
           console.error(error?.error?.errorText);
           this.messageService.sendError(
             "Problem beim Entziehen der Veröffentlichung: " +
@@ -278,20 +273,36 @@ export class DocumentService {
   }
 
   delete(ids: string[], isAddress: boolean): Promise<void> {
-    return new Promise((resolve) => {
-      this.dataService.delete(ids).subscribe((res) => {
-        const data = ids.map((id) => {
-          return { id: id };
-        });
-        this.datasetsChanged$.next({
-          type: UpdateType.Delete,
-          // @ts-ignore
-          data: data,
-        });
+    return new Promise((resolve, reject) => {
+      this.dataService
+        .delete(ids)
+        .pipe(
+          catchError((error) => {
+            if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
+              console.error(error?.error?.errorText);
+              let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
 
-        this.updateStoreAfterDelete(ids, isAddress);
-        resolve();
-      });
+              this.messageService.sendError(
+                "Das Dokument ist von den folgenden Dokumenten referenziert: " +
+                  uniqueUuids.join(", ")
+              );
+              reject(error?.error);
+              return of(null);
+            }
+          }),
+          filter((response) => response),
+          map(() => ids.map((id) => ({ id: id })))
+        )
+        .subscribe((data) => {
+          this.datasetsChanged$.next({
+            type: UpdateType.Delete,
+            // @ts-ignore
+            data: data,
+          });
+
+          this.updateStoreAfterDelete(ids, isAddress);
+          resolve();
+        });
     });
   }
 
