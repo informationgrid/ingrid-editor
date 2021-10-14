@@ -96,13 +96,15 @@ open class UsersApiController : UsersApi {
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         if (catalogService.getManagedUserIds(userId, catalogId).isEmpty()) {
-            catalogService.deleteUser(userId)
+            val deleted = catalogService.deleteUser(catalogId, userId)
+            // if user really deleted (only was connected to one catalog)
+            if (deleted) {
+                keycloakService.deleteUser(principal, userId)
+            }
         } else {
             throw ConflictException.withReason("User still has manager assignments and can't be deleted")
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
-        // TODO: remove special realm management roles
-//        keycloakService.removeRoles(principal, userId, listOf("view-users", "manage-users", "manage-realm"))
+
         return ResponseEntity.ok().build()
 
     }

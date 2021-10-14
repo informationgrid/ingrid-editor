@@ -204,9 +204,19 @@ class CatalogService @Autowired constructor(
         return merge
     }
 
-    fun deleteUser(userId: String) {
+    fun deleteUser(catalogId: String, userId: String): Boolean {
 
-        userRepo.deleteByUserId(userId)
+        val user = userRepo.findByUserId(userId)!!
+        user.catalogs = user.catalogs.filter { it.identifier != catalogId }.toMutableSet()
+
+        // only remove user if not connected to any catalog
+        if (user.catalogs.size == 0) {
+            userRepo.deleteByUserId(userId)
+            return true
+        } else {
+            userRepo.save(user)
+            return false
+        }
 
     }
 

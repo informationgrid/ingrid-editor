@@ -94,6 +94,10 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
+    override fun deleteUser(principal: Principal?, userId: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateUser(principal: Principal?, user: User) {
         // do nothing
         log.info("Mocked update user function")

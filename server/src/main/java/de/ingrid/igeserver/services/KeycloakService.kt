@@ -16,7 +16,7 @@ import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
 import org.keycloak.admin.client.resource.RolesResource
-import org.keycloak.representations.idm.ClientRepresentation
+import org.keycloak.admin.client.resource.UserResource
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
@@ -312,6 +312,55 @@ class KeycloakService : UserManagementService {
 
         }
 
+    }
+
+    override fun deleteUser(principal: Principal?, userId: String) {
+        initClient(principal).use { client ->
+
+            val user = getKeycloakUser(client, userId)
+            val users = client.realm().users()
+            val userResource = users.get(user.id)
+
+            // delete user if it doesn't contain extra roles
+            if (hasOnlyIgeRoles(userResource)) {
+                // delete user
+                val response = users.delete(user.id)
+                if (response.status != 204) {
+                    log.error("Error during deleting keycloak user: $userId", response.status)
+                }
+                return
+            }
+
+            // otherwise only remove IGE roles
+            removeIgeRoles(client, userResource)
+
+        }
+    }
+
+    private fun hasOnlyIgeRoles(userResource: UserResource): Boolean {
+        val realmRolesOfUser = userResource.roles().realmLevel().listAll().map { it.name }
+        val userRolesNonIge = filterRoles(realmRolesOfUser)
+        return userRolesNonIge.isEmpty()
+    }
+
+    private fun removeIgeRoles(
+        client: KeycloakCloseableClient,
+        userResource: UserResource
+    ) {
+        userResource.apply {
+            val roles = client.realm().roles()
+            roles().realmLevel().remove(
+                listOf(
+                    roles.get("ige-user").toRepresentation(),
+                    roles.get("ige-user-manager").toRepresentation()
+                )
+            )
+        }
+    }
+
+    private fun filterRoles(roles: List<String>): List<String> {
+        val ignoreRoles = listOf("ige-user", "ige-user-manager", "offline_access", "uma_authorization")
+        return roles.filter { !ignoreRoles.contains(it) }
     }
 
     private fun getRoleRepresentations(client: Closeable, roles: List<String>): List<RoleRepresentation> {
