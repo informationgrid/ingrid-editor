@@ -36,7 +36,7 @@ class CatalogService @Autowired constructor(
         return getCurrentCatalogForUser(userId)
     }
 
-    fun getCurrentCatalogForUser(userId: String): String {
+    private fun getCurrentCatalogForUser(userId: String): String {
 
         val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 

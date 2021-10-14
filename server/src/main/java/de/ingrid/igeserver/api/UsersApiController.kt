@@ -30,7 +30,7 @@ import kotlin.time.measureTime
 
 @RestController
 @RequestMapping(path = ["/api"])
-class UsersApiController : UsersApi {
+open class UsersApiController : UsersApi {
 
     private val logger = logger()
 
@@ -198,12 +198,12 @@ class UsersApiController : UsersApi {
     }
 
     override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
+        principal as Authentication
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
             val user = keycloakService.getUser(client, userId)
 
-            val roles = keycloakService.getRoles(principal as Authentication)
 
             val lastLogin = this.getLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
@@ -217,7 +217,7 @@ class UsersApiController : UsersApi {
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
                 groups = dbUser?.groups?.map { it.name!! }?.toSet(),
-                currentCatalog = dbUser?.curCatalog,
+                currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0),
                 version = getVersion(),
                 lastLogin = lastLogin,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
