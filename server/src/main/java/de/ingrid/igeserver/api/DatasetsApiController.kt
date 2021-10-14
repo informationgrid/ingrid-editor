@@ -78,14 +78,14 @@ class DatasetsApiController @Autowired constructor(
     }
 
     @Transactional
-    override fun deleteById(principal: Principal, ids: Array<String>): ResponseEntity<String> {
+    override fun deleteById(principal: Principal, ids: Array<String>): ResponseEntity<Unit> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         for (id in ids) {
             // TODO: remove references to document!?
             documentService.deleteRecursively(catalogId, id)
         }
-        return ResponseEntity.ok().build()
+        return ResponseEntity.noContent().build()
     }
 
     @Transactional

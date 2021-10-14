@@ -57,11 +57,11 @@ interface DatasetsApi {
             @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions): ResponseEntity<List<JsonNode>>
 
     @Operation(description = "Deletes a dataset")
-    @ApiResponses(value = [ApiResponse(responseCode = "200"), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @ApiResponses(value = [ApiResponse(responseCode = "204"), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @RequestMapping(value = ["/datasets/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.DELETE])
     fun deleteById(
             principal: Principal,
-            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: Array<String>): ResponseEntity<String>
+            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: Array<String>): ResponseEntity<Unit>
 
     @Operation(description = "Get child datasets of a given parent document/folder")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Child Datasets found")])

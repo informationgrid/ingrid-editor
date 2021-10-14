@@ -298,10 +298,12 @@ export class DocumentService {
                   uniqueUuids.join(", ")
               );
               reject(error?.error);
-              return of(null);
+              return of("ERROR THROWN");
             }
+            // unknown error
+            throw error;
           }),
-          filter((response) => response),
+          filter((response) => response != "ERROR THROWN"),
           map(() => ids.map((id) => ({ id: id })))
         )
         .subscribe((data) => {
