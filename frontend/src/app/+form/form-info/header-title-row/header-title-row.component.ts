@@ -20,14 +20,24 @@ import { DocumentUtils } from "../../../services/document.utils";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderTitleRowComponent implements OnInit {
-  @Input() form: FormGroup;
-  @Input() model: IgeDocument;
+  @Input() set form(value: FormGroup) {
+    this._form = value;
+    this.icon = this.getIcon(value);
+  }
+  @Input() set model(value: IgeDocument) {
+    this._model = value;
+    this.stateClass = this.getStateClass(value);
+  }
   @Input() sections: string[];
   @Input() disableEdit: boolean;
 
   @ViewChild("titleInput") titleInput: ElementRef;
   @ViewChild("cfcAutosize") contentFCAutosize: CdkTextareaAutosize;
 
+  _form: FormGroup;
+  _model: IgeDocument;
+  stateClass: string;
+  icon: string;
   showTitleInput = false;
   showMore = false;
 
@@ -49,11 +59,11 @@ export class HeaderTitleRowComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  getIcon() {
-    return this.profileService.getDocumentIcon(this.form.value);
+  private getIcon(form: FormGroup) {
+    return this.profileService.getDocumentIcon(form.value);
   }
 
-  getStateClass() {
-    return DocumentUtils.getStateClass(this.model._state, this.model._type);
+  private getStateClass(model) {
+    return DocumentUtils.getStateClass(model._state, model._type);
   }
 }

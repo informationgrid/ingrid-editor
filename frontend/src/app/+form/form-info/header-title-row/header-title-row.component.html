@@ -1,9 +1,9 @@
 <div class="title">
     <div class="document-type">
         <mat-icon
-            [svgIcon]="getIcon()"
-            [title]="form.get('title')?.value"
-            [ngClass]="['document-icon', getStateClass()]"
+            [svgIcon]="icon"
+            [title]="_form.get('title')?.value"
+            [ngClass]="['document-icon', stateClass]"
         ></mat-icon>
     </div>
 
@@ -14,14 +14,14 @@
         matTooltip="Der Titel der Adresse ergibt sich aus den Feldern Organisation und Name/Vorname."
         [matTooltipDisabled]="!disableEdit"
         [matTooltipShowDelay]="1000"
-        [class.editable]="!disableEdit && form.enabled"
-        (click)="!disableEdit && form.enabled && editTitle()"
+        [class.editable]="!disableEdit && _form.enabled"
+        (click)="!disableEdit && _form.enabled && editTitle()"
     >
-        <span>{{ form.get("title")?.value || "Kein Titel" }}</span>
+        <span>{{ _form.get("title")?.value || "Kein Titel" }}</span>
         <mat-icon svgIcon="cursor-edit"></mat-icon>
     </span>
 
-    <form [formGroup]="form" [class.hide]="!showTitleInput">
+    <form [formGroup]="_form" [class.hide]="!showTitleInput">
         <mat-form-field appearance="outline">
             <textarea
                 #cfcAutosize="cdkTextareaAutosize"
@@ -52,4 +52,4 @@
     </button>-->
 </div>
 
-<ige-header-more [showMore]="showMore" [model]="model"></ige-header-more>
+<ige-header-more [showMore]="showMore" [model]="_model"></ige-header-more>
