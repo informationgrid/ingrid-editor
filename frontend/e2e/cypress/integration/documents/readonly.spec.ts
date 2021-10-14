@@ -114,7 +114,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.toolbarSaveGroup();
 
     DocumentPage.visit();
-    // try to copy a document to the read-only folder
+    // try to copy a document from the read-only folder to another folder
     Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D', documentToCopy]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();

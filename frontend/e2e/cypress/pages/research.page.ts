@@ -165,11 +165,11 @@ export class ResearchPage {
   }
 
   static downloadCSVFile(): void {
-    cy.get('button.mat-button:nth-child(3) > span:nth-child(1)').click();
+    cy.contains('ige-result-table button', 'CSV').click();
   }
 
   static saveSearchProfile(title: string, description: string): void {
-    cy.get('ige-result-table').find('button > span:contains("Speichern")').click(); //open up save dialogue
+    cy.contains('.save-search-button button', 'Speichern').click();
     cy.get('[data-cy="search-name"]').type(title);
     cy.get('[data-cy="search-description"]').type(description);
     cy.intercept('POST', /api\/search/).as('saveChanges');

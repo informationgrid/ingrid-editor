@@ -45,7 +45,7 @@ export class UserAuthorizationPage extends BasePage {
       .parent()
       .parent()
       .within(() => {
-        cy.get('.right-button.active');
+        //cy.get('.right-button.active');
         cy.get('.left-button').click();
         cy.get('.left-button.active');
       });
@@ -57,7 +57,7 @@ export class UserAuthorizationPage extends BasePage {
       .parent()
       .parent()
       .within(() => {
-        cy.get('.left-button.active');
+        //cy.get('.left-button.active');
         cy.get('.right-button').click();
         cy.get('.right-button.active');
       });
