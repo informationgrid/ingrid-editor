@@ -1,5 +1,5 @@
 import { FormPluginToken } from "./tokens/plugin.token";
-import { PublishPlugin } from "./+form/dialogs/publish/publish.plugin";
+import { PublishPlugin } from "./+form/dialogs/save/publish.plugin";
 import { CreateDocumentPlugin } from "./+form/dialogs/create/create-doc.plugin";
 import { SavePlugin } from "./+form/dialogs/save/save.plugin";
 import { CreateFolderPlugin } from "./+form/dialogs/create/create-folder.plugin";

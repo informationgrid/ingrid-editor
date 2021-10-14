@@ -238,8 +238,11 @@ export class DynamicFormComponent
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.updateFormWithData(data);
-        this.showBlocker = false;
       });
+
+    this.documentService.documentOperationFinished$
+      .pipe(untilDestroyed(this))
+      .subscribe((finished) => (this.showBlocker = !finished));
   }
 
   @HostListener("window: keydown", ["$event"])

@@ -35,7 +35,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.criteria.*
@@ -270,25 +269,7 @@ open class DocumentService @Autowired constructor(
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             // update wrapper to document association
-            with(preUpdatePayload.wrapper) {
-                if (publish) {
-                    // move published version to archive
-                    if (published != null) {
-                        archive.add(published!!)
-                    }
-                    // set published version
-                    published = updatedDoc
-                    // remove draft version
-                    draft = null
-                } else {
-                    // update draft version
-                    if (draft == null) {
-                        draft = updatedDoc
-                    } else {
-                        // 'if' must have both main and 'else' branches if used as an expression
-                    }
-                }
-            }
+            updateWrapper(preUpdatePayload, publish, updatedDoc)
 
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
@@ -300,6 +281,39 @@ open class DocumentService @Autowired constructor(
                 preUpdatePayload.wrapper.draft?.version ?: preUpdatePayload.wrapper.published?.version!!,
                 preUpdatePayload.document.version!!
             )
+        }
+    }
+
+    private fun updateWrapper(
+        preUpdatePayload: PreUpdatePayload,
+        publish: Boolean,
+        updatedDoc: Document
+    ) {
+        with(preUpdatePayload.wrapper) {
+            if (publish) {
+                // move published version to archive
+                if (published != null) {
+                    archive.add(published!!)
+                }
+
+                // if no draft then manually increase version
+                if (draft == null) {
+                    updatedDoc.version = updatedDoc.version?.inc()
+                }
+
+                // set published version
+                published = updatedDoc
+
+                // remove draft version
+                draft = null
+            } else {
+                // update draft version
+                if (draft == null) {
+                    // since new document we update version manually
+                    updatedDoc.version = updatedDoc.version?.inc()
+                    draft = updatedDoc
+                }
+            }
         }
     }
 

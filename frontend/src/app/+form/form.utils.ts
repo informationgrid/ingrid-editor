@@ -38,7 +38,7 @@ export class FormUtils {
       const form = formControl.value;
       const decision = await this.showDecisionDialog(dialog);
       if (decision === "save") {
-        await documentService.save(form, false, isAddress);
+        await documentService.save(form, false, isAddress).toPromise();
       } else if (decision === "discard") {
         formControl.reset();
       } else {

@@ -12,12 +12,7 @@ import {
   DocumentAbstract,
 } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
-import {
-  applyTransaction,
-  arrayAdd,
-  arrayRemove,
-  transaction,
-} from "@datorama/akita";
+import { applyTransaction, transaction } from "@datorama/akita";
 import { MessageService } from "../message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
@@ -46,6 +41,7 @@ export class DocumentService {
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
   afterProfileSwitch$ = new Subject<any>();
+  documentOperationFinished$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<string>();
@@ -151,7 +147,7 @@ export class DocumentService {
     isAddress?: boolean,
     path?: string[],
     noVisualUpdates = false
-  ): Promise<IgeDocument> {
+  ): Observable<IgeDocument> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     if (isAddress && data._type !== "FOLDER") {
@@ -160,11 +156,10 @@ export class DocumentService {
     }
 
     this.beforeSave$.next();
+    this.documentOperationFinished$.next(false);
 
-    return this.dataService
-      .save(data, isAddress)
-      .toPromise()
-      .then((json) => {
+    return this.dataService.save(data, isAddress).pipe(
+      tap((json) => {
         if (noVisualUpdates) {
           return;
         }
@@ -172,6 +167,7 @@ export class DocumentService {
         this.messageService.sendInfo("Ihre Eingabe wurde gespeichert");
 
         this.afterSave$.next(json);
+        this.documentOperationFinished$.next(true);
 
         const parentId = json._parent;
         const info = this.mapToDocumentAbstracts([json], parentId)[0];
@@ -202,15 +198,17 @@ export class DocumentService {
         });
 
         return json;
-      });
+      })
+    );
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument, isAddress: boolean): Promise<void> {
+  publish(data: IgeDocument, isAddress: boolean): Observable<void> {
     console.log("PUBLISHING");
     const errors: any = { errors: [] };
 
     this.beforeSave$.next();
+    this.documentOperationFinished$.next(false);
     this.beforePublish$.next(errors);
     console.log("After validation:", data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
@@ -221,35 +219,48 @@ export class DocumentService {
       return;
     }
 
-    return this.dataService
-      .publish(data)
-      .pipe(
-        catchError((error) => {
-          if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-            console.error(error?.error?.errorText);
-            this.messageService.sendError(
-              "Problem beim Veröffentlichen: " + error?.error?.errorText
-            );
-            return this.load(data._id);
-          } else {
-            this.afterSave$.next(null);
-          }
-        })
-      )
-      .toPromise()
-      .then((json) => {
-        const info = this.mapToDocumentAbstracts([json], json._parent)[0];
+    return this.dataService.publish(data).pipe(
+      // catchError((error) => this.handlePublishError(error, data, isAddress)),
+      filter((response) => response),
+      tap(() =>
+        this.messageService.sendInfo("Das Dokument wurde veröffentlicht.")
+      ),
+      tap((json) => this.handleAfterPublish(json, isAddress))
+    );
+  }
 
-        this.afterSave$.next(json);
+  private handlePublishError(error, data: IgeDocument, isAddress: boolean) {
+    if (error?.error?.errorCode === "POST_SAVE_ERROR") {
+      console.error(error?.error?.errorText);
+      this.messageService.sendError(
+        "Der Datensatz wurde erfolgreich in der Datenbank veröffentlicht, jedoch trat ein Problem danach auf: " +
+          error?.error?.errorText
+      );
+      this.load(data._id).subscribe((json) =>
+        this.handleAfterPublish(json, isAddress)
+      );
+    } else {
+      this.messageService.sendError(
+        "Der Datensatz wurde nicht erfolgreich veröffentlicht: " +
+          error?.error?.errorText
+      );
+    }
+    return of(null);
+  }
 
-        this.updateOpenedDocumentInTreestore(info, isAddress);
+  handleAfterPublish(json: any, isAddress: boolean) {
+    const info = this.mapToDocumentAbstracts([json], json._parent)[0];
 
-        this.datasetsChanged$.next({
-          type: UpdateType.Update,
-          data: [info],
-        });
-        this.treeStore.upsert(info.id, info);
-      });
+    this.afterSave$.next(json);
+    this.documentOperationFinished$.next(true);
+
+    this.updateOpenedDocumentInTreestore(info, isAddress);
+
+    this.datasetsChanged$.next({
+      type: UpdateType.Update,
+      data: [info],
+    });
+    this.treeStore.upsert(info.id, info);
   }
 
   unpublish(id: string): Observable<any> {
@@ -441,30 +452,6 @@ export class DocumentService {
     } else {
       return moveOperation();
     }
-  }
-
-  addExpandedNode(nodeId: string) {
-    this.treeStore.update((node) => ({
-      expandedNodes: arrayAdd(node.expandedNodes, nodeId),
-    }));
-  }
-
-  removeExpandedNode(nodeId: string) {
-    this.treeStore.update((node) => ({
-      expandedNodes: arrayRemove(node.expandedNodes, nodeId),
-    }));
-  }
-
-  addDocumentToStore(docs: DocumentAbstract[]) {
-    // TODO: what about addresses?
-    this.treeStore.add(docs);
-  }
-
-  updateChildrenInfo(id: string, hasChildren: boolean) {
-    // TODO: what about addresses?
-    this.treeStore.update(id, {
-      _hasChildren: hasChildren,
-    });
   }
 
   createAddressTitle(address: IgeDocument) {

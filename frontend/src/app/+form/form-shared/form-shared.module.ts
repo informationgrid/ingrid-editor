@@ -14,7 +14,7 @@ import { CreateFolderPlugin } from "../dialogs/create/create-folder.plugin";
 import { DeleteDocsPlugin } from "../dialogs/delete-docs/delete-docs.plugin";
 import { IsoViewPlugin } from "../dialogs/isoView/iso-view.plugin";
 import { CopyCutPastePlugin } from "../dialogs/copy-cut-paste/copy-cut-paste.plugin";
-import { PublishPlugin } from "../dialogs/publish/publish.plugin";
+import { PublishPlugin } from "../dialogs/save/publish.plugin";
 import { UndoPlugin } from "../dialogs/undo/undo.plugin";
 import { PrintViewPlugin } from "../dialogs/print-view/print-view.plugin";
 import { FormularService } from "../formular.service";

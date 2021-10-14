@@ -2,32 +2,22 @@ import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { MessageService } from "../../../services/message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { merge, Subscription } from "rxjs";
-import { IgeDocument } from "../../../models/ige-document";
-import { HttpErrorResponse } from "@angular/common/http";
-import {
-  VersionConflictChoice,
-  VersionConflictDialogComponent,
-} from "../version-conflict-dialog/version-conflict-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { ErrorDialogComponent } from "../../../dialogs/error/error-dialog.component";
-import { IgeError } from "../../../models/ige-error";
-import { SessionStore } from "../../../store/session.store";
-import { ServerValidation } from "../../../server-validation.util";
 import { FormStateService } from "../../form-state.service";
-import { AbstractControl, FormGroup } from "@angular/forms";
-import { filter } from "rxjs/operators";
+import { AbstractControl } from "@angular/forms";
+import { catchError, filter } from "rxjs/operators";
+import { SaveBase } from "./save.base";
 
 @Injectable()
-export class PublishPlugin extends Plugin {
+export class PublishPlugin extends SaveBase {
   id = "plugin.publish";
   _name = "Publish Plugin";
   group = "Toolbar";
@@ -43,15 +33,14 @@ export class PublishPlugin extends Plugin {
   }
 
   constructor(
-    private formToolbarService: FormToolbarService,
-    private dialog: MatDialog,
-    private sessionStore: SessionStore,
+    public formToolbarService: FormToolbarService,
     private modalService: ModalService,
-    private messageService: MessageService,
+    public messageService: MessageService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private formStateService: FormStateService,
-    private storageService: DocumentService
+    public dialog: MatDialog,
+    public formStateService: FormStateService,
+    public documentService: DocumentService
   ) {
     super();
     this.isActive = true;
@@ -114,7 +103,7 @@ export class PublishPlugin extends Plugin {
   }
 
   publish() {
-    this.storageService.publishState$.next(true);
+    this.documentService.publishState$.next(true);
     const formIsValid = this.formStateService.getForm().valid;
 
     if (formIsValid) {
@@ -140,7 +129,7 @@ export class PublishPlugin extends Plugin {
         .afterClosed()
         .subscribe((doPublish) => {
           if (doPublish) {
-            this.publishWithData(this.getFormValue());
+            this.saveWithData(this.getForm().value);
           }
         });
     } else {
@@ -184,26 +173,17 @@ export class PublishPlugin extends Plugin {
     return Object.keys(controls).filter((key) => controls[key].invalid);
   }
 
-  private publishWithData(data) {
-    this.storageService
+  saveWithData(data) {
+    this.documentService
       .publish(data, this.forAddress)
-      .then(() =>
-        this.messageService.sendInfo("Das Dokument wurde veröffentlicht.")
+      .pipe(
+        catchError((error) => this.handleError(error, data, this.forAddress))
       )
-      .catch((error) => this.handleSaveError(error));
-  }
-
-  private getFormValue(): IgeDocument {
-    const form = this.getForm();
-    return form?.value;
-  }
-
-  private getForm(): FormGroup {
-    return this.formStateService.getForm();
+      .subscribe();
   }
 
   revert() {
-    const doc = this.getFormValue();
+    const doc = this.getForm().value;
 
     const message =
       "Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?";
@@ -227,7 +207,7 @@ export class PublishPlugin extends Plugin {
       .afterClosed()
       .subscribe((doRevert) => {
         if (doRevert) {
-          this.storageService.revert(doc._id, this.forAddress).subscribe(
+          this.documentService.revert(doc._id, this.forAddress).subscribe(
             () => {},
             (err) => {
               console.log("Error when reverting data", err);
@@ -273,69 +253,7 @@ export class PublishPlugin extends Plugin {
     });
   }
 
-  // TODO: refactor in base class to prevent duplicate code (see save.plugin.ts)
-  /**
-   * Handle version conflict errors during save
-   *
-   * @param error
-   * @private
-   */
-  private handleSaveError(error: HttpErrorResponse) {
-    if (error?.error?.errorCode === "VERSION_CONFLICT") {
-      this.dialog
-        .open(VersionConflictDialogComponent)
-        .afterClosed()
-        .subscribe((choice) =>
-          this.handleAfterConflictChoice(choice, error.error)
-        );
-    } else if (
-      error?.status === 400 &&
-      error?.error.errorCode === "VALIDATION_ERROR"
-    ) {
-      this.sessionStore.update({
-        serverValidationErrors: ServerValidation.prepareServerValidationErrors(
-          error.error.data
-        ),
-      });
-      this.dialog.open(ErrorDialogComponent, {
-        data: new IgeError(
-          "Beim Veröffentlichen wurden Fehler im Formular entdeckt"
-          // error: {message: ServerValidation.prepareServerError(error?.error)})
-        ),
-      });
-    } else {
-      throw error;
-    }
-  }
-
-  private handleAfterConflictChoice(
-    choice: VersionConflictChoice,
-    latestVersion: number
-  ) {
-    switch (choice) {
-      case "cancel":
-        break;
-      case "force":
-        const formData = this.getFormDataWithVersionInfo(latestVersion);
-        this.publishWithData(formData);
-        break;
-      case "reload":
-        this.storageService.reload$.next(this.getIdFromFormData());
-        break;
-    }
-  }
-
-  private getFormDataWithVersionInfo(version: number) {
-    const data = this.getFormValue();
-    data["_version"] = version;
-    return data;
-  }
-
-  private getIdFromFormData() {
-    return this.getFormValue()["_id"];
-  }
-
   private unpublish(id: string) {
-    this.storageService.unpublish(id).subscribe();
+    this.documentService.unpublish(id).subscribe();
   }
 }

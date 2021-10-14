@@ -2,23 +2,18 @@ import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { MessageService } from "../../../services/message.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
 import { merge } from "rxjs";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter } from "rxjs/operators";
-import {
-  VersionConflictChoice,
-  VersionConflictDialogComponent,
-} from "../version-conflict-dialog/version-conflict-dialog.component";
-import { HttpErrorResponse } from "@angular/common/http";
+import { catchError, filter } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
+import { SaveBase } from "./save.base";
 
 @Injectable()
-export class SavePlugin extends Plugin {
+export class SavePlugin extends SaveBase {
   id = "plugin.save";
   _name = "Save Plugin";
   group = "Toolbar";
@@ -29,14 +24,14 @@ export class SavePlugin extends Plugin {
   }
 
   constructor(
-    private formToolbarService: FormToolbarService,
+    public formToolbarService: FormToolbarService,
     private modalService: ModalService,
-    private messageService: MessageService,
+    public messageService: MessageService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private dialog: MatDialog,
-    private formStateService: FormStateService,
-    private documentService: DocumentService
+    public dialog: MatDialog,
+    public formStateService: FormStateService,
+    public documentService: DocumentService
   ) {
     super();
   }
@@ -62,15 +57,7 @@ export class SavePlugin extends Plugin {
         const form: IgeDocument = this.getForm()?.value;
         if (form) {
           this.formToolbarService.setButtonState("toolBtnSave", false);
-          this.save(form)
-            .then(() =>
-              this.formToolbarService.setButtonState("toolBtnSave", true)
-            )
-            .catch((e) => {
-              // when using the finally block, then the error will not be catched in global error handler!
-              this.formToolbarService.setButtonState("toolBtnSave", true);
-              throw e;
-            });
+          this.saveWithData(form);
         }
       });
 
@@ -91,70 +78,24 @@ export class SavePlugin extends Plugin {
     this.subscriptions.push(toolbarEventSubscription, treeSubscription);
   }
 
-  private getForm() {
-    return this.formStateService.getForm();
-  }
-
-  private save(formData: IgeDocument) {
+  saveWithData(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
     return this.documentService
       .save(formData, false, this.forAddress)
-      .catch((error) => this.handleSaveError(error));
+      .pipe(
+        catchError((error) =>
+          this.handleError(error, formData, this.forAddress)
+        )
+      )
+      .subscribe(() =>
+        this.formToolbarService.setButtonState("toolBtnSave", true)
+      );
   }
 
   unregister() {
     super.unregister();
 
     this.formToolbarService.removeButton("toolBtnSave");
-  }
-
-  /**
-   * Handle version conflict errors during save
-   *
-   * @param response
-   * @private
-   */
-  private handleSaveError(response: HttpErrorResponse) {
-    if (response?.error?.errorCode === "VERSION_CONFLICT") {
-      this.dialog
-        .open(VersionConflictDialogComponent)
-        .afterClosed()
-        .subscribe((choice) =>
-          this.handleAfterConflictChoice(
-            choice,
-            response.error.data.databaseVersion
-          )
-        );
-    } else {
-      throw response;
-    }
-  }
-
-  private handleAfterConflictChoice(
-    choice: VersionConflictChoice,
-    latestVersion: number
-  ) {
-    switch (choice) {
-      case "cancel":
-        break;
-      case "force":
-        const formData = this.getFormDataWithVersionInfo(latestVersion);
-        this.save(formData);
-        break;
-      case "reload":
-        this.documentService.reload$.next(this.getIdFromFormData());
-        break;
-    }
-  }
-
-  private getFormDataWithVersionInfo(version: number) {
-    const data = this.getForm()?.value;
-    data["_version"] = version;
-    return data;
-  }
-
-  private getIdFromFormData() {
-    return this.getForm()?.value["_id"];
   }
 }

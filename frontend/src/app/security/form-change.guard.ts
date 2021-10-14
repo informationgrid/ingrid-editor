@@ -87,7 +87,9 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
     if (action === "save") {
       const form = this.formStateService.getForm()?.value;
-      await this.documentService.save(form, false, isAddress, null, true);
+      await this.documentService
+        .save(form, false, isAddress, null, true)
+        .toPromise();
     } else if (action === "stay") {
       this.treeService.selectTreeNode(isAddress, currentId);
     }

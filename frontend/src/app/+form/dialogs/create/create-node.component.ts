@@ -278,7 +278,9 @@ export class CreateNodeComponent implements OnInit {
 
   private saveForm(data: IgeDocument) {
     const pathIds = this.path.map((item) => item.id);
-    return this.documentService.save(data, true, this.forAddress, pathIds);
+    return this.documentService
+      .save(data, true, this.forAddress, pathIds)
+      .toPromise();
   }
 
   private navigateAfterSave(id: string) {

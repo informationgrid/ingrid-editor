@@ -15,7 +15,7 @@ class PostSaveException: ServerException {
          * Factory method for an arbitrary reason
          */
         fun withException(cause: Throwable): PostSaveException {
-            return PostSaveException(STATUS_CODE, ERROR_CODE, ERROR_TEXT + ": ${cause.message}", null, cause)
+            return PostSaveException(STATUS_CODE, ERROR_CODE, cause.message ?: ERROR_TEXT, null, cause)
         }
     }
 }
