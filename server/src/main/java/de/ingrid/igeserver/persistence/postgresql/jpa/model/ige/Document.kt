@@ -68,8 +68,7 @@ class Document {
 
     @PrePersist
     fun setPersistDate() {
-        created = dateService?.now()
-        modified = created
+        modified = dateService?.now()
     }
 
     @PreUpdate

@@ -53,13 +53,13 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
                 log.debug("Parent cannot be accessed due to permissions, so reference will not be updated")
             }
         }
-        
+
         // set catalog information
         // TODO: a document does not really need this information since the document wrapper takes care of it
         payload.document.catalog = catalogRepo.findByIdentifier(context.catalogId)
 
-        // update modified date
-        payload.document.modified = dateService.now()
+        // update modified date -> already done in entity!
+        // payload.document.modified = dateService.now()
 
         // handle linked docs
         payload.type.pullReferences(payload.document)
