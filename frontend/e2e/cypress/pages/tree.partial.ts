@@ -103,35 +103,27 @@ export class Tree {
     return cy.get('ige-sidebar mat-tree mat-tree-node').its('length');
   }
 
-  // this function works if the parent node has another sibling; only then does the nextUntil-condition lead to stopping at the next non-child-node
-  // if you want it to find e.g. children that are neighbours of siblings of parents of the parent node, you would have to adjust the aria-level that
-  // serves as a stopping condition
-  static getNumberChildren(nodeName: string): Chainable<number> {
+  // does not work with 0 children -> it doesn't tell you IF, but HOW MANY children there are
+  static getNumberChildren(nodeName: string, stopper: number): Chainable<number> {
     return cy
       .contains('mat-tree-node', nodeName)
-      .invoke('attr', 'aria-level')
-      .then(ariaLevel => {
-        return cy
-          .contains('mat-tree-node', nodeName)
-          .nextUntil('mat-tree-node[aria-level="' + ariaLevel + '"]')
-          .its('length');
-      });
+      .nextUntil('mat-tree-node[aria-level="' + stopper.toString() + '"]')
+      .its('length');
   }
 
-  static deleteChildren(nodeName: string): void {
+  static deleteChildren(nodeName: string, stopper: number): void {
+    /* "stopper" is the stopping condition that defines to which node the set of children borders: this is where the
+     * deleting is supposed to stop. It is necessary to be dynamic because the first non-child node (that should not be
+     * deleted) can be of various aria-levels, depending on the structure of the tree */
     cy.contains('mat-tree-node', nodeName)
-      .invoke('attr', 'aria-level')
-      .then(ariaLevel => {
-        cy.contains('mat-tree-node', nodeName)
-          .nextUntil('mat-tree-node[aria-level="' + ariaLevel + '"]')
-          .then($els => {
-            // jQuery => Array => get "innerText" from each
-            Cypress._.map(Cypress.$.makeArray($els), 'innerText').forEach(element => {
-              cy.contains('mat-tree-node', element).click();
-              DocumentPage.deleteLoadedNode();
-              cy.contains('mat-tree-node', nodeName).click();
-            });
-          });
+      .nextUntil('mat-tree-node[aria-level="' + stopper.toString() + '"]')
+      .then($els => {
+        // apply 'innerText' function to array of jquery elements
+        Cypress._.map(Cypress.$.makeArray($els), 'innerText').forEach(element => {
+          cy.contains('mat-tree-node', element).click();
+          DocumentPage.deleteLoadedNode();
+          cy.contains('mat-tree-node', nodeName).click();
+        });
       });
   }
 

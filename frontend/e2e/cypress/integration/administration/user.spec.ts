@@ -441,8 +441,15 @@ describe('User', () => {
     cy.get('text.text').should('not.contain', 0);
 
     //Documents should be present
+    DocumentPage.visit();
     //Addresses should be present
+    AddressPage.visit();
+    // make sure folders ranking high in hierarchy are present and are displayed on top (= indicator for universal access rights)
+    cy.contains('mat-tree-node', 'Neue Testadressen').invoke('attr', 'aria-level').should('equal', 1);
     //Users and groups should be present
+    cy.visit('user');
+    cy.url().should('contain', 'user');
+    cy.contains('mat-toolbar .page-title', 'Nutzer & Rechte');
   });
 
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});

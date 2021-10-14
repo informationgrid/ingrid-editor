@@ -250,7 +250,7 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     Tree.openNode(['Ordner_3.Ebene_C']);
     UserAuthorizationPage.verifyDocumentTitle('Ordner_3.Ebene_C');
-    Tree.deleteChildren('Ordner_3.Ebene_C');
+    Tree.deleteChildren('Ordner_3.Ebene_C', 1);
     // try to delete the folder: expect delete button to be disabled
     Tree.openNode(['Ordner_3.Ebene_C']);
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
@@ -454,7 +454,25 @@ describe('Meta data administrator with a group', () => {
     });
   });
 
-  xit('metadata admin should not be able to see the users other metadata admins created', () => {});
+  xit('metadata admin should not be able to see the users other metadata admins created', () => {
+    cy.visit('user');
+    // create a new user
+    cy.contains('button', 'Hinzufügen').click();
+    AdminUserPage.addNewUserLogin('autor7');
+    AdminUserPage.addNewUserFirstname('Autor_for_MD_test');
+    AdminUserPage.addNewUserLastname('Test_autor');
+    AdminUserPage.addNewUserEmail('testmd@wemove.com');
+    AdminUserPage.addNewUserRole('Autor');
+    AdminUserPage.confirmAddUserDialog();
+
+    // log in as another metadata admin
+    cy.kcLogout();
+    cy.kcLogin('meta');
+
+    // make sure user created by previous metadata admin is not visible
+    cy.visit('user');
+    cy.contains('user-table', 'autor5').should('not.exist');
+  });
 
   it('meta data admin should not be able to create a catalog administrator (#2875)', () => {
     // got to Users and Rights
@@ -509,6 +527,43 @@ describe('Catalogue admin', () => {
     cy.get('permission-table[label="Berechtigungen Daten"]').should('contain', 'TestDocResearch4');
     // try to grant authorization for data twice
     AdminGroupPage.tryIllegitimateAddToGroup('TestDocResearch4', 'Daten');
+  });
+
+  it('data that are part of different user-assigned groups are nevertheless only displayed once (#3471)', () => {
+    const path_to_shared_folder = ['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D'];
+    const path_to_shared_address_folder = ['Ordner 2. Ebene', 'Ordner_3.Ebene_A', 'Ordner_4.Ebene_A'];
+    // assign a user an additional group so that data overlap exists
+    cy.visit('user');
+    AdminGroupPage.goToTabmenu(UserAndRights.User);
+    cy.get('.page-title').contains('Nutzer');
+    AdminUserPage.selectUser('Autor_mit Gruppen');
+    AdminUserPage.addGroupToUser('test_gruppe_4');
+    AdminGroupPage.toolbarSaveUser();
+    // log in as the other user
+    cy.kcLogout();
+    cy.kcLogin('autor2');
+
+    // make sure data documents are only listed once
+    DocumentPage.visit();
+    Tree.openNode(path_to_shared_folder);
+    // check if folders in the path exist only once
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_folder[0]}")`).its('length').should('equal', 1);
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_folder[1]}")`).its('length').should('equal', 1);
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_folder[2]}")`).its('length').should('equal', 1);
+    // check if document exists only once
+    cy.contains('mat-tree-node.mat-tree-node', 'Datum_Ebene_4_7').its('length').should('equal', 1);
+    cy.contains('mat-tree-node.mat-tree-node', 'Datum_Ebene_4_8').its('length').should('equal', 1);
+
+    // make sure address documents are only listed once
+    AddressPage.visit();
+    Tree.openNode(path_to_shared_address_folder);
+    // check if folders in the path exist only once
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_address_folder[0]}")`).its('length').should('equal', 1);
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_address_folder[1]}")`).its('length').should('equal', 1);
+    cy.get('mat-tree-node').filter(`:contains("${path_to_shared_address_folder[2]}")`).its('length').should('equal', 1);
+    // check if document exists only once
+    cy.contains('mat-tree-node.mat-tree-node', 'Limousin, Adresse').its('length').should('equal', 1);
+    cy.contains('mat-tree-node.mat-tree-node', 'Rheinland, Adresse').its('length').should('equal', 1);
   });
 
   it('catalogue admin should be able to create root documents', () => {

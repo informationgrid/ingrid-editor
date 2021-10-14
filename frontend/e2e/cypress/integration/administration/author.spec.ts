@@ -71,6 +71,12 @@ describe('User without authorizations', () => {
     AddressPage.visit();
     cy.get(DocumentPage.Toolbar.NewDoc).should('be.disabled');
   });
+
+  it('if the currently logged in user has no right to access page, dashboard is shown (#3038)', () => {
+    cy.visit('user').then(() => {
+      cy.url().should('include', 'dashboard');
+    });
+  });
 });
 
 // user with some limited authorizations (test_gruppe_3: Neue Testdokumente/ Ordner_2.Ebene)
