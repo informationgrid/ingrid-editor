@@ -73,14 +73,14 @@
     <mat-tree-node
         *matTreeNodeDef="let node; when: isFolder"
         [draggable]="enableDrag"
-        (drop)="drop($event, node)"
+        (drop)="isDragging && drop($event, node)"
         (dragstart)="handleDragStart($event, node)"
-        (dragover)="dragManager.handleDragOver($event, node)"
+        (dragover)="isDragging && dragManager.handleDragOver($event, node)"
         (dragend)="handleDragEnd()"
         matTreeNodePadding
         matTreeNodePaddingIndent="24"
         (click)="handleFolderClick(node, $event)"
-        [class.drop]="dragManager.dragNodeExpandOverNode === node"
+        [class.drop]="isDragging && dragManager.dragNodeExpandOverNode === node"
         [class.active]="node._id === activeNodeId"
         [class.expanded]="treeControl.isExpanded(node)"
         [class.readonly]="!node.hasWritePermission"
