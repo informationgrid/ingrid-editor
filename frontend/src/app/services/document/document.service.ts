@@ -3,13 +3,20 @@ import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
 import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
-import { catchError, filter, finalize, map, switchMap, tap } from "rxjs/operators";
+import {
+  catchError,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import {
   ADDRESS_ROOT_NODE,
   DOCUMENT_ROOT_NODE,
-  DocumentAbstract
+  DocumentAbstract,
 } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { applyTransaction, transaction } from "@datorama/akita";
@@ -32,7 +39,7 @@ import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 export type AddressTitleFn = (address: IgeDocument) => string;
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class DocumentService {
   // TODO: check usefulness
@@ -136,7 +143,7 @@ export class DocumentService {
       setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
       if (!keepOpenedDocument) {
         return store.update({
-          openedDocument: doc
+          openedDocument: doc,
         });
       }
     });
@@ -187,7 +194,7 @@ export class DocumentService {
         store.upsert(info.id, info);
         if (isNewDoc && parentId) {
           store.update(parentId, {
-            _hasChildren: true
+            _hasChildren: true,
           });
         }
 
@@ -195,7 +202,7 @@ export class DocumentService {
           type: isNewDoc ? UpdateType.New : UpdateType.Update,
           data: [info],
           parent: parentId,
-          path: path
+          path: path,
         });
 
         return json;
@@ -237,7 +244,7 @@ export class DocumentService {
       console.error(error?.error?.errorText);
       this.messageService.sendError(
         "Der Datensatz wurde erfolgreich in der Datenbank veröffentlicht, jedoch trat ein Problem danach auf: " +
-        error?.error?.errorText
+          error?.error?.errorText
       );
       this.load(data._id).subscribe((json) =>
         this.handleAfterPublish(json, isAddress)
@@ -245,7 +252,7 @@ export class DocumentService {
     } else {
       this.messageService.sendError(
         "Der Datensatz wurde nicht erfolgreich veröffentlicht: " +
-        error?.error?.errorText
+          error?.error?.errorText
       );
     }
     return of(null);
@@ -260,7 +267,7 @@ export class DocumentService {
 
     this.datasetsChanged$.next({
       type: UpdateType.Update,
-      data: [info]
+      data: [info],
     });
     this.treeStore.upsert(info.id, info);
   }
@@ -272,7 +279,7 @@ export class DocumentService {
           console.error(error?.error?.errorText);
           this.messageService.sendError(
             "Problem beim Entziehen der Veröffentlichung: " +
-            error?.error?.errorText
+              error?.error?.errorText
           );
           return this.load(id);
         }
@@ -297,7 +304,7 @@ export class DocumentService {
 
               this.messageService.sendError(
                 "Das Dokument ist von den folgenden Dokumenten referenziert: " +
-                uniqueUuids.join(", ")
+                  uniqueUuids.join(", ")
               );
               reject(error?.error);
               return of("ERROR THROWN");
@@ -312,7 +319,7 @@ export class DocumentService {
           this.datasetsChanged$.next({
             type: UpdateType.Delete,
             // @ts-ignore
-            data: data
+            data: data,
           });
 
           this.updateStoreAfterDelete(ids, isAddress);
@@ -372,7 +379,7 @@ export class DocumentService {
           type: UpdateType.New,
           data: infos,
           parent: dest,
-          doNotSelect: true
+          doNotSelect: true,
           // path: path
         });
       }),
@@ -415,7 +422,7 @@ export class DocumentService {
             type: UpdateType.Move,
             // @ts-ignore
             data: srcIDs.map((id) => ({ id: id })),
-            parent: dest
+            parent: dest,
           });
 
           this.reloadDocumentIfOpenedChanged(isAddress, srcIDs);
@@ -445,9 +452,9 @@ export class DocumentService {
               id: "confirm",
               text: "Verschieben",
               emphasize: true,
-              alignRight: true
-            }
-          ]
+              alignRight: true,
+            },
+          ],
         })
         .pipe(
           filter((result) => result),
@@ -465,7 +472,7 @@ export class DocumentService {
       const fields = [
         address.organization,
         address.lastName,
-        address.firstName
+        address.firstName,
       ].filter((item) => item);
       return fields.join(", ");
     }
@@ -519,7 +526,7 @@ export class DocumentService {
       .pipe(
         tap((path) =>
           store.update({
-            breadcrumb: path
+            breadcrumb: path,
           })
         )
       )
@@ -555,7 +562,7 @@ export class DocumentService {
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
-          doc.hasOnlySubtreeWritePermission ?? false
+          doc.hasOnlySubtreeWritePermission ?? false,
       };
     });
   }
@@ -588,7 +595,7 @@ export class DocumentService {
   private mapSearchResults(result: ServerSearchResult): SearchResult {
     return {
       totalHits: result.totalHits,
-      hits: this.mapToDocumentAbstracts(result.hits, null)
+      hits: this.mapToDocumentAbstracts(result.hits, null),
     } as SearchResult;
   }
 
@@ -609,7 +616,7 @@ export class DocumentService {
 
     parentsWithNoChildren.forEach((parent) => {
       store.update(parent, {
-        _hasChildren: false
+        _hasChildren: false,
       });
     });
   }
@@ -627,7 +634,7 @@ export class DocumentService {
 
     if (parent !== null) {
       store.update(parent, {
-        _hasChildren: true
+        _hasChildren: true,
       });
     }
   }
@@ -647,7 +654,7 @@ export class DocumentService {
     // update parent in case it didn't have children before
     if (parentId) {
       store.update(parentId, {
-        _hasChildren: true
+        _hasChildren: true,
       });
     }
   }
