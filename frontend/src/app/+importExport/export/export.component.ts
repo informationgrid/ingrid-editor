@@ -6,7 +6,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { ImportExportService } from "../import-export-service";
-import { tap } from "rxjs/operators";
+import { catchError, tap } from "rxjs/operators";
 import { MatStepper } from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
@@ -15,6 +15,9 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { IgeError } from "../../models/ige-error";
+import { HttpErrorResponse } from "@angular/common/http";
+import { IgeException } from "../../server-validation.util";
 
 @Component({
   selector: "ige-export",
@@ -36,6 +39,7 @@ export class ExportComponent implements OnInit {
     );
   path: ShortTreeNode[];
   showMore = false;
+  exportSuccess = false;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -72,10 +76,14 @@ export class ExportComponent implements OnInit {
       model.format.type,
       model
     );
-    this.exportService.export(options).subscribe((response) => {
-      console.log("Export-Result:", response);
-      response.text().then((text) => (this.exportResult = text));
-    });
+    this.exportService
+      .export(options)
+      .pipe(catchError((error) => this.handleError(error)))
+      .subscribe((response) => {
+        console.log("Export-Result:", response);
+        response.text().then((text) => (this.exportResult = text));
+        this.exportSuccess = true;
+      });
   }
 
   downloadExport() {
@@ -115,6 +123,37 @@ export class ExportComponent implements OnInit {
         message: this.exportResult,
         buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
       } as ConfirmDialogData,
+    });
+  }
+
+  private handleError(error: HttpErrorResponse): Promise<any> {
+    this.exportSuccess = false;
+
+    return this.getErrorFromBlob(error).then((jsonError: IgeException) => {
+      if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
+        throw new IgeError(
+          "Veröffentlichte Version existiert nicht! In den Optionen können Sie auch Entwürfe exportieren."
+        );
+      }
+      throw new IgeError(jsonError.errorText);
+    });
+  }
+
+  private getErrorFromBlob(error: HttpErrorResponse) {
+    return new Promise<any>((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = (e: Event) => {
+        try {
+          const errmsg = JSON.parse((<any>e.target).result);
+          resolve(errmsg);
+        } catch (e) {
+          reject(error);
+        }
+      };
+      reader.onerror = (e) => {
+        reject(error);
+      };
+      reader.readAsText(error.error);
     });
   }
 }

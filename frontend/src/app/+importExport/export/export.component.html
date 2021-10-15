@@ -119,6 +119,7 @@
                         mat-flat-button
                         color="primary"
                         matStepperNext
+                        [disabled]="!exportSuccess"
                         (click)="downloadExport()"
                     >
                         Exportieren
