@@ -77,7 +77,6 @@ export abstract class SaveBase extends Plugin {
   ) {
     switch (choice) {
       case "cancel":
-        this.documentService.documentOperationFinished$.next(true);
         this.formToolbarService.setButtonState("toolBtnSave", true);
         break;
       case "force":
