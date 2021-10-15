@@ -22,6 +22,7 @@ import { Subject } from "rxjs";
 export class GroupsTableComponent implements OnInit, AfterViewInit {
   @Input()
   set groups(val: Group[]) {
+    if (val) this.isLoading = false;
     this.dataSource.data = val ?? [];
   }
 
@@ -37,6 +38,8 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
   @Output() onGroupSelect = new EventEmitter<Group>();
   @Output() onDelete = new EventEmitter<string>();
+
+  isLoading = true;
 
   constructor() {
     const initialSelection = [];

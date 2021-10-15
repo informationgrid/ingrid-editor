@@ -21,8 +21,11 @@ import { UserService } from "../../../services/user/user.service";
   styleUrls: ["../../user.styles.scss"],
 })
 export class UserTableComponent implements OnInit, AfterViewInit {
+  isLoading = true;
+
   @Input()
   set users(val: User[]) {
+    if (val) this.isLoading = false;
     this.dataSource.data = val ?? [];
   }
 
