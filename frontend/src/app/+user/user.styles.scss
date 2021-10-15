@@ -168,6 +168,12 @@ table {
   td.mat-cell:first-of-type {
     padding-left: 24px !important;
   }
+
+  ::ng-deep {
+    .mat-sort-header-content {
+      padding: 0 12px;
+    }
+  }
 }
 
 mat-paginator {
@@ -209,4 +215,10 @@ mat-toolbar-row {
     padding-top: 30px;
     text-align: center;
   }
+}
+
+.table-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

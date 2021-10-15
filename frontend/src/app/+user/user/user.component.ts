@@ -144,9 +144,6 @@ export class UserComponent
             .sort((a, b) => a.login.localeCompare(b.login))
         ),
         tap((users) => (this.users = users ? users : [])),
-        // tap(() =>
-        //   setTimeout(() => this.selectedUserForm.setValue(currentValue))
-        // )
         untilDestroyed(this)
       )
       .subscribe();
