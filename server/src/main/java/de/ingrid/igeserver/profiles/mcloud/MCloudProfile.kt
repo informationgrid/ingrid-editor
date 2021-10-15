@@ -19,6 +19,7 @@ import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
@@ -42,6 +43,9 @@ class MCloudProfile : CatalogProfile {
     @JsonIgnore
     lateinit var dateService: DateService
 
+    @Value("#{'\${spring.profiles.active:}'.indexOf('demo') != -1}")
+    private val demoMode = false
+
     override val identifier: String = "mcloud"
     override val title: String = "mCLOUD Katalog"
     override val description: String? = null
@@ -58,7 +62,7 @@ class MCloudProfile : CatalogProfile {
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
                     DocMCloud(),
-                    DocTest()
+                    *(if (demoMode) arrayOf() else arrayOf(DocTest()))
                 )
             ),
             FacetGroup(
