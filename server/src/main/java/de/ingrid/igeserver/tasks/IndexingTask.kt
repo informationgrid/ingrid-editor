@@ -109,12 +109,12 @@ class IndexingTask @Autowired constructor(
             // TODO: dynamically get target to send exported documents
 
             // TODO: configure index name
-            val indexInfo = IndexInfo()
-            indexInfo.realIndexName = info.second
-            indexInfo.toType = "base"
-            indexInfo.toAlias = categoryAlias
-            indexInfo.docIdField = "uuid"
-
+            val indexInfo = IndexInfo().apply {
+                realIndexName = info.second
+                toType = "base"
+                toAlias = categoryAlias
+                docIdField = "uuid"
+            }
 
             var page = -1
             do {
@@ -195,24 +195,26 @@ class IndexingTask @Autowired constructor(
      * Indexing of a single document into an Elasticsearch index.
      */
     // TODO: implement
-    fun updateDocument(catalog: String, format: String, docId: String) {
+    fun updateDocument(catalogId: String, format: String, docId: String) {
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
         if (oldIndex == null) {
-            oldIndex = IndexManager.getNextIndexName(elasticsearchAlias, generalProperties.uuid, "ige-ng-test")
-            indexManager.createIndex(oldIndex, "base", indexManager.defaultMapping, indexManager.defaultSettings)
-            indexManager.addToAlias(elasticsearchAlias, oldIndex)
+            val catalog = catalogRepo.findByIdentifier(catalogId)
+            val (_, newIndex) = indexPrePhase(elasticsearchAlias, catalog.type, format)
+            oldIndex = newIndex
+            indexManager.addToAlias(elasticsearchAlias, newIndex)
         }
-        val indexInfo = IndexInfo()
-        indexInfo.realIndexName = oldIndex
-        indexInfo.toType = "base"
-        indexInfo.toAlias = elasticsearchAlias
-        indexInfo.docIdField = "uuid"
+        val indexInfo = IndexInfo().apply {
+            realIndexName = oldIndex
+            toType = "base"
+            toAlias = elasticsearchAlias
+            docIdField = "uuid"
+        }
 
         val exporter = indexService.getExporter(DocumentCategory.DATA, format)
-        val doc = indexService.getSinglePublishedDocument(catalog, DocumentCategory.DATA, format, docId)
+        val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
         val export = exporter.run(doc)
 
-        log.debug("Exported document: " + export)
+        log.debug("Exported document: $export")
         indexManager.update(indexInfo, convertToElasticDocument(export), false)
     }
 
@@ -321,7 +323,7 @@ class IndexingTask @Autowired constructor(
         executor.shutdownNow()
     }
 
-    final fun initScheduler(): TaskScheduler {
+    fun initScheduler(): TaskScheduler {
         val scheduler = ThreadPoolTaskScheduler()
         scheduler.poolSize = 10
         scheduler.afterPropertiesSet()
