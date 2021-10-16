@@ -3,6 +3,7 @@
   "brokerUrl": "ws://localhost:8550/ws",
   "featureFlags": {
     "AP3": true,
+    "AP4": false,
     "NotForDemo": true
   }
 }

@@ -1,5 +1,7 @@
 import { NativeDateAdapter } from "@angular/material/core";
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class GermanDateAdapter extends NativeDateAdapter {
   parse(value: string) {
     if (typeof value === "string" && value.indexOf(".") > -1) {

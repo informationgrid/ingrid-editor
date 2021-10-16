@@ -57,6 +57,7 @@ export class ModalService {
     // run the opening of the dialog within a zone, otherwise the dialog will not be closable (see #9676)
     this.ngZone.run(() => {
       this.dialogRef = this.dialog.open(ErrorDialogComponent, {
+        maxWidth: 700,
         data: this.errors,
       });
       this.dialogRef.afterClosed().subscribe(() => {
@@ -103,6 +104,7 @@ export class ModalService {
 
     this.ngZone.run(() => {
       this.dialogRef = this.dialog.open(ErrorDialogComponent, {
+        maxWidth: 700,
         data: errorObj,
       });
       this.dialogRef.afterClosed().subscribe(() => {

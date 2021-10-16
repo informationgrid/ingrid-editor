@@ -8,7 +8,7 @@
 </div>
 <mat-dialog-content data-cy="error-dialog-content">
     <ng-container *ngIf="errors.length === 1">
-        <p>{{ errors[0].message }}</p>
+        <div>{{ errors[0].message }}</div>
         <ul *ngIf="errors[0].detail || errors[0].stacktrace">
             <li>
                 {{ errors[0].detail }}

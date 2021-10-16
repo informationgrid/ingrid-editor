@@ -44,7 +44,7 @@ export class UploadService {
           );
         }
         throw new IgeError(
-          `${file.data.name} upload failed: ${error.error.message}`
+          `${file.data.name} upload failed: ${error.error.errorText}`
         );
       })
     );
