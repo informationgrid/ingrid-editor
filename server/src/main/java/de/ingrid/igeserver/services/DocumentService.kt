@@ -97,6 +97,9 @@ open class DocumentService @Autowired constructor(
      */
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
 
+    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String, id: String): DocumentWrapper =
+        docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
+
     fun documentExistsNot(id: String): Boolean {
         return !documentExists(id)
     }
@@ -230,6 +233,7 @@ open class DocumentService @Autowired constructor(
     }
 
     private fun removeInternalFields(node: ObjectNode): ObjectNode {
+        val copy = jacksonObjectMapper().createObjectNode().setAll<ObjectNode>(node)
         listOf(
             FIELD_VERSION,
             FIELD_CREATED,
@@ -239,8 +243,8 @@ open class DocumentService @Autowired constructor(
             "title",
             "hasWritePermission"
         )
-            .forEach { node.remove(it) }
-        return node
+            .forEach { copy.remove(it) }
+        return copy
     }
 
     fun updateDocument(catalogId: String, id: String, data: Document, publish: Boolean = false): Document {

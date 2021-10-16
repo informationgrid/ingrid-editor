@@ -1,23 +1,25 @@
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.acls.model.NotFoundException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.nio.charset.Charset
 import java.util.*
 
 @Service
-class ImportService {
+open class ImportService {
     private val log = logger()
 
     @Autowired
@@ -35,61 +37,79 @@ class ImportService {
 
     }
 
-    fun importFile(dbId: String, importerId: String, file: MultipartFile): Pair<Document, String> {
+    @Transactional
+    open fun importFile(
+        catalogId: String,
+        importerId: String,
+        file: MultipartFile,
+        options: ImportOptions
+    ): Pair<Document, String> {
         val fileContent = String(file.bytes, Charset.defaultCharset())
         val importer = factory.getImporterById(importerId)
 
         val importedDoc = importer.run(fileContent)
 
-        log.debug("Transformed document: $importedDoc")
-        /*val doc = documentService.convertToDocument((importedDoc as ArrayNode)[0])
-*/
-        // TODO: if import under a special folder then create new UUIDs for docs
-        //       doc.uuid = UUID.randomUUID().toString()
-
-
         val document = importedDoc[0]
-        val uuid = document.get(FIELD_ID)
+        handleOptions(document as ObjectNode, options)
+
+        log.debug("Transformed document: $document")
+
+        val uuid = document.get(FIELD_ID).asText()
         // check if document already exists
         val wrapper = try {
-            documentService.getWrapperByDocumentId(uuid.asText())
+            documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid)
         } catch (ex: NotFoundException) {
             null
         } catch (ex: EmptyResultDataAccessException) {
             null
         }
 
-        val createDocument = if (wrapper == null) {
-            documentService.createDocument(dbId, document, null, false, false)
-        } else {
-            (document as ObjectNode).put(FIELD_ID, UUID.randomUUID().toString())
-            documentService.createDocument(dbId, document, null, false, false)
-//            documentService.updateDocument(dbId, uuid, document, null, false, false)
-        }
-        val doc = documentService.convertToDocument(createDocument)
+        val docObj = documentService.convertToDocument(document)
+        extractAndSaveReferences(catalogId, docObj)
 
-//        extractAndSaveReferences(createDocument)
+        val createDocument = if (wrapper == null || options.options == "create_under_target") {
+            val doc = documentService.createDocument(catalogId, document, options.parentDocument, false, false)
+            documentService.convertToDocument(doc)
+        } else {
+            // only when version matches in updated document, it'll be overwritten
+            // otherwise a new document is created and wrapper links to original instead the updated one
+            docObj.version = wrapper.draft?.version ?: wrapper.published?.version
+//            docObj.created = OffsetDateTime.now()
+            documentService.updateDocument(catalogId, uuid, docObj, false)
+        }
 
         // TODO: return created document instead of transformed JSON
-        return Pair(doc, importer.typeInfo.id)
+        return Pair(createDocument, importer.typeInfo.id)
     }
 
-    private fun extractAndSaveReferences(doc: Document) {
-/* TODO: migrate
-        val docType = doc[FIELD_DOCUMENT_TYPE].asText()
-        val refType = documentService.getDocumentType(docType)
+    private fun handleOptions(
+        document: ObjectNode,
+        options: ImportOptions
+    ) {
+        if (options.options == "create_under_target") {
+            document.put(FIELD_PARENT, options.parentDocument)
+            // if import under a special folder then create new UUIDs for docs
+            document.put(FIELD_ID, UUID.randomUUID().toString())
+        }
+    }
+
+    private fun extractAndSaveReferences(catalogId: String, doc: Document) {
+
+        val refType = documentService.getDocumentType(doc.type!!)
 
         val references = refType.pullReferences(doc)
 
         // save references
         // TODO: use option if we want to publish it
+        // TODO: prevent conversion to Document and JsonNode
         references
             .filter { !documentAlreadyExists(it) }
-            .forEach { documentService.createDocument(it, publish = false) }
+            .map { documentService.convertToJsonNode(it) }
+            .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = null) }
 
         // save imported document
 
-        // TODO: option for new UUID or overwrite
+        /*// TODO: option for new UUID or overwrite
         if (documentAlreadyExists(doc)) {
             (doc as ObjectNode).remove(FIELD_ID)
         }
@@ -99,13 +119,12 @@ class ImportService {
 
     }
 
-    private fun documentAlreadyExists(ref: JsonNode): Boolean {
+    private fun documentAlreadyExists(ref: Document): Boolean {
 
         // TODO: optimize by caching reference information
 
-        val id = ref.path(FIELD_ID).textValue()
         return try {
-            documentService.getWrapperByDocumentId(id)
+            documentService.getWrapperByDocumentId(ref.uuid)
             true
         } catch (e: RuntimeException) {
             false

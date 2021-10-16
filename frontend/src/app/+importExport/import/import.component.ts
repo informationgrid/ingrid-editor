@@ -8,9 +8,14 @@ import {
 import { ConfigService } from "../../services/config/config.service";
 import { FileUploadModel } from "../upload/upload.component";
 import { MatStepper } from "@angular/material/stepper";
-import { tap } from "rxjs/operators";
+import { catchError, tap } from "rxjs/operators";
 import { UploadService } from "../upload/upload.service";
 import { Router } from "@angular/router";
+import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
+import { DocumentService } from "../../services/document/document.service";
+import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
+import { Observable, of } from "rxjs";
+import { IgeError } from "../../models/ige-error";
 
 @Component({
   selector: "ige-import",
@@ -39,12 +44,15 @@ export class ImportComponent implements OnInit {
   readyForImport = false;
   chosenFiles: FileUploadModel[];
   private importedDocId: string = null;
+  pathToDocument: ShortTreeNode[];
+  hasImportError = false;
 
   constructor(
     private importExportService: ImportExportService,
     config: ConfigService,
     private uploadService: UploadService,
-    private router: Router
+    private router: Router,
+    private documentService: DocumentService
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
@@ -69,10 +77,12 @@ export class ImportComponent implements OnInit {
 
   onAnalyzeComplete(info: UploadAnalysis) {
     this.compatibleImporters = info.analysis.importer;
+    const importerControl = this.optionsFormGroup.get("importer");
     if (this.compatibleImporters.length === 1) {
-      this.optionsFormGroup
-        .get("importer")
-        .setValue(this.compatibleImporters[0]);
+      importerControl.setValue(this.compatibleImporters[0]);
+      importerControl.disable();
+    } else {
+      importerControl.enable();
     }
     this.step1Complete = true;
   }
@@ -135,6 +145,14 @@ export class ImportComponent implements OnInit {
   }
 
   startImport() {
+    // get path for destination for final page
+    this.documentService
+      .getPath(this.locationDoc[0])
+      .subscribe((path) => (this.pathToDocument = path));
+
+    this.hasImportError = false;
+
+    // upload each file
     this.chosenFiles.forEach((file) => {
       const importer = this.optionsFormGroup.get("importer").value;
       const option = this.optionsFormGroup.get("option").value;
@@ -145,9 +163,12 @@ export class ImportComponent implements OnInit {
           `api/import?importerId=${importer}&parentDoc=${this.locationDoc[0]}&parentAddress=${this.locationAddress[0]}&options=${option}`
         )
         .pipe(
+          catchError((error) => this.handleError(error)),
           tap((response) => console.log("File imported", response)),
-          // @ts-ignore
-          tap((response) => (this.importedDocId = response.body.result._id))
+          tap(
+            (response: HttpResponse<any>) =>
+              (this.importedDocId = response.body.result._id)
+          )
         )
         .subscribe();
     });
@@ -155,5 +176,10 @@ export class ImportComponent implements OnInit {
 
   openImportedDocument() {
     this.router.navigate(["/form", { id: this.importedDocId }]);
+  }
+
+  private handleError(error: IgeError): Observable<HttpResponse<any>> {
+    this.hasImportError = true;
+    throw error;
   }
 }

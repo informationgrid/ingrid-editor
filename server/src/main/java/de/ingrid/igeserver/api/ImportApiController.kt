@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.model.ImportAnalyzeInfo
@@ -39,7 +40,8 @@ class ImportApiController @Autowired constructor(
 
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val (result, importerName) = importService.importFile(dbId, importerId, file)
+        val optionsObj = ImportOptions(parentDoc, parentAddress, options)
+        val (result, importerName) = importService.importFile(dbId, importerId, file, optionsObj)
         val info = createInfo(importerName, result)
         return ResponseEntity.ok(info)
     }
@@ -58,3 +60,5 @@ class ImportApiController @Autowired constructor(
         return info
     }
 }
+
+data class ImportOptions(val parentDocument: String, val parentAddress: String, val options: String)

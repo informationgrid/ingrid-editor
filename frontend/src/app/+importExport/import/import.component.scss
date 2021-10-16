@@ -36,9 +36,31 @@
   }
 }
 
-.success-icon {
+.success-icon,
+.error-icon {
   height: 128px;
   width: 128px;
   font-size: 128px;
+}
+
+.success-icon {
   color: $ige-check-color;
+}
+
+.error-icon {
+  color: $error-color;
+}
+
+.content {
+  background-color: $ige-background;
+  padding: 24px;
+}
+
+.options {
+  margin: 0 auto;
+  width: 600px;
+}
+
+.space-top {
+  padding-top: 24px;
 }

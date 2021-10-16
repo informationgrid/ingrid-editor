@@ -14,6 +14,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findById(uuid: String): DocumentWrapper
 
+    @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
+    fun findByIdAndCatalog_Identifier(id: String, catalog_identifier: String): DocumentWrapper
+
     fun existsById(uuid: String): Boolean
 
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
@@ -47,7 +50,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
     fun save(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
-    
+
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
     fun saveAndFlush(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
 

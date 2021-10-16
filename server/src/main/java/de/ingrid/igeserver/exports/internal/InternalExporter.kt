@@ -6,8 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -30,12 +29,25 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
     override fun run(doc: Document): Any {
         // TODO: profile must be added to the exported format!
         val json = documentService.convertToJsonNode(doc)
+        removeInternalFields(json as ObjectNode)
         return addExportWrapper(json)
+    }
+
+    private fun removeInternalFields(json: ObjectNode) {
+        listOf(
+            FIELD_VERSION,
+            FIELD_CREATED,
+            FIELD_MODIFIED,
+            FIELD_STATE,
+            FIELD_HAS_CHILDREN,
+            "hasWritePermission",
+            "hasOnlySubtreeWritePermission"
+        ).forEach { json.remove(it) }
     }
 
     private fun addExportWrapper(json: JsonNode): ObjectNode {
 
-        return jacksonObjectMapper().createObjectNode().apply { 
+        return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
             put("_version", "0.0.1")
             put("resources", jacksonObjectMapper().createArrayNode().add(json))
