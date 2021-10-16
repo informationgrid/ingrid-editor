@@ -10,6 +10,7 @@ import { FormUtils } from "../../form.utils";
 import { DocumentService } from "../../../services/document/document.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
+import { ConfigService } from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Injectable()
@@ -21,11 +22,14 @@ export class CreateFolderPlugin extends Plugin {
 
   eventCreateFolderId = "CREATE_FOLDER";
 
+  private isAdmin = this.config.isAdmin();
+
   get name() {
     return this._name;
   }
 
   constructor(
+    private config: ConfigService,
     private formToolbarService: FormToolbarService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
@@ -58,6 +62,19 @@ export class CreateFolderPlugin extends Plugin {
           this.createFolder();
         }
       });
+
+    if (!this.isAdmin) {
+      const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
+      query.rootDocuments$.subscribe((data) => {
+        const hasAnyWritePermission = data.some(
+          (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
+        );
+        this.formToolbarService.setButtonState(
+          "toolBtnFolder",
+          hasAnyWritePermission
+        );
+      });
+    }
 
     this.subscriptions.push(toolbarEventSubscription);
   }
