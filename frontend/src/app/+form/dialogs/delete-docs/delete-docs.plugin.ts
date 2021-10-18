@@ -137,6 +137,8 @@ export class DeleteDocsPlugin extends Plugin {
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
     const docIdsToDelete = docs.map((doc) => <string>doc.id);
+    const currentDoc = this.tree.getOpenedDocument();
+
     return this.documentService.delete(docIdsToDelete, this.forAddress).pipe(
       // TODO: handle update in plugin!?
       tap(() =>
@@ -145,7 +147,7 @@ export class DeleteDocsPlugin extends Plugin {
           this.forAddress
         )
       ),
-      tap(() => this.selectParent(docs, this.tree.getOpenedDocument()))
+      tap(() => this.selectParent(docs, currentDoc))
     );
   }
 
