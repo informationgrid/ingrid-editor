@@ -69,7 +69,7 @@ class ResearchService {
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
-        val map = mapResult(result, isAdmin, principal)
+        val map = filterAndMapResult(result, isAdmin, principal)
 
         return ResearchResponse(map.size, map)
     }
@@ -77,7 +77,7 @@ class ResearchService {
     private fun getParameters(query: ResearchQuery): List<Any> {
         return query.clauses?.clauses
             ?.mapNotNull { it.parameter }
-            ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it  } }
+            ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it } }
             ?.filter { it.isNotEmpty() }
             ?.flatten() ?: emptyList()
     }
@@ -219,8 +219,14 @@ class ResearchService {
             .resultList as List<Array<out Any?>>
     }
 
-    private fun mapResult(result: List<Array<out Any?>>, isAdmin: Boolean, principal: Principal): List<Result> {
-        return result.map { item ->
+    private fun filterAndMapResult(result: List<Array<out Any?>>, isAdmin: Boolean, principal: Principal): List<Result> {
+        principal as Authentication
+        return result.filter { item ->
+            isAdmin || aclService.getPermissionInfo(
+                principal,
+                item[2] as String
+            ).canRead
+        }.map { item ->
             Result(
                 title = item[1] as? String,
                 uuid = item[2] as? String,
@@ -229,10 +235,16 @@ class ResearchService {
                 _modified = item[5] as? Date,
                 _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
                 _category = (item[7] as? String),
-                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canWrite,
-                hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canOnlyWriteSubtree,
+                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
+                    principal,
+                    item[2] as String
+                ).canWrite,
+                hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
+                    principal,
+                    item[2] as String
+                ).canOnlyWriteSubtree,
             )
-        }.filter { item -> isAdmin || item.uuid?.let { aclService.getPermissionInfo(principal as Authentication, it).canRead } ?: false}
+        }
     }
 
     fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
@@ -241,7 +253,7 @@ class ResearchService {
         try {
             val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
             val result = sendQuery(catalogQuery, emptyList())
-            val map = mapResult(result, isAdmin, principal)
+            val map = filterAndMapResult(result, isAdmin, principal)
 
             return ResearchResponse(map.size, map)
         } catch (error: Exception) {
