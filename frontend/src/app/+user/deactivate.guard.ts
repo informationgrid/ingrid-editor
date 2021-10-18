@@ -46,7 +46,7 @@ export class DeactivateGuard implements CanDeactivate<UserManagementComponent> {
         disableClose: true,
         data: (<ConfirmDialogData>{
           title: "Änderungen verwerfen?",
-          message: "Wollen Sie die Änderungen verwerfen?1",
+          message: "Wollen Sie die Änderungen verwerfen?",
           buttons: [
             { text: "Abbrechen" },
             {

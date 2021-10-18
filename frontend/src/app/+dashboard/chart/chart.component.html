@@ -51,7 +51,10 @@
             <div class="count">{{ dataSeq[0] }}</div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq[0] / total)?.toFixed(2) * 100 ?? 0 }}%
+                {{
+                    (dataSeq[0] / total)?.toFixed(2) * 100 ?? 0
+                        | number: "1.0-0"
+                }}%
             </div>
         </div>
 
@@ -59,7 +62,10 @@
             <div class="count">{{ dataSeq[1] }}</div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq[1] / total)?.toFixed(2) * 100 ?? 0 }}%
+                {{
+                    (dataSeq[1] / total)?.toFixed(2) * 100 ?? 0
+                        | number: "1.0-0"
+                }}%
             </div>
         </div>
     </div>
