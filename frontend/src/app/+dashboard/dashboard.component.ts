@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit {
       maxWidth: 600,
       minHeight: 400,
       disableClose: true,
+      hasBackdrop: true,
       data: {
         parent: null,
         forAddress: false,
@@ -72,6 +73,7 @@ export class DashboardComponent implements OnInit {
       maxWidth: 600,
       minHeight: 400,
       disableClose: true,
+      hasBackdrop: true,
       data: {
         parent: null,
         forAddress: true,
@@ -98,6 +100,7 @@ export class DashboardComponent implements OnInit {
       maxWidth: 600,
       minHeight: 400,
       disableClose: true,
+      hasBackdrop: true,
       data: {
         forAddress: false,
         isFolder: true,
