@@ -103,7 +103,7 @@ export const getUserFormFields = (
             return groups.map((group) => {
               return {
                 label: group.name,
-                value: group.id,
+                value: group.id + "",
               };
             });
           })
