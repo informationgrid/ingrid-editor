@@ -20,7 +20,10 @@
         </div>
     </div>
     <ng-template #showNumDocuments>
-        <div>Anzahl Dokumente: {{ log.numDocuments }}</div>
+        <div>
+            Anzahl Dokumente:
+            <span data-cy="count-documents">{{ log.numDocuments }}</span>
+        </div>
     </ng-template>
 
     <div
@@ -37,11 +40,14 @@
         </div>
     </div>
     <ng-template #showNumAddresses>
-        <div>Anzahl Adressen: {{ log.numAddresses }}</div>
+        <div>
+            Anzahl Adressen:
+            <span data-cy="count-addresses">{{ log.numAddresses }}</span>
+        </div>
     </ng-template>
 
     <div *ngIf="log.errors?.length > 0">
-        Fehler: {{ log.errors.length }}
+        Fehler: <span data-cy="count-errors">{{ log.errors.length }}</span>
         <ul>
             <li *ngFor="let error of log.errors">{{ error }}</li>
         </ul>

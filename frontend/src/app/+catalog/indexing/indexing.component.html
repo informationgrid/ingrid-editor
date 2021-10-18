@@ -99,12 +99,17 @@
                 *ngIf="!indexingIsRunning; else indexing"
                 mat-flat-button
                 color="primary"
+                class="start-index"
                 (click)="index()"
             >
                 Indizieren
             </button>
             <ng-template #indexing>
-                <button mat-flat-button (click)="cancelIndexing()">
+                <button
+                    mat-flat-button
+                    (click)="cancelIndexing()"
+                    class="cancel-index"
+                >
                     Indizierung abbrechen
                 </button>
             </ng-template>

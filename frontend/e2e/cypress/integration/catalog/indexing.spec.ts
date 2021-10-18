@@ -1,7 +1,7 @@
 import { BehavioursPage } from '../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../pages/base.page';
 import { DocumentPage } from '../../pages/document.page';
-import { IndexingPage, StatusContent } from '../../pages/indexing.page';
+import { IndexingPage } from '../../pages/indexing.page';
 
 describe('Indexing', () => {
   beforeEach(() => {
@@ -15,12 +15,20 @@ describe('Indexing', () => {
 
   it('Index and check indexed object counter has increased', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
-    BehavioursPage.openIndexStatusBox();
 
-    const statusEntry = cy.get('div.status').invoke('text');
+    // the very first time no status is visible
+    // cy.get('.main-header .menu-button').should('not.exist');
 
     IndexingPage.indexAndWait();
+    cy.get('.main-header .menu-button').should('exist');
 
+    // also check that content of status changes
+    BehavioursPage.openIndexStatusBox();
+    const statusEntry = cy.get('div.status').invoke('text');
+
+    // wait a bit after last indexing
+    cy.wait(1000);
+    IndexingPage.indexAndWait();
     // compare status box entry is not the same like before indexing
     cy.get('div.status').invoke('text').should('not.equal', statusEntry);
   });
@@ -57,26 +65,28 @@ describe('Indexing', () => {
 
   it('Only index published documents', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
-    BehavioursPage.openIndexStatusBox();
 
     IndexingPage.indexAndWait();
+    // TODO: function does not belong to BehavioursPage!
+    BehavioursPage.openIndexStatusBox();
 
-    IndexingPage.getStatusContent(StatusContent.countDocuments).then(text => {
-      const pattern = /[0-9]+/g;
-      const number = text.match(pattern);
-      cy.log('Anzahl der indexierten Dokumente: ' + number);
+    cy.get('.status span[data-cy=count-documents]')
+      .invoke('text')
+      .then(number => {
+        cy.log('Anzahl der indizierten Dokumente: ' + number);
 
-      DocumentPage.CreateFullMcloudDocumentWithAPI('Published_mCloudDoc_Indextest', true);
+        DocumentPage.CreateFullMcloudDocumentWithAPI('Published_mCloudDoc_Indextest', true);
 
-      IndexingPage.indexAndWait();
+        IndexingPage.indexAndWait();
 
-      IndexingPage.getStatusContent(StatusContent.countDocuments).then(text => {
-        const number2 = text.match(pattern);
-        cy.log('Anzahl der indexierten Dokumente: ' + number2);
+        cy.get('.status span[data-cy=count-documents]')
+          .invoke('text')
+          .then(number2 => {
+            cy.log('Anzahl der indizierten Dokumente: ' + number2);
 
-        // compare number of indexed objects
-        assert.notEqual(number2, number, number2 + ' ' + number + ' are not equal');
+            // compare number of indexed objects
+            assert.notEqual(number2, number, number2 + ' ' + number + ' are not equal');
+          });
       });
-    });
   });
 });
