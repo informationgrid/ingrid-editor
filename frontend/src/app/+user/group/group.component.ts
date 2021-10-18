@@ -12,7 +12,7 @@ import {
 } from "@angular/forms";
 import { BackendUser, Permissions, User } from "../user";
 import { map, tap } from "rxjs/operators";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -32,7 +32,10 @@ import { ConfigService } from "../../services/config/config.service";
 })
 export class GroupComponent implements OnInit, AfterViewInit {
   groups: Group[] = [];
+  userGroupNames: string[];
   searchQuery: string;
+
+  userInfo$ = this.configService.$userInfo;
 
   form: FormGroup;
 
@@ -60,7 +63,10 @@ export class GroupComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.fetchGroups().subscribe();
+    this.fetchGroups().pipe(untilDestroyed(this)).subscribe();
+    this.userInfo$
+      .pipe(untilDestroyed(this))
+      .subscribe((info) => (this.userGroupNames = info.groups));
 
     this.form = this.fb.group({
       id: [],
@@ -84,7 +90,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   fetchGroups(): Observable<Group[]> {
     const currentValue = this.selectedGroupForm.value;
-
     return this.groupService.getGroups().pipe(
       tap((groups) => (this.groups = groups)),
       tap(() => setTimeout(() => this.selectedGroupForm.setValue(currentValue)))

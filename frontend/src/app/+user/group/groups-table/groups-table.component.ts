@@ -11,7 +11,7 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
-import { Group } from "../../../models/user-group";
+import { FrontendGroup, Group } from "../../../models/user-group";
 import { Subject } from "rxjs";
 
 @Component({
@@ -32,6 +32,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   }
 
   @Input() selectedGroup: Subject<Group>;
+  @Input() userGroupNames: string[];
   displayedColumns: string[] = ["role-icon", "name", "settings"];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
@@ -92,5 +93,11 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   trySelect(element) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
+  }
+
+  getRoleIcon(group: FrontendGroup): "group" | "group-standin" {
+    // TODO possibly also mark created groups as own groups
+    if (this.userGroupNames?.includes(group.name)) return "group";
+    return "group-standin";
   }
 }

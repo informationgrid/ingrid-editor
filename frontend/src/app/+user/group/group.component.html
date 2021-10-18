@@ -51,6 +51,7 @@
             <groups-table
                 [query]="searchQuery"
                 [groups]="groups"
+                [userGroupNames]="userGroupNames"
                 [selectedGroup]="groupService.selectedGroup$"
                 (onGroupSelect)="loadGroup($event.id)"
                 (onDelete)="deleteGroup($event)"
@@ -73,7 +74,13 @@
             >
                 <div class="user-title">
                     <div class="document-type">
-                        <mat-icon svgIcon="group"></mat-icon>
+                        <mat-icon
+                            [svgIcon]="
+                                userGroupNames.includes(form.get('name')?.value)
+                                    ? 'group'
+                                    : 'group-standin'
+                            "
+                        ></mat-icon>
                     </div>
 
                     <span fxFlex class="label" [class.editable]="false">
