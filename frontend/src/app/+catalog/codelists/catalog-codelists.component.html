@@ -9,7 +9,7 @@
 
         <div>
             Ein Codelisteneintrag kann optional als Defaultwert eingestellt
-            werden. Bei einem neuen Dokument, wird das Feld, welches diese
+            werden. Bei einem neuen Dokument wird das Feld, welches diese
             Codeliste verwendet, bereits den ausgewählten Eintrag vorausgewählt
             haben.
         </div>
@@ -17,7 +17,7 @@
 
     <div main-header fxLayout="column" fxLayoutAlign="center center" fxFlex>
         <ng-container
-            *ngIf="(hasCatalogCodelists | async) === false; else showSelecter"
+            *ngIf="(hasCatalogCodelists | async) === false; else showSelector"
         >
             <div>
                 In diesem Katalog liegen keine spezifischen Codelisten vor.
@@ -37,7 +37,7 @@
             </div>
         </ng-container>
 
-        <ng-template #showSelecter>
+        <ng-template #showSelector>
             <mat-form-field
                 appearance="outline"
                 class="white-bg"
