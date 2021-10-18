@@ -179,7 +179,7 @@ class DatasetsApiController @Autowired constructor(
                 val childDoc = documentService.getLatestDocument(it, false, false)
                 val childVersion = (documentService.convertToJsonNode(childDoc) as ObjectNode)
                     .put(FIELD_PARENT, parentId)
-                createCopyAndHandleSubTree(catalogId, childVersion, options, isAddress)
+                createCopyAndHandleSubTree(catalogId, childVersion, CopyOptions(parentId, true), isAddress)
             }
 
         }
