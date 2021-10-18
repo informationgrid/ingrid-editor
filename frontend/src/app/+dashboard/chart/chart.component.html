@@ -1,21 +1,21 @@
-<div fxFlex fxLayout="column" *ngIf="data | async as dataSeq">
+<div fxFlex fxLayout="column" *ngIf="dataMap | async as dataSeq">
     <svg viewBox="0 0 36 36" class="circular-chart">
         <path
-            *ngIf="dataSeq[0]"
+            *ngIf="dataSeq.first"
             class="circle circle-1"
             attr.stroke-dasharray="{{
-                calculateAdjustedStrokeDash(dataSeq[0])
-            }}, {{ calculateStrokeDash(dataSeq[1]) }}"
+                calculateAdjustedStrokeDash(dataSeq.first)
+            }}, {{ calculateStrokeDash(dataSeq.second) }}"
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
         ></path>
         <path
-            *ngIf="dataSeq[1]"
+            *ngIf="dataSeq.second"
             class="circle circle-2"
-            attr.stroke-dasharray="0, {{ calculateStrokeDash(dataSeq[0]) }}, {{
-                calculateAdjustedStrokeDash(dataSeq[1])
-            }}"
+            attr.stroke-dasharray="0, {{
+                calculateStrokeDash(dataSeq.first)
+            }}, {{ calculateAdjustedStrokeDash(dataSeq.second) }}"
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -48,24 +48,18 @@
         "
     >
         <div class="box working">
-            <div class="count">{{ dataSeq[0] }}</div>
+            <div class="count">{{ dataSeq.first }}</div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{
-                    (dataSeq[0] / total)?.toFixed(2) * 100 ?? 0
-                        | number: "1.0-0"
-                }}%
+                {{ (dataSeq.first / total) * 100 ?? 0 | number: "1.0-0" }}%
             </div>
         </div>
 
         <div class="box">
-            <div class="count">{{ dataSeq[1] }}</div>
+            <div class="count">{{ dataSeq.second }}</div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{
-                    (dataSeq[1] / total)?.toFixed(2) * 100 ?? 0
-                        | number: "1.0-0"
-                }}%
+                {{ (dataSeq.second / total) * 100 ?? 0 | number: "1.0-0" }}%
             </div>
         </div>
     </div>

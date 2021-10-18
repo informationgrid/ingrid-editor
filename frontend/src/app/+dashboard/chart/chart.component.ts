@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { map, tap } from "rxjs/operators";
 
 /**
  * This functionality was much inspired by https://stackoverflow.com/questions/48601880/svg-counterclockwise
@@ -15,14 +16,23 @@ export class ChartComponent implements OnInit {
   @Input() data: Observable<number[]>;
   @Input() showPercentages: boolean;
 
+  dataMap: Observable<any>;
+
   total: number;
 
   constructor() {}
 
   ngOnInit() {
-    this.data.pipe(untilDestroyed(this)).subscribe((values) => {
-      this.total = this.calculateTotal(values);
-    });
+    this.dataMap = this.data.pipe(
+      tap((values) => (this.total = this.calculateTotal(values))),
+      map((values) => {
+        return {
+          first: values[0] ?? 0,
+          second: values[1] ?? 0,
+        };
+      }),
+      untilDestroyed(this)
+    );
   }
 
   calculateStrokeDash(dataVal) {
