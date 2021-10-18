@@ -30,6 +30,7 @@ import de.ingrid.igeserver.repository.UserRepository
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
@@ -95,17 +96,18 @@ open class DocumentService @Autowired constructor(
     /**
      * Get the DocumentWrapper with the given document uuid
      */
+    @Deprecated(
+        message = "This function can return more than one result if a document is imported in more than one catalog",
+        replaceWith = ReplaceWith("getWrapperByDocumentIdAndCatalog", "catalogId", "uuid")
+    )
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String, id: String): DocumentWrapper =
-        docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
-
-    fun documentExistsNot(id: String): Boolean {
-        return !documentExists(id)
-    }
-
-    fun documentExists(id: String): Boolean {
-        return docWrapperRepo.existsById(id)
+    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String, id: String): DocumentWrapper {
+        try {
+            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
+        } catch (ex: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(id, null)
+        }
     }
 
     fun getTitleFromDocumentId(id: String): String {
@@ -265,7 +267,7 @@ open class DocumentService @Autowired constructor(
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 
         // run pre-update pipe(s)
-        val wrapper = getWrapperByDocumentId(id)
+        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
         val docType = getDocumentType(wrapper.type!!)
         val preUpdatePayload = PreUpdatePayload(docType, data, wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
@@ -365,7 +367,7 @@ open class DocumentService @Autowired constructor(
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
 
         // run pre-delete pipe(s)
-        val wrapper = getWrapperByDocumentId(id)
+        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
         val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = data.type!!
@@ -382,7 +384,7 @@ open class DocumentService @Autowired constructor(
         }
 
         if (generalProperties.markInsteadOfDelete) {
-            markDocumentAsDeleted(id)
+            markDocumentAsDeleted(catalogId, id)
         } else {
             // remove all document versions which have the same ID
             docRepo.deleteAllByUuid(id)
@@ -404,15 +406,15 @@ open class DocumentService @Autowired constructor(
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
 
-    private fun markDocumentAsDeleted(id: String) {
-        val markedDoc = getWrapperByDocumentId(id).apply { deleted = 1 }
+    private fun markDocumentAsDeleted(catalogId: String, id: String) {
+        val markedDoc = getWrapperByDocumentIdAndCatalog(catalogId, id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
 
     fun revertDocument(catalogId: String, id: String): Document {
 
         // remove draft version
-        val wrapper = getWrapperByDocumentId(id)
+        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
         // check if draft and published field are filled
         assert(wrapper.draft != null && wrapper.published != null)
@@ -432,7 +434,7 @@ open class DocumentService @Autowired constructor(
 
     fun unpublishDocument(catalogId: String, id: String): Document {
         // remove publish
-        val wrapper = getWrapperByDocumentId(id)
+        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
         assert(wrapper.published != null)
 
         // if no draft version exists, move published version to draft

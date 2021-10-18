@@ -2,6 +2,7 @@ package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
@@ -10,8 +11,6 @@ import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.security.acls.model.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -60,8 +59,6 @@ open class ImportService {
             documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid)
         } catch (ex: NotFoundException) {
             null
-        } catch (ex: EmptyResultDataAccessException) {
-            null
         }
 
         val docObj = documentService.convertToDocument(document)
@@ -103,7 +100,7 @@ open class ImportService {
         // TODO: use option if we want to publish it
         // TODO: prevent conversion to Document and JsonNode
         references
-            .filter { !documentAlreadyExists(it) }
+            .filter { !documentAlreadyExists(catalogId, it) }
             .map {
                 // create address under given folder
                 it.data.put(FIELD_PARENT, options.parentAddress)
@@ -115,12 +112,12 @@ open class ImportService {
 
     }
 
-    private fun documentAlreadyExists(ref: Document): Boolean {
+    private fun documentAlreadyExists(catalogId: String, ref: Document): Boolean {
 
         // TODO: optimize by caching reference information
 
         return try {
-            documentService.getWrapperByDocumentId(ref.uuid)
+            documentService.getWrapperByDocumentIdAndCatalog(catalogId, ref.uuid)
             true
         } catch (e: RuntimeException) {
             false

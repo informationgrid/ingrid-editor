@@ -316,9 +316,13 @@ export class DocumentService {
   }
 
   getPath(id: string): Observable<ShortTreeNode[]> {
-    return this.dataService
-      .getPath(id)
-      .pipe(map((path) => this.preparePath(path)));
+    return this.dataService.getPath(id).pipe(
+      catchError((error) => {
+        if (error.status === 404) return [];
+        else throw error;
+      }),
+      map((path) => this.preparePath(path))
+    );
   }
 
   /**

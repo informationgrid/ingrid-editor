@@ -27,10 +27,10 @@ class ExportApiController : ExportApi {
 
     override fun export(principal: Principal, data: ExportRequestParameter): ResponseEntity<String?> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         // TODO: option to export addresses too?
-        val doc = documentService.getWrapperByDocumentId(data.id)
+        val doc = documentService.getWrapperByDocumentIdAndCatalog(catalogId, data.id)
         val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
 
         val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
