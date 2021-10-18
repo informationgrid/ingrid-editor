@@ -11,8 +11,9 @@ import { DocumentService } from "../../../services/document/document.service";
 import { Router } from "@angular/router";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { EventService, IgeEvent } from "../../../services/event/event.service";
-import { filter, take } from "rxjs/operators";
+import { filter, take, tap } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -110,14 +111,8 @@ export class DeleteDocsPlugin extends Plugin {
           })
           .afterClosed()
           .pipe(filter((response) => response === "confirm"))
-          .subscribe(() => this.handleDeleteDocs(docs));
+          .subscribe(() => this.deleteDocs(docs).subscribe());
       });
-  }
-
-  private handleDeleteDocs(docs: DocumentAbstract[]) {
-    const currentDoc = this.tree.getOpenedDocument();
-    this.deleteDocs(docs.map((doc) => <string>doc.id));
-    this.selectParent(docs, currentDoc);
   }
 
   private selectParent(docs: DocumentAbstract[], currentDoc: DocumentAbstract) {
@@ -140,31 +135,18 @@ export class DeleteDocsPlugin extends Plugin {
     }
   }
 
-  private deleteDocs(docIdsToDelete: string[]) {
-    try {
-      // const parents = this.treeQuery.getAll()
-      //   .filter(doc => docIdsToDelete.indexOf(doc.id.toString()) !== -1)
-      //   .map(doc => doc._parent);
-
-      this.documentService
-        .delete(docIdsToDelete, this.forAddress)
-        .then(() => {
-          this.documentService.updateOpenedDocumentInTreestore(
-            null,
-            this.forAddress
-          );
-
-          // find all parents in store who now have no children anymore
-          // parents
-          //   .filter(id => this.treeQuery.getCount(item => item._parent === id) === 0)
-          //   .forEach( id => this.documentService.updateChildrenInfo(id, false));
-        })
-        .catch((ex) => {
-          console.log("Error already handled");
-        });
-    } catch (ex) {
-      console.error("Could not delete", ex);
-    }
+  private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
+    const docIdsToDelete = docs.map((doc) => <string>doc.id);
+    return this.documentService.delete(docIdsToDelete, this.forAddress).pipe(
+      // TODO: handle update in plugin!?
+      tap(() =>
+        this.documentService.updateOpenedDocumentInTreestore(
+          null,
+          this.forAddress
+        )
+      ),
+      tap(() => this.selectParent(docs, this.tree.getOpenedDocument()))
+    );
   }
 
   unregister() {

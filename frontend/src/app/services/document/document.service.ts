@@ -292,40 +292,30 @@ export class DocumentService {
     );
   }
 
-  delete(ids: string[], isAddress: boolean): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.dataService
-        .delete(ids)
-        .pipe(
-          catchError((error) => {
-            if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
-              console.error(error?.error?.errorText);
-              let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
+  delete(ids: string[], isAddress: boolean): Observable<void> {
+    return this.dataService.delete(ids).pipe(
+      catchError((error) => {
+        if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
+          console.error(error?.error?.errorText);
+          let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
 
-              this.messageService.sendError(
-                "Das Dokument ist von den folgenden Dokumenten referenziert: " +
-                  uniqueUuids.join(", ")
-              );
-              reject(error?.error);
-              return of("ERROR THROWN");
-            }
-            // unknown error
-            throw error;
-          }),
-          filter((response) => response != "ERROR THROWN"),
-          map(() => ids.map((id) => ({ id: id })))
-        )
-        .subscribe((data) => {
-          this.datasetsChanged$.next({
-            type: UpdateType.Delete,
-            // @ts-ignore
-            data: data,
-          });
-
-          this.updateStoreAfterDelete(ids, isAddress);
-          resolve();
+          this.messageService.sendError(
+            "Das Dokument wird von den folgenden Dokumenten referenziert: " +
+              uniqueUuids.join(", ")
+          );
+        }
+        // unknown error
+        throw error;
+      }),
+      tap(() => {
+        this.datasetsChanged$.next({
+          type: UpdateType.Delete,
+          // @ts-ignore
+          data: ids.map((id) => ({ id: id })),
         });
-    });
+      }),
+      tap(() => this.updateStoreAfterDelete(ids, isAddress))
+    );
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {

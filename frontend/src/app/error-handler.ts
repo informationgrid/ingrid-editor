@@ -23,7 +23,10 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else if (error instanceof HttpErrorResponse) {
       if (error.error?.errorCode) {
         const e = new IgeError();
-        e.setMessage(error.error.errorText);
+        e.setMessage(
+          GlobalErrorHandler.translateMessage(error.error.errorCode) ??
+            error.error.errorText
+        );
         this.modalService.showIgeError(e);
       } else {
         const e = new IgeError();
@@ -46,6 +49,15 @@ export class GlobalErrorHandler implements ErrorHandler {
       this.modalService.showIgeError(e);
     } else {
       this.modalService.showJavascriptError(error.message, error.stack);
+    }
+  }
+
+  private static translateMessage(errorCode: string) {
+    switch (errorCode) {
+      case "IS_REFERENCED_ERROR":
+        return "Der Datensatz wird von einem anderen referenziert und kann nicht gelöscht werden.";
+      default:
+        return null;
     }
   }
 }
