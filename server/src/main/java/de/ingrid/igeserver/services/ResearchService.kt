@@ -110,8 +110,14 @@ class ResearchService {
         val deletedFilter = "document_wrapper.deleted = 0 AND "
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
+        // encode opening curly brace as hibernate tries to match closing tags even in string literals
+        // which produces an error. Sample query: "{"
+        // https://hibernate.atlassian.net/browse/JPA-12
+        // https://hibernate.atlassian.net/browse/HHH-2744
+        val cTerm = query.term?.replace("{", "\$que$ || CHR(123) || \$que$")
+
         val termSearch =
-            if (query.term == null) "" else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%' OR document_wrapper.uuid ILIKE '${query.term}')"
+            if (cTerm.isNullOrEmpty()) "" else "(t.val ILIKE \$que$%${cTerm}%\$que$ OR title ILIKE \$que$%${cTerm}%\$que$ OR document_wrapper.uuid ILIKE \$que$${cTerm}\$que$)"
 
         val filter = convertQuery(query.clauses)
 
@@ -219,7 +225,11 @@ class ResearchService {
             .resultList as List<Array<out Any?>>
     }
 
-    private fun filterAndMapResult(result: List<Array<out Any?>>, isAdmin: Boolean, principal: Principal): List<Result> {
+    private fun filterAndMapResult(
+        result: List<Array<out Any?>>,
+        isAdmin: Boolean,
+        principal: Principal
+    ): List<Result> {
         principal as Authentication
         return result.filter { item ->
             isAdmin || aclService.getPermissionInfo(
