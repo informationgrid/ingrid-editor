@@ -69,7 +69,8 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
             SELECT DISTINCT d.uuid 
             FROM document d, document_wrapper dw 
             WHERE (
-                dw.published = d.id 
+                dw.published = d.id
+                AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
             """.trimIndent()
         )
