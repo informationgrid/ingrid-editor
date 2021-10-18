@@ -462,7 +462,10 @@ open class DocumentService @Autowired constructor(
                     toType = "base"
                     toAlias = elasticsearchAlias
                 }
-                indexManager!!.delete(info, id, true)
+
+                if (oldIndex != null && indexManager!!.indexExists(oldIndex)) {
+                    indexManager!!.delete(info, id, true)
+                }
             }
         } catch (ex: NoNodeAvailableException) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
