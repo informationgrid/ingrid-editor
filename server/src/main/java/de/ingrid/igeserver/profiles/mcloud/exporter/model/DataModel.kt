@@ -17,5 +17,6 @@ data class DataModel(
     val timeSpan: TimeSpanModel?,
     val periodicity: String?,
     val mfundFKZ: String?,
-    val mfundProject: String?
+    val mfundProject: String?,
+    val keywords: List<String>?
 )

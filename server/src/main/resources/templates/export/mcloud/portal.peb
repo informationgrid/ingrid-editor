@@ -13,7 +13,11 @@
         "accrual_periodicity": "{{ model.periodicity }}",
     {% endif %}
     "contact_point": null,
-    "keywords": null,
+    "keywords": [
+        {% if not model.data.keywords.isEmpty() %}
+            "{{ model.data.keywords | join('","') | raw }}"
+        {% endif %}
+    ],
     "creator": null,
     {% if model.data.origin %}
         "originator": [

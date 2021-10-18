@@ -82,6 +82,16 @@ export class McloudDoctype extends BaseDoctype {
               },
             },
           },
+          {
+            key: "keywords",
+            type: "repeatChip",
+            wrappers: ["panel"],
+            templateOptions: {
+              externalLabel: "Schlagworte",
+              required: false,
+              useDialog: false,
+            },
+          },
         ],
       },
       {
