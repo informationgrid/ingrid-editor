@@ -18,14 +18,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import javax.validation.Valid
-import javax.ws.rs.QueryParam
 
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
-    @RequestMapping(
+    @PostMapping(
         value = ["/users"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Create a new user. If the user already exists an error will be returned.")
     @ApiResponses(
@@ -47,10 +45,9 @@ interface UsersApi {
         @RequestParam(value = "newExternalUser", required = false) newExternalUser: Boolean = false
     ): ResponseEntity<Void>
 
-    @RequestMapping(
+    @DeleteMapping(
         value = ["/users/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.DELETE]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "The user with the given ID is deleted. If user with a given login does not exists an error will be returned.")
     @ApiResponses(
@@ -67,10 +64,9 @@ interface UsersApi {
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<Void>
 
-    @RequestMapping(
+    @GetMapping(
         value = ["/users/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Get the user with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
@@ -104,7 +100,7 @@ interface UsersApi {
         ) @RequestBody managerId: @Valid String
     )
 
-    @RequestMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation
     @ApiResponses(
         value = [ApiResponse(
@@ -117,10 +113,9 @@ interface UsersApi {
         @RequestParam(value = "fromUser", required = false) fromUser: String?
     ): ResponseEntity<List<User>>
 
-    @RequestMapping(
+    @GetMapping(
         value = ["/users/admins"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(
@@ -131,10 +126,9 @@ interface UsersApi {
     )
     fun listCatAdmins(principal: Principal): ResponseEntity<List<User>>
 
-    @RequestMapping(
+    @PutMapping(
         value = ["/users/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.PUT]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")
     @ApiResponses(
@@ -152,10 +146,9 @@ interface UsersApi {
         ) @RequestBody user: @Valid User
     ): ResponseEntity<Void>
 
-    @RequestMapping(
+    @PutMapping(
         value = ["/users/currentUser"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.PUT]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Updates the current user with the given values. If the user does not exist an error will be returned.")
     @ApiResponses(
@@ -172,10 +165,9 @@ interface UsersApi {
         ) @RequestBody user: User
     ): ResponseEntity<Void>
 
-    @RequestMapping(
+    @GetMapping(
         value = ["/info/currentUser"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(
@@ -186,10 +178,9 @@ interface UsersApi {
     )
     fun currentUserInfo(principal: Principal): ResponseEntity<UserInfo>
 
-    @RequestMapping(
+    @PostMapping(
         value = ["/info/setCatalogAdmin"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(
@@ -206,10 +197,9 @@ interface UsersApi {
         ) @RequestBody info: @Valid CatalogAdmin
     ): ResponseEntity<UserInfo?>
 
-    @RequestMapping(
+    @GetMapping(
         value = ["/info/assignedUsers/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
@@ -221,7 +211,7 @@ interface UsersApi {
         ) @PathVariable("id") id: String
     ): ResponseEntity<List<String>>
 
-    @RequestMapping(value = ["/user/catalog/{catalogId}"], method = [RequestMethod.POST])
+    @PostMapping(value = ["/user/catalog/{catalogId}"])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun switchCatalog(
@@ -232,7 +222,7 @@ interface UsersApi {
         ) @PathVariable("catalogId") catalogId: String
     ): ResponseEntity<Void>
 
-    @RequestMapping(value = ["/info/refreshSession"], method = [RequestMethod.GET])
+    @GetMapping(value = ["/info/refreshSession"])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun refreshSession(): ResponseEntity<Void>
@@ -251,10 +241,9 @@ interface UsersApi {
     )
     fun listExternal(principal: Principal): ResponseEntity<List<User>>
 
-    @RequestMapping(
+    @PostMapping(
         value = ["/externalUsers/requestPasswordChange/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(

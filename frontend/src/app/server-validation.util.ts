@@ -4,6 +4,7 @@ export interface IgeException {
   errorCode: string;
   errorId: string;
   errorText: string;
+  data: any;
 }
 
 const SERVER_ERRORS = {

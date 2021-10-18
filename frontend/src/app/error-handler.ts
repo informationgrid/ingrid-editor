@@ -2,6 +2,7 @@ import { ErrorHandler, Injectable } from "@angular/core";
 import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
+import { IgeException } from "./server-validation.util";
 
 export interface IgeValidationError {
   errorCode: string;
@@ -24,7 +25,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       if (error.error?.errorCode) {
         const e = new IgeError();
         e.setMessage(
-          GlobalErrorHandler.translateMessage(error.error.errorCode) ??
+          GlobalErrorHandler.translateMessage(error.error) ??
             error.error.errorText
         );
         this.modalService.showIgeError(e);
@@ -52,10 +53,12 @@ export class GlobalErrorHandler implements ErrorHandler {
     }
   }
 
-  private static translateMessage(errorCode: string) {
-    switch (errorCode) {
+  private static translateMessage(error: IgeException) {
+    switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
         return "Der Datensatz wird von einem anderen referenziert und kann nicht gelöscht werden.";
+      case "CATALOG_NOT_FOUND":
+        return `Dem Nutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       default:
         return null;
     }

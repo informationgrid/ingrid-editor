@@ -84,7 +84,12 @@ open class UsersApiController : UsersApi {
         } else {
             val password = keycloakService.createUser(principal, user)
             catalogService.createUser(catalogId, user)
-            if (!developmentMode) email.sendWelcomeEmailWithPassword(user.email, user.firstName, user.lastName, password)
+            if (!developmentMode) email.sendWelcomeEmailWithPassword(
+                user.email,
+                user.firstName,
+                user.lastName,
+                password
+            )
 
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
@@ -326,6 +331,8 @@ open class UsersApiController : UsersApi {
 
         val user = userRepo.findByUserId(userId)?.apply {
             curCatalog = catalogService.getCatalogById(catalogId)
+            // if not assigned yet, then do it now
+            if (!catalogs.contains(curCatalog)) catalogs.add(curCatalog!!)
         } ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         userRepo.save(user)
