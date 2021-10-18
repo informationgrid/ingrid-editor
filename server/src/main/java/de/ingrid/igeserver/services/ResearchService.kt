@@ -71,7 +71,7 @@ class ResearchService {
         val result = sendQuery(sql, parameters)
         val map = mapResult(result, isAdmin, principal)
 
-        return ResearchResponse(result.size, map)
+        return ResearchResponse(map.size, map)
     }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
@@ -232,7 +232,7 @@ class ResearchService {
                 hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canWrite,
                 hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(principal as Authentication, item[2] as String).canOnlyWriteSubtree,
             )
-        }
+        }.filter { item -> isAdmin || item.uuid?.let { aclService.getPermissionInfo(principal as Authentication, it).canRead } ?: false}
     }
 
     fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
@@ -241,8 +241,9 @@ class ResearchService {
         try {
             val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
             val result = sendQuery(catalogQuery, emptyList())
+            val map = mapResult(result, isAdmin, principal)
 
-            return ResearchResponse(result.size, mapResult(result, isAdmin, principal))
+            return ResearchResponse(map.size, map)
         } catch (error: Exception) {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
