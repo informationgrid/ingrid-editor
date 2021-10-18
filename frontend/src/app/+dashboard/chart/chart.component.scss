@@ -1,5 +1,10 @@
 @import "../../../variables";
 
+:host {
+  max-width: 900px;
+  flex-grow: 1;
+}
+
 .circular-chart {
   display: block;
   margin: 20px auto 0;
@@ -81,11 +86,13 @@
 }
 
 .wrapper {
-  flex: 1 1 0% !important;
+  flex: 1 1 0 !important;
   padding: 0 15%;
 
   &.inline {
-    margin-top: -139px;
-    padding-bottom: 100px;
+    @media (min-width: 1400px) {
+      margin-top: -139px;
+      padding-bottom: 100px;
+    }
   }
 }

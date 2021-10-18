@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { Observable } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, tap } from "rxjs/operators";
@@ -15,6 +15,8 @@ import { map, tap } from "rxjs/operators";
 export class ChartComponent implements OnInit {
   @Input() data: Observable<number[]>;
   @Input() showPercentages: boolean;
+
+  @ViewChild("ige-chart", { read: ElementRef }) igeChart: ElementRef;
 
   dataMap: Observable<any>;
 

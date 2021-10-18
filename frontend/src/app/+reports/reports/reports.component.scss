@@ -1,7 +1,21 @@
 @import "src/variables.scss";
 
+:host {
+  height: 100%;
+}
+
 .main-content ::ng-deep .circle-3 {
   stroke: $ige-background !important;
+}
+
+.chart-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  ::ng-deep.wrapper {
+    //padding: 0 8px;
+  }
 }
 
 .doc-item {

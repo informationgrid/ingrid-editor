@@ -43,9 +43,7 @@
         fxFlex
         fxLayout="row"
         [class.inline]="showPercentages && total > 0"
-        [fxLayoutAlign]="
-            showPercentages && total > 0 ? 'space-around' : 'space-between'
-        "
+        fxLayoutAlign="space-between"
     >
         <div class="box working">
             <div class="count">{{ dataSeq.first }}</div>

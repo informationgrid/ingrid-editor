@@ -103,6 +103,15 @@ export class ReportsComponent implements OnInit {
       case "TestDoc":
         return "Geodatendienst";
       case "AddressDoc":
+        // TODO Temporary: Remove when AddressDocs are more distinguishable.
+        if (
+          this.facetModel?.addrType?.selectOrganisations &&
+          this.facetModel?.addrType?.selectPersons
+        )
+          return "Freie-Adresse";
+        if (this.facetModel?.addrType?.selectOrganisations)
+          return "Institution";
+        if (this.facetModel?.addrType?.selectPersons) return "Freie-Adresse";
         return "Freie-Adresse";
       default:
         return "";
@@ -115,6 +124,15 @@ export class ReportsComponent implements OnInit {
       case "TestDoc":
         return type.slice(0, -3);
       case "AddressDoc":
+        // TODO Temporary: Remove when AddressDocs are more distinguishable.
+        if (
+          this.facetModel?.addrType?.selectOrganisations &&
+          this.facetModel?.addrType?.selectPersons
+        )
+          return "Adresse";
+        if (this.facetModel?.addrType?.selectOrganisations)
+          return "Organisation";
+        if (this.facetModel?.addrType?.selectPersons) return "Person";
         return "Adresse";
       default:
         return type;

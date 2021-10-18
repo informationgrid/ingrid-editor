@@ -9,11 +9,11 @@
                     (valueChange)="updateSearchClass($event)"
                 >
                     <mat-button-toggle value="selectDocuments"
-                        >Daten</mat-button-toggle
-                    >
+                        >Daten
+                    </mat-button-toggle>
                     <mat-button-toggle value="selectAddresses"
-                        >Adressen</mat-button-toggle
-                    >
+                        >Adressen
+                    </mat-button-toggle>
                 </mat-button-toggle-group>
                 <ige-facets
                     [model]="facetModel"
@@ -25,10 +25,12 @@
                 ></ige-facets>
             </div>
             <div main-content fxLayout="column" fxLayoutGap="36px">
-                <ige-chart
-                    [data]="chartDataPublished"
-                    showPercentages="true"
-                ></ige-chart>
+                <div class="chart-container">
+                    <ige-chart
+                        [data]="chartDataPublished"
+                        showPercentages="true"
+                    ></ige-chart>
+                </div>
                 <ige-card-box fxFlex label="Datensätze">
                     <table
                         mat-table
