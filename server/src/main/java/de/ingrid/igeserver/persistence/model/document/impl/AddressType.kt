@@ -40,6 +40,7 @@ class AddressType : EntityType() {
             SELECT DISTINCT d.uuid, title 
             FROM document d, document_wrapper dw 
             WHERE (
+                dw.deleted = 0 AND
                 (dw.draft = d.id OR dw.published = d.id) 
                 AND data->'addresses' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
