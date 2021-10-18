@@ -170,6 +170,7 @@ open class DocumentService @Autowired constructor(
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
 
+        (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
 
         // run pre-create pipe(s)
