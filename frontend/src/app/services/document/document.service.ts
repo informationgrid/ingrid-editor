@@ -261,7 +261,12 @@ export class DocumentService {
       tap((json) =>
         this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
       ),
-      tap(() => this.reload$.next(id))
+      tap(() => this.reload$.next(id)),
+      tap(() =>
+        this.messageService.sendInfo(
+          "Die Veröffentlichung wurde zurückgezogen."
+        )
+      )
     );
   }
 
