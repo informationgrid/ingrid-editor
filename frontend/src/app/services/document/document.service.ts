@@ -157,8 +157,19 @@ export class DocumentService {
     path?: string[],
     noVisualUpdates = false
   ): Observable<IgeDocument> {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    this.preSaveActions(data, isAddress);
 
+    return this.dataService.save(data, isAddress).pipe(
+      filter(() => !noVisualUpdates),
+      tap((json) =>
+        this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")
+      ),
+      tap((json) => this.postSaveActions(json, isNewDoc, path, isAddress)),
+      finalize(() => this.documentOperationFinished$.next(true))
+    );
+  }
+
+  private preSaveActions(data: IgeDocument, isAddress: boolean) {
     if (isAddress && data._type !== "FOLDER") {
       // recreate address title, as it can not be changed manually for addresses
       data.title = this.createAddressTitle(data);
@@ -166,58 +177,53 @@ export class DocumentService {
 
     this.beforeSave$.next();
     this.documentOperationFinished$.next(false);
+  }
 
-    return this.dataService.save(data, isAddress).pipe(
-      tap((json) => {
-        if (noVisualUpdates) {
-          return;
-        }
+  postSaveActions(
+    json: any,
+    isNewDoc: boolean,
+    path: string[],
+    isAddress: boolean
+  ) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-        this.messageService.sendInfo("Ihre Eingabe wurde gespeichert");
+    this.afterSave$.next(json);
 
-        this.afterSave$.next(json);
+    const parentId = json._parent;
+    const info = this.mapToDocumentAbstracts([json], parentId)[0];
 
-        const parentId = json._parent;
-        const info = this.mapToDocumentAbstracts([json], parentId)[0];
+    // after renaming a folder the folder must still be expandable
+    if (!isNewDoc) {
+      const entity = store.getValue().entities[info.id];
+      if (entity) {
+        info._hasChildren = entity._hasChildren;
+      }
+    }
 
-        // after renaming a folder the folder must still be expandable
-        if (!isNewDoc) {
-          const entity = store.getValue().entities[info.id];
-          if (entity) {
-            info._hasChildren = entity._hasChildren;
-          }
-        }
+    this.updateOpenedDocumentInTreestore(info, isAddress);
 
-        this.updateOpenedDocumentInTreestore(info, isAddress);
+    // update state by adding node and updating parent info
+    store.upsert(info.id, info);
+    if (isNewDoc && parentId) {
+      store.update(parentId, {
+        _hasChildren: true,
+      });
+    }
 
-        // update state by adding node and updating parent info
-        store.upsert(info.id, info);
-        if (isNewDoc && parentId) {
-          store.update(parentId, {
-            _hasChildren: true,
-          });
-        }
-
-        this.datasetsChanged$.next({
-          type: isNewDoc ? UpdateType.New : UpdateType.Update,
-          data: [info],
-          parent: parentId,
-          path: path,
-        });
-
-        return json;
-      }),
-      finalize(() => this.documentOperationFinished$.next(true))
-    );
+    this.datasetsChanged$.next({
+      type: isNewDoc ? UpdateType.New : UpdateType.Update,
+      data: [info],
+      parent: parentId,
+      path: path,
+    });
   }
 
   // FIXME: this should be added with a plugin
   publish(data: IgeDocument, isAddress: boolean): Observable<void> {
-    console.log("PUBLISHING");
     const errors: any = { errors: [] };
 
-    this.beforeSave$.next();
-    this.documentOperationFinished$.next(false);
+    this.preSaveActions(data, isAddress);
+
     this.beforePublish$.next(errors);
     console.log("After validation:", data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
@@ -234,42 +240,9 @@ export class DocumentService {
       tap(() =>
         this.messageService.sendInfo("Das Dokument wurde veröffentlicht.")
       ),
-      tap((json) => this.handleAfterPublish(json, isAddress)),
+      tap((json) => this.postSaveActions(json, false, null, isAddress)),
       finalize(() => this.documentOperationFinished$.next(true))
     );
-  }
-
-  private handlePublishError(error, data: IgeDocument, isAddress: boolean) {
-    if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-      console.error(error?.error?.errorText);
-      this.messageService.sendError(
-        "Der Datensatz wurde erfolgreich in der Datenbank veröffentlicht, jedoch trat ein Problem danach auf: " +
-          error?.error?.errorText
-      );
-      this.load(data._id).subscribe((json) =>
-        this.handleAfterPublish(json, isAddress)
-      );
-    } else {
-      this.messageService.sendError(
-        "Der Datensatz wurde nicht erfolgreich veröffentlicht: " +
-          error?.error?.errorText
-      );
-    }
-    return of(null);
-  }
-
-  handleAfterPublish(json: any, isAddress: boolean) {
-    const info = this.mapToDocumentAbstracts([json], json._parent)[0];
-
-    this.afterSave$.next(json);
-
-    this.updateOpenedDocumentInTreestore(info, isAddress);
-
-    this.datasetsChanged$.next({
-      type: UpdateType.Update,
-      data: [info],
-    });
-    this.treeStore.upsert(info.id, info);
   }
 
   unpublish(id: string): Observable<any> {
