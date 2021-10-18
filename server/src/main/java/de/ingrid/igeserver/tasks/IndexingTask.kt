@@ -3,6 +3,7 @@ package de.ingrid.igeserver.tasks
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
+import kotlin.NoSuchElementException
 import kotlin.concurrent.schedule
 
 
@@ -211,11 +213,16 @@ class IndexingTask @Autowired constructor(
         }
 
         val exporter = indexService.getExporter(DocumentCategory.DATA, format)
-        val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
-        val export = exporter.run(doc)
 
-        log.debug("Exported document: $export")
-        indexManager.update(indexInfo, convertToElasticDocument(export), false)
+        try {
+            val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
+            val export = exporter.run(doc)
+
+            log.debug("Exported document: $export")
+            indexManager.update(indexInfo, convertToElasticDocument(export), false)
+        } catch (ex: NoSuchElementException) {
+            throw NotFoundException.withMissingPublishedVersion(docId, ex)
+        }
     }
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
