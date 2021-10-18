@@ -1,12 +1,15 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
+import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.utils.SpringContext
+import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -72,8 +75,11 @@ data class MCloudModel(
     }
     fun getLicenseData(): Any? {
         if(data.license != null) {
+            var jsonString = "{\"id\":\""+data.license+"\",\"name\":\""+data.license+"\"}";
             val entryID = codeListService?.getCodeListEntryId("6500", data.license, "de")
-            val jsonString = codeListService?.getCodeListEntry("6500", entryID)?.data
+            if(entryID != null) {
+                jsonString = codeListService?.getCodeListEntry("6500", entryID)?.data.toString();
+            }
             return if (jsonString.isNullOrEmpty()) null else JSONParser().parse(jsonString)
         }
         return null

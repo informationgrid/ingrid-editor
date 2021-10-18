@@ -57,8 +57,10 @@
         ],
         "license": {
             "id": "{{ model.getLicenseData().id }}",
-            "title": "{{ model.getLicenseData().name }}",
-            "url": "{{ model.getLicenseData().url }}"
+            "title": "{{ model.getLicenseData().name }}"
+            {% if model.getLicenseData().url %}
+                ,"url": "{{ model.getLicenseData().url }}"
+            {% endif %}
         },
         "harvested_data": null,
         "subsection": null,
@@ -84,14 +86,17 @@
         {% endif %}
         ,
         "spatial_text": "{{ model.spatialTitels | join(',') }}",
-        "temporal": [{
-         {% if model.data.timeSpan.start %}
-            "gte": "{{model.data.timeSpan.start}}"{% if model.data.timeSpan.end %},{% endif %}
-         {% endif %}
-         {% if model.data.timeSpan.end %}
-            "lte": "{{model.data.timeSpan.end}}"
-         {% endif %}
-        }],
+        "temporal": [
+         {% if model.data.timeSpan.start or model.data.timeSpan.end %}
+        {
+            {% if model.data.timeSpan.start %}
+                "gte": "{{model.data.timeSpan.start}}"{% if model.data.timeSpan.end %},{% endif %}
+            {% endif %}
+            {% if model.data.timeSpan.end %}
+                "lte": "{{model.data.timeSpan.end}}"
+            {% endif %}
+            }
+         {% endif %}],
         "groups": null,
         "display_contact": [{
             "name": "{{ model.getPublisher().organization }}",
