@@ -241,10 +241,24 @@ open class DocumentService @Autowired constructor(
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
             "title",
-            "hasWritePermission"
+            "hasWritePermission",
+            "hasOnlySubtreeWritePermission"
         )
             .forEach { copy.remove(it) }
         return copy
+    }
+
+    // TODO: refactor since removeInternalFields does almost the same, find out difference and why
+    fun removeInternalFieldsForImport(json: ObjectNode) {
+        listOf(
+            FIELD_VERSION,
+            FIELD_CREATED,
+            FIELD_MODIFIED,
+            FIELD_STATE,
+            FIELD_HAS_CHILDREN,
+            "hasWritePermission",
+            "hasOnlySubtreeWritePermission"
+        ).forEach { json.remove(it) }
     }
 
     fun updateDocument(catalogId: String, id: String, data: Document, publish: Boolean = false): Document {

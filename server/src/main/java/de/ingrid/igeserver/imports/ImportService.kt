@@ -65,7 +65,7 @@ open class ImportService {
         }
 
         val docObj = documentService.convertToDocument(document)
-        extractAndSaveReferences(catalogId, docObj)
+        extractAndSaveReferences(catalogId, docObj, options)
 
         val createDocument = if (wrapper == null || options.options == "create_under_target") {
             val doc = documentService.createDocument(catalogId, document, options.parentDocument, false, false)
@@ -93,7 +93,7 @@ open class ImportService {
         }
     }
 
-    private fun extractAndSaveReferences(catalogId: String, doc: Document) {
+    private fun extractAndSaveReferences(catalogId: String, doc: Document, options: ImportOptions) {
 
         val refType = documentService.getDocumentType(doc.type!!)
 
@@ -104,18 +104,14 @@ open class ImportService {
         // TODO: prevent conversion to Document and JsonNode
         references
             .filter { !documentAlreadyExists(it) }
-            .map { documentService.convertToJsonNode(it) }
+            .map {
+                // create address under given folder
+                it.data.put(FIELD_PARENT, options.parentAddress)
+                val json = documentService.convertToJsonNode(it)
+                documentService.removeInternalFieldsForImport(json as ObjectNode)
+                json
+            }
             .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = null) }
-
-        // save imported document
-
-        /*// TODO: option for new UUID or overwrite
-        if (documentAlreadyExists(doc)) {
-            (doc as ObjectNode).remove(FIELD_ID)
-        }
-
-        // TODO: use option if we want to publish it
-        documentService.createDocument(doc, publish = false)*/
 
     }
 

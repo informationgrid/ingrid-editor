@@ -29,20 +29,8 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
     override fun run(doc: Document): Any {
         // TODO: profile must be added to the exported format!
         val json = documentService.convertToJsonNode(doc)
-        removeInternalFields(json as ObjectNode)
+        documentService.removeInternalFieldsForImport(json as ObjectNode)
         return addExportWrapper(json)
-    }
-
-    private fun removeInternalFields(json: ObjectNode) {
-        listOf(
-            FIELD_VERSION,
-            FIELD_CREATED,
-            FIELD_MODIFIED,
-            FIELD_STATE,
-            FIELD_HAS_CHILDREN,
-            "hasWritePermission",
-            "hasOnlySubtreeWritePermission"
-        ).forEach { json.remove(it) }
     }
 
     private fun addExportWrapper(json: JsonNode): ObjectNode {

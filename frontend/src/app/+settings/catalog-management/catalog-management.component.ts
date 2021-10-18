@@ -21,6 +21,8 @@ import { combineLatest } from "rxjs";
   styleUrls: ["./catalog-management.component.scss"],
 })
 export class CatalogManagementComponent implements OnInit {
+  // TODO: there is a race condition .... catalogs are often not loaded in time before
+  //       calling mapProfileTitleToCatalog
   private catalogs = combineLatest([
     this.catalogQuery.selectAll(),
     this.catalogService

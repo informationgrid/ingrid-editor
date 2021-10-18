@@ -8,15 +8,11 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 
-interface DialogContent {
-  message: string;
-}
-
 @Injectable({
   providedIn: "root",
 })
 export class ModalService {
-  private dialogRef: MatDialogRef<ErrorDialogComponent, any>;
+  private dialogRef: MatDialogRef<ErrorDialogComponent>;
   errors: IgeError[] = [];
   isExclusive = false;
 
@@ -58,6 +54,7 @@ export class ModalService {
     this.ngZone.run(() => {
       this.dialogRef = this.dialog.open(ErrorDialogComponent, {
         maxWidth: 700,
+        hasBackdrop: true,
         data: this.errors,
       });
       this.dialogRef.afterClosed().subscribe(() => {
@@ -93,18 +90,10 @@ export class ModalService {
       errorObj.stacktrace = message._body;
     }
 
-    /*const dialogRef = this.dialog.open(ErrorDialogComponent, {
-      width: '250px',
-      data: errorObj
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });*/
-
     this.ngZone.run(() => {
       this.dialogRef = this.dialog.open(ErrorDialogComponent, {
         maxWidth: 700,
+        hasBackdrop: true,
         data: errorObj,
       });
       this.dialogRef.afterClosed().subscribe(() => {
