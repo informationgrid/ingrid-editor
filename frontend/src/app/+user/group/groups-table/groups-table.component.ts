@@ -97,7 +97,12 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
   getRoleIcon(group: FrontendGroup): "group" | "group-standin" {
     // TODO possibly also mark created groups as own groups
+    /*
     if (this.userGroupNames?.includes(group.name)) return "group";
     return "group-standin";
+    */
+
+    //only use standard icon for now
+    return "group";
   }
 }
