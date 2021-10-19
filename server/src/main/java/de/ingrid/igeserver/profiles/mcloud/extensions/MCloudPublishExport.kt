@@ -7,6 +7,7 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
@@ -82,7 +83,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     private fun indexMCloudDoc(context: Context, docId: String) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, "portal", docId)
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA,"portal", docId)
 
     }
 }

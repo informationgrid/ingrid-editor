@@ -76,7 +76,6 @@ class IndexingTask @Autowired constructor(
     fun startIndexing(catalogId: String, format: String) {
         log.debug("Starting Indexing - Task for $catalogId")
 
-        val catalog = catalogRepo.findByIdentifier(catalogId)
         val message = IndexMessage()
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
@@ -98,7 +97,7 @@ class IndexingTask @Autowired constructor(
 
             // pre phase
             val info = try {
-                indexPrePhase(categoryAlias, catalog.type, format)
+                indexPrePhase(categoryAlias, catalogId, format)
             } catch (ex: Exception) {
                 val errorMessage = "Error during Index Pre-Phase: ${ex.message}"
                 log.error(errorMessage, ex)
@@ -149,9 +148,13 @@ class IndexingTask @Autowired constructor(
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
             // post phase
-            indexPostPhase(categoryAlias, info.first, info.second)
+            indexPostPhase(elasticsearchAlias, info.first, info.second)
 
         }
+
+        // make sure to write everything to elasticsearch
+        // if another indexing starts right afterwards, then the previous index could still be there
+        indexManager.flush()
 
         log.debug("Indexing finished")
         notify.sendMessage(message.apply {
@@ -160,6 +163,15 @@ class IndexingTask @Autowired constructor(
         })
 
         // save last indexing information to database for this catalog to get this in frontend
+        updateIndexLog(catalogId, message)
+
+    }
+
+    private fun updateIndexLog(
+        catalogId: String,
+        message: IndexMessage
+    ) {
+        val catalog = catalogRepo.findByIdentifier(catalogId)
         if (catalog.settings == null) {
             catalog.settings = CatalogSettings(lastLogSummary = message)
         } else {
@@ -197,31 +209,37 @@ class IndexingTask @Autowired constructor(
      * Indexing of a single document into an Elasticsearch index.
      */
     // TODO: implement
-    fun updateDocument(catalogId: String, format: String, docId: String) {
+    fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
+
+        val exporter = indexService.getExporter(category, format)
+
+        try {
+            val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
+
+            val export = exporter.run(doc)
+
+            log.debug("Exported document: $export")
+            val indexInfo = getOrPrepareIndex(catalogId, category, format)
+            indexManager.update(indexInfo, convertToElasticDocument(export), false)
+        } catch (ex: NoSuchElementException) {
+            throw NotFoundException.withMissingPublishedVersion(docId, ex)
+        }
+    }
+
+    private fun getOrPrepareIndex(catalogId: String, category: DocumentCategory, format: String): IndexInfo {
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
         if (oldIndex == null) {
-            val catalog = catalogRepo.findByIdentifier(catalogId)
-            val (_, newIndex) = indexPrePhase(elasticsearchAlias, catalog.type, format)
+            val categoryAlias = "${elasticsearchAlias}_${category.value}"
+            val (_, newIndex) = indexPrePhase(categoryAlias, catalogId, format)
             oldIndex = newIndex
             indexManager.addToAlias(elasticsearchAlias, newIndex)
         }
-        val indexInfo = IndexInfo().apply {
+
+        return IndexInfo().apply {
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
             docIdField = "uuid"
-        }
-
-        val exporter = indexService.getExporter(DocumentCategory.DATA, format)
-
-        try {
-            val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
-            val export = exporter.run(doc)
-
-            log.debug("Exported document: $export")
-            indexManager.update(indexInfo, convertToElasticDocument(export), false)
-        } catch (ex: NoSuchElementException) {
-            throw NotFoundException.withMissingPublishedVersion(docId, ex)
         }
     }
 
@@ -234,8 +252,9 @@ class IndexingTask @Autowired constructor(
     }
 
 
-    private fun indexPrePhase(alias: String, catalogType: String, format: String): Pair<String, String> {
-        val catalogProfile = catalogService.getCatalogProfile(catalogType)
+    private fun indexPrePhase(alias: String, catalogId: String, format: String): Pair<String, String> {
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
         val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, "ige-ng-test")
