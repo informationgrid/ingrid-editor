@@ -28,7 +28,5 @@ export class IndexingPage {
   static indexAndWait(timeout = 30000) {
     cy.get('.start-index').click();
     cy.get('.cancel-index').should('not.exist');
-    // cy.get('.main-header button').contains('Indizieren');
-    // cy.get("div.status:contains('Endzeit')", { timeout: timeout }).should('exist');
   }
 }

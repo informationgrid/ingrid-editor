@@ -3,7 +3,6 @@ import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import { BasePage } from '../../pages/base.page';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
@@ -130,7 +129,6 @@ describe('General create addresses/folders', () => {
 
     it('should create an organization', () => {
       AddressPage.createAddress(new Address('', '', 'NewOrg'));
-      cy.reload();
       cy.get(DocumentPage.title).should('have.text', 'NewOrg');
       // check Organisation input
       cy.get('.organization input').should('have.value', 'NewOrg');
