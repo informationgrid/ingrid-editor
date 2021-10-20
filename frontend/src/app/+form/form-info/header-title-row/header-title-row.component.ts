@@ -22,12 +22,14 @@ import { DocumentUtils } from "../../../services/document.utils";
 export class HeaderTitleRowComponent implements OnInit {
   @Input() set form(value: FormGroup) {
     this._form = value;
-    this.icon = this.getIcon(value);
   }
+
   @Input() set model(value: IgeDocument) {
     this._model = value;
     this.stateClass = this.getStateClass(value);
+    this.icon = this.getIcon(value);
   }
+
   @Input() sections: string[];
   @Input() disableEdit: boolean;
 
@@ -59,8 +61,8 @@ export class HeaderTitleRowComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  private getIcon(form: FormGroup) {
-    return this.profileService.getDocumentIcon(form.value);
+  private getIcon(doc: IgeDocument) {
+    return this.profileService.getDocumentIcon(doc);
   }
 
   private getStateClass(model) {
