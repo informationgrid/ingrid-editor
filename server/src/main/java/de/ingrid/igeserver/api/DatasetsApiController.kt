@@ -205,6 +205,9 @@ class DatasetsApiController @Autowired constructor(
         // TODO Evaluate if "republish" wanted and necessary here?
         documentService.updateDocument(catalogId, id, doc, publish = published)
 
+        // update ACL parent
+        documentService.aclService.updateParent(id, options.destId)
+
         // get new parent path
         val newPath = if (options.destId == null) emptyList() else {
             getPathFromWrapper(catalogId, options.destId) + options.destId

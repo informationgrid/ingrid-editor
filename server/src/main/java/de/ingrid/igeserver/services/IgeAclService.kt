@@ -133,6 +133,20 @@ class IgeAclService @Autowired constructor(
         }
     }
 
+    fun updateParent(uuid: String, parentUuid: String?) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+        val acl = aclService.readAclById(objIdentity) as MutableAcl
+
+        if (parentUuid == null) {
+            acl.setParent(null)
+        } else {
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
+            val parentAcl = aclService.readAclById(parentObjIdentity)
+            acl.setParent(parentAcl)
+        }
+        (aclService as JdbcMutableAclService).updateAcl(acl)
+    }
+
     fun removeAclForDocument(uuid: String) {
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
