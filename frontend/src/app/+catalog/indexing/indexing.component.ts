@@ -79,7 +79,7 @@ export class IndexingComponent implements OnInit {
       return {
         valid: true,
         message:
-          "Ein gültige Cron Ausdruck sieht folgendermaßen aus: 0 */10 * * * *",
+          "Ein gültiger Cron Ausdruck sieht folgendermaßen aus: 0 */10 * * * *",
       };
     }
 
