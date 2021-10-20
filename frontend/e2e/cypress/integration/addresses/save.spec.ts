@@ -224,5 +224,33 @@ describe('General create addresses/folders', () => {
       cy.get('[data-cy="toolbar_DELETE"]').should('be.enabled').click();
       cy.contains('mat-dialog-container', 'Möchten Sie wirklich diese Datensätze löschen:');
     });
+
+    it('should actualize tree after deleting (#3048)', () => {
+      // create folder
+      const folderName = 'folder_to_be_later_deleted';
+      AddressPage.visit();
+      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
+      AddressPage.createFolder(folderName);
+      cy.get(DocumentPage.title).should('have.text', folderName);
+
+      // delete the folder
+      AddressPage.deleteLoadedNode();
+
+      // check if folder has been deleted and is not visible anymore
+      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
+      cy.contains('mat-tree-node', folderName).should('not.exist');
+
+      // create an address
+      AddressPage.CreateDialog.open();
+      AddressPage.CreateDialog.fill(new Address('Adresse', 'Burgund', 'Organisation_1'));
+      cy.get('[data-cy=create-action]').click();
+
+      // delete the address
+      AddressPage.deleteLoadedNode();
+
+      // check if address has been deleted and is not visible anymore
+      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
+      cy.contains('mat-tree-node', folderName).should('not.exist');
+    });
   });
 });

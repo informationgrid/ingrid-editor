@@ -170,7 +170,14 @@ describe('Research Page', () => {
   it('should delete SQL-query and subsequently return 0 results', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
+    // make sure query field is not empty
+    cy.get('[data-cy="sql-query-field"]').should('not.have.value', '');
+    // make sure a non-zero number of results is returned
+    cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
+    // click the button to remove query
     cy.get('button').contains('Entfernen').click();
+    // make sure query has been removed from query field
+    cy.get('[data-cy="sql-query-field"]').should('have.value', '');
     ResearchPage.getSearchResultCountZeroIncluded().should('be.equal', 0);
   });
 

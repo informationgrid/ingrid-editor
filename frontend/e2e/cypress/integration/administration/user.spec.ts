@@ -335,10 +335,11 @@ describe('User', () => {
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
   });
 
-  it('should not be able to add the same group twice to a user', () => {
+  it('should not be able to add the same group twice to a user (#3047)', () => {
     const username = 'autor test';
     const groupName = 'test_gruppe_1';
 
+    // I. make sure that same group cannot be added twice consecutively
     AdminUserPage.selectUser(username);
 
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
@@ -352,6 +353,15 @@ describe('User', () => {
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
+
+    // II. make sure that a group can not be added when the same group is already assigned to user
+    // (force-option is necessary because on the previous user profile a menu is still expanded)
+    cy.get('user-table').contains('Test Verantwortlicher2').click({ force: true });
+    AdminUserPage.discardChanges();
+    cy.get('[data-cy=Gruppen]').should('contain', 'gruppe_mit_ortsrechten');
+    // check if 'gruppe_mit_ortsrechten' is not selectable
+    cy.get('[data-cy=Gruppen] mat-select').click();
+    cy.get('.mat-option-disabled').should('contain', 'gruppe_mit_ortsrechten');
   });
 
   it('should enable save button, when a user`s entries have changed (#2569)', () => {
