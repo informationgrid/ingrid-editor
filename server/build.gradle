@@ -74,7 +74,7 @@ dependencies {
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     kapt("org.springframework.boot:spring-boot-configuration-processor")
-    
+
     // Jackson
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-52:2.11.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.10.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-codelist-service:5.10.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
