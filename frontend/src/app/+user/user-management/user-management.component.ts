@@ -6,6 +6,7 @@ import {
 } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
+import { SessionService } from "../../services/session.service";
 import { MatTabGroup } from "@angular/material/tabs";
 
 @Component({
@@ -15,18 +16,17 @@ import { MatTabGroup } from "@angular/material/tabs";
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserManagementComponent implements AfterViewInit {
-  currentTab = 0;
-
   @ViewChild("user") user: UserComponent;
   @ViewChild("group") group: GroupComponent;
   @ViewChild(MatTabGroup) tabs: MatTabGroup;
 
-  constructor() {}
+  selectedIndex = this.sessionService.observeTabChange("user");
+
+  constructor(private sessionService: SessionService) {}
 
   @HostListener("window:beforeunload", ["$event"])
   unloadHandler(event: Event) {
-    const component = this.currentTab === 0 ? this.user : this.group;
-    if (component.form?.dirty) return false;
+    return !(this.user?.form?.dirty || this.group?.form?.dirty);
   }
 
   ngAfterViewInit(): void {
@@ -37,12 +37,16 @@ export class UserManagementComponent implements AfterViewInit {
     const handleTabClick = this.tabs._handleClick;
 
     this.tabs._handleClick = (tab, header, index) => {
-      if (index !== this.currentTab) {
-        const component = this.currentTab === 0 ? this.user : this.group;
+      if (index !== this.tabs.selectedIndex) {
+        const component = this.user ?? this.group;
         component.dirtyFormHandled().subscribe((allClear) => {
           if (allClear) handleTabClick.apply(this.tabs, [tab, header, index]);
         });
       }
     };
+  }
+
+  handleTabChange(tabIndex: number) {
+    this.sessionService.updateCurrentTab("user", tabIndex);
   }
 }

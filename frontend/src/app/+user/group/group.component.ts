@@ -39,6 +39,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   form: FormGroup;
 
+  // TODO: what is the use of this form control?
   selectedGroupForm = new FormControl();
   selectedGroup: FrontendGroup;
   isLoading = false;
@@ -63,7 +64,21 @@ export class GroupComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.fetchGroups().pipe(untilDestroyed(this)).subscribe();
+    this.fetchGroups()
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        // select group after groups are fetched, otherwise table has no data
+        // to select from
+        this.groupService.selectedGroup$.subscribe((group) => {
+          const previousId = this.selectedGroup?.id;
+          this.selectedGroup = group;
+          if (group && previousId !== group.id) {
+            this.form.reset(group);
+            this.form.markAsPristine();
+          }
+        });
+      });
+
     this.userInfo$
       .pipe(untilDestroyed(this))
       .subscribe((info) => (this.userGroupNames = info.groups));
@@ -75,17 +90,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
       permissions: [],
     });
 
-    if (this.groupService.selectedGroup$.value)
+    if (this.groupService.selectedGroup$.value) {
       this.loadGroup(this.groupService.selectedGroup$.value.id);
-
-    this.groupService.selectedGroup$.subscribe((group) => {
-      const previousId = this.selectedGroup?.id;
-      this.selectedGroup = group;
-      if (group && previousId !== group.id) {
-        this.form.reset(group);
-        this.form.markAsPristine();
-      }
-    });
+    }
   }
 
   fetchGroups(): Observable<Group[]> {

@@ -2,17 +2,17 @@
     dynamicHeight
     class="page-tabs"
     [animationDuration]="'0ms'"
-    (selectedIndexChange)="currentTab = $event"
-    [selectedIndex]="currentTab"
+    (selectedIndexChange)="handleTabChange($event)"
+    [selectedIndex]="selectedIndex | async"
 >
-    <mat-tab label="Nutzer">
+    <mat-tab label="Nutzer" aria-label="users">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
             <ige-user-manager #user></ige-user-manager>
         </ng-template>
     </mat-tab>
 
-    <mat-tab label="Gruppen & Rechte">
+    <mat-tab label="Gruppen & Rechte" aria-label="groups-and-permissions">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
             <ige-group-manager #group></ige-group-manager>

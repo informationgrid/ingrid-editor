@@ -114,39 +114,41 @@ export class UserComponent
   ngOnInit() {
     this.currentTab = "users";
 
-    this.fetchUsers();
+    this.fetchUsers().subscribe(() => {
+      // select group after groups are fetched, otherwise table has no data
+      // to select from
+      this.userService.selectedUser$
+        .pipe(
+          filter((user) => !!user),
+          tap((user) => {
+            this.selectedUser = user;
+            this.selectedUserRole = user.role;
+          }),
+          untilDestroyed(this)
+        )
+        .subscribe();
+    });
+
+    // load previously selected user
     if (this.userService.selectedUser$.value) {
       this.loadUser(this.userService.selectedUser$.value.login);
     }
-    this.userService.selectedUser$
-      .pipe(
-        filter((user) => !!user),
-        tap((user) => {
-          this.selectedUser = user;
-          this.selectedUserRole = user.role;
-        }),
-        untilDestroyed(this)
-      )
-      .subscribe();
   }
 
-  fetchUsers() {
-    // const currentValue = this.selectedUserForm.value;
-    this.userService
-      .getUsers()
-      .pipe(
-        map((users: FrontendUser[]) =>
-          users
-            .filter(
-              // remove current user from list
-              (u) => u.login !== this.configService.$userInfo.getValue().userId
-            )
-            .sort((a, b) => a.login.localeCompare(b.login))
-        ),
-        tap((users) => (this.users = users ? users : [])),
-        untilDestroyed(this)
-      )
-      .subscribe();
+  // TODO: the belongs in the service
+  fetchUsers(): Observable<FrontendUser[]> {
+    return this.userService.getUsers().pipe(
+      map((users: FrontendUser[]) =>
+        users
+          .filter(
+            // remove current user from list
+            (u) => u.login !== this.configService.$userInfo.getValue().userId
+          )
+          .sort((a, b) => a.login.localeCompare(b.login))
+      ),
+      tap((users) => (this.users = users ? users : [])),
+      untilDestroyed(this)
+    );
   }
 
   loadUser(login: string) {
@@ -173,7 +175,7 @@ export class UserComponent
           .afterClosed()
           .subscribe((result) => {
             if (result) {
-              this.fetchUsers();
+              this.fetchUsers().subscribe();
               this.loadUser(result.login);
               this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
                 panelClass: "green",
@@ -211,7 +213,7 @@ export class UserComponent
               this.userService.deleteUser(login).subscribe(() => {
                 this.userService.selectedUser$.next(null);
                 this.selectedUser = null;
-                this.fetchUsers();
+                this.fetchUsers().subscribe();
               });
             }
           });
@@ -294,7 +296,7 @@ export class UserComponent
     // send request and handle error
     createUserObserver.subscribe(
       () => {
-        this.fetchUsers();
+        this.fetchUsers().subscribe();
         this.enableForm();
         this.form.markAsPristine();
         this.loadUser(user.login);
