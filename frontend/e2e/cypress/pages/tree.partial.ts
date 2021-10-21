@@ -50,10 +50,10 @@ export class Tree {
     });
   }
 
-  static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
+  static openNode(targetNodePath: string[], isInsideDialog: boolean = false, terminal: boolean = true) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
-      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1);
+      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1, terminal);
     });
     if (!isInsideDialog) {
       this.determineRootAndCheckPath(targetNodePath);
@@ -73,7 +73,8 @@ export class Tree {
     isInsideDialog = false,
     exact = true,
     hierarchyLevel?: number,
-    forceClick?: boolean
+    forceClick?: boolean,
+    terminal?: boolean
   ) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
@@ -90,7 +91,7 @@ export class Tree {
             cy.log('Clicking on node: ' + nodeTitle);
             node.trigger('click');
             // give some time to add open state. Parent might be selected otherwise again instead of child
-            if (!isInsideDialog) {
+            if (!isInsideDialog && forceClick && terminal) {
               cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
@@ -125,6 +126,12 @@ export class Tree {
           cy.contains('mat-tree-node', nodeName).click();
         });
       });
+  }
+
+  static confirmCopy() {
+    cy.intercept('POST', /\/copy/).as('copy');
+    cy.get('[data-cy=create-applyLocation]').click();
+    cy.wait('@copy');
   }
 
   static selectNodeAndCheckPath(nodeTitle: string, path: string[]) {

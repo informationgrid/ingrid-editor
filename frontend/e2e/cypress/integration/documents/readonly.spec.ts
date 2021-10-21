@@ -119,7 +119,7 @@ describe('Read Only Documents', () => {
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
     Tree.openNode(['Ordner_Ebene_2A'], true);
-    cy.get('[data-cy=create-applyLocation]').click();
+    Tree.confirmCopy();
 
     Tree.openNode(['Ordner_Ebene_2A', documentToCopy], false);
     // set access right back to 'write'

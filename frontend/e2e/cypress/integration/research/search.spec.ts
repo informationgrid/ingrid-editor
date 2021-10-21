@@ -178,7 +178,10 @@ describe('Research Page', () => {
     cy.get('button').contains('Entfernen').click();
     // make sure query has been removed from query field
     cy.get('[data-cy="sql-query-field"]').should('have.value', '');
-    ResearchPage.getSearchResultCountZeroIncluded().should('be.equal', 0);
+    //ResearchPage.getSearchResultCountZeroIncluded().should('be.equal', 0);  <- not very stable,
+    // with the following easier solution the whole assertion is retried until it resolves to true (within the timeout
+    // interval of course) which makes it much more robust:
+    cy.contains('.result', '0 Ergebnisse gefunden');
   });
 
   //saved searches

@@ -190,7 +190,7 @@ describe('General create documents/folders', () => {
     });
 
     it('should not remember last dirty state when page has been left (#2121)', () => {
-      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument']);
+      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'], false, false);
       enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
@@ -205,9 +205,8 @@ describe('General create documents/folders', () => {
       cy.wait(500);
       cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
 
-      Tree.openNode(['Testdokumente']);
-
-      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
+      /*Tree.openNode(['Testdokumente']);
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');*/
     });
 
     it('should not possible to delete a non-empty folder  (#2115)', () => {
