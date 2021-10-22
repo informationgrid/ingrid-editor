@@ -638,6 +638,7 @@ ige-side-menu {
     opacity: 0.75;
 
     &.active-link {
+      opacity: 1;
       color: #4ba7d0;
     }
   }
