@@ -10,5 +10,19 @@ export const routing = RouterModule.forChild([
     canActivate: [AuthGuard],
     canDeactivate: [DeactivateGuard],
     data: { roles: ["admin"], permission: "manage_users" },
+    /*children: [
+      {
+        path: "",
+        redirectTo: "user",
+      },
+      {
+        path: "codelists",
+        component: CatalogCodelistsComponent,
+      },
+      {
+        path: "form-behaviours",
+        component: BehavioursComponent,
+      },
+      ]*/
   },
 ]);

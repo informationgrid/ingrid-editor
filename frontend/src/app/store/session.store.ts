@@ -14,6 +14,8 @@ export interface SessionState {
     currentTab: {
       research: number;
       user: number;
+      import: number;
+      catalog: number;
     };
   };
   latestDocuments: DocumentAbstract[];
@@ -39,6 +41,8 @@ export function createInitialState(): SessionState {
       currentTab: {
         research: 0,
         user: 0,
+        import: 0,
+        catalog: 0,
       },
     },
     latestDocuments: [],

@@ -17,6 +17,7 @@ import {
 import { DocumentService } from "../services/document/document.service";
 import { ShortResultInfo } from "./result-table/result-table.component";
 import { logAction } from "@datorama/akita";
+import { SessionService } from "../services/session.service";
 
 @UntilDestroy()
 @Component({
@@ -25,7 +26,7 @@ import { logAction } from "@datorama/akita";
   styleUrls: ["./research.component.scss"],
 })
 export class ResearchComponent implements OnInit {
-  selectedIndex = this.queryQuery.select((state) => state.ui.currentTabIndex);
+  selectedIndex = this.sessionService.observeTabChange("research");
 
   query = new FormControl("");
 
@@ -45,6 +46,7 @@ export class ResearchComponent implements OnInit {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private documentService: DocumentService,
+    private sessionService: SessionService,
     private queryQuery: QueryQuery
   ) {}
 
@@ -71,11 +73,11 @@ export class ResearchComponent implements OnInit {
 
     this.queryQuery.searchSelect$
       .pipe(untilDestroyed(this), debounceTime(200), distinct())
-      .subscribe((state) => this.startSearch());
+      .subscribe(() => this.startSearch());
 
     this.queryQuery.sqlSelect$
       .pipe(untilDestroyed(this))
-      .subscribe((state) => this.queryBySQL());
+      .subscribe(() => this.queryBySQL());
   }
 
   updateFilter(info: FacetUpdate) {
@@ -122,7 +124,6 @@ export class ResearchComponent implements OnInit {
     logAction("Load query");
     if (entity.type === "facet") {
       this.researchService.updateUIState({
-        currentTab: 0,
         search: {
           category: (<FacetQuery>entity).model.type,
           query: (<FacetQuery>entity).term,
@@ -132,11 +133,12 @@ export class ResearchComponent implements OnInit {
           },
         },
       });
+      this.sessionService.updateCurrentTab("research", 0);
     } else {
       this.researchService.updateUIState({
-        currentTab: 1,
         sqlSearch: { query: (<SqlQuery>entity).sql },
       });
+      this.sessionService.updateCurrentTab("research", 1);
     }
 
     this.updateControlsFromState();
@@ -230,9 +232,7 @@ export class ResearchComponent implements OnInit {
 
   handleTabChange(index: number) {
     logAction("Tab change");
-    this.researchService.updateUIState({
-      currentTab: index,
-    });
+    this.sessionService.updateCurrentTab("research", index);
     if (index === 0) {
       this.facetViewRefresher.emit();
     }
