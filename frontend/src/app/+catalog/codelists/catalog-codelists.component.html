@@ -38,11 +38,7 @@
         </ng-container>
 
         <ng-template #showSelector>
-            <mat-form-field
-                appearance="outline"
-                class="white-bg"
-                style="flex: 1; width: 600px"
-            >
+            <mat-form-field appearance="outline" class="white-bg main-center">
                 <mat-select
                     (selectionChange)="selectCodelist($event.value)"
                     [value]="initialValue"
