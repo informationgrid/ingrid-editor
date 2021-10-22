@@ -31,7 +31,10 @@ describe('Research Page', () => {
     ResearchPage.search(' ');
     ResearchPage.getSearchResultCount().then(allCount => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
-      ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
+      //ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
+      ResearchPage.getSearchResultCount().should(res => {
+        expect(res).to.be.lessThan(allCount).and.to.be.greaterThan(0);
+      });
     });
   });
 
@@ -168,19 +171,20 @@ describe('Research Page', () => {
   });
 
   it('should delete SQL-query and subsequently return 0 results', () => {
+    cy.intercept('/api/search/query').as('query');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
     // make sure query field is not empty
     cy.get('[data-cy="sql-query-field"]').should('not.have.value', '');
     // make sure a non-zero number of results is returned
     cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
+    // make sure both query-requests are done before proceeding with removing the SQL-query
+    cy.wait('@query');
+    cy.wait('@query');
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
     // make sure query has been removed from query field
     cy.get('[data-cy="sql-query-field"]').should('have.value', '');
-    //ResearchPage.getSearchResultCountZeroIncluded().should('be.equal', 0);  <- not very stable,
-    // with the following easier solution the whole assertion is retried until it resolves to true (within the timeout
-    // interval of course) which makes it much more robust:
     cy.contains('.result', '0 Ergebnisse gefunden');
   });
 
