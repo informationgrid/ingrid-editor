@@ -420,15 +420,42 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('if metadata admin deletes one of his assigned groups, he should not be able to see the documents of this group', () => {
-    // delete a group
+    // -1- create new document
+
+    cy.kcLogout();
+    cy.kcLogin('user');
+    const documentName = 'newDocumentToDelete';
+    const newGroup = 'new_group_to_delete';
+    DocumentPage.visit();
+    DocumentPage.createDocument(documentName);
+    Tree.openNode([documentName]);
+
+    // -2- create new group
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.deleteGroup('gruppe_mit_ortsrechten');
-    // make sure documents are not accessible anymore
+    AdminGroupPage.addNewGroup(newGroup);
+
+    // -3- assign folder to the group
+    AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+
+    // -4- assign group  to user
+    AdminUserPage.goToTabmenu(UserAndRights.User);
+    AdminUserPage.selectUser('MetaAdmin mitGruppen');
+    AdminUserPage.addGroupToUser(newGroup);
+    AdminUserPage.toolbarSaveUser();
+
+    cy.kcLogout();
+
+    cy.kcLogin('meta2');
+
+    // -5- delete the group
+    cy.visit('user');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.deleteGroup(newGroup);
+    // -6- make sure the document is no longer exist
     DocumentPage.visit();
-    cy.contains('mat-tree.mat-tree', 'Ordner_Ebene_2A').should('not.exist');
-    AddressPage.visit();
-    cy.contains('mat-tree.mat-tree', 'test_z, test_z').should('not.exist');
+    cy.contains('mat-tree.mat-tree', documentName).should('not.exist');
   });
 
   it('meta data administrator should be able to jump to documents via the "last edited"-section of the dashboard, addresses and data page', () => {
