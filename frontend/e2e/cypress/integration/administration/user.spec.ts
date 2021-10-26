@@ -45,10 +45,11 @@ describe('User', () => {
 
   it('should be possible to rename a user', () => {
     const firstname = 'Meta';
+    const fullName = 'Meta Admin';
+    const modifiedFullName = 'Mario Admin';
     const modified = 'Mario';
 
-    AdminUserPage.selectUser(firstname);
-
+    AdminUserPage.selectUser(fullName);
     // modify name of a user
     cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
     AdminUserPage.toolbarSaveUser();
@@ -58,7 +59,7 @@ describe('User', () => {
     cy.get('user-table').should('contain', modified);
 
     // reverse changes
-    AdminUserPage.selectUser(modified);
+    AdminUserPage.selectUser(modifiedFullName);
 
     cy.get('[data-cy=Name] .firstName').click().clear().type(firstname);
     AdminUserPage.toolbarSaveUser();
@@ -462,7 +463,40 @@ describe('User', () => {
     cy.contains('mat-toolbar .page-title', 'Nutzer & Rechte');
   });
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {});
+  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+    cy.visit('user');
+    cy.get('.page-title').contains('Nutzer');
+
+    let userLogIn = 'new-user-meta-admin';
+    let userEmail = 'new-user-meta-admin@wemove.com';
+    let userRole = 'Metadaten-Administrator';
+    var psw = '';
+
+    AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
+
+    // get email and extract the password
+    cy.task('getLastEmail', userEmail)
+      .its('body')
+      .then(body => {
+        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+
+        psw = body.substring(body.indexOf('Passwort: ') + 'Passwort: '.length, body.indexOf('(muss') - 1);
+
+        cy.kcLogout();
+        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
+
+        cy.get('#username').type(userLogIn);
+        cy.get('#password').type(psw);
+        cy.get('#kc-login').click();
+
+        cy.get('#kc-header-wrapper').should('contain', 'Update password');
+        // create new user for the created user here
+        cy.visit('user');
+
+        let userNewLogIn = 'new-user-meta-admin';
+        let userNewEmail = 'new-user-meta-admin@wemove.com';
+      });
+  });
 
   xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
     // Go to data section and make sure no single data is displayed
