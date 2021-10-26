@@ -395,7 +395,7 @@ describe('Meta data administrator with a group', () => {
     const newGroup = 'some_new_group';
     const description = 'something of a description';
 
-    cy.visit('user', { timeout: 30000 });
+    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true });
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
@@ -421,7 +421,6 @@ describe('Meta data administrator with a group', () => {
 
   it('if metadata admin deletes one of his assigned groups, he should not be able to see the documents of this group', () => {
     // -1- create new document
-
     cy.kcLogout();
     cy.kcLogin('user');
     const documentName = 'newDocumentToDelete';
@@ -429,26 +428,21 @@ describe('Meta data administrator with a group', () => {
     DocumentPage.visit();
     DocumentPage.createDocument(documentName);
     Tree.openNode([documentName]);
-
     // -2- create new group
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
-
     // -3- assign folder to the group
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     AdminGroupPage.toolbarSaveGroup();
-
     // -4- assign group  to user
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser('MetaAdmin mitGruppen');
     AdminUserPage.addGroupToUser(newGroup);
     AdminUserPage.toolbarSaveUser();
-
     cy.kcLogout();
 
     cy.kcLogin('meta2');
-
     // -5- delete the group
     cy.visit('user');
     AdminUserPage.goToTabmenu(UserAndRights.Group);

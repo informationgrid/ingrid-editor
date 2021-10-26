@@ -69,7 +69,7 @@ export class DocumentPage extends BasePage {
   };
 
   static visit() {
-    cy.visit('form');
+    cy.visit('form', { retryOnStatusCodeFailure: true, timeout: 30000 });
   }
 
   static visitSingleDoc() {
