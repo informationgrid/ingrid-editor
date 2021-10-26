@@ -177,6 +177,18 @@ export class AdminUserPage extends BasePage {
         );
       });
   }
+
+  static createNewUser(userLogIn: string, userEmail: string, userRole: string) {
+    // create user
+    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    AdminUserPage.addNewUserLogin(userLogIn);
+    AdminUserPage.addNewUserFirstname(userLogIn);
+    AdminUserPage.addNewUserLastname(userLogIn);
+    AdminUserPage.addNewUserEmail(userEmail);
+    AdminUserPage.addNewUserRole(userRole);
+    cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
+    AdminUserPage.confirmAddUserDialog();
+  }
 }
 
 export enum keysInHeader {
