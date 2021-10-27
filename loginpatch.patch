@@ -1,0 +1,39 @@
+Index: frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js b/frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js
+--- a/frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js	(revision 44bcaabe5bfe96228a4073c8804c60579fdc09e7)
++++ b/frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.js	(date 1635332746758)
+@@ -7,6 +7,7 @@
+         var authBaseUrl = Cypress.env("auth_base_url");
+         var realm = Cypress.env("auth_realm");
+         var client_id = Cypress.env("auth_client_id");
++        var client_secret = Cypress.env("auth_client_secret");
+         cy.request({
+             url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/auth",
+             followRedirect: false,
+@@ -36,17 +37,21 @@
+         })
+             .then(function (response) {
+             var code = utils_1.getAuthCodeFromLocation(response.headers["location"]);
++            var failStatus = true;
++            if (code == '' || code == undefined) failStatus = false;
+             cy.request({
+                 method: "post",
+                 url: authBaseUrl + "/realms/" + realm + "/protocol/openid-connect/token",
+                 body: {
+                     client_id: client_id,
++                    client_secret: client_secret,
+                     redirect_uri: Cypress.config("baseUrl"),
+                     code: code,
+                     grant_type: "authorization_code"
+                 },
+                 form: true,
+-                followRedirect: false
++                followRedirect: false,
++                failOnStatusCode :failStatus
+             }).its("body");
+         });
+     });
