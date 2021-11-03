@@ -437,36 +437,11 @@ describe('User', () => {
     cy.contains('mat-dialog-container', 'Der ausgewählte Benutzer ist für keine anderen Nutzer verantwortlich');
   });
 
-  xit('should show to a user her managed and sub users (#2671)', () => {});
-
   xit('should show to a user the users she represents (#2671)', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show to a user the subusers of the user she represents (#2671)', () => {});
-
   xit('should show all the users to a catalogue admin (#2671)', () => {});
-
-  xit('should show no users to a catalogue admin (#2671)', () => {});
-
-  xit('catalogue admin should be able to see everything', () => {
-    //Dashboard should give overview of data
-    DashboardPage.visit();
-    cy.contains('In Bearbeitung').parent().should('not.contain', 0);
-    cy.contains('Veröffentlicht').parent().should('not.contain', 0);
-    cy.get('text.text').should('not.contain', 0);
-
-    //Documents should be present
-    DocumentPage.visit();
-    //Addresses should be present
-    AddressPage.visit();
-    // make sure folders ranking high in hierarchy are present and are displayed on top (= indicator for universal access rights)
-    cy.contains('mat-tree-node', 'Neue Testadressen').invoke('attr', 'aria-level').should('equal', 1);
-    //Users and groups should be present
-    cy.visit('user');
-    cy.url().should('contain', 'user');
-    cy.contains('mat-toolbar .page-title', 'Nutzer & Rechte');
-  });
 
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
     cy.visit('user');
@@ -501,37 +476,6 @@ describe('User', () => {
         let userNewLogIn = 'new-user-meta-admin';
         let userNewEmail = 'new-user-meta-admin@wemove.com';
       });
-  });
-
-  xit('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
-    // Go to data section and make sure no single data is displayed
-    DocumentPage.visit();
-    cy.get('ige-form-dashboard').contains('Kein Ordner oder Datensatz vorhanden');
-    // Also: make sure no data is displayed in the data list
-    cy.get('ige-tree').contains('Leer');
-
-    // Go to address section and make sure no single address is displayed
-    AddressPage.visit();
-    cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
-    // Also: make sure no address is displayed in the address list
-    cy.get('ige-tree').contains('Leer');
-  });
-
-  // Research Page
-  xit('user without authorization should be able to prompt SQL search by button but should not be shown any results', () => {
-    ResearchPage.visit();
-    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
-    cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
-    ResearchPage.getSearchResultCount().should('be', 0);
-  });
-
-  xit('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
-    // Make sure search page shows no data when visiting
-    ResearchPage.visit();
-    cy.get('.result').contains('0 Ergebnisse gefunden');
-    // Make sure triggering search doesn't deliver search results
-    ResearchPage.search('test');
-    ResearchPage.getSearchResultCount().should('be', 0);
   });
 
   //TODO: Verification emails for user!

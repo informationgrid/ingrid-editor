@@ -9,7 +9,7 @@ export class ResearchPage {
 
   static search(query: string) {
     // version without checking server request:
-    return cy.get('.mat-form-field-infix > .mat-input-element').type(query).wait(4000);
+    return cy.get('.mat-form-field-infix > .mat-input-element').first().type(query).wait(4000);
 
     /*//Alternative to make sure the search term has been typed in completely
     cy.intercept('POST', '/api/search/query', req => {

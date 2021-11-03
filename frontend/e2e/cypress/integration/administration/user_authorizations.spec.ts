@@ -61,6 +61,36 @@ describe('Meta data administrator without groups', () => {
     cy.get('[data-cy="toolbar_CREATE_FOLDER"]').should('be.disabled');
   });
 
+  it('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
+    ResearchPage.visit();
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
+    cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+  });
+
+  it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
+    // Make sure search page shows no data when visiting
+    ResearchPage.visit();
+    cy.get('.result').contains('0 Ergebnisse gefunden');
+    // Make sure triggering search doesn't deliver search results
+    ResearchPage.search('test');
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+  });
+
+  it('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
+    // Go to data section and make sure no single data is displayed
+    DocumentPage.visit();
+    cy.get('ige-form-dashboard').contains('Kein Ordner oder Datensatz vorhanden');
+    // Also: make sure no data is displayed in the data list
+    cy.get('ige-tree').contains('Leer');
+
+    // Go to address section and make sure no single address is displayed
+    AddressPage.visit();
+    cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
+    // Also: make sure no address is displayed in the address list
+    cy.get('ige-tree').contains('Leer');
+  });
+
   xit('metadata admin without groups should be able to change manager of users', () => {
     // on hold, since manager functionality will probably be removed in the near future
     cy.visit('user');
