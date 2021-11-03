@@ -512,10 +512,6 @@ describe('User', () => {
     cy.get('ige-tree').contains('Leer');
   });
 
-  xit('Section "Nutzer und Rechte" should not be visible to an author', () => {
-    cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
-  });
-
   // Research Page
   xit('user without authorization should be able to prompt SQL search by button but should not be shown any results', () => {
     ResearchPage.visit();
