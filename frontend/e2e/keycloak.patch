@@ -33,7 +33,7 @@ diff --git a/frontend/e2e/node_modules/cypress-keycloak-commands/dist/kc-login.j
                  form: true,
 -                followRedirect: false
 +                followRedirect: false,
-+                failOnStatusCode :failStatus
++                failOnStatusCode :false
              }).its("body");
          });
      });
