@@ -8,7 +8,12 @@ import { DashboardPage } from '../../pages/dashboard.page';
 describe('User', () => {
   beforeEach(() => {
     cy.kcLogin('user');
-    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true });
+    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
+      .document()
+      .its('contentType')
+      .then(function (res) {
+        if (res != 'text/html') cy.visit('user');
+      });
     cy.get('.page-title').contains('Nutzer');
   });
 
