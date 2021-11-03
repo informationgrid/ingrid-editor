@@ -61,6 +61,4 @@ describe('Codelist', () => {
     CodelistPage.openContextMenu(newEntry, CodelistSubMenu.Defaultwert);
     cy.get('mat-panel-description').should('not.contain', 'Defaultwert');
   });
-
-  xit('Check default set Codelist-entry is staid in a new document', () => {});
 });
