@@ -395,7 +395,12 @@ describe('Meta data administrator with a group', () => {
     const newGroup = 'some_new_group';
     const description = 'something of a description';
 
-    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true });
+    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
+      .document()
+      .its('contentType')
+      .then(function (res) {
+        if (res != 'text/html') cy.visit('user');
+      });
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
