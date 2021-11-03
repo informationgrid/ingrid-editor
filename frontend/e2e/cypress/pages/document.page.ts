@@ -321,7 +321,7 @@ export class DocumentPage extends BasePage {
   static changeLocation(targetNodePath: string[]) {
     cy.get('[data-cy=create-changeLocation]').click();
     if (targetNodePath.length > 0) {
-      targetNodePath.forEach(node => Tree.openNode([node], true));
+      Tree.openNode(targetNodePath, true);
     } else {
       // cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
       cy.get('ige-destination-selection mat-list-option').click();

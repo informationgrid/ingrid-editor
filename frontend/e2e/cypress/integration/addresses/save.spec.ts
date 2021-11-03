@@ -17,13 +17,25 @@ describe('General create addresses/folders', () => {
   const createDialog = AddressPage.CreateDialog;
 
   describe('Create Folder', () => {
-    xit('should show all nested folders after creation when root parent is collapsed and expanded', () => {
+    it('should show all nested folders after creation when root parent is collapsed and expanded', () => {
       // create root folder "Nested"
+      const rootFolder = 'Nested';
+      DocumentPage.createFolder(rootFolder, []);
       // create another folder under "Nested" with name "More nested"
+      const moreNested = 'More nested';
+      DocumentPage.createFolder(moreNested, [rootFolder]);
+
       // create another folder under "More nested" with name "Even more nested"
+      const evenMoreNested = 'Even More nested';
+      Tree.openNode([rootFolder, moreNested]);
+      DocumentPage.createFolder(evenMoreNested, [rootFolder, moreNested]);
+
       // collapse "Nested"
+      Tree.openNode([rootFolder]);
       // expand "Nested" and "More nested"
+      Tree.openNode([rootFolder, moreNested]);
       // assert that directory "Even more nested" exists
+      Tree.openNode([rootFolder, moreNested, evenMoreNested]);
     });
   });
 
