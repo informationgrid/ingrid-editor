@@ -37,6 +37,7 @@ export class ResearchComponent implements OnInit {
   result: ResearchResponse;
 
   error: string = null;
+  isSearching = false;
 
   facetViewRefresher = new EventEmitter<void>();
 
@@ -85,6 +86,7 @@ export class ResearchComponent implements OnInit {
   }
 
   startSearch() {
+    this.isSearching = true;
     const state = this.queryQuery.getValue();
 
     // complete model with other parameters
@@ -98,7 +100,10 @@ export class ResearchComponent implements OnInit {
           model,
           state.ui.search.facets.fieldsWithParameters ?? {}
         )
-        .subscribe((result) => this.updateHits(result));
+        .subscribe((result) => {
+          this.isSearching = false;
+          this.updateHits(result);
+        });
     });
   }
 
@@ -109,11 +114,14 @@ export class ResearchComponent implements OnInit {
       this.updateHits({ hits: [], totalHits: 0 });
       return;
     }
-
-    this.researchService.searchBySQL(sql).subscribe(
-      (result) => this.updateHits(result),
-      (error: HttpErrorResponse) => (this.error = error.error.errorText)
-    );
+    this.isSearching = true;
+    this.researchService
+      .searchBySQL(sql)
+      .pipe(tap(() => (this.isSearching = false)))
+      .subscribe(
+        (result) => this.updateHits(result),
+        (error: HttpErrorResponse) => (this.error = error.error.errorText)
+      );
   }
 
   loadQuery(id: string) {

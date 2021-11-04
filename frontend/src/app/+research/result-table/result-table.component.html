@@ -1,6 +1,9 @@
 <ng-container *ngIf="columnsMap">
     <div class="result-table-header">
-        <div class="result">{{ totalHits }} Ergebnisse gefunden</div>
+        <div class="result">
+            {{ isLoading ? "Suche" : totalHits + " Ergebnisse gefunden" }}
+            <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+        </div>
         <div class="result-buttons">
             <ng-container *ngIf="showSaveButton">
                 <button mat-button color="primary" (click)="save.emit()">
@@ -19,6 +22,7 @@
     </div>
     <mat-divider></mat-divider>
     <table
+        [class.disabled]="!isLoading"
         mat-table
         matTableExporter
         #exporter="matTableExporter"
@@ -69,6 +73,7 @@
             </th>
             <td mat-cell *matCellDef="let element" class="settings">
                 <button
+                    [disabled]="isLoading"
                     mat-icon-button
                     class="table-options"
                     [matMenuTriggerFor]="moreResult"
@@ -93,8 +98,8 @@
         <tr
             mat-row
             *matRowDef="let row; columns: displayedColumns"
-            [class.readonly]="!row.hasWritePermission"
-            (click)="openDataset(row)"
+            [class.readonly]="!row.hasWritePermission || isLoading"
+            (click)="isLoading ? undefined : openDataset(row)"
         ></tr>
     </table>
     <mat-paginator

@@ -74,6 +74,7 @@
             <div main-content fxFlex>
                 <ige-result-table
                     [result]="result"
+                    [isLoading]="isSearching"
                     (open)="loadDataset($event)"
                     (remove)="removeDataset($event)"
                 ></ige-result-table>
@@ -86,6 +87,7 @@
             <ige-result-table
                 *ngIf="!error"
                 [result]="result"
+                [isLoading]="isSearching"
                 (open)="loadDataset($event)"
                 (save)="saveQuery(true)"
             ></ige-result-table>

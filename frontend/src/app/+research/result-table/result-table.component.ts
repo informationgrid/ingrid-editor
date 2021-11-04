@@ -39,6 +39,8 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     }
   }
 
+  @Input() isLoading = false;
+
   @Output() save = new EventEmitter<void>();
   @Output() open = new EventEmitter<ShortResultInfo>();
   @Output() remove = new EventEmitter<any>();

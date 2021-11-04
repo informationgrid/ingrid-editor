@@ -39,6 +39,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../services/german-date.adapter";
 import { SharedModule } from "../shared/shared.module";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { SharedModule } from "../shared/shared.module";
     MatChipsModule,
     MatDatepickerModule,
     SharedModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

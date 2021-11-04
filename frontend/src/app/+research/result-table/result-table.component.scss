@@ -17,10 +17,19 @@
     line-height: 49px;
     color: $ige-primary;
 
-    display: inline-block;
     margin: auto;
     width: 50%;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ::ng-deep.mat-spinner {
+    margin-left: 8px;
+    circle {
+      stroke: $ige-primary;
+    }
   }
 
   .result-buttons {
