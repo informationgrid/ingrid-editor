@@ -94,14 +94,14 @@ describe('User', () => {
   it('should display the discard dialog, when changes on user entries are not saved (#2675)', () => {
     const UserLogin = 'eins';
 
-    AdminUserPage.selectUser('Meins Deins');
+    AdminUserPage.selectUser('Katalog Admin1');
     // change name, then interrupt editing by trying to switch to another user
     // after canceling the prompt to discard changes, we are still in editing mode
     cy.get('.firstName').click().clear().type('Tralala');
     cy.get('user-table').contains('Majid').click();
     AdminUserPage.cancelChanges();
     // check that firstname-Entry is not changed to the original value and that user is still selected
-    cy.get('.firstName input').should('not.have.value', 'Meins');
+    cy.get('.firstName input').should('not.have.value', 'Katalog');
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(UserLogin);
     //wait for new user being selected is reversed (no network request involved to intercept)
@@ -116,13 +116,13 @@ describe('User', () => {
     cy.wait('@fetchInformationRequest');
 
     // go back to original user profile and make sure data is unchanged
-    AdminUserPage.selectUser('Meins Deins');
-    cy.get('.firstName input').should('have.value', 'Meins');
-    cy.get('.lastName input').should('have.value', 'Deins');
+    AdminUserPage.selectUser('Katalog Admin1');
+    cy.get('.firstName input').should('have.value', 'Katalog');
+    cy.get('.lastName input').should('have.value', 'Admin1');
   });
 
   it('should not display any dialog after the discard dialog has appeared (#2574)', () => {
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
     const newEntry = 'Tristan';
 
     // change something (name) and try to click on another user --> discard dialog appears
@@ -142,7 +142,7 @@ describe('User', () => {
 
   it('should display the discard dialog when the menu-page is changed with unsaved changes (#2619)', () => {
     const newEntry = 'Tralala';
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
 
     // change something and try to click on another user --> discard dialog appears
     AdminUserPage.selectUser(username);
@@ -188,7 +188,7 @@ describe('User', () => {
   });
 
   it('should not be possible to change the login or the role after a user is created', () => {
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
     const username2 = 'Meta Admin';
     const username3 = 'toDelete inTest';
 
@@ -243,23 +243,23 @@ describe('User', () => {
   });
 
   it('should show only the names, emails, logins and organisations as result of a user search (#2551)', () => {
-    cy.get('user-table').should('contain', 'Meins');
+    cy.get('user-table').should('contain', 'Katalog');
     cy.get('user-table').should('contain', 'Majid');
 
-    cy.get('ige-search-field').type('Meins');
+    cy.get('ige-search-field').type('Katalog');
     cy.get('user-table').should('not.contain', 'Majid');
-    cy.get('user-table').should('contain', 'Meins');
+    cy.get('user-table').should('contain', 'Katalog');
 
-    cy.get('ige-search-field').clear().type('Deins');
+    cy.get('ige-search-field').clear().type('Admin1');
     cy.get('user-table').should('not.contain', 'Ercan');
-    cy.get('user-table').should('contain', 'Deins');
+    cy.get('user-table').should('contain', 'Admin1');
 
     cy.get('ige-search-field').clear().type('me@wemove.com');
     cy.get('user-table').should('not.contain', 'majid.ercan@wemove.com');
     cy.get('user-table').should('contain', 'me@wemove.com');
 
     cy.get('ige-search-field').clear().type('wemove digital solutions');
-    cy.get('user-table').should('not.contain', 'Meins');
+    cy.get('user-table').should('not.contain', 'Katalog Admin1');
     cy.get('user-table').should('contain', 'wemove digital solutions');
 
     cy.get('ige-search-field').clear().type('ige2');
@@ -268,15 +268,15 @@ describe('User', () => {
   });
 
   it('should find a user using her first- and lastname as search terms (#2596)', () => {
-    cy.get('ige-search-field').type('Meins Deins');
+    cy.get('ige-search-field').type('Katalog Admin1');
     cy.get('user-table').should('not.contain', 'Majid');
 
-    cy.get('user-table').should('contain', 'Meins Deins');
+    cy.get('user-table').should('contain', 'Katalog Admin1');
   });
 
   it('should display all information of a selected user and mark her as active (#2551)', () => {
     const username = 'Meta Admin';
-    const username2 = 'Meins Deins';
+    const username2 = 'Katalog Admin1';
     const username3 = 'autor test';
 
     // meta-admin
@@ -371,7 +371,7 @@ describe('User', () => {
   });
 
   it('should enable save button, when a user`s entries have changed (#2569)', () => {
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
     const modified = 'Vorname';
 
     AdminUserPage.selectUser(username);
@@ -382,7 +382,7 @@ describe('User', () => {
   });
 
   it('should not be possible to click on another object, while the discard dialog is open (#2569)', () => {
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
     const username2 = 'Meta Admin';
     const modified = 'Vorname';
 
@@ -397,7 +397,7 @@ describe('User', () => {
   });
 
   it('should not leave the page after changes are canceled and the changes are not saved by discarding (#2569)', () => {
-    const username = 'Meins Deins';
+    const username = 'Katalog Admin1';
     const username2 = 'Meta Admin';
     const modified = 'Vorname';
 
