@@ -27,7 +27,8 @@ export class AddressPage extends DocumentPage {
   };
 
   static visit() {
-    cy.visit('address');
+    cy.visit('address', { timeout: 30000, retryOnStatusCodeFailure: true });
+    cy.contains('.page-title', 'Adressen');
   }
 
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789') {

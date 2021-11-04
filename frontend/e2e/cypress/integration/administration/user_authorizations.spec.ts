@@ -699,8 +699,7 @@ describe('Catalogue admin', () => {
   });
 
   it('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
-    const login = 'meta';
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.selectUser('Test Verantwortlicher');
     // take responsibility away from a user
     AdminUserPage.cedeResponsibility('Meta Admin');
