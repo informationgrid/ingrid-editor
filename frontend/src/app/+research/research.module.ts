@@ -40,6 +40,7 @@ import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../services/german-date.adapter";
 import { SharedModule } from "../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatDatepickerModule,
     SharedModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   providers: [
     {

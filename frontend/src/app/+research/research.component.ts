@@ -18,6 +18,7 @@ import { DocumentService } from "../services/document/document.service";
 import { ShortResultInfo } from "./result-table/result-table.component";
 import { logAction } from "@datorama/akita";
 import { SessionService } from "../services/session.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -48,7 +49,8 @@ export class ResearchComponent implements OnInit {
     private researchService: ResearchService,
     private documentService: DocumentService,
     private sessionService: SessionService,
-    private queryQuery: QueryQuery
+    private queryQuery: QueryQuery,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
@@ -177,7 +179,15 @@ export class ResearchComponent implements OnInit {
         if (dialogOptions) {
           this.researchService
             .saveQuery(this.queryQuery.getValue(), dialogOptions, asSql)
-            .subscribe();
+            .subscribe(() =>
+              this.snackBar.open(
+                `Suche '${dialogOptions.name}' gespeichert`,
+                "",
+                {
+                  panelClass: "green",
+                }
+              )
+            );
         }
       });
   }
