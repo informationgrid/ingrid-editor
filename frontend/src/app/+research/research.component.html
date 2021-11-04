@@ -83,13 +83,16 @@
     </mat-tab>
 
     <mat-tab label="SQL Suche">
-        <ige-tab-sql (query)="updateSqlQueryState($event)" fxFlex>
+        <ige-tab-sql
+            (query)="updateSqlQueryState($event)"
+            (save)="saveQuery(true)"
+            fxFlex
+        >
             <ige-result-table
                 *ngIf="!error"
                 [result]="result"
                 [isLoading]="isSearching"
                 (open)="loadDataset($event)"
-                (save)="saveQuery(true)"
             ></ige-result-table>
 
             <div *ngIf="error" class="error-container">

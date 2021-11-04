@@ -12,6 +12,7 @@ export class TabSqlComponent implements OnInit {
   sql: string;
 
   @Output() query = new EventEmitter();
+  @Output() save = new EventEmitter();
 
   sqlExamples = [
     {
