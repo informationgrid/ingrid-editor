@@ -21,7 +21,7 @@ describe('Read Only Documents', () => {
   // it('should load a document from dashboard', () => {
   it('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
     // set access to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -56,7 +56,7 @@ describe('Read Only Documents', () => {
     const documentToMove = 'Datum_Ebene_3_3';
 
     // set access to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');

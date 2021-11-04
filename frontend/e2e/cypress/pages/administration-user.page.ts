@@ -6,6 +6,16 @@ export class AdminUserPage extends BasePage {
     cy.get('mat-tab-header .mat-tab-label:nth-child(' + tabmenu + '', { timeout: 10000 }).click();
   }
 
+  static visit() {
+    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
+      .document()
+      .its('contentType')
+      .then(function (res) {
+        if (res != 'text/html') cy.visit('user');
+      });
+    cy.get('.page-title').contains('Nutzer');
+  }
+
   static addNewUserLogin(login: string) {
     cy.get('ige-new-user-dialog input:first').click({ force: true }).clear().type(login);
   }
