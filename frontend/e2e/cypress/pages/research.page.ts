@@ -32,7 +32,8 @@ export class ResearchPage {
       .contains(/[1-9][0-9]* Ergebnisse gefunden/)
       .then($node => {
         // extract number from string like '12 Ergebnisse gefunden'
-        return parseInt($node.text().split(' ')[0]);
+        console.log('this: ' + $node.text().trim().split(' ')[0]);
+        return parseInt($node.text().trim().split(' ')[0]);
       });
   }
 
@@ -42,7 +43,7 @@ export class ResearchPage {
       .contains(/[0-9]+ Ergebnisse gefunden/)
       .then($node => {
         // extract number from string like '12 Ergebnisse gefunden'
-        return parseInt($node.text().split(' ')[0]);
+        return parseInt($node.text().trim().split(' ')[0]);
       });
   }
 
