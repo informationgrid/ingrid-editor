@@ -10,11 +10,11 @@ import { FrontendGroup } from "../../../models/user-group";
     trigger("slideDown", [
       transition(":enter", [
         style({ height: 0, opacity: 0 }),
-        animate("300ms", style({ height: 134, opacity: 1 })),
+        animate("250ms ease-out", style({ height: 60, opacity: 1 })),
       ]),
       transition(":leave", [
-        style({ height: 134, opacity: 1 }),
-        animate("300ms", style({ height: 0, opacity: 0 })),
+        style({ height: 60, opacity: 1 }),
+        animate("250ms linear", style({ height: 0, opacity: 0 })),
       ]),
     ]),
   ],
