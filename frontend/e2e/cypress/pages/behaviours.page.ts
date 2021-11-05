@@ -13,7 +13,7 @@ export class BehavioursPage extends BasePage {
   }
 
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
-    cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click();
+    cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click({ force: true });
     cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')').click();
   }
 
