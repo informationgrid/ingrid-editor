@@ -103,7 +103,7 @@ describe('User', () => {
     // check that firstname-Entry is not changed to the original value and that user is still selected
     cy.get('.firstName input').should('not.have.value', 'Katalog');
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
-    cy.get('.user-title').contains(UserLogin);
+    cy.get('.user-title').contains('Tralala Admin1');
     //wait for new user being selected is reversed (no network request involved to intercept)
     cy.wait(2000);
     cy.get('user-table .selected').contains(UserLogin);
