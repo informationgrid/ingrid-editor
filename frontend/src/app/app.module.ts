@@ -8,7 +8,6 @@ import {
   LOCALE_ID,
   NgModule,
 } from "@angular/core";
-import { ModalService } from "./services/modal/modal.service";
 import { HelpComponent } from "./help/help.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { environment } from "../environments/environment";
@@ -72,42 +71,77 @@ import {
   rxStompServiceFactory,
 } from "@stomp/ng2-stompjs";
 import { IgeStompConfig } from "./ige-stomp.config";
+import { KeycloakAngularModule, KeycloakService } from "keycloak-angular";
 
 registerLocaleData(de);
 
-export function ConfigLoader(configService: ConfigService) {
+export function ConfigLoader(
+  configService: ConfigService,
+  keycloakService: KeycloakService
+) {
   return () => {
-    return configService
-      .load(environment.configFile)
-      .then(
-        () =>
-          // login to backend for creating a development principal
-          !environment.production && configService.dummyLoginForDevelopment()
-      )
-      .then(() => configService.getCurrentUserInfo())
-      .then((userInfo) => {
-        // an admin role has no constraints
-        if (configService.isAdmin()) {
-          if (userInfo.assignedCatalogs.length === 0) {
+    return (
+      configService
+        .load(environment.configFile)
+        // .then(
+        //   () =>
+        // login to backend for creating a development principal
+        // !environment.production && configService.dummyLoginForDevelopment()
+        // )
+        .then(() => initializeKeycloak(keycloakService))
+        .then(() => keycloakService.isLoggedIn())
+        .then((loggedIn) => {
+          if (loggedIn) {
+            return keycloakService.getToken().then((token) => {
+              return configService
+                .getCurrentUserInfo(token)
+                .then((userInfo) => {
+                  // an admin role has no constraints
+                  if (configService.isAdmin()) {
+                    if (userInfo.assignedCatalogs.length === 0) {
+                    }
+                  } else {
+                    // check if user has any assigned catalog
+                    if (userInfo.assignedCatalogs.length === 0) {
+                      const error = new IgeError();
+                      error.setMessage(
+                        "The user has no assigned catalog. An administrator has to assign a catalog to this user."
+                      );
+                      throw error;
+                    }
+                  }
+                });
+            });
+          } else {
+            return keycloakService.login();
           }
-        } else {
-          // check if user has any assigned catalog
-          if (userInfo.assignedCatalogs.length === 0) {
-            const error = new IgeError();
-            error.setMessage(
-              "The user has no assigned catalog. An administrator has to assign a catalog to this user."
-            );
-            throw error;
-          }
-        }
-      })
-      .catch((err) => {
-        // remove loading spinner and rethrow error
-        document.getElementsByClassName("app-loading").item(0).innerHTML =
-          "An error occurred";
-        throw new IgeError(err);
-      });
+        })
+        .catch((err) => {
+          debugger;
+          // remove loading spinner and rethrow error
+          document.getElementsByClassName("app-loading").item(0).innerHTML =
+            "An error occurred";
+          throw new IgeError(err);
+        })
+    );
   };
+}
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return keycloak.init({
+    config: {
+      url: "http://localhost:8080/auth",
+      realm: "master",
+      clientId: "keycloak-angular",
+    },
+    // bearerExcludedUrls: ["/assets", "/clients/public"],
+    loadUserProfileAtStartUp: true,
+    initOptions: {
+      onLoad: "check-sso",
+      silentCheckSsoRedirectUri:
+        window.location.origin + "/assets/silent-check-sso.html",
+    },
+  });
 }
 
 @NgModule({
@@ -130,6 +164,7 @@ export function ConfigLoader(configService: ConfigService) {
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
+    KeycloakAngularModule,
     AngularSplitModule,
     MatTooltipModule,
     MatDialogModule,
@@ -179,7 +214,7 @@ export function ConfigLoader(configService: ConfigService) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, ModalService],
+      deps: [ConfigService, KeycloakService],
       multi: true,
     },
     // set locale for dates

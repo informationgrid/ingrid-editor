@@ -68,8 +68,8 @@ export class ConfigService {
   }
 
   // TODO: refactor to fetchCurrentUserInfo()
-  getCurrentUserInfo(): Promise<UserInfo> {
-    return this.dataService.getCurrentUserInfo().then((userInfo) => {
+  getCurrentUserInfo(token?: string): Promise<UserInfo> {
+    return this.dataService.getCurrentUserInfo(token).then((userInfo) => {
       if (userInfo === null) {
         throw new IgeError("Could not get current user");
       }
@@ -117,14 +117,14 @@ export class ConfigService {
   ): boolean {
     if (neededPermission instanceof Array) {
       return (
-        user.permissions.filter(
+        user?.permissions?.filter(
           (value) => neededPermission.indexOf(value) !== -1
         ).length > 0
       );
     } else {
       return (
         !neededPermission ||
-        user.permissions.indexOf(<string>neededPermission) !== -1
+        user?.permissions?.indexOf(<string>neededPermission) !== -1
       );
     }
   }

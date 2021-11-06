@@ -12,6 +12,8 @@ import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
 import { SessionQuery } from "../store/session.query";
 import { ApiService } from "./ApiService";
+import { KeycloakService } from "keycloak-angular";
+import { log } from "util";
 
 @Injectable({
   providedIn: "root",
@@ -26,6 +28,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     private session: SessionStore,
     private modalService: ModalService,
     private apiService: ApiService,
+    private keycloak: KeycloakService,
     sessionQuery: SessionQuery
   ) {
     sessionQuery
@@ -37,7 +40,11 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(tap(() => this.resetSessionTimeout()));
+    return next.handle(request).pipe(
+      tap((res) => {
+        this.resetSessionTimeout();
+      })
+    );
   }
 
   private resetSessionTimeout() {
@@ -45,9 +52,20 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.timer$.unsubscribe();
     }
 
-    const duration =
-      (this.overrideSessionDuration ??
-        this.defaultSessionDurationInMillSeconds) + 1;
+    const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    if (!refreshToken) return;
+
+    const endTime = refreshToken.exp;
+    const accessTokenEndTime =
+      this.keycloak.getKeycloakInstance().tokenParsed.exp;
+
+    const now = Math.ceil(new Date().getTime() / 1000);
+    const durationRefresh = endTime - now;
+
+    console.log(`Endtime Refresh: ${durationRefresh}`);
+
+    const duration = durationRefresh;
+    this.updateStore(duration);
 
     this.timer$ = timer(0, this.oneSecondInMilliseconds)
       .pipe(
@@ -72,8 +90,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
       );
       this.modalService.showIgeError(error);
-      this.apiService.logout().subscribe().unsubscribe();
-      setTimeout(() => window.location.reload(), 5000);
+      setTimeout(() => this.keycloak.logout(), 5000);
     }
   }
 }

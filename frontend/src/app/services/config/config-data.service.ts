@@ -18,9 +18,13 @@ export class ConfigDataService {
       .catch((err) => console.warn("typical login error during development"));
   }
 
-  getCurrentUserInfo(): Promise<UserInfo> {
+  getCurrentUserInfo(token: string): Promise<UserInfo> {
     return (
-      this.sendRequest("GET", this.config.backendUrl + "info/currentUser")
+      this.sendRequest(
+        "GET",
+        this.config.backendUrl + "info/currentUser",
+        token
+      )
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
         .then((response) => {
@@ -84,11 +88,18 @@ export class ConfigDataService {
     );
   }
 
-  private sendRequest(method = "GET", url = null): Promise<string> {
+  private sendRequest(
+    method = "GET",
+    url = null,
+    token?: string
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.overrideMimeType("application/json");
       xhr.open(method, url, true);
+      if (token) {
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+      }
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {

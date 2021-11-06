@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { ApiService } from "../services/ApiService";
 import {
   ConfigService,
   UserInfo,
@@ -9,7 +8,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { ShortResultInfo } from "../+research/result-table/result-table.component";
+import { KeycloakService } from "keycloak-angular";
 
 @Component({
   selector: "ige-main-header",
@@ -26,18 +25,18 @@ export class MainHeaderComponent implements OnInit {
   initials: string;
 
   constructor(
-    private apiService: ApiService,
     private configService: ConfigService,
     private session: SessionQuery,
-    private router: Router
+    private router: Router,
+    private keycloak: KeycloakService
   ) {}
 
   ngOnInit() {
     let userInfo = this.configService.$userInfo.getValue();
-    this.version = userInfo.version;
+    this.version = userInfo?.version;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
-      map((userInfo) => userInfo.currentCatalog.label)
+      map((userInfo) => userInfo?.currentCatalog?.label)
     );
 
     this.router.events.subscribe((event: any) => {
@@ -49,13 +48,11 @@ export class MainHeaderComponent implements OnInit {
   }
 
   logout() {
-    this.apiService.logout().subscribe(() => {
-      window.location.reload(true);
-    });
+    this.keycloak.logout();
   }
 
   getInitials(user: UserInfo) {
-    const initials = (user.firstName[0] ?? "") + (user.lastName[0] ?? "");
+    const initials = (user?.firstName[0] ?? "") + (user?.lastName[0] ?? "");
     return initials.length === 0 ? "??" : initials;
   }
 

@@ -52,7 +52,7 @@ export class SideMenuComponent implements OnInit {
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
-      map((info) => info.assignedCatalogs.length > 0)
+      map((info) => info?.assignedCatalogs?.length > 0)
     );
   }
 

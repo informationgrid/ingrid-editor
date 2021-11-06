@@ -64,7 +64,7 @@ export class KeycloakMockService {
           resolveToken(mockToken);
         });
       };
-      resolve();
+      resolve(null);
       // reject();
     });
   }

@@ -1,12 +1,13 @@
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "./security/auth.guard";
+import { IgeKeycloakAuthGuard } from "./security/keycloak-auth.guard";
 
 export const routes: Routes = [
   {
     path: "dashboard",
     loadChildren: () =>
       import("./+dashboard/dashboard.module").then((m) => m.DashboardModule),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, IgeKeycloakAuthGuard],
     data: {
       title: "Übersicht",
       icon: "Uebersicht",
@@ -119,6 +120,6 @@ export const routes: Routes = [
 // export const appRoutingProviders: any[] = [];
 
 export const routing = RouterModule.forRoot(routes, {
-  preloadingStrategy: PreloadAllModules,
-  relativeLinkResolution: "legacy",
+  // preloadingStrategy: PreloadAllModules,
+  // relativeLinkResolution: "legacy",
 });

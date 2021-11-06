@@ -57,7 +57,7 @@ export class BehaviourService {
       catchError((e) => {
         const userInfo = this.configService.$userInfo.value;
         console.error("Could not get behaviours");
-        if (userInfo.assignedCatalogs.length === 0) {
+        if (userInfo?.assignedCatalogs?.length === 0) {
           console.log("because of user with no assigned catalogs");
           return [];
         } else {

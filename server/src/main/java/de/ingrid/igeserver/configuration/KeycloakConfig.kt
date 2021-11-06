@@ -46,7 +46,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         ) {
             request as HttpServletRequest
             response as HttpServletResponse
-            
+
             if (request.requestURI == "/error") {
                 // redirect to login-resource, which redirects to keycloak or extract authentication
                 // information from response
@@ -115,6 +115,12 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         var http = httpSec
         super.configure(http)
 
+        http.authorizeRequests()
+            .antMatchers("/api/**").hasRole("ige-user")
+            .anyRequest().permitAll()
+            .and().csrf().disable();
+        return
+
         http = if (generalProperties.enableCsrf) {
             http.csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -132,13 +138,14 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .and()
         }
         http
-            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
-            .authorizeRequests()
-            .anyRequest().authenticated()
-            .and()
-            .anonymous().disable() // force login when keycloak session timeouts because of inactivity
-            .logout()
-            .permitAll()
+//            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
+            .authorizeRequests().antMatchers("/api/**").authenticated().and()
+            .authorizeRequests().antMatchers("/").permitAll()
+//            .anyRequest().authenticated()
+//            .and()
+//            .anonymous().disable() // force login when keycloak session timeouts because of inactivity
+//            .logout()
+//            .permitAll()
     }
 
 }
