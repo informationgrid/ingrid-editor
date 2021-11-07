@@ -9,6 +9,7 @@ import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { KeycloakService } from "keycloak-angular";
+import { StorageService } from "../../storage.service";
 
 @Component({
   selector: "ige-main-header",
@@ -28,7 +29,8 @@ export class MainHeaderComponent implements OnInit {
     private configService: ConfigService,
     private session: SessionQuery,
     private router: Router,
-    private keycloak: KeycloakService
+    private keycloak: KeycloakService,
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
@@ -48,6 +50,7 @@ export class MainHeaderComponent implements OnInit {
   }
 
   logout() {
+    this.storageService.clear("ige-refresh-token");
     this.keycloak.logout();
   }
 

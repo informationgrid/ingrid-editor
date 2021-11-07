@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AuthService } from "../../services/security/auth.service";
+import { KeycloakService } from "keycloak-angular";
 
 @Component({
   selector: "ige-session-timeout-info",
@@ -9,11 +9,11 @@ import { AuthService } from "../../services/security/auth.service";
 export class SessionTimeoutInfoComponent implements OnInit {
   @Input() timeout: number;
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: KeycloakService) {}
 
   ngOnInit(): void {}
 
   refreshSession() {
-    this.auth.refreshSession().subscribe();
+    this.auth.updateToken(60);
   }
 }

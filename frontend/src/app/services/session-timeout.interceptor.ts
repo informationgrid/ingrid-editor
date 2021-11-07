@@ -6,22 +6,19 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { Observable, Subscription, timer } from "rxjs";
-import { scan, takeWhile, tap } from "rxjs/operators";
+import { filter, scan, takeWhile } from "rxjs/operators";
 import { SessionStore } from "../store/session.store";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { SessionQuery } from "../store/session.query";
 import { ApiService } from "./ApiService";
-import { KeycloakService } from "keycloak-angular";
-import { log } from "util";
+import { KeycloakEventType, KeycloakService } from "keycloak-angular";
+import { StorageService } from "../../storage.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class SessionTimeoutInterceptor implements HttpInterceptor {
   timer$: Subscription;
-  private defaultSessionDurationInMillSeconds = 1800;
-  private overrideSessionDuration;
   private oneSecondInMilliseconds = 1000;
 
   constructor(
@@ -29,22 +26,17 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     private modalService: ModalService,
     private apiService: ApiService,
     private keycloak: KeycloakService,
-    sessionQuery: SessionQuery
+    private storageService: StorageService
   ) {
-    sessionQuery
-      .select("sessionTimeoutDuration")
-      .subscribe((duration) => (this.overrideSessionDuration = duration));
+    this.initListener();
+    this.resetSessionTimeout();
   }
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(
-      tap((res) => {
-        this.resetSessionTimeout();
-      })
-    );
+    return next.handle(request);
   }
 
   private resetSessionTimeout() {
@@ -56,8 +48,6 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     if (!refreshToken) return;
 
     const endTime = refreshToken.exp;
-    const accessTokenEndTime =
-      this.keycloak.getKeycloakInstance().tokenParsed.exp;
 
     const now = Math.ceil(new Date().getTime() / 1000);
     const durationRefresh = endTime - now;
@@ -92,5 +82,56 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.modalService.showIgeError(error);
       setTimeout(() => this.keycloak.logout(), 5000);
     }
+  }
+
+  private initListener() {
+    this.storageService.changes
+      .pipe(filter((item) => item.key === "ige-refresh-token"))
+      .subscribe((data) => {
+        console.log("Token in LocalStorage has changed", data);
+        if (!data.value) {
+          this.keycloak.logout();
+        }
+        this.keycloak.getKeycloakInstance().refreshToken = data.value;
+        this.keycloak.getKeycloakInstance().refreshTokenParsed =
+          this.decodeToken(data.value);
+
+        this.resetSessionTimeout();
+      });
+
+    this.keycloak.keycloakEvents$
+      .pipe(
+        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess)
+      )
+      .subscribe(() => {
+        this.storageService.store(
+          "ige-refresh-token",
+          this.keycloak.getKeycloakInstance().refreshToken
+        );
+      });
+  }
+
+  private decodeToken(str) {
+    str = str.split(".")[1];
+
+    str = str.replace(/-/g, "+");
+    str = str.replace(/_/g, "/");
+    switch (str.length % 4) {
+      case 0:
+        break;
+      case 2:
+        str += "==";
+        break;
+      case 3:
+        str += "=";
+        break;
+      default:
+        throw "Invalid token";
+    }
+
+    str = decodeURIComponent(escape(atob(str)));
+
+    str = JSON.parse(str);
+    return str;
   }
 }

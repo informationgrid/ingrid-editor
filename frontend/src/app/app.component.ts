@@ -4,6 +4,9 @@ import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
+import { KeycloakEventType, KeycloakService } from "keycloak-angular";
+import { StorageService } from "../storage.service";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "ige-root",
@@ -17,8 +20,7 @@ export class AppComponent implements OnInit {
     private behaviourService: BehaviourService /*for initialization!*/,
     private codelistService: CodelistService,
     registry: MatIconRegistry,
-    domSanitizer: DomSanitizer,
-    private roleService: GroupService
+    domSanitizer: DomSanitizer
   ) {
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     /*this.roleService.getGroup('admin')
