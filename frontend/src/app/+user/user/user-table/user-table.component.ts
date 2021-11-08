@@ -24,6 +24,9 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   isLoading = true;
 
   @Input()
+  simple = false;
+
+  @Input()
   set users(val: User[]) {
     if (val) this.isLoading = false;
     this.dataSource.data = val ?? [];
@@ -35,12 +38,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   }
 
   @Input() selectedUser: Subject<User>;
-  displayedColumns: string[] = [
-    "role-icon",
-    "login",
-    "firstName",
-    "organisation",
-  ];
+  displayedColumns: string[];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<User>;
 
@@ -69,7 +67,10 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.selectedUser.subscribe((user) => {
+    this.displayedColumns = this.simple
+      ? ["role-icon", "firstName"]
+      : ["role-icon", "login", "firstName", "organisation"];
+    this.selectedUser?.subscribe((user) => {
       this.selection.select(
         this.dataSource.data.find((d) => d.login == user?.login)
       );

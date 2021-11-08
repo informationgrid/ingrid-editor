@@ -56,7 +56,12 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups)
         }
 
-        groups = groups.filter { it.manager?.userId == userId || igeAclService.hasRightsForGroup(principal as Authentication, it) }
+        groups = groups.filter {
+            it.manager?.userId == userId || igeAclService.hasRightsForGroup(
+                principal as Authentication,
+                it
+            )
+        }
 /*
 
         // filter groups for user
@@ -81,11 +86,8 @@ class GroupsApiController @Autowired constructor(
     }
 
     override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<User>> {
-
-        val users = groupService.getUsersOfGroup(id)
-            .map { User(it.userId) }
+        val users = groupService.getUsersOfGroup(id, principal)
         return ResponseEntity.ok(users)
-
     }
 
     override fun getManagerOfGroup(principal: Principal, id: Int): ResponseEntity<User> {

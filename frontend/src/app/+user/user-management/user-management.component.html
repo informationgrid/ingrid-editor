@@ -15,7 +15,10 @@
     <mat-tab label="Gruppen & Rechte" aria-label="groups-and-permissions">
         <!-- Lazy load tab content to correctly initialize split component -->
         <ng-template matTabContent>
-            <ige-group-manager #group></ige-group-manager>
+            <ige-group-manager
+                #group
+                (onUserSelect)="switchToUser($event)"
+            ></ige-group-manager>
         </ng-template>
     </mat-tab>
 </mat-tab-group>

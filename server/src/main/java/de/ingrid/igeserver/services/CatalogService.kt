@@ -288,6 +288,9 @@ class CatalogService @Autowired constructor(
             .filter { user -> catalogUsers.any { it.userId == user.login } }
             .onEach { user ->
                 val catUser = catalogUsers.find { it.userId == user.login }!!
+                user.groups = catUser.groups.sortedBy { it.name }.map { it.id!! }
+                user.creationDate = catUser.data?.creationDate ?: Date(0)
+                user.modificationDate = catUser.data?.modificationDate ?: Date(0)
                 user.role = catUser.role?.name ?: ""
                 user.organisation = catUser.data?.organisation ?: ""
                 user.manager = managerRepo.findByUserAndCatalogIdentifier(catUser, catalogId)?.manager?.userId ?: ""

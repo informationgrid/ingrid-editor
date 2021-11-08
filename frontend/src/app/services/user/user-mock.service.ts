@@ -11,6 +11,7 @@ export class UserMockService {
       role: "md-admin",
       creationDate: new Date(),
       modificationDate: new Date(),
+      organisation: "",
       attributes: [],
     },
   ];

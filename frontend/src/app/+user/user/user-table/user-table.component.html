@@ -1,19 +1,9 @@
-<!--
-
-<mat-selection-list #userSelect [formControl]="selectedUserForm" multiple="false"
-                    (selectionChange)="'TODO'">
-    <mat-list-option *ngFor="let user of users" [value]="user.login">
-        <h4 mat-line>{{user.login}}</h4>
-    </mat-list-option>
-</mat-selection-list>
-
--->
-
 <table mat-table [dataSource]="dataSource" matSort class="width-100">
     <!-- Role Column -->
     <ng-container matColumnDef="role-icon" class="thin-column">
-        <th mat-header-cell *matHeaderCellDef>Rolle</th>
+        <th class="thin-column" mat-header-cell *matHeaderCellDef>Rolle</th>
         <td
+            class="thin-column"
             mat-cell
             *matCellDef="let element"
             (click)="trySelect(element)"
@@ -101,12 +91,13 @@
     <mat-spinner> </mat-spinner>
 </div>
 <mat-paginator
+    *ngIf="!simple"
     [pageSize]="10"
     [hidePageSize]="true"
     matPaginator
     showFirstLastButtons
 ></mat-paginator>
-<div class="legend">
+<div *ngIf="!simple" class="legend">
     <mat-icon svgIcon="author"></mat-icon>
     <span> Autor,</span>
     <mat-icon svgIcon="meta-admin"></mat-icon>

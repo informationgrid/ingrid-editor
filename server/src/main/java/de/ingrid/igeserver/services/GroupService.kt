@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.GroupData
@@ -21,6 +22,7 @@ import org.springframework.security.acls.model.MutableAcl
 import org.springframework.security.acls.model.Permission
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.security.Principal
 import java.util.*
 
 
@@ -29,7 +31,8 @@ open class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
-    private val aclService: AclService
+    private val aclService: AclService,
+    private var keycloakService: UserManagementService
 ) {
 
     private val log = logger()
@@ -163,8 +166,14 @@ open class GroupService @Autowired constructor(
 
     }
 
-    fun getUsersOfGroup(id: Int): List<UserInfo> {
-        return userRepo.findByGroups_Id(id)
+    fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
+        keycloakService.getClient(principal).use { client ->
+            val users = userRepo.findByGroups_Id(id)
+                .map {
+                    keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                }
+            return users
+        }
     }
 
     fun removeDocFromGroups(catalogId: String, docId: String) {

@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { FrontendGroup, Group } from "../../models/user-group";
@@ -23,6 +29,7 @@ import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { EditManagerDialogComponent } from "../user/edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
+import { UserService } from "../../services/user/user.service";
 
 @UntilDestroy()
 @Component({
@@ -35,6 +42,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
   userGroupNames: string[];
   searchQuery: string;
 
+  @Output() onUserSelect = new EventEmitter<User>();
+
   userInfo$ = this.configService.$userInfo;
 
   form: FormGroup;
@@ -45,6 +54,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
   isLoading = false;
   showMore = false;
   tableWidth: number;
+  groupUsers: User[];
 
   constructor(
     private modalService: ModalService,
@@ -53,6 +63,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     public groupService: GroupService,
     private configService: ConfigService,
     public userManagementService: UserManagementService,
+    public userService: UserService,
     private session: SessionQuery
   ) {
     this.searchQuery = "";
@@ -133,6 +144,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           this.groupService.getGroupManager(id).subscribe((manager) => {
             if (this.selectedGroup) this.selectedGroup.manager = manager.login;
           });
+          this.loadGroupUsers(id);
         });
       } else {
         this.groupService.selectedGroup$.next(this.selectedGroup);
@@ -289,6 +301,25 @@ export class GroupComponent implements OnInit, AfterViewInit {
                 }
               });
           });
+      }
+    });
+  }
+
+  private loadGroupUsers(id: number) {
+    this.groupService
+      .getUsersOfGroup(id)
+      .subscribe(
+        (users) =>
+          (this.groupUsers = users.sort((a, b) =>
+            a.login.localeCompare(b.login)
+          ))
+      );
+  }
+
+  switchToUser($event: User) {
+    this.dirtyFormHandled().subscribe((allClear) => {
+      if (allClear) {
+        this.onUserSelect.emit($event);
       }
     });
   }
