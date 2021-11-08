@@ -13,7 +13,6 @@ import {
   CreateNodeComponent,
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
-import { KeycloakService } from "keycloak-angular";
 
 @Component({
   templateUrl: "./dashboard.component.html",
@@ -31,8 +30,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private docService: DocumentService,
-    private sessionQuery: SessionQuery,
-    private keycloak: KeycloakService
+    private sessionQuery: SessionQuery
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -108,9 +106,5 @@ export class DashboardComponent implements OnInit {
         isFolder: true,
       } as CreateOptions,
     });
-  }
-
-  login() {
-    this.keycloak.login();
   }
 }

@@ -5,7 +5,6 @@ import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../environments/environment";
 
 export class Configuration {
   constructor(
