@@ -1,6 +1,11 @@
 {
   "backendUrl": "/api/",
   "brokerUrl": "ws://localhost:8550/ws",
+  "keycloak": {
+    "url": "http://localhost:8080/auth",
+    "realm": "InGrid",
+    "clientId": "ige-ng-frontend"
+  },
   "featureFlags": {
     "AP3": true,
     "AP4": false,

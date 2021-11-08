@@ -4,10 +4,15 @@ import { BehaviorSubject } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
+import { HttpClient } from "@angular/common/http";
 
 export class Configuration {
   constructor(
-    public keykloakBaseUrl: string,
+    public keycloak: {
+      url: string;
+      realm: string;
+      clientId: string;
+    },
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string
@@ -49,8 +54,8 @@ export class ConfigService {
   private dataService: ConfigDataService;
   private isAdministrator = false;
 
-  constructor() {
-    this.dataService = new ConfigDataService();
+  constructor(private http: HttpClient) {
+    this.dataService = new ConfigDataService(http);
   }
 
   load(url: string): Promise<Configuration> {
@@ -63,13 +68,9 @@ export class ConfigService {
     });
   }
 
-  dummyLoginForDevelopment() {
-    return this.dataService.dummyLoginForDevelopment();
-  }
-
   // TODO: refactor to fetchCurrentUserInfo()
-  getCurrentUserInfo(token?: string): Promise<UserInfo> {
-    return this.dataService.getCurrentUserInfo(token).then((userInfo) => {
+  getCurrentUserInfo(): Promise<UserInfo> {
+    return this.dataService.getCurrentUserInfo().then((userInfo) => {
       if (userInfo === null) {
         throw new IgeError("Could not get current user");
       }

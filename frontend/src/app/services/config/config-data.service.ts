@@ -2,33 +2,25 @@ import { Configuration, UserInfo } from "./config.service";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
+import { HttpClient } from "@angular/common/http";
 
 export class ConfigDataService {
   config: Configuration;
 
+  constructor(private httpClient: HttpClient) {}
+
   load(url: string): Promise<any> {
-    return this.sendRequest("GET", url).then((response) =>
-      JSON.parse(response)
-    );
+    return this.httpClient.get<string>(url).toPromise();
   }
 
-  dummyLoginForDevelopment() {
-    return this.sendRequest("GET", "/login")
-      .then((response) => console.log("Successfully created backend principal"))
-      .catch((err) => console.warn("typical login error during development"));
-  }
-
-  getCurrentUserInfo(token: string): Promise<UserInfo> {
+  getCurrentUserInfo(): Promise<UserInfo> {
     return (
-      this.sendRequest(
-        "GET",
-        this.config.backendUrl + "info/currentUser",
-        token
-      )
+      this.httpClient
+        .get<any>(this.config.backendUrl + "info/currentUser")
+        .toPromise()
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
-        .then((response) => {
-          const json = JSON.parse(response);
+        .then((json) => {
           return <UserInfo>{
             assignedCatalogs: json.assignedCatalogs,
             name: json.name,
@@ -48,7 +40,7 @@ export class ConfigDataService {
             permissions: json.permissions,
           };
         })
-        .catch((e: IgeException | string) => {
+        .catch((e: IgeException | XMLHttpRequest | string) => {
           if (typeof e === "string") {
             if (e.indexOf("Cannot GET /sso/login") !== -1) {
               console.error(
@@ -66,8 +58,12 @@ export class ConfigDataService {
             } else {
               console.error("Could not get current user info", e);
             }
+          } else if ((<XMLHttpRequest>e).status === 401) {
+            throw new Error(
+              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein"
+            );
           } else {
-            throw new Error(e.errorText);
+            throw new Error((<IgeException>e).errorText);
           }
           return <UserInfo>{
             assignedCatalogs: [],
@@ -86,36 +82,5 @@ export class ConfigDataService {
           };
         })
     );
-  }
-
-  private sendRequest(
-    method = "GET",
-    url = null,
-    token?: string
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.overrideMimeType("application/json");
-      xhr.open(method, url, true);
-      if (token) {
-        xhr.setRequestHeader("Authorization", "Bearer " + token);
-      }
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            resolve(xhr.responseText);
-          } else {
-            let error;
-            try {
-              error = JSON.parse(xhr.responseText);
-            } catch (e) {
-              error = xhr.responseText;
-            }
-            reject(error);
-          }
-        }
-      };
-      xhr.send(null);
-    });
   }
 }

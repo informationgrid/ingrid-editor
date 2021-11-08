@@ -6,7 +6,7 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { Observable, Subscription, timer } from "rxjs";
-import { filter, scan, takeWhile } from "rxjs/operators";
+import { filter, scan, take, takeWhile } from "rxjs/operators";
 import { SessionStore } from "../store/session.store";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
@@ -29,7 +29,12 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     private storageService: StorageService
   ) {
     this.initListener();
-    this.resetSessionTimeout();
+    this.keycloak.keycloakEvents$
+      .pipe(
+        filter((item) => item.type === KeycloakEventType.OnAuthSuccess),
+        take(1)
+      )
+      .subscribe(() => this.resetSessionTimeout());
   }
 
   intercept(
@@ -86,11 +91,16 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
   private initListener() {
     this.storageService.changes
-      .pipe(filter((item) => item.key === "ige-refresh-token"))
+      .pipe(
+        filter((item) => item.key === "ige-refresh-token"),
+        takeWhile((item) => item.value !== null)
+      )
       .subscribe((data) => {
         console.log("Token in LocalStorage has changed", data);
         if (!data.value) {
           this.keycloak.logout();
+          this.storageService.clear("ige-refresh-token");
+          return;
         }
         this.keycloak.getKeycloakInstance().refreshToken = data.value;
         this.keycloak.getKeycloakInstance().refreshTokenParsed =
