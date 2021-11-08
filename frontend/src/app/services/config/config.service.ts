@@ -5,14 +5,14 @@ import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
 
 export class Configuration {
   constructor(
-    public keycloak: {
-      url: string;
-      realm: string;
-      clientId: string;
-    },
+    public keycloakUrl: string,
+    public keycloakRealm: string,
+    public keycloakClientId: string,
+
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string
@@ -58,10 +58,10 @@ export class ConfigService {
     this.dataService = new ConfigDataService(http);
   }
 
-  load(url: string): Promise<Configuration> {
+  load(): Promise<Configuration> {
     console.log("=== ConfigService ===");
 
-    return this.dataService.load(url).then((json) => {
+    return this.dataService.load().then((json) => {
       this.config = json;
       this.dataService.config = this.config;
       return this.config;

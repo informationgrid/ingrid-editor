@@ -3,14 +3,30 @@ import { Catalog } from "../../+catalog/services/catalog.model";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
+import { map, tap } from "rxjs/operators";
 
 export class ConfigDataService {
   config: Configuration;
 
   constructor(private httpClient: HttpClient) {}
 
-  load(url: string): Promise<any> {
-    return this.httpClient.get<string>(url).toPromise();
+  private getEnvironmentConfig(): Promise<any> {
+    return this.httpClient.get<any>(environment.configFile).toPromise();
+  }
+
+  /**
+   * Get environment config from frontend and add configuration coming from
+   * backend. Backend configuration is easier since environment variables can
+   * be used directly when creating docker container. However we need at least
+   * the URL from the backend to make our requests. This needs to be changed if
+   * the application is behind a proxy pass (with a context path).
+   */
+  async load(): Promise<any> {
+    const config = await this.getEnvironmentConfig();
+    return this.httpClient
+      .get<any>(config.backendUrl + "config")
+      .pipe(map((data) => ({ ...config, ...data })))
+      .toPromise();
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {

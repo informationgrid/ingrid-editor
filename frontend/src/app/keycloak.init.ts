@@ -31,12 +31,12 @@ export function getUserInfo(configService) {
 }
 
 function getKeycloakOptions(configService: ConfigService): KeycloakOptions {
-  const keycloakConfig = configService.getConfiguration().keycloak;
+  const config = configService.getConfiguration();
   return {
     config: {
-      url: keycloakConfig.url,
-      realm: keycloakConfig.realm,
-      clientId: keycloakConfig.clientId,
+      url: config.keycloakUrl,
+      realm: config.keycloakRealm,
+      clientId: config.keycloakClientId,
     },
     // bearerExcludedUrls: ["/assets", "/clients/public"],
     loadUserProfileAtStartUp: false,

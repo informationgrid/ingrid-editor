@@ -116,6 +116,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         super.configure(http)
 
         http.authorizeRequests()
+            .antMatchers("/api/config").permitAll()
             .antMatchers("/api/**").hasRole("ige-user")
             .anyRequest().permitAll()
             .and().csrf().disable();

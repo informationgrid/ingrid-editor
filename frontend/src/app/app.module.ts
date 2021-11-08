@@ -82,7 +82,7 @@ export function ConfigLoader(
 ) {
   return () => {
     return configService
-      .load(environment.configFile)
+      .load()
       .then(() =>
         initializeKeycloakAndGetUserInfo(keycloakService, configService)
       )
