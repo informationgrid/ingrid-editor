@@ -11,7 +11,6 @@ import { DocumentService } from "../../../services/document/document.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { RouterTestingModule } from "@angular/router/testing";
 import { TreeService } from "../../sidebars/tree/tree.service";
-import { AuthService } from "../../../services/security/auth.service";
 import { FormPluginToken } from "../../../tokens/plugin.token";
 import { AddressTitleBehaviour } from "../../../+catalog/+behaviours/system/AddressTitle/address-title.behaviour";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -19,6 +18,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
 import { FormSharedModule } from "../form-shared.module";
 import { of } from "rxjs";
+import { KeycloakService } from "keycloak-angular";
 
 describe("Dynamic Form", () => {
   let spectator: Spectator<DynamicFormComponent>;
@@ -43,7 +43,7 @@ describe("Dynamic Form", () => {
       DocumentService,
       ModalService,
       TreeService,
-      AuthService,
+      KeycloakService,
     ],
     detectChanges: false,
   });

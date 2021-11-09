@@ -12,7 +12,6 @@ import { HelpComponent } from "./help/help.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config/config.service";
-import { LoginComponent } from "./security/login.component";
 import { GlobalErrorHandler } from "./error-handler";
 import {
   HTTP_INTERCEPTORS,
@@ -101,7 +100,6 @@ export function ConfigLoader(
   declarations: [
     AppComponent,
     HelpComponent,
-    LoginComponent,
     ErrorDialogComponent,
     ConfirmDialogComponent,
     OneColumnWrapperComponent,
