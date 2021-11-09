@@ -53,7 +53,7 @@ export const routes: Routes = [
     },
   },
   {
-    path: "user",
+    path: "manage",
     loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
     data: {
       title: "Nutzer & Rechte",

@@ -1,24 +1,13 @@
-<mat-tab-group
-    dynamicHeight
-    class="page-tabs"
-    [animationDuration]="'0ms'"
-    (selectedIndexChange)="handleTabChange($event)"
-    [selectedIndex]="selectedIndex | async"
->
-    <mat-tab label="Nutzer" aria-label="users">
-        <!-- Lazy load tab content to correctly initialize split component -->
-        <ng-template matTabContent>
-            <ige-user-manager #user></ige-user-manager>
-        </ng-template>
-    </mat-tab>
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a
+        *ngFor="let tab of tabs; let i = index"
+        mat-tab-link
+        routerLinkActive="active-link"
+        [routerLink]="tab.params ? [tab.path, tab.params] : tab.path"
+        [active]="activeLink == tab.path"
+    >
+        {{ tab.label }}
+    </a>
+</nav>
 
-    <mat-tab label="Gruppen & Rechte" aria-label="groups-and-permissions">
-        <!-- Lazy load tab content to correctly initialize split component -->
-        <ng-template matTabContent>
-            <ige-group-manager
-                #group
-                (onUserSelect)="switchToUser($event)"
-            ></ige-group-manager>
-        </ng-template>
-    </mat-tab>
-</mat-tab-group>
+<router-outlet (activate)="onActivate($event)"></router-outlet>

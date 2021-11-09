@@ -22,6 +22,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
 
+  onItemClick: (id: number) => void = () => {};
+
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
@@ -44,6 +46,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         .subscribe();
     } else {
       this.initInputListener(this.to.options);
+    }
+
+    if (this.to.onItemClick) {
+      this.onItemClick = this.to.onItemClick;
     }
   }
 

@@ -35,6 +35,7 @@ import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { EditManagerDialogComponent } from "./user/edit-manager-dialog/edit-manager-dialog.component";
+import { RouterModule } from "@angular/router";
 
 @NgModule({
   imports: [
@@ -78,6 +79,7 @@ import { EditManagerDialogComponent } from "./user/edit-manager-dialog/edit-mana
     IgeSearchField,
     EditManagerDialogComponent,
   ],
+  exports: [RouterModule],
   providers: [UserManagementService],
 })
 export class UserModule {}

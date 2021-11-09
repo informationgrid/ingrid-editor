@@ -3,7 +3,7 @@ import { SessionStore } from "../store/session.store";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 
-export type TabPage = "research" | "user" | "import" | "catalog";
+export type TabPage = "research" | "manage" | "import" | "catalog";
 
 @Injectable({
   providedIn: "root",

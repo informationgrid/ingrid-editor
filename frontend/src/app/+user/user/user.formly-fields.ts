@@ -8,7 +8,8 @@ import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.fie
 export const getUserFormFields = (
   roles: SelectOptionUi[],
   groups: Observable<Group[]>,
-  roleChangeCallback: FormlyAttributeEvent = undefined
+  roleChangeCallback: FormlyAttributeEvent = undefined,
+  groupClickCallback: (id: number) => void = undefined
 ): FormlyFieldConfig[] => {
   return [
     {
@@ -108,6 +109,7 @@ export const getUserFormFields = (
             });
           })
         ),
+        onItemClick: groupClickCallback,
         noDrag: true,
         elementIcon: "group",
         asSelect: true,

@@ -155,12 +155,14 @@ export class UserService {
   }
 
   getUserFormFields(
-    roleChangeCallback: FormlyAttributeEvent = undefined
+    roleChangeCallback: FormlyAttributeEvent = undefined,
+    groupClickCallback: (id: number) => void = undefined
   ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
       this.groupService.getGroups(),
-      roleChangeCallback
+      roleChangeCallback,
+      groupClickCallback
     );
   }
 

@@ -10,6 +10,7 @@
         cdkDrag
         [cdkDragDisabled]="to.noDrag"
         class="clickable list-item"
+        (click)="this.onItemClick(model[i]?.value)"
     >
         <span class="list-display-element">
             <mat-icon
@@ -55,8 +56,8 @@
             *ngIf="parameterOptions && repeatListInput.value.length === 0"
             class="gray"
             matPrefix
-            >search</mat-icon
-        >
+            >search
+        </mat-icon>
         <input
             type="text"
             #repeatListInput
@@ -91,10 +92,10 @@
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
         <mat-hint *ngIf="!parameterOptions"
-            >Eingabe mit RETURN bestätigen</mat-hint
-        >
+            >Eingabe mit RETURN bestätigen
+        </mat-hint>
     </mat-form-field>
     <mat-error *ngIf="formControl.errors?.required"
-        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
-    >
+        >Bitte erstellen Sie mindestens einen Eintrag
+    </mat-error>
 </ng-template>

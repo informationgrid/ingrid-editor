@@ -6,22 +6,25 @@ import {
 } from "@angular/router";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-import { UserManagementComponent } from "./user-management/user-management.component";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
+import { UserComponent } from "./user/user.component";
+import { GroupComponent } from "./group/group.component";
 
 @Injectable({
   providedIn: "root",
 })
-export class DeactivateGuard implements CanDeactivate<UserManagementComponent> {
+export class DeactivateGuard
+  implements CanDeactivate<UserComponent | GroupComponent>
+{
   constructor(private dialog: MatDialog) {}
 
   canDeactivate(
-    component: UserManagementComponent,
+    component: UserComponent | GroupComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
@@ -30,7 +33,7 @@ export class DeactivateGuard implements CanDeactivate<UserManagementComponent> {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    const isDirty = component.user?.form?.dirty || component.group?.form?.dirty;
+    const isDirty = component.form?.dirty;
 
     if (!isDirty) {
       return true;

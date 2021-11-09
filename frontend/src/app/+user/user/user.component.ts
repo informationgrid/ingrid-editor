@@ -13,7 +13,7 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -26,6 +26,7 @@ import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { EditManagerDialogComponent } from "./edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
+import { Router } from "@angular/router";
 
 @UntilDestroy()
 @Component({
@@ -40,7 +41,6 @@ export class UserComponent
   currentTab: string;
   form = new FormGroup({});
 
-  selectedUserForm = new FormControl();
   selectedUser: User;
   showMore = false;
   searchQuery: string;
@@ -57,6 +57,7 @@ export class UserComponent
     public userService: UserService,
     private groupService: GroupService,
     private configService: ConfigService,
+    private router: Router,
     public userManagementService: UserManagementService,
     private session: SessionQuery,
     private snackBar: MatSnackBar,
@@ -65,43 +66,52 @@ export class UserComponent
     this.model = new FrontendUser();
     this.searchQuery = "";
     this.formlyFieldConfig = this.userService.getUserFormFields(
-      (field, $event) => {
-        // user can only be downgraded to author if he is not a manager of any other users
-        if ($event.value === "author") {
-          this.userService
-            .getManagedUsers(this.selectedUser.login)
-            .subscribe((managedUsers) => {
-              if (managedUsers.length > 0) {
-                // reset role change as user is still a manager
-                this.form.get("role").setValue(this.selectedUserRole);
-
-                this.dialog.open(ConfirmDialogComponent, {
-                  data: {
-                    title: "Benutzer Rolle ändern",
-                    message:
-                      "Die Rolle des Nutzers kann nicht geändert werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
-                      managedUsers.join("\n") +
-                      "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
-                    buttons: [
-                      {
-                        text: "Schließen",
-                        alignRight: true,
-                        emphasize: true,
-                      },
-                    ],
-                  } as ConfirmDialogData,
-                  hasBackdrop: true,
-                });
-              }
-              this.selectedUserRole = this.form.get("role").value;
-            });
-        } else {
-          this.selectedUserRole = this.form.get("role").value;
-        }
-      }
+      this.roleChangeCallback,
+      this.groupSelectCallback
     );
     this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
+
+  groupSelectCallback = (groupId: number) =>
+    this.groupService.getGroup(groupId).subscribe((group) => {
+      this.groupService.selectedGroup$.next(group);
+      this.router.navigate(["/manage/group"]);
+    });
+
+  roleChangeCallback = (field, $event) => {
+    // user can only be downgraded to author if he is not a manager of any other users
+    if ($event.value === "author") {
+      this.userService
+        .getManagedUsers(this.selectedUser.login)
+        .subscribe((managedUsers) => {
+          if (managedUsers.length > 0) {
+            // reset role change as user is still a manager
+            this.form.get("role").setValue(this.selectedUserRole);
+
+            this.dialog.open(ConfirmDialogComponent, {
+              data: {
+                title: "Benutzer Rolle ändern",
+                message:
+                  "Die Rolle des Nutzers kann nicht geändert werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
+                  managedUsers.join("\n") +
+                  "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
+                buttons: [
+                  {
+                    text: "Schließen",
+                    alignRight: true,
+                    emphasize: true,
+                  },
+                ],
+              } as ConfirmDialogData,
+              hasBackdrop: true,
+            });
+          }
+          this.selectedUserRole = this.form.get("role").value;
+        });
+    } else {
+      this.selectedUserRole = this.form.get("role").value;
+    }
+  };
 
   ngAfterViewInit(): void {
     this.tableWidth = this.session.getValue().ui.userTableWidth;

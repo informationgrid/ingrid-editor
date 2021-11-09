@@ -30,6 +30,8 @@ import { SessionQuery } from "../../store/session.query";
 import { EditManagerDialogComponent } from "../user/edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
+import { SessionService } from "../../services/session.service";
+import { Router } from "@angular/router";
 
 @UntilDestroy()
 @Component({
@@ -41,8 +43,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
   groups: Group[] = [];
   userGroupNames: string[];
   searchQuery: string;
-
-  @Output() onUserSelect = new EventEmitter<User>();
 
   userInfo$ = this.configService.$userInfo;
 
@@ -64,6 +64,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     private configService: ConfigService,
     public userManagementService: UserManagementService,
     public userService: UserService,
+    private router: Router,
     private session: SessionQuery
   ) {
     this.searchQuery = "";
@@ -317,10 +318,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
   }
 
   switchToUser($event: User) {
-    this.dirtyFormHandled().subscribe((allClear) => {
-      if (allClear) {
-        this.onUserSelect.emit($event);
-      }
-    });
+    this.userService.selectedUser$.next($event);
+    this.router.navigate(["/manage/user"]);
   }
 }
