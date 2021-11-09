@@ -151,14 +151,16 @@ export class DocumentPage extends BasePage {
       periodicity: '8'
     };
 
-    // for local tests
-    /*cy.request({
-      method: 'GET',
-      url: 'http://localhost:8550/login',
-      failOnStatusCode: false
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
     });
-    cy.request('POST', `http://localhost:8550/api/datasets?address=false&publish=${published}`, json);*/
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
   }
 
   static CreateTestDocumentWithAPI(title: string, published?: boolean) {
@@ -218,14 +220,16 @@ export class DocumentPage extends BasePage {
       ]
     };
 
-    // for local tests
-    /*cy.request({
-      method: 'GET',
-      url: 'http://localhost:8550/login',
-      failOnStatusCode: false
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
     });
-    cy.request('POST', `http://localhost:8550/api/datasets?address=false&publish=${published}`, json);*/
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
   }
 
   static CreateSpatialBboxWithAPI(title: string, published?: boolean) {
@@ -248,7 +252,16 @@ export class DocumentPage extends BasePage {
       ]
     };
 
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
   }
 
   static CreateSpatialWKTWithAPI(title: string, published?: boolean) {
@@ -266,7 +279,16 @@ export class DocumentPage extends BasePage {
       ]
     };
 
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
   }
 
   static CreateSpatialBboxAndWktEntrysWithAPI(title: string, published?: boolean) {
@@ -309,7 +331,16 @@ export class DocumentPage extends BasePage {
       ]
     };
 
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`, json);
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: Cypress.config('baseUrl') + `/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
   }
 
   static fillCreateDialog(objectName: string) {

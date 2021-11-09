@@ -5,12 +5,9 @@ import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 
 describe('mCLOUD documents', function () {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     DocumentPage.visit();
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   describe('Publish documents', () => {

@@ -10,12 +10,9 @@ import { AddressPage } from '../../pages/address.page';
 
 describe('Research Page', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('research');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   //Erweiterte Suche

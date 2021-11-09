@@ -9,11 +9,8 @@ import { Utils } from '../../pages/utils';
 // user without authorizations (author)
 describe('User without authorizations', () => {
   beforeEach(() => {
-    cy.kcLogin('autor');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('autor');
   });
 
   xit('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
@@ -82,11 +79,8 @@ describe('User without authorizations', () => {
 // user with some limited authorizations (test_gruppe_3: Neue Testdokumente/ Ordner_2.Ebene)
 describe('author with groups', () => {
   beforeEach(() => {
-    cy.kcLogin('autor2');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('autor2');
   });
 
   it('search by search field in sidebar should search for the assigned data documents, be they expanded or not', () => {

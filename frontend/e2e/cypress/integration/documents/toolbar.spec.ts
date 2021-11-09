@@ -3,13 +3,10 @@ import { Tree } from '../../pages/tree.partial';
 
 describe('Toolbar behavior', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
+    cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
     cy.visit('/form');
     cy.get('mat-toolbar').should('be.visible');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('initially only create folder and create doc are enabled', () => {

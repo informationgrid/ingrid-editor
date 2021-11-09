@@ -7,13 +7,10 @@ import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('User', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('user', { timeout: 30000 });
     cy.get('.page-title').contains('Nutzer');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should create a new user', () => {

@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "8.2.0",
+    "cypress": "8.7.0",
     "gremlins.js": "^2.2.0",
     "mocha": "^8.3.2",
     "mochawesome": "^6.2.2",

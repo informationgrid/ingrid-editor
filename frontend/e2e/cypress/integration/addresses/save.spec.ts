@@ -6,12 +6,9 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     AddressPage.visit();
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   const createDialog = AddressPage.CreateDialog;
@@ -225,6 +222,7 @@ describe('General create addresses/folders', () => {
       cy.contains('mat-dialog-container', 'Möchten Sie wirklich diese Datensätze löschen:');
     });
 
+    // TODO: use prepared addresses / folders for this test instead of creating them
     it('should actualize tree after deleting (#3048)', () => {
       // create folder
       const folderName = 'folder_to_be_later_deleted';

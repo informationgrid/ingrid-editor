@@ -6,12 +6,9 @@ import { CatalogsTabmenu } from '../../pages/base.page';
 
 describe('Behaviours', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
-    cy.visit('catalogs');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
+    cy.visit('catalogs');
   });
 
   it('should show multiple system and form behaviours', () => {

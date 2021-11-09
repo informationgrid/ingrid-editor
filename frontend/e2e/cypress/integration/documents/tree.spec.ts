@@ -6,12 +6,9 @@ import { xit } from 'mocha';
 
 describe('Tree', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
-    cy.visit('form');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
+    cy.visit('form');
   });
 
   const dragAndDropFolder = "Drag'n'Drop";

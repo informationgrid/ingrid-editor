@@ -3,11 +3,8 @@ import { beforeEach } from 'mocha';
 
 describe('Load documents', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user');
   });
 
   // tested in dashboard

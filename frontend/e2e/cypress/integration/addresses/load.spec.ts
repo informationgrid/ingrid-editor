@@ -3,12 +3,9 @@ import { AddressPage, ROOT } from '../../pages/address.page';
 
 describe('Load addresses', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     AddressPage.visit();
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should show a dashboard view when no address is selected or in root element', () => {
