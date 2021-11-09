@@ -7,7 +7,7 @@ import { BreadcrumbComponent } from "../+form/form-info/breadcrumb/breadcrumb.co
 import { ApiService } from "../services/ApiService";
 import { ConfigService } from "../services/config/config.service";
 import { Router } from "@angular/router";
-import { KeycloakService } from "keycloak-angular";
+import { AuthenticationFactory } from "../security/auth.factory";
 
 describe("MainHeaderComponent", () => {
   let spectator: Spectator<MainHeaderComponent>;
@@ -16,7 +16,7 @@ describe("MainHeaderComponent", () => {
     imports: [MatDialogModule],
     declarations: [BreadcrumbComponent],
     componentMocks: [ApiService, ConfigService, Router, MatDialog],
-    mocks: [KeycloakService],
+    mocks: [AuthenticationFactory],
     detectChanges: false,
   });
 

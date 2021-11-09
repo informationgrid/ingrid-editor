@@ -20,12 +20,6 @@ class HomeController {
         return RedirectView("index.html")
     }
 
-    @GetMapping(path = ["/api/logout"])
-    fun logout(request: HttpServletRequest): ResponseEntity<String> {
-        request.logout()
-        return ResponseEntity.ok("""{ "message": "Logged out" }""")
-    }
-
     @GetMapping(value = ["/swagger"])
     fun swagger(): RedirectView {
         return RedirectView("swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config")

@@ -11,6 +11,7 @@ export class Configuration {
     public keycloakUrl: string,
     public keycloakRealm: string,
     public keycloakClientId: string,
+    public keycloakEnabled: boolean,
 
     public backendUrl: string,
     public featureFlags: any,

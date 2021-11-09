@@ -70,26 +70,29 @@ import {
   rxStompServiceFactory,
 } from "@stomp/ng2-stompjs";
 import { IgeStompConfig } from "./ige-stomp.config";
-import { KeycloakAngularModule, KeycloakService } from "keycloak-angular";
+import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
+import { AuthenticationFactory } from "./security/auth.factory";
 
 registerLocaleData(de);
 
 export function ConfigLoader(
   configService: ConfigService,
-  keycloakService: KeycloakService
+  authFactory: AuthenticationFactory
 ) {
   return () => {
     return configService
       .load()
-      .then(() =>
-        initializeKeycloakAndGetUserInfo(keycloakService, configService)
-      )
+      .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
+      .then(() => console.log("FINISHED APP INIT"))
       .catch((err) => {
         debugger;
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
-          "An error occurred";
+          "Fehler bei der Initialisierung";
+        if (err.status === 504) {
+          throw new IgeError("Backend ist wohl nicht gestartet");
+        }
         throw new IgeError(err);
       });
   };
@@ -159,12 +162,11 @@ export function ConfigLoader(
     FormFieldsModule,
   ],
   providers: [
-    // appRoutingProviders,
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, KeycloakService],
+      deps: [ConfigService, AuthenticationFactory],
       multi: true,
     },
     // set locale for dates

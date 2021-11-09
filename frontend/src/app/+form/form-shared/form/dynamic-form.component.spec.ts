@@ -18,7 +18,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
 import { FormSharedModule } from "../form-shared.module";
 import { of } from "rxjs";
-import { KeycloakService } from "keycloak-angular";
+import { AuthenticationFactory } from "../../../security/auth.factory";
 
 describe("Dynamic Form", () => {
   let spectator: Spectator<DynamicFormComponent>;
@@ -43,7 +43,7 @@ describe("Dynamic Form", () => {
       DocumentService,
       ModalService,
       TreeService,
-      KeycloakService,
+      AuthenticationFactory,
     ],
     detectChanges: false,
   });

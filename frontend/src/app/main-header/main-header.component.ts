@@ -8,8 +8,8 @@ import { NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { KeycloakService } from "keycloak-angular";
 import { StorageService } from "../../storage.service";
+import { AuthenticationFactory } from "../security/auth.factory";
 
 @Component({
   selector: "ige-main-header",
@@ -24,17 +24,19 @@ export class MainHeaderComponent implements OnInit {
   version: Version;
   timeout$ = this.session.select("sessionTimeoutIn");
   initials: string;
+  isAdmin: boolean;
 
   constructor(
     private configService: ConfigService,
     private session: SessionQuery,
     private router: Router,
-    private keycloak: KeycloakService,
+    private authFactory: AuthenticationFactory,
     private storageService: StorageService
   ) {}
 
   ngOnInit() {
     let userInfo = this.configService.$userInfo.getValue();
+    this.isAdmin = this.configService.isAdmin();
     this.version = userInfo?.version;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
@@ -51,7 +53,7 @@ export class MainHeaderComponent implements OnInit {
 
   logout() {
     this.storageService.clear("ige-refresh-token");
-    this.keycloak.logout();
+    this.authFactory.get().logout();
   }
 
   getInitials(user: UserInfo) {

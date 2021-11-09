@@ -1,13 +1,13 @@
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
 import { SessionTimeoutInfoComponent } from "./session-timeout-info.component";
-import { KeycloakService } from "keycloak-angular";
+import { AuthenticationFactory } from "../../security/auth.factory";
 
 describe("SessionTimeoutInfoComponent", () => {
   let spectator: Spectator<SessionTimeoutInfoComponent>;
   const createComponent = createComponentFactory({
     component: SessionTimeoutInfoComponent,
-    mocks: [KeycloakService],
+    mocks: [AuthenticationFactory],
   });
 
   it("should create", () => {

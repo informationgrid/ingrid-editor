@@ -1,20 +1,24 @@
-import { KeycloakOptions, KeycloakService } from "keycloak-angular";
+import { KeycloakOptions } from "keycloak-angular";
 import { IgeError } from "./models/ige-error";
 import { ConfigService } from "./services/config/config.service";
+import { AuthenticationFactory } from "./security/auth.factory";
 
 export function initializeKeycloakAndGetUserInfo(
-  keycloak: KeycloakService,
+  authFactory: AuthenticationFactory,
   configService: ConfigService
 ) {
-  return keycloak
+  configService.getConfiguration().keycloakEnabled
+    ? authFactory.initWithKeycloak()
+    : authFactory.initWithoutKeycloak();
+
+  const auth = authFactory.get();
+  return auth
     .init(getKeycloakOptions(configService))
-    .then(() => keycloak.isLoggedIn())
-    .then((loggedIn) =>
-      loggedIn ? getUserInfo(configService) : keycloak.login()
-    );
+    .then(() => auth.isLoggedIn())
+    .then((loggedIn) => (loggedIn ? getUserInfo(configService) : auth.login()));
 }
 
-export function getUserInfo(configService) {
+export function getUserInfo(configService: ConfigService) {
   return configService.getCurrentUserInfo().then((userInfo) => {
     // an admin role has no constraints
     if (!configService.isAdmin()) {

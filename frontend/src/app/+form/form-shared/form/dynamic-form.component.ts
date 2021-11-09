@@ -33,7 +33,7 @@ import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
-import { KeycloakService } from "keycloak-angular";
+import { AuthenticationFactory } from "../../../security/auth.factory";
 
 @UntilDestroy()
 @Component({
@@ -100,7 +100,7 @@ export class DynamicFormComponent
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
     private router: Router,
-    private auth: KeycloakService,
+    private authFactory: AuthenticationFactory,
     private route: ActivatedRoute
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
@@ -132,7 +132,7 @@ export class DynamicFormComponent
         untilDestroyed(this),
         debounceTime(3000) // send request 3s after last form change
       )
-      .subscribe(() => this.auth.updateToken(60));
+      .subscribe(() => this.authFactory.get().refreshToken());
 
     this.query
       .select("isDocLoading")

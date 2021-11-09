@@ -19,13 +19,17 @@ class ConfigApiController : ConfigApi {
     @Value("\${frontend.keycloak.resource}")
     lateinit var keycloakClientId: String
 
+    @Value("\${frontend.keycloak.enable}")
+    var keycloakEnabled: Boolean = true
+
     override fun get(): ResponseEntity<FrontendConfiguration> {
 
         return ResponseEntity.ok().body(
             FrontendConfiguration(
                 keycloakUrl = keycloakUrl,
                 keycloakRealm = keycloakRealm,
-                keycloakClientId = keycloakClientId
+                keycloakClientId = keycloakClientId,
+                keycloakEnabled = keycloakEnabled
             )
         )
 

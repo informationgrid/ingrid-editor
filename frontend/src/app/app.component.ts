@@ -1,12 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { GroupService } from "./services/role/group.service";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
-import { KeycloakEventType, KeycloakService } from "keycloak-angular";
-import { StorageService } from "../storage.service";
-import { filter } from "rxjs/operators";
 
 @Component({
   selector: "ige-root",
