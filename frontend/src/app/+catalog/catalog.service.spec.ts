@@ -20,7 +20,15 @@ describe("CatalogService", () => {
     providers: [
       mockProvider(ConfigService, {
         getConfiguration: () =>
-          new Configuration("/keycloak", "Test", "Client", "/api", null, null),
+          new Configuration(
+            "/keycloak",
+            "Test",
+            "Client",
+            false,
+            "/api",
+            null,
+            null
+          ),
       }),
     ],
     mocks: [Router, CatalogDataService],
