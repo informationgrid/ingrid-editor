@@ -708,6 +708,38 @@ describe('Catalogue admin', () => {
     AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, 'Meta Admin');
   });
 
-  // maybe additional to the test that checks if number of users is greater than 0?
-  xit('should show all the groups to a catalogue admin (#2670)', () => {});
+  it('should show all the groups to a catalogue admin (#2670)', () => {
+    // login as super admin
+    // get number of the groups
+    // logout from admin and login as catalog admin
+    // get number of groups and compare the two numbers
+    cy.kcLogout();
+    cy.kcLogin('user');
+    cy.visit('user');
+    cy.intercept('GET', '/api/groups').as('superAdminGroups');
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    cy.wait('@superAdminGroups');
+    cy.get('.page-title')
+      .contains('Gruppen')
+      .then($text => {
+        // get number of the groups super admin
+        let txt = $text.text();
+        let regex = /\d+/g;
+        let matches = txt.match(regex);
+        cy.kcLogout();
+        cy.kcLogin('eins');
+        cy.visit('user');
+        cy.intercept('GET', '/api/groups').as('catalogAdminGroups');
+        AdminGroupPage.goToTabmenu(UserAndRights.Group);
+        cy.wait('@catalogAdminGroups');
+        cy.get('.page-title')
+          .contains('Gruppen')
+          .then($txtCatalog => {
+            // get number of the groups catalog admin
+            let txtCatalog = $txtCatalog.text();
+            let matchesCatalog = txtCatalog.match(regex);
+            expect(matchesCatalog![0]).to.eq(matches![0]);
+          });
+      });
+  });
 });
