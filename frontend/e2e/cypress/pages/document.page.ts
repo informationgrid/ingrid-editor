@@ -78,7 +78,7 @@ export class DocumentPage extends BasePage {
 
   static createDocument(docName: string) {
     cy.log('Create Document: ' + docName);
-    cy.get(DocumentPage.Toolbar.NewDoc).click();
+    cy.get(DocumentPage.Toolbar.NewDoc, { timeout: 18000 }).click();
     this.fillDialog(docName);
   }
 

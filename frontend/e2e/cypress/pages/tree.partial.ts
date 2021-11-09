@@ -82,7 +82,7 @@ export class Tree {
       cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
     } else {
       // only click on node if it isn't expanded
-      cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`)
+      cy.get(`${parentContainer} mat-tree mat-tree-node[aria-level="${hierarchyLevel}"]`, { timeout: 18000 })
         .should('contain.text', nodeTitle) // assert here to wait for tree to be updated in case node has been moved
         .contains('.label span', query)
         .then(node => {
