@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser } from "../../+user/user";
+import { EmailValidator } from "../../formly/ige-formly.module";
 
 @Component({
   selector: "ige-change-email-dialog",
@@ -11,7 +12,7 @@ import { FrontendUser } from "../../+user/user";
 })
 export class ChangeEmailDialogComponent implements OnInit {
   form = new FormGroup({
-    email: new FormControl("", [Validators.email, Validators.required]),
+    email: new FormControl("", [EmailValidator, Validators.required]),
   });
 
   constructor(
