@@ -42,7 +42,7 @@ describe('Read Only Documents', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -93,7 +93,7 @@ describe('Read Only Documents', () => {
     UserAuthorizationPage.closeErrorBox();
 
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -106,7 +106,7 @@ describe('Read Only Documents', () => {
     const readOnlyFolder = 'Ordner_Ebene_2C';
     const documentToCopy = 'Datum_Ebene_4_7';
     // set access to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -123,7 +123,7 @@ describe('Read Only Documents', () => {
 
     Tree.openNode(['Ordner_Ebene_2A', documentToCopy], false);
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -135,7 +135,7 @@ describe('Read Only Documents', () => {
     const readOnlyFolder = 'Ordner_Ebene_2C';
     const documentName = 'Datum_Ebene_4_7';
     // set access to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');
@@ -151,7 +151,7 @@ describe('Read Only Documents', () => {
     cy.get('textarea').eq(2).should('be.disabled');
 
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     cy.get('.user-title').contains('test_gruppe_1');

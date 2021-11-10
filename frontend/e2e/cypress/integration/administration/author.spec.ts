@@ -73,7 +73,7 @@ describe('User without authorizations', () => {
   });
 
   it('if the currently logged in user has no right to access page, dashboard is shown (#3038)', () => {
-    cy.visit('user').then(() => {
+    cy.visit('manage/user').then(() => {
       cy.url().should('include', 'dashboard');
     });
   });

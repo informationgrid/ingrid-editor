@@ -7,7 +7,7 @@ import { ResearchPage } from '../../pages/research.page';
 describe('Group', () => {
   beforeEach(() => {
     cy.kcLogin('user');
-    cy.visit('user');
+    AdminUserPage.visit();
 
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     cy.get('.page-title').contains('Gruppen');
@@ -180,7 +180,7 @@ describe('Group', () => {
 
   it('should delete a document from a group when deleting action is performed and the save button is pressed (#3469)', () => {
     // delete address from group
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');

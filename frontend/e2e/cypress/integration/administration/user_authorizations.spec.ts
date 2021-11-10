@@ -29,17 +29,16 @@ describe('Meta data administrator without groups', () => {
   });
 
   it('should show no groups to a metadata-administrator without groups', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     cy.get('.user-management-header').contains('Gruppen (0)');
   });
-
   it('metadata admin without groups should be able to create groups of his own, but not add documents', () => {
     // create group
     const newGroup = 'new_empty_group';
     const description = 'group for metadata-admin without groups';
 
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
@@ -93,7 +92,7 @@ describe('Meta data administrator without groups', () => {
 
   xit('metadata admin without groups should be able to change manager of users', () => {
     // on hold, since manager functionality will probably be removed in the near future
-    cy.visit('user');
+    AdminUserPage.visit();
   });
 });
 
@@ -127,7 +126,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data administrator with group(s) should see his group(s)', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     // check for existence of one of user's groups
     cy.get('groups-table').contains('gruppe_mit_ortsrechten').click();
@@ -172,7 +171,7 @@ describe('Meta data administrator with a group', () => {
 
   it('meta data admin with groups should not be able to edit/move/delete an address of his assigned groups if access is read-only', () => {
     // set access right to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
@@ -193,7 +192,7 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
@@ -207,7 +206,7 @@ describe('Meta data administrator with a group', () => {
     const documentToMove = 'Aquitanien, Adresse';
 
     // set access to read-only
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
@@ -244,7 +243,7 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.closeErrorBox();
 
     // set access right back to 'write'
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
@@ -253,7 +252,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.openAddDocumentsDialog('Adressen');
@@ -262,7 +261,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin should be able to add documents to groups', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.addDocumentToGroup('Franken, Adresse', 'Adressen');
@@ -271,7 +270,7 @@ describe('Meta data administrator with a group', () => {
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be deleted (#2785)', () => {
     // set access right to "nur Unterordner"
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_3.Ebene_C', 'Adressen');
@@ -288,7 +287,7 @@ describe('Meta data administrator with a group', () => {
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed (#2895)', () => {
     // set access right to "nur Unterordner"
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
@@ -324,7 +323,7 @@ describe('Meta data administrator with a group', () => {
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
     // set access right to "nur Unterordner"
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_1');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
@@ -378,7 +377,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin should be able to create authors', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
     AdminUserPage.addNewUserLogin('some_random_authorLogin');
     AdminUserPage.addNewUserFirstname('random');
@@ -393,7 +392,7 @@ describe('Meta data administrator with a group', () => {
     const groupName = 'test_gruppe_1';
     const groupName2 = 'gruppe_mit_ortsrechten';
     //create user
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
     AdminUserPage.addNewUserLogin('meta4');
     AdminUserPage.addNewUserFirstname('Metadaten');
@@ -412,7 +411,7 @@ describe('Meta data administrator with a group', () => {
     cy.writeFile('cypress/fixtures/users/meta4.json', { username: 'meta4', password: 'meta4' });
     cy.kcLogout();
     cy.kcLogin('meta4');
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.selectGroup(groupName2);
@@ -425,12 +424,7 @@ describe('Meta data administrator with a group', () => {
     const newGroup = 'some_new_group';
     const description = 'something of a description';
 
-    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
-      .document()
-      .its('contentType')
-      .then(function (res) {
-        if (res != 'text/html') cy.visit('user');
-      });
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
@@ -440,7 +434,7 @@ describe('Meta data administrator with a group', () => {
 
   it('if a meta data admin deletes a document from one of his groups, he cannot access this document anymore (neither write nor read)', () => {
     // delete address from group and check existence
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.deleteDocumentFromGroup('test_c, test_c', 'Adressen');
@@ -464,7 +458,7 @@ describe('Meta data administrator with a group', () => {
     DocumentPage.createDocument(documentName);
     Tree.openNode([documentName]);
     // -2- create new group
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     // -3- assign folder to the group
@@ -479,7 +473,7 @@ describe('Meta data administrator with a group', () => {
 
     cy.kcLogin('meta2');
     // -5- delete the group
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.deleteGroup(newGroup);
     // -6- make sure the document is no longer exist
@@ -511,7 +505,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   xit('metadata admin should not be able to see the users other metadata admins created', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     // create a new user
     cy.contains('button', 'Hinzufügen').click();
     AdminUserPage.addNewUserLogin('autor7');
@@ -526,13 +520,13 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogin('meta');
 
     // make sure user created by previous metadata admin is not visible
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.contains('user-table', 'autor5').should('not.exist');
   });
 
   it('meta data admin should not be able to create a catalog administrator (#2875)', () => {
     // got to Users and Rights
-    cy.visit('user');
+    AdminUserPage.visit();
     // open dialog for creating new user and try to pick role "catalog administrator"
     cy.get('[data-cy="toolbar_add_user"]').click();
     cy.get('[data-cy="Rolle"]').click();
@@ -541,7 +535,7 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin should not be able to access catalog management (#2874)', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
 
     // check for catalog management in side bar
     cy.contains('ige-side-menu .mat-list-item', 'Katalog').should('not.exist');
@@ -567,7 +561,7 @@ describe('Catalogue admin', () => {
 
   // eigentlich egal, welcher User -> nur Recht, Gruppen Dokumente zuzuweisen nötig
   it('it should not be possible to add a piece of data twice to a group (#3461)', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     // it might be necessary to turn the page, if there are too many group entries to be displayed at once:
     AdminGroupPage.getNextPage();
@@ -589,7 +583,7 @@ describe('Catalogue admin', () => {
     const path_to_shared_folder = ['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D'];
     const path_to_shared_address_folder = ['Ordner 2. Ebene', 'Ordner_3.Ebene_A', 'Ordner_4.Ebene_A'];
     // assign a user an additional group so that data overlap exists
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.User);
     cy.get('.page-title').contains('Nutzer');
     AdminUserPage.selectUser('Autor_mit Gruppen');
@@ -660,7 +654,7 @@ describe('Catalogue admin', () => {
     // if there are addresses to show, ige-tree has two children: the navigation board and the tree with the items
     cy.get('ige-tree').children().should('have.length', 2);
     //Users and groups should be present
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Nutzer & Rechte');
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.getNumberOfUsers().should('be.greaterThan', 0);
@@ -671,14 +665,14 @@ describe('Catalogue admin', () => {
   });
 
   it('catalogue admin can see empty groups', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('leere_Gruppe');
     cy.get('.user-title').contains('leere_Gruppe');
   });
 
   it('catalogue admin is warned when assigning groups different rights in the same hierarchy tree (#2764)', () => {
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('leere_Gruppe');
     cy.get('.user-title').contains('leere_Gruppe');
@@ -715,7 +709,7 @@ describe('Catalogue admin', () => {
     // get number of groups and compare the two numbers
     cy.kcLogout();
     cy.kcLogin('user');
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.intercept('GET', '/api/groups').as('superAdminGroups');
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     cy.wait('@superAdminGroups');
@@ -728,7 +722,7 @@ describe('Catalogue admin', () => {
         let matches = txt.match(regex);
         cy.kcLogout();
         cy.kcLogin('eins');
-        cy.visit('user');
+        AdminUserPage.visit();
         cy.intercept('GET', '/api/groups').as('catalogAdminGroups');
         AdminGroupPage.goToTabmenu(UserAndRights.Group);
         cy.wait('@catalogAdminGroups');

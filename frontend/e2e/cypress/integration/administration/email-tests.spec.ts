@@ -3,7 +3,7 @@ import { AdminUserPage } from '../../pages/administration-user.page';
 describe('Email-tests', () => {
   beforeEach(() => {
     cy.kcLogin('user');
-    cy.visit('user');
+    AdminUserPage.visit();
     cy.get('.page-title').contains('Nutzer');
 
     cy.task('resetEmails');

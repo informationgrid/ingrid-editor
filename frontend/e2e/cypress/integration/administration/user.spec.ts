@@ -8,13 +8,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 describe('User', () => {
   beforeEach(() => {
     cy.kcLogin('user');
-    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
-      .document()
-      .its('contentType')
-      .then(function (res) {
-        if (res != 'text/html') cy.visit('user');
-      });
-    cy.get('.page-title', { timeout: 10000 }).contains('Nutzer', { timeout: 10000 });
+    AdminUserPage.visit();
   });
 
   afterEach(() => {
@@ -421,7 +415,7 @@ describe('User', () => {
   it('should be possible to change manager of a user', () => {
     const login = 'drei';
     const managerName = 'Test Verantwortlicher';
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.selectUser('autor test');
     AdminUserPage.changeManager(login);
     AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, managerName);
@@ -429,7 +423,7 @@ describe('User', () => {
 
   it('should not be possible to take responsibility from a user without responsibility', () => {
     // go to user
-    cy.visit('user');
+    AdminUserPage.visit();
     AdminUserPage.selectUser('autor2');
     // try to execute action "Verantwortung abgeben"
     AdminUserPage.cedeResponsibility();
@@ -444,8 +438,7 @@ describe('User', () => {
   xit('should show all the users to a catalogue admin (#2671)', () => {});
 
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
-    cy.visit('user');
-    cy.get('.page-title').contains('Nutzer');
+    AdminUserPage.visit();
 
     let userLogIn = 'new-user-meta-admin';
     let userEmail = 'new-user-meta-admin@wemove.com';
@@ -471,7 +464,7 @@ describe('User', () => {
 
         cy.get('#kc-header-wrapper').should('contain', 'Update password');
         // create new user for the created user here
-        cy.visit('user');
+        AdminUserPage.visit();
 
         let userNewLogIn = 'new-user-meta-admin';
         let userNewEmail = 'new-user-meta-admin@wemove.com';

@@ -7,13 +7,10 @@ export class AdminUserPage extends BasePage {
   }
 
   static visit() {
-    cy.visit('user', { timeout: 30000, retryOnStatusCodeFailure: true })
-      .document()
-      .its('contentType')
-      .then(function (res) {
-        if (res != 'text/html') cy.visit('user');
-      });
-    cy.get('.page-title', { timeout: 10000 }).contains('Nutzer', { timeout: 10000 });
+    cy.intercept('GET', '/api/users').as('usersCall');
+    cy.visit('manage/user');
+    cy.wait('@usersCall');
+    cy.get('.page-title').contains('Nutzer');
   }
 
   static addNewUserLogin(login: string) {
