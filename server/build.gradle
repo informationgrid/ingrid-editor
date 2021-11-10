@@ -184,11 +184,10 @@ jib {
     }
     to {
         image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
-        // tags = ['jib'] // additional tags
     }
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'
-        jvmFlags = ['-Xmx512m', '-Dstorage.diskCache.bufferSize=256']
+        jvmFlags = ['-Xmx768m', '-Dstorage.diskCache.bufferSize=256']
     }
 }
 
