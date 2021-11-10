@@ -95,7 +95,7 @@ export class TestDoctype extends BaseDoctype {
           {
             key: "autocomplete",
             type: "autocomplete",
-            wrappers: ["panel"],
+            wrappers: ["panel", "form-field"],
             templateOptions: {
               externalLabel: "Combobox/Autocomplete",
               placeholder: "Bitte wählen",

@@ -199,7 +199,7 @@ export class McloudDoctype extends BaseDoctype {
           {
             key: "license",
             type: "autocomplete",
-            wrappers: ["panel"],
+            wrappers: ["panel", "form-field"],
             templateOptions: {
               externalLabel: "Lizenz",
               placeholder: "Bitte wählen",

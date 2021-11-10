@@ -70,6 +70,12 @@ export function EmailValidator(control: FormControl): ValidationErrors {
     : { email: true };
 }
 
+export function LowercaseValidator(control: FormControl): ValidationErrors {
+  return control.value === control.value.toLowerCase()
+    ? null
+    : { lowercase: true };
+}
+
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
 }
@@ -138,6 +144,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
       ],
       validators: [
         { name: "ip", validation: IpValidator },
+        { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
       ],
       validationMessages: [
@@ -145,6 +152,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "email",
           message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
+        },
+        {
+          name: "lowercase",
+          message: "Dieses Feld darf keine Großbuchstaben enthalten",
         },
       ] /*,
       wrappers: [
