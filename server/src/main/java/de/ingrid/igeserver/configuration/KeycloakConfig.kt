@@ -130,9 +130,10 @@ internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .and()
         }
 
-        http.authorizeRequests()
+        http.headers().frameOptions().sameOrigin().and()
+            .authorizeRequests()
             .antMatchers("/api/config").permitAll()
-            .antMatchers("/api/**").hasRole("ige-user")
+            .antMatchers("/api/**").hasAnyRole("ige-user", "ige-super-admin")
             .anyRequest().permitAll()
             .and().csrf().disable()
 

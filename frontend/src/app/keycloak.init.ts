@@ -1,13 +1,14 @@
 import { KeycloakOptions } from "keycloak-angular";
 import { IgeError } from "./models/ige-error";
-import { ConfigService } from "./services/config/config.service";
+import { ConfigService, Configuration } from "./services/config/config.service";
 import { AuthenticationFactory } from "./security/auth.factory";
 
 export function initializeKeycloakAndGetUserInfo(
   authFactory: AuthenticationFactory,
   configService: ConfigService
 ) {
-  configService.getConfiguration().keycloakEnabled
+  const config = configService.getConfiguration();
+  config.keycloakEnabled
     ? authFactory.initWithKeycloak()
     : authFactory.initWithoutKeycloak();
 
@@ -15,7 +16,8 @@ export function initializeKeycloakAndGetUserInfo(
   return auth
     .init(getKeycloakOptions(configService))
     .then(() => auth.isLoggedIn())
-    .then((loggedIn) => (loggedIn ? getUserInfo(configService) : auth.login()));
+    .then((loggedIn) => (loggedIn ? getUserInfo(configService) : auth.login()))
+    .catch((ex) => handleKeycloakConfigError(ex, config));
 }
 
 export function getUserInfo(configService: ConfigService) {
@@ -50,4 +52,12 @@ function getKeycloakOptions(configService: ConfigService): KeycloakOptions {
         window.location.origin + "/assets/silent-check-sso.html",
     },
   };
+}
+
+function handleKeycloakConfigError(ex, config: Configuration) {
+  if (ex === undefined) {
+    throw `Keycloak scheint nicht korrekt konfiguriert zu sein: ${config.keycloakUrl} (${config.keycloakClientId})`;
+  }
+  console.error(ex);
+  throw new IgeError(ex);
 }
