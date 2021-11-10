@@ -69,7 +69,9 @@ export class DocumentPage extends BasePage {
   };
 
   static visit() {
-    cy.visit('form', { retryOnStatusCodeFailure: true, timeout: 30000 });
+    cy.intercept('GET', '/api/tree/children').as('treeCall');
+    cy.visit('form');
+    cy.wait('@treeCall');
   }
 
   static visitSingleDoc() {

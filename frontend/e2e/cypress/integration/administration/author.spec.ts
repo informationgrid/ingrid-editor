@@ -41,11 +41,8 @@ describe('User without authorizations', () => {
 
   it('Author should see neither documents nor addresses', () => {
     // check if there is an empty tree for both adressen and daten
-    cy.intercept('GET', '/api/tree/children').as('treeCall');
     DocumentPage.visit();
-    cy.wait('@treeCall');
     cy.get('ige-empty-navigation').should('exist');
-
     cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     AddressPage.visit();
     cy.wait('@treeCallAddress');
