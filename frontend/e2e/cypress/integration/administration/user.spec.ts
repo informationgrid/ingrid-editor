@@ -14,7 +14,7 @@ describe('User', () => {
       .then(function (res) {
         if (res != 'text/html') cy.visit('user');
       });
-    cy.get('.page-title', { timeout: 10000 }).contains('Nutzer');
+    cy.get('.page-title', { timeout: 10000 }).contains('Nutzer', { timeout: 10000 });
   });
 
   afterEach(() => {
