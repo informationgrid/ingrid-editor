@@ -59,7 +59,9 @@ export class CodelistPage {
       .parent()
       .parent()
       .find('[data-mat-icon-name=Mehr]')
-      .click({ force: true });
-    cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
+      .click({ force: true })
+      .then(_ => {
+        cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
+      });
   }
 }
