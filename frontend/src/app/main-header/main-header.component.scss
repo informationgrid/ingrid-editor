@@ -10,7 +10,9 @@ ige-session-timeout-info {
 
 .center-header {
   height: inherit;
-  text-align: end;
+  display: flex;
+  align-items: center;
+  justify-content: end;
 
   &:hover ige-session-timeout-info,
   ige-session-timeout-info.show {
