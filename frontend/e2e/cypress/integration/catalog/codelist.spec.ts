@@ -55,7 +55,14 @@ describe('Codelist', () => {
     cy.get('mat-panel-description').should('contain', 'Defaultwert');
 
     // remove default value
+    cy.intercept('PUT', /api\/codelist\/manage/, {
+      statusCode: 200,
+      body: {
+        defaultEntry: 'null'
+      }
+    }).as('removeDefault');
     CodelistPage.openContextMenu(newEntry, CodelistSubMenu.Defaultwert);
+    cy.wait('@removeDefault');
     cy.get('mat-panel-description').should('not.contain', 'Defaultwert');
   });
 });
