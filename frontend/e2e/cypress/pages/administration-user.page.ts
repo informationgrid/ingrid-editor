@@ -13,7 +13,7 @@ export class AdminUserPage extends BasePage {
       .then(function (res) {
         if (res != 'text/html') cy.visit('user');
       });
-    cy.get('.page-title').contains('Nutzer');
+    cy.get('.page-title', { timeout: 10000 }).contains('Nutzer');
   }
 
   static addNewUserLogin(login: string) {
