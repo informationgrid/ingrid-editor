@@ -92,6 +92,7 @@ export class AddressDoctype extends BaseDoctype {
                     key: "salutation",
                     className: "flex-1",
                     type: "autocomplete",
+                    wrappers: ["form-field"],
                     templateOptions: {
                       highlightMatches: true,
                       hideDeleteButton: true,

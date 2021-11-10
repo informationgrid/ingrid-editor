@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { MatInput } from "@angular/material/input";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
@@ -20,6 +26,8 @@ export class AutocompleteTypeComponent
   @ViewChild(MatInput, { static: true }) formFieldControl: MatInput;
   @ViewChild(MatAutocompleteTrigger, { static: true })
   autocomplete: MatAutocompleteTrigger;
+
+  @ViewChild("matSuffix") matSuffix: TemplateRef<any>;
 
   private parameterOptions: SelectOptionUi[] = [];
   filteredOptions: Observable<SelectOptionUi[]>;
@@ -68,6 +76,8 @@ export class AutocompleteTypeComponent
 
   ngAfterViewInit() {
     super.ngAfterViewInit();
+    setTimeout(() => (this.to.suffix = this.matSuffix));
+
     // temporary fix for https://github.com/angular/material2/issues/6728
     // (<any>this.autocomplete)._formField = this.formField;
   }

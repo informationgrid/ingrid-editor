@@ -43,7 +43,7 @@ interface UsersApi {
         ) @RequestBody user: @Valid User,
         @Parameter(description = "With this option an external user is tried to be created")
         @RequestParam(value = "newExternalUser", required = false) newExternalUser: Boolean = false
-    ): ResponseEntity<Void>
+    ): ResponseEntity<String?>
 
     @DeleteMapping(
         value = ["/users/{id}"],

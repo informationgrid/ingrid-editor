@@ -373,7 +373,7 @@ class KeycloakService : UserManagementService {
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
 
         return userRep.apply {
-            username = user.login
+            username = user.login.lowercase()
             firstName = user.firstName
             lastName = user.lastName
             email = user.email

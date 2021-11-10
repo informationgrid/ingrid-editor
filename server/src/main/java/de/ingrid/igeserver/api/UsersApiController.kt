@@ -67,7 +67,12 @@ open class UsersApiController : UsersApi {
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
 
-    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<Void> {
+    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<String?> {
+
+        // user login must be lowercase
+        if (user.login != user.login.lowercase()) {
+            return ResponseEntity.badRequest().body("user.login must be lowercase")
+        }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 

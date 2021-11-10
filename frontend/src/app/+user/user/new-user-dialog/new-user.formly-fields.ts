@@ -10,13 +10,16 @@ export const getNewUserFormFields = (
     {
       key: "login",
       type: "autocomplete",
-      wrappers: ["panel"],
+      wrappers: ["panel", "form-field"],
       templateOptions: {
         externalLabel: "Login",
         // placeholder: "Bitte wählen",
         appearance: "outline",
         required: true,
         options: logins,
+      },
+      validators: {
+        validation: ["lowercase"],
       },
     },
     {
