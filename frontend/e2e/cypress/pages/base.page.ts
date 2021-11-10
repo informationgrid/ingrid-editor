@@ -35,6 +35,6 @@ export enum CodelistSubMenu {
 }
 
 export enum UserAndRights {
-  User = 1,
-  Group
+  User = '/manage/user',
+  Group = '/manage/group'
 }
