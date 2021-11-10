@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.servlet.view.RedirectView
-import javax.servlet.http.HttpServletRequest
 
 /**
  * Home redirection to swagger api documentation

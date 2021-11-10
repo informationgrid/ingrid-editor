@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.*
-import java.util.Optional.empty
 import javax.annotation.PostConstruct
 import kotlin.concurrent.schedule
 

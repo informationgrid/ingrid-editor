@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+open class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/topic")
@@ -21,5 +21,5 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
         // fallback to sockjs
         registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:4300").withSockJS()
     }
-    
+
 }

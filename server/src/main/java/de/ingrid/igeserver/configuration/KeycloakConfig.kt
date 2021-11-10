@@ -4,10 +4,8 @@ import de.ingrid.igeserver.configuration.acl.MyAuthenticationProvider
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter
-import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter
 import org.keycloak.adapters.springsecurity.management.HttpSessionManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
@@ -31,7 +29,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Profile("!dev")
 @KeycloakConfiguration
-internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
+internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     val log = logger()
 
@@ -65,7 +63,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
     @Autowired
-    fun configureGlobal(auth: AuthenticationManagerBuilder) {
+    open fun configureGlobal(auth: AuthenticationManagerBuilder) {
         // check out: https://www.thomasvitale.com/spring-security-keycloak/
         val grantedAuthorityMapper = SimpleAuthorityMapper()
         grantedAuthorityMapper.setPrefix("ROLE_")
@@ -91,7 +89,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      * @return the modified firewall
      */
     @Bean
-    fun allowUrlEncodedSlashHttpFirewall(): HttpFirewall {
+    open fun allowUrlEncodedSlashHttpFirewall(): HttpFirewall {
         val firewall = StrictHttpFirewall()
         firewall.setAllowUrlEncodedSlash(true)
         firewall.setAllowSemicolon(true)
@@ -115,13 +113,6 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         var http = httpSec
         super.configure(http)
 
-        http.authorizeRequests()
-            .antMatchers("/api/config").permitAll()
-            .antMatchers("/api/**").hasRole("ige-user")
-            .anyRequest().permitAll()
-            .and().csrf().disable();
-        return
-
         http = if (generalProperties.enableCsrf) {
             http.csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -138,15 +129,13 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
                 .requiresSecure()
                 .and()
         }
-        http
-//            .addFilterAfter(RequestResponseLoggingFilter(), KeycloakSecurityContextRequestFilter::class.java)
-            .authorizeRequests().antMatchers("/api/**").authenticated().and()
-            .authorizeRequests().antMatchers("/").permitAll()
-//            .anyRequest().authenticated()
-//            .and()
-//            .anonymous().disable() // force login when keycloak session timeouts because of inactivity
-//            .logout()
-//            .permitAll()
+
+        http.authorizeRequests()
+            .antMatchers("/api/config").permitAll()
+            .antMatchers("/api/**").hasRole("ige-user")
+            .anyRequest().permitAll()
+            .and().csrf().disable()
+
     }
 
 }
