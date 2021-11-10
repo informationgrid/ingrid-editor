@@ -23,8 +23,9 @@ export class MenuService {
     return this._mainRoutes.filter(
       (item) =>
         item.path !== "" &&
-        !item.data.hideFromMenu &&
-        (!item.data.featureFlag || this.config.hasFlags(item.data.featureFlag))
+        !item.data?.hideFromMenu &&
+        (!item.data?.featureFlag ||
+          this.config.hasFlags(item.data?.featureFlag))
     );
   }
 

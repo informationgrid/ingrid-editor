@@ -115,6 +115,13 @@ export const routes: Routes = [
     redirectTo: "/dashboard",
     pathMatch: "full",
   },
+  {
+    path: "**",
+    redirectTo: "/dashboard",
+    data: {
+      hideFromMenu: true,
+    },
+  },
 ];
 
 // export const appRoutingProviders: any[] = [];

@@ -69,7 +69,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   private checkIfUserHasAccess(route: Route): boolean {
-    let neededPermission = route.data.permission;
+    let neededPermission = route.data?.permission;
     return this.configService.hasPermission(neededPermission);
   }
 }
