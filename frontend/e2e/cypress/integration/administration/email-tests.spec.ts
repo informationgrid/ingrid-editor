@@ -11,19 +11,12 @@ describe('Email-tests', () => {
   });
 
   it('should register a user, get her password per email and log in', () => {
-    let userLogIn = 'email-test';
-    let userEmail = 'email-test@wemove.com';
+    let userLogIn = 'email-test-' + Date.now().toString();
+    let userEmail = 'email-test' + Date.now().toString() + '@wemove.com';
     var psw = '';
 
     // create user
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
-    AdminUserPage.addNewUserLogin(userLogIn);
-    AdminUserPage.addNewUserFirstname(userLogIn);
-    AdminUserPage.addNewUserLastname(userLogIn);
-    AdminUserPage.addNewUserEmail(userEmail);
-    AdminUserPage.addNewUserRole('Autor');
-    cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
-    AdminUserPage.confirmAddUserDialog();
+    AdminUserPage.createNewUser(userLogIn, userEmail, 'Autor');
 
     // get email and extract the password
     cy.task('getLastEmail', userEmail)
@@ -31,16 +24,30 @@ describe('Email-tests', () => {
       .then(body => {
         expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
 
-        psw = body.substring(body.indexOf('Passwort: ') + 'Passwort: '.length, body.indexOf('(muss') - 1);
+        // Extract the password
+        let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
+        psw = bodyArray[1].split('\n')[0].trim();
 
         cy.kcLogout();
+        // Here we have to reload otherwise the because logout does not redirect to login page
+        cy.reload();
         cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
 
         cy.get('#username').type(userLogIn);
         cy.get('#password').type(psw);
         cy.get('#kc-login').click();
+        cy.wait(1000);
+        cy.get('#kc-content-wrapper').should('contain', 'Sie müssen Ihr Passwort ändern,');
 
-        cy.get('#kc-header-wrapper').should('contain', 'Update password');
+        // login and check for the user name
+        cy.get('#password-new').type(userLogIn);
+        cy.get('#password-confirm').type(userLogIn);
+        cy.intercept('GET', 'api/info/currentUser').as('getUser');
+        cy.get('#kc-login').click();
+        cy.wait('@getUser');
+        cy.get('.welcome').contains('Willkommen');
+        cy.get('[data-cy="header-profile-button"]').click();
+        cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
       });
   });
 });
