@@ -4,6 +4,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.utils.KeycloakAuthUtils
 import org.keycloak.adapters.springsecurity.account.KeycloakRole
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +20,8 @@ import kotlin.collections.ArrayList
 @Service
 class MyAuthenticationProvider @Autowired constructor(
     val userRepository: UserRepository,
-    val roleRepository: RoleRepository
+    val roleRepository: RoleRepository,
+    val authUtils: KeycloakAuthUtils
 ) : AuthenticationProvider {
 
     private var grantedAuthoritiesMapper: GrantedAuthoritiesMapper? = null
@@ -28,6 +30,7 @@ class MyAuthenticationProvider @Autowired constructor(
         this.grantedAuthoritiesMapper = grantedAuthoritiesMapper
     }
 
+    // TODO: try to cache function since it's been called on each request
     override fun authenticate(authentication: Authentication?): Authentication {
 
         val token = authentication as KeycloakAuthenticationToken
@@ -40,20 +43,10 @@ class MyAuthenticationProvider @Autowired constructor(
             grantedAuthorities.add(KeycloakRole("ROLE_$role"))
         }
 
-        val username = token.account.principal.name
+        // TODO: make function static
+        val username = authUtils.getUsernameFromPrincipal(authentication);
         var userDb = userRepository.findByUserId(username)
-        if (userDb == null && isSuperAdmin) {
-            // create user for super admin in db
-            userDb = UserInfo().apply {
-                userId = username
-                role = roleRepository.findByName("ige-super-admin")
-                data = UserInfoData().apply{
-                    this.creationDate = Date()
-                    this.modificationDate = Date()
-                }
-            }
-            userRepository.save(userDb)
-        }
+        userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
 
         // add groups
         userDb?.groups
@@ -76,9 +69,29 @@ class MyAuthenticationProvider @Autowired constructor(
             }
         }
 
-
         return KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
 
+    }
+
+    private fun checkAndCreateSuperUser(
+        userDb: UserInfo?,
+        isSuperAdmin: Boolean,
+        username: String
+    ): UserInfo? {
+        var userDb1 = userDb
+        if (userDb1 == null && isSuperAdmin) {
+            // create user for super admin in db
+            userDb1 = UserInfo().apply {
+                userId = username
+                role = roleRepository.findByName("ige-super-admin")
+                data = UserInfoData().apply {
+                    this.creationDate = Date()
+                    this.modificationDate = Date()
+                }
+            }
+            userRepository.save(userDb1)
+        }
+        return userDb1
     }
 
     override fun supports(authentication: Class<*>?): Boolean {
