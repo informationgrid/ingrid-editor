@@ -10,7 +10,7 @@ import org.springframework.context.annotation.*
 
 @Configuration
 @ComponentScan(basePackages = ["de.ingrid.igeserver"])
-class BeansConfiguration {
+open class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null
 
@@ -24,7 +24,7 @@ class BeansConfiguration {
     private val codelistDataPath: String? = null
 
     @Bean
-    fun HttpCodelistCommunication(): ICodeListCommunication {
+    open fun HttpCodelistCommunication(): ICodeListCommunication {
         val communication = HttpCLCommunication()
         communication.setRequestUrl("$codelistUrl/rest/getCodelists")
         communication.setUsername(codelistUserName)
@@ -33,15 +33,15 @@ class BeansConfiguration {
     }
 
     @Bean
-    fun codeListPersistency(): ICodeListPersistency {
+    open fun codeListPersistency(): ICodeListPersistency {
         val persistency = XmlCodeListPersistency<Any>()
         persistency.setPathToXml(codelistDataPath)
         return persistency
     }
 
     @Bean
-    fun codeListService(communication: ICodeListCommunication?,
-                        persistencies: List<ICodeListPersistency?>?): CodeListService {
+    open fun codeListService(communication: ICodeListCommunication?,
+                             persistencies: List<ICodeListPersistency?>?): CodeListService {
         val service = CodeListService()
         service.setPersistencies(persistencies)
         service.setComm(communication)

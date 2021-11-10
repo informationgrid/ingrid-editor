@@ -28,12 +28,12 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { combineLatest, merge, Subscription } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
-import { AuthService } from "../../../services/security/auth.service";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { AuthenticationFactory } from "../../../security/auth.factory";
 
 @UntilDestroy()
 @Component({
@@ -100,7 +100,7 @@ export class DynamicFormComponent
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
     private router: Router,
-    private auth: AuthService,
+    private authFactory: AuthenticationFactory,
     private route: ActivatedRoute
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
@@ -132,7 +132,7 @@ export class DynamicFormComponent
         untilDestroyed(this),
         debounceTime(3000) // send request 3s after last form change
       )
-      .subscribe(() => this.auth.refreshSession().subscribe());
+      .subscribe(() => this.authFactory.get().refreshToken());
 
     this.query
       .select("isDocLoading")

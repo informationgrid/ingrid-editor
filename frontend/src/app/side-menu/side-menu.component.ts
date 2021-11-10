@@ -52,7 +52,7 @@ export class SideMenuComponent implements OnInit {
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
-      map((info) => info.assignedCatalogs.length > 0)
+      map((info) => info?.assignedCatalogs?.length > 0)
     );
   }
 
@@ -69,7 +69,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   private checkIfUserHasAccess(route: Route): boolean {
-    let neededPermission = route.data.permission;
+    let neededPermission = route.data?.permission;
     return this.configService.hasPermission(neededPermission);
   }
 }

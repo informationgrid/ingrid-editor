@@ -10,11 +10,8 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 
 describe('Read Only Documents', () => {
   beforeEach(() => {
-    cy.kcLogin('meta2');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('meta2');
   });
 
   // tested in dashboard

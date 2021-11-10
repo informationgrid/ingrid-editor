@@ -8,12 +8,10 @@ import {
   LOCALE_ID,
   NgModule,
 } from "@angular/core";
-import { ModalService } from "./services/modal/modal.service";
 import { HelpComponent } from "./help/help.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config/config.service";
-import { LoginComponent } from "./security/login.component";
 import { GlobalErrorHandler } from "./error-handler";
 import {
   HTTP_INTERCEPTORS,
@@ -72,39 +70,29 @@ import {
   rxStompServiceFactory,
 } from "@stomp/ng2-stompjs";
 import { IgeStompConfig } from "./ige-stomp.config";
+import { KeycloakAngularModule } from "keycloak-angular";
+import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
+import { AuthenticationFactory } from "./security/auth.factory";
 
 registerLocaleData(de);
 
-export function ConfigLoader(configService: ConfigService) {
+export function ConfigLoader(
+  configService: ConfigService,
+  authFactory: AuthenticationFactory
+) {
   return () => {
     return configService
-      .load(environment.configFile)
-      .then(
-        () =>
-          // login to backend for creating a development principal
-          !environment.production && configService.dummyLoginForDevelopment()
-      )
-      .then(() => configService.getCurrentUserInfo())
-      .then((userInfo) => {
-        // an admin role has no constraints
-        if (configService.isAdmin()) {
-          if (userInfo.assignedCatalogs.length === 0) {
-          }
-        } else {
-          // check if user has any assigned catalog
-          if (userInfo.assignedCatalogs.length === 0) {
-            const error = new IgeError();
-            error.setMessage(
-              "The user has no assigned catalog. An administrator has to assign a catalog to this user."
-            );
-            throw error;
-          }
-        }
-      })
+      .load()
+      .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
+      .then(() => console.log("FINISHED APP INIT"))
       .catch((err) => {
+        debugger;
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
-          "An error occurred";
+          "Fehler bei der Initialisierung";
+        if (err.status === 504) {
+          throw new IgeError("Backend ist wohl nicht gestartet");
+        }
         throw new IgeError(err);
       });
   };
@@ -115,7 +103,6 @@ export function ConfigLoader(configService: ConfigService) {
   declarations: [
     AppComponent,
     HelpComponent,
-    LoginComponent,
     ErrorDialogComponent,
     ConfirmDialogComponent,
     OneColumnWrapperComponent,
@@ -130,6 +117,7 @@ export function ConfigLoader(configService: ConfigService) {
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot(),
+    KeycloakAngularModule,
     AngularSplitModule,
     MatTooltipModule,
     MatDialogModule,
@@ -174,12 +162,11 @@ export function ConfigLoader(configService: ConfigService) {
     FormFieldsModule,
   ],
   providers: [
-    // appRoutingProviders,
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, ModalService],
+      deps: [ConfigService, AuthenticationFactory],
       multi: true,
     },
     // set locale for dates

@@ -4,10 +4,15 @@ import { BehaviorSubject } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
+import { HttpClient } from "@angular/common/http";
 
 export class Configuration {
   constructor(
-    public keykloakBaseUrl: string,
+    public keycloakUrl: string,
+    public keycloakRealm: string,
+    public keycloakClientId: string,
+    public keycloakEnabled: boolean,
+
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string
@@ -49,22 +54,18 @@ export class ConfigService {
   private dataService: ConfigDataService;
   private isAdministrator = false;
 
-  constructor() {
-    this.dataService = new ConfigDataService();
+  constructor(private http: HttpClient) {
+    this.dataService = new ConfigDataService(http);
   }
 
-  load(url: string): Promise<Configuration> {
+  load(): Promise<Configuration> {
     console.log("=== ConfigService ===");
 
-    return this.dataService.load(url).then((json) => {
+    return this.dataService.load().then((json) => {
       this.config = json;
       this.dataService.config = this.config;
       return this.config;
     });
-  }
-
-  dummyLoginForDevelopment() {
-    return this.dataService.dummyLoginForDevelopment();
   }
 
   // TODO: refactor to fetchCurrentUserInfo()
@@ -117,14 +118,14 @@ export class ConfigService {
   ): boolean {
     if (neededPermission instanceof Array) {
       return (
-        user.permissions.filter(
+        user?.permissions?.filter(
           (value) => neededPermission.indexOf(value) !== -1
         ).length > 0
       );
     } else {
       return (
         !neededPermission ||
-        user.permissions.indexOf(<string>neededPermission) !== -1
+        user?.permissions?.indexOf(<string>neededPermission) !== -1
       );
     }
   }

@@ -12,11 +12,8 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
   beforeEach(() => {
-    cy.kcLogin('meta');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('meta');
   });
 
   it('meta data administrator without groups should see neither documents nor addresses (#2635)', () => {
@@ -99,11 +96,8 @@ describe('Meta data administrator without groups', () => {
 // meta data administrator with groups
 describe('Meta data administrator with a group', () => {
   beforeEach(() => {
-    cy.kcLogin('meta2');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('meta2');
   });
 
   it('meta data administrator with group should be able to see the addresses of his group and search for it', () => {
@@ -552,11 +546,8 @@ describe('Meta data administrator with a group', () => {
 // catalogue admin
 describe('Catalogue admin', () => {
   beforeEach(() => {
-    cy.kcLogin('eins');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('eins');
   });
 
   // eigentlich egal, welcher User -> nur Recht, Gruppen Dokumente zuzuweisen nötig

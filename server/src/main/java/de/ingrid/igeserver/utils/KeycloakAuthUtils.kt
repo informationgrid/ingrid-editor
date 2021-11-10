@@ -14,7 +14,8 @@ class KeycloakAuthUtils : AuthUtils {
     override fun getUsernameFromPrincipal(principal: Principal): String {
 
         return if (principal is KeycloakAuthenticationToken) {
-            principal.account.principal.name
+//            principal.account.principal.name
+            principal.account.keycloakSecurityContext.token.preferredUsername
         } else {
             (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
         }

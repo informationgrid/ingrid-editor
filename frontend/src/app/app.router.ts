@@ -1,5 +1,6 @@
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "./security/auth.guard";
+import { IgeKeycloakAuthGuard } from "./security/keycloak-auth.guard";
 
 export const routes: Routes = [
   {
@@ -114,11 +115,18 @@ export const routes: Routes = [
     redirectTo: "/dashboard",
     pathMatch: "full",
   },
+  {
+    path: "**",
+    redirectTo: "/dashboard",
+    data: {
+      hideFromMenu: true,
+    },
+  },
 ];
 
 // export const appRoutingProviders: any[] = [];
 
 export const routing = RouterModule.forRoot(routes, {
-  preloadingStrategy: PreloadAllModules,
-  relativeLinkResolution: "legacy",
+  // preloadingStrategy: PreloadAllModules,
+  // relativeLinkResolution: "legacy",
 });

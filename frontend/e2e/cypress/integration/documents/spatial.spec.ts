@@ -6,12 +6,9 @@ import Doc = Mocha.reporters.Doc;
 
 describe('Spatial References', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
-    DocumentPage.visit();
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
+    DocumentPage.visit();
   });
 
   it('should create a new spatial reference (bbox)', () => {

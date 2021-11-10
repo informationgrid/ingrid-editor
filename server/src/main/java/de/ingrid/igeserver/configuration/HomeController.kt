@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.servlet.view.RedirectView
-import javax.servlet.http.HttpServletRequest
 
 /**
  * Home redirection to swagger api documentation
@@ -18,12 +17,6 @@ class HomeController {
     @GetMapping(value = ["/"])
     fun index(): RedirectView {
         return RedirectView("index.html")
-    }
-
-    @GetMapping(path = ["/api/logout"])
-    fun logout(request: HttpServletRequest): ResponseEntity<String> {
-        request.logout()
-        return ResponseEntity.ok("""{ "message": "Logged out" }""")
     }
 
     @GetMapping(value = ["/swagger"])

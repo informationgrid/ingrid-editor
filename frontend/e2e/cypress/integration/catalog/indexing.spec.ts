@@ -5,12 +5,9 @@ import { IndexingPage } from '../../pages/indexing.page';
 
 describe('Indexing', () => {
   beforeEach(() => {
-    cy.kcLogin('user');
-    cy.visit('catalogs');
-  });
-
-  afterEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
+    cy.visit('catalogs');
   });
 
   it('Index and check indexed object counter has increased', () => {

@@ -64,9 +64,6 @@ class KeycloakService : UserManagementService {
     @Value("\${keycloak.resource}")
     private val keycloakClientId: String? = null
 
-    @Value("\${keycloak.credentials.secret}")
-    private val keycloakSecret: String? = null
-
     override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         try {
             initClient(principal).use {
@@ -116,10 +113,11 @@ class KeycloakService : UserManagementService {
 
         client = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)
-            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                // secret not needed for bearer only
+            // .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+            // .clientSecret(keycloakSecret)
             .realm(keycloakRealm)
             .clientId(keycloakClientId)
-            .clientSecret(keycloakSecret)
             .authorization(tokenString)
             .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
             .build()

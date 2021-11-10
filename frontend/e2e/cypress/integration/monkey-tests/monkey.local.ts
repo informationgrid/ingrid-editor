@@ -7,6 +7,7 @@ describe('Gremlin Tests', () => {
   let testHorde: any;
 
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('form');
 
@@ -27,10 +28,6 @@ describe('Gremlin Tests', () => {
         strategies: [strategies.allTogether({ nb: 100000 })]
       });
     });
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   describe('skip until it works: Basic Monkey Test', () => {

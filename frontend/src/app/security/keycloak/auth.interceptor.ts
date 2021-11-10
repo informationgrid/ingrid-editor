@@ -6,12 +6,11 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from "@angular/common/http";
-import { KeycloakService } from "./keycloak.service";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ModalService } from "../../services/modal/modal.service";
 import { IgeError } from "../../models/ige-error";
-import { environment } from "../../../environments/environment";
+import { KeycloakService } from "keycloak-angular";
 
 @Injectable({
   providedIn: "root",
@@ -36,19 +35,20 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 403) {
           // TODO: redirect?
           this.showError(this.getMessage(error));
-        } else if (
-          error.status === 401 ||
-          (error.status === 404 && error.url.indexOf("/sso/login") !== -1)
-        ) {
-          const message =
-            "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
-          this.showError(message);
-          console.error(error);
-          setTimeout(() => {
-            environment.production
-              ? window.location.reload()
-              : (window.location.href = "http://localhost:8550");
-          }, 5000);
+        } else if (error.status === 401) {
+          return this.auth.isLoggedIn().then((isLoggedIn) => {
+            console.log("Logged in?: " + isLoggedIn);
+            if (!isLoggedIn) {
+              const message =
+                "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
+              this.showError(message);
+              console.error(error);
+              setTimeout(() => {
+                this.auth.logout().then(() => this.auth.login());
+              }, 5000);
+            }
+            return null;
+          });
         }
         // intercept the response error and displace it to the console
         console.log("Error Occurred", error);

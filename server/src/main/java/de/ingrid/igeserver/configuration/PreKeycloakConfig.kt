@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class PreKeycloakConfig {
+open class PreKeycloakConfig {
     /**
      * Use properties in application.properties instead of keycloak.json
      */
     @Bean
-    fun keycloakConfigResolver(): KeycloakSpringBootConfigResolver {
+    open fun keycloakConfigResolver(): KeycloakSpringBootConfigResolver {
         return KeycloakSpringBootConfigResolver()
     }
 }

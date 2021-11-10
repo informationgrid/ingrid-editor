@@ -27,10 +27,8 @@ class AuthenticationProviderMock : AuthenticationProvider {
     override fun authenticate(authentication: Authentication?): Authentication {
 
         val userId = config.logins?.get(config.currentUser)
+            ?: throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
 
-        if (userId == null) {
-            throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
-        }
         val user = BasicUserPrincipal(userId)
         val userDb = userRepo.findByUserId(userId)
         val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.name}") } ?: emptyList()
@@ -40,7 +38,7 @@ class AuthenticationProviderMock : AuthenticationProvider {
         } else {
             // add special role for administrators to allow group acl management
             if (role == "cat-admin" || role == "md-admin" || role == "ige-super-admin") {
-                listOf(SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_GROUP_MANAGER")) 
+                listOf(SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_GROUP_MANAGER"))
             } else {
                 listOf(SimpleGrantedAuthority(role))
             }

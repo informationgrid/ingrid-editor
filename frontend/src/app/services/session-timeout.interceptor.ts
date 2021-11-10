@@ -6,38 +6,42 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { Observable, Subscription, timer } from "rxjs";
-import { scan, takeWhile, tap } from "rxjs/operators";
+import { filter, scan, take, takeWhile } from "rxjs/operators";
 import { SessionStore } from "../store/session.store";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { SessionQuery } from "../store/session.query";
 import { ApiService } from "./ApiService";
+import { KeycloakEventType, KeycloakService } from "keycloak-angular";
+import { StorageService } from "../../storage.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class SessionTimeoutInterceptor implements HttpInterceptor {
   timer$: Subscription;
-  private defaultSessionDurationInMillSeconds = 1800;
-  private overrideSessionDuration;
   private oneSecondInMilliseconds = 1000;
 
   constructor(
     private session: SessionStore,
     private modalService: ModalService,
     private apiService: ApiService,
-    sessionQuery: SessionQuery
+    private keycloak: KeycloakService,
+    private storageService: StorageService
   ) {
-    sessionQuery
-      .select("sessionTimeoutDuration")
-      .subscribe((duration) => (this.overrideSessionDuration = duration));
+    this.initListener();
+    this.keycloak.keycloakEvents$
+      .pipe(
+        filter((item) => item.type === KeycloakEventType.OnAuthSuccess),
+        take(1)
+      )
+      .subscribe(() => this.resetSessionTimeout());
   }
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(tap(() => this.resetSessionTimeout()));
+    return next.handle(request);
   }
 
   private resetSessionTimeout() {
@@ -45,9 +49,18 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.timer$.unsubscribe();
     }
 
-    const duration =
-      (this.overrideSessionDuration ??
-        this.defaultSessionDurationInMillSeconds) + 1;
+    const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    if (!refreshToken) return;
+
+    const endTime = refreshToken.exp;
+
+    const now = Math.ceil(new Date().getTime() / 1000);
+    const durationRefresh = endTime - now;
+
+    console.log(`Endtime Refresh: ${durationRefresh}`);
+
+    const duration = durationRefresh;
+    this.updateStore(duration);
 
     this.timer$ = timer(0, this.oneSecondInMilliseconds)
       .pipe(
@@ -72,8 +85,63 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
       );
       this.modalService.showIgeError(error);
-      this.apiService.logout().subscribe().unsubscribe();
-      setTimeout(() => window.location.reload(), 5000);
+      setTimeout(() => this.keycloak.logout(), 5000);
     }
+  }
+
+  private initListener() {
+    this.storageService.changes
+      .pipe(
+        filter((item) => item.key === "ige-refresh-token"),
+        takeWhile((item) => item.value !== null)
+      )
+      .subscribe((data) => {
+        console.log("Token in LocalStorage has changed", data);
+        if (!data.value) {
+          this.keycloak.logout();
+          this.storageService.clear("ige-refresh-token");
+          return;
+        }
+        this.keycloak.getKeycloakInstance().refreshToken = data.value;
+        this.keycloak.getKeycloakInstance().refreshTokenParsed =
+          this.decodeToken(data.value);
+
+        this.resetSessionTimeout();
+      });
+
+    this.keycloak.keycloakEvents$
+      .pipe(
+        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess)
+      )
+      .subscribe(() => {
+        this.storageService.store(
+          "ige-refresh-token",
+          this.keycloak.getKeycloakInstance().refreshToken
+        );
+      });
+  }
+
+  private decodeToken(str) {
+    str = str.split(".")[1];
+
+    str = str.replace(/-/g, "+");
+    str = str.replace(/_/g, "/");
+    switch (str.length % 4) {
+      case 0:
+        break;
+      case 2:
+        str += "==";
+        break;
+      case 3:
+        str += "=";
+        break;
+      default:
+        throw "Invalid token";
+    }
+
+    str = decodeURIComponent(escape(atob(str)));
+
+    str = JSON.parse(str);
+    return str;
   }
 }

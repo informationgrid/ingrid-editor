@@ -7,12 +7,9 @@ import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('User', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     AdminUserPage.visit();
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should create a new user', () => {

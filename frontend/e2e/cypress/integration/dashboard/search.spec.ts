@@ -5,12 +5,9 @@ import { AddressPage } from '../../pages/address.page';
 
 describe('Search', function () {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should show quicksearch results while entering a searchterm', () => {

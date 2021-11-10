@@ -23,7 +23,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver
             Server(url = "https://ige-ng.informationgrid.eu/", description = "Test Server")
         ])
 @Configuration
-class SwaggerDocumentationConfig : WebMvcConfigurer {
+open class SwaggerDocumentationConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
                 .allowedMethods(

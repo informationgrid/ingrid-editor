@@ -2,6 +2,7 @@ import { AdminUserPage } from '../../pages/administration-user.page';
 
 describe('Email-tests', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     AdminUserPage.visit();
     cy.get('.page-title').contains('Nutzer');

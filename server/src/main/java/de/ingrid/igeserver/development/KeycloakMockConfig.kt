@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.configuration.KeycloakConfig
-import de.ingrid.igeserver.development.AuthenticationProviderMock
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Profile("dev")
 @KeycloakConfiguration
-internal class KeycloakMockConfig : KeycloakConfig() {
+internal open class KeycloakMockConfig : KeycloakConfig() {
 
     @Autowired
     private val authenticationProviderMock: AuthenticationProviderMock? = null

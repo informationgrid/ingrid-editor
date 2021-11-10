@@ -50,7 +50,7 @@ export class CatalogSettingsComponent implements OnInit {
       .observeTabChange("catalog")
       .pipe(untilDestroyed(this))
       .subscribe((index) => {
-        const tab = this.tabs[index];
+        const tab = this.tabs[index] ?? this.tabs[0];
         this.activeLink = tab.path;
         tab.params
           ? this.router.navigate(["/catalogs/" + tab.path, tab.params])

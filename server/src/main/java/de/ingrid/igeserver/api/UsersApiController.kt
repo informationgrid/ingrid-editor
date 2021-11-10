@@ -11,18 +11,21 @@ import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
+import org.apache.commons.codec.binary.Base64.decodeBase64
 import org.apache.logging.log4j.kotlin.logger
+import org.keycloak.RSATokenVerifier
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.lang.Math.ceil
 import java.security.Principal
 import java.util.*
 import kotlin.time.ExperimentalTime
@@ -206,6 +209,11 @@ open class UsersApiController : UsersApi {
 
     override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
         principal as Authentication
+/*
+        val refreshToken = (principal.details as SimpleKeycloakAccount).keycloakSecurityContext.refreshToken
+        RSATokenVerifier.create(refreshToken).token.exp
+*/
+
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         keycloakService.getClient(principal).use { client ->

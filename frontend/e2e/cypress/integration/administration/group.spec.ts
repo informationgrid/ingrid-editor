@@ -6,15 +6,12 @@ import { ResearchPage } from '../../pages/research.page';
 
 describe('Group', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     AdminUserPage.visit();
 
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     cy.get('.page-title').contains('Gruppen');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should create a new group', () => {

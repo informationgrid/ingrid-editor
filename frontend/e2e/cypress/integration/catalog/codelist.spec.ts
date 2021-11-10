@@ -4,12 +4,9 @@ import { CodelistPage } from '../../pages/codelist.page';
 
 describe('Codelist', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('catalogs');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('Add, modify, set as default and delete a Codelist-Entry and review all changes', () => {

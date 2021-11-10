@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AuthService } from "../../services/security/auth.service";
+import { AuthenticationFactory } from "../../security/auth.factory";
 
 @Component({
   selector: "ige-session-timeout-info",
@@ -9,11 +9,11 @@ import { AuthService } from "../../services/security/auth.service";
 export class SessionTimeoutInfoComponent implements OnInit {
   @Input() timeout: number;
 
-  constructor(private auth: AuthService) {}
+  constructor(private authFactory: AuthenticationFactory) {}
 
   ngOnInit(): void {}
 
   refreshSession() {
-    this.auth.refreshSession().subscribe();
+    this.authFactory.get().refreshToken();
   }
 }

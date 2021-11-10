@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { ApiService } from "../services/ApiService";
 import {
   ConfigService,
   UserInfo,
@@ -9,7 +8,8 @@ import { NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { ShortResultInfo } from "../+research/result-table/result-table.component";
+import { StorageService } from "../../storage.service";
+import { AuthenticationFactory } from "../security/auth.factory";
 
 @Component({
   selector: "ige-main-header",
@@ -24,20 +24,23 @@ export class MainHeaderComponent implements OnInit {
   version: Version;
   timeout$ = this.session.select("sessionTimeoutIn");
   initials: string;
+  isAdmin: boolean;
 
   constructor(
-    private apiService: ApiService,
     private configService: ConfigService,
     private session: SessionQuery,
-    private router: Router
+    private router: Router,
+    private authFactory: AuthenticationFactory,
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
     let userInfo = this.configService.$userInfo.getValue();
-    this.version = userInfo.version;
+    this.isAdmin = this.configService.isAdmin();
+    this.version = userInfo?.version;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
-      map((userInfo) => userInfo.currentCatalog.label)
+      map((userInfo) => userInfo?.currentCatalog?.label)
     );
 
     this.router.events.subscribe((event: any) => {
@@ -49,13 +52,12 @@ export class MainHeaderComponent implements OnInit {
   }
 
   logout() {
-    this.apiService.logout().subscribe(() => {
-      window.location.reload(true);
-    });
+    this.storageService.clear("ige-refresh-token");
+    this.authFactory.get().logout();
   }
 
   getInitials(user: UserInfo) {
-    const initials = (user.firstName[0] ?? "") + (user.lastName[0] ?? "");
+    const initials = (user?.firstName[0] ?? "") + (user?.lastName[0] ?? "");
     return initials.length === 0 ? "??" : initials;
   }
 

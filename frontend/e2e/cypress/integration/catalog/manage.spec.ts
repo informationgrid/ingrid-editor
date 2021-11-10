@@ -3,12 +3,9 @@ import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('Catalog management', () => {
   beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('user');
     cy.visit('');
-  });
-
-  afterEach(() => {
-    cy.kcLogout();
   });
 
   it('should create a new catalog', () => {

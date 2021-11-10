@@ -2,29 +2,41 @@ import { Configuration, UserInfo } from "./config.service";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
+import { HttpClient } from "@angular/common/http";
+import { map, tap } from "rxjs/operators";
 
 export class ConfigDataService {
   config: Configuration;
 
-  load(url: string): Promise<any> {
-    return this.sendRequest("GET", url).then((response) =>
-      JSON.parse(response)
-    );
+  constructor(private httpClient: HttpClient) {}
+
+  private getEnvironmentConfig(): Promise<any> {
+    return this.httpClient.get<any>(environment.configFile).toPromise();
   }
 
-  dummyLoginForDevelopment() {
-    return this.sendRequest("GET", "/login")
-      .then((response) => console.log("Successfully created backend principal"))
-      .catch((err) => console.warn("typical login error during development"));
+  /**
+   * Get environment config from frontend and add configuration coming from
+   * backend. Backend configuration is easier since environment variables can
+   * be used directly when creating docker container. However we need at least
+   * the URL from the backend to make our requests. This needs to be changed if
+   * the application is behind a proxy pass (with a context path).
+   */
+  async load(): Promise<any> {
+    const config = await this.getEnvironmentConfig();
+    return this.httpClient
+      .get<any>(config.backendUrl + "config")
+      .pipe(map((data) => ({ ...config, ...data })))
+      .toPromise();
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {
     return (
-      this.sendRequest("GET", this.config.backendUrl + "info/currentUser")
+      this.httpClient
+        .get<any>(this.config.backendUrl + "info/currentUser")
+        .toPromise()
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
-        .then((response) => {
-          const json = JSON.parse(response);
+        .then((json) => {
           return <UserInfo>{
             assignedCatalogs: json.assignedCatalogs,
             name: json.name,
@@ -44,7 +56,7 @@ export class ConfigDataService {
             permissions: json.permissions,
           };
         })
-        .catch((e: IgeException | string) => {
+        .catch((e: IgeException | XMLHttpRequest | string) => {
           if (typeof e === "string") {
             if (e.indexOf("Cannot GET /sso/login") !== -1) {
               console.error(
@@ -62,8 +74,12 @@ export class ConfigDataService {
             } else {
               console.error("Could not get current user info", e);
             }
+          } else if ((<XMLHttpRequest>e).status === 401) {
+            throw new Error(
+              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein"
+            );
           } else {
-            throw new Error(e.errorText);
+            throw new Error((<IgeException>e).errorText);
           }
           return <UserInfo>{
             assignedCatalogs: [],
@@ -82,29 +98,5 @@ export class ConfigDataService {
           };
         })
     );
-  }
-
-  private sendRequest(method = "GET", url = null): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.overrideMimeType("application/json");
-      xhr.open(method, url, true);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            resolve(xhr.responseText);
-          } else {
-            let error;
-            try {
-              error = JSON.parse(xhr.responseText);
-            } catch (e) {
-              error = xhr.responseText;
-            }
-            reject(error);
-          }
-        }
-      };
-      xhr.send(null);
-    });
   }
 }
