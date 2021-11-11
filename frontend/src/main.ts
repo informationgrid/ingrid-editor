@@ -19,7 +19,7 @@ persistState({
   preStorageUpdate: (storeName: string, state: any) => {
     const { currentTab, ...otherUiState } = state.ui;
     return {
-      ui: (state) => otherUiState,
+      ui: otherUiState,
       recentAddresses: state.recentAddresses,
     };
   },
