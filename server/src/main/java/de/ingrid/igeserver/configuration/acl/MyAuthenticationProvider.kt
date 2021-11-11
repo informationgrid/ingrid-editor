@@ -4,7 +4,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
-import de.ingrid.igeserver.utils.KeycloakAuthUtils
+import de.ingrid.igeserver.utils.AuthUtils
 import org.keycloak.adapters.springsecurity.account.KeycloakRole
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
 class MyAuthenticationProvider @Autowired constructor(
     val userRepository: UserRepository,
     val roleRepository: RoleRepository,
-    val authUtils: KeycloakAuthUtils
+    val authUtils: AuthUtils
 ) : AuthenticationProvider {
 
     private var grantedAuthoritiesMapper: GrantedAuthoritiesMapper? = null
