@@ -13,7 +13,7 @@ export interface SessionState {
     userTableWidth?: number;
     currentTab: {
       research: number;
-      user: number;
+      manage: number;
       import: number;
       catalog: number;
     };
@@ -40,7 +40,7 @@ export function createInitialState(): SessionState {
       userTableWidth: 35,
       currentTab: {
         research: 0,
-        user: 0,
+        manage: 0,
         import: 0,
         catalog: 0,
       },

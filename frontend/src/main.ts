@@ -23,6 +23,11 @@ persistState({
       recentAddresses: state.recentAddresses,
     };
   },
+  preStoreUpdate(storeName: string, state: any, initialState: any): any {
+    // add initial values for fields that are not persisted
+    state.ui.currentTab = initialState.ui.currentTab;
+    return state;
+  },
 });
 
 platformBrowserDynamic().bootstrapModule(AppModule);
