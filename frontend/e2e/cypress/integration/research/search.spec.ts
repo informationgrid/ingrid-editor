@@ -307,4 +307,138 @@ describe('Research Page', () => {
       });
     });
   });
+
+  it('should do timerelated search with only start date given (#3040)', () => {
+    // choose start date and compare filtered results with number of all search results
+    ResearchPage.openCalendar('von');
+    ResearchPage.switchMonthsBackward(3);
+    ResearchPage.pickDayOfMonth(9);
+    cy.wait(1000);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.clearDateField('startDate');
+      cy.wait(1000);
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
+  it('should do timerelated search with only end date given (#3040)', () => {
+    // choose end date and compare filtered results with number of all search results
+    ResearchPage.openCalendar('bis');
+    ResearchPage.switchMonthsBackward(3);
+    ResearchPage.pickDayOfMonth(11);
+    cy.wait(1000);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.clearDateField('endDate');
+      cy.wait(1000);
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
+  it('should do timerelated search with both start date and end date given (#3040)', () => {
+    // choose start date and compare filtered results with number of all search results
+    ResearchPage.openCalendar('von');
+    ResearchPage.switchMonthsBackward(3);
+    ResearchPage.pickDayOfMonth(9);
+    ResearchPage.openCalendar('bis');
+    ResearchPage.switchMonthsBackward(3);
+    ResearchPage.pickDayOfMonth(29);
+    cy.wait(1000);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.clearDateField('endDate');
+      ResearchPage.clearDateField('startDate');
+      cy.wait(1000);
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
+  it('timerelated search with same start date and end date should return only documents belonging to this date (#3040)', () => {
+    ResearchPage.typeDateManually('startDate', '22.07.2021');
+    ResearchPage.typeDateManually('endDate', '22.07.2021');
+    cy.wait(1000);
+
+    // iterate through every result to check date
+    cy.get('tbody tr').each(el => {
+      cy.wrap(el).should('contain', '22.07.2021');
+    });
+
+    // compare filtered results with number of all search results
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.clearDateField('endDate');
+      ResearchPage.clearDateField('startDate');
+      cy.wait(1000);
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
+  it('timerelated search with start date more recent than end date should return 0 results (#3040)', () => {
+    ResearchPage.typeDateManually('startDate', '24.07.2021');
+    ResearchPage.typeDateManually('endDate', '22.07.2021');
+    cy.wait(500);
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+  });
+
+  it('timerelated search for specific document should only return it when respective date is covered by interval (#3040)', () => {
+    // date interval too early for specific document
+    ResearchPage.typeDateManually('startDate', '20.06.2021');
+    ResearchPage.typeDateManually('endDate', '29.06.2021');
+    cy.wait(1000);
+    // expect to get 0 results
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    // stretch the interval to cover the date in question
+    ResearchPage.typeDateManually('endDate', '30.06.2021');
+    cy.wait(1000);
+    // expect the document to be returned
+    ResearchPage.getSearchResultCount().should('equal', 1);
+    cy.contains('tbody tr', 'Veröffentlichter Datensatz mit Bearbeitungsversion');
+  });
+
+  it('should do timerelated search together with search for published documents (#3040)', () => {
+    ResearchPage.typeDateManually('startDate', '20.06.2021');
+    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    cy.wait(500);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
+      cy.wait(500);
+      ResearchPage.getSearchResultCount().should('be.lessThan', temporallyFiltered);
+    });
+  });
+
+  it('should do timerelated search together with document type search (#3040)', () => {
+    ResearchPage.typeDateManually('startDate', '20.06.2021');
+    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    cy.wait(500);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.mCloud);
+      cy.wait(500);
+      ResearchPage.getSearchResultCount().should('be.lessThan', temporallyFiltered);
+    });
+  });
+
+  it('should do timerelated search together with spatial reference search (#3040)', () => {
+    ResearchPage.typeDateManually('startDate', '20.06.2021');
+    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    cy.wait(500);
+    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
+      ResearchPage.createSpatialReference('Deutschland', 'testSpatial10');
+      cy.wait(500);
+      ResearchPage.getSearchResultCount().should('be.lessThan', temporallyFiltered);
+    });
+  });
+
+  it('should be possible to delete date from input fields (#3040)', () => {
+    // type in dates
+    ResearchPage.typeDateManually('startDate', '20.06.2021');
+    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    // delete dates
+    cy.get(ResearchPage.StartDateField).clear();
+    cy.get(ResearchPage.EndDateField).clear();
+    // make sure input fields for the date are empty
+    cy.get(ResearchPage.StartDateField).invoke('val').should('be.empty');
+    cy.get(ResearchPage.EndDateField).invoke('val').should('be.empty');
+    // continue with navigating the site and make sure date field stays cleared
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.ExtendedSearch);
+    cy.get(ResearchPage.StartDateField).invoke('val').should('be.empty');
+    cy.get(ResearchPage.EndDateField).invoke('val').should('be.empty');
+  });
 });

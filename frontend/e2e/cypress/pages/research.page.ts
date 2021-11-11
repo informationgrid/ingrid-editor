@@ -203,6 +203,53 @@ export class ResearchPage {
   }
 
   static SQLField = '[data-cy="sql-query-field"]';
+
+  static StartDateField = 'input[formcontrolname="startDate"]';
+
+  static EndDateField = 'input[formcontrolname="endDate"]';
+
+  static openCalendar(point: string): void {
+    point === 'von'
+      ? cy.get('[aria-label="Open calendar"]').should('have.length', 2).first().click()
+      : cy.get('button[aria-label="Open calendar"]').should('have.length', 2).last().click();
+  }
+
+  static pickDayOfMonth(date: number): void {
+    cy.contains('.mat-calendar-body tr td', date).click();
+  }
+
+  static clearDateField(point: string): void {
+    cy.get(`.mat-input-element[formcontrolname="${point}"]`).should('have.length', 1).clear({ force: true });
+  }
+
+  static typeDateManually(point: string, date: string): void {
+    cy.get(`.mat-input-element[formcontrolname="${point}"]`).should('have.length', 1).clear({ force: true }).type(date);
+  }
+
+  // call with recursion to avoid undeterministic behaviour
+  static switchMonthsForward(date: number = 1): void {
+    while (date > 0) {
+      date -= 1;
+      cy.log('month: ' + date.toString());
+      cy.get('[aria-label="Next month"]')
+        .click()
+        .then(_ => {
+          this.switchMonthsForward(date);
+        });
+    }
+  }
+
+  static switchMonthsBackward(date: number = 1): void {
+    while (date > 0) {
+      date -= 1;
+      cy.log('month: ' + date.toString());
+      cy.get('[aria-label="Previous month"]')
+        .click()
+        .then(_ => {
+          this.switchMonthsBackward(date);
+        });
+    }
+  }
 }
 
 export enum FilterExtendedSearch {
