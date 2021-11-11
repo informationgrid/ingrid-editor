@@ -543,7 +543,7 @@ describe('Meta data administrator with a group', () => {
     });*/
   });
 
-  it('display of documents should be actualized accordingly after deletion action', () => {
+  it('display of documents should be actualized accordingly after deletion action (#2786)', () => {
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
     // create document
