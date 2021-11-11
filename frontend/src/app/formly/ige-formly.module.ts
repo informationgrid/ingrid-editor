@@ -65,7 +65,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
 }
 
 export function EmailValidator(control: FormControl): ValidationErrors {
-  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(control.value)
+  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(control.value)
     ? null
     : { email: true };
 }
