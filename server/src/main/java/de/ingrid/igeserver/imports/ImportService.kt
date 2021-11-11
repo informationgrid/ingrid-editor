@@ -108,7 +108,7 @@ open class ImportService {
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
             }
-            .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = null) }
+            .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = options.parentAddress) }
 
     }
 
