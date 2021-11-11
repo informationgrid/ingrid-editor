@@ -28,6 +28,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    fun findByParent_dbId(parent_dbId: Int): List<DocumentWrapper>
+
     fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>

@@ -104,8 +104,11 @@ open class DocumentService @Autowired constructor(
 
     fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String, id: String): DocumentWrapper {
         try {
-            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
+//            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
+            return docWrapperRepo.findById(id.toInt()).get()
         } catch (ex: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(id, null)
+        } catch (ex: NoSuchElementException) {
             throw NotFoundException.withMissingResource(id, null)
         }
     }
@@ -125,11 +128,16 @@ open class DocumentService @Autowired constructor(
         docCat: DocumentCategory = DocumentCategory.DATA
     ): FindAllResults<DocumentWrapper> {
 
-        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
+        val docs = if (parentId == null) {
+            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value);
+        } else {
+            docWrapperRepo.findByParent_dbId(parentId.toInt());
+        };
+        /*val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
             catalogId,
             parentId,
             docCat.value
-        )
+        )*/
         return FindAllResults(
             docs.size.toLong(),
             docs

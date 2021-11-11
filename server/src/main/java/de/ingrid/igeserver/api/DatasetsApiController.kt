@@ -400,9 +400,11 @@ class DatasetsApiController @Autowired constructor(
         val path = wrapper.path
 
         val response = path.map { uuid ->
-            val title = documentService.getTitleFromDocumentId(uuid)
+//            val title = documentService.getTitleFromDocumentId(uuid)
+            val pathWrapper = docWrapperRepo.findByDraftUuidOrPublishedUuid(uuid, uuid)
+            val title = pathWrapper.draft?.title ?: pathWrapper.published?.title ?: "???!"
             val permission = aclService.getPermissionInfo(principal as Authentication, uuid)
-            PathResponse(uuid, title, permission)
+            PathResponse(pathWrapper.dbId.toString(), title, permission)
         }
 
         return ResponseEntity.ok(

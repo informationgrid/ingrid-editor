@@ -22,7 +22,7 @@ class DocumentWrapper {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
+    @JsonProperty("_id")
     var dbId: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +33,6 @@ class DocumentWrapper {
 
     // must be named "id" since getId() method is used for ACL permissions!
     @Column(name = "uuid", nullable = false)
-    @JsonProperty("_id")
     var id: String = UUID.randomUUID().toString()
 
     @Column(nullable = false)
@@ -155,7 +154,7 @@ class DocumentWrapper {
 
     @Column(name = "deleted")
     var deleted = 0
-    
+
     @Transient
     fun getState(): String {
         val hasDraft = draft != null
