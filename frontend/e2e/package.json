@@ -6,7 +6,8 @@
   "scripts": {
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "cypress:runFull": "node scripts/cypress.js"
+    "cypress:runFull": "node scripts/cypress.js",
+    "mailserver": "node scripts/startMailserver.js"
   },
   "keywords": [],
   "author": "",
