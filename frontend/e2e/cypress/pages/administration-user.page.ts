@@ -65,7 +65,6 @@ export class AdminUserPage extends BasePage {
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
     cy.contains('mat-option', groupName).click();
-    cy.wait(1000);
   }
 
   static removeGroupFromUser(groupName: string) {

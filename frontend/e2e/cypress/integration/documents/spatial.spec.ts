@@ -49,10 +49,12 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))';
     const docNameBbox = 'spatialwkt-' + Utils.randomString();
 
+    // create new document
+    cy.intercept('POST', /openid-connect\/token/).as('createRequest');
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
-    // give application time to show the api-created document
-    AddressPage.visit();
-    DocumentPage.visit();
+    cy.wait('@createRequest', { timeout: 10000 });
+    // reload the page so that the new document is visible
+    DocumentPage.reloadPage();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
