@@ -272,19 +272,6 @@ export class DocumentService {
 
   delete(ids: string[], isAddress: boolean): Observable<void> {
     return this.dataService.delete(ids).pipe(
-      catchError((error) => {
-        if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
-          console.error(error?.error?.errorText);
-          let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
-
-          this.messageService.sendError(
-            "Das Dokument wird von den folgenden Dokumenten referenziert: " +
-              uniqueUuids.join(", ")
-          );
-        }
-        // unknown error
-        throw error;
-      }),
       tap(() => {
         this.datasetsChanged$.next({
           type: UpdateType.Delete,
@@ -292,8 +279,23 @@ export class DocumentService {
           data: ids.map((id) => ({ id: id })),
         });
       }),
-      tap(() => this.updateStoreAfterDelete(ids, isAddress))
+      tap(() => this.updateStoreAfterDelete(ids, isAddress)),
+      catchError((error) => this.handleDeleteError(error))
     );
+  }
+
+  private handleDeleteError(error): Observable<any> {
+    if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
+      console.error(error?.error?.errorText);
+      let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
+
+      this.messageService.sendError(
+        "Das Dokument wird von den folgenden Dokumenten referenziert: " +
+          uniqueUuids.join(", ")
+      );
+    }
+    // unknown error
+    throw error;
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {
