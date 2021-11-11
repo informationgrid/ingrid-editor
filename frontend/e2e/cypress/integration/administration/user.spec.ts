@@ -14,7 +14,7 @@ describe('User', () => {
 
   it('should create a new user', () => {
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('loginZ');
+    AdminUserPage.addNewUserLogin('loginz');
     AdminUserPage.addNewUserFirstname('Son');
     AdminUserPage.addNewUserLastname('Goku');
 
@@ -27,6 +27,9 @@ describe('User', () => {
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
 
     AdminUserPage.confirmAddUserDialog();
+
+    // check if user has been added to user list
+    cy.contains('user-table', 'loginz');
   });
 
   it('should display the correct role symbol in the user list', () => {
@@ -181,7 +184,7 @@ describe('User', () => {
   it('should not be possible to change the login or the role after a user is created', () => {
     const username = 'Katalog Admin1';
     const username2 = 'Meta Admin';
-    const username3 = 'toDelete inTest';
+    const username3 = 'Majid Ercan';
 
     //Katalog-Admin
     AdminUserPage.selectUser(username);
@@ -227,8 +230,18 @@ describe('User', () => {
   });
 
   it('should be possible to delete a user', () => {
-    const toDelete = 'toDelete inTest';
+    const toDelete = 'todelete inthistest';
+    // create user
+    cy.contains('button', 'Hinzufügen').click();
+    AdminUserPage.addNewUserLogin('autor112');
+    AdminUserPage.addNewUserFirstname('todelete');
+    AdminUserPage.addNewUserLastname('inthistest');
+    AdminUserPage.addNewUserEmail('autor112@wemove.com');
+    AdminUserPage.addNewUserRole('Autor');
+    AdminUserPage.confirmAddUserDialog();
+    // check user has been created
     AdminUserPage.selectUser(toDelete);
+    // delete user
     AdminUserPage.deleteUser();
     cy.get('user-table').should('not.contain', toDelete);
   });
@@ -291,7 +304,7 @@ describe('User', () => {
     //author
     AdminUserPage.selectUser(username3);
     // check user was selected
-    cy.get('td.selected').contains(username3);
+    cy.contains('td.selected', username3);
     // check user informations were loaded
     cy.get('#formUser').should('be.visible');
     // check user role

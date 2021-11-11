@@ -3,6 +3,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Tree } from '../../pages/tree.partial';
 import Doc = Mocha.reporters.Doc;
+import { AddressPage } from '../../pages/address.page';
 
 describe('Spatial References', () => {
   beforeEach(() => {
@@ -34,6 +35,9 @@ describe('Spatial References', () => {
     const docNameBbox = 'spatialbbox-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxWithAPI(docNameBbox, false);
+    // give the application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
@@ -46,6 +50,9 @@ describe('Spatial References', () => {
     const docNameBbox = 'spatialwkt-' + Utils.randomString();
 
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
@@ -65,6 +72,9 @@ describe('Spatial References', () => {
     const docName = 'spatial-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     DocumentPage.checkSpatialEntryNumber(4);
@@ -82,6 +92,9 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))';
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     enterMcloudDocTestData.openSpatialMenuDoc('reference, wkt-1');
@@ -96,6 +109,9 @@ describe('Spatial References', () => {
     const docName = 'spatialToDelete-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     // delete a bbox entry

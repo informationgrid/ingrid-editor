@@ -63,9 +63,9 @@ export class AdminUserPage extends BasePage {
   }
 
   static addGroupToUser(groupName: string) {
-    cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('mat-option', { timeout: 7000 }).contains(groupName).click();
-    cy.wait(100);
+    cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
+    cy.contains('mat-option', groupName).click();
+    cy.wait(1000);
   }
 
   static removeGroupFromUser(groupName: string) {
@@ -95,6 +95,8 @@ export class AdminUserPage extends BasePage {
   static selectUser(name: string) {
     cy.get('user-table').contains(name).click();
     cy.get('#formUser').should('be.visible');
+    // sometimes further selecting goes wrong because dom is not ready -> add some time
+    cy.wait(1000);
   }
 
   static changeManager(name: string) {
@@ -117,7 +119,10 @@ export class AdminUserPage extends BasePage {
     cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich');
     cy.contains('button', 'Verantwortlichen auswählen').click();
     cy.intercept('GET', '/api/users/admins').as('getAdmins');
+    // arrow-select menu needs time to be able to be expanded:
+    cy.wait(1000);
     cy.get('mat-dialog-container .mat-select-arrow').trigger('mouseover').click({ force: true });
+    //cy.get('mat-dialog-container .mat-select-arrow').click({ force: true });
     cy.wait('@getAdmins');
     cy.contains('[role="listbox"] mat-option', manager, { timeout: 10000 }).click();
     cy.intercept('POST', '/api/users/' + '*' + '/manager' + '*').as('waitForSelection');

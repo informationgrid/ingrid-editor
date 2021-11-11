@@ -8,6 +8,7 @@ import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { Utils } from '../../pages/utils';
 
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
@@ -373,7 +374,7 @@ describe('Meta data administrator with a group', () => {
   it('meta data admin should be able to create authors', () => {
     AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('some_random_authorLogin');
+    AdminUserPage.addNewUserLogin('some_random_authorlogin');
     AdminUserPage.addNewUserFirstname('random');
     AdminUserPage.addNewUserLastname('author');
     AdminUserPage.addNewUserEmail('test@thisauthor.com');
@@ -540,6 +541,30 @@ describe('Meta data administrator with a group', () => {
     cy.request(link, { failOnStatusCode: false }).then(response => {
       expect(response.status).not.to.eq(200);
     });*/
+  });
+
+  it('display of documents should be actualized accordingly after deletion action', () => {
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    // create document
+    const docName = 'TestDokument' + Utils.randomString();
+    DocumentPage.createDocument(docName);
+    // go to research section and search for document
+    ResearchPage.visit();
+    ResearchPage.search(docName);
+    ResearchPage.getSearchResultCount().should('equal', 1);
+    cy.contains('td.mat-cell', docName).click();
+    cy.contains('.label', docName);
+    // delete the document
+    DocumentPage.deleteLoadedNode();
+    // search and expect to not get a result
+    ResearchPage.visit();
+    ResearchPage.search(docName);
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    // make sure display of documents has been actualized
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    cy.contains('mat-tree-node', docName).should('not.exist');
   });
 });
 
