@@ -70,6 +70,15 @@ export function EmailValidator(control: FormControl): ValidationErrors {
     : { email: true };
 }
 
+export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
+  const connectionType = control.parent.value.type;
+  // if connection type is email
+  if (connectionType === "3") {
+    console.log(EmailValidator(control));
+    return EmailValidator(control);
+  }
+}
+
 export function LowercaseValidator(control: FormControl): ValidationErrors {
   return control.value === control.value.toLowerCase()
     ? null
@@ -146,11 +155,16 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
+        { name: "emailInRepeat", validation: EmailInRepeatValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
         {
           name: "email",
+          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
+        },
+        {
+          name: "emailInRepeat",
           message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
         },
         {
