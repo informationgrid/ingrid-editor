@@ -403,8 +403,8 @@ formly-field {
 }
 
 /* Disabled material icon SVG */
-.mat-icon-button[disabled] .mat-icon {
-  opacity: 0.2;
+.mat-button[disabled] .mat-icon[data-mat-icon-type="svg"] {
+  opacity: 0.26;
 }
 
 ige-root .mat-drawer-container {

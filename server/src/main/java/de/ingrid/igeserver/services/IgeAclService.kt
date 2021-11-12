@@ -32,7 +32,7 @@ class IgeAclService @Autowired constructor(
         if (hasAdminRole(authentication)) {
             return true
         }
-        val permissionLevels = listOf<String>("writeTree", "ReadTree", "writeTreeExceptParent")
+        val permissionLevels = listOf<String>("writeTree", "readTree", "writeTreeExceptParent")
         val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
         var isAllowed = false
@@ -44,7 +44,7 @@ class IgeAclService @Autowired constructor(
                 )
                 when (it) {
                     "writeTree" -> isAllowed = isAllowed(acl, BasePermission.WRITE, sids)
-                    "ReadTree" -> isAllowed = isAllowed(acl, BasePermission.READ, sids)
+                    "readTree" -> isAllowed = isAllowed(acl, BasePermission.READ, sids)
                     "writeTreeExceptParent" -> isAllowed = isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
                     else -> {
                         throw error("this is impossible and must not happen.")

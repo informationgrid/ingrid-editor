@@ -10,6 +10,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Component({
   selector: "ige-folder-dashboard",
@@ -31,6 +32,7 @@ export class FolderDashboardComponent {
   constructor(
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
+    public configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService,

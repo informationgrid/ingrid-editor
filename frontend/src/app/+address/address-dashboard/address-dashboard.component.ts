@@ -6,6 +6,7 @@ import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../store/document/document.model";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-address-dashboard",
@@ -17,6 +18,7 @@ export class AddressDashboardComponent implements OnChanges {
   childDocs$: Observable<DocumentAbstract[]>;
 
   constructor(
+    public configService: ConfigService,
     private treeQuery: AddressTreeQuery,
     private formToolbarService: FormToolbarService,
     private router: Router,

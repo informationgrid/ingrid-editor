@@ -1,12 +1,28 @@
 <div class="text-center shortcut">
-    <button mat-button (click)="createNewFolder()">
+    <button
+        mat-button
+        (click)="createNewFolder()"
+        [disabled]="
+            isAddress
+                ? !configService.hasPermission('can_create_address')
+                : !configService.hasPermission('can_create_dataset')
+        "
+    >
         <mat-icon
             class="material-icons-outlined"
             svgIcon="outline-create_new_folder-24px"
         ></mat-icon>
         <span>Neuer Unterordner</span>
     </button>
-    <button mat-button (click)="createNewDataset()">
+    <button
+        mat-button
+        (click)="createNewDataset()"
+        [disabled]="
+            isAddress
+                ? !configService.hasPermission('can_create_address')
+                : !configService.hasPermission('can_create_dataset')
+        "
+    >
         <mat-icon
             class="material-icons-outlined"
             svgIcon="Neuer-Datensatz"

@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
   chartDataPublished = new Subject<number[]>();
 
   constructor(
-    configService: ConfigService,
+    public configService: ConfigService,
     private router: Router,
     private dialog: MatDialog,
     private docService: DocumentService,

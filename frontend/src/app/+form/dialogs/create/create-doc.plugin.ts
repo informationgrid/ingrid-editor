@@ -73,15 +73,10 @@ export class CreateDocumentPlugin extends Plugin {
       });
 
     if (!this.isAdmin) {
-      // add disabled condition based on groups
-      const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-      const stateSubscription = query.rootDocuments$.subscribe((data) => {
-        const hasAnyWritePermission = data.some(
-          (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
-        );
-        this.toolbarService.setButtonState("toolBtnNew", hasAnyWritePermission);
-      });
-      this.subscriptions.push(stateSubscription);
+      const buttonEnabled = this.config.hasPermission(
+        this.forAddress ? "can_create_address" : "can_create_dataset"
+      );
+      this.toolbarService.setButtonState("toolBtnNew", buttonEnabled);
     }
 
     this.subscriptions.push(toolbarEventSubscription);

@@ -10,27 +10,43 @@
         ></ige-quick-search>
 
         <div class="shortcut">
-            <button mat-button (click)="createNewFolder()">
+            <button
+                mat-button
+                (click)="createNewFolder()"
+                [disabled]="!configService.hasPermission('can_create_dataset')"
+            >
                 <mat-icon
                     class="material-icons-outlined"
                     svgIcon="outline-create_new_folder-24px"
                 ></mat-icon>
                 <span>Neuer Ordner</span>
             </button>
-            <button mat-button (click)="createNewDocument()">
+            <button
+                mat-button
+                (click)="createNewDocument()"
+                [disabled]="!configService.hasPermission('can_create_dataset')"
+            >
                 <mat-icon
                     class="material-icons-outlined"
                     svgIcon="Neuer-Datensatz"
                 ></mat-icon>
                 <span>Neuer Datensatz</span>
             </button>
-            <button mat-button (click)="gotoImportPage()">
+            <button
+                mat-button
+                (click)="gotoImportPage()"
+                [disabled]="!configService.hasPermission('can_import')"
+            >
                 <mat-icon class="material-icons-outlined"
-                    >import_export</mat-icon
-                >
+                    >import_export
+                </mat-icon>
                 <span>Datensatz importieren</span>
             </button>
-            <button mat-button (click)="createNewAddress()">
+            <button
+                mat-button
+                (click)="createNewAddress()"
+                [disabled]="!configService.hasPermission('can_create_address')"
+            >
                 <mat-icon
                     class="material-icons-outlined"
                     svgIcon="outline-person_add-24px"

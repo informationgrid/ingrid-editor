@@ -5,6 +5,7 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { SessionQuery } from "../../store/session.query";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-form-dashboard",
@@ -15,6 +16,7 @@ export class FormDashboardComponent implements OnChanges {
   childDocs$: Observable<DocumentAbstract[]>;
 
   constructor(
+    public configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private sessionQuery: SessionQuery,

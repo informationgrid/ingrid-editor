@@ -1,21 +1,34 @@
 <h1 class="text-center">Daten</h1>
 
 <div class="text-center shortcut">
-    <button mat-button (click)="createNewFolder()">
+    <button
+        mat-button
+        (click)="createNewFolder()"
+        [disabled]="!configService.hasPermission('can_create_dataset')"
+    >
         <mat-icon
             class="material-icons-outlined"
             svgIcon="outline-create_new_folder-24px"
         ></mat-icon>
         <span>Neuer Ordner</span>
     </button>
-    <button mat-button (click)="createNewDataset()">
+    <button
+        mat-button
+        (click)="createNewDataset()"
+        [disabled]="!configService.hasPermission('can_create_dataset')"
+    >
         <mat-icon
             class="material-icons-outlined"
             svgIcon="Neuer-Datensatz"
         ></mat-icon>
         <span>Neuer Datensatz</span>
     </button>
-    <button mat-button (click)="importDataset()" disabled>
+    <button
+        mat-button
+        (click)="importDataset()"
+        disabled
+        [disabled]="!configService.hasPermission('can_import')"
+    >
         <mat-icon>import_export</mat-icon>
         <span>Datensatz Import</span>
     </button>
