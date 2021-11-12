@@ -407,6 +407,11 @@ formly-field {
   opacity: 0.26;
 }
 
+/* Disabled material icon SVG */
+.mat-icon-button[disabled] .mat-icon {
+  opacity: 0.26;
+}
+
 ige-root .mat-drawer-container {
   background-color: $ige-background;
 }

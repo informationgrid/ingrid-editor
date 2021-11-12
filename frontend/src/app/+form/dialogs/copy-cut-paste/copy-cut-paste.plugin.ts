@@ -95,7 +95,9 @@ export class CopyCutPastePlugin extends Plugin {
         if (data.length === 0) {
           this.toolbarService.setButtonState("toolBtnCopy", false);
         } else {
-          if (!this.isAdmin) {
+          if (this.isAdmin) {
+            this.toolbarService.setButtonState("toolBtnCopy", true);
+          } else {
             const buttonEnabled = this.config.hasPermission(
               this.forAddress ? "can_create_address" : "can_create_dataset"
             );
