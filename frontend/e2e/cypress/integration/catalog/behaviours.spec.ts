@@ -22,16 +22,6 @@ describe('Behaviours', () => {
   });
 
   describe('System', () => {
-    it('should change the session timeout behaviour', () => {
-      BehavioursPage.checkTimeoutIs('30');
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSettingInput('Session Timeout Dauer', '600');
-      BehavioursPage.checkTimeoutIs('10');
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
-      BehavioursPage.checkTimeoutIs('30');
-    });
-
     it('should change the sorting of the tree', () => {
       const firstDoc = 'AAA_testDocForSortingCheck_API';
       const lastDoc = 'ZZZ_mCloudDocForSortingCheck_API';
