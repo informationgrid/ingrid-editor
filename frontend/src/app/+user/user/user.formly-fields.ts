@@ -3,12 +3,10 @@ import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 
 export const getUserFormFields = (
   roles: SelectOptionUi[],
   groups: Observable<Group[]>,
-  roleChangeCallback: FormlyAttributeEvent = undefined,
   groupClickCallback: (id: number) => void = undefined
 ): FormlyFieldConfig[] => {
   return [
@@ -33,7 +31,6 @@ export const getUserFormFields = (
         appearance: "outline",
         required: true,
         options: of(roles),
-        change: roleChangeCallback,
       },
     },
     {

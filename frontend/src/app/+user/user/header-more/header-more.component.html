@@ -28,23 +28,5 @@
         <div>ID/login</div>
         <div>{{ user.login }}</div>
     </div>
-    <div *ngIf="user.manager" fxLayout="row">
-        <div>Verantwortlich</div>
-        <div>{{ getManagerInfo(user.manager) }}</div>
-    </div>
-    <div *ngIf="standinUsers?.length" fxLayout="row">
-        <div>Vertritt</div>
-        <div>
-            <mat-chip-list
-                ><mat-chip *ngFor="let standUser of standinUsers">{{
-                    standUser
-                }}</mat-chip></mat-chip-list
-            >
-        </div>
-    </div>
-    <div *ngIf="user.standin" fxLayout="row">
-        <div>Wird vertreten von</div>
-        <div>{{ user.standin }}</div>
-    </div>
     <div class="padding-below"></div>
 </div>

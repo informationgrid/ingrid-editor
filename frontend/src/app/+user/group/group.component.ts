@@ -27,10 +27,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
-import { EditManagerDialogComponent } from "../user/edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
-import { SessionService } from "../../services/session.service";
 import { Router } from "@angular/router";
 
 @UntilDestroy()
@@ -270,40 +268,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     }
 
     return of(true);
-  }
-
-  openChangeManagerDialog(): void {
-    this.dirtyFormHandled().subscribe((allClear) => {
-      if (allClear) {
-        this.groupService
-          .getGroupManager(this.selectedGroup.id)
-          .subscribe((manager) => {
-            this.dialog
-              .open(EditManagerDialogComponent, {
-                data: {
-                  user: new BackendUser({
-                    // current user who is editing
-                    login: this.configService.$userInfo.getValue().userId,
-                    // current group manager
-                    manager: manager.login,
-                  }),
-                  group: this.selectedGroup,
-                },
-                hasBackdrop: true,
-              })
-              .afterClosed()
-              .subscribe((result) => {
-                if (result?.manager) {
-                  this.groupService
-                    .updateGroupManager(this.selectedGroup.id, result.manager)
-                    .subscribe(
-                      () => (this.selectedGroup.manager = result.manager)
-                    );
-                }
-              });
-          });
-      }
-    });
   }
 
   private loadGroupUsers(id: number) {

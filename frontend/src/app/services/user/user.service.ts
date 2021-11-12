@@ -47,72 +47,6 @@ export class UserService {
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
-  /**
-   * Get potential Managers for User
-   *
-   * These are all Catalog Admins + all MD-Admins visible by the editing admin + the editing admin.
-   * Minus the User forUser himself and minus all Users underneath the User forUser
-   *
-   * If forGroup is True, the children and the User himself are not filtered out, as they are valid options.
-   * @param forUser
-   * @param forGroup
-   */
-  getPotentialManagers(
-    forUser: User,
-    forGroup: boolean = false
-  ): Observable<FrontendUser[]> {
-    const forUserId = forUser.login;
-    const allUsers$ = this.getUsers();
-    const catAdmins$ = this.getCatAdmins();
-    const editingUser$ = this.getUser(
-      this.configService.$userInfo.getValue().userId
-    );
-    const childrenOfUser$ = this.dataService
-      .getUsersForUser(forUserId)
-      .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
-
-    return combineLatest(
-      allUsers$,
-      childrenOfUser$,
-      catAdmins$,
-      editingUser$,
-      (allUsers, childrenOfUser, catAdmins, editingUser) => ({
-        allUsers,
-        childrenOfUser,
-        catAdmins,
-        editingUser,
-      })
-    ).pipe(
-      map((pair) => {
-        // all visible MD-Admins - target itself - target's children
-        // + all Cat-Admins except if in targets children
-        // + editing user (current user)
-
-        // allUsers + catAdmins without duplicates
-        const eligibleManagers = pair.allUsers.concat(
-          pair.catAdmins.filter(
-            (admin) => !pair.allUsers.find((u) => admin.login == u.login)
-          )
-        );
-        // add editing user
-        eligibleManagers.push(pair.editingUser);
-
-        // filter out children, self and non admins
-        return eligibleManagers.filter(
-          (user) =>
-            ["md-admin", "cat-admin"].includes(user.role) &&
-            (forGroup || user.login !== forUserId) &&
-            (forGroup ||
-              !pair.childrenOfUser.find((u) => user.login == u.login))
-        );
-      })
-    );
-  }
-
-  getManagedUsers(login: string): Observable<String[]> {
-    return this.dataService.getManagedUserIds(login);
-  }
-
   getUser(login: string): Observable<FrontendUser> {
     return this.dataService
       .getUser(login)
@@ -155,13 +89,11 @@ export class UserService {
   }
 
   getUserFormFields(
-    roleChangeCallback: FormlyAttributeEvent = undefined,
     groupClickCallback: (id: number) => void = undefined
   ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
       this.groupService.getGroups(),
-      roleChangeCallback,
       groupClickCallback
     );
   }
@@ -177,10 +109,6 @@ export class UserService {
         )
       )
     );
-  }
-
-  updateManager(userId: String, managerId: String): Observable<any> {
-    return this.dataService.setManagerForUser(userId, managerId);
   }
 
   sendPasswordChangeRequest(login: string) {

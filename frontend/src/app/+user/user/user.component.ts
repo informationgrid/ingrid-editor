@@ -24,7 +24,6 @@ import { filter, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { EditManagerDialogComponent } from "./edit-manager-dialog/edit-manager-dialog.component";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 
@@ -66,7 +65,6 @@ export class UserComponent
     this.model = new FrontendUser();
     this.searchQuery = "";
     this.formlyFieldConfig = this.userService.getUserFormFields(
-      this.roleChangeCallback,
       this.groupSelectCallback
     );
     this.tableWidth = this.session.getValue().ui.userTableWidth;
@@ -77,41 +75,6 @@ export class UserComponent
       this.groupService.selectedGroup$.next(group);
       this.router.navigate(["/manage/group"]);
     });
-
-  roleChangeCallback = (field, $event) => {
-    // user can only be downgraded to author if he is not a manager of any other users
-    if ($event.value === "author") {
-      this.userService
-        .getManagedUsers(this.selectedUser.login)
-        .subscribe((managedUsers) => {
-          if (managedUsers.length > 0) {
-            // reset role change as user is still a manager
-            this.form.get("role").setValue(this.selectedUserRole);
-
-            this.dialog.open(ConfirmDialogComponent, {
-              data: {
-                title: "Benutzer Rolle ändern",
-                message:
-                  "Die Rolle des Nutzers kann nicht geändert werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
-                  managedUsers.join("\n") +
-                  "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
-                buttons: [
-                  {
-                    text: "Schließen",
-                    alignRight: true,
-                    emphasize: true,
-                  },
-                ],
-              } as ConfirmDialogData,
-              hasBackdrop: true,
-            });
-          }
-          this.selectedUserRole = this.form.get("role").value;
-        });
-    } else {
-      this.selectedUserRole = this.form.get("role").value;
-    }
-  };
 
   ngAfterViewInit(): void {
     this.tableWidth = this.session.getValue().ui.userTableWidth;
@@ -196,101 +159,23 @@ export class UserComponent
   }
 
   deleteUser(login: string) {
-    this.userService.getManagedUsers(login).subscribe((managedUsers) => {
-      if (managedUsers?.length) {
-        this.dialog.open(ConfirmDialogComponent, {
-          data: {
-            title: "Benutzer löschen",
-            message:
-              "Der Benutzer kann nicht gelöscht werden, da er noch für folgende Nutzer verantwortlich ist:\n\n" +
-              managedUsers.join("\n") +
-              "\n\nBitte geben Sie zunächst die Verantwortung des Nutzers ab.",
-          } as ConfirmDialogData,
-          hasBackdrop: true,
-        });
-      } else {
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: "Benutzer löschen",
-              message:
-                "Möchten Sie den Benutzer " + login + " wirklich löschen?",
-            } as ConfirmDialogData,
-          })
-          .afterClosed()
-          .subscribe((result) => {
-            if (result) {
-              this.userService.deleteUser(login).subscribe(() => {
-                this.userService.selectedUser$.next(null);
-                this.selectedUser = null;
-                this.fetchUsers().subscribe();
-              });
-            }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "Benutzer löschen",
+          message: "Möchten Sie den Benutzer " + login + " wirklich löschen?",
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.userService.deleteUser(login).subscribe(() => {
+            this.userService.selectedUser$.next(null);
+            this.selectedUser = null;
+            this.fetchUsers().subscribe();
           });
-      }
-    });
-  }
-
-  changeManagerForManagedUsers(login: string) {
-    this.userService.getManagedUsers(login).subscribe((managedUsers) => {
-      if (managedUsers?.length) {
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: {
-              title: "Verantwortung abgeben",
-              message:
-                "Der Benutzer ist aktuell für folgende Nutzer verantwortlich:\n\n" +
-                managedUsers.join("\n") +
-                "\n\nBitte wählen Sie im nächsten Schritt einen neuen Verantwortlichen",
-              buttons: [
-                { text: "Abbrechen" },
-                {
-                  text: "Verantwortlichen auswählen",
-                  alignRight: true,
-                  id: "confirm",
-                  emphasize: true,
-                },
-              ],
-            } as ConfirmDialogData,
-          })
-          .afterClosed()
-          .subscribe((result) => {
-            if (!result) return;
-            this.dialog
-              .open(EditManagerDialogComponent, {
-                data: { user: this.selectedUser },
-                hasBackdrop: true,
-              })
-              .afterClosed()
-              .subscribe((result) => {
-                if (result) {
-                  const newManagerId = result.manager;
-                  const promises = [];
-                  managedUsers.forEach((userId) => {
-                    promises.push(
-                      this.userService
-                        .updateManager(userId, newManagerId)
-                        .toPromise()
-                    );
-                  });
-                  Promise.all(promises).then(() =>
-                    this.snackBar.open("Verantwortung geändert", "", {
-                      panelClass: "green",
-                    })
-                  );
-                }
-              });
-          });
-      } else {
-        this.dialog.open(ConfirmDialogComponent, {
-          data: {
-            title: "Verantwortung abgeben",
-            message:
-              "Der ausgewählte Benutzer ist für keine anderen Nutzer verantwortlich",
-          } as ConfirmDialogData,
-        });
-      }
-    });
+        }
+      });
   }
 
   saveUser(user?: User): void {
@@ -390,24 +275,5 @@ export class UserComponent
     }
 
     return of(true);
-  }
-
-  openChangeManagerDialog(): void {
-    this.dirtyFormHandled().subscribe((allClear) => {
-      if (allClear) {
-        this.dialog
-          .open(EditManagerDialogComponent, {
-            data: { user: this.selectedUser },
-            hasBackdrop: true,
-          })
-          .afterClosed()
-          .subscribe((result) => {
-            if (result) {
-              this.saveUser(result);
-              this.userService.selectedUser$.next(result);
-            }
-          });
-      }
-    });
   }
 }

@@ -6,9 +6,10 @@ import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
-import de.ingrid.igeserver.repository.ManagerRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.commons.codec.binary.Base64.decodeBase64
@@ -41,10 +42,13 @@ open class UsersApiController : UsersApi {
     private lateinit var catalogService: CatalogService
 
     @Autowired
-    private lateinit var userRepo: UserRepository
+    private lateinit var groupService: GroupService
 
     @Autowired
-    private lateinit var managerRepo: ManagerRepository
+    private lateinit var igeAclService: IgeAclService
+
+    @Autowired
+    private lateinit var userRepo: UserRepository
 
     @Autowired
     private lateinit var keycloakService: UserManagementService
@@ -76,9 +80,6 @@ open class UsersApiController : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        // if user has no manager, set it to creating user
-        if (user.manager.isEmpty()) user.manager = authUtils.getUsernameFromPrincipal(principal)
-
         val userExists = keycloakService.userExists(principal, user.login)
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already Exists with login ${user.login}")
@@ -108,14 +109,10 @@ open class UsersApiController : UsersApi {
     @Transactional
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        if (catalogService.getManagedUserIds(userId, catalogId).isEmpty()) {
-            val deleted = catalogService.deleteUser(catalogId, userId)
-            // if user really deleted (only was connected to one catalog)
-            if (deleted) {
-                keycloakService.deleteUser(principal, userId)
-            }
-        } else {
-            throw ConflictException.withReason("User still has manager assignments and can't be deleted")
+        val deleted = catalogService.deleteUser(catalogId, userId)
+        // if user really deleted (only was connected to one catalog)
+        if (deleted) {
+            keycloakService.deleteUser(principal, userId)
         }
 
         return ResponseEntity.ok().build()
@@ -144,14 +141,6 @@ open class UsersApiController : UsersApi {
                 user.role = frontendUser.role?.name ?: ""
                 user.organisation = frontendUser.data?.organisation ?: ""
 
-                user.manager = managerRepo.findByUserAndCatalogIdentifier(
-                    frontendUser,
-                    catalogService.getCurrentCatalogForPrincipal(principal)
-                )?.manager?.userId ?: ""
-
-                // TODO implement manager and standin
-                //user.standin = "herbert"
-
                 logger.info("getUser: $durationGetUser")
                 logger.info("getLatestLoginDate: $durationGetLatestLoginDate")
             }
@@ -162,21 +151,28 @@ open class UsersApiController : UsersApi {
 
     }
 
-    override fun list(principal: Principal, fromUser: String?): ResponseEntity<List<User>> {
+    override fun list(principal: Principal): ResponseEntity<List<User>> {
 
-        var filteredUsers = catalogService.getAllCatalogUsers(principal)
 
-        val isCatAdmin = authUtils.isAdmin(principal)
         // return all users for katadmins
-        if (isCatAdmin && fromUser.isNullOrEmpty()) {
-            return ResponseEntity.ok(filteredUsers)
+        val isCatAdmin = authUtils.isAdmin(principal)
+        if (isCatAdmin) {
+            val allUsers = catalogService.getAllCatalogUsers(principal)
+            return ResponseEntity.ok(allUsers)
         }
 
-        // filter for fromUser children. if not set filter for principal children
-        val userName = fromUser.orEmpty().ifEmpty { authUtils.getUsernameFromPrincipal(principal) }
-        filteredUsers = catalogService.filterUsersForUser(filteredUsers.toSet(), userName).toList()
-
-        return ResponseEntity.ok(filteredUsers)
+        // return all users of assigned groups and subgroups for non-katadmins
+        val filteredUsers = mutableSetOf<User>()
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        groupService.getAll(catalogId).filter {
+            igeAclService.hasRightsForGroup(
+                principal as Authentication,
+                it
+            )
+        }.forEach {
+            filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal))
+        }
+        return ResponseEntity.ok(filteredUsers.toList())
     }
 
     override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
@@ -376,14 +372,6 @@ open class UsersApiController : UsersApi {
 
     }
 
-    override fun getManagedUsers(principal: Principal, userId: String): ResponseEntity<List<String>> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        return ResponseEntity.ok(catalogService.getManagedUserIds(userId, catalogId))
-    }
 
-    override fun setManager(principal: Principal, userId: String, managerId: String) {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        this.catalogService.setManager(userId, managerId, catalogId)
-    }
 
 }

@@ -9,8 +9,6 @@ export abstract class User {
   organisation: string;
   attributes: any[];
   password?: string;
-  manager?: string;
-  standin?: string;
   creationDate: Date;
   modificationDate: Date;
   latestLogin?: Date;
