@@ -14,14 +14,12 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { Subscription } from "rxjs/Subscription";
 import { UploadService } from "./upload.service";
-import { ModalService } from "../../services/modal/modal.service";
-import {
-  ImportAnalyzeResponse,
-  ImportTypeInfo,
-  UploadAnalysis,
-} from "../import-export-service";
+import { UploadAnalysis } from "../import-export-service";
+import { FileUploadModel } from "./fileUploadModel";
+import { catchError } from "rxjs/operators";
+import { IgeError } from "../../models/ige-error";
+import { of } from "rxjs";
 
 @Component({
   selector: "ige-file-upload",
@@ -40,7 +38,7 @@ export class UploadComponent implements OnInit {
   /** Name used in form which will be sent in HTTP request. */
   @Input() param = "file";
   /** Target URL for file uploading. */
-  @Input() targetAnalyze = "/api/import/analyze";
+  @Input() targetAnalyze;
 
   @Input() target = "/api/import";
   /** File extension that accepted, same as 'accept' of <input type="file" />.
@@ -55,10 +53,7 @@ export class UploadComponent implements OnInit {
   @Output() chosenFiles = new EventEmitter<FileUploadModel[]>();
   @ViewChild("fileUploadInput") htmlFileUpload: ElementRef;
 
-  constructor(
-    private uploadService: UploadService,
-    private modalService: ModalService
-  ) {}
+  constructor(private uploadService: UploadService) {}
 
   private _files: FileUploadModel[] = [];
 
@@ -75,7 +70,11 @@ export class UploadComponent implements OnInit {
 
   @Input() set droppedFiles(files: FileUploadModel[]) {
     this.files = files;
-    this.analyzeFiles();
+    if (this.targetAnalyze) {
+      this.analyzeFiles();
+    } else {
+      this.uploadFiles();
+    }
   }
 
   ngOnInit() {}
@@ -136,7 +135,7 @@ export class UploadComponent implements OnInit {
     file.sub = this.uploadService
       .uploadFile(file, this.param, this.target)
       .subscribe((event: any) => {
-        this.removeFileFromArray(file);
+        // this.removeFileFromArray(file);
         this.complete.emit(event.body);
       });
   }
@@ -148,6 +147,12 @@ export class UploadComponent implements OnInit {
   private analyzeFile(file: FileUploadModel) {
     file.sub = this.uploadService
       .uploadFile(file, this.param, this.target + "/analyze")
+      .pipe(
+        catchError((error) => {
+          file.error = error;
+          return of({}); // throw new IgeError("Datei konnte nicht hochgeladen werden");
+        })
+      )
       .subscribe((event: any) => {
         this.analyzed.emit({
           file: file,
@@ -155,14 +160,4 @@ export class UploadComponent implements OnInit {
         });
       });
   }
-}
-
-export class FileUploadModel {
-  data: File;
-  state: string;
-  inProgress: boolean;
-  progress: number;
-  canRetry: boolean;
-  canCancel: boolean;
-  sub?: Subscription;
 }

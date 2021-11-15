@@ -1,0 +1,41 @@
+<mat-list-item>
+    <mat-icon
+        *ngIf="!file.error"
+        matListIcon
+        svgIcon="baseline-check-24px"
+    ></mat-icon>
+    <mat-icon *ngIf="file.error" matListIcon class="mat-error"
+        >error_outline</mat-icon
+    >
+    <div mat-line>{{ file.data.name }}</div>
+    <div mat-line>{{ file.data.size }} Bytes</div>
+    <div *ngIf="file.error" mat-line class="mat-error">
+        {{ file.error.message }}
+    </div>
+    <button mat-icon-button (click)="cancelFile(file)" *ngIf="file.canCancel">
+        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+    </button>
+</mat-list-item>
+<mat-progress-bar
+    *ngIf="file.progress < 100"
+    [value]="file.progress"
+></mat-progress-bar>
+
+<div *ngIf="file.error" fxLayout="column">
+    <div fxFlex fxFlexAlign="end">
+        <button mat-button color="primary">Überschreiben</button>
+        <button mat-button color="primary">Umbenennen</button>
+        <button mat-button color="primary">Existierende verwenden</button>
+    </div>
+</div>
+
+<!--<div *ngIf="file.progress === 100">{{ file | json }}</div>-->
+<!--<span id="file-label">
+    {{ file.data.name }}
+    <a title="Retry" (click)="retryFile(file)" *ngIf="file.canRetry">
+        <mat-icon>refresh</mat-icon></a
+    >
+    <a title="Cancel" (click)="cancelFile(file)" *ngIf="file.canCancel">
+        <mat-icon>cancel</mat-icon></a
+    >
+</span>-->

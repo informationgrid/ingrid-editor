@@ -898,3 +898,11 @@ mat-icon.wide-icon-26px {
     }
   }
 }*/
+
+/* Slide toggle (stretched) */
+.mat-slide-toggle.stretch {
+  display: block;
+  .mat-slide-toggle-label {
+    justify-content: space-between;
+  }
+}

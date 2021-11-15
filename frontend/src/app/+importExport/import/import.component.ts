@@ -6,7 +6,6 @@ import {
   UploadAnalysis,
 } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
-import { FileUploadModel } from "../upload/upload.component";
 import { MatStepper } from "@angular/material/stepper";
 import { catchError, tap } from "rxjs/operators";
 import { UploadService } from "../upload/upload.service";
@@ -16,6 +15,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { IgeError } from "../../models/ige-error";
+import { FileUploadModel } from "../upload/fileUploadModel";
 
 @Component({
   selector: "ige-import",

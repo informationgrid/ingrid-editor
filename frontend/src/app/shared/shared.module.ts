@@ -31,6 +31,8 @@ import { SpatialListComponent } from "../formly/types/map/spatial-list/spatial-l
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatMenuModule } from "@angular/material/menu";
 import { FeatureFlagDirective } from "../directives/feature-flag.directive";
+import { DndDirective } from "../directives/dnd.directive";
+import { UploadItemComponent } from "../+importExport/upload/upload-item/upload-item.component";
 
 @NgModule({
   imports: [
@@ -66,6 +68,8 @@ import { FeatureFlagDirective } from "../directives/feature-flag.directive";
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,
+    DndDirective,
+    UploadItemComponent,
   ],
   exports: [
     TreeComponent,
@@ -82,6 +86,8 @@ import { FeatureFlagDirective } from "../directives/feature-flag.directive";
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,
+    DndDirective,
+    UploadItemComponent,
   ],
 })
 export class SharedModule {}

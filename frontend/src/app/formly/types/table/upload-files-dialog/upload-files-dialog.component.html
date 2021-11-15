@@ -1,0 +1,27 @@
+<ige-dialog-template title="Datei(en) hochladen" contentColor="#f3f3f3">
+    <ng-container content>
+        <div
+            class="upload-content"
+            appDnd
+            (fileDropped)="onFileDropped($event)"
+        >
+            <div class="text-center">
+                <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
+                <mat-icon class="upload light" svgIcon="upload"></mat-icon>
+                <div class="alternative-text">oder</div>
+            </div>
+
+            <ige-file-upload
+                [droppedFiles]="droppedFiles"
+                target="/api/upload"
+                (analyzed)="onAnalyzeComplete($event)"
+                (complete)="onFileComplete($event)"
+                (chosenFiles)="chosenFiles = $event"
+            ></ige-file-upload>
+        </div>
+
+        <mat-slide-toggle labelPosition="before" color="primary" class="stretch"
+            >ZIP-Archive nach dem Übernehmen entpacken</mat-slide-toggle
+        >
+    </ng-container>
+</ige-dialog-template>

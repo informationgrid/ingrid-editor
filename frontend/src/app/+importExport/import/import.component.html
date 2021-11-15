@@ -26,6 +26,7 @@
 
                         <ige-file-upload
                             [droppedFiles]="droppedFiles"
+                            targetAnalyze="/api/import/analyze"
                             (analyzed)="onAnalyzeComplete($event)"
                             (complete)="onFileComplete($event)"
                             (chosenFiles)="chosenFiles = $event"

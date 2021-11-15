@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -12,6 +12,8 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
+import { UploadFilesDialogComponent } from "./upload-files-dialog/upload-files-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -191,5 +193,26 @@ export class TableTypeComponent
             column.templateOptions.formatter(value[index][column.key]);
         })
       );
+  }
+
+  showUploadFilesDialog() {
+    this.dialog
+      .open(UploadFilesDialogComponent, {
+        minWidth: 700,
+      })
+      .afterClosed()
+      .subscribe();
+  }
+
+  showAddLinkDialog() {
+    this.dialog
+      .open(LinkDialogComponent)
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((url) => {
+        this.dataSource.data.push({ link: { asLink: true, value: url } });
+        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+        this.updateFormControl(this.dataSource.data);
+      });
   }
 }

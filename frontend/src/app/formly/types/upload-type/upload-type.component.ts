@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FileUploadModel } from "../../../+importExport/upload/upload.component";
+import { FileUploadModel } from "../../../+importExport/upload/fileUploadModel";
 
 interface LinkType {
   value: string;

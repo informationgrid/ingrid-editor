@@ -6,8 +6,8 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { catchError, last, map } from "rxjs/operators";
-import { FileUploadModel } from "./upload.component";
 import { IgeError } from "../../models/ige-error";
+import { FileUploadModel } from "./fileUploadModel";
 
 @Injectable({
   providedIn: "root",
