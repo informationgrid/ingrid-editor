@@ -1,6 +1,6 @@
 import { AppComponent } from "./app.component";
 import { registerLocaleData } from "@angular/common";
-import { routing } from "./app.router";
+import { CustomReuseStrategy, routing } from "./app.router";
 import { BrowserModule } from "@angular/platform-browser";
 import {
   APP_INITIALIZER,
@@ -73,6 +73,7 @@ import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
+import { RouteReuseStrategy } from "@angular/router";
 
 registerLocaleData(de);
 
@@ -190,6 +191,11 @@ export function ConfigLoader(
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
+    },
+    // cache routes
+    {
+      provide: RouteReuseStrategy,
+      useClass: CustomReuseStrategy,
     },
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
