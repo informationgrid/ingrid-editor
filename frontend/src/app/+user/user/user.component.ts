@@ -7,7 +7,6 @@ import {
   Component,
   OnInit,
 } from "@angular/core";
-import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
@@ -20,7 +19,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, map, tap } from "rxjs/operators";
+import { filter, finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -37,7 +36,6 @@ export class UserComponent
   implements OnInit, AfterViewInit, AfterContentChecked
 {
   users: User[];
-  currentTab: string;
   form = new FormGroup({});
 
   selectedUser: User;
@@ -50,7 +48,6 @@ export class UserComponent
   selectedUserRole: string;
 
   constructor(
-    private modalService: ModalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     public userService: UserService,
@@ -85,8 +82,6 @@ export class UserComponent
   }
 
   ngOnInit() {
-    this.currentTab = "users";
-
     this.fetchUsers().subscribe(() => {
       // select group after groups are fetched, otherwise table has no data
       // to select from
@@ -127,13 +122,15 @@ export class UserComponent
   loadUser(login: string) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
-        this.isLoading = true;
-        this.form.disable();
-        this.userService.getUser(login).subscribe((user) => {
-          this.userService.selectedUser$.next(user);
-          this.model = user;
-          this.updateUserForm(user);
-        });
+        this.showLoading();
+        this.userService
+          .getUser(login)
+          .pipe(finalize(() => this.hideLoading()))
+          .subscribe((user) => {
+            this.userService.selectedUser$.next(user);
+            this.model = user;
+            this.updateUserForm(user);
+          });
       } else {
         this.userService.selectedUser$.next(this.selectedUser);
       }
@@ -179,34 +176,21 @@ export class UserComponent
   }
 
   saveUser(user?: User): void {
-    let createUserObserver: Observable<User>;
-
-    // convert roles to numbers
-    // user.roles = user.roles.map(role => +role);
-    this.form.disable();
+    this.showLoading();
 
     user = user ?? this.model;
-    createUserObserver = this.userService.updateUser(user);
 
     // send request and handle error
-    createUserObserver.subscribe(
+    this.userService.updateUser(user).subscribe(
       () => {
         this.fetchUsers().subscribe();
-        this.enableForm();
         this.form.markAsPristine();
         this.loadUser(user.login);
       },
       (err: any) => {
-        this.enableForm();
-        this.isLoading = false;
+        this.hideLoading();
         this.userService.selectedUser$.next(null);
-        if (err.status === 409) {
-          this.modalService.showJavascriptError(
-            "Es existiert kein Benutzer mit dem Login: " + this.form.value.login
-          );
-        } else {
-          throw err;
-        }
+        throw err;
       }
     );
   }
@@ -239,16 +223,12 @@ export class UserComponent
 
   private updateUserForm(user: FrontendUser) {
     const mergedUser = {
-      ...{
-        email: "",
-        groups: [],
-        role: "Keiner Rolle zugeordnet",
-        ...user,
-      },
+      email: "",
+      groups: [],
+      role: "Keiner Rolle zugeordnet",
+      ...user,
     };
-    this.enableForm();
     this.form.reset(mergedUser);
-    this.isLoading = false;
   }
 
   dirtyFormHandled(): Observable<boolean> {
@@ -275,5 +255,15 @@ export class UserComponent
     }
 
     return of(true);
+  }
+
+  private showLoading() {
+    this.isLoading = true;
+    this.form.disable();
+  }
+
+  private hideLoading() {
+    this.enableForm();
+    this.isLoading = false;
   }
 }

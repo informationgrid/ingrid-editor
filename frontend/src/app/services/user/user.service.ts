@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
-import { map } from "rxjs/operators";
+import { catchError, map } from "rxjs/operators";
 import { SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
@@ -10,6 +10,7 @@ import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -21,7 +22,7 @@ export class UserService {
     { label: "Autor", value: "author" },
   ];
 
-  selectedUser$: BehaviorSubject<User>;
+  selectedUser$ = new BehaviorSubject<User>(null);
 
   constructor(
     private dataService: UserDataService,
@@ -32,7 +33,6 @@ export class UserService {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin"
       );
-    this.selectedUser$ = new BehaviorSubject<User>(null);
   }
 
   getUsers(): Observable<FrontendUser[]> {
@@ -59,9 +59,18 @@ export class UserService {
       groups: user.groups.map((group) => +group.value),
     };
 
-    return this.dataService
-      .saveUser(userForBackend)
-      .pipe(map((u) => new FrontendUser(u)));
+    return this.dataService.saveUser(userForBackend).pipe(
+      map((u) => new FrontendUser(u)),
+      catchError((error) => {
+        if (error.status === 404) {
+          throw new IgeError(
+            "Es existiert kein Benutzer mit dem Login: " + user.login
+          );
+        } else {
+          throw error;
+        }
+      })
+    );
   }
 
   updateCurrentUser(user: User): Observable<FrontendUser> {
