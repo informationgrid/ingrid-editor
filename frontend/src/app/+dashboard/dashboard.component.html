@@ -13,7 +13,7 @@
             <button
                 mat-button
                 (click)="createNewFolder()"
-                [disabled]="!configService.hasPermission('can_create_dataset')"
+                [disabled]="!canCreateDataset"
             >
                 <mat-icon
                     class="material-icons-outlined"
@@ -24,7 +24,7 @@
             <button
                 mat-button
                 (click)="createNewDocument()"
-                [disabled]="!configService.hasPermission('can_create_dataset')"
+                [disabled]="!canCreateDataset"
             >
                 <mat-icon
                     class="material-icons-outlined"
@@ -35,7 +35,7 @@
             <button
                 mat-button
                 (click)="gotoImportPage()"
-                [disabled]="!configService.hasPermission('can_import')"
+                [disabled]="!canImport"
             >
                 <mat-icon class="material-icons-outlined"
                     >import_export
@@ -45,7 +45,7 @@
             <button
                 mat-button
                 (click)="createNewAddress()"
-                [disabled]="!configService.hasPermission('can_create_address')"
+                [disabled]="!canCreateAddress"
             >
                 <mat-icon
                     class="material-icons-outlined"

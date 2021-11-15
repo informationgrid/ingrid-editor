@@ -4,7 +4,6 @@ import { FormToolbarService } from "../../+form/form-shared/toolbar/form-toolbar
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
-import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { ConfigService } from "../../services/config/config.service";
 
@@ -14,17 +13,20 @@ import { ConfigService } from "../../services/config/config.service";
   styleUrls: ["./address-dashboard.component.scss"],
 })
 export class AddressDashboardComponent implements OnChanges {
-  treeDocs: Observable<number> = this.treeQuery.selectCount();
   childDocs$: Observable<DocumentAbstract[]>;
+  canCreateAddress: boolean;
+  canImport: boolean;
 
   constructor(
-    public configService: ConfigService,
+    configService: ConfigService,
     private treeQuery: AddressTreeQuery,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService
   ) {
     this.childDocs$ = this.docService.findRecentAddresses();
+    this.canCreateAddress = configService.hasPermission("can_create_address");
+    this.canImport = configService.hasPermission("can_import");
   }
 
   ngOnChanges() {

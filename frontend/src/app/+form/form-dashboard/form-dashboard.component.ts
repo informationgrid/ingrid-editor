@@ -14,9 +14,11 @@ import { ConfigService } from "../../services/config/config.service";
 })
 export class FormDashboardComponent implements OnChanges {
   childDocs$: Observable<DocumentAbstract[]>;
+  canCreateDatasets: boolean;
+  canImport: boolean;
 
   constructor(
-    public configService: ConfigService,
+    configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private sessionQuery: SessionQuery,
@@ -25,6 +27,8 @@ export class FormDashboardComponent implements OnChanges {
     // TODO switch to user specific query
     this.childDocs$ = this.sessionQuery.latestDocuments$;
     this.docService.findRecent();
+    this.canCreateDatasets = configService.hasPermission("can_create_dataset");
+    this.canImport = configService.hasPermission("can_import");
   }
 
   ngOnChanges() {

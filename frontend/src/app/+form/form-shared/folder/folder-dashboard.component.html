@@ -2,11 +2,7 @@
     <button
         mat-button
         (click)="createNewFolder()"
-        [disabled]="
-            isAddress
-                ? !configService.hasPermission('can_create_address')
-                : !configService.hasPermission('can_create_dataset')
-        "
+        [disabled]="isAddress ? !canCreateAddress : !canCreateDataset"
     >
         <mat-icon
             class="material-icons-outlined"
@@ -17,11 +13,7 @@
     <button
         mat-button
         (click)="createNewDataset()"
-        [disabled]="
-            isAddress
-                ? !configService.hasPermission('can_create_address')
-                : !configService.hasPermission('can_create_dataset')
-        "
+        [disabled]="isAddress ? !canCreateAddress : !canCreateDataset"
     >
         <mat-icon
             class="material-icons-outlined"

@@ -4,7 +4,7 @@
     <button
         mat-button
         (click)="createNewFolder()"
-        [disabled]="!configService.hasPermission('can_create_dataset')"
+        [disabled]="!canCreateDatasets"
     >
         <mat-icon
             class="material-icons-outlined"
@@ -15,7 +15,7 @@
     <button
         mat-button
         (click)="createNewDataset()"
-        [disabled]="!configService.hasPermission('can_create_dataset')"
+        [disabled]="!canCreateDatasets"
     >
         <mat-icon
             class="material-icons-outlined"
@@ -27,7 +27,7 @@
         mat-button
         (click)="importDataset()"
         disabled
-        [disabled]="!configService.hasPermission('can_import')"
+        [disabled]="!canImport"
     >
         <mat-icon>import_export</mat-icon>
         <span>Datensatz Import</span>

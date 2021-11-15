@@ -24,6 +24,8 @@ export class FolderDashboardComponent {
     this.updateChildren(value);
   }
 
+  canCreateAddress: boolean;
+  canCreateDataset: boolean;
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
   private subscription: Subscription;
@@ -32,7 +34,7 @@ export class FolderDashboardComponent {
   constructor(
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
-    public configService: ConfigService,
+    configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService,
@@ -40,6 +42,8 @@ export class FolderDashboardComponent {
     private dialog: MatDialog
   ) {
     this.query = this.isAddress ? addressTreeQuery : treeQuery;
+    this.canCreateAddress = configService.hasPermission("can_create_address");
+    this.canCreateDataset = configService.hasPermission("can_create_dataset");
   }
 
   updateChildren(model) {
