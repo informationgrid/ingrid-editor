@@ -55,7 +55,7 @@ public interface Storage {
      * @param file The file
      * @return boolean
      */
-    boolean exists(String userID, String datasetID, String file);
+    boolean exists(String catalog, String userID, String datasetID, String file);
 
     /**
      * Check if a file has a valid name
@@ -66,7 +66,7 @@ public interface Storage {
      * @param size The size
      * @throws ValidationException
      */
-    void validate(String userID, String datasetID, String file, final long size) throws ValidationException;
+    void validate(String catalog, String userID, String datasetID, String file, final long size) throws ValidationException;
 
     /**
      * Get information about a file
@@ -77,7 +77,7 @@ public interface Storage {
      * @return StorageItem
      * @throws IOException
      */
-    StorageItem getInfo(String userID, String datasetID, String file) throws IOException;
+    StorageItem getInfo(String catalog, String userID, String datasetID, String file) throws IOException;
 
     /**
      * Get the content of a file
@@ -88,11 +88,12 @@ public interface Storage {
      * @return InputStream
      * @throws IOException
      */
-    InputStream read(String userID, String datasetID, String file) throws IOException;
+    InputStream read(String catalog, String userID, String datasetID, String file) throws IOException;
 
     /**
      * Write data to a file in a path and extract archives contained in data
      *
+     * @param catalog The current catalog
      * @param userID The ID of the current User, relevant for unsaved Scope
      * @param datasetID The UUID of the dataset
      * @param file The file
@@ -102,7 +103,7 @@ public interface Storage {
      * @return StorageItem[] The list of created files
      * @throws IOException
      */
-    StorageItem[] write(String userID, String datasetID, String file, InputStream data, Long size, boolean replace) throws IOException;
+    StorageItem[] write(String catalog, String userID, String datasetID, String file, InputStream data, Long size, boolean replace) throws IOException;
 
     /**
      * Write a file part
@@ -129,7 +130,7 @@ public interface Storage {
      * @return StorageItem[] The list of created files
      * @throws IOException
      */
-    StorageItem[] combineParts(String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace, boolean extract) throws IOException;
+    StorageItem[] combineParts(String catalog, String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace, boolean extract) throws IOException;
 
     /**
      * Delete a file
@@ -139,7 +140,7 @@ public interface Storage {
      * @param file The file
      * @throws IOException
      */
-    void delete(String userID, String datasetID, String file) throws IOException;
+    void delete(String catalog, String userID, String datasetID, String file) throws IOException;
 
     /**
      * Archive a file
@@ -148,7 +149,7 @@ public interface Storage {
      * @param file
      * @throws IOException
      */
-    void archive(String datasetID, String file) throws IOException;
+    void archive(String catalog, String datasetID, String file) throws IOException;
 
     /**
      * Restore a file
@@ -157,7 +158,7 @@ public interface Storage {
      * @param file
      * @throws IOException
      */
-    void restore(String datasetID, String file) throws IOException;
+    void restore(String catalog, String datasetID, String file) throws IOException;
 
     /**
      * Restore a file
@@ -185,7 +186,7 @@ public interface Storage {
      * @param referencedFiles Files referenced in the Dataset
      * @throws IOException
      */
-    void saveDataset(String userID, String datasetID, List<String> referencedFiles) throws IOException;
+    void saveDataset(String catalog, String userID, String datasetID, List<String> referencedFiles) throws IOException;
 
     /**
      * transfer files from unpublished to published state
@@ -194,7 +195,7 @@ public interface Storage {
      * @param referencedFiles Files referenced in the Dataset
      * @throws IOException
      */
-    void publishDataset(String datasetID, List<String> referencedFiles) throws IOException;
+    void publishDataset(String catalog, String datasetID, List<String> referencedFiles) throws IOException;
 
     /**
      * transfer files from published to unpublished state
@@ -203,7 +204,7 @@ public interface Storage {
      * @param referencedFiles Files referenced in the unpublished Dataset
      * @throws IOException
      */
-    void unpublishDataset(String datasetID, List<String> referencedFiles) throws IOException;
+    void unpublishDataset(String catalog, String datasetID, List<String> referencedFiles) throws IOException;
 
     /**
      * remove files from unpublished state
@@ -211,7 +212,7 @@ public interface Storage {
      * @param datasetID The UUID of the dataset
      * @throws IOException
      */
-    void discardUnpublished(String datasetID) throws IOException;
+    void discardUnpublished(String catalog, String datasetID) throws IOException;
 
     /**
      * remove files from unsaved state
@@ -220,5 +221,5 @@ public interface Storage {
      * @param datasetID The UUID of the dataset
      * @throws IOException
      */
-    void discardUnsaved(String userID, String datasetID) throws IOException;
+    void discardUnsaved(String catalog, String userID, String datasetID) throws IOException;
 }

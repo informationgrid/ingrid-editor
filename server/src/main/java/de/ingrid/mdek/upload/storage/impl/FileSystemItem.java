@@ -133,13 +133,14 @@ public class FileSystemItem implements StorageItem {
 
     @Override
     public String getNextName() {
-        if (this.storage.exists(null, this.path, this.file)) {
+        /*
+        if (this.storage.exists(null, null, this.path, this.file)) {
             final List<String> parts = new LinkedList<>(Arrays.asList(this.file.split("\\.")));
             final String extension = parts.size() > 1 ? parts.remove(parts.size()-1) : "";
             final String filename = String.join(".", parts);
             String tmpFile = this.file;
             int i = 0;
-            while (this.storage.exists(null, this.path, tmpFile)) {
+            while (this.storage.exists(null, null, this.path, tmpFile)) {
                 i++;
                 tmpFile = filename + "-" + i;
                 if (extension.length() > 0) {
@@ -148,6 +149,8 @@ public class FileSystemItem implements StorageItem {
             }
             return tmpFile;
         }
+
+         */
         return this.file;
     }
 

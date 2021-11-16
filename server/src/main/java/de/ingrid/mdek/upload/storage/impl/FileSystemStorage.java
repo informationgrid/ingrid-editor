@@ -34,6 +34,8 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -52,6 +54,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +224,7 @@ public class FileSystemStorage implements Storage {
         files.addAll(this.listFiles(path));
 
         // add files from archive
-        final Path archivePath = this.getArchivePath(this.stripPath(path.toString()), "", this.docsDir);
+        final Path archivePath = this.getArchivePath("", this.stripPath(path.toString()), "", this.docsDir);
         files.addAll(this.listFiles(archivePath));
 
         return files;
@@ -254,21 +257,21 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public boolean exists(final String userID, final String path, final String file) {
-        boolean result;
-        final Path realPath = this.getRealPath(path, file, this.docsDir);
-        try {
-            final FileSystemItem fileInfo = this.getFileInfo(realPath.toString());
-            result = fileInfo.getRealPath().toFile().exists();
+    public boolean exists(final String catalog, final String userID, final String path, final String file) {
+        Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
+        if(realPath.toFile().exists()){
+            return true;
         }
-        catch (final Exception ex) {
-            result = false;
+        realPath = this.getUnpublishedPath(catalog, path, file, this.docsDir);
+        if(realPath.toFile().exists()){
+            return true;
         }
-        return result;
+        realPath = this.getRealPath(catalog, path, file, this.docsDir);
+        return realPath.toFile().exists();
     }
 
     @Override
-    public void validate(final String userID, final String path, final String file, final long size) {
+    public void validate(final String catalog, final String userID, final String path, final String file, final long size) {
         final String validatePath = Paths.get(this.docsDir, path).toString();
         for (final Validator validator : this.validators) {
             validator.validate(validatePath, file, size, null, false);
@@ -276,28 +279,36 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public StorageItem getInfo(final String userID, final String path, final String file) throws IOException {
-        final Path realPath = this.getRealPath(path, file, this.docsDir);
+    public StorageItem getInfo(final String catalog, final String userID, final String path, final String file) throws IOException {
+        Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
+        if(realPath.toFile().exists()){
+            return this.getFileInfo(realPath.toString());
+        }
+        realPath = this.getUnpublishedPath(catalog, path, file, this.docsDir);
+        if(realPath.toFile().exists()){
+            return this.getFileInfo(realPath.toString());
+        }
+        realPath = this.getRealPath(catalog, path, file, this.docsDir);
         return this.getFileInfo(realPath.toString());
     }
 
     @Override
-    public InputStream read(final String userID, final String path, final String file) throws IOException {
-        Path realPath = this.getUnsavedPath(userID, path, file, this.docsDir);
+    public InputStream read(final String catalog, final String userID, final String path, final String file) throws IOException {
+        Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
         if(realPath.toFile().exists()){
             return Files.newInputStream(realPath);
         }
-        realPath = this.getUnpublishedPath(path, file, this.docsDir);
+        realPath = this.getUnpublishedPath(catalog, path, file, this.docsDir);
         if(realPath.toFile().exists()){
             return Files.newInputStream(realPath);
         }
-        realPath = this.getRealPath(path, file, this.docsDir);
+        realPath = this.getRealPath(catalog, path, file, this.docsDir);
         final FileSystemItem fileInfo = this.getFileInfo(realPath.toString());
         return Files.newInputStream(fileInfo.getRealPath());
     }
 
     @Override
-    public FileSystemItem[] write(final String userID, final String path, final String file, final InputStream data, final Long size, final boolean replace) throws IOException {
+    public FileSystemItem[] write(final String catalog, final String userID, final String path, final String file, final InputStream data, final Long size, final boolean replace) throws IOException {
         // file name and content validation
         // NOTE: we write the data to a temporary file before calling the validators
         // in order to allow multiple access to the streamed data
@@ -318,7 +329,7 @@ public class FileSystemStorage implements Storage {
         }
 
         // copy file
-        final Path realPath = this.getUnsavedPath(userID, path, file, this.docsDir);
+        final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
         Files.createDirectories(realPath.getParent());
 
         final List<CopyOption> copyOptionList = new ArrayList<>();
@@ -338,48 +349,6 @@ public class FileSystemStorage implements Storage {
             throw new IOException("The file size is different to the expected size");
         }
         String[] files = new String[] { realPath.toString() };
-
-        /*
-        if (extract && this.isArchive(realPath)) {
-            // extract archive
-            try {
-                files = this.extract(realPath, copyOptions);
-                try {
-                    for (String extractedFile : files) {
-                        Path extractedPath = Paths.get(extractedFile);
-                        Path basePath = realPath.getParent();
-                        for (final Validator validator : this.validators) {
-                            validator.validate(basePath.toString(), basePath.relativize(extractedPath).toString(), 0, extractedPath, true);
-                        }
-                    }
-                }
-                catch (final ValidationException ex) {
-                    // remove extracted files, if validation failed
-                    for (String extractedFile : files) {
-                        Files.delete(Paths.get(extractedFile));
-                    }
-                    throw ex;
-                }
-            }
-            catch (final FileAlreadyExistsException faex) {
-                // get files from existing archive
-                final List<StorageItem> items = this.list(this.getExtractPath(realPath));
-                throw new ConflictException(faex.getMessage(), items.toArray(new StorageItem[items.size()]), this.getFileInfo(realPath.toString()).getNextName());
-            }
-            catch (final ValidationException ex) {
-                throw ex;
-            }
-            catch (final Exception ex) {
-                throw new IOException(ex);
-            }
-            finally {
-                // delete archive
-                if (Files.exists(realPath)) {
-                    Files.delete(realPath);
-                }
-            }
-        }
-        */
 
         // prepare result
         final FileSystemItem[] result = new FileSystemItem[files.length];
@@ -407,7 +376,7 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public FileSystemItem[] combineParts(final String userID, final String path, final String file, final String id, final Integer totalParts, final Long size, final boolean replace, final boolean extract) throws IOException {
+    public FileSystemItem[] combineParts(final String catalog, final String userID, final String path, final String file, final String id, final Integer totalParts, final Long size, final boolean replace, final boolean extract) throws IOException {
         // file name validation (content validation is done in write() method)
         final String validatePath = Paths.get(this.docsDir, path).toString();
         for (final Validator validator : this.validators) {
@@ -427,7 +396,7 @@ public class FileSystemStorage implements Storage {
         FileSystemItem[] result = null;
         // this also closes InputStreams of streams
         try (InputStream data = new SequenceInputStream(streams.elements())) {
-            result = this.write(userID, path, file, data, size, replace);
+            result = this.write(catalog, userID, path, file, data, size, replace);
         }
 
         // delete parts
@@ -438,31 +407,26 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void delete(final String userID, final String path, final String file) throws IOException {
-        final Path realPath = this.getRealPath(path, file, this.docsDir);
-        final Path trashPath = this.getTrashPath(path, file, this.docsDir);
-        // ensure directory
-        this.getTrashPath(path, "", this.docsDir).toFile().mkdirs();
-        // get the real location of the file
-        final FileSystemItem fileInfo = this.getFileInfo(realPath.toString());
-        Files.move(fileInfo.getRealPath(), trashPath, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+    public void delete(final String catalog, final String userID, final String path, final String file) throws IOException {
+        final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
+        Files.deleteIfExists(realPath);
     }
 
     @Override
-    public void archive(final String path, final String file) throws IOException {
-        final Path realPath = this.getRealPath(path, file, this.docsDir);
-        final Path archivePath = this.getArchivePath(path, file, this.docsDir);
+    public void archive(final String catalog, final String path, final String file) throws IOException {
+        final Path realPath = this.getRealPath(catalog, path, file, this.docsDir);
+        final Path archivePath = this.getArchivePath(catalog, path, file, this.docsDir);
         // ensure directory
-        this.getArchivePath(path, "", this.docsDir).toFile().mkdirs();
+        this.getArchivePath(catalog, path, "", this.docsDir).toFile().mkdirs();
         Files.move(realPath, archivePath, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
-    public void restore(final String path, final String file) throws IOException {
-        final Path realPath = this.getRealPath(path, file, this.docsDir);
-        final Path archivePath = this.getArchivePath(path, file, this.docsDir);
+    public void restore(final String catalog, final String path, final String file) throws IOException {
+        final Path realPath = this.getRealPath(catalog, path, file, this.docsDir);
+        final Path archivePath = this.getArchivePath(catalog, path, file, this.docsDir);
         // ensure directory
-        this.getRealPath(path, "", this.docsDir).toFile().mkdirs();
+        this.getRealPath(catalog, path, "", this.docsDir).toFile().mkdirs();
         Files.move(archivePath, realPath, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -476,6 +440,19 @@ public class FileSystemStorage implements Storage {
         // delete empty directories
         final Path trashPath = Paths.get(this.docsDir, TRASH_PATH);
         final Path archivePath = Paths.get(this.docsDir, ARCHIVE_PATH);
+        final Path unsavedPath = Paths.get(this.docsDir, UNSAVED_PATH);
+        final Path unpublishedPath = Paths.get(this.docsDir, UNPUBLISHED_PATH);
+
+        // Delete old unsaved Files
+        try (Stream<Path> stream = Files.walk(Paths.get(this.docsDir))) {
+            final List<Path> oldFiles = stream
+                    .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(1)).getMillis())
+                    .collect(Collectors.toList());
+            for (final Path oldFile : oldFiles) {
+                Files.delete(oldFile);
+            }
+
+        }
 
         // run as long as there are empty directories
         boolean hasEmptyDirs = true;
@@ -488,7 +465,7 @@ public class FileSystemStorage implements Storage {
                     try {
                         if (p.toFile().isDirectory()) {
                             try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
-                                isEmptyDir = !dirStream.iterator().hasNext() && !(p.equals(trashPath) || p.equals(archivePath));
+                                isEmptyDir = !dirStream.iterator().hasNext() && !(p.equals(trashPath) || p.equals(archivePath) || p.equals(unsavedPath) || p.equals(unpublishedPath));
                             }
                         }
                     }
@@ -511,28 +488,263 @@ public class FileSystemStorage implements Storage {
 
 
     @Override
-    public void saveDataset(String userID, String datasetID, List<String> referencedFiles) throws IOException {
+    public void saveDataset(final String catalog, String userID, String datasetID, List<String> referencedFiles) throws IOException {
+        var unsavedDirPath = this.getUnsavedPath(catalog, userID, datasetID, "", this.docsDir);
+        var unpublishedDirPath = this.getUnpublishedPath(catalog, datasetID, "", this.docsDir);
+
+        var unsavedFiles = this.listFiles(unsavedDirPath);
+        var existingFiles = this.listFiles(unpublishedDirPath);
+
+        final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
+
+
+        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var existingFile = ((FileSystemItem) f).getRealPath();
+
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getFile(), this.docsDir);
+                Files.createDirectories(trashPath.getParent());
+                Files.move(existingFile, trashPath, copyOptions);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        unsavedFiles.stream().filter(f -> referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var srcPath = this.getUnsavedPath(catalog, userID, datasetID, f.getFile(), this.docsDir);
+                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getFile(), this.docsDir);
+
+                if(targetPath.toFile().exists()){
+                    var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir);
+                    Files.createDirectories(trashPath.getParent());
+                    Files.move(targetPath, trashPath, copyOptions);
+                }
+
+                Files.createDirectories(targetPath.getParent());
+                Files.move(srcPath, targetPath, copyOptions);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        unsavedFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var unsavedFile = ((FileSystemItem) f).getRealPath();
+
+                Files.deleteIfExists(unsavedFile);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
     }
 
 
     @Override
-    public void publishDataset(String datasetID, List<String> referencedFiles) throws IOException{
+    public void publishDataset(final String catalog, String datasetID, List<String> referencedFiles) throws IOException{
+        var unpublishedDirPath = this.getUnpublishedPath(catalog, datasetID, "", this.docsDir);
+        var publishedDirPath = this.getRealPath(catalog, datasetID, "", this.docsDir);
 
+        var unpublishedFiles = this.listFiles(unpublishedDirPath);
+        var existingFiles = this.listFiles(publishedDirPath);
+
+        final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
+
+
+        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var existingFile = ((FileSystemItem) f).getRealPath();
+
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getFile(), this.docsDir);
+                Files.createDirectories(trashPath.getParent());
+                Files.move(existingFile, trashPath, copyOptions);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        unpublishedFiles.stream().filter(f -> referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var srcPath = this.getUnpublishedPath(catalog, datasetID, f.getFile(), this.docsDir);
+                var targetPath = this.getRealPath(catalog, datasetID, f.getFile(), this.docsDir);
+
+                if(targetPath.toFile().exists()){
+                    var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir);
+                    Files.createDirectories(trashPath.getParent());
+                    Files.move(targetPath, trashPath, copyOptions);
+                }
+
+                Files.createDirectories(targetPath.getParent());
+                Files.move(srcPath, targetPath, copyOptions);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        unpublishedFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var unsavedFile = ((FileSystemItem) f).getRealPath();
+
+                Files.deleteIfExists(unsavedFile);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
     }
 
     @Override
-    public void unpublishDataset(String datasetID, List<String> referencedFiles) throws IOException{
+    public void unpublishDataset(final String catalog, String datasetID, List<String> referencedFiles) throws IOException{
+        var publishedDirPath = this.getRealPath(catalog, datasetID, "", this.docsDir);
+        var publishedFiles = this.listFiles(publishedDirPath);
 
+        final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
+
+        publishedFiles.stream().filter(f -> referencedFiles.contains(f.getFile())).forEach(f -> {
+            try {
+                var srcPath = this.getRealPath(catalog, datasetID, f.getFile(), this.docsDir);
+                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getFile(), this.docsDir);
+
+                if(!targetPath.toFile().exists()){
+                    Files.createDirectories(targetPath.getParent());
+                    Files.move(srcPath, targetPath);
+                }
+                else{
+                    var trashPath = this.getTrashPath(catalog, datasetID, srcPath.getFileName().toString(), this.docsDir);
+                    Files.createDirectories(trashPath.getParent());
+                    Files.move(srcPath, trashPath, copyOptions);
+                }
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
     }
 
     @Override
-    public void discardUnpublished(String datasetID) throws IOException{
+    public void discardUnpublished(final String catalog, final String datasetID) throws IOException{
+        var unpublishedDirPath = this.getUnpublishedPath(catalog, datasetID, "", this.docsDir);
 
+        var unpublishedFiles = this.listFiles(unpublishedDirPath);
+
+        final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
+
+        unpublishedFiles.stream().forEach(f -> {
+            try {
+                var existingFile = ((FileSystemItem) f).getRealPath();
+
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getFile(), this.docsDir);
+                Files.createDirectories(trashPath.getParent());
+                Files.move(existingFile, trashPath, copyOptions);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
     }
 
     @Override
-    public void discardUnsaved(String userID, String datasetID) throws IOException{
+    public void discardUnsaved(final String catalog, String userID, String datasetID) throws IOException{
 
+        var unsavedDirPath = this.getUnsavedPath(catalog, userID, datasetID, "", this.docsDir);
+
+        var unsavedFiles = this.listFiles(unsavedDirPath);
+
+        unsavedFiles.stream().forEach(f -> {
+            try {
+                var existingFile = ((FileSystemItem) f).getRealPath();
+                Files.deleteIfExists(existingFile);
+            }
+            catch (final FileAlreadyExistsException faex) {
+                try {
+                    final StorageItem[] items = {this.getFileInfo(faex.getFile())};
+                    throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                }
+                catch (final IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
     }
 
     /**
@@ -639,9 +851,9 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getRealPath(final String path, final String file, final String basePath) {
+    private Path getRealPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath,
-            this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
     }
 
 
@@ -653,9 +865,9 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getUnsavedPath(final String userID, final String path, final String file, final String basePath) {
+    private Path getUnsavedPath(final String catalog, final String userID, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNSAVED_PATH,
-                this.sanitize(userID, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(userID, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
     }
 
     /**
@@ -666,9 +878,9 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getUnpublishedPath(final String path, final String file, final String basePath) {
+    private Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNPUBLISHED_PATH,
-                this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
     }
 
     /**
@@ -690,9 +902,9 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getTrashPath(final String path, final String file, final String basePath) {
+    private Path getTrashPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, TRASH_PATH,
-            this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
     }
 
     /**
@@ -703,7 +915,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getArchivePath(final String path, final String file, final String basePath) {
+    private Path getArchivePath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, ARCHIVE_PATH,
             this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
     }
