@@ -427,10 +427,13 @@ open class DocumentService @Autowired constructor(
         wrapper.draft = null
         val updatedWrapper = docWrapperRepo.save(wrapper)
 
-        val publishedDoc = updatedWrapper.published!!
-        publishedDoc.state = DocumentState.PUBLISHED.value
+        val doc = this.getLatestDocument(updatedWrapper, true)
 
-        return publishedDoc
+        // reverted documents must get parent ID from wrapper
+        // if doc was modified in another folder then the previous parent would be used otherwise
+        doc.data.put(FIELD_PARENT, wrapper.getParentUuid())
+
+        return doc
     }
 
     fun unpublishDocument(catalogId: String, id: String): Document {
