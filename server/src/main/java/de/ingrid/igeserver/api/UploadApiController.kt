@@ -45,26 +45,29 @@ class UploadApiController  @Autowired constructor(
             return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
         }
 
+        val userID = principal.getName()
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val path = catalogId + File.separator+docId
 
-        //val path = "path"//file.originalFilename
         val size = file.size
 
         // check filename
         try {
-            storage.validate("UserID", path, file.originalFilename, size)
+            storage.validate(catalogId, userID, docId, file.originalFilename, size)
         } catch (ex: Exception) {
             return  ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
         // check if file exists already
-        if (storage.exists("UserID", path, file.originalFilename)) {
-            val items: Array<StorageItem> = arrayOf<StorageItem>(storage.getInfo("UserID",  path, file.originalFilename))
+        if(!replace) {
+            if (storage.exists(catalogId, userID, docId, file.originalFilename)) {
+                val items: Array<StorageItem> =
+                    arrayOf<StorageItem>(storage.getInfo(catalogId, userID, docId, file.originalFilename))
 
-            val uploadResponse = UploadResponse(ConflictException("The file already exists.", items, items[0].getNextName()))
-            return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.CONFLICT)
-            //throw ConflictException("The file already exists.", items, items[0].getNextName())
+                val uploadResponse =
+                    UploadResponse(ConflictException("The file already exists.", items, items[0].getNextName()))
+                return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.CONFLICT)
+                //throw ConflictException("The file already exists.", items, items[0].getNextName())
+            }
         }
 
         var files: Array<StorageItem> = arrayOf<StorageItem>()
@@ -74,7 +77,7 @@ class UploadApiController  @Autowired constructor(
       //      storage.writePart(id, partsIndex, fileInputStream, partsSize)
       //  } else {
       //      // store file
-            files = storage.write("UserID", path, file.originalFilename, file.inputStream, size, false)
+            files = storage.write(catalogId, userID, docId, file.originalFilename, file.inputStream, size, replace)
       //  }
         return this.createUploadResponse(files)
 
@@ -106,10 +109,12 @@ class UploadApiController  @Autowired constructor(
             throw ForbiddenException.withAccessRights("No access to referenced dataset");
         }
 
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
         // read file
         val fileStream = StreamingResponseBody { output ->
             try {
-                this.storage.read("UserID", docId, file).use { data ->
+                this.storage.read(catalogId, principal.getName(), docId, file).use { data ->
                     IOUtils.copy(data, output)
                     output.flush()
                 }
@@ -121,7 +126,7 @@ class UploadApiController  @Autowired constructor(
         // build response
         val response = Response.ok(fileStream, MediaType.APPLICATION_OCTET_STREAM)
         response.header("Content-Disposition", "attachment; filename=\"$file\"")
-        response.header("Content-Length", storage.getInfo("UserID", docId, file).getSize())
+        response.header("Content-Length", storage.getInfo(catalogId, principal.getName(), docId, file).getSize())
         return ResponseEntity<StreamingResponseBody>(fileStream, HttpStatus.OK);
     }
 
