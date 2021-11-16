@@ -51,11 +51,15 @@ describe('Meta data administrator without groups', () => {
   it('metadata admin without groups should not be able to create documents', () => {
     // data documents
     DocumentPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').should('be.disabled');
-
+    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
+    DocumentPage.CreateDialog.cancel();
+    cy.get('[data-cy="toolbar_NEW_DOC"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
     // addresses
     AddressPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').should('be.disabled');
+    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
   });
 
   it('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
