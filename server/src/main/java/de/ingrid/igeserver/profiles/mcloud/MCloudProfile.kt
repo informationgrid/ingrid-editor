@@ -137,13 +137,34 @@ class MCloudProfile : CatalogProfile {
                 add(toCodelistEntry("TECH", "Wissenschaft und Technologie"))
             }
         }
+        val codelist20002 = Codelist().apply {
+            identifier = "20002"
+            catalog = catalogRef
+            name = "Download Typ"
+            description = "Dies sind die Typen, die ein Download-Eintrag haben kann"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toCodelistEntry("API", "API"))
+                add(toCodelistEntry("AtomFeed", "AtomFeed"))
+                add(toCodelistEntry("Dateidownload", "Dateidownload"))
+                add(toCodelistEntry("FTP", "FTP"))
+                add(toCodelistEntry("Portal", "Portal"))
+                add(toCodelistEntry("Software", "Software"))
+                add(toCodelistEntry("SOS", "SOS"))
+                add(toCodelistEntry("WCS", "WCS"))
+                add(toCodelistEntry("WFS", "WFS"))
+                add(toCodelistEntry("WMS", "WMS"))
+                add(toCodelistEntry("WMTS", "WMTS"))
+            }
+        }
 
         when (codelistId) {
             "20000" -> removeAndAddCodelist(catalogId, codelist20000)
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
+            "20002" -> removeAndAddCodelist(catalogId, codelist20002)
             null -> {
                 codelistRepo.save(codelist20000)
                 codelistRepo.save(codelist20001)
+                codelistRepo.save(codelist20002)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
