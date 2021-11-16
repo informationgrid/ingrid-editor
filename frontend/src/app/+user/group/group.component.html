@@ -153,23 +153,6 @@
                             >({{ groupUsers.length }})</span
                         >
                     </div>
-                    <!--                    <mat-list>
-                        <mat-list-item *ngFor="let user of groupUsers">
-                            <mat-icon
-                                [svgIcon]="
-                                    this.userService.getRoleIcon(user.role)
-                                "
-                            ></mat-icon>
-                            {{
-                                user.firstName +
-                                    " " +
-                                    user.lastName +
-                                    " (" +
-                                    user.email +
-                                    ")"
-                            }}</mat-list-item
-                        >
-                    </mat-list>-->
                 </div>
                 <user-table
                     [users]="groupUsers"
