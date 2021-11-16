@@ -72,7 +72,7 @@ open class ImportService {
             // otherwise a new document is created and wrapper links to original instead the updated one
             docObj.version = wrapper.draft?.version ?: wrapper.published?.version
 //            docObj.created = OffsetDateTime.now()
-            documentService.updateDocument(catalogId, uuid, docObj, false)
+            documentService.updateDocument(null, catalogId, uuid, docObj, false)
         }
 
         // TODO: return created document instead of transformed JSON

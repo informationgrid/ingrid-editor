@@ -4,20 +4,21 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.repository.CatalogRepository
 import org.apache.logging.log4j.kotlin.logger
+import java.security.Principal
 import java.util.*
 
 /**
  * Default implementation of a filter context
  */
-open class DefaultContext(override val catalogId: String, override val profile: String?) : Context {
+open class DefaultContext(override val catalogId: String, override val profile: String?, override val principal: Principal?) : Context {
 
     companion object {
         /**
          * Create an instance with the profile of the currently opened catalog (database)
          */
-        fun withCurrentProfile(catalogId: String?, catalogRepo: CatalogRepository): DefaultContext {
+        fun withCurrentProfile(catalogId: String?, catalogRepo: CatalogRepository, principal: Principal?): DefaultContext {
             val catalogInfo = catalogRepo.findByIdentifier(catalogId!!)
-            return DefaultContext(catalogId, catalogInfo.type)
+            return DefaultContext(catalogId, catalogInfo.type, principal)
         }
     }
 
