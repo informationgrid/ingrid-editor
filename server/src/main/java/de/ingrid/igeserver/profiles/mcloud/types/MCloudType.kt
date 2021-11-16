@@ -29,6 +29,17 @@ class MCloudType : EntityType() {
         updateAddresses(doc, onlyPublished)
     }
 
+    override fun getUploads(doc: Document): List<String> {
+        if( doc.data.get("downloads") != null) {
+            val files = doc.data.get("downloads")
+                .filter { download -> !download.get("link").get("asLink").booleanValue() }
+                .map { download -> download.get("link").get("value").textValue() }
+
+            return files
+        }
+        return emptyList()
+    }
+
     private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
         val addressDocs = mutableListOf<Document>()
 
