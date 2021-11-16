@@ -4,6 +4,7 @@ import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { AdminGroupPage } from '../../pages/administration-group.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -425,7 +426,38 @@ describe('User', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show all the users to a catalogue admin (#2671)', () => {});
+  it('should show all the users to a catalogue admin (#2671)', () => {
+    // login as super admin
+    // get number of the users
+    // logout from admin and login as catalog admin
+    // get number of users and compare the two numbers
+    cy.kcLogout();
+    cy.kcLogin('user');
+    AdminUserPage.visit();
+    cy.get('.page-title')
+      .contains('Nutzer')
+      .then($text => {
+        // get number of the users super admin
+        let txt = $text.text();
+        let regex = /\d+/g;
+        let matches = txt.match(regex);
+        cy.kcLogout();
+        cy.kcLogin('eins');
+        AdminUserPage.visit();
+        cy.intercept('GET', '/api/users').as('usersCall');
+        cy.wait('@usersCall');
+        cy.get('.page-title')
+          .contains('Nutzer')
+          .then($txtCatalog => {
+            // get number of the users catalog admin
+            let txtCatalog = $txtCatalog.text();
+            let matchesCatalog = txtCatalog.match(regex);
+            let catalogNumber = Number(matchesCatalog![0]);
+            let superUserNumber = Number(matches![0]) - 1;
+            expect(catalogNumber.toString()).to.eq(superUserNumber.toString());
+          });
+      });
+  });
 
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
     AdminUserPage.visit();
