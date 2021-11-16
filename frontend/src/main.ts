@@ -26,7 +26,7 @@ persistState({
   },
   preStoreUpdate(storeName: string, state: any, initialState: any): any {
     // add initial values for fields that are not persisted
-    if (!state.ui) state.ui = initialState.ui;
+    if (!state.ui) state.ui = { ...initialState.ui };
     state.ui.currentTab = initialState.ui.currentTab;
     return state;
   },
