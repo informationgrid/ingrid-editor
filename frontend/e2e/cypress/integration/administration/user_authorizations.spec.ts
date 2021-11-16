@@ -708,16 +708,6 @@ describe('Catalogue admin', () => {
     cy.contains('mat-dialog-actions button', 'Abbrechen').click;
   });
 
-  it('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
-    AdminUserPage.visit();
-    AdminUserPage.selectUser('Test Verantwortlicher');
-    // take responsibility away from a user
-    AdminUserPage.cedeResponsibility('Meta Admin');
-    // check if users of the old manager now belong to the new manager
-    AdminUserPage.selectUser('autor2');
-    AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, 'Meta Admin');
-  });
-
   it('should show all the groups to a catalogue admin (#2670)', () => {
     // login as super admin
     // get number of the groups

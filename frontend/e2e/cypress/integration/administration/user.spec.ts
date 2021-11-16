@@ -222,7 +222,6 @@ describe('User', () => {
     cy.get('.more-info').contains('Zuletzt eingeloggt');
     cy.get('.more-info').contains('Erstellt am');
     cy.get('.more-info').contains('Geändert am');
-    cy.get('.more-info').contains('Verantwortlich');
     cy.get('.more-info').contains(loginEntry);
 
     // compare the entry in ID/login with the Login- field
@@ -420,25 +419,6 @@ describe('User', () => {
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(modified + ' ' + 'Admin');
-  });
-
-  it('should be possible to change manager of a user', () => {
-    const login = 'drei';
-    const managerName = 'Test Verantwortlicher';
-    AdminUserPage.visit();
-    AdminUserPage.selectUser('autor test');
-    AdminUserPage.changeManager(login);
-    AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, managerName);
-  });
-
-  it('should not be possible to take responsibility from a user without responsibility', () => {
-    // go to user
-    AdminUserPage.visit();
-    AdminUserPage.selectUser('autor2');
-    // try to execute action "Verantwortung abgeben"
-    AdminUserPage.cedeResponsibility();
-    // expect error
-    cy.contains('mat-dialog-container', 'Der ausgewählte Benutzer ist für keine anderen Nutzer verantwortlich');
   });
 
   xit('should show to a user the users she represents (#2671)', () => {
