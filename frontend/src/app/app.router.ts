@@ -137,12 +137,7 @@ export const routing = RouterModule.forRoot(routes, {
 });
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
-  routesToCache: string[] = [
-    "form",
-    "address",
-    "manageuser",
-    "managegroup",
-  ];
+  routesToCache: string[] = ["form", "address", "manageuser", "managegroup"];
   storedRouteHandles = new Map<string, DetachedRouteHandle>();
 
   // Decides if the route should be stored

@@ -1,10 +1,13 @@
 <nav mat-tab-nav-bar class="page-tabs-routing">
     <a
-        *ngFor="let tab of tabs; let i = index"
         mat-tab-link
+        *ngFor="let tab of tabs; let i = index"
+        #rla="routerLinkActive"
         routerLinkActive="active-link"
         [routerLink]="tab.params ? [tab.path, tab.params] : tab.path"
-        [active]="activeLink == tab.path"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [active]="rla.isActive"
+        (click)="updateTab(i)"
     >
         {{ tab.label }}
     </a>
