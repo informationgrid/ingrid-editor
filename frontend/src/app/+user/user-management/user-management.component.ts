@@ -1,7 +1,10 @@
-import { AfterViewInit, Component, HostListener } from "@angular/core";
+import { AfterViewInit, Component, HostListener, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Router } from "@angular/router";
+import { SessionService } from "../../services/session.service";
+import { filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -9,17 +12,15 @@ import { UntilDestroy } from "@ngneat/until-destroy";
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.scss"],
 })
-export class UserManagementComponent {
+export class UserManagementComponent implements OnInit {
   currentComponent: UserComponent | GroupComponent;
-
-  activeLink = "user";
 
   tabs = [
     { label: "Nutzer", path: "user" },
     { label: "Gruppen & Rechte", path: "group" },
   ];
 
-  constructor() {}
+  constructor(private router: Router, private sessionService: SessionService) {}
 
   @HostListener("window:beforeunload", ["$event"])
   unloadHandler() {
@@ -28,5 +29,18 @@ export class UserManagementComponent {
 
   onActivate(componentRef) {
     this.currentComponent = componentRef;
+  }
+
+  ngOnInit(): void {
+    this.sessionService
+      .observeTabChange("manage")
+      .pipe(untilDestroyed(this))
+      .subscribe((index) => {
+        this.router.navigate(["/manage/" + this.tabs[index].path]);
+      });
+  }
+
+  updateTab(index: number) {
+    this.sessionService.updateCurrentTab("manage", index);
   }
 }
