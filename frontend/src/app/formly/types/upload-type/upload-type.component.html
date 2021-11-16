@@ -29,7 +29,7 @@
         <ige-file-upload
             [multiple]="false"
             [targetAnalyze]="null"
-            target="/api/upload"
+            target="/api/upload/{{ model.document._id }}?replace=true"
             (chosenFiles)="selectedUploads = $event"
             (complete)="uploadComplete($event)"
         ></ige-file-upload>

@@ -2,7 +2,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
+import { Injectable, Input } from "@angular/core";
 import { CodelistStore } from "../../app/store/codelist/codelist.store";
 import { map } from "rxjs/operators";
 
@@ -166,10 +166,10 @@ export class McloudDoctype extends BaseDoctype {
                     appearance: "outline",
                     required: true,
                     formatter: (link: any) => {
-                      if (link.asLink) {
-                        return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                      if (!link.asLink) {
+                        return `<a href="/api/upload/${link.documentID}/${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       } else {
-                        return `<a href="/api/upload/${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                        return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       }
                     },
                   },
@@ -182,6 +182,8 @@ export class McloudDoctype extends BaseDoctype {
                     label: "Typ",
                     appearance: "outline",
                     required: true,
+                    options: this.getCodelistForSelect(20002, null),
+                    codelistId: 20002,
                   },
                 },
                 {

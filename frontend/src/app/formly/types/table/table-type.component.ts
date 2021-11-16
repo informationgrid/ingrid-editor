@@ -104,6 +104,7 @@ export class TableTypeComponent
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+          document: this.model,
           newEntry: newEntry,
         } as FormDialogData,
       })
