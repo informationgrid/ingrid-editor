@@ -91,7 +91,7 @@
     <mat-spinner> </mat-spinner>
 </div>
 <mat-paginator
-    *ngIf="!simple"
+    [class.hide]="simple && dataSource.data?.length < 10"
     [pageSize]="10"
     [hidePageSize]="true"
     matPaginator
