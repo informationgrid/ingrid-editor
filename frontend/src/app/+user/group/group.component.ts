@@ -83,8 +83,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           const previousId = this.selectedGroup?.id;
           this.selectedGroup = group;
           if (group && previousId !== group.id) {
-            this.form.reset(group);
-            this.form.markAsPristine();
+            this.loadGroup(group.id);
           }
         });
       });
