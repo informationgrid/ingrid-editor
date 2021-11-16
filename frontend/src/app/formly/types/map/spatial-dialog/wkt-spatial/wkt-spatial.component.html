@@ -13,15 +13,15 @@
             placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"
         ></textarea>
     </mat-form-field>
+    <div>
+        <button mat-button color="primary" (click)="validateWKT(wkt.value)">
+            Anzeigen
+        </button>
+    </div>
     <mat-hint
         >Nur in geografischen Koordinaten (WGS84) möglich. Unterstützt werden
         Polygone mit einer Außen- und Innengrenze (Löcher), Points und
         Linestrings. Zur Darstellung auf der Karte klicken Sie auf
         "Anzeigen".</mat-hint
     >
-    <div>
-        <button mat-button color="primary" (click)="validateWKT(wkt.value)">
-            Anzeigen
-        </button>
-    </div>
 </div>
