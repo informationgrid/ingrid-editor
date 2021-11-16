@@ -89,7 +89,9 @@
             {% endif %}
         {% endif %}
         ,
-        "spatial_text": "{{ model.spatialTitels | join(',') }}",
+       {% if not model.spatialTitels.isEmpty() %}
+            "spatial_text": "{{ model.spatialTitels | join(',') }}",
+        {% endif %}
         "temporal": [
          {% if model.data.timeSpan.start or model.data.timeSpan.end %}
         {
