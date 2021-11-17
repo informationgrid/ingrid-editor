@@ -137,6 +137,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
             fetchedGroup.permissions = new Permissions();
           }
           this.groupService.selectedGroup$.next(fetchedGroup);
+          this.form.reset(fetchedGroup);
+          this.form.markAsPristine();
           this.form.enable();
           this.isLoading = false;
           this.groupService.getGroupManager(id).subscribe((manager) => {
