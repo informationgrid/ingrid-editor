@@ -197,6 +197,4 @@ describe('Group', () => {
     ResearchPage.search('Elsass, Adresse');
     ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
   });
-
-  xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
 });
