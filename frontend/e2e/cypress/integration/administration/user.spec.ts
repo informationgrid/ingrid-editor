@@ -459,6 +459,25 @@ describe('User', () => {
       });
   });
 
+  it('Creation of a user after it has been previously deleted (#3108)', () => {
+    AdminUserPage.visit();
+
+    let userLogIn = 'user-to-be-deleted-after-creation';
+    let userEmail = 'new-user-to-be-deleted@wemove.com';
+    let userRole = 'Metadaten-Administrator';
+
+    AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
+    // check user has been created
+    AdminUserPage.selectUser(userLogIn);
+    // delete user
+    AdminUserPage.deleteUser();
+    cy.get('user-table').should('not.contain', userLogIn + ' ' + userLogIn);
+
+    // create user again
+    AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
+    cy.get('user-table').should('contain', userLogIn + ' ' + userLogIn);
+  });
+
   xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
     AdminUserPage.visit();
 
