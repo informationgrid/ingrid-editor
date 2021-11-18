@@ -1,10 +1,7 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.IgeAclService
-import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.ConflictException
 import de.ingrid.mdek.upload.UploadResponse
 import de.ingrid.mdek.upload.storage.Storage
@@ -19,13 +16,30 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.File
 import java.io.IOException
 import java.io.UncheckedIOException
 import java.security.Principal
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+
+
+class FileInfo {
+    private val uploadedChunks: Set<Int> = HashSet()
+
+    fun isUploadFinished(flowTotalChunks: Int): Boolean {
+        return this.uploadedChunks.size == flowTotalChunks
+    }
+
+    fun containsChunk(flowChunkNumber: Int): Boolean {
+        return uploadedChunks.contains(flowChunkNumber)
+    }
+
+    fun addUploadedChunk(flowChunkNumber: Int) {
+        uploadedChunks.plus(flowChunkNumber)
+    }
+}
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -35,8 +49,19 @@ class UploadApiController  @Autowired constructor(
     private val aclService: IgeAclService
 ) : UploadApi {
     private val logger = logger()
+    private val fileInfos: Map<String, FileInfo> = ConcurrentHashMap()
 
-    override fun uploadFile(principal: Principal, docId: String, file: MultipartFile, replace: Boolean): ResponseEntity<UploadResponse> {
+    override fun uploadFile(
+        principal: Principal, docId: String,
+        file: MultipartFile,
+        replace: Boolean,
+        flowChunkNumber: Int,
+        flowTotalChunks: Int,
+        flowChunkSize: Long,
+        flowTotalSize: Long,
+        flowIdentifier: String,
+        flowFilename: String,
+    ): ResponseEntity<UploadResponse> {
         logger.info("Receiving file: " + file.originalFilename)
 
         val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
@@ -48,7 +73,7 @@ class UploadApiController  @Autowired constructor(
         val userID = principal.getName()
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val size = file.size
+        val size = flowTotalSize
 
         // check filename
         try {
@@ -71,17 +96,26 @@ class UploadApiController  @Autowired constructor(
         }
 
         var files: Array<StorageItem> = arrayOf<StorageItem>()
-      //  val isPartialUpload = partsTotal != null
-      //  if (isPartialUpload) {
-      //      // store part
-      //      storage.writePart(id, partsIndex, fileInputStream, partsSize)
-      //  } else {
-      //      // store file
-            files = storage.write(catalogId, userID, docId, file.originalFilename, file.inputStream, size, replace)
-      //  }
-        return this.createUploadResponse(files)
 
-        //return ResponseEntity(HttpStatus.OK)
+        var fileInfo: FileInfo? = this.fileInfos.get(flowIdentifier)
+        if (fileInfo == null) {
+            fileInfo = FileInfo()
+            this.fileInfos.plus(Pair(flowIdentifier, fileInfo))
+        }
+
+        storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowChunkSize)
+
+
+        fileInfo.addUploadedChunk(flowChunkNumber)
+
+        if (fileInfo.isUploadFinished(flowTotalChunks)) {
+            // store file
+            files = storage.write(catalogId, userID, docId, file.originalFilename, file.inputStream, size, replace)
+
+            this.fileInfos.minus(flowIdentifier)
+        }
+
+        return this.createUploadResponse(files)
     }
 
 

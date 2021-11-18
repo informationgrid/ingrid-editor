@@ -22,7 +22,13 @@ interface UploadApi {
             principal: Principal,
             @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
             @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile,
-            @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean
+            @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
+            @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+            @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
+            @Parameter(description = "") @RequestParam("flowChunkSize") flowChunkSize: Long,
+            @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
+            @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
+            @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
         ): ResponseEntity<UploadResponse>
 
     @GetMapping(value = ["/upload/{docId}/{file}"])

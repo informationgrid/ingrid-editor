@@ -23,6 +23,7 @@
 package de.ingrid.mdek.upload.storage;
 
 import de.ingrid.mdek.upload.ValidationException;
+import de.ingrid.mdek.upload.storage.impl.FileSystemItem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,7 +115,7 @@ public interface Storage {
      * @param size The size of the part in bytes (used to verify)
      * @throws IOException
      */
-    void writePart(String id, Integer index, InputStream data, Integer size) throws IOException;
+    void writePart(String id, Integer index, InputStream data, Long size) throws IOException;
 
     /**
      * Combine all parts belonging to an id to the final file
@@ -123,14 +124,12 @@ public interface Storage {
      * @param datasetID The UUID of the dataset
      * @param file The file
      * @param id The id of the file
-     * @param totalParts The number of parts
      * @param size The size of the file in bytes (used to verify)
      * @param replace Boolean indicating whether to replace an existing file or not
-     * @param extract Boolean indicating whether to extract archives or not
      * @return StorageItem[] The list of created files
      * @throws IOException
      */
-    StorageItem[] combineParts(String catalog, String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace, boolean extract) throws IOException;
+    StorageItem[] finalizeParts(String catalog, String userID, String datasetID, String file, String id, Long size, boolean replace) throws IOException;
 
     /**
      * Delete a file

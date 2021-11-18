@@ -41,6 +41,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.io.SequenceInputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
@@ -359,50 +360,46 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void writePart(final String id, final Integer index, final InputStream data, final Integer size) throws IOException {
-        final String file = id + "-" + index;
-        final Path realPath = this.getRealPath(file, this.partsDir);
-        Files.createDirectories(realPath.getParent());
-        try {
-            Files.copy(data, realPath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (final FileAlreadyExistsException faex) {
-            final StorageItem[] items = { this.getFileInfo(faex.getFile()) };
-            throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
-        }
-        if (Files.size(realPath) != size) {
-            throw new IOException("The file size is different to the expected size");
+    public void writePart(final String id, final Integer index, final InputStream data, final Long size) throws IOException {
+        Path identifierFile = this.getRealPath(id, this.partsDir);
+
+        try (RandomAccessFile raf = new RandomAccessFile(identifierFile.toString(), "rw")){
+            raf.seek((index - 1) * size);
+
+            long readed = 0;
+            long content_length = size;
+            byte[] bytes = new byte[1024 * 100];
+            while (readed < content_length) {
+                int r = data.read(bytes);
+                if (r < 0) {
+                    break;
+                }
+                raf.write(bytes, 0, r);
+                readed += r;
+            }
         }
     }
 
     @Override
-    public FileSystemItem[] combineParts(final String catalog, final String userID, final String path, final String file, final String id, final Integer totalParts, final Long size, final boolean replace, final boolean extract) throws IOException {
+    public FileSystemItem[] finalizeParts(final String catalog, final String userID, final String datasetID, final String file, final String id, final Long size, final boolean replace) throws IOException {
         // file name validation (content validation is done in write() method)
+        /*
         final String validatePath = Paths.get(this.docsDir, path).toString();
         for (final Validator validator : this.validators) {
             validator.validate(validatePath, file, size, null, false);
         }
-        // combine parts into stream
-        final Vector<InputStream> streams = new Vector<>();
-        final Path[] parts = new Path[totalParts];
-        for (int i = 0; i < totalParts; i++) {
-            final String part = id + "-" + i;
-            final Path realPath = this.getRealPath(part, this.partsDir);
-            streams.add(Files.newInputStream(realPath));
-            parts[i] = realPath;
-        }
+        */
+
+        Path partPath = this.getRealPath(id, this.partsDir);
 
         // delegate to write method
         FileSystemItem[] result = null;
-        // this also closes InputStreams of streams
-        try (InputStream data = new SequenceInputStream(streams.elements())) {
-            result = this.write(catalog, userID, path, file, data, size, replace);
+        try (InputStream data = Files.newInputStream(partPath)) {
+            result = this.write(catalog, userID, datasetID, file, data, size, replace);
         }
 
-        // delete parts
-        for (final Path part : parts) {
-            Files.delete(part);
-        }
+        Files.delete(partPath);
+
         return result;
     }
 
