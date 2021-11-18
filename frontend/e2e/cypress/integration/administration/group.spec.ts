@@ -1,7 +1,6 @@
-import { BasePage, UserAndRights } from '../../pages/base.page';
-import { AdminGroupPage } from '../../pages/administration-group.page';
+import { UserAndRights } from '../../pages/base.page';
+import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { AddressPage } from '../../pages/address.page';
 import { ResearchPage } from '../../pages/research.page';
 
 describe('Group', () => {
@@ -198,33 +197,41 @@ describe('Group', () => {
     ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
   });
 
-  it.only('should be possible to jump between groups and associated users', () => {
+  it('should be possible to jump between groups and associated users', () => {
     const group = 'z_group';
-    const description = 'eine Beschreibung';
-
-    //cy.visit('manage/group');
-    // create group
-    //AdminGroupPage.addNewGroup(group);
+    const user = 'autor test';
+    // create a new group
+    AdminGroupPage.addNewGroup(group);
     AdminGroupPage.getNextPage();
     cy.get('groups-table').should('contain', group);
-    // add group to several users
+    // add group to user
     AdminUserPage.visit();
-    const user_list = ['autor test', 'Autor_mit Gruppen', 'Test Verantwortlicher'];
-    user_list.forEach(user => {
-      cy.contains('user-table .mat-row', user).then(user => {
-        cy.wrap(user).click();
-        cy.wait(4000);
-        AdminUserPage.addGroupToUser(group);
-      });
-    });
+    AdminUserPage.selectUser(user);
+    AdminUserPage.addGroupToUser(group);
+    AdminUserPage.toolbarSaveUser();
     // jump from group to user
-    cy.visit('manage/group');
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.getNextPage();
     AdminGroupPage.selectGroup(group);
-    cy.get('user-table tbody tr').each(el => {
-      cy.wrap(el).click();
-      cy.get('ige-repeat-list').should('contain', el.text());
-    });
-    // make sure associated user are only users who have the group assigned to them
+    AdminUserPage.selectAssociatedUser(user);
+    // make sure group is associated to user
+    cy.get('ige-repeat-list').should('contain', group);
+  });
+
+  it('should show correct information in group header', () => {
+    // change an existing group and make sure the "last-edited" date is updated
+    AdminGroupPage.selectGroup('leere_Gruppe');
+    // edit group
+    AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
+    AdminGroupPage.toolbarSaveGroup();
+    // check that last-edited date has been updated
+    const today = new Date();
+    const formatted_date = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`;
+    AdminGroupPage.verifyInfoInHeader(headerKeys.EditDate, formatted_date);
+
+    // make sure ID consists of a number
+    AdminGroupPage.openUpGroupHeader();
+    cy.contains(AdminGroupPage.ID, /[0-9]+/);
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});

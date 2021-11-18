@@ -65,6 +65,7 @@ export class AdminUserPage extends BasePage {
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
     cy.contains('mat-option', groupName).click();
+    cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
 
   static removeGroupFromUser(groupName: string) {
@@ -96,6 +97,12 @@ export class AdminUserPage extends BasePage {
     cy.get('#formUser').should('be.visible');
     // sometimes further selecting goes wrong because dom is not ready -> add some time
     cy.wait(1000);
+  }
+
+  static selectAssociatedUser(name: string) {
+    cy.intercept('GET', /api\/groups/).as('openUser');
+    cy.get('user-table tbody tr').contains(name).click();
+    cy.wait('@openUser');
   }
 
   static changeManager(name: string) {
