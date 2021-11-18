@@ -89,7 +89,11 @@ export class UserComponent
         .pipe(
           filter((user) => !!user),
           tap((user) => {
+            const previousId = this.selectedUser?.login;
             this.selectedUser = user;
+            if (user && previousId !== user.login) {
+              this.loadUser(user.login);
+            }
             this.selectedUserRole = user.role;
           }),
           untilDestroyed(this)
@@ -127,6 +131,7 @@ export class UserComponent
           .getUser(login)
           .pipe(finalize(() => this.hideLoading()))
           .subscribe((user) => {
+            this.selectedUser = user;
             this.userService.selectedUser$.next(user);
             this.model = user;
             this.updateUserForm(user);
