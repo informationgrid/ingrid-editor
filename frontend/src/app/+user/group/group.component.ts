@@ -98,10 +98,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
       description: [],
       permissions: [],
     });
-
-    if (this.groupService.selectedGroup$.value) {
-      this.loadGroup(this.groupService.selectedGroup$.value.id);
-    }
   }
 
   fetchGroups(): Observable<Group[]> {
@@ -136,6 +132,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           if (!fetchedGroup.permissions) {
             fetchedGroup.permissions = new Permissions();
           }
+          this.selectedGroup = fetchedGroup;
           this.groupService.selectedGroup$.next(fetchedGroup);
           this.form.reset(fetchedGroup);
           this.form.markAsPristine();
