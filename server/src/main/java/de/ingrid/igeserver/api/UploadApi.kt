@@ -27,23 +27,16 @@ interface UploadApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully uploaded"), ApiResponse(responseCode = "500", description = "An error occurred during upload")])
     fun uploadFile(
         principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
-            @Parameter() flowChunkNumber: Int,
-        @Parameter() flowTotalChunks: Int,
-        @Parameter() flowChunkSize: Long,
-        @SuppressWarnings("unused") @Parameter() flowTotalSize: Long,
-        @Parameter() flowIdentifier: String,
-        @Parameter() flowFilename: String,
-        @Parameter() file: MultipartFile
-    ,
-            @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
-            @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
-            @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
-            @Parameter(description = "") @RequestParam("flowChunkSize") flowChunkSize: Long,
-            @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
-            @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
-            @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
-        ): ResponseEntity<UploadResponse>
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
+        @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile,
+        @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
+        @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
+        @Parameter(description = "") @RequestParam("flowChunkSize") flowChunkSize: Long,
+        @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
+        @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
+        @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
+    ): ResponseEntity<UploadResponse>
 
     @GetMapping(value = ["/upload/{docId}/{file}"])
     @Operation(description = "Get an uploaded file")

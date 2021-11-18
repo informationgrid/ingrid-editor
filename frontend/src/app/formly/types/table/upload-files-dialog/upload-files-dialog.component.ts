@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Transfer } from "@flowjs/ngx-flow";
 import { MatDialogRef } from "@angular/material/dialog";
+import { ConfigService } from "../../../../services/config/config.service";
 
 @Component({
   selector: "ige-upload-files-dialog",
@@ -10,9 +11,14 @@ import { MatDialogRef } from "@angular/material/dialog";
 export class UploadFilesDialogComponent implements OnInit {
   droppedFiles: any = [];
   chosenFiles: Transfer[] = [];
-  targetUrl = "/api/upload";
+  targetUrl = "/api/upload/";
 
-  constructor(private dlgRef: MatDialogRef<UploadFilesDialogComponent>) {}
+  constructor(
+    private dlgRef: MatDialogRef<UploadFilesDialogComponent>,
+    configService: ConfigService
+  ) {
+    this.targetUrl += configService.$userInfo.getValue().userId;
+  }
 
   ngOnInit(): void {}
 

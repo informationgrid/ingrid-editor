@@ -104,7 +104,7 @@ class UploadApiController  @Autowired constructor(
             }
         }
 
-        var files: Array<StorageItem> = arrayOf<StorageItem>()
+        var files: Array<StorageItem> = arrayOf()
 
         var fileInfo: FileInfo? = this.fileInfos.get(flowIdentifier)
         if (fileInfo == null) {
