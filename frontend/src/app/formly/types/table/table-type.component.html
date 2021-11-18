@@ -211,6 +211,8 @@
             {{ to.externalLabel }}<span *ngIf="to.required">*</span>
         </ng-container>
     </ige-form-label>
+
+    <!--
     <ige-add-button
         (add)="addRow()"
         [showRequiredError]="
@@ -218,4 +220,23 @@
         "
         [attr.data-cy]="to.externalLabel + '-add'"
     ></ige-add-button>
+-->
+
+    <div class="button-wrapper">
+        <button
+            mat-stroked-button
+            color="primary"
+            (click)="showUploadFilesDialog()"
+        >
+            Dateien hochladen
+        </button>
+        oder
+        <button
+            mat-stroked-button
+            color="primary"
+            (click)="showAddLinkDialog()"
+        >
+            Link angeben
+        </button>
+    </div>
 </div>

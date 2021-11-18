@@ -15,13 +15,27 @@ import java.security.Principal
 
 @Tag(name = "Upload", description = "the upload API")
 interface UploadApi {
+
+    @GetMapping("/upload")
+    fun chunkExists(
+        @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @RequestParam("flowIdentifier") flowIdentifier: String?
+    ): ResponseEntity<Void>
+
     @PostMapping(value = ["/upload/{docId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(description = "Upload a file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully uploaded"), ApiResponse(responseCode = "500", description = "An error occurred during upload")])
     fun uploadFile(
-            principal: Principal,
+        principal: Principal,
             @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
-            @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile,
+            @Parameter() flowChunkNumber: Int,
+        @Parameter() flowTotalChunks: Int,
+        @Parameter() flowChunkSize: Long,
+        @SuppressWarnings("unused") @Parameter() flowTotalSize: Long,
+        @Parameter() flowIdentifier: String,
+        @Parameter() flowFilename: String,
+        @Parameter() file: MultipartFile
+    ,
             @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
             @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
             @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
@@ -35,7 +49,7 @@ interface UploadApi {
     @Operation(description = "Get an uploaded file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
     fun getFile(
-            principal: Principal,
+        principal: Principal,
             @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
             @Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
         ): ResponseEntity<StreamingResponseBody>

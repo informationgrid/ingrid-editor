@@ -74,6 +74,8 @@ import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { RouteReuseStrategy } from "@angular/router";
+import { NgxFlowModule, FlowInjectionToken } from "@flowjs/ngx-flow";
+import Flow from "@flowjs/flow.js";
 
 registerLocaleData(de);
 
@@ -126,6 +128,7 @@ export function ConfigLoader(
     // angular
     BrowserModule,
     BrowserAnimationsModule,
+    NgxFlowModule,
     HttpClientModule,
     HttpClientXsrfModule,
     // Flex layout
@@ -196,6 +199,11 @@ export function ConfigLoader(
     {
       provide: RouteReuseStrategy,
       useClass: CustomReuseStrategy,
+    },
+    // uploader
+    {
+      provide: FlowInjectionToken,
+      useValue: Flow,
     },
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -12,6 +12,9 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
+import { UploadFilesDialogComponent } from "./upload-files-dialog/upload-files-dialog.component";
+import { Transfer } from "@flowjs/ngx-flow";
 
 @UntilDestroy()
 @Component({
@@ -192,5 +195,39 @@ export class TableTypeComponent
             column.templateOptions.formatter(value[index][column.key]);
         })
       );
+  }
+
+  showUploadFilesDialog() {
+    this.dialog
+      .open(UploadFilesDialogComponent, {
+        minWidth: 700,
+      })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((files: Transfer[]) => {
+        files.forEach((file) => {
+          this.dataSource.data.push({
+            title: file.name,
+            link: { asLink: false, value: file.name },
+          });
+        });
+        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+        this.updateFormControl(this.dataSource.data);
+      });
+  }
+
+  showAddLinkDialog() {
+    this.dialog
+      .open(LinkDialogComponent, { maxWidth: 600 })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((result) => {
+        this.dataSource.data.push({
+          title: result.title,
+          link: { asLink: true, value: result.url },
+        });
+        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+        this.updateFormControl(this.dataSource.data);
+      });
   }
 }

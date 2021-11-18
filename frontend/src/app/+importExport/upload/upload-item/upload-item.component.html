@@ -1,0 +1,69 @@
+<mat-list-item>
+    <mat-spinner
+        diameter="24"
+        matListIcon
+        *ngIf="file.transfer.progress < 1"
+    ></mat-spinner>
+    <mat-icon
+        class="green"
+        *ngIf="file.transfer.complete"
+        matListIcon
+        svgIcon="baseline-check-24px"
+    ></mat-icon>
+    <mat-icon *ngIf="file.errors" matListIcon class="mat-error"
+        >error_outline
+    </mat-icon>
+    <div mat-line>{{ file.transfer.name }}</div>
+    <div mat-line>{{ file.transfer.size / 1024 / 1024 | number: ".2" }} MB</div>
+    <div *ngIf="file.errors" mat-line class="mat-error">
+        {{ file.errors.message }}
+    </div>
+    <ng-container *ngIf="!showOnlyProgress">
+        <button
+            *ngIf="file.transfer.complete; else pauseButton"
+            mat-icon-button
+            (click)="cancelFile()"
+        >
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
+        <ng-template #pauseButton>
+            <button
+                mat-icon-button
+                (click)="file.transfer.paused ? resume() : pause()"
+            >
+                <mat-icon class="gray">{{
+                    file.transfer.paused ? "not_started" : "pause"
+                }}</mat-icon>
+            </button>
+        </ng-template>
+    </ng-container>
+</mat-list-item>
+<mat-progress-bar
+    *ngIf="file.transfer.progress < 1"
+    [value]="file.transfer.progress * 100"
+></mat-progress-bar>
+
+<div *ngIf="file.errors" fxLayout="column">
+    <div fxFlex fxFlexAlign="end">
+        <button mat-button color="primary" (click)="overwrite()">
+            Überschreiben
+        </button>
+        <button mat-button color="primary" (click)="rename()">
+            Umbenennen
+        </button>
+        <button mat-button color="primary" (click)="useExisting()">
+            Existierende verwenden
+        </button>
+    </div>
+</div>
+
+<!--<div *ngIf="file.progress === 100">{{ file | json }}</div>-->
+<!--<span id="file-label">
+    {{ file.data.name }}
+    <a title="Retry" (click)="retryFile(file)" *ngIf="file.canRetry">
+        <mat-icon>refresh</mat-icon></a
+    >
+    <a title="Cancel" (click)="cancelFile(file)" *ngIf="file.canCancel">
+        <mat-icon>cancel</mat-icon></a
+    >
+</span>-->

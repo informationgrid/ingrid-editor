@@ -23,6 +23,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import de.ingrid.igeserver.model.FileInfo
 
 
 class FileInfo {
@@ -50,6 +51,14 @@ class UploadApiController  @Autowired constructor(
 ) : UploadApi {
     private val logger = logger()
     private val fileInfos: Map<String, FileInfo> = ConcurrentHashMap()
+
+    override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
+        val fileInfo = this.fileInfos.get(flowIdentifier)
+        if (fileInfo != null && fileInfo.containsChunk(flowChunkNumber)) {
+            return ResponseEntity.ok().build()
+        }
+        return ResponseEntity.noContent().build()
+    }
 
     override fun uploadFile(
         principal: Principal, docId: String,

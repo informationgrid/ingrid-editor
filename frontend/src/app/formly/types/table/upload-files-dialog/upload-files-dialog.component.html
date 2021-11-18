@@ -1,0 +1,18 @@
+<ige-dialog-template
+    title="Datei(en) hochladen"
+    contentColor="#f3f3f3"
+    (submit)="submit()"
+>
+    <ng-container content>
+        <ige-file-upload
+            [target]="targetUrl"
+            (analyzed)="onAnalyzeComplete($event)"
+            (complete)="onFileComplete($event)"
+            (chosenFiles)="chosenFiles = $event"
+        ></ige-file-upload>
+
+        <mat-slide-toggle labelPosition="before" color="primary" class="stretch"
+            >ZIP-Archive nach dem Übernehmen entpacken
+        </mat-slide-toggle>
+    </ng-container>
+</ige-dialog-template>
