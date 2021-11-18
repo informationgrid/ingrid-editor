@@ -310,10 +310,7 @@ export class DocumentService {
       tap((json) =>
         this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
       ),
-      // tap(json => this.treeStore.update(id, json[0])),
-      // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
       tap(() => this.reload$.next(id))
-      // catchError( err => this.errorService.handle( err ) )
     );
   }
 

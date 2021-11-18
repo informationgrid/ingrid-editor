@@ -12,20 +12,50 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletResponse
+
 
 @Tag(name = "Upload", description = "the upload API")
 interface UploadApi {
+
+    @GetMapping("/upload")
+    fun chunkExists(
+        @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @RequestParam("flowIdentifier") flowIdentifier: String?
+    ): ResponseEntity<Void>
+
     @PostMapping(value = ["/upload"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(description = "Upload a file")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully uploaded"), ApiResponse(responseCode = "500", description = "An error occurred during upload")])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "File was successfully uploaded"
+        ), ApiResponse(responseCode = "500", description = "An error occurred during upload")]
+    )
     fun uploadFile(
-            @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile): ResponseEntity<Void>
-    
+        @Parameter() flowChunkNumber: Int,
+        @Parameter() flowTotalChunks: Int,
+        @Parameter() flowChunkSize: Long,
+        @SuppressWarnings("unused") @Parameter() flowTotalSize: Long,
+        @Parameter() flowIdentifier: String,
+        @Parameter() flowFilename: String,
+        @Parameter() file: MultipartFile
+    ): ResponseEntity<Void>
+
     @GetMapping(value = ["/upload/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(description = "Get an uploaded file")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "File was successfully downloaded"
+        ), ApiResponse(responseCode = "500", description = "An error occurred during download")]
+    )
     fun getFile(
-            @Parameter(description = "The file to be downloaded", required = true) @PathVariable("id") id: String): ResponseEntity<Void>
+        @Parameter(description = "The file to be downloaded", required = true) @PathVariable("id") id: String
+    ): ResponseEntity<Void>
 }

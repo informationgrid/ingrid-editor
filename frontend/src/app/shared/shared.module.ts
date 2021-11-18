@@ -33,6 +33,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { FeatureFlagDirective } from "../directives/feature-flag.directive";
 import { DndDirective } from "../directives/dnd.directive";
 import { UploadItemComponent } from "../+importExport/upload/upload-item/upload-item.component";
+import { NgxFlowModule } from "@flowjs/ngx-flow";
 
 @NgModule({
   imports: [
@@ -56,6 +57,7 @@ import { UploadItemComponent } from "../+importExport/upload/upload-item/upload-
     CardBoxModule,
     MatDatepickerModule,
     MatMenuModule,
+    NgxFlowModule,
   ],
   declarations: [
     TreeComponent,

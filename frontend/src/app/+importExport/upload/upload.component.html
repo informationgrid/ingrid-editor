@@ -1,17 +1,47 @@
-<button mat-button mat-flat-button color="primary" (click)="onClick()">
-    {{ text }}
-</button>
+<ng-container #flow="flow" [flowConfig]="flowConfig"></ng-container>
 
-<mat-list>
-    <ige-upload-item *ngFor="let file of files" [file]="file"></ige-upload-item>
-</mat-list>
+<div
+    [class.dragged]="isDragged"
+    (dragenter)="setDragged(true)"
+    (dragleave)="setDragged(false)"
+    (drop)="setDragged(false)"
+>
+    <div flowDrop [flow]="flow.flowJs" class="upload-content">
+        <div class="text-center">
+            <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
+            <mat-icon class="upload light" svgIcon="upload"></mat-icon>
+            <div class="alternative-text">oder</div>
 
-<input
-    #fileUploadInput
-    type="file"
-    id="fileUpload"
-    name="fileUpload"
-    [multiple]="multiple"
-    accept="{{ accept }}"
-    style="display: none"
-/>
+            <button
+                mat-button
+                mat-flat-button
+                color="primary"
+                (click)="hiddenUploadInput.click()"
+            >
+                {{ text }}
+            </button>
+        </div>
+
+        <mat-list>
+            <ige-upload-item
+                *ngFor="
+                    let file of filesForUpload | async;
+                    trackBy: getIdentifier
+                "
+                [file]="file"
+                [flow]="flow"
+            ></ige-upload-item>
+        </mat-list>
+
+        <input
+            #hiddenUploadInput
+            type="file"
+            flowButton
+            [flow]="flow.flowJs"
+            [flowAttributes]="{ accept: 'image/*' }"
+            style="display: none"
+        />
+
+        <!--<button mat-button (click)="flow.upload()">Alle Hochladen</button>-->
+    </div>
+</div>

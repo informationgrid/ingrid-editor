@@ -9,46 +9,29 @@
             <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
 
-                <div
-                    class="text-center upload-content"
-                    appDnd
-                    (fileDropped)="onFileDropped($event)"
-                >
-                    <div *ngIf="!step1Complete; else analyzeFinished">
-                        <div class="strong">
-                            Datei(en) zum Hochladen hier ablegen
-                        </div>
-                        <mat-icon
-                            class="upload light"
-                            svgIcon="upload"
-                        ></mat-icon>
-                        <div class="alternative-text">oder auswählen</div>
-
-                        <ige-file-upload
-                            [droppedFiles]="droppedFiles"
-                            targetAnalyze="/api/import/analyze"
-                            (analyzed)="onAnalyzeComplete($event)"
-                            (complete)="onFileComplete($event)"
-                            (chosenFiles)="chosenFiles = $event"
-                        ></ige-file-upload>
-                    </div>
-
-                    <ng-template #analyzeFinished>
-                        <div class="content">
-                            <div class="section-title">Datei hochgeladen:</div>
-                            <div *ngFor="let file of droppedFiles">
-                                {{ file.data.name }}
-                            </div>
-                            <mat-icon class="success-icon"
-                                >check_circle_outline
-                            </mat-icon>
-                        </div>
-                    </ng-template>
-
-                    <span *ngIf="importFileErrorMessage">{{
-                        importFileErrorMessage
-                    }}</span>
+                <div *ngIf="!step1Complete; else analyzeFinished">
+                    <ige-file-upload
+                        target="/api/import/analyze"
+                        (complete)="onAnalyzeComplete($event)"
+                        (chosenFiles)="chosenFiles = $event"
+                    ></ige-file-upload>
                 </div>
+
+                <ng-template #analyzeFinished>
+                    <div class="content">
+                        <div class="section-title">Datei hochgeladen:</div>
+                        <div *ngFor="let file of droppedFiles">
+                            {{ file.data.name }}
+                        </div>
+                        <mat-icon class="success-icon"
+                            >check_circle_outline
+                        </mat-icon>
+                    </div>
+                </ng-template>
+
+                <span *ngIf="importFileErrorMessage">{{
+                    importFileErrorMessage
+                }}</span>
 
                 <div class="action-bar">
                     <button
@@ -170,6 +153,13 @@
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">
+                    <ige-file-upload
+                        #uploadComponent
+                        autoupload="false"
+                        target="/api/import"
+                        (complete)="onFileComplete($event)"
+                    ></ige-file-upload>
+
                     <div class="section-title">Datei importiert:</div>
                     <mat-icon
                         *ngIf="hasImportError; else success"
@@ -210,3 +200,12 @@
         </mat-horizontal-stepper>
     </section>
 </page-template>
+
+<ng-template #uploader>
+    <ige-file-upload
+        #uploadComponent
+        target="/api/import/analyze"
+        (complete)="onAnalyzeComplete($event)"
+        (chosenFiles)="chosenFiles = $event"
+    ></ige-file-upload>
+</ng-template>

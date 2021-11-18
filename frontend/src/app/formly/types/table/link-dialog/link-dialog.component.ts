@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import {
   FormControl,
+  FormGroup,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -32,16 +33,22 @@ export class LinkDialogComponent {
   private URL_REGEXP =
     "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
 
-  urlFormControl = new FormControl("", [
-    Validators.required,
-    Validators.pattern(this.URL_REGEXP),
-  ]);
+  form = new FormGroup(
+    {
+      title: new FormControl(),
+      url: new FormControl("", [
+        Validators.required,
+        Validators.pattern(this.URL_REGEXP),
+      ]),
+    },
+    { updateOn: "blur" }
+  );
 
   matcher = new MyErrorStateMatcher();
 
   constructor(public dialogRef: MatDialogRef<LinkDialogComponent>) {}
 
   submit() {
-    this.dialogRef.close(this.urlFormControl.value);
+    this.dialogRef.close(this.form.value);
   }
 }

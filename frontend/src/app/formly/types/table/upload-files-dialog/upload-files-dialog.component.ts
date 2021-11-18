@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { FileUploadModel } from "../../../../+importExport/upload/fileUploadModel";
+import { Transfer } from "@flowjs/ngx-flow";
+import { MatDialogRef } from "@angular/material/dialog";
 
 @Component({
   selector: "ige-upload-files-dialog",
@@ -8,9 +9,10 @@ import { FileUploadModel } from "../../../../+importExport/upload/fileUploadMode
 })
 export class UploadFilesDialogComponent implements OnInit {
   droppedFiles: any = [];
-  chosenFiles: FileUploadModel[] = [];
+  chosenFiles: Transfer[] = [];
+  targetUrl = "/api/upload";
 
-  constructor() {}
+  constructor(private dlgRef: MatDialogRef<UploadFilesDialogComponent>) {}
 
   ngOnInit(): void {}
 
@@ -22,20 +24,7 @@ export class UploadFilesDialogComponent implements OnInit {
     console.log(this.droppedFiles[0]);
   }
 
-  onFileDropped(files: FileList) {
-    console.log(files);
-    for (let index = 0; index < files.length; index++) {
-      this.droppedFiles = [
-        ...this.droppedFiles,
-        {
-          data: files.item(index),
-          state: "in",
-          inProgress: false,
-          progress: 0,
-          canRetry: false,
-          canCancel: true,
-        },
-      ];
-    }
+  submit() {
+    this.dlgRef.close(this.chosenFiles);
   }
 }

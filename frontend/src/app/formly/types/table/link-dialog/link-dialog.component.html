@@ -1,6 +1,7 @@
 <ige-dialog-template
     title="Link angeben"
-    [disabled]="urlFormControl.invalid"
+    [formGroup]="form"
+    [disabled]="form.invalid"
     (submit)="submit()"
 >
     <ng-container content>
@@ -9,10 +10,13 @@
             vollständige Internetadresse an (http://… oder https://…).
         </div>
         <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Titel</mat-label>
+            <input igeFocus formControlName="title" matInput />
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>URL</mat-label>
             <input
-                igeFocus
-                [formControl]="urlFormControl"
+                formControlName="url"
                 [errorStateMatcher]="matcher"
                 matInput
                 placeholder="z.B. https://"
@@ -20,13 +24,15 @@
             />
             <mat-error
                 *ngIf="
-                    urlFormControl.hasError('pattern') &&
-                    !urlFormControl.hasError('required')
+                    form.controls.url.hasError('pattern') &&
+                    !form.controls.url.hasError('required')
                 "
             >
                 Verwenden Sie bitte eine gültige URL
             </mat-error>
-            <mat-error> URL ist verpflichtend </mat-error>
+            <mat-error *ngIf="form.controls.url.hasError('required')">
+                URL ist verpflichtend
+            </mat-error>
         </mat-form-field>
     </ng-container>
 </ige-dialog-template>
