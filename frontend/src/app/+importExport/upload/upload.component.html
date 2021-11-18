@@ -1,13 +1,14 @@
 <ng-container #flow="flow" [flowConfig]="flowConfig"></ng-container>
 
 <div
+    [class.no-drop-zone]="showOnlyProgress"
     [class.dragged]="isDragged"
     (dragenter)="setDragged(true)"
     (dragleave)="setDragged(false)"
     (drop)="setDragged(false)"
 >
     <div flowDrop [flow]="flow.flowJs" class="upload-content">
-        <div class="text-center">
+        <div *ngIf="!showOnlyProgress" class="text-center">
             <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
             <mat-icon class="upload light" svgIcon="upload"></mat-icon>
             <div class="alternative-text">oder</div>
@@ -30,6 +31,7 @@
                 "
                 [file]="file"
                 [flow]="flow"
+                showOnlyProgress="true"
             ></ige-upload-item>
         </mat-list>
 

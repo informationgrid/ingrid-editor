@@ -24,6 +24,15 @@ li {
   cursor: pointer;
 }
 
+.no-drop-zone {
+  .upload-content {
+    padding: 0;
+  }
+  mat-list {
+    padding-top: 0;
+  }
+}
+
 mat-list {
   padding-top: 36px;
 }

@@ -153,14 +153,16 @@
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">
+                    <div class="section-title">Datei importiert:</div>
+
                     <ige-file-upload
                         #uploadComponent
+                        showOnlyProgress="true"
                         autoupload="false"
                         target="/api/import"
                         (complete)="onFileComplete($event)"
                     ></ige-file-upload>
 
-                    <div class="section-title">Datei importiert:</div>
                     <mat-icon
                         *ngIf="hasImportError; else success"
                         class="error-icon"

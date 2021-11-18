@@ -10,6 +10,7 @@ import { TransfersWithErrorInfo } from "../TransferWithErrors";
 export class UploadItemComponent implements OnInit {
   @Input() file: TransfersWithErrorInfo;
   @Input() flow: FlowDirective;
+  @Input() showOnlyProgress = false;
 
   constructor() {}
 

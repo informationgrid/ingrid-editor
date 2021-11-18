@@ -51,6 +51,9 @@ export class UploadComponent implements OnInit {
   /* automatically upload files after drop/select */
   @Input() autoupload = true;
 
+  /* hide everything except the progressed files */
+  @Input() showOnlyProgress = false;
+
   @Output() complete = new EventEmitter<any>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
 

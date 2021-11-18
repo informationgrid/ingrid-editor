@@ -11,30 +11,32 @@
         svgIcon="baseline-check-24px"
     ></mat-icon>
     <mat-icon *ngIf="file.errors" matListIcon class="mat-error"
-        >error_outline</mat-icon
-    >
+        >error_outline
+    </mat-icon>
     <div mat-line>{{ file.transfer.name }}</div>
     <div mat-line>{{ file.transfer.size / 1024 / 1024 | number: ".2" }} MB</div>
     <div *ngIf="file.errors" mat-line class="mat-error">
         {{ file.errors.message }}
     </div>
-    <button
-        *ngIf="file.transfer.complete; else pauseButton"
-        mat-icon-button
-        (click)="cancelFile()"
-    >
-        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-    </button>
-    <ng-template #pauseButton>
+    <ng-container *ngIf="!showOnlyProgress">
         <button
+            *ngIf="file.transfer.complete; else pauseButton"
             mat-icon-button
-            (click)="file.transfer.paused ? resume() : pause()"
+            (click)="cancelFile()"
         >
-            <mat-icon class="gray">{{
-                file.transfer.paused ? "not_started" : "pause"
-            }}</mat-icon>
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
-    </ng-template>
+        <ng-template #pauseButton>
+            <button
+                mat-icon-button
+                (click)="file.transfer.paused ? resume() : pause()"
+            >
+                <mat-icon class="gray">{{
+                    file.transfer.paused ? "not_started" : "pause"
+                }}</mat-icon>
+            </button>
+        </ng-template>
+    </ng-container>
 </mat-list-item>
 <mat-progress-bar
     *ngIf="file.transfer.progress < 1"
