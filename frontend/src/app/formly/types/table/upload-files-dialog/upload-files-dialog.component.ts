@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Transfer } from "@flowjs/ngx-flow";
 import { MatDialogRef } from "@angular/material/dialog";
-import { ConfigService } from "../../../../services/config/config.service";
+import { FormStateService } from "../../../../+form/form-state.service";
 
 @Component({
   selector: "ige-upload-files-dialog",
@@ -15,9 +15,9 @@ export class UploadFilesDialogComponent implements OnInit {
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent>,
-    configService: ConfigService
+    formStateService: FormStateService
   ) {
-    this.targetUrl += configService.$userInfo.getValue().userId;
+    this.targetUrl += formStateService.getForm().get("_id").value;
   }
 
   ngOnInit(): void {}
