@@ -2,6 +2,7 @@ import { UserAndRights } from '../../pages/base.page';
 import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
 import { ResearchPage } from '../../pages/research.page';
+import { Utils } from '../../pages/utils';
 
 describe('Group', () => {
   beforeEach(() => {
@@ -223,6 +224,7 @@ describe('Group', () => {
   });
 
   it('should show correct information in group header', () => {
+    /* 1. last-edited-date */
     // change an existing group and make sure the "last-edited" date is updated
     AdminGroupPage.selectGroup('leere_Gruppe');
     // edit group
@@ -233,9 +235,18 @@ describe('Group', () => {
     const formatted_date = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`;
     AdminGroupPage.verifyInfoInHeader(headerKeys.EditDate, formatted_date);
 
+    /* 2. ID */
     // make sure ID consists of a number
     AdminGroupPage.openUpGroupHeader();
     cy.contains(AdminGroupPage.ID, /[0-9]+/);
+
+    /* 3. creation-date */
+    // create group and make sure the created-date is correct
+    const groupName = 'group' + Utils.randomString();
+    AdminGroupPage.addNewGroup(groupName);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.openUpGroupHeader();
+    AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, formatted_date);
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
