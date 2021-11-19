@@ -156,6 +156,7 @@ export class AdminUserPage extends BasePage {
   static discardChanges() {
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     cy.get('[data-cy=confirm-dialog-discard]').click();
+    cy.get('mat-dialog-container').should('not.exist');
   }
 
   static cancelChanges() {

@@ -84,6 +84,10 @@ describe('Group', () => {
 
     cy.get('groups-table').contains(groupName2).click();
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    // close error box
+    cy.findByText('Verwerfen').click();
+    // make sure error box is not there anymore
+    cy.get('mat-dialog-container').should('not.exist');
   });
 
   it('should change a selected group after discard changes', () => {
