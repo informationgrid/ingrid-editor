@@ -851,11 +851,14 @@ public class FileSystemStorage implements Storage {
      * @return String
      */
     private String sanitize(String path, final Pattern illegalChars) {
-        path = path.replace("/../", "/");
-        if(path.startsWith("../")){
-            path = path.substring(3);
+        if(path != null) {
+            path = path.replace("/../", "/");
+            if (path.startsWith("../")) {
+                path = path.substring(3);
+            }
+            return illegalChars.matcher(path).replaceAll("_");
         }
-        return illegalChars.matcher(path).replaceAll("_");
+        return null;
     }
 
     /**

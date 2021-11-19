@@ -33,8 +33,9 @@ class DefaultUploadSaver : Filter<PostUpdatePayload> {
         val docId = payload.document.uuid
 
         val files = payload.type.getUploads(payload.document)
-        storage.saveDataset(context.catalogId, context.principal?.name, docId, files)
-
+        if(context.principal != null) {
+            storage.saveDataset(context.catalogId, context.principal?.name, docId, files)
+        }
         return payload
     }
 
