@@ -32,6 +32,8 @@ public class SpringConfiguration {
                 instance.setDocsDir(config.uploadDocsDir);
                 instance.setPartsDir(config.uploadPartsDir);
                 instance.setTempDir(config.uploadTempDir);
+                instance.setTrashRetentionTime(config.uploadTrashRetentionTime);
+                instance.setUnsavedRetentionTime(config.uploadUnsavedRetentionTime);
 
                 // validators
                 final List<Validator> validators = new ArrayList<Validator>();

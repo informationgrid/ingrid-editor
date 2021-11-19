@@ -116,13 +116,13 @@ public class Config {
     @TypeTransformers(de.ingrid.mdek.upload.storage.validate.config.StringToValidatorTransformer.class)
     public Map<String, Validator> uploadValidatorMap;
 
-    @PropertyValue("upload.trash.threshold")
+    @PropertyValue("upload.trash.retentionTime")
     @DefaultValue("0")
-    public int uploadTrashThreshold;
+    public int uploadTrashRetentionTime;
 
-    @PropertyValue("upload.trash.threshold")
+    @PropertyValue("upload.trash.retentionTime")
     @DefaultValue("24")
-    public int uploadUnsavedThreshold;
+    public int uploadUnsavedRetentionTime;
 
     /**
      * VARIOUS

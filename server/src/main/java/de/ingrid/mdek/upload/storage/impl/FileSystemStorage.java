@@ -118,6 +118,10 @@ public class FileSystemStorage implements Storage {
     private String docsDir = null;
     private String partsDir = null;
     private String tempDir = null;
+
+    private int trashRetentionTime = 0;
+    private int unsavedRetentionTime = 0;
+
     private List<Validator> validators = new ArrayList<>();
 
     /**
@@ -204,6 +208,29 @@ public class FileSystemStorage implements Storage {
     public void setValidators(final List<Validator> validators) {
         this.validators = validators;
     }
+
+
+    /**
+     * Set the Limit after how many hours files are removed from trash.
+     * Files will never be removed for values of 0 or among
+     *
+     * @param trashRetentionTime
+     */
+    public void setTrashRetentionTime(final int trashRetentionTime) {
+        this.trashRetentionTime = trashRetentionTime;
+    }
+
+    /**
+     * Set the Limit after how many hours files are removed from trash.
+     * Files will never be removed for values of 0 or among
+     *
+     * @param unsavedRetentionTime
+     */
+    public void setUnsavedRetentionTime(final int unsavedRetentionTime) {
+        this.unsavedRetentionTime = unsavedRetentionTime;
+    }
+
+
 
     @Override
     public StorageItem[] list(final String userID, final String datasetID) throws IOException {
@@ -455,15 +482,27 @@ public class FileSystemStorage implements Storage {
         final Path unpublishedPath = Paths.get(this.docsDir, UNPUBLISHED_PATH);
 
         // Delete old unsaved Files
-        try (Stream<Path> stream = Files.walk(Paths.get(this.docsDir))) {
+        if(this.unsavedRetentionTime > 0)
+        try (Stream<Path> stream = Files.walk(unsavedPath)) {
             final List<Path> oldFiles = stream
-                    .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(1)).getMillis())
+                    .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(this.unsavedRetentionTime)).getMillis())
                     .collect(Collectors.toList());
             for (final Path oldFile : oldFiles) {
                 Files.delete(oldFile);
             }
-
         }
+
+
+        // Delete old Trash Files
+        if(this.trashRetentionTime > 0)
+            try (Stream<Path> stream = Files.walk(trashPath)) {
+                final List<Path> oldFiles = stream
+                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(this.trashRetentionTime)).getMillis())
+                        .collect(Collectors.toList());
+                for (final Path oldFile : oldFiles) {
+                    Files.delete(oldFile);
+                }
+            }
 
         // run as long as there are empty directories
         boolean hasEmptyDirs = true;
