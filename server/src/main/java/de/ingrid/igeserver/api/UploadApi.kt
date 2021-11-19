@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.security.Principal
+import javax.servlet.ServletRequest
+import javax.servlet.http.HttpServletRequest
 
 @Tag(name = "Upload", description = "the upload API")
 interface UploadApi {
@@ -32,19 +34,30 @@ interface UploadApi {
         @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
         @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
         @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
-        @Parameter(description = "") @RequestParam("flowChunkSize") flowChunkSize: Long,
+        @Parameter(description = "") @RequestParam("flowCurrentChunkSize") flowCurrentChunkSize: Long,
         @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
         @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
         @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
     ): ResponseEntity<UploadResponse>
 
-    @GetMapping(value = ["/upload/{docId}/{file}"])
+    @GetMapping(value = ["/upload/extract/{docId}/{file}"])
+    @Operation(description = "Extract an uploaded file")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
+    fun extractFile(
+        principal: Principal,
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
+        @Parameter(description = "The file to be extracted", required = true) @PathVariable("file") file: String,
+        @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
+    ): ResponseEntity<UploadResponse>
+
+    @GetMapping(value = ["/upload/{docId}/**"])
     @Operation(description = "Get an uploaded file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
     fun getFile(
+        request: HttpServletRequest,
         principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
-            @Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
+            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String
+            //@Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
         ): ResponseEntity<StreamingResponseBody>
 
     @DeleteMapping(value = ["/upload/{docId}/{file}"])

@@ -129,7 +129,7 @@ public interface Storage {
      * @return StorageItem[] The list of created files
      * @throws IOException
      */
-    StorageItem[] finalizeParts(String catalog, String userID, String datasetID, String file, String id, Long size, boolean replace) throws IOException;
+    StorageItem[] combineParts(String catalog, String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace) throws IOException;
 
     /**
      * Delete a file
@@ -167,7 +167,7 @@ public interface Storage {
      * @param file
      * @throws IOException
      */
-    void extract(String userID, String datasetID, String file) throws IOException;
+    StorageItem[] extract(String catalog, String userID, String datasetID, String file, boolean replace) throws IOException;
 
     /**
      * Execute cleanup tasks, that are necessary to maintain this storage

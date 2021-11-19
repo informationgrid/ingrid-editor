@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import de.ingrid.igeserver.model.FileInfo
+import javax.servlet.ServletRequest
+import javax.servlet.http.HttpServletRequest
 
 
 class FileInfo {
@@ -50,7 +52,7 @@ class UploadApiController  @Autowired constructor(
     private val aclService: IgeAclService
 ) : UploadApi {
     private val logger = logger()
-    private val fileInfos: Map<String, FileInfo> = ConcurrentHashMap()
+    private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
 
     override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
         val fileInfo = this.fileInfos.get(flowIdentifier)
@@ -66,13 +68,11 @@ class UploadApiController  @Autowired constructor(
         replace: Boolean,
         flowChunkNumber: Int,
         flowTotalChunks: Int,
-        flowChunkSize: Long,
+        flowCurrentChunkSize: Long,
         flowTotalSize: Long,
         flowIdentifier: String,
         flowFilename: String,
     ): ResponseEntity<UploadResponse> {
-        logger.info("Receiving file: " + file.originalFilename)
-
         val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
         if(!canWrite){
             val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
@@ -109,21 +109,22 @@ class UploadApiController  @Autowired constructor(
         var fileInfo: FileInfo? = this.fileInfos.get(flowIdentifier)
         if (fileInfo == null) {
             fileInfo = FileInfo()
-            this.fileInfos.plus(Pair(flowIdentifier, fileInfo))
+            this.fileInfos.put(flowIdentifier, fileInfo)
         }
 
-        storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowChunkSize)
+        storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
 
         fileInfo.addUploadedChunk(flowChunkNumber)
 
         if (fileInfo.isUploadFinished(flowTotalChunks)) {
             // store file
-            files = storage.write(catalogId, userID, docId, file.originalFilename, file.inputStream, size, replace)
-
-            this.fileInfos.minus(flowIdentifier)
+                try {
+                    files = storage.combineParts(catalogId, userID, docId, file.originalFilename, flowIdentifier, flowTotalChunks, size, replace)
+                } finally {
+                    this.fileInfos.remove(flowIdentifier)
+                }
         }
-
         return this.createUploadResponse(files)
     }
 
@@ -145,7 +146,29 @@ class UploadApiController  @Autowired constructor(
         return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.CREATED)
     }
 
-    override fun getFile(principal: Principal, docId: String, file: String): ResponseEntity<StreamingResponseBody> {
+    override fun extractFile(principal: Principal, docId: String, file: String, replace: Boolean): ResponseEntity<UploadResponse> {
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
+        if(!canWrite){
+            val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
+            return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
+        }
+
+        val userID = principal.getName()
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        var files: Array<StorageItem> = arrayOf()
+
+                files = storage.extract(catalogId, userID, docId, file, replace)
+
+        return this.createUploadResponse(files)
+
+    }
+
+    override fun getFile(request: HttpServletRequest,principal: Principal, docId: String): ResponseEntity<StreamingResponseBody> {
+        val requestURI = request.requestURI
+
+        val idx = requestURI.indexOf(docId)
+        val file = requestURI.substring(idx+docId.length+1)
 
         val canRead = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canRead
         if(!canRead){

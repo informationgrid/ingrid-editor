@@ -361,44 +361,45 @@ public class FileSystemStorage implements Storage {
 
     @Override
     public void writePart(final String id, final Integer index, final InputStream data, final Long size) throws IOException {
-        Path identifierFile = this.getRealPath(id, this.partsDir);
-
-        try (RandomAccessFile raf = new RandomAccessFile(identifierFile.toString(), "rw")){
-            raf.seek((index - 1) * size);
-
-            long readed = 0;
-            long content_length = size;
-            byte[] bytes = new byte[1024 * 100];
-            while (readed < content_length) {
-                int r = data.read(bytes);
-                if (r < 0) {
-                    break;
-                }
-                raf.write(bytes, 0, r);
-                readed += r;
-            }
+        final String file = id + "-" + index;
+        final Path realPath = this.getRealPath(file, this.partsDir);
+        Files.createDirectories(realPath.getParent());
+        try {
+            Files.copy(data, realPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (final FileAlreadyExistsException faex) {
+            final StorageItem[] items = { this.getFileInfo(faex.getFile()) };
+            throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+        }
+        if (Files.size(realPath) != size) {
+            throw new IOException("The file size is different to the expected size");
         }
     }
 
     @Override
-    public FileSystemItem[] finalizeParts(final String catalog, final String userID, final String datasetID, final String file, final String id, final Long size, final boolean replace) throws IOException {
-        // file name validation (content validation is done in write() method)
-        /*
-        final String validatePath = Paths.get(this.docsDir, path).toString();
-        for (final Validator validator : this.validators) {
-            validator.validate(validatePath, file, size, null, false);
-        }
-        */
+    public FileSystemItem[] combineParts(final String catalog, final String userID, final String datasetID, final String file, final String id, final Integer totalParts, final Long size, final boolean replace) throws IOException {
 
-        Path partPath = this.getRealPath(id, this.partsDir);
+        // combine parts into stream
+        final Vector<InputStream> streams = new Vector<>();
+        final List<Path> parts = new ArrayList<>();
+        for (int i = 1; i <= totalParts; i++) {
+            final String part = id + "-" + i;
+            final Path realPath = this.getRealPath(part, this.partsDir);
+            streams.add(Files.newInputStream(realPath));
+            parts.add(realPath);
+        }
 
         // delegate to write method
         FileSystemItem[] result = null;
-        try (InputStream data = Files.newInputStream(partPath)) {
+        // this also closes InputStreams of streams
+        try (InputStream data = new SequenceInputStream(streams.elements())) {
             result = this.write(catalog, userID, datasetID, file, data, size, replace);
         }
-
-        Files.delete(partPath);
+        finally {
+            for (final Path part : parts) {
+                Files.delete(part);
+            }
+        }
 
         return result;
     }
@@ -428,8 +429,21 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void extract(String userID, String datasetID, String file) throws IOException {
+    public StorageItem[] extract(final String catalog, String userID, String datasetID, String file, boolean replace) throws IOException {
+        final Path realPath = this.getUnsavedPath(catalog, userID, datasetID, file, this.docsDir);
 
+        final List<CopyOption> copyOptionList = new ArrayList<>();
+        if (replace) {
+            copyOptionList.add(StandardCopyOption.REPLACE_EXISTING);
+        }
+        final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
+
+        String[] files = extract(realPath, copyOptions);
+        List<StorageItem> storageItems = new ArrayList<>();
+        for (String fileName: files) {
+            storageItems.add(this.getFileInfo(fileName));
+        }
+        return storageItems.toArray(new StorageItem[storageItems.size()]);
     }
 
     @Override
@@ -764,7 +778,7 @@ public class FileSystemStorage implements Storage {
      * @return String[]
      * @throws Exception
      */
-    private String[] extract(final Path path, final CopyOption... copyOptions) throws Exception {
+    private String[] extract(final Path path, final CopyOption... copyOptions) throws IOException {
         final List<Path> result = new ArrayList<>();
 
         // get the directory name from the archive name
@@ -836,7 +850,11 @@ public class FileSystemStorage implements Storage {
      * @param illegalChars
      * @return String
      */
-    private String sanitize(final String path, final Pattern illegalChars) {
+    private String sanitize(String path, final Pattern illegalChars) {
+        path = path.replace("/../", "/");
+        if(path.startsWith("../")){
+            path = path.substring(3);
+        }
         return illegalChars.matcher(path).replaceAll("_");
     }
 
@@ -850,7 +868,7 @@ public class FileSystemStorage implements Storage {
      */
     private Path getRealPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath,
-                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
 
@@ -864,7 +882,7 @@ public class FileSystemStorage implements Storage {
      */
     private Path getUnsavedPath(final String catalog, final String userID, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNSAVED_PATH,
-                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(userID, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(userID, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
     /**
@@ -877,7 +895,7 @@ public class FileSystemStorage implements Storage {
      */
     private Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNPUBLISHED_PATH,
-                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
     /**
@@ -901,7 +919,7 @@ public class FileSystemStorage implements Storage {
      */
     private Path getTrashPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, TRASH_PATH,
-                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
     /**
@@ -914,7 +932,7 @@ public class FileSystemStorage implements Storage {
      */
     private Path getArchivePath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, ARCHIVE_PATH,
-            this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_FILE_CHARS));
+            this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
     /**
