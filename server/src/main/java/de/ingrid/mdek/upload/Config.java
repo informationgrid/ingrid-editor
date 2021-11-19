@@ -50,65 +50,6 @@ public class Config {
     @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( Config.class );
 
-
-    /**
-     * COMMUNICATION - SETTINGS
-     */
-    @SystemPropertyValue("communication")
-    @PropertyValue("communication.properties")
-    @DefaultValue("communication.xml")
-    public String communicationLocation;
-
-    @PropertyValue("communication.server.name")
-    @DefaultValue("")
-    public String ibusName;
-
-    @PropertyValue("communication.server.port")
-    @DefaultValue("")
-    public String ibusPort;
-
-    @PropertyValue("communication.server.timeout")
-    @DefaultValue("10")
-    public int ibusTimeout;
-
-    @PropertyValue("communication.server.maxMsgSize")
-    @DefaultValue("3145728")
-    public int ibusMaxMsgSize;
-
-    @PropertyValue("communication.server.threadCount")
-    @DefaultValue("100")
-    public int ibusThreadCount;
-
-    @PropertyValue("communication.server.msgTimeout")
-    @DefaultValue("30")
-    private String ibusMsgTimeout;
-
-    @PropertyValue("communication.server.queueSize")
-    @DefaultValue("2000")
-    private String ibusQueueSize;
-
-
-    /**
-     * CODELIST - REPOSITORY
-     */
-    @PropertyValue("codelist.requestUrl")
-    @DefaultValue("http://localhost:8089/rest/getCodelists")
-    public String codelistRequestUrl;
-
-    @PropertyValue("codelist.username")
-    public String codelistUsername;
-
-    @PropertyValue("codelist.password")
-    public String codelistPassword;
-
-    @PropertyValue("codelist.communicationType")
-    @DefaultValue("http")
-    public String codelistCommunicationType;
-
-    @PropertyValue("codelist.defaultPersistency")
-    @DefaultValue("0")
-    public int codelistDefaultPersistency;
-
     /**
      * MAIL
      */
@@ -175,6 +116,14 @@ public class Config {
     @TypeTransformers(de.ingrid.mdek.upload.storage.validate.config.StringToValidatorTransformer.class)
     public Map<String, Validator> uploadValidatorMap;
 
+    @PropertyValue("upload.trash.threshold")
+    @DefaultValue("0")
+    public int uploadTrashThreshold;
+
+    @PropertyValue("upload.trash.threshold")
+    @DefaultValue("24")
+    public int uploadUnsavedThreshold;
+
     /**
      * VARIOUS
      */
@@ -186,61 +135,7 @@ public class Config {
     @DefaultValue("")
     public String mdekDirectLink;
 
-    /**
-     * used in UVP profile
-     */
-    @PropertyValue("mdek.nominatimBaseURL")
-    @DefaultValue("https://nominatim.openstreetmap.org")
-    public String nominatimBaseURL;
 
-    public void initialize() {
-        System.setProperty( "spring.profiles.active", "http" );
-        writeCommunication();
-    }
-
-    public boolean writeCommunication() {
-        File communicationFile = new File( this.communicationLocation );
-        if (ibusName.isEmpty() || ibusPort.isEmpty()) {
-            // do not remove communication file if no
-            if(communicationFile.exists() && communicationFile.delete()) {
-                log.debug("Delete communication.");
-            }
-            return true;
-        }
-
-        try {
-            final XPathService communication = getCommunicationTemplate();
-            Integer id = 0;
-
-            communication.removeNode( "/communication/server", id );
-
-            // create default nodes and attributes if server tag does not exist
-
-            communication.addNode( "/communication", "server", id );
-            communication.addAttribute( "/communication/server", "name", ibusName, id );
-
-            communication.addNode( "/communication/server", "socket", id );
-            communication.addNode( "/communication/server", "messages", id );
-
-            communication.addAttribute( "/communication/server/messages", "maximumSize", "" + this.ibusMaxMsgSize, id );
-            communication.addAttribute( "/communication/server/messages", "threadCount", "" + this.ibusThreadCount, id );
-
-            communication.addAttribute( "/communication/server/socket", "port", "" + ibusPort, id );
-            communication.addAttribute( "/communication/server/socket", "timeout", "" + this.ibusTimeout, id );
-
-            communication.addNode( "/communication", "messages", id );
-            communication.addAttribute( "/communication/messages", "handleTimeout", this.ibusMsgTimeout, id );
-            communication.addAttribute( "/communication/messages", "queueSize", this.ibusQueueSize, id );
-
-            communication.store( communicationFile );
-
-        } catch (Exception e) {
-            log.error("Error on writeCommunication.", e);
-            return false;
-        }
-
-        return true;
-    }
 
     private final XPathService getCommunicationTemplate() throws Exception {
 

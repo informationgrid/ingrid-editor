@@ -20,7 +20,6 @@ public class SpringConfiguration {
     @Bean
     public Config globalConfig() {
         Config config = new ConfigBuilder<Config>(Config.class).build();
-        config.initialize();
         return config;
     }
 
