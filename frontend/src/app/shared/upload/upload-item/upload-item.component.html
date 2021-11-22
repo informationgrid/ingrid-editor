@@ -14,7 +14,12 @@
         >error_outline
     </mat-icon>
     <div mat-line>{{ file.transfer.name }}</div>
-    <div mat-line>{{ file.transfer.size | size }}</div>
+    <div mat-line>
+        {{ file.transfer.size | size }}
+        <span *ngIf="file.transfer.progress < 1"
+            >({{ file.transfer.progress * 100 | number: ".1-1" }}%)</span
+        >
+    </div>
     <div *ngIf="file.errors" mat-line class="mat-error">
         {{ file.errors.message ?? file.errors.errorText }}
     </div>
