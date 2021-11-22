@@ -56,6 +56,7 @@ export class UploadComponent implements OnInit {
 
   @Output() complete = new EventEmitter<any>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
+  @Output() removeFile = new EventEmitter<string>();
 
   @ViewChild("flow") flow: FlowDirective;
 
@@ -76,6 +77,7 @@ export class UploadComponent implements OnInit {
     this.flowConfig = {
       target: this.target,
       testChunks: false,
+      forceChunkSize: false,
     };
   }
 
@@ -112,7 +114,9 @@ export class UploadComponent implements OnInit {
             message;
           this.errors.next(this._errors);
         } else if (event.type === "fileSuccess") {
-          const message = JSON.parse(<string>event.event[1]);
+          const message = event.event[1]
+            ? JSON.parse(<string>event.event[1])
+            : "OK";
           this.complete.next(message);
         } else {
           console.log("other event", event);
@@ -121,117 +125,8 @@ export class UploadComponent implements OnInit {
         console.error("Error uploading file", e);
       }
     });
-    /*
-        this.flow.transfers$
-          .pipe(untilDestroyed(this))
-          .subscribe((files) => (this.files = files.transfers));*/
   }
 
-  /*  private _files: Transfer[] = [];
-
-  get files(): Transfer[] {
-    return this._files;
-  }
-
-  set files(value: Transfer[]) {
-    this._files = value;
-    this.chosenFiles.emit([...this._files]);
-  }*/
-
-  /** Allow you to add handler after its completion. Bubble up response text from remote. */
-
-  /*  @Input() set droppedFiles(files: FileItem[]) {
-    this.files = files;
-    if (this.targetAnalyze) {
-      // this.analyzeFiles();
-    } else {
-      // this.uploadFiles();
-    }
-  }*/
-
-  /*
-  onClick() {
-    const fileUpload = this.htmlFileUpload.nativeElement;
-    fileUpload.onchange = () => {
-      for (let index = 0; index < fileUpload.files.length; index++) {
-        const file = fileUpload.files[index];
-        this.files = [
-          ...this.files,
-          {
-            data: file,
-            state: "in",
-            inProgress: false,
-            progress: 0,
-            canRetry: false,
-            canCancel: true,
-          },
-        ];
-      }
-      if (this.targetAnalyze) {
-        this.analyzeFiles();
-      } else {
-        this.uploadFiles();
-      }
-    };
-    fileUpload.click();
-  }
-*/
-  /*
-  cancelFile(file: FileUploadModel) {
-    file.sub.unsubscribe();
-    this.removeFileFromArray(file);
-  }
-
-  retryFile(file: FileUploadModel) {
-    this.uploadFile(file);
-    file.canRetry = false;
-  }
-
-  removeFileFromArray(file: FileUploadModel) {
-    const index = this.files.indexOf(file);
-    if (index > -1) {
-      this.files.splice(index, 1);
-    }
-  }
-
-  private uploadFiles() {
-    const fileUpload = this.htmlFileUpload?.nativeElement;
-    if (fileUpload) fileUpload.value = "";
-
-    this.files.forEach((file) => {
-      this.uploadFile(file);
-    });
-  }
-
-  private uploadFile(file: FileUploadModel) {
-    file.sub = this.uploadService
-      .uploadFile(file, this.param, this.target)
-      .subscribe((event: any) => {
-        // this.removeFileFromArray(file);
-        this.complete.emit(event.body);
-      });
-  }
-
-  private analyzeFiles() {
-    this.files.forEach((file) => this.analyzeFile(file));
-  }
-
-  private analyzeFile(file: FileUploadModel) {
-    file.sub = this.uploadService
-      .uploadFile(file, this.param, this.target + "/analyze")
-      .pipe(
-        catchError((error) => {
-          file.error = error;
-          return of({}); // throw new IgeError("Datei konnte nicht hochgeladen werden");
-        })
-      )
-      .subscribe((event: any) => {
-        this.analyzed.emit({
-          file: file,
-          analysis: event.body,
-        });
-      });
-  }*/
   isDragged = false; // new BehaviorSubject<boolean>(false);
   counter = 0;
 

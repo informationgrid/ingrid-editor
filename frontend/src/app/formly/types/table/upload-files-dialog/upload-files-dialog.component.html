@@ -2,12 +2,14 @@
     title="Datei(en) hochladen"
     contentColor="#f3f3f3"
     (submit)="submit()"
+    (cancel)="cancel()"
 >
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
-            (complete)="onFileComplete($event)"
+            (complete)="onFileComplete()"
             (chosenFiles)="chosenFiles = $event"
+            (removeFile)="removeUploadedFile($event)"
         ></ige-file-upload>
 
         <mat-slide-toggle labelPosition="before" color="primary" class="stretch"

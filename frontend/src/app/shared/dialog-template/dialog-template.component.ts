@@ -10,6 +10,7 @@ export class DialogTemplateComponent implements OnInit {
   @Input() disabled = false;
   @Input() contentColor = "#ffffff";
   @Output() submit = new EventEmitter();
+  @Output() cancel = new EventEmitter();
 
   constructor() {}
 

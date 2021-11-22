@@ -85,10 +85,6 @@ export class TableTypeComponent
     );
   }
 
-  addRow() {
-    this.editRow(null);
-  }
-
   removeRow(index: number) {
     this.dataSource = new MatTableDataSource<any>(
       this.dataSource.data.filter((item, indexItem) => indexItem !== index)
@@ -204,16 +200,18 @@ export class TableTypeComponent
       })
       .afterClosed()
       .pipe(filter((result) => result))
-      .subscribe((files: Transfer[]) => {
-        files.forEach((file) => {
-          this.dataSource.data.push({
-            title: file.name,
-            link: { asLink: false, value: file.name },
-          });
-        });
-        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
-        this.updateFormControl(this.dataSource.data);
+      .subscribe((files: Transfer[]) => this.updateTableInformation(files));
+  }
+
+  private updateTableInformation(files: Transfer[]) {
+    files.forEach((file) => {
+      this.dataSource.data.push({
+        title: file.name,
+        link: { asLink: false, value: file.name },
       });
+    });
+    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+    this.updateFormControl(this.dataSource.data);
   }
 
   showAddLinkDialog() {

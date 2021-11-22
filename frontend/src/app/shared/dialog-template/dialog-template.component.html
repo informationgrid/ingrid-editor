@@ -11,7 +11,9 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button color="primary" mat-dialog-close>Abbrechen</button>
+    <button mat-button color="primary" mat-dialog-close (click)="cancel.next()">
+        Abbrechen
+    </button>
     <div fxFlex></div>
     <ng-content select="[actions]"></ng-content>
     <button

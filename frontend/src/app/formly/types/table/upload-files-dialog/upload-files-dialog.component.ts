@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { Transfer } from "@flowjs/ngx-flow";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormStateService } from "../../../../+form/form-state.service";
+import { TransfersWithErrorInfo } from "../../../../shared/upload/TransferWithErrors";
+import { UploadService } from "../../../../shared/upload/upload.service";
 
 @Component({
   selector: "ige-upload-files-dialog",
@@ -10,27 +11,37 @@ import { FormStateService } from "../../../../+form/form-state.service";
 })
 export class UploadFilesDialogComponent implements OnInit {
   droppedFiles: any = [];
-  chosenFiles: Transfer[] = [];
+  chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl = "/api/upload/";
+  docId = null;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent>,
-    formStateService: FormStateService
+    formStateService: FormStateService,
+    private uploadService: UploadService
   ) {
-    this.targetUrl += formStateService.getForm().get("_id").value;
+    this.docId = formStateService.getForm().get("_id").value;
+    this.targetUrl += this.docId;
   }
 
   ngOnInit(): void {}
 
-  onAnalyzeComplete($event) {
-    console.log("analyzed", $event);
+  onFileComplete() {
+    console.log(this.droppedFiles[0]);
   }
 
-  onFileComplete($event: string) {
-    console.log(this.droppedFiles[0]);
+  removeUploadedFile(fileId: string) {
+    this.uploadService.deleteUploadedFile(this.docId, fileId);
   }
 
   submit() {
     this.dlgRef.close(this.chosenFiles);
+  }
+
+  cancel() {
+    this.chosenFiles.forEach((file) =>
+      this.removeUploadedFile(file.transfer.id)
+    );
+    this.dlgRef.close();
   }
 }

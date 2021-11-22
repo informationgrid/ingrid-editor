@@ -31,7 +31,8 @@
                 "
                 [file]="file"
                 [flow]="flow"
-                showOnlyProgress="true"
+                [showOnlyProgress]="showOnlyProgress"
+                (remove)="removeFile.next($event)"
             ></ige-upload-item>
         </mat-list>
 

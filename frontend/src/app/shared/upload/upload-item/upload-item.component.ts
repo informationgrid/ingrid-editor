@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FlowDirective } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 
@@ -12,12 +12,15 @@ export class UploadItemComponent implements OnInit {
   @Input() flow: FlowDirective;
   @Input() showOnlyProgress = false;
 
+  @Output() remove = new EventEmitter<string>();
+
   constructor() {}
 
   ngOnInit(): void {}
 
   cancelFile() {
     this.file.transfer.flowFile.cancel();
+    this.remove.next(this.file.transfer.id);
   }
 
   pause() {
