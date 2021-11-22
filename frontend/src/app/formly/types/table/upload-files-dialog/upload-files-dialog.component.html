@@ -12,7 +12,11 @@
             (removeFile)="removeUploadedFile($event)"
         ></ige-file-upload>
 
-        <mat-slide-toggle labelPosition="before" color="primary" class="stretch"
+        <mat-slide-toggle
+            labelPosition="before"
+            color="primary"
+            class="stretch"
+            (change)="extractZipFiles = $event.checked"
             >ZIP-Archive nach dem Übernehmen entpacken
         </mat-slide-toggle>
     </ng-container>

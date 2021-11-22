@@ -14,7 +14,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
 import { UploadFilesDialogComponent } from "./upload-files-dialog/upload-files-dialog.component";
-import { Transfer } from "@flowjs/ngx-flow";
+import { TransfersWithErrorInfo } from "../../../shared/upload/TransferWithErrors";
 
 @UntilDestroy()
 @Component({
@@ -200,14 +200,16 @@ export class TableTypeComponent
       })
       .afterClosed()
       .pipe(filter((result) => result))
-      .subscribe((files: Transfer[]) => this.updateTableInformation(files));
+      .subscribe((files: TransfersWithErrorInfo[]) =>
+        this.updateTableInformation(files)
+      );
   }
 
-  private updateTableInformation(files: Transfer[]) {
+  private updateTableInformation(files: TransfersWithErrorInfo[]) {
     files.forEach((file) => {
       this.dataSource.data.push({
-        title: file.name,
-        link: { asLink: false, value: file.name },
+        title: file.transfer.name,
+        link: { asLink: false, value: file.transfer.name },
       });
     });
     this.dataSource = new MatTableDataSource<any>(this.dataSource.data);

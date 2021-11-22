@@ -3,7 +3,10 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { TransfersWithErrorInfo } from "../../../../shared/upload/TransferWithErrors";
 import { UploadService } from "../../../../shared/upload/upload.service";
+import { forkJoin } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
@@ -14,6 +17,7 @@ export class UploadFilesDialogComponent implements OnInit {
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl = "/api/upload/";
   docId = null;
+  extractZipFiles = false;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent>,
@@ -35,7 +39,31 @@ export class UploadFilesDialogComponent implements OnInit {
   }
 
   submit() {
-    this.dlgRef.close(this.chosenFiles);
+    if (this.extractZipFiles) {
+      this.extractAndCloseDialog();
+    } else {
+      this.dlgRef.close(this.getSuccessfulUploadedFiles());
+    }
+  }
+
+  private getSuccessfulUploadedFiles() {
+    return this.chosenFiles.filter((file) => file.transfer.success);
+  }
+
+  private extractAndCloseDialog() {
+    forkJoin(
+      this.chosenFiles.map((file) => {
+        return this.uploadService.extractUploadedFilesOnServer(
+          this.docId,
+          file.transfer.id
+        );
+      })
+    )
+      .pipe(untilDestroyed(this))
+      .subscribe((allFiles) => {
+        console.log("allFiles", allFiles);
+        this.dlgRef.close(allFiles);
+      });
   }
 
   cancel() {
