@@ -62,6 +62,7 @@ import { GermanDateAdapter } from "../services/german-date.adapter";
 import { LinkDialogComponent } from "./types/table/link-dialog/link-dialog.component";
 import { UploadFilesDialogComponent } from "./types/table/upload-files-dialog/upload-files-dialog.component";
 import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
+import { UploadModule } from "../shared/upload/upload.module";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
@@ -189,6 +190,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DragDropModule,
     MatSlideToggleModule,
     DialogTemplateModule,
+    UploadModule,
   ],
   providers: [
     {

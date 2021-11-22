@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FileUploadModel } from "../../../+importExport/upload/fileUploadModel";
+import { FileUploadModel } from "../../../shared/upload/fileUploadModel";
 import { IgeDocument } from "../../../models/ige-document";
 
 interface LinkType {

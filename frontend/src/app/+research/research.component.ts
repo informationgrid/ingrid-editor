@@ -75,7 +75,7 @@ export class ResearchComponent implements OnInit {
       .subscribe();
 
     this.queryQuery.searchSelect$
-      .pipe(untilDestroyed(this), debounceTime(200), distinct())
+      .pipe(untilDestroyed(this), debounceTime(500), distinct())
       .subscribe(() => this.startSearch());
 
     this.queryQuery.sqlSelect$

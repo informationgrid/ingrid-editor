@@ -14,7 +14,7 @@
         >error_outline
     </mat-icon>
     <div mat-line>{{ file.transfer.name }}</div>
-    <div mat-line>{{ file.transfer.size / 1024 / 1024 | number: ".2" }} MB</div>
+    <div mat-line>{{ file.transfer.size | size }}</div>
     <div *ngIf="file.errors" mat-line class="mat-error">
         {{ file.errors.message ?? file.errors.errorText }}
     </div>

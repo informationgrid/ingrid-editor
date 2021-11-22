@@ -6,7 +6,6 @@
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
-            (analyzed)="onAnalyzeComplete($event)"
             (complete)="onFileComplete($event)"
             (chosenFiles)="chosenFiles = $event"
         ></ige-file-upload>

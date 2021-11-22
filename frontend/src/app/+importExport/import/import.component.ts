@@ -4,16 +4,12 @@ import { ImportExportService, ImportTypeInfo } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
 import { tap } from "rxjs/operators";
-import { UploadService } from "../upload/upload.service";
 import { Router } from "@angular/router";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
-import { HttpResponse } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { IgeError } from "../../models/ige-error";
-import { FileUploadModel } from "../upload/fileUploadModel";
-import { UploadComponent } from "../upload/upload.component";
-import { TransfersWithErrorInfo } from "../upload/TransferWithErrors";
+import { FileUploadModel } from "../../shared/upload/fileUploadModel";
+import { UploadComponent } from "../../shared/upload/upload.component";
+import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 
 @Component({
   selector: "ige-import",
@@ -50,7 +46,6 @@ export class ImportComponent implements OnInit {
   constructor(
     private importExportService: ImportExportService,
     config: ConfigService,
-    private uploadService: UploadService,
     private router: Router,
     private documentService: DocumentService
   ) {
@@ -95,42 +90,6 @@ export class ImportComponent implements OnInit {
     setTimeout(() => this.stepper.next());
   }
 
-  /**
-   * on file drop handler
-   */
-  onFileDropped(files: FileList) {
-    console.log(files);
-    for (let index = 0; index < files.length; index++) {
-      this.droppedFiles = [
-        ...this.droppedFiles,
-        {
-          data: files.item(index),
-          state: "in",
-          inProgress: false,
-          progress: 0,
-          canRetry: false,
-          canCancel: true,
-        },
-      ];
-    }
-  }
-
-  /**
-   * format bytes
-   * @param bytes (File size in bytes)
-   * @param decimals (Decimals point)
-   */
-  formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) {
-      return "0 Bytes";
-    }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
   cancel() {
     this.droppedFiles = [];
     this.stepper.selectedIndex = 0;
@@ -170,10 +129,5 @@ export class ImportComponent implements OnInit {
 
   openImportedDocument() {
     this.router.navigate(["/form", { id: this.importedDocId }]);
-  }
-
-  private handleError(error: IgeError): Observable<HttpResponse<any>> {
-    this.hasImportError = true;
-    throw error;
   }
 }
