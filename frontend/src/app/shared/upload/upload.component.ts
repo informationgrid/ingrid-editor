@@ -104,6 +104,7 @@ export class UploadComponent implements OnInit {
 
     this.flow.events$.pipe(untilDestroyed(this)).subscribe((event) => {
       try {
+        console.log("event:", event);
         if (this.autoupload && event.type === "filesSubmitted") {
           this.flow.upload();
         } else if (event.type === "fileError") {
@@ -117,9 +118,10 @@ export class UploadComponent implements OnInit {
           const message = event.event[1]
             ? JSON.parse(<string>event.event[1])
             : "OK";
+          this._errors[(<flowjs.FlowFile>event.event[0]).uniqueIdentifier] =
+            null;
+          this.errors.next(this._errors);
           this.complete.next(message);
-        } else {
-          console.log("other event", event);
         }
       } catch (e) {
         console.error("Error uploading file", e);
