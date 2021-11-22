@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { UploadComponent } from "./upload.component";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
+import { SizePipe } from "../../directives/size.pipe";
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
@@ -21,7 +22,7 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
     FlexModule,
     NgxFlowModule,
   ],
-  declarations: [UploadComponent, UploadItemComponent],
+  declarations: [UploadComponent, UploadItemComponent, SizePipe],
   exports: [UploadComponent],
 })
 export class UploadModule {}
