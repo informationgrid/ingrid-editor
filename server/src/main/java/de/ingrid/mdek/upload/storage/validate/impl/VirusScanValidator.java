@@ -53,6 +53,7 @@ public class VirusScanValidator implements Validator {
     private static final String CONFIG_KEY_COMMAND       = "command";
     private static final String CONFIG_KEY_VIRUS_PATTERN = "virusPattern";
     private static final String CONFIG_KEY_CLEAN_PATTERN = "cleanPattern";
+    private static final String CONFIG_KEY_TIMEOUT = "timeout";
 
     private static final String PLACEHOLDER_FILE = "%FILE%";
 
@@ -60,7 +61,7 @@ public class VirusScanValidator implements Validator {
     private Pattern virusPattern;
     private Pattern cleanPattern;
 
-    private final ExternalCommand scanner = new ExternalCommand();
+    private ExternalCommand scanner = new ExternalCommand();
 
     private static final Logger log = LogManager.getLogger(VirusScanValidator.class);
 
@@ -71,6 +72,11 @@ public class VirusScanValidator implements Validator {
             if (!configuration.containsKey(parameter)) {
                 throw new IllegalArgumentException("Configuration value '"+parameter+"' is required.");
             }
+        }
+
+        // Set Timeout
+        if(configuration.containsKey(CONFIG_KEY_TIMEOUT)){
+            scanner = new ExternalCommand(Integer.parseInt(configuration.get(CONFIG_KEY_TIMEOUT)));
         }
 
         // command parameter
