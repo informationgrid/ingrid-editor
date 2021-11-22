@@ -32,17 +32,21 @@ export class UploadItemComponent implements OnInit {
   }
 
   overwrite() {
-    this.file.transfer.flowFile.flowObj.opts.query = { replace: true };
-    this.file.transfer.flowFile.retry();
+    this.retryWithParameter({ replace: true });
   }
 
   rename() {
-    this.file.transfer.flowFile.flowObj.opts.query = { replace: false };
-    this.file.transfer.flowFile.retry();
+    this.retryWithParameter({ replace: false });
   }
 
   useExisting() {
     // TODO: set query param
+    this.retryWithParameter({});
+  }
+
+  private retryWithParameter(param: any) {
+    this.file.transfer.flowFile.flowObj.opts.query = param;
     this.file.transfer.flowFile.retry();
+    this.file.transfer.flowFile.flowObj.opts.query = {};
   }
 }
