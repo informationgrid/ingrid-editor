@@ -129,7 +129,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .subscribe((result) => {
         if (result) {
           this.codelistService
-            .resetCodelist(this.selectedCodelist?.id ?? null)
+            .resetCodelist(this.selectedCodelist.id)
             .subscribe();
         }
       });
@@ -178,5 +178,30 @@ export class CatalogCodelistsComponent implements OnInit {
       }
       this.selectCodelist(this.initialValue);
     }
+  }
+
+  resetAllCodelists() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie alle Codelisten wirklich zurücksetzen?`,
+          title: "Zurücksetzen",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Zurücksetzen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.codelistService.resetCodelist(null).subscribe();
+        }
+      });
   }
 }

@@ -162,8 +162,11 @@ class MCloudProfile : CatalogProfile {
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
             "20002" -> removeAndAddCodelist(catalogId, codelist20002)
             null -> {
+                removeAndAddCodelist(catalogId, codelist20000)
                 codelistRepo.save(codelist20000)
+                removeAndAddCodelist(catalogId, codelist20001)
                 codelistRepo.save(codelist20001)
+                removeAndAddCodelist(catalogId, codelist20002)
                 codelistRepo.save(codelist20002)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
