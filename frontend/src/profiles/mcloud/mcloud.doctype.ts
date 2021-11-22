@@ -176,7 +176,7 @@ export class McloudDoctype extends BaseDoctype {
                 },
                 {
                   key: "type",
-                  type: "input",
+                  type: "select",
                   label: "Typ",
                   templateOptions: {
                     label: "Typ",
