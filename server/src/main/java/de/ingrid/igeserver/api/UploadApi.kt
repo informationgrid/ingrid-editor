@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.security.Principal
-import javax.servlet.ServletRequest
 import javax.servlet.http.HttpServletRequest
 
 @Tag(name = "Upload", description = "the upload API")
@@ -67,5 +66,5 @@ interface UploadApi {
             principal: Principal,
             @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
             @Parameter(description = "The file to delete", required = true) @PathVariable("file") file: String
-        ): ResponseEntity<StreamingResponseBody>
+        ): ResponseEntity<Unit>
 }

@@ -24,29 +24,11 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import de.ingrid.igeserver.model.FileInfo
-import javax.servlet.ServletRequest
 import javax.servlet.http.HttpServletRequest
-
-
-class FileInfo {
-    private val uploadedChunks: Set<Int> = HashSet()
-
-    fun isUploadFinished(flowTotalChunks: Int): Boolean {
-        return this.uploadedChunks.size == flowTotalChunks
-    }
-
-    fun containsChunk(flowChunkNumber: Int): Boolean {
-        return uploadedChunks.contains(flowChunkNumber)
-    }
-
-    fun addUploadedChunk(flowChunkNumber: Int) {
-        uploadedChunks.plus(flowChunkNumber)
-    }
-}
 
 @RestController
 @RequestMapping(path = ["/api"])
-class UploadApiController  @Autowired constructor(
+class UploadApiController @Autowired constructor(
     private val catalogService: CatalogService,
     private val storage: Storage,
     private val aclService: IgeAclService
@@ -73,10 +55,10 @@ class UploadApiController  @Autowired constructor(
         flowIdentifier: String,
         flowFilename: String,
     ): ResponseEntity<UploadResponse> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
-        if(!canWrite){
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        if (!canWrite) {
             val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
-            return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
+            return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
         }
 
         val userID = principal.getName()
@@ -88,11 +70,11 @@ class UploadApiController  @Autowired constructor(
         try {
             storage.validate(catalogId, userID, docId, file.originalFilename, size)
         } catch (ex: Exception) {
-            return  ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
         // check if file exists already
-        if(!replace) {
+        if (!replace) {
             if (storage.exists(catalogId, userID, docId, file.originalFilename)) {
                 val items: Array<StorageItem> =
                     arrayOf<StorageItem>(storage.getInfo(catalogId, userID, docId, file.originalFilename))
@@ -119,11 +101,20 @@ class UploadApiController  @Autowired constructor(
 
         if (fileInfo.isUploadFinished(flowTotalChunks)) {
             // store file
-                try {
-                    files = storage.combineParts(catalogId, userID, docId, file.originalFilename, flowIdentifier, flowTotalChunks, size, replace)
-                } finally {
-                    this.fileInfos.remove(flowIdentifier)
-                }
+            try {
+                files = storage.combineParts(
+                    catalogId,
+                    userID,
+                    docId,
+                    file.originalFilename,
+                    flowIdentifier,
+                    flowTotalChunks,
+                    size,
+                    replace
+                )
+            } finally {
+                this.fileInfos.remove(flowIdentifier)
+            }
         }
         return this.createUploadResponse(files)
     }
@@ -143,36 +134,43 @@ class UploadApiController  @Autowired constructor(
 
         // build response
         val uploadResponse = UploadResponse(Arrays.asList(*files))
-        return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.CREATED)
+        return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.CREATED)
     }
 
-    override fun extractFile(principal: Principal, docId: String, file: String, replace: Boolean): ResponseEntity<UploadResponse> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
-        if(!canWrite){
+    override fun extractFile(
+        principal: Principal,
+        docId: String,
+        file: String,
+        replace: Boolean
+    ): ResponseEntity<UploadResponse> {
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        if (!canWrite) {
             val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
-            return  ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
+            return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
         }
 
         val userID = principal.getName()
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        var files: Array<StorageItem> = arrayOf()
-
-                files = storage.extract(catalogId, userID, docId, file, replace)
+        val files = storage.extract(catalogId, userID, docId, file, replace)
 
         return this.createUploadResponse(files)
 
     }
 
-    override fun getFile(request: HttpServletRequest,principal: Principal, docId: String): ResponseEntity<StreamingResponseBody> {
+    override fun getFile(
+        request: HttpServletRequest,
+        principal: Principal,
+        docId: String
+    ): ResponseEntity<StreamingResponseBody> {
         val requestURI = request.requestURI
 
         val idx = requestURI.indexOf(docId)
-        val file = requestURI.substring(idx+docId.length+1)
+        val file = requestURI.substring(idx + docId.length + 1)
 
-        val canRead = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canRead
-        if(!canRead){
-            throw ForbiddenException.withAccessRights("No access to referenced dataset");
+        val canRead = aclService.getPermissionInfo(principal as Authentication, docId).canRead
+        if (!canRead) {
+            throw ForbiddenException.withAccessRights("No access to referenced dataset")
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -193,15 +191,15 @@ class UploadApiController  @Autowired constructor(
         val response = Response.ok(fileStream, MediaType.APPLICATION_OCTET_STREAM)
         response.header("Content-Disposition", "attachment; filename=\"$file\"")
         response.header("Content-Length", storage.getInfo(catalogId, principal.getName(), docId, file).getSize())
-        return ResponseEntity<StreamingResponseBody>(fileStream, HttpStatus.OK);
+        return ResponseEntity<StreamingResponseBody>(fileStream, HttpStatus.OK)
     }
 
-    override fun deleteFile(principal: Principal, docId: String, file: String): ResponseEntity<StreamingResponseBody> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId ?: "").canWrite
-        if(!canWrite){
-            throw ForbiddenException.withAccessRights("No access to referenced dataset");
+    override fun deleteFile(principal: Principal, docId: String, file: String): ResponseEntity<Unit> {
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        if (!canWrite) {
+            throw ForbiddenException.withAccessRights("No access to referenced dataset")
         }
 
-        return ResponseEntity<StreamingResponseBody>(null, HttpStatus.OK);
+        return ResponseEntity.ok().build()
     }
 }
