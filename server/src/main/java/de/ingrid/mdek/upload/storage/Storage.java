@@ -33,10 +33,6 @@ import java.util.List;
  * Storage defines the interface for classes, that are responsible for storing and retrieving files.
  */
 public interface Storage {
-    public enum Scope{
-
-    }
-
     /**
      * Check if a file exists
      *

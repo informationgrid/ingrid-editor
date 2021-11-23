@@ -26,6 +26,7 @@ import de.ingrid.mdek.upload.ConflictException;
 import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.Storage;
 import de.ingrid.mdek.upload.storage.StorageItem;
+import de.ingrid.mdek.upload.storage.impl.Scope;
 import de.ingrid.mdek.upload.storage.validate.IllegalNameException;
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +42,6 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.io.SequenceInputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
@@ -55,7 +55,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +88,6 @@ public class FileSystemStorage implements Storage {
     private static final String TRASH_PATH = "_trash_";
     private static final String UNSAVED_PATH = "_unsaved_";
     private static final String UNPUBLISHED_PATH = "_unpublished_";
-
-    private enum Scope{
-        UNSAVED, UNPUBLISHED, PUBLISHED, ARCHIVED, TRASH
-    }
 
     private static final String UNKNOWN_MIME_TYPE = "";
 
@@ -187,6 +182,14 @@ public class FileSystemStorage implements Storage {
     }
 
     /**
+     * returns the document directory
+     *
+     */
+    public String getDocsDir() {
+        return this.docsDir;
+    }
+
+    /**
      * Set the partial upload directory
      *
      * @param partsDir
@@ -243,12 +246,12 @@ public class FileSystemStorage implements Storage {
      */
     private List<StorageItem> listFiles(String catalog, String userID, String docID, String basePath, Scope scope) throws IOException {
         final List<StorageItem> files = new ArrayList<>();
-        Path dir = this.getRealPath(catalog, docID, null, basePath);
-        if (scope == Scope.UNSAVED) dir = this.getUnsavedPath(catalog, userID, docID, null, basePath);
-        else if (scope == Scope.UNPUBLISHED) dir = this.getUnpublishedPath(catalog, docID, null, basePath);
-        else if (scope == Scope.ARCHIVED) dir = this.getArchivePath(catalog, docID, null, basePath);
-        else if (scope == Scope.TRASH) dir = this.getTrashPath(catalog, docID, null, basePath);
-        final Path archivePath = this.getArchivePath(catalog, docID, null, basePath);
+        Path dir = this.getRealPath(catalog, docID, "", basePath);
+        if (scope == Scope.UNSAVED) dir = this.getUnsavedPath(catalog, userID, docID, "", basePath);
+        else if (scope == Scope.UNPUBLISHED) dir = this.getUnpublishedPath(catalog, docID, "", basePath);
+        else if (scope == Scope.ARCHIVED) dir = this.getArchivePath(catalog, docID, "", basePath);
+        else if (scope == Scope.TRASH) dir = this.getTrashPath(catalog, docID, "", basePath);
+        final Path archivePath = this.getArchivePath(catalog, docID, "", basePath);
         final Path dirPath = dir;
 
         if (dirPath.toFile().exists()) {
@@ -256,7 +259,10 @@ public class FileSystemStorage implements Storage {
                 stream
                 .forEach(p -> {
                     try {
-                        files.add(this.getFileInfo(catalog, userID, docID, p.relativize(dirPath).toString(), basePath, scope));
+                        if(!p.toFile().isDirectory())
+                        {
+                            files.add(this.getFileInfo(catalog, userID, docID, dirPath.relativize(p).toString(), basePath, scope));
+                        }
                     }
                     catch (final IOException e) {
                         throw new UncheckedIOException(e);
@@ -847,7 +853,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getRealPath(final String catalog, final String path, final String file, final String basePath) {
+    Path getRealPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
@@ -861,7 +867,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getUnsavedPath(final String catalog, final String userID, final String path, final String file, final String basePath) {
+    Path getUnsavedPath(final String catalog, final String userID, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNSAVED_PATH,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(userID, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
@@ -874,7 +880,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
+    Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNPUBLISHED_PATH,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
@@ -886,7 +892,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getRealPath(final String file, final String basePath) {
+    Path getRealPath(final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
@@ -898,7 +904,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getTrashPath(final String catalog, final String path, final String file, final String basePath) {
+    Path getTrashPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, TRASH_PATH,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
@@ -911,7 +917,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    private Path getArchivePath(final String catalog, final String path, final String file, final String basePath) {
+    Path getArchivePath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, ARCHIVE_PATH,
             this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
@@ -979,8 +985,8 @@ public class FileSystemStorage implements Storage {
         // get last modified date of file and take care of timezone correctly, since LocalDateTime does not store time zone information (#745)
         final LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(Files.getLastModifiedTime(filePath).toInstant(), TimeZone.getDefault().toZoneId());
 
-        return new FileSystemItem(this, itemPath, itemFile, mimeType, fileSize, lastModifiedTime,
-                isArchived, filePath);
+        return new FileSystemItem(this, catalog, docID, userID, itemPath, itemFile, mimeType, fileSize, lastModifiedTime,
+                isArchived, scope);
     }
 
     /**

@@ -43,14 +43,17 @@ public class FileSystemItem implements StorageItem {
     // separator used in URI paths
     public static final String URI_PATH_SEPARATOR = "/";
 
-    private Storage storage;
+    private FileSystemStorage storage;
+    private String catalog;
+    private String document;
+    private String user;
     private String path;
     private String file;
     private String type;
     private long size;
     private LocalDateTime lastModifiedTime;
     private boolean isArchived;
-    private Path realPath;
+    private Scope state;
 
     /**
      * Constructor
@@ -66,18 +69,21 @@ public class FileSystemItem implements StorageItem {
      * @param size
      * @param lastModifiedTime
      * @param isArchived
-     * @param realPath
+     * @param state
      */
-    public FileSystemItem(final Storage storage, final String path, final String file, final String type, final long size,
-            final LocalDateTime lastModifiedTime, final boolean isArchived, final Path realPath) {
+    public FileSystemItem(final FileSystemStorage storage, final String catalog, final String document, final String user, final String path, final String file, final String type, final long size,
+            final LocalDateTime lastModifiedTime, final boolean isArchived, final Scope state) {
         this.storage = storage;
+        this.catalog = catalog;
+        this.document = document;
+        this.user = user;
         this.path = path;
         this.file = file;
         this.type = type;
         this.size = size;
         this.lastModifiedTime = lastModifiedTime;
         this.isArchived = isArchived;
-        this.realPath = realPath;
+        this.state = state;
     }
 
     @Override
@@ -133,14 +139,13 @@ public class FileSystemItem implements StorageItem {
 
     @Override
     public String getNextName() {
-        /*
-        if (this.storage.exists(null, null, this.path, this.file)) {
+        if (this.storage.exists(catalog, user, this.document, Path.of(this.path, this.file).toString())) {
             final List<String> parts = new LinkedList<>(Arrays.asList(this.file.split("\\.")));
             final String extension = parts.size() > 1 ? parts.remove(parts.size()-1) : "";
             final String filename = String.join(".", parts);
             String tmpFile = this.file;
             int i = 0;
-            while (this.storage.exists(null, null, this.path, tmpFile)) {
+            while (this.storage.exists(catalog, user, this.document, Path.of(this.path, tmpFile).toString())) {
                 i++;
                 tmpFile = filename + "-" + i;
                 if (extension.length() > 0) {
@@ -149,16 +154,19 @@ public class FileSystemItem implements StorageItem {
             }
             return tmpFile;
         }
-
-         */
-        return this.file;
+        return Path.of(this.path, this.file).toString();
     }
 
     /**
      * Get the real absolute path of the file in the file system
      * @return Path
      */
-    public Path getRealPath() {
-        return this.realPath;
+    Path getRealPath() {
+        Path realPath = storage.getRealPath(catalog, document, file, storage.getDocsDir());
+        if (this.state == Scope.UNSAVED) realPath = storage.getUnsavedPath(catalog, user, document, file, storage.getDocsDir());
+        else if (this.state == Scope.UNPUBLISHED) realPath = storage.getUnpublishedPath(catalog, document, file, storage.getDocsDir());
+        else if (this.state == Scope.ARCHIVED) realPath = storage.getArchivePath(catalog, document, file, storage.getDocsDir());
+        else if (this.state == Scope.TRASH) realPath = storage.getTrashPath(catalog, document, file, storage.getDocsDir());
+        return realPath;
     }
 }

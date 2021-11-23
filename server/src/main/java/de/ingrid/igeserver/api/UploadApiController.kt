@@ -200,6 +200,11 @@ class UploadApiController @Autowired constructor(
             throw ForbiddenException.withAccessRights("No access to referenced dataset")
         }
 
+        val userID = principal.getName()
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        this.storage.delete(catalogId, userID, docId, file);
+
         return ResponseEntity.ok().build()
     }
 }
