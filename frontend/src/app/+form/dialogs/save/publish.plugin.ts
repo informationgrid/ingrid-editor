@@ -254,6 +254,6 @@ export class PublishPlugin extends SaveBase {
   }
 
   private unpublish(id: string) {
-    this.documentService.unpublish(id).subscribe();
+    this.documentService.unpublish(id, this.forAddress).subscribe();
   }
 }
