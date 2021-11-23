@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FlowDirective } from "@flowjs/ngx-flow";
+import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 import { UploadService } from "../upload.service";
 
@@ -14,6 +14,7 @@ export class UploadItemComponent implements OnInit {
   @Input() showOnlyProgress = false;
 
   @Output() remove = new EventEmitter<string>();
+  @Output() useExisting = new EventEmitter<Transfer>();
 
   constructor(private uploadService: UploadService) {}
 
@@ -38,11 +39,6 @@ export class UploadItemComponent implements OnInit {
 
   rename() {
     this.retryWithParameter({ replace: false });
-  }
-
-  useExisting() {
-    // TODO: set query param
-    this.retryWithParameter({});
   }
 
   private async retryWithParameter(param: any) {

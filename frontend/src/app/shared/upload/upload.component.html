@@ -33,6 +33,7 @@
                 [flow]="flow"
                 [showOnlyProgress]="showOnlyProgress"
                 (remove)="removeFile.next($event)"
+                (useExisting)="updateFileToUseExisting($event)"
             ></ige-upload-item>
         </mat-list>
 

@@ -13,7 +13,7 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { FlowDirective } from "@flowjs/ngx-flow";
+import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
@@ -144,5 +144,11 @@ export class UploadComponent implements OnInit {
 
   getIdentifier(index, item: TransfersWithErrorInfo) {
     return item.transfer.id;
+  }
+
+  updateFileToUseExisting(transfer: Transfer) {
+    this._errors[transfer.id] = null;
+    transfer.success = true;
+    this.errors.next(this._errors);
   }
 }

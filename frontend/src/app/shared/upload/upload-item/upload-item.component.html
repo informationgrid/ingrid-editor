@@ -56,7 +56,11 @@
         <button mat-button color="primary" (click)="rename()">
             Umbenennen
         </button>
-        <button mat-button color="primary" (click)="useExisting()">
+        <button
+            mat-button
+            color="primary"
+            (click)="useExisting.next(file.transfer)"
+        >
             Existierende verwenden
         </button>
     </div>
