@@ -20,7 +20,7 @@ export class UploadItemComponent implements OnInit {
 
   cancelFile() {
     this.file.transfer.flowFile.cancel();
-    this.remove.next(this.file.transfer.id);
+    this.remove.next(this.file.transfer.name);
   }
 
   pause() {

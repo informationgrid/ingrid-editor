@@ -5,6 +5,7 @@ import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable, Input } from "@angular/core";
 import { CodelistStore } from "../../app/store/codelist/codelist.store";
 import { map } from "rxjs/operators";
+import { FormGroup } from "@angular/forms";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -165,9 +166,13 @@ export class McloudDoctype extends BaseDoctype {
                     label: "Link",
                     appearance: "outline",
                     required: true,
-                    formatter: (link: any) => {
+                    formatter: (link: any, form: FormGroup) => {
                       if (!link.asLink) {
-                        return `<a href="/api/upload/${link.documentID}/${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                        return `<a href="/api/upload/${form.get("_id").value}/${
+                          link.value
+                        }" target="_blank" class="no-text-transform">${
+                          link.value
+                        }</a>`;
                       } else {
                         return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       }

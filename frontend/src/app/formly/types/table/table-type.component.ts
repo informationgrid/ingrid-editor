@@ -13,8 +13,10 @@ import { ContextHelpService } from "../../../services/context-help/context-help.
 import { ConfigService } from "../../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
-import { UploadFilesDialogComponent } from "./upload-files-dialog/upload-files-dialog.component";
-import { TransfersWithErrorInfo } from "../../../shared/upload/TransferWithErrors";
+import {
+  LinkInfo,
+  UploadFilesDialogComponent,
+} from "./upload-files-dialog/upload-files-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -188,7 +190,10 @@ export class TableTypeComponent
         value?.forEach((row, index) => {
           this.formattedCell.push({});
           this.formattedCell[index][column.key] =
-            column.templateOptions.formatter(value[index][column.key]);
+            column.templateOptions.formatter(
+              value[index][column.key],
+              this.form
+            );
         })
       );
   }
@@ -200,16 +205,14 @@ export class TableTypeComponent
       })
       .afterClosed()
       .pipe(filter((result) => result))
-      .subscribe((files: TransfersWithErrorInfo[]) =>
-        this.updateTableInformation(files)
-      );
+      .subscribe((files: LinkInfo[]) => this.updateTableInformation(files));
   }
 
-  private updateTableInformation(files: TransfersWithErrorInfo[]) {
+  private updateTableInformation(files: LinkInfo[]) {
     files.forEach((file) => {
       this.dataSource.data.push({
-        title: file.transfer.name,
-        link: { asLink: false, value: file.transfer.name },
+        title: file.file,
+        link: { asLink: false, value: file.file },
       });
     });
     this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
@@ -229,5 +232,13 @@ export class TableTypeComponent
         this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
         this.updateFormControl(this.dataSource.data);
       });
+  }
+
+  update() {
+    this.value = this.formControl.value;
+  }
+
+  cancel() {
+    this.formControl.setValue(this.value);
   }
 }

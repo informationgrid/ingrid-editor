@@ -5,6 +5,11 @@ import { TransfersWithErrorInfo } from "../../../../shared/upload/TransferWithEr
 import { UploadService } from "../../../../shared/upload/upload.service";
 import { forkJoin } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { map } from "rxjs/operators";
+
+export interface LinkInfo {
+  file: string;
+}
 
 @UntilDestroy()
 @Component({
@@ -20,7 +25,7 @@ export class UploadFilesDialogComponent implements OnInit {
   extractZipFiles = false;
 
   constructor(
-    private dlgRef: MatDialogRef<UploadFilesDialogComponent>,
+    private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
     formStateService: FormStateService,
     private uploadService: UploadService
   ) {
@@ -46,8 +51,10 @@ export class UploadFilesDialogComponent implements OnInit {
     }
   }
 
-  private getSuccessfulUploadedFiles() {
-    return this.chosenFiles.filter((file) => file.transfer.success);
+  private getSuccessfulUploadedFiles(): LinkInfo[] {
+    return this.chosenFiles
+      .filter((file) => file.transfer.success)
+      .map((file) => ({ file: file.transfer.name }));
   }
 
   private extractAndCloseDialog() {
@@ -55,11 +62,14 @@ export class UploadFilesDialogComponent implements OnInit {
       this.chosenFiles.map((file) => {
         return this.uploadService.extractUploadedFilesOnServer(
           this.docId,
-          file.transfer.id
+          file.transfer.name
         );
       })
     )
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        map(UploadFilesDialogComponent.convertExtractResponse)
+      )
       .subscribe((allFiles) => {
         console.log("allFiles", allFiles);
         this.dlgRef.close(allFiles);
@@ -68,8 +78,22 @@ export class UploadFilesDialogComponent implements OnInit {
 
   cancel() {
     this.chosenFiles.forEach((file) =>
-      this.removeUploadedFile(file.transfer.id)
+      this.removeUploadedFile(file.transfer.name)
     );
     this.dlgRef.close();
+  }
+
+  private static convertExtractResponse(
+    response: { files: any[] }[]
+  ): LinkInfo[] {
+    return UploadFilesDialogComponent.flatten(
+      response.map((zipFile) =>
+        zipFile.files.map((file) => ({ file: file.file }))
+      )
+    );
+  }
+
+  private static flatten<T>(arr: T[][]): T[] {
+    return ([] as T[]).concat(...arr);
   }
 }
