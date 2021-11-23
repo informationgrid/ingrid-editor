@@ -1,11 +1,12 @@
 import { Transfer } from "@flowjs/ngx-flow";
+import { UploadError } from "./upload.service";
 
 export class TransfersWithErrorInfo {
-  errors: any;
+  error: UploadError;
   transfer: Transfer;
 
-  constructor(errors: any, transfer: Transfer) {
-    this.errors = errors;
+  constructor(error: any, transfer: Transfer) {
+    this.error = error;
     this.transfer = transfer;
   }
 }

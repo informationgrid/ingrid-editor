@@ -34,6 +34,7 @@
                 [showOnlyProgress]="showOnlyProgress"
                 (remove)="removeFile.next($event)"
                 (useExisting)="updateFileToUseExisting($event)"
+                (retryUpload)="retryUpload(file, $event)"
             ></ige-upload-item>
         </mat-list>
 

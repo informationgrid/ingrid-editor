@@ -19,7 +19,7 @@ import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { TransfersWithErrorInfo } from "./TransferWithErrors";
-import { UploadService } from "./upload.service";
+import { UploadError, UploadService } from "./upload.service";
 
 @UntilDestroy()
 @Component({
@@ -62,8 +62,8 @@ export class UploadComponent implements OnInit {
   @ViewChild("flow") flow: FlowDirective;
 
   flowConfig: flowjs.FlowOptions;
-  _errors = {};
-  errors = new BehaviorSubject<any>({});
+  _errors: { [x: string]: UploadError } = {};
+  errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
 
   constructor(private uploadService: UploadService) {}
@@ -108,15 +108,13 @@ export class UploadComponent implements OnInit {
           );
           this.flow.upload();
         } else if (event.type === "fileError") {
-          this._errors[(<flowjs.FlowFile>event.event[0]).uniqueIdentifier] =
-            JSON.parse(<string>event.event[1]);
-          this.errors.next(this._errors);
+          this.handleUploadError(event.event);
         } else if (event.type === "fileSuccess") {
-          const messageSuccess = event.event[1]
-            ? JSON.parse(<string>event.event[1])
-            : "OK";
-          this._errors[(<flowjs.FlowFile>event.event[0]).uniqueIdentifier] =
-            null;
+          const messageSuccess = this.getMessageFromResponse(
+            event.event[2].xhr
+          );
+          const fileIdentifier = this.getFileIdentifier(event.event);
+          this._errors[fileIdentifier] = null;
           this.errors.next(this._errors);
           this.complete.next(messageSuccess);
         }
@@ -127,7 +125,7 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  isDragged = false; // new BehaviorSubject<boolean>(false);
+  isDragged = false;
   counter = 0;
 
   setDragged(isDragged: boolean) {
@@ -150,5 +148,41 @@ export class UploadComponent implements OnInit {
     this._errors[transfer.id] = null;
     transfer.success = true;
     this.errors.next(this._errors);
+  }
+
+  private handleUploadError(event: flowjs.FlowEventFromEventName<any>) {
+    const errorResponse = event[2].xhr;
+
+    const fileIdentifier = this.getFileIdentifier(event);
+
+    const detail = this.getMessageFromResponse(errorResponse);
+
+    this._errors[fileIdentifier] = new UploadError(
+      errorResponse.status,
+      detail.message,
+      detail.errorData
+    );
+    this.errors.next(this._errors);
+  }
+
+  private getFileIdentifier(event: flowjs.FlowEventFromEventName<any>) {
+    return (<flowjs.FlowFile>event[0]).uniqueIdentifier;
+  }
+
+  private getMessageFromResponse(error: XMLHttpRequest): any {
+    try {
+      return JSON.parse(error.responseText);
+    } catch (ex) {
+      return { message: error.responseText };
+    }
+  }
+
+  async retryUpload(file: TransfersWithErrorInfo, parameter: any) {
+    this._errors[file.transfer.id] = null;
+    const flowFile = file.transfer.flowFile;
+    await this.uploadService.updateAuthenticationToken([flowFile]);
+    flowFile.flowObj.opts.query = parameter;
+    flowFile.retry();
+    flowFile.flowObj.opts.query = {};
   }
 }

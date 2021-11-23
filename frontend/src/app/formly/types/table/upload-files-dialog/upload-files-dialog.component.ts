@@ -67,7 +67,6 @@ export class UploadFilesDialogComponent implements OnInit {
         map(UploadFilesDialogComponent.convertExtractResponse)
       )
       .subscribe((allFiles) => {
-        console.log("allFiles", allFiles);
         this.dlgRef.close(allFiles);
       });
   }

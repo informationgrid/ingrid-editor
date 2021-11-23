@@ -3,6 +3,32 @@ import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
 import { KeycloakService } from "keycloak-angular";
 
+export class UploadError {
+  status: number;
+  message: string;
+  data: any;
+
+  constructor(status: number, message: string, data: any) {
+    this.status = status;
+    this.message = this.translate(status, message);
+    this.data = data;
+  }
+
+  translate(status: number, message: string) {
+    switch (status) {
+      case 401:
+        return "Sie haben keine Berechtigung, die Datei hochzuladen.";
+    }
+
+    switch (message) {
+      case "The file already exists.":
+        return "Die Datei existiert bereits.";
+      default:
+        return message;
+    }
+  }
+}
+
 @Injectable({
   providedIn: "root",
 })

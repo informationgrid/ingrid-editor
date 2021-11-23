@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
-import { UploadService } from "../upload.service";
 
 @Component({
   selector: "ige-upload-item",
@@ -15,8 +14,9 @@ export class UploadItemComponent implements OnInit {
 
   @Output() remove = new EventEmitter<string>();
   @Output() useExisting = new EventEmitter<Transfer>();
+  @Output() retryUpload = new EventEmitter<any>();
 
-  constructor(private uploadService: UploadService) {}
+  constructor() {}
 
   ngOnInit(): void {}
 
@@ -34,18 +34,14 @@ export class UploadItemComponent implements OnInit {
   }
 
   overwrite() {
-    this.retryWithParameter({ replace: true });
+    this.retryUpload.next({ replace: true });
   }
 
   rename() {
-    this.retryWithParameter({ replace: false });
+    this.retryUpload.next({ replace: false });
   }
 
-  private async retryWithParameter(param: any) {
-    const flowFile = this.file.transfer.flowFile;
-    await this.uploadService.updateAuthenticationToken([flowFile]);
-    flowFile.flowObj.opts.query = param;
-    flowFile.retry();
-    flowFile.flowObj.opts.query = {};
+  retry() {
+    this.retryUpload.next();
   }
 }
