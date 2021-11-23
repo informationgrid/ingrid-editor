@@ -37,17 +37,6 @@ public interface Storage {
 
     }
 
-
-    /**
-     * List all files for a Dataset recursively
-     *
-     * @param userID The ID of the current User, relevant for unsaved Scope
-     * @param datasetID The UUID of the dataset
-     * @return StorageItem[]
-     * @throws IOException
-     */
-	StorageItem[] list(String userID, String datasetID) throws IOException;
-
     /**
      * Check if a file exists
      *
