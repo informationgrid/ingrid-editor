@@ -209,14 +209,28 @@ export class TableTypeComponent
   }
 
   private updateTableInformation(files: LinkInfo[]) {
-    files.forEach((file) => {
-      this.dataSource.data.push({
-        title: file.file,
-        link: { asLink: false, value: file.file },
-      });
-    });
+    files
+      .filter((file) => this.isNotInTable(file))
+      .forEach((file) => this.addToDatasource(file));
+
     this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
     this.updateFormControl(this.dataSource.data);
+  }
+
+  private addToDatasource(file: LinkInfo) {
+    this.dataSource.data.push({
+      title: file.file,
+      link: { asLink: false, value: file.file },
+    });
+  }
+
+  private isNotInTable(file: LinkInfo) {
+    return (
+      this.dataSource.data.findIndex(
+        (tableItem) =>
+          !tableItem.link.asLink && tableItem.link.value === file.file
+      ) === -1
+    );
   }
 
   showAddLinkDialog() {
