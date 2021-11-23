@@ -100,8 +100,10 @@ describe('General create documents/folders', () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Unterordner' + Utils.randomString();
 
+      cy.intercept('POST', '/api/datasets**').as('getFile');
       DocumentPage.createFolder(folderName, [parentFolder]);
 
+      cy.wait('@getFile');
       Tree.containsNodeWithFolderTitle(folderName, 2);
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
     });
