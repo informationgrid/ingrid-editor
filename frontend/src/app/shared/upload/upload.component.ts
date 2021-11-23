@@ -15,10 +15,11 @@ import {
 } from "@angular/animations";
 import { FlowDirective } from "@flowjs/ngx-flow";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { map, skip, tap } from "rxjs/operators";
+import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { TransfersWithErrorInfo } from "./TransferWithErrors";
+import { UploadService } from "./upload.service";
 
 @UntilDestroy()
 @Component({
@@ -65,7 +66,7 @@ export class UploadComponent implements OnInit {
   errors = new BehaviorSubject<any>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
 
-  constructor() {}
+  constructor(private uploadService: UploadService) {}
 
   ngOnInit() {
     if (!this.target) {
@@ -85,10 +86,6 @@ export class UploadComponent implements OnInit {
     combineLatest([this.errors, this.flow.transfers$])
       .pipe(
         untilDestroyed(this),
-        tap((result) => {
-          console.log("Error", result[0]);
-          console.log("Transfers", result[1]);
-        }),
         skip(1), // do not use initial value
         map((result) =>
           result[1].transfers.map(
@@ -102,29 +99,30 @@ export class UploadComponent implements OnInit {
         this.chosenFiles.next(result);
       });
 
-    this.flow.events$.pipe(untilDestroyed(this)).subscribe((event) => {
+    this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
         console.log("event:", event);
         if (this.autoupload && event.type === "filesSubmitted") {
+          await this.uploadService.updateAuthenticationToken(
+            <flowjs.FlowFile[]>event.event[0]
+          );
           this.flow.upload();
         } else if (event.type === "fileError") {
-          console.log(event);
-          const message = JSON.parse(<string>event.event[1]);
-          console.log("Event:", message);
           this._errors[(<flowjs.FlowFile>event.event[0]).uniqueIdentifier] =
-            message;
+            JSON.parse(<string>event.event[1]);
           this.errors.next(this._errors);
         } else if (event.type === "fileSuccess") {
-          const message = event.event[1]
+          const messageSuccess = event.event[1]
             ? JSON.parse(<string>event.event[1])
             : "OK";
           this._errors[(<flowjs.FlowFile>event.event[0]).uniqueIdentifier] =
             null;
           this.errors.next(this._errors);
-          this.complete.next(message);
+          this.complete.next(messageSuccess);
         }
       } catch (e) {
         console.error("Error uploading file", e);
+        throw new IgeError(e);
       }
     });
   }

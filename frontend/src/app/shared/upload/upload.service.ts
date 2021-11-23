@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
+import { KeycloakService } from "keycloak-angular";
 
 @Injectable({
   providedIn: "root",
@@ -8,7 +9,11 @@ import { ConfigService } from "../../services/config/config.service";
 export class UploadService {
   private backendUrl: string;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+    private keycloak: KeycloakService
+  ) {
     this.backendUrl = configService.getConfiguration().backendUrl;
   }
 
@@ -18,5 +23,16 @@ export class UploadService {
 
   extractUploadedFilesOnServer(docId: string, fileId: string) {
     return this.http.get(`${this.backendUrl}upload/extract/${docId}/${fileId}`);
+  }
+
+  async updateAuthenticationToken(flowFiles: flowjs.FlowFile[]) {
+    if (this.keycloak.isTokenExpired()) {
+      await this.keycloak.updateToken();
+    }
+    flowFiles.forEach((file) => {
+      file.flowObj.opts.headers = {
+        Authorization: "Bearer " + this.keycloak.getKeycloakInstance().token,
+      };
+    });
   }
 }

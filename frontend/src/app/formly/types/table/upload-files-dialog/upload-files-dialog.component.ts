@@ -35,10 +35,6 @@ export class UploadFilesDialogComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onFileComplete() {
-    console.log(this.droppedFiles[0]);
-  }
-
   removeUploadedFile(fileId: string) {
     this.uploadService.deleteUploadedFile(this.docId, fileId);
   }

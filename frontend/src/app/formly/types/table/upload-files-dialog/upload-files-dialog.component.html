@@ -7,7 +7,6 @@
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
-            (complete)="onFileComplete()"
             (chosenFiles)="chosenFiles = $event"
             (removeFile)="removeUploadedFile($event)"
         ></ige-file-upload>
