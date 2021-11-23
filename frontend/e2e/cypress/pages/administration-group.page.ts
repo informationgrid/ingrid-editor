@@ -44,7 +44,7 @@ export class AdminGroupPage extends BasePage {
   }
 
   static selectGroup(groupName: string) {
-    cy.intercept('GET', '/api/groups/*').as('fetchGroupRequest');
+    cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
     cy.get('groups-table').contains(groupName).click();
     cy.wait('@fetchGroupRequest');
     cy.get('#formRoles').should('be.visible');
