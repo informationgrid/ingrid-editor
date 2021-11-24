@@ -100,7 +100,7 @@ export class AdminGroupPage extends BasePage {
   static addDocumentToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');
-    cy.intercept('GET', /address=false/, {
+    cy.intercept('GET', '/api/datasets/**', {
       statusCode: 200,
       body: {
         title: docName
