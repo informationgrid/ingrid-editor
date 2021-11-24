@@ -1,5 +1,6 @@
 import { BasePage, UserAndRights } from './base.page';
 import Chainable = Cypress.Chainable;
+import { DashboardPage } from './dashboard.page';
 
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
@@ -208,6 +209,50 @@ export class AdminUserPage extends BasePage {
     AdminUserPage.addNewUserRole(userRole);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.confirmAddUserDialog();
+  }
+
+  static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {
+    //Here we want to wait after user creation to get the email
+    //Because it takes some time to receive welcoming email
+    //we are unable to intercept the call, so we added random wait time
+    cy.wait(5000);
+    // get email and extract the password
+    cy.task('getLastEmail', userEmail)
+      .its('body')
+      .then(body => {
+        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+
+        // Extract the password
+        let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
+        let psw = bodyArray[1].split('\n')[0].trim();
+
+        cy.kcLogout();
+
+        debugger;
+        // Here we have to reload otherwise the because logout does not redirect to login page
+        cy.reload();
+        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
+
+        cy.get('#username').type(userLogIn);
+        cy.get('#password').type(psw);
+        cy.get('#kc-login').click();
+        cy.wait(1000);
+
+        cy.get('#kc-content-wrapper').should('contain', 'Sie müssen Ihr Passwort ändern,');
+
+        // login and check for the user name
+        cy.get('#password-new').type(userLogIn);
+        cy.get('#password-confirm').type(userLogIn);
+        cy.intercept('GET', 'api/info/currentUser').as('getUser');
+        cy.get('#kc-login').click();
+        cy.wait('@getUser');
+        if (userRole != 'Autor') {
+          DashboardPage.visit();
+        }
+        cy.get('.welcome').contains('Willkommen');
+        cy.get('[data-cy="header-profile-button"]').click();
+        cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
+      });
   }
 }
 

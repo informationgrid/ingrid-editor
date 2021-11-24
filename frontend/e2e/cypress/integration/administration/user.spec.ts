@@ -478,38 +478,26 @@ describe('User', () => {
     cy.get('user-table').should('contain', userLogIn + ' ' + userLogIn);
   });
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+  it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
     AdminUserPage.visit();
 
-    let userLogIn = 'new-user-meta-admin';
-    let userEmail = 'new-user-meta-admin@wemove.com';
+    let firstUserLogIn = 'first-new-meta' + Date.now().toString();
+    let firstUserEmail = 'first-new-meta' + Date.now().toString() + '@wemove.com';
+    let secondUserLogIn = 'second-new-meta' + Date.now().toString();
+    let secondUserEmail = 'second-new-meta' + Date.now().toString() + '@wemove.com';
     let userRole = 'Metadaten-Administrator';
-    var psw = '';
 
-    AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
+    // create first user
+    AdminUserPage.createNewUser(firstUserLogIn, firstUserEmail, userRole);
+    //  extract and update first user password then login
+    AdminUserPage.extractAndResetNewUserPassword(firstUserLogIn, firstUserEmail, userRole);
 
-    // get email and extract the password
-    cy.task('getLastEmail', userEmail)
-      .its('body')
-      .then(body => {
-        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+    AdminUserPage.visit();
 
-        psw = body.substring(body.indexOf('Passwort: ') + 'Passwort: '.length, body.indexOf('(muss') - 1);
-
-        cy.kcLogout();
-        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
-
-        cy.get('#username').type(userLogIn);
-        cy.get('#password').type(psw);
-        cy.get('#kc-login').click();
-
-        cy.get('#kc-header-wrapper').should('contain', 'Update password');
-        // create new user for the created user here
-        AdminUserPage.visit();
-
-        let userNewLogIn = 'new-user-meta-admin';
-        let userNewEmail = 'new-user-meta-admin@wemove.com';
-      });
+    // create second user
+    AdminUserPage.createNewUser(secondUserLogIn, secondUserEmail, userRole);
+    // extract and update second user password then login
+    AdminUserPage.extractAndResetNewUserPassword(secondUserLogIn, secondUserEmail, userRole);
   });
 
   //TODO: Verification emails for user!
