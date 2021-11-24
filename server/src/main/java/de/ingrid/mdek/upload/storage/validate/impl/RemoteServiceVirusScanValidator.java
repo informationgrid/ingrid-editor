@@ -222,7 +222,7 @@ public class RemoteServiceVirusScanValidator implements Validator {
     }
 
     @Override
-    public void validate(final String path, final String file, final long size, final Path data, final boolean isArchiveContent) throws ValidationException {
+    public void validate(final String path, final String file, final long size, final long currentSize, final Path data, final boolean isArchiveContent) throws ValidationException {
         if (data == null) {
             return;
         }

@@ -48,10 +48,10 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SizeValidator implements Validator {
 
     private static final String CONFIG_KEY_MAX_FILE_SIZE = "maxFileSize";
-    private static final String CONFIG_KEY_MAX_DIR_SIZE  = "maxDirSize";
+    private static final String CONFIG_KEY_MAX_DIR_SIZE  = "maxDatasetSize";
 
     private Long maxFileSize = -1L;
-    private Long maxDirSize = -1L;
+    private Long maxDatasetSize = -1L;
 
     private static final Logger log = LogManager.getLogger(SizeValidator.class);
 
@@ -76,7 +76,7 @@ public class SizeValidator implements Validator {
         // max directory size parameter
         final String maxDirSizeStr = configuration.get(CONFIG_KEY_MAX_DIR_SIZE);
         try {
-            this.maxDirSize = Long.parseLong(maxDirSizeStr);
+            this.maxDatasetSize = Long.parseLong(maxDirSizeStr);
         }
         catch (Exception e) {
             throw new IllegalArgumentException("Configuration value 'maxDirSize' is not a valid number.", e);
@@ -84,7 +84,7 @@ public class SizeValidator implements Validator {
     }
 
     @Override
-    public void validate(final String path, final String file, final long size, final Path data, final boolean isArchiveContent) throws ValidationException {
+    public void validate(final String path, final String file, final long size, final long currentSize, final Path data, final boolean isArchiveContent) throws ValidationException {
         final Path targetPath = Paths.get(path, file);
 
         try {
@@ -102,14 +102,13 @@ public class SizeValidator implements Validator {
                 }
             }
 
-            if (maxDirSize != -1) {
+            if (maxDatasetSize != -1) {
                 // reference directory for maxDirSize parameter
                 final Path rootPath = Paths.get(path);
                 // sum sizes of all files in the root directory
-                long usedSize = getSize(rootPath, targetPath);
-                if (fileSize + usedSize > maxDirSize) {
-                    throw new IllegalSizeException("The directory size exceeds the maximum size of " + maxDirSize + " bytes.", path+"/"+file,
-                            IllegalSizeException.LimitType.DIRECTORY, maxDirSize, fileSize + usedSize);
+                if (fileSize + currentSize > maxDatasetSize) {
+                    throw new IllegalSizeException("The dataset size exceeds the maximum size of " + maxDatasetSize + " bytes.", path+"/"+file,
+                            IllegalSizeException.LimitType.DIRECTORY, maxDatasetSize, fileSize + currentSize);
                 }
             }
         }

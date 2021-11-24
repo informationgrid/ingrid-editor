@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import de.ingrid.igeserver.model.FileInfo
+import java.net.URLDecoder
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -112,6 +113,8 @@ class UploadApiController @Autowired constructor(
                     size,
                     replace
                 )
+            }  catch (ex: Exception) {
+                return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
             } finally {
                 this.fileInfos.remove(flowIdentifier)
             }
@@ -166,7 +169,7 @@ class UploadApiController @Autowired constructor(
         val requestURI = request.requestURI
 
         val idx = requestURI.indexOf(docId)
-        val file = requestURI.substring(idx + docId.length + 1)
+        val file = URLDecoder.decode(requestURI.substring(idx + docId.length + 1), "UTF-8")
 
         val canRead = aclService.getPermissionInfo(principal as Authentication, docId).canRead
         if (!canRead) {

@@ -49,10 +49,13 @@ import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -131,7 +135,7 @@ public class FileSystemStorage implements Storage {
         public void initialize(final Map<String, String> configuration) throws IllegalArgumentException {}
 
         @Override
-        public void validate(final String path, final String file, final long size, final Path data, final boolean isArchiveContent) throws ValidationException {
+        public void validate(final String path, final String file, final long size, final long currentSize, final Path data, final boolean isArchiveContent) throws ValidationException {
             final Path filePath = Paths.get(path, file);
             final Iterator<Path> it = filePath.iterator();
             while(it.hasNext()) {
@@ -289,9 +293,10 @@ public class FileSystemStorage implements Storage {
 
     @Override
     public void validate(final String catalog, final String userID, final String path, final String file, final long size) {
-        final String validatePath = Paths.get(this.docsDir, path).toString();
+        final String validatePath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir).toString();
+        final long datasetSize = getDatasetSize(catalog, userID, path);
         for (final Validator validator : this.validators) {
-            validator.validate(validatePath, file, size, null, false);
+            validator.validate(validatePath, file, size, datasetSize, null, false);
         }
     }
 
@@ -332,10 +337,11 @@ public class FileSystemStorage implements Storage {
         final Path tmpFile = Files.createTempFile(Paths.get(this.tempDir), TMP_FILE_PREFIX, null);
         Files.copy(data, tmpFile, StandardCopyOption.REPLACE_EXISTING);
 
-        final String validatePath = Paths.get(this.docsDir, path).toString();
+        final String validatePath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir).toString();
+        final long datasetSize = getDatasetSize(catalog, userID, path);
         try {
             for (final Validator validator : this.validators) {
-                validator.validate(validatePath, file, size, tmpFile, false);
+                validator.validate(validatePath, file, size, datasetSize, tmpFile, false);
             }
         }
         catch (final ValidationException ex) {
@@ -1006,5 +1012,57 @@ public class FileSystemStorage implements Storage {
             final MediaType mediaType = tika.getDetector().detect(stream, metadata);
             return mediaType.getBaseType().toString();
         }
+    }
+
+    private long getDatasetSize(String catalog, String userID, String docID){
+        final AtomicLong size = new AtomicLong(0);
+
+        size.addAndGet(getSize(this.getUnsavedPath(catalog, userID, docID, "", this.docsDir), null));
+        size.addAndGet(getSize(this.getUnpublishedPath(catalog, docID, "", this.docsDir), null));
+        size.addAndGet(getSize(this.getRealPath(catalog, docID, "", this.docsDir), null));
+
+        return size.get();
+    }
+
+    /**
+     * Calculate the size of a file or directory excluding the optional path
+     *
+     * @param path
+     * @param excludePath
+     * @return long
+     */
+    private static long getSize(Path path, Path excludePath) {
+        final AtomicLong size = new AtomicLong(0);
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (excludePath == null || !excludePath.equals(file)) {
+                        size.addAndGet(attrs.size());
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    // skip folders that can't be traversed
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException ex) {
+                    if (ex != null) {
+                        log.error("Could not traverse directory " + dir, ex);
+                    }
+                    // ignore errors traversing a folder
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException e) {
+            log.error("Failed to obtain directory size", e);
+        }
+
+        return size.get();
     }
 }

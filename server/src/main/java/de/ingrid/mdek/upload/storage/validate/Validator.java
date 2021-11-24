@@ -25,6 +25,7 @@ package de.ingrid.mdek.upload.storage.validate;
 import de.ingrid.mdek.upload.ValidationException;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +34,7 @@ import java.util.Map;
 public interface Validator {
     /**
      * Initialization method called with configuration values
-     * @param properties
+     * @param configuration
      * @throws IllegalArgumentException
      */
     void initialize(Map<String, String> configuration) throws IllegalArgumentException;
@@ -48,5 +49,5 @@ public interface Validator {
      * @param data The path pointing to the uploaded file content (is not necessarily equal to path + file)
      * @param isArchiveContent True, if the file was part of an archive that was extracted in the upload process
      */
-    void validate(final String path, final String file, final long size, final Path data, final boolean isArchiveContent) throws ValidationException;
+    void validate(final String path, final String file, final long size, final long currentSize, final Path data, final boolean isArchiveContent) throws ValidationException;
 }

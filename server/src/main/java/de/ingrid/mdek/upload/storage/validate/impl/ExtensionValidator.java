@@ -40,7 +40,7 @@ public class ExtensionValidator implements Validator {
         }
     }
 
-    @Override public void validate(String path, String file, long size, Path data, boolean isArchiveContent)
+    @Override public void validate(String path, String file, long size, final long currentSize, Path data, boolean isArchiveContent)
             throws ValidationException {
         Pattern pattern = Pattern.compile( "(.*)\\.(.*)" );
         Matcher matcherFile = pattern.matcher( file );
