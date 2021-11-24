@@ -169,18 +169,19 @@ describe('Research Page', () => {
 
   it('should delete SQL-query and subsequently return 0 results', () => {
     cy.intercept('/api/search/query').as('query');
+    cy.intercept('/api/search/querySql').as('sqlQuery');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
     // make sure query field is not empty
     cy.get('[data-cy="sql-query-field"]').should('not.have.value', '');
     // make sure a non-zero number of results is returned
+    cy.wait('@sqlQuery');
     cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
-    // make sure both query-requests are done before proceeding with removing the SQL-query
-    cy.wait('@query');
+    //cy.wait('@query');
     cy.wait('@query');
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
-    // make sure query has been removed from query field
+    // make sure query has been removed from query field and 0 results are returned
     cy.get('[data-cy="sql-query-field"]').should('have.value', '');
     cy.contains('.result', '0 Ergebnisse gefunden');
   });
@@ -236,6 +237,7 @@ describe('Research Page', () => {
     DashboardPage.visit();
     DashboardPage.search('556c875e-d471-4a35-8203-0c750737d296');
     cy.contains('button', 'Suchen').click();
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     cy.contains('td', 'Taunus, Adresse');
     ResearchPage.getSearchResultCount().should('equal', 1);
