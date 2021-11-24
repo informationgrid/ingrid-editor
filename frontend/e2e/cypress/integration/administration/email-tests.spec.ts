@@ -18,6 +18,10 @@ describe('Email-tests', () => {
     // create user
     AdminUserPage.createNewUser(userLogIn, userEmail, 'Autor');
 
+    //Here we want to wait after user creation to get the email
+    //Because it takes some time to receive welcoming email
+    //we are unable to intercept the call, so we added random wait about 5 seconds
+    cy.wait(5000);
     // get email and extract the password
     cy.task('getLastEmail', userEmail)
       .its('body')
