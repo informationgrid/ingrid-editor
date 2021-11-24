@@ -181,7 +181,12 @@ export class UploadComponent implements OnInit {
     this._errors[file.transfer.id] = null;
     const flowFile = file.transfer.flowFile;
     await this.uploadService.updateAuthenticationToken([flowFile]);
-    flowFile.flowObj.opts.query = parameter;
+    if (parameter.rename) {
+      flowFile.name = parameter.altName;
+      // file.transfer.flowFile.file.name = parameter.altName;
+    } else {
+      flowFile.flowObj.opts.query = parameter;
+    }
     flowFile.retry();
     flowFile.flowObj.opts.query = {};
   }

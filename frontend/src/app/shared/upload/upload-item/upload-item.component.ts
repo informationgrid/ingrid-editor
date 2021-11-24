@@ -38,7 +38,7 @@ export class UploadItemComponent implements OnInit {
   }
 
   rename() {
-    this.retryUpload.next({ replace: false });
+    this.retryUpload.next({ rename: true, altName: this.file.error.data.alt });
   }
 
   retry() {
