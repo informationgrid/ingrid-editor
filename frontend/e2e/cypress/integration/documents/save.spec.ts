@@ -102,6 +102,8 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createFolder(folderName, [parentFolder]);
       Tree.containsNodeWithFolderTitle(folderName, 2);
+      // without the reload the breadcrumb doesn't seem to be built correctly
+      DocumentPage.reloadPage();
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
     });
 
