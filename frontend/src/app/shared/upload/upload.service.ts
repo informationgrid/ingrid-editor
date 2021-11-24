@@ -52,12 +52,17 @@ export class UploadService {
   }
 
   async updateAuthenticationToken(flowFiles: flowjs.FlowFile[]) {
+    const keycloakInstance = this.keycloak.getKeycloakInstance();
+    if (!keycloakInstance) {
+      return;
+    }
+
     if (this.keycloak.isTokenExpired()) {
       await this.keycloak.updateToken();
     }
     flowFiles.forEach((file) => {
       file.flowObj.opts.headers = {
-        Authorization: "Bearer " + this.keycloak.getKeycloakInstance().token,
+        Authorization: "Bearer " + keycloakInstance.token,
       };
     });
   }
