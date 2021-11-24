@@ -65,10 +65,8 @@ describe('Behaviours', () => {
       BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels', 'firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      cy.intercept('GET', /api\/datasets\/[0-9a-z-]+\?address=false/).as('setAddress');
-      AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
-      cy.wait('@setAddress');
 
+      AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
       cy.get(DocumentPage.title)
         .should('have.text', firstName2)
         .should('not.contain', organizationName2 + ', ' + lastName2);

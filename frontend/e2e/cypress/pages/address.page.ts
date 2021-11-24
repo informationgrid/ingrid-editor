@@ -44,7 +44,15 @@ export class AddressPage extends DocumentPage {
   static createAddress(address: Address, targetTreePath?: string[]) {
     this.CreateDialog.open();
     this.CreateDialog.fill(address, targetTreePath);
+    cy.intercept({
+      pathname: '/api/datasets',
+      query: {
+        address: 'true'
+      },
+      method: 'POST'
+    }).as('setAddress');
     this.CreateDialog.execute();
+    cy.wait('@setAddress');
   }
 
   static apiCreateAddress(json: any, published?: boolean) {
