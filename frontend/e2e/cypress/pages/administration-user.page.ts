@@ -65,6 +65,7 @@ export class AdminUserPage extends BasePage {
 
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
+    cy.get(this.groupSelectionField).should('be.visible');
     cy.contains('mat-option', groupName).click();
     cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
@@ -92,6 +93,8 @@ export class AdminUserPage extends BasePage {
     cy.get('ige-new-group-dialog mat-form-field input').click().clear().type(groupname);
     this.applyDialog();
   }
+
+  static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
     cy.get('user-table').contains(name).click();
@@ -163,6 +166,11 @@ export class AdminUserPage extends BasePage {
   static cancelChanges() {
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
+  }
+
+  static getNextPage() {
+    cy.get('.mat-paginator-navigation-next').click();
+    cy.wait(100);
   }
 
   static getNumberOfUsers(): Chainable<number> {
