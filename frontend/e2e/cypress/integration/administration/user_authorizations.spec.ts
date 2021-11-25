@@ -446,8 +446,8 @@ describe('Meta data administrator with a group', () => {
     // -1- create new document
     cy.kcLogout();
     cy.kcLogin('user');
-    const documentName = 'newDocumentToDelete';
-    const newGroup = 'new_group_to_delete';
+    const documentName = 'newDocumentToDelete' + Utils.randomString();
+    const newGroup = 'new_group_to_delete' + Utils.randomString();
     DocumentPage.visit();
     DocumentPage.createDocument(documentName);
     Tree.openNode([documentName]);
