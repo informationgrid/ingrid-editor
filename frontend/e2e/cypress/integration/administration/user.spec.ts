@@ -475,7 +475,14 @@ describe('User', () => {
 
     // create user again
     AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
-    cy.get('user-table').should('contain', userLogIn + ' ' + userLogIn);
+
+    // turn the page if user is not found on the current page
+    if (Cypress.$(`user-table tr .mat-row:contains("${userLogIn}")`)) {
+      cy.contains('user-table', userLogIn + ' ' + userLogIn);
+    } else {
+      AdminUserPage.getNextPage();
+      cy.contains('user-table', userLogIn + ' ' + userLogIn);
+    }
   });
 
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
