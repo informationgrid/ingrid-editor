@@ -193,11 +193,14 @@ export class McloudDoctype extends BaseDoctype {
                 },
                 {
                   key: "format",
-                  type: "input",
+                  type: "autocomplete",
                   label: "Datenformat",
+                  wrappers: ["form-field"],
                   templateOptions: {
                     label: "Datenformat",
                     appearance: "outline",
+                    options: this.getCodelistForSelect(1320, null),
+                    codelistId: 1320,
                   },
                 },
               ],
