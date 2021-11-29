@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FileUploadModel } from "../../../shared/upload/fileUploadModel";
 import { IgeDocument } from "../../../models/ige-document";
+import { FormControl, Validators } from "@angular/forms";
 
 interface LinkType {
   value: string;
@@ -22,17 +22,16 @@ export class UploadTypeComponent extends FieldType implements OnInit {
   upload: LinkType;
   @Input() document: IgeDocument;
 
-  selectedUploads: FileUploadModel[];
-  private remember = {
-    uploadedFile: "",
-    externalLink: "",
-  };
+  private URL_REGEXP =
+    "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
 
   private defaultValue: LinkType = {
     asLink: true,
     value: "",
     documentID: "",
   };
+
+  control: FormControl;
 
   constructor() {
     super();
@@ -42,6 +41,11 @@ export class UploadTypeComponent extends FieldType implements OnInit {
     this.upload =
       this.mapStringValue(this.formControl.value) || this.defaultValue;
 
+    this.control = new FormControl(
+      { value: this.upload.value, disabled: !this.upload.asLink },
+      Validators.pattern(this.URL_REGEXP)
+    );
+
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -49,33 +53,6 @@ export class UploadTypeComponent extends FieldType implements OnInit {
         map((value) => this.mapStringValue(value))
       )
       .subscribe((value) => (this.upload = value || this.defaultValue));
-  }
-
-  uploadComplete(response: string) {
-    console.log(response);
-    this.upload.value = this.selectedUploads[0].data.name;
-    this.formControl.setValue(this.upload);
-  }
-
-  toggleLinkType(asLink: boolean) {
-    // remember previously set link during toggling
-    if (asLink) {
-      this.remember.uploadedFile = this.upload.value;
-      this.upload = {
-        asLink: asLink,
-        value: this.remember.externalLink,
-        documentID: this.model.document._id,
-      };
-    } else {
-      this.remember.externalLink = this.upload.value;
-      this.upload = {
-        asLink: asLink,
-        value: this.remember.uploadedFile,
-        documentID: this.model.document._id,
-      };
-    }
-
-    this.formControl.setValue(this.upload);
   }
 
   private mapStringValue(value: any): LinkType {
@@ -90,7 +67,8 @@ export class UploadTypeComponent extends FieldType implements OnInit {
     };
   }
 
-  objectKeys(obj) {
-    return Object.keys(obj);
+  updateValue() {
+    this.upload.value = this.control.value;
+    this.formControl.setValue(this.upload);
   }
 }
