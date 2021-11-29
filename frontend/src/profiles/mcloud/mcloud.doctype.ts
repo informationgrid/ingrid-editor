@@ -167,14 +167,14 @@ export class McloudDoctype extends BaseDoctype {
                     appearance: "outline",
                     required: true,
                     formatter: (link: any, form: FormGroup) => {
-                      if (!link.asLink) {
+                      if (link.asLink) {
+                        return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                      } else {
                         return `<a href="/api/upload/${form.get("_id").value}/${
-                          link.value
+                          link.uri
                         }" target="_blank" class="no-text-transform">${
                           link.value
                         }</a>`;
-                      } else {
-                        return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       }
                     },
                   },

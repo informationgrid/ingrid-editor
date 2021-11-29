@@ -202,6 +202,9 @@ export class TableTypeComponent
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
+        data: {
+          currentItems: this.dataSource.data,
+        },
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -220,7 +223,7 @@ export class TableTypeComponent
   private addToDatasource(file: LinkInfo) {
     this.dataSource.data.push({
       title: file.file,
-      link: { asLink: false, value: file.file },
+      link: { asLink: false, value: file.file, uri: file.uri },
     });
   }
 
@@ -241,7 +244,7 @@ export class TableTypeComponent
       .subscribe((result) => {
         this.dataSource.data.push({
           title: result.title,
-          link: { asLink: true, value: result.url },
+          link: { asLink: true, value: result.url, uri: result.url },
         });
         this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
         this.updateFormControl(this.dataSource.data);
