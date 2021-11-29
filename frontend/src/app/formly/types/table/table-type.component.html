@@ -197,30 +197,8 @@
     </mat-table>
 </div>
 
-<div
-    *ngIf="formControl.enabled"
-    class="display-flex"
-    [class.hasContextHelp]="to.hasContextHelp"
-    [class.required]="to.required"
->
-    <ige-form-label
-        [hasContextHelp]="to.hasContextHelp"
-        (contextHelp)="showContextHelp($event)"
-    >
-        <ng-container *ngIf="dataSource?.data?.length === 0">
-            {{ to.externalLabel }}<span *ngIf="to.required">*</span>
-        </ng-container>
-    </ige-form-label>
-
-    <!--
-    <ige-add-button
-        (add)="addRow()"
-        [showRequiredError]="
-            formFieldControl.errorState && formControl.errors?.required
-        "
-        [attr.data-cy]="to.externalLabel + '-add'"
-    ></ige-add-button>
--->
+<div *ngIf="formControl.enabled" class="display-flex">
+    <ige-form-label></ige-form-label>
 
     <div class="button-wrapper">
         <button
