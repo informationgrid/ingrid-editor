@@ -426,10 +426,6 @@ describe('Tree', () => {
       DocumentPage.createFolder(testFolder);
       DocumentPage.createDocument(docName);
 
-      // move from root to root
-      Tree.openNode([testFolder]);
-      CopyCutUtils.move();
-
       Tree.openNode([testFolder, docName]);
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
 
