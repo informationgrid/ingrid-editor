@@ -90,4 +90,8 @@ class Document {
 
     @Transient
     var hasOnlySubtreeWritePermission: Boolean = false
+
+    @Transient
+    @JsonProperty("_wrapperId")
+    var wrapperId: Int? = null
 }

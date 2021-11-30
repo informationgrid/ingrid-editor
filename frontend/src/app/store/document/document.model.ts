@@ -10,6 +10,7 @@ export interface DocumentAbstract {
   _parent: string;
   _hasChildren: boolean;
   _modified: any;
+  _wrapperId: any;
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
 }

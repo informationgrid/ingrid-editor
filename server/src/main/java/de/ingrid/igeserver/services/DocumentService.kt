@@ -102,7 +102,7 @@ open class DocumentService @Autowired constructor(
     )
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String, id: String): DocumentWrapper {
+    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
         try {
 //            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
             return docWrapperRepo.findById(id.toInt()).get()
@@ -253,7 +253,8 @@ open class DocumentService @Autowired constructor(
             FIELD_DOCUMENT_TYPE,
             "title",
             "hasWritePermission",
-            "hasOnlySubtreeWritePermission"
+            "hasOnlySubtreeWritePermission",
+            "_wrapperId"
         )
             .forEach { copy.remove(it) }
         return copy
@@ -268,7 +269,8 @@ open class DocumentService @Autowired constructor(
             FIELD_STATE,
             FIELD_HAS_CHILDREN,
             "hasWritePermission",
-            "hasOnlySubtreeWritePermission"
+            "hasOnlySubtreeWritePermission",
+            "_wrapperId"
         ).forEach { json.remove(it) }
     }
 
@@ -545,6 +547,7 @@ open class DocumentService @Autowired constructor(
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+        objectNode.wrapperId = wrapper.dbId
 
         return objectNode
     }

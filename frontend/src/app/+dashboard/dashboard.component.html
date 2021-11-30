@@ -70,7 +70,7 @@
                 <ige-document-list-item
                     [docs]="recentDocs$"
                     [hideDate]="false"
-                    (select)="openDocument($event.id)"
+                    (select)="openDocument($event._wrapperId)"
                 ></ige-document-list-item>
             </ige-card-box>
         </div>

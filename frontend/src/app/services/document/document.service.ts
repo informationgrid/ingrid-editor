@@ -527,6 +527,7 @@ export class DocumentService {
         id: doc._id,
         icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || "-Ohne Titel-",
+        _wrapperId: doc._wrapperId,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
         _parent: parentId,

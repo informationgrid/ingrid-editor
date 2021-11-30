@@ -344,7 +344,7 @@ export class DynamicFormComponent
     }
 
     // update tree state
-    this.activeId = data._id;
+    this.activeId = data._wrapperId;
 
     const profile = data._type;
 
