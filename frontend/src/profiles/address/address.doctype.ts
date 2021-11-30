@@ -202,6 +202,9 @@ export class AddressDoctype extends BaseDoctype {
                     appearance: "outline",
                     required: true,
                   },
+                  validators: {
+                    validation: ["emailInRepeat"],
+                  },
                 },
               ],
             },

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
-import { map } from "rxjs/operators";
+import { catchError, map } from "rxjs/operators";
 import { SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
@@ -10,6 +10,7 @@ import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -21,7 +22,7 @@ export class UserService {
     { label: "Autor", value: "author" },
   ];
 
-  selectedUser$: BehaviorSubject<User>;
+  selectedUser$ = new BehaviorSubject<User>(null);
 
   constructor(
     private dataService: UserDataService,
@@ -32,7 +33,6 @@ export class UserService {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin"
       );
-    this.selectedUser$ = new BehaviorSubject<User>(null);
   }
 
   getUsers(): Observable<FrontendUser[]> {
@@ -47,72 +47,6 @@ export class UserService {
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
-  /**
-   * Get potential Managers for User
-   *
-   * These are all Catalog Admins + all MD-Admins visible by the editing admin + the editing admin.
-   * Minus the User forUser himself and minus all Users underneath the User forUser
-   *
-   * If forGroup is True, the children and the User himself are not filtered out, as they are valid options.
-   * @param forUser
-   * @param forGroup
-   */
-  getPotentialManagers(
-    forUser: User,
-    forGroup: boolean = false
-  ): Observable<FrontendUser[]> {
-    const forUserId = forUser.login;
-    const allUsers$ = this.getUsers();
-    const catAdmins$ = this.getCatAdmins();
-    const editingUser$ = this.getUser(
-      this.configService.$userInfo.getValue().userId
-    );
-    const childrenOfUser$ = this.dataService
-      .getUsersForUser(forUserId)
-      .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
-
-    return combineLatest(
-      allUsers$,
-      childrenOfUser$,
-      catAdmins$,
-      editingUser$,
-      (allUsers, childrenOfUser, catAdmins, editingUser) => ({
-        allUsers,
-        childrenOfUser,
-        catAdmins,
-        editingUser,
-      })
-    ).pipe(
-      map((pair) => {
-        // all visible MD-Admins - target itself - target's children
-        // + all Cat-Admins except if in targets children
-        // + editing user (current user)
-
-        // allUsers + catAdmins without duplicates
-        const eligibleManagers = pair.allUsers.concat(
-          pair.catAdmins.filter(
-            (admin) => !pair.allUsers.find((u) => admin.login == u.login)
-          )
-        );
-        // add editing user
-        eligibleManagers.push(pair.editingUser);
-
-        // filter out children, self and non admins
-        return eligibleManagers.filter(
-          (user) =>
-            ["md-admin", "cat-admin"].includes(user.role) &&
-            (forGroup || user.login !== forUserId) &&
-            (forGroup ||
-              !pair.childrenOfUser.find((u) => user.login == u.login))
-        );
-      })
-    );
-  }
-
-  getManagedUsers(login: string): Observable<String[]> {
-    return this.dataService.getManagedUserIds(login);
-  }
-
   getUser(login: string): Observable<FrontendUser> {
     return this.dataService
       .getUser(login)
@@ -125,9 +59,18 @@ export class UserService {
       groups: user.groups.map((group) => +group.value),
     };
 
-    return this.dataService
-      .saveUser(userForBackend)
-      .pipe(map((u) => new FrontendUser(u)));
+    return this.dataService.saveUser(userForBackend).pipe(
+      map((u) => new FrontendUser(u)),
+      catchError((error) => {
+        if (error.status === 404) {
+          throw new IgeError(
+            "Es existiert kein Benutzer mit dem Login: " + user.login
+          );
+        } else {
+          throw error;
+        }
+      })
+    );
   }
 
   updateCurrentUser(user: User): Observable<FrontendUser> {
@@ -155,13 +98,11 @@ export class UserService {
   }
 
   getUserFormFields(
-    roleChangeCallback: FormlyAttributeEvent = undefined,
     groupClickCallback: (id: number) => void = undefined
   ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
       this.groupService.getGroups(),
-      roleChangeCallback,
       groupClickCallback
     );
   }
@@ -177,10 +118,6 @@ export class UserService {
         )
       )
     );
-  }
-
-  updateManager(userId: String, managerId: String): Observable<any> {
-    return this.dataService.setManagerForUser(userId, managerId);
   }
 
   sendPasswordChangeRequest(login: string) {

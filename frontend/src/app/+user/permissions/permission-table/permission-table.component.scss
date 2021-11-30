@@ -64,9 +64,12 @@ mat-button {
   }
 }
 
-ige-add-button {
-  display: block;
+.permission-table-footer {
   padding: 10px 24px 38px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .table-title {

@@ -28,6 +28,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     private treeService: TreeService
   ) {}
 
+  // TODO: find another way to reset form instead of reloading, which makes a backend request
   canDeactivate(
     target: FormComponent | AddressComponent,
     currentRoute: ActivatedRouteSnapshot,
@@ -92,6 +93,11 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         .toPromise();
     } else if (action === "stay") {
       this.treeService.selectTreeNode(isAddress, currentId);
+    } else {
+      this.documentService.reload$.next({
+        id: currentId,
+        forAddress: isAddress,
+      });
     }
   }
 

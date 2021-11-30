@@ -34,7 +34,6 @@ import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
 import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { EditManagerDialogComponent } from "./user/edit-manager-dialog/edit-manager-dialog.component";
 import { RouterModule } from "@angular/router";
 
 @NgModule({
@@ -77,7 +76,6 @@ import { RouterModule } from "@angular/router";
     PermissionTableComponent,
     PermissionAddDialogComponent,
     IgeSearchField,
-    EditManagerDialogComponent,
   ],
   exports: [RouterModule],
   providers: [UserManagementService],

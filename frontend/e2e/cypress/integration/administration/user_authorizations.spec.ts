@@ -8,6 +8,7 @@ import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { Utils } from '../../pages/utils';
 
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
@@ -50,11 +51,15 @@ describe('Meta data administrator without groups', () => {
   it('metadata admin without groups should not be able to create documents', () => {
     // data documents
     DocumentPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').should('be.disabled');
-
+    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
+    DocumentPage.CreateDialog.cancel();
+    cy.get('[data-cy="toolbar_NEW_DOC"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
     // addresses
     AddressPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').should('be.disabled');
+    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
   });
 
   it('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
@@ -85,11 +90,6 @@ describe('Meta data administrator without groups', () => {
     cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
     // Also: make sure no address is displayed in the address list
     cy.get('ige-tree').contains('Leer');
-  });
-
-  xit('metadata admin without groups should be able to change manager of users', () => {
-    // on hold, since manager functionality will probably be removed in the near future
-    AdminUserPage.visit();
   });
 });
 
@@ -373,7 +373,7 @@ describe('Meta data administrator with a group', () => {
   it('meta data admin should be able to create authors', () => {
     AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('some_random_authorLogin');
+    AdminUserPage.addNewUserLogin('some_random_authorlogin');
     AdminUserPage.addNewUserFirstname('random');
     AdminUserPage.addNewUserLastname('author');
     AdminUserPage.addNewUserEmail('test@thisauthor.com');
@@ -446,8 +446,8 @@ describe('Meta data administrator with a group', () => {
     // -1- create new document
     cy.kcLogout();
     cy.kcLogin('user');
-    const documentName = 'newDocumentToDelete';
-    const newGroup = 'new_group_to_delete';
+    const documentName = 'newDocumentToDelete' + Utils.randomString();
+    const newGroup = 'new_group_to_delete' + Utils.randomString();
     DocumentPage.visit();
     DocumentPage.createDocument(documentName);
     Tree.openNode([documentName]);
@@ -540,6 +540,30 @@ describe('Meta data administrator with a group', () => {
     cy.request(link, { failOnStatusCode: false }).then(response => {
       expect(response.status).not.to.eq(200);
     });*/
+  });
+
+  it('display of documents should be actualized accordingly after deletion action (#2786)', () => {
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    // create document
+    const docName = 'TestDokument' + Utils.randomString();
+    DocumentPage.createDocument(docName);
+    // go to research section and search for document
+    ResearchPage.visit();
+    ResearchPage.search(docName);
+    ResearchPage.getSearchResultCount().should('equal', 1);
+    cy.contains('td.mat-cell', docName).click();
+    cy.contains('.label', docName);
+    // delete the document
+    DocumentPage.deleteLoadedNode();
+    // search and expect to not get a result
+    ResearchPage.visit();
+    ResearchPage.search(docName);
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    // make sure display of documents has been actualized
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    cy.contains('mat-tree-node', docName).should('not.exist');
   });
 });
 
@@ -681,16 +705,6 @@ describe('Catalogue admin', () => {
     cy.get('mat-dialog-actions button').eq(2).click();
     // close box for adding documents
     cy.contains('mat-dialog-actions button', 'Abbrechen').click;
-  });
-
-  it('catalog admin should be able to take responsibility from a user away and choose a new manager', () => {
-    AdminUserPage.visit();
-    AdminUserPage.selectUser('Test Verantwortlicher');
-    // take responsibility away from a user
-    AdminUserPage.cedeResponsibility('Meta Admin');
-    // check if users of the old manager now belong to the new manager
-    AdminUserPage.selectUser('autor2');
-    AdminUserPage.verifyInfoInHeader(keysInHeader.Manager, 'Meta Admin');
   });
 
   it('should show all the groups to a catalogue admin (#2670)', () => {

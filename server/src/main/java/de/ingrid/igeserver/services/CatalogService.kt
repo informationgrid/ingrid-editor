@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
@@ -22,7 +23,6 @@ class CatalogService @Autowired constructor(
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
-    private val managerRepo: ManagerRepository,
     private val authUtils: AuthUtils,
     private val aclService: AclService,
     private val keycloakService: UserManagementService,
@@ -163,7 +163,6 @@ class CatalogService @Autowired constructor(
         user.data?.modificationDate = Date()
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
         val createdUser = userRepo.save(user)
-        setManager(userModel.login, userModel.manager, catalogId)
 
         return createdUser
 
@@ -226,33 +225,6 @@ class CatalogService @Autowired constructor(
         userModel.modificationDate = Date()
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
-        if (userModel.manager.isNotEmpty()) setManager(userModel.login, userModel.manager, catalogId)
-    }
-
-    fun setManager(userId: String, managerId: String, catalogId: String) {
-        val catalog = getCatalogById(catalogId)
-        val user = userRepo.findByUserId(userId)
-        val manager = userRepo.findByUserId(managerId)
-
-        val managerAssignment = managerRepo.findByUser_UserIdAndCatalogIdentifier(userId, catalogId)
-        if (managerAssignment != null) {
-            managerRepo.delete(managerAssignment)
-            managerRepo.flush()
-        }
-        managerRepo.save(CatalogManagerAssignment().apply {
-            id = AssignmentKey().apply {
-                this.catalogId = catalog.id as Int
-                this.managerId = manager?.id as Int
-                this.userId = user?.id as Int
-            }
-            this.catalog = catalog
-            this.user = user
-            this.manager = manager
-        })
-    }
-
-    fun getManagedUserIds(managerId: String, catalogId: String): List<String> {
-        return managerRepo.findAllByManager_UserIdAndCatalogIdentifier(managerId, catalogId).map { it.user!!.userId }
     }
 
     fun getPermissions(principal: Authentication): List<String> {
@@ -260,24 +232,53 @@ class CatalogService @Autowired constructor(
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
         return if (isCatAdmin) {
             listOf(
+                Permissions.manage_catalog.name,
                 Permissions.manage_users.name,
                 Permissions.can_export.name,
                 Permissions.can_import.name,
-                Permissions.manage_catalog.name
+                Permissions.can_create_dataset.name,
+                Permissions.can_create_address.name,
             )
         } else if (isMdAdmin) {
             listOf(
                 Permissions.manage_users.name,
                 Permissions.can_export.name,
                 Permissions.can_import.name,
+                Permissions.can_create_dataset.name,
+                Permissions.can_create_address.name,
             )
         } else {
-            listOf(
-                Permissions.can_import.name,
-                Permissions.can_export.name,
-            )
+            return determineNonAdminUserPermissions(principal)
         }
     }
+
+    private fun determineNonAdminUserPermissions(principal: Authentication): MutableList<String> {
+        // anyone can export
+        val userPermissions = mutableListOf(Permissions.can_export.name)
+
+        val userName = authUtils.getUsernameFromPrincipal(principal)
+        val userGroups = this.getUser(userName)?.groups
+        var can_import = false;
+        userGroups?.forEach { group ->
+            if (containsAnyWritePermission(group.permissions?.documents)) {
+                userPermissions.add(Permissions.can_create_dataset.name)
+                can_import = true;
+            }
+            if (containsAnyWritePermission(group.permissions?.addresses)) {
+                userPermissions.add(Permissions.can_create_address.name)
+                can_import = true;
+            }
+        }
+        if (can_import) {
+            userPermissions.add(Permissions.can_import.name)
+        }
+        return userPermissions
+    }
+
+    private fun containsAnyWritePermission(groupEntries: List<JsonNode>?) =
+        groupEntries?.any { entry ->
+            entry["isFolder"].asBoolean() && entry["permission"].asText().contains("writeTree")
+        } == true
 
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
@@ -293,22 +294,7 @@ class CatalogService @Autowired constructor(
                 user.modificationDate = catUser.data?.modificationDate ?: Date(0)
                 user.role = catUser.role?.name ?: ""
                 user.organisation = catUser.data?.organisation ?: ""
-                user.manager = managerRepo.findByUserAndCatalogIdentifier(catUser, catalogId)?.manager?.userId ?: ""
             }
         return filteredUsers
     }
-
-
-    fun filterUsersForUser(users: Set<User>, userLogin: String): Set<User> {
-        val filtered = users.filter { user -> user.manager == userLogin }.toSet()
-        if (filtered.isEmpty()) {
-            return filtered
-        } else {
-            val collectedUsers = mutableSetOf<User>()
-            collectedUsers.addAll(filtered)
-            filtered.forEach { user -> collectedUsers.addAll(filterUsersForUser(users, user.login)) }
-            return collectedUsers
-        }
-    }
-
 }

@@ -75,31 +75,6 @@ interface UsersApi {
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
     ): ResponseEntity<User>
 
-    @GetMapping(
-        value = ["/users/{id}/managed"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
-    @Operation(description = "Get userIds of all users managed by the user with the given ID.")
-    fun getManagedUsers(
-        principal: Principal,
-        @Parameter(description = "The unique id of the manager.", required = true) @PathVariable("id") userId: String
-    ): ResponseEntity<List<String>>
-
-
-    @PostMapping(
-        value = ["/users/{id}/manager"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
-    @Operation(description = "Get userIds of all users managed by the user with the given ID.")
-    fun setManager(
-        principal: Principal,
-        @Parameter(description = "The unique id of the user.", required = true) @PathVariable("id") userId: String,
-        @Parameter(
-            description = "The unique id of the manager.",
-            required = true
-        ) @RequestBody managerId: @Valid String
-    )
-
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation
     @ApiResponses(
@@ -109,8 +84,7 @@ interface UsersApi {
         )]
     )
     fun list(
-        principal: Principal, @Parameter(description = "With this option an external user is tried to be created")
-        @RequestParam(value = "fromUser", required = false) fromUser: String?
+        principal: Principal
     ): ResponseEntity<List<User>>
 
     @GetMapping(

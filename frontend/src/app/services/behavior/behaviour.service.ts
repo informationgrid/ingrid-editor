@@ -26,6 +26,8 @@ export class BehaviourService {
   theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
   backendBehaviourStates: BehaviourFormatBackend[];
 
+  behaviours$ = new BehaviorSubject<BehaviourFormatBackend[]>([]);
+
   constructor(
     private eventManager: EventManager,
     private configService: ConfigService,
@@ -92,6 +94,7 @@ export class BehaviourService {
   saveBehaviours(behaviours: BehaviourFormatBackend[]) {
     this.updateState(behaviours);
     this.dataService.saveBehaviors(behaviours).subscribe();
+    this.behaviours$.next(behaviours);
   }
 
   private updateState(behaviours: BehaviourFormatBackend[]) {

@@ -22,16 +22,6 @@ describe('Behaviours', () => {
   });
 
   describe('System', () => {
-    it('should change the session timeout behaviour', () => {
-      BehavioursPage.checkTimeoutIs('30');
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSettingInput('Session Timeout Dauer', '600');
-      BehavioursPage.checkTimeoutIs('10');
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSetting('Session Timeout Dauer', false);
-      BehavioursPage.checkTimeoutIs('30');
-    });
-
     it('should change the sorting of the tree', () => {
       const firstDoc = 'AAA_testDocForSortingCheck_API';
       const lastDoc = 'ZZZ_mCloudDocForSortingCheck_API';
@@ -75,10 +65,8 @@ describe('Behaviours', () => {
       BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels', 'firstName');
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      cy.intercept('GET', /api\/datasets\/[0-9a-z-]+\?address=false/).as('setAddress');
-      AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
-      cy.wait('@setAddress');
 
+      AddressPage.createAddress(new Address(firstName2, lastName2, organizationName2));
       cy.get(DocumentPage.title)
         .should('have.text', firstName2)
         .should('not.contain', organizationName2 + ', ' + lastName2);

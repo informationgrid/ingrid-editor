@@ -55,20 +55,15 @@ describe('Toolbar behavior', () => {
   });
 
   it('should activate specific buttons when a published document is loaded', () => {
-    const docTitle = 'Published_mCloudDoc_ToolbarTest';
+    const docTitle = 'tstPublished_mCloudDoc_ToolbarTest';
     // create a published doc to be checked
     DocumentPage.CreateFullMcloudDocumentWithAPI(docTitle, true);
 
     Tree.openNode(['Neue Testdokumente', docTitle]);
-    DocumentPage.checkOnlyActiveToolbarButtons([
-      'NewDoc',
-      'NewFolder',
-      'Copy',
-      'Delete',
-      'Save',
-      'Publish',
-      'Previous'
-    ]);
+    DocumentPage.checkOnlyActiveToolbarButtons(
+      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish'],
+      ['Previous']
+    );
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders

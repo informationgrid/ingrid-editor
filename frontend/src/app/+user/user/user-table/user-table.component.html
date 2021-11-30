@@ -91,7 +91,7 @@
     <mat-spinner> </mat-spinner>
 </div>
 <mat-paginator
-    *ngIf="!simple"
+    [class.hide]="simple && dataSource.data?.length < 10"
     [pageSize]="10"
     [hidePageSize]="true"
     matPaginator
@@ -104,6 +104,4 @@
     <span> Metadaten-Admin,</span>
     <mat-icon svgIcon="catalog-admin"></mat-icon>
     <span> Katalog-Admin</span>
-    <!--    <mat-icon svgIcon="author-standin"></mat-icon>-->
-    <!--    <span> stellvertretende Verwaltung</span>-->
 </div>

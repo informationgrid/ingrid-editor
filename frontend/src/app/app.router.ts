@@ -1,6 +1,11 @@
-import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
+import {
+  ActivatedRouteSnapshot,
+  DetachedRouteHandle,
+  RouteReuseStrategy,
+  RouterModule,
+  Routes,
+} from "@angular/router";
 import { AuthGuard } from "./security/auth.guard";
-import { IgeKeycloakAuthGuard } from "./security/keycloak-auth.guard";
 
 export const routes: Routes = [
   {
@@ -130,3 +135,46 @@ export const routing = RouterModule.forRoot(routes, {
   // preloadingStrategy: PreloadAllModules,
   // relativeLinkResolution: "legacy",
 });
+
+export class CustomReuseStrategy implements RouteReuseStrategy {
+  routesToCache: string[] = ["form", "address", "manageuser", "managegroup"];
+  storedRouteHandles = new Map<string, DetachedRouteHandle>();
+
+  // Decides if the route should be stored
+  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+    return this.routesToCache.indexOf(this.getKey(route)) > -1;
+  }
+
+  //Store the information for the route we're destructing
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
+    // this.storedRouteHandles.set(route.data[key].path, handle);
+    this.storedRouteHandles.set(this.getKey(route), handle);
+  }
+
+  //Return true if we have a stored route object for the next route
+  shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return this.storedRouteHandles.has(this.getKey(route));
+  }
+
+  //If we returned true in shouldAttach(), now return the actual route data for restoration
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
+    return this.storedRouteHandles.get(this.getKey(route));
+  }
+
+  //Reuse the route if we're going to and from the same route
+  shouldReuseRoute(
+    future: ActivatedRouteSnapshot,
+    curr: ActivatedRouteSnapshot
+  ): boolean {
+    return future.routeConfig === curr.routeConfig;
+  }
+
+  private getKey(route: ActivatedRouteSnapshot): string {
+    return route.pathFromRoot
+      .map((el: ActivatedRouteSnapshot) =>
+        el.routeConfig ? el.routeConfig.path : ""
+      )
+      .filter((str) => str.length > 0)
+      .join("");
+  }
+}

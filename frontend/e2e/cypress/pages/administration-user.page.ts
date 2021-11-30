@@ -1,5 +1,6 @@
 import { BasePage, UserAndRights } from './base.page';
 import Chainable = Cypress.Chainable;
+import { DashboardPage } from './dashboard.page';
 
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
@@ -10,7 +11,7 @@ export class AdminUserPage extends BasePage {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.visit('manage/user');
     cy.wait('@usersCall');
-    cy.get('.page-title').contains('Nutzer');
+    cy.get('.user-management-header').contains('Nutzer');
   }
 
   static addNewUserLogin(login: string) {
@@ -63,9 +64,10 @@ export class AdminUserPage extends BasePage {
   }
 
   static addGroupToUser(groupName: string) {
-    cy.get('[data-cy=Gruppen] mat-select').click();
-    cy.get('mat-option', { timeout: 7000 }).contains(groupName).click();
-    cy.wait(100);
+    cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
+    cy.get(this.groupSelectionField).should('be.visible');
+    cy.contains('mat-option', groupName).click();
+    cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
 
   static removeGroupFromUser(groupName: string) {
@@ -92,9 +94,19 @@ export class AdminUserPage extends BasePage {
     this.applyDialog();
   }
 
+  static groupSelectionField = '.mat-select-panel-wrap';
+
   static selectUser(name: string) {
     cy.get('user-table').contains(name).click();
     cy.get('#formUser').should('be.visible');
+    // sometimes further selecting goes wrong because dom is not ready -> add some time
+    cy.wait(1000);
+  }
+
+  static selectAssociatedUser(name: string) {
+    cy.intercept('GET', /api\/groups/).as('openUser');
+    cy.get('user-table tbody tr').contains(name).click();
+    cy.wait('@openUser');
   }
 
   static changeManager(name: string) {
@@ -117,7 +129,10 @@ export class AdminUserPage extends BasePage {
     cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich');
     cy.contains('button', 'Verantwortlichen auswählen').click();
     cy.intercept('GET', '/api/users/admins').as('getAdmins');
+    // arrow-select menu needs time to be able to be expanded:
+    cy.wait(1000);
     cy.get('mat-dialog-container .mat-select-arrow').trigger('mouseover').click({ force: true });
+    //cy.get('mat-dialog-container .mat-select-arrow').click({ force: true });
     cy.wait('@getAdmins');
     cy.contains('[role="listbox"] mat-option', manager, { timeout: 10000 }).click();
     cy.intercept('POST', '/api/users/' + '*' + '/manager' + '*').as('waitForSelection');
@@ -145,11 +160,17 @@ export class AdminUserPage extends BasePage {
   static discardChanges() {
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     cy.get('[data-cy=confirm-dialog-discard]').click();
+    cy.get('mat-dialog-container').should('not.exist');
   }
 
   static cancelChanges() {
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
+  }
+
+  static getNextPage() {
+    cy.get('.mat-paginator-navigation-next').click();
+    cy.wait(100);
   }
 
   static getNumberOfUsers(): Chainable<number> {
@@ -196,6 +217,50 @@ export class AdminUserPage extends BasePage {
     AdminUserPage.addNewUserRole(userRole);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.confirmAddUserDialog();
+  }
+
+  static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {
+    //Here we want to wait after user creation to get the email
+    //Because it takes some time to receive welcoming email
+    //we are unable to intercept the call, so we added random wait time
+    cy.wait(5000);
+    // get email and extract the password
+    cy.task('getLastEmail', userEmail)
+      .its('body')
+      .then(body => {
+        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+
+        // Extract the password
+        let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
+        let psw = bodyArray[1].split('\n')[0].trim();
+
+        cy.kcLogout();
+
+        debugger;
+        // Here we have to reload otherwise the because logout does not redirect to login page
+        cy.reload();
+        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
+
+        cy.get('#username').type(userLogIn);
+        cy.get('#password').type(psw);
+        cy.get('#kc-login').click();
+        cy.wait(1000);
+
+        cy.get('#kc-content-wrapper').should('contain', 'Sie müssen Ihr Passwort ändern,');
+
+        // login and check for the user name
+        cy.get('#password-new').type(userLogIn);
+        cy.get('#password-confirm').type(userLogIn);
+        cy.intercept('GET', 'api/info/currentUser').as('getUser');
+        cy.get('#kc-login').click();
+        cy.wait('@getUser');
+        if (userRole != 'Autor') {
+          DashboardPage.visit();
+        }
+        cy.get('.welcome').contains('Willkommen');
+        cy.get('[data-cy="header-profile-button"]').click();
+        cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
+      });
   }
 }
 

@@ -28,31 +28,10 @@ import { FormGroup } from "@angular/forms";
 })
 export class HeaderMoreComponent implements OnInit {
   @Input() user: FrontendUser;
-  @Input() allUsers: FrontendUser[];
   @Input() form: FormGroup;
   @Input() showMore = false;
-  standinUsers: String[];
 
   constructor() {}
 
-  ngOnInit() {
-    this.standinUsers = this.getStandinUsers();
-  }
-
-  getStandinUsers(): String[] {
-    // TODO implement
-    return [];
-  }
-
-  getManagerInfo(managerLogin: string): string {
-    const manager = this.allUsers.find((u) => u.login == managerLogin);
-    if (manager) {
-      return (
-        `${manager.firstName} ${manager.lastName}` +
-        (manager.organisation ? ` (${manager.organisation})` : "")
-      );
-    } else {
-      return managerLogin;
-    }
-  }
+  ngOnInit() {}
 }

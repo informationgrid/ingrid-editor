@@ -18,6 +18,7 @@ import { MessageService } from "../../../services/message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { filter, switchMap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -36,7 +37,10 @@ export class CopyCutPastePlugin extends Plugin {
     return this._name;
   }
 
+  isAdmin = this.config.isAdmin();
+
   constructor(
+    private config: ConfigService,
     private toolbarService: FormToolbarService,
     private documentService: DocumentService,
     private treeQuery: TreeQuery,
@@ -91,7 +95,14 @@ export class CopyCutPastePlugin extends Plugin {
         if (data.length === 0) {
           this.toolbarService.setButtonState("toolBtnCopy", false);
         } else {
-          this.toolbarService.setButtonState("toolBtnCopy", true);
+          if (this.isAdmin) {
+            this.toolbarService.setButtonState("toolBtnCopy", true);
+          } else {
+            const buttonEnabled = this.config.hasPermission(
+              this.forAddress ? "can_create_address" : "can_create_dataset"
+            );
+            this.toolbarService.setButtonState("toolBtnCopy", buttonEnabled);
+          }
 
           // set state of menu items
           this.toolbarService.setMenuItemStateOfButton(

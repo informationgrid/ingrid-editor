@@ -40,9 +40,7 @@ describe('User without authorizations', () => {
     // check if there is an empty tree for both adressen and daten
     DocumentPage.visit();
     cy.get('ige-empty-navigation').should('exist');
-    cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     AddressPage.visit();
-    cy.wait('@treeCallAddress');
     cy.get('ige-empty-navigation').should('exist');
   });
 

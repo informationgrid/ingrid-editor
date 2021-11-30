@@ -3,6 +3,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Tree } from '../../pages/tree.partial';
 import Doc = Mocha.reporters.Doc;
+import { AddressPage } from '../../pages/address.page';
 
 describe('Spatial References', () => {
   beforeEach(() => {
@@ -34,6 +35,9 @@ describe('Spatial References', () => {
     const docNameBbox = 'spatialbbox-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxWithAPI(docNameBbox, false);
+    // give the application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
@@ -45,7 +49,12 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((1 5, 5 9, 1 7, 2 1, 3 5)(5 5, 5 7, 7 7, 7 5, 5 5))';
     const docNameBbox = 'spatialwkt-' + Utils.randomString();
 
+    // create new document
+    cy.intercept('POST', /openid-connect\/token/).as('createRequest');
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
+    cy.wait('@createRequest', { timeout: 10000 });
+    // reload the page so that the new document is visible
+    DocumentPage.reloadPage();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
@@ -65,6 +74,9 @@ describe('Spatial References', () => {
     const docName = 'spatial-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     DocumentPage.checkSpatialEntryNumber(4);
@@ -82,6 +94,9 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))';
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     enterMcloudDocTestData.openSpatialMenuDoc('reference, wkt-1');
@@ -96,6 +111,9 @@ describe('Spatial References', () => {
     const docName = 'spatialToDelete-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
+    // give application time to show the api-created document
+    AddressPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 
     // delete a bbox entry
@@ -132,8 +150,11 @@ describe('Spatial References', () => {
 
     // make sure that only the first one is visible
     cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');
-    cy.get('path.leaflet-interactive:nth-of-type(1)', { timeout: 1000 }).should('not.be.visible');
-
+    // I checked for property d to contains the coordinates of focused location because the two objects are always visible
+    // could not check for not visible event with focus view
+    cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 })
+      .invoke('attr', 'd')
+      .should('eq', 'M393 295L393 91L657 91L657 295z');
     DocumentPage.clickLeafletMapResetBtn();
     //  make sure that all others are visible
     cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');

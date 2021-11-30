@@ -74,15 +74,6 @@
             >
                 <div class="user-title">
                     <div class="document-type">
-                        <!--         Only use standard icon for now
-                        <mat-icon
-                            [svgIcon]="
-                                userGroupNames.includes(form.get('name')?.value)
-                                    ? 'group'
-                                    : 'group-standin'
-                            "
-                        ></mat-icon>
-                        -->
                         <mat-icon svgIcon="group"></mat-icon>
                     </div>
 
@@ -110,13 +101,6 @@
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #groupMoreMenu="matMenu">
-                        <!--                        <button
-                            disabled
-                            mat-menu-item
-                            (click)="openChangeManagerDialog()"
-                        >
-                            Verantwortlichen ändern
-                        </button>-->
                         <button
                             mat-menu-item
                             (click)="showGroupUsers(selectedGroup.id)"
@@ -160,23 +144,6 @@
                             >({{ groupUsers.length }})</span
                         >
                     </div>
-                    <!--                    <mat-list>
-                        <mat-list-item *ngFor="let user of groupUsers">
-                            <mat-icon
-                                [svgIcon]="
-                                    this.userService.getRoleIcon(user.role)
-                                "
-                            ></mat-icon>
-                            {{
-                                user.firstName +
-                                    " " +
-                                    user.lastName +
-                                    " (" +
-                                    user.email +
-                                    ")"
-                            }}</mat-list-item
-                        >
-                    </mat-list>-->
                 </div>
                 <user-table
                     [users]="groupUsers"

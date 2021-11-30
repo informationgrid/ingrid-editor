@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, HostListener } from "@angular/core";
+import { AfterViewInit, Component, HostListener, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
-import { SessionService } from "../../services/session.service";
-import { NavigationEnd, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Router } from "@angular/router";
+import { SessionService } from "../../services/session.service";
 import { filter } from "rxjs/operators";
 
 @UntilDestroy()
@@ -12,7 +12,7 @@ import { filter } from "rxjs/operators";
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.scss"],
 })
-export class UserManagementComponent implements AfterViewInit {
+export class UserManagementComponent implements OnInit {
   currentComponent: UserComponent | GroupComponent;
 
   tabs = [
@@ -20,49 +20,27 @@ export class UserManagementComponent implements AfterViewInit {
     { label: "Gruppen & Rechte", path: "group" },
   ];
 
-  constructor(private router: Router, private sessionService: SessionService) {
-    this.router.events.pipe(untilDestroyed(this)).subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        // only update tab from route if it was set explicitly in URL
-        if (event.url === event.urlAfterRedirects) {
-          const activeTabIndex = this.getActiveTabIndex();
-          this.sessionService.updateCurrentTab("manage", activeTabIndex);
-        }
-      }
-    });
-  }
-
-  getActiveTabIndex(): number {
-    const activeLink =
-      this.router.getCurrentNavigation()?.finalUrl?.root?.children?.primary
-        ?.segments[1]?.path ?? "user";
-    return this.tabs.findIndex((tab) => tab.path === activeLink);
-  }
+  constructor(private router: Router, private sessionService: SessionService) {}
 
   @HostListener("window:beforeunload", ["$event"])
-  unloadHandler(event: Event) {
+  unloadHandler() {
     return !this.currentComponent?.form?.dirty;
-  }
-
-  ngAfterViewInit(): void {}
-
-  activeLink = "user";
-
-  ngOnInit(): void {
-    this.sessionService
-      .observeTabChange("manage")
-      .pipe(
-        untilDestroyed(this),
-        filter((index) => index !== undefined)
-      )
-      .subscribe((index) => {
-        const tab = this.tabs[index];
-        this.activeLink = tab.path;
-        this.router.navigate(["/manage/" + tab.path]);
-      });
   }
 
   onActivate(componentRef) {
     this.currentComponent = componentRef;
+  }
+
+  ngOnInit(): void {
+    this.sessionService
+      .observeTabChange("manage")
+      .pipe(untilDestroyed(this))
+      .subscribe((index) => {
+        this.router.navigate(["/manage/" + this.tabs[index].path]);
+      });
+  }
+
+  updateTab(index: number) {
+    this.sessionService.updateCurrentTab("manage", index);
   }
 }

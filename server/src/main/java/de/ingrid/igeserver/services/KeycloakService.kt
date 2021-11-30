@@ -30,6 +30,7 @@ import java.io.Closeable
 import java.security.Principal
 import java.util.*
 import javax.ws.rs.core.Response
+import kotlin.NoSuchElementException
 
 
 @Service
@@ -139,6 +140,8 @@ class KeycloakService : UserManagementService {
             return (client as KeycloakCloseableClient).realm().users()
                 .search(username, true)
                 .first()
+        } catch (e: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(username, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(username, e)
         }
@@ -165,7 +168,6 @@ class KeycloakService : UserManagementService {
             lastName = user.lastName ?: "",
             email = user.email ?: "",
             latestLogin = null,
-            standin = null
 //            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
         )
     }

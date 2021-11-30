@@ -27,7 +27,9 @@ export class AddressPage extends DocumentPage {
   };
 
   static visit() {
-    cy.visit('address', { timeout: 30000, retryOnStatusCodeFailure: true });
+    cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
+    cy.visit('address');
+    cy.wait('@treeCallAddress');
     cy.contains('.page-title', 'Adressen');
   }
 
@@ -42,7 +44,15 @@ export class AddressPage extends DocumentPage {
   static createAddress(address: Address, targetTreePath?: string[]) {
     this.CreateDialog.open();
     this.CreateDialog.fill(address, targetTreePath);
+    cy.intercept({
+      pathname: '/api/datasets',
+      query: {
+        address: 'true'
+      },
+      method: 'POST'
+    }).as('setAddress');
     this.CreateDialog.execute();
+    cy.wait('@setAddress');
   }
 
   static apiCreateAddress(json: any, published?: boolean) {

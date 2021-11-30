@@ -64,16 +64,10 @@ export class CreateFolderPlugin extends Plugin {
       });
 
     if (!this.isAdmin) {
-      const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-      query.rootDocuments$.subscribe((data) => {
-        const hasAnyWritePermission = data.some(
-          (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
-        );
-        this.formToolbarService.setButtonState(
-          "toolBtnFolder",
-          hasAnyWritePermission
-        );
-      });
+      const buttonEnabled = this.config.hasPermission(
+        this.forAddress ? "can_create_address" : "can_create_dataset"
+      );
+      this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
     }
 
     this.subscriptions.push(toolbarEventSubscription);

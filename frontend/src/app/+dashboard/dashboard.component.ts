@@ -19,7 +19,9 @@ import {
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit {
-  datasets;
+  canCreateAddress: boolean;
+  canCreateDataset: boolean;
+  canImport: boolean;
 
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
@@ -33,6 +35,9 @@ export class DashboardComponent implements OnInit {
     private sessionQuery: SessionQuery
   ) {
     this.configuration = configService.getConfiguration();
+    this.canCreateAddress = configService.hasPermission("can_create_address");
+    this.canCreateDataset = configService.hasPermission("can_create_dataset");
+    this.canImport = configService.hasPermission("can_import");
   }
 
   ngOnInit() {
@@ -48,12 +53,12 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  fetchData(query?: string) {
+  fetchData() {
     this.docService.findRecent();
   }
 
   createNewDocument() {
-    const dlg = this.dialog.open(CreateNodeComponent, {
+    this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       maxWidth: 600,
       minHeight: 400,
@@ -68,7 +73,7 @@ export class DashboardComponent implements OnInit {
   }
 
   createNewAddress() {
-    const dlg = this.dialog.open(CreateNodeComponent, {
+    this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       maxWidth: 600,
       minHeight: 400,

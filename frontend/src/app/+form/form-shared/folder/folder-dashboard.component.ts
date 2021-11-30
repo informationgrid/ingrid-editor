@@ -10,6 +10,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Component({
   selector: "ige-folder-dashboard",
@@ -23,6 +24,8 @@ export class FolderDashboardComponent {
     this.updateChildren(value);
   }
 
+  canCreateAddress: boolean;
+  canCreateDataset: boolean;
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
   private subscription: Subscription;
@@ -31,6 +34,7 @@ export class FolderDashboardComponent {
   constructor(
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
+    configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService,
@@ -38,6 +42,8 @@ export class FolderDashboardComponent {
     private dialog: MatDialog
   ) {
     this.query = this.isAddress ? addressTreeQuery : treeQuery;
+    this.canCreateAddress = configService.hasPermission("can_create_address");
+    this.canCreateDataset = configService.hasPermission("can_create_dataset");
   }
 
   updateChildren(model) {

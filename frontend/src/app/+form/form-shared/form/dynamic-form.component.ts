@@ -125,8 +125,6 @@ export class DynamicFormComponent
       this.query = this.treeQuery;
     }
 
-    this.formStateService.updateForm(this.form);
-
     this.form.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -143,7 +141,10 @@ export class DynamicFormComponent
       this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
       merge(
         this.route.params.pipe(map((param) => param.id)),
-        this.documentService.reload$
+        this.documentService.reload$.pipe(
+          filter((item) => item.forAddress === this.address),
+          map((item) => item.id)
+        )
       ),
     ])
       .pipe(untilDestroyed(this))
@@ -260,6 +261,10 @@ export class DynamicFormComponent
    * @param {string} id is the ID of document to be loaded
    */
   loadDocument(id: string) {
+    // update form here instead of onInit, because of caching problem, where no onInit method is called
+    // after revisiting the page
+    this.formStateService.updateForm(this.form);
+
     if (id === undefined) {
       this.resetForm();
       return;

@@ -9,14 +9,21 @@ export class FormPluginsService {
   plugins: Plugin[] = [];
 
   constructor(
-    behaviourService: BehaviourService,
-    @Inject(FormPluginToken) autoPlugins: Plugin[],
+    private behaviourService: BehaviourService,
+    @Inject(FormPluginToken) private autoPlugins: Plugin[],
     router: Router
   ) {
     const forAddress = router.url.indexOf("/address") !== -1;
 
-    behaviourService.applyActiveStates(autoPlugins);
-    this.plugins.push(...autoPlugins);
+    behaviourService.behaviours$.subscribe(() => {
+      this.unregisterAll();
+      this.init(forAddress);
+    });
+  }
+
+  private init(forAddress: boolean) {
+    this.behaviourService.applyActiveStates(this.autoPlugins);
+    this.plugins = [...this.autoPlugins];
 
     if (forAddress) {
       this.plugins.forEach((p) => p.setForAddress());
@@ -28,6 +35,10 @@ export class FormPluginsService {
   // on destroy must be called manually from provided component since it may not be
   // called always
   onDestroy(): void {
+    this.unregisterAll();
+  }
+
+  private unregisterAll() {
     this.plugins.forEach((p) => p.unregister());
   }
 }

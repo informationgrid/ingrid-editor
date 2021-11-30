@@ -7,6 +7,7 @@ import { enableAkitaProdMode, persistState } from "@datorama/akita";
 
 // add scrollto polyfill for ie11
 import smoothscroll from "smoothscroll-polyfill";
+
 smoothscroll.polyfill();
 
 if (environment.production) {
@@ -25,6 +26,7 @@ persistState({
   },
   preStoreUpdate(storeName: string, state: any, initialState: any): any {
     // add initial values for fields that are not persisted
+    if (!state.ui) state.ui = { ...initialState.ui };
     state.ui.currentTab = initialState.ui.currentTab;
     return state;
   },
