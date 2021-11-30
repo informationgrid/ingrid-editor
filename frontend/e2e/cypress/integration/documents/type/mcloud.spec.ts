@@ -6,7 +6,7 @@ import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 describe('mCLOUD documents', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     DocumentPage.visit();
   });
 
