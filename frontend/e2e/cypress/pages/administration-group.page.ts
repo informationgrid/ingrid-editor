@@ -100,12 +100,8 @@ export class AdminGroupPage extends BasePage {
   static addDocumentToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');
-    cy.intercept('GET', '/api/datasets/**', {
-      statusCode: 200,
-      body: {
-        title: docName
-      }
-    }).as('waitRequest');
+
+    cy.intercept('GET', '/api/datasets/**').as('waitRequest');
     cy.contains('mat-tree-node', docName).click();
     cy.get('mat-dialog-actions button').contains('Hinzufügen').click();
     cy.wait('@waitRequest');
