@@ -1,22 +1,28 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, HostListener, OnInit } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { throttleTime } from "rxjs/operators";
+import { AuthenticationFactory } from "./security/auth.factory";
+import { Subject } from "rxjs";
 
+@UntilDestroy()
 @Component({
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
-  // TODO: modal zoom -> https://codepen.io/wolfcreativo/pen/yJKEbp/
+  sessionRefresher$ = new Subject();
 
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
     private codelistService: CodelistService,
     registry: MatIconRegistry,
-    domSanitizer: DomSanitizer
+    domSanitizer: DomSanitizer,
+    private authFactory: AuthenticationFactory
   ) {
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     /*this.roleService.getGroup('admin')
@@ -61,5 +67,17 @@ export class AppComponent implements OnInit {
     codelistService.fetchCatalogCodelists();
   }
 
-  ngOnInit() {}
+  @HostListener("click")
+  updateSession() {
+    this.sessionRefresher$.next();
+  }
+
+  ngOnInit() {
+    this.sessionRefresher$
+      .pipe(
+        untilDestroyed(this),
+        throttleTime(10000) // allow token refresh only every 10s once
+      )
+      .subscribe(() => this.authFactory.get().refreshToken());
+  }
 }
