@@ -15,9 +15,20 @@ describe('Dashboard', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  it('make sure number of published and draft documents in chart is present and greater than 0', function () {
+  it('make sure number of published and draft documents in chart is present and adds up', function () {
     cy.get('.box.working .count').countShouldBeGreaterThan(0);
     cy.get('.box .count').countShouldBeGreaterThan(0);
+    // check if sum of drafted and published documents equals the total number of displayed documents
+    let sum = 0;
+    cy.get('.count')
+      .each($element => {
+        sum += parseInt($element.text());
+      })
+      .then(_ => {
+        DashboardPage.getCount(DashboardPage.totalDisplay).then(_ => {
+          expect(sum).to.equal(_);
+        });
+      });
   });
 
   it('should load a document from dashboard from latest docs box', () => {
