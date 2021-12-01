@@ -226,6 +226,45 @@ describe('Research Page', () => {
     cy.get('div.location').contains('Hamburg');
   });
 
+  it('should be able to create different types of saved searches', () => {
+    // create saved search with limited viewer scope
+    ResearchPage.createSpatialReference('Hamburg', 'saved search with small scope');
+    ResearchPage.saveSearchProfile('savedSearchProfileLimitedScope', 'save description to test existence and scope');
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(
+      'savedSearchProfileLimitedScope',
+      'save description to test existence and scope'
+    );
+    // check for correct search parameters
+    ResearchPage.openSavedSearch('savedSearchProfileLimitedScope', 'save description to test existence and scope');
+    cy.get('.location').should('not.be.empty');
+    // create globally visible search
+    ResearchPage.visit();
+    ResearchPage.search('das');
+    ResearchPage.saveSearchProfile(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope',
+      true
+    );
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope'
+    );
+    // log in as different user and trigger saved search
+    cy.kcLogout();
+    cy.kcLogin('meta');
+    ResearchPage.visit();
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.openSavedSearch(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope',
+      'Globale Suchanfragen'
+    );
+    cy.get('input.mat-input-element').first().should('have.value', 'das');
+    // todo: check that global search can not be deleted
+  });
+
   it('should do search via Schnellsuche by using document ID', () => {
     // Schnellsuche in Dashboard:
     DashboardPage.visit();
