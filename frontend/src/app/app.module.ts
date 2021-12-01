@@ -84,6 +84,7 @@ import { ReplaceAddressDialogComponent } from "./+catalog/+behaviours/system/Del
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { SharedModule } from "./shared/shared.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
+import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 
 registerLocaleData(de);
 
@@ -92,10 +93,17 @@ export function ConfigLoader(
   authFactory: AuthenticationFactory
 ) {
   return () => {
+    const redirectToCatalogSpecificRoute = () => {
+      console.log(
+        "Current Catalog: ",
+        configService.$userInfo.value.currentCatalog.id
+      );
+    };
     return configService
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
+      .then(() => redirectToCatalogSpecificRoute())
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
@@ -136,6 +144,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     MainHeaderComponent,
     SessionTimeoutInfoComponent,
     AnimationWrapperComponent,
+    InitCatalogComponent,
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),

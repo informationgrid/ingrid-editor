@@ -7,117 +7,124 @@ import {
   Routes,
 } from "@angular/router";
 import { AuthGuard } from "./security/auth.guard";
+import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 
 export const routes: Routes = [
   {
-    path: "dashboard",
-    loadChildren: () =>
-      import("./+dashboard/dashboard.module").then((m) => m.DashboardModule),
-    canActivate: [AuthGuard],
-    data: {
-      icon: "Uebersicht",
-    },
-  },
-  {
-    path: "form",
-    loadChildren: () =>
-      import("./+form/ige-form.module").then((m) => m.IgeFormModule),
-    canActivate: [AuthGuard],
-    data: {
-      icon: "Daten",
-    },
-  },
-  {
-    path: "address",
-    loadChildren: () =>
-      import("./+address/address.module").then((m) => m.AddressModule),
-    canActivate: [AuthGuard],
-    data: {
-      icon: "Adressen",
-    },
-  },
-  {
-    path: "research",
-    loadChildren: () =>
-      import("./+research/research.module").then((m) => m.ResearchModule),
-    canActivate: [AuthGuard],
-    data: {
-      icon: "Recherche",
-    },
-  },
-  {
-    path: "reports",
-    loadChildren: () =>
-      import("./+reports/reports.module").then((m) => m.ReportsModule),
-    data: {
-      onlyAdmin: true,
-      icon: "Reports",
-    },
-  },
-  {
-    path: "manage",
-    loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
-    data: {
-      onlyAdmin: true,
-      permission: "manage_users",
-      icon: "Benutzer",
-    },
-  },
-  // TODO: check canActivateChild: [AuthGuard],
-  {
-    path: "importExport",
-    loadChildren: () =>
-      import("./+importExport/import-export.module").then(
-        (m) => m.ImportExportModule
-      ),
-    canActivate: [AuthGuard],
-    data: {
-      onlyAdmin: true,
-      permission: ["can_import", "can_export"],
-      icon: "Im-Export",
-    },
-  },
-  {
-    path: "catalogs",
-    loadChildren: () =>
-      import("./+catalog/catalog.module").then((m) => m.CatalogModule),
-    data: {
-      onlyAdmin: true,
-      permission: "manage_catalog",
-      icon: "Katalog",
-    },
-  },
-  {
-    path: "settings",
-    loadChildren: () =>
-      import("./+settings/settings.module").then((m) => m.SettingsModule),
-    data: {
-      onlyAdmin: true,
-      icon: "",
-      hideFromMenu: true,
-    },
-  },
-  {
-    path: "profile",
-    loadChildren: () =>
-      import("./+profile/profile.module").then((m) => m.ProfileModule),
-    data: {
-      icon: "",
-      hideFromMenu: true,
-    },
-  },
-  {
-    path: "",
-    redirectTo: "/dashboard",
-    pathMatch: "full",
-  },
-  {
-    path: "**",
-    redirectTo: "/dashboard",
-    data: {
-      hideFromMenu: true,
-    },
-  },
+    path: ":catalog",
+    component: InitCatalogComponent,
+    children: [
+      {
+        path: "dashboard",
+        loadChildren: () =>
+          import("./+dashboard/dashboard.module").then((m) => m.DashboardModule),
+        canActivate: [AuthGuard],
+        data: {
+          icon: "Uebersicht",
+        },
+      },
+      {
+        path: "form",
+        loadChildren: () =>
+          import("./+form/ige-form.module").then((m) => m.IgeFormModule),
+        canActivate: [AuthGuard],
+        data: {
+          icon: "Daten",
+        },
+      },
+      {
+        path: "address",
+        loadChildren: () =>
+          import("./+address/address.module").then((m) => m.AddressModule),
+        canActivate: [AuthGuard],
+        data: {
+          icon: "Adressen",
+        },
+      },
+      {
+        path: "research",
+        loadChildren: () =>
+          import("./+research/research.module").then((m) => m.ResearchModule),
+        canActivate: [AuthGuard],
+        data: {
+          icon: "Recherche",
+        },
+      },
+      {
+        path: "reports",
+        loadChildren: () =>
+          import("./+reports/reports.module").then((m) => m.ReportsModule),
+        data: {
+          onlyAdmin: true,
+          icon: "Reports",
+        },
+      },
+      {
+        path: "manage",
+        loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
+        data: {
+          onlyAdmin: true,
+          permission: "manage_users",
+          icon: "Benutzer",
+        },
+      },
+      // TODO: check canActivateChild: [AuthGuard],
+      {
+        path: "importExport",
+        loadChildren: () =>
+          import("./+importExport/import-export.module").then(
+            (m) => m.ImportExportModule
+          ),
+        canActivate: [AuthGuard],
+        data: {
+          onlyAdmin: true,
+          permission: ["can_import", "can_export"],
+          icon: "Im-Export",
+        },
+      },
+      {
+        path: "catalogs",
+        loadChildren: () =>
+          import("./+catalog/catalog.module").then((m) => m.CatalogModule),
+        data: {
+          onlyAdmin: true,
+          permission: "manage_catalog",
+          icon: "Katalog",
+        },
+      },
+      {
+        path: "settings",
+        loadChildren: () =>
+          import("./+settings/settings.module").then((m) => m.SettingsModule),
+        data: {
+          onlyAdmin: true,
+          icon: "",
+          hideFromMenu: true,
+        },
+      },
+      {
+        path: "profile",
+        loadChildren: () =>
+          import("./+profile/profile.module").then((m) => m.ProfileModule),
+        data: {
+          icon: "",
+          hideFromMenu: true,
+        },
+      },
+      {
+        path: "",
+        redirectTo: "/dashboard",
+        pathMatch: "full",
+      },
+    ],
+  }
+  /*  {
+        path: "**",
+        redirectTo: "/dashboard",
+        data: {
+          hideFromMenu: true,
+        },
+  },*/
 ];
 
 // export const appRoutingProviders: any[] = [];
@@ -125,6 +132,7 @@ export const routes: Routes = [
 export const routing = RouterModule.forRoot(routes, {
   // preloadingStrategy: PreloadAllModules,
   // relativeLinkResolution: "legacy",
+  enableTracing: false,
 });
 
 export class CustomReuseStrategy implements RouteReuseStrategy {

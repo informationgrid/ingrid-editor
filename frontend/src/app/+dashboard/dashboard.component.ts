@@ -7,7 +7,7 @@ import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { SessionQuery } from "../store/session.query";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import {
   CreateNodeComponent,
@@ -96,15 +96,19 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoImportPage() {
-    this.router.navigate(["/importExport/import"]);
+    this.router.navigate(["../importExport/import"], {
+      relativeTo: this.route,
+    });
   }
 
-  openDocument(uuid: string) {
-    this.router.navigate(["/form", { id: uuid }]);
+  openDocument(uuid:  string) {
+    this.router.navigate(["../form", { id: uuid }], { relativeTo: this.route });
   }
 
   openAddress(uuid: string) {
-    this.router.navigate(["/address", { id: uuid }]);
+    this.router.navigate(["../address", { id: uuid }], {
+      relativeTo: this.route,
+    });
   }
 
   createNewFolder() {
