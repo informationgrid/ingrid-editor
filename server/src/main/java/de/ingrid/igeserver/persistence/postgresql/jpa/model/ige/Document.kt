@@ -22,7 +22,7 @@ class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("_id")
+    @JsonIgnore
     var id: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,6 +32,7 @@ class Document {
     var catalog: Catalog? = null
 
     @Column(nullable = false)
+    @JsonProperty("_id")
     var uuid: String = UUID.randomUUID().toString()
 
     @Column(nullable=false)

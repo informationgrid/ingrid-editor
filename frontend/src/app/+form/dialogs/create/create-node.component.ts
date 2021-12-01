@@ -273,7 +273,7 @@ export class CreateNodeComponent implements OnInit {
     newDocument.title = this.formGroup.get("title").value;
     const savedDoc = await this.saveForm(newDocument);
 
-    this.navigateAfterSave(savedDoc._id);
+    this.navigateAfterSave(savedDoc._wrapperId);
   }
 
   private saveForm(data: IgeDocument) {
