@@ -44,11 +44,28 @@ export class AddressPage extends DocumentPage {
   static createAddress(address: Address, targetTreePath?: string[]) {
     this.CreateDialog.open();
     this.CreateDialog.fill(address, targetTreePath);
+    cy.intercept({
+      pathname: '/api/datasets',
+      query: {
+        address: 'true'
+      },
+      method: 'POST'
+    }).as('setAddress');
     this.CreateDialog.execute();
+    cy.wait('@setAddress');
   }
 
   static apiCreateAddress(json: any, published?: boolean) {
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=true&publish=${published}`, json);
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: Cypress.config('baseUrl') + `/api/datasets?address=true&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
   }
 
   static saveChanges() {

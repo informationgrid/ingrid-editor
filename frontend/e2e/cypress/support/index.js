@@ -36,28 +36,27 @@ Cypress.Commands.add(
   },
   (subject, equalTo) => {
     if (isNaN(equalTo)) {
-      expect(subject.text().trim()).to.eq(equalTo);
+      cy.wrap(subject.text().trim()).should('eq', equalTo);
     } else {
-      expect(parseInt(subject.text())).to.eq(equalTo);
+      cy.wrap(parseInt(subject.text())).should('eq', equalTo);
     }
-    return subject;
+    return cy.wrap(subject);
   }
 );
 
 Cypress.Commands.add(
   'countShouldBeGreaterThan',
   {
-    prevSubject: true,
+    prevSubject: true
   },
   (subject, greaterThan) => {
-
     expect(parseInt(subject.text())).to.gt(greaterThan);
 
     return subject;
-  },
+  }
 );
 
-Cypress.Commands.add('hasErrorDialog', (content) => {
+Cypress.Commands.add('hasErrorDialog', content => {
   cy.get('error-dialog').should('be.visible');
 
   if (content) {

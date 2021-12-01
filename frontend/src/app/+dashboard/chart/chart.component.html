@@ -4,8 +4,8 @@
             *ngIf="dataSeq.first"
             class="circle circle-1"
             attr.stroke-dasharray="{{
-                calculateAdjustedStrokeDash(dataSeq.first)
-            }}, {{ calculateStrokeDash(dataSeq.second) }}"
+                calculateAdjustedStrokeDash(dataSeq.second)
+            }}, {{ calculateStrokeDash(dataSeq.first) }}"
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -14,8 +14,8 @@
             *ngIf="dataSeq.second"
             class="circle circle-2"
             attr.stroke-dasharray="0, {{
-                calculateStrokeDash(dataSeq.first)
-            }}, {{ calculateAdjustedStrokeDash(dataSeq.second) }}"
+                calculateStrokeDash(dataSeq.second)
+            }}, {{ calculateAdjustedStrokeDash(dataSeq.first) }}"
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"

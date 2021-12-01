@@ -1,6 +1,12 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
 import { ResearchResponse, ResearchService } from "./research.service";
-import { debounceTime, distinct, tap } from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinct,
+  finalize,
+  tap,
+} from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormControl } from "@angular/forms";
 import { FacetUpdate } from "./+facets/facets.component";
@@ -19,6 +25,7 @@ import { ShortResultInfo } from "./result-table/result-table.component";
 import { logAction } from "@datorama/akita";
 import { SessionService } from "../services/session.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { of } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -102,11 +109,19 @@ export class ResearchComponent implements OnInit {
           model,
           state.ui.search.facets.fieldsWithParameters ?? {}
         )
+        .pipe(
+          catchError((err) => this.handleSearchError(err)),
+          finalize(() => (this.isSearching = false))
+        )
         .subscribe((result) => {
-          this.isSearching = false;
           this.updateHits(result);
         });
     });
+  }
+
+  private handleSearchError(err) {
+    console.warn("Error during search", err);
+    return of({ totalHits: 0, hits: [] });
   }
 
   queryBySQL() {

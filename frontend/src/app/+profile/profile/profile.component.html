@@ -22,7 +22,7 @@
                 <mat-icon svgIcon="group"></mat-icon>
                 {{ group }}
             </div>
-            <div *ngIf="!userInfo.groups.length" class="side-item">
+            <div *ngIf="userInfo.groups.length === 0" class="side-item">
                 - Keine -
             </div>
         </div>
@@ -43,40 +43,28 @@
             <div>Nachname</div>
             <div>{{ userInfo.lastName }}</div>
         </div>
+
         <h3>Kontakt</h3>
 
-        <div class="info-row" fxLayout="row">
+        <div class="info-row" fxLayout="row" fxLayoutAlign="start">
             <div>E-Mail Adresse</div>
-            <div>{{ userInfo.email }}</div>
-            <button
-                mat-button
-                color="primary"
-                (click)="openChangeEmailDialog()"
+            <ige-emailform
+                *ngIf="editingEmail; else editMail"
+                [initialEmail]="userInfo.email"
+                (onClose)="editingEmail = false; changeEmail($event)"
             >
-                Ändern
-            </button>
+            </ige-emailform>
+            <ng-template #editMail>
+                <div>{{ userInfo.email }}</div>
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="editingEmail = true"
+                >
+                    Ändern
+                </button>
+            </ng-template>
         </div>
-
-        <!--        <h3>Kontakt</h3>-->
-
-        <!--        <div class="info-row" fxLayout="row">-->
-        <!--            <div>E-Mail Adresse</div>-->
-        <!--            <ige-emailform-->
-        <!--                *ngIf="editingEmail"-->
-        <!--                [initialEmail]="userInfo.email"-->
-        <!--                (onClose)="editingEmail = false; changeEmail($event)"-->
-        <!--            >-->
-        <!--            </ige-emailform>-->
-        <!--            <div *ngIf="!editingEmail">{{ userInfo.email }}</div>-->
-        <!--            <button-->
-        <!--                *ngIf="!editingEmail"-->
-        <!--                mat-button-->
-        <!--                color="primary"-->
-        <!--                (click)="editingEmail = true"-->
-        <!--            >-->
-        <!--                Ändern-->
-        <!--            </button>-->
-        <!--        </div>-->
 
         <h3>Sicherheit</h3>
         <div class="info-row" fxLayout="row">

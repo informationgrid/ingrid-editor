@@ -169,18 +169,19 @@ describe('Research Page', () => {
 
   it('should delete SQL-query and subsequently return 0 results', () => {
     cy.intercept('/api/search/query').as('query');
+    cy.intercept('/api/search/querySql').as('sqlQuery');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
     // make sure query field is not empty
     cy.get('[data-cy="sql-query-field"]').should('not.have.value', '');
     // make sure a non-zero number of results is returned
+    cy.wait('@sqlQuery');
     cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
-    // make sure both query-requests are done before proceeding with removing the SQL-query
-    cy.wait('@query');
+    //cy.wait('@query');
     cy.wait('@query');
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
-    // make sure query has been removed from query field
+    // make sure query has been removed from query field and 0 results are returned
     cy.get('[data-cy="sql-query-field"]').should('have.value', '');
     cy.contains('.result', '0 Ergebnisse gefunden');
   });
@@ -236,6 +237,7 @@ describe('Research Page', () => {
     DashboardPage.visit();
     DashboardPage.search('556c875e-d471-4a35-8203-0c750737d296');
     cy.contains('button', 'Suchen').click();
+    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     cy.contains('td', 'Taunus, Adresse');
     ResearchPage.getSearchResultCount().should('equal', 1);
@@ -253,8 +255,8 @@ describe('Research Page', () => {
     cy.contains('.title', 'TestDocResearch');
   });
 
-  // test for naughty strings
-  xit('should be able to deal with potentially problematic search terms (#3457)', () => {
+  // test for nasty strings
+  it('should be able to deal with potentially problematic search terms (#3457)', () => {
     //check if document with problematic strings in title can be found
     DocumentPage.visit();
     DocumentPage.createDocument("What's{This");
@@ -310,51 +312,43 @@ describe('Research Page', () => {
 
   it('should do timerelated search with only start date given (#3040)', () => {
     // choose start date and compare filtered results with number of all search results
-    ResearchPage.openCalendar('von');
-    ResearchPage.switchMonthsBackward(3);
-    ResearchPage.pickDayOfMonth(9);
-    cy.wait(1000);
+    ResearchPage.setDate('startDate', '09.08.2021');
+    cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.clearDateField('startDate');
-      cy.wait(1000);
+      cy.wait(500);
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('should do timerelated search with only end date given (#3040)', () => {
     // choose end date and compare filtered results with number of all search results
-    ResearchPage.openCalendar('bis');
-    ResearchPage.switchMonthsBackward(3);
-    ResearchPage.pickDayOfMonth(11);
-    cy.wait(1000);
+    ResearchPage.setDate('endDate', '11.08.2021');
+    cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.clearDateField('endDate');
-      cy.wait(1000);
+      cy.wait(500);
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('should do timerelated search with both start date and end date given (#3040)', () => {
     // choose start date and compare filtered results with number of all search results
-    ResearchPage.openCalendar('von');
-    ResearchPage.switchMonthsBackward(3);
-    ResearchPage.pickDayOfMonth(9);
-    ResearchPage.openCalendar('bis');
-    ResearchPage.switchMonthsBackward(3);
-    ResearchPage.pickDayOfMonth(29);
-    cy.wait(1000);
+    ResearchPage.setDate('startDate', '07.08.2021');
+    ResearchPage.setDate('endDate', '29.08.2021');
+    cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.clearDateField('endDate');
       ResearchPage.clearDateField('startDate');
-      cy.wait(1000);
+      cy.wait(500);
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('timerelated search with same start date and end date should return only documents belonging to this date (#3040)', () => {
-    ResearchPage.typeDateManually('startDate', '22.07.2021');
-    ResearchPage.typeDateManually('endDate', '22.07.2021');
-    cy.wait(1000);
+    ResearchPage.setDate('startDate', '22.07.2021');
+    ResearchPage.setDate('endDate', '22.07.2021');
+    cy.wait(500);
 
     // iterate through every result to check date
     cy.get('tbody tr').each(el => {
@@ -365,36 +359,36 @@ describe('Research Page', () => {
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.clearDateField('endDate');
       ResearchPage.clearDateField('startDate');
-      cy.wait(1000);
+      cy.wait(500);
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('timerelated search with start date more recent than end date should return 0 results (#3040)', () => {
-    ResearchPage.typeDateManually('startDate', '24.07.2021');
-    ResearchPage.typeDateManually('endDate', '22.07.2021');
+    ResearchPage.setDate('startDate', '24.07.2021');
+    ResearchPage.setDate('endDate', '22.07.2021');
     cy.wait(500);
     ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
   });
 
   it('timerelated search for specific document should only return it when respective date is covered by interval (#3040)', () => {
     // date interval too early for specific document
-    ResearchPage.typeDateManually('startDate', '20.06.2021');
-    ResearchPage.typeDateManually('endDate', '29.06.2021');
-    cy.wait(1000);
+    ResearchPage.setDate('startDate', '20.06.2021');
+    ResearchPage.setDate('endDate', '29.06.2021');
+    cy.wait(500);
     // expect to get 0 results
     ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
     // stretch the interval to cover the date in question
-    ResearchPage.typeDateManually('endDate', '30.06.2021');
-    cy.wait(1000);
+    ResearchPage.setDate('endDate', '30.06.2021');
+    cy.wait(500);
     // expect the document to be returned
     ResearchPage.getSearchResultCount().should('equal', 1);
     cy.contains('tbody tr', 'Veröffentlichter Datensatz mit Bearbeitungsversion');
   });
 
   it('should do timerelated search together with search for published documents (#3040)', () => {
-    ResearchPage.typeDateManually('startDate', '20.06.2021');
-    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    ResearchPage.setDate('startDate', '20.06.2021');
+    ResearchPage.setDate('endDate', '29.07.2021');
     cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
@@ -404,8 +398,8 @@ describe('Research Page', () => {
   });
 
   it('should do timerelated search together with document type search (#3040)', () => {
-    ResearchPage.typeDateManually('startDate', '20.06.2021');
-    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    ResearchPage.setDate('startDate', '10.05.2021');
+    ResearchPage.setDate('endDate', '30.08.2021');
     cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.mCloud);
@@ -415,8 +409,8 @@ describe('Research Page', () => {
   });
 
   it('should do timerelated search together with spatial reference search (#3040)', () => {
-    ResearchPage.typeDateManually('startDate', '20.06.2021');
-    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    ResearchPage.setDate('startDate', '20.06.2021');
+    ResearchPage.setDate('endDate', '29.07.2021');
     cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial10');
@@ -427,8 +421,8 @@ describe('Research Page', () => {
 
   it('should be possible to delete date from input fields (#3040)', () => {
     // type in dates
-    ResearchPage.typeDateManually('startDate', '20.06.2021');
-    ResearchPage.typeDateManually('endDate', '29.07.2021');
+    ResearchPage.setDate('startDate', '20.06.2021');
+    ResearchPage.setDate('endDate', '29.07.2021');
     // delete dates
     cy.get(ResearchPage.StartDateField).clear();
     cy.get(ResearchPage.EndDateField).clear();

@@ -49,17 +49,10 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       this.timer$.unsubscribe();
     }
 
-    const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
-    if (!refreshToken) return;
+    /*const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    if (!refreshToken) return;*/
 
-    const endTime = refreshToken.exp;
-
-    const now = Math.ceil(new Date().getTime() / 1000);
-    const durationRefresh = endTime - now;
-
-    console.log(`Endtime Refresh: ${durationRefresh}`);
-
-    const duration = durationRefresh;
+    let duration = this.calculateDuration();
     this.updateStore(duration);
 
     this.timer$ = timer(0, this.oneSecondInMilliseconds)
@@ -69,9 +62,27 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       )
       .subscribe((time) => {
         if (time % 60 == 0 || time < 300) {
+          duration = this.calculateDuration();
           this.updateStore(time);
         }
       });
+  }
+
+  private calculateDuration() {
+    const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    if (!refreshToken) {
+      this.updateStore(-1);
+      return;
+    }
+
+    const endTime = refreshToken.exp;
+
+    const now = Math.ceil(new Date().getTime() / 1000);
+    const durationRefresh = endTime - now;
+
+    console.log(`Endtime Refresh: ${durationRefresh}`);
+
+    return durationRefresh;
   }
 
   private updateStore(time: number) {

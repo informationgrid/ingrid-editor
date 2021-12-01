@@ -23,10 +23,9 @@ export class DocumentDataService {
     return this.http.get<any[]>(url);
   }
 
-  load(id: string, address = false): Observable<IgeDocument> {
-    const params = "?address=" + address;
+  load(id: string): Observable<IgeDocument> {
     return this.http.get<IgeDocument>(
-      this.configuration.backendUrl + "datasets/" + id + params
+      this.configuration.backendUrl + "datasets/" + id
     );
   }
 

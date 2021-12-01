@@ -1,31 +1,39 @@
-<form
-    style="align-items: center"
-    novalidate
-    [formGroup]="emailForm"
-    id="editForm"
-    (ngSubmit)="onSubmit()"
->
-    <mat-form-field>
-        <input matInput formControlName="email" type="email" email required />
+<form novalidate [formGroup]="emailForm" id="editForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="width-100">
+        <input
+            igeFocus
+            matInput
+            formControlName="email"
+            type="email"
+            email
+            required
+        />
         <mat-error *ngIf="formErrors.email">{{ formErrors.email }}</mat-error>
     </mat-form-field>
 
-    <p>
+    <div class="comment">
         Ihre E-Mail Adresse wird für Zusendung von Benachrichtigungen oder zur
         Passwortänderung verwendet
-    </p>
+    </div>
 
-    <button type="button" mat-button color="primary" (click)="abortChange()">
-        {{ "abrechen" | uppercase }}
-    </button>
+    <div fxLayoutAlign="end" fxLayoutGap="12px">
+        <button
+            type="button"
+            mat-button
+            color="primary"
+            (click)="abortChange()"
+        >
+            Abbrechen
+        </button>
 
-    <button
-        [disabled]="emailForm.invalid"
-        type="submit"
-        mat-flat-button
-        color="primary"
-        class="mat-primary"
-    >
-        {{ "übernehmen" | uppercase }}
-    </button>
+        <button
+            [disabled]="emailForm.invalid"
+            type="submit"
+            mat-flat-button
+            color="primary"
+            class="mat-primary"
+        >
+            Übernehmen
+        </button>
+    </div>
 </form>

@@ -6,7 +6,7 @@ import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 describe('mCLOUD documents', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     DocumentPage.visit();
   });
 
@@ -118,8 +118,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.checkURL('/form');
       AddressPage.apiCreateAddress(json, true);
 
-      cy.visit('/address');
-      cy.wait(100);
+      AddressPage.visit();
       DocumentPage.checkURL('/address');
       Tree.containsNodeWithObjectTitle('APICallPublishedAdr');
     });

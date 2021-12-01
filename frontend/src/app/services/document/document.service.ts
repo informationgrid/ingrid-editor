@@ -38,6 +38,11 @@ import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
+export interface ReloadData {
+  id: string;
+  forAddress: boolean;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -47,11 +52,10 @@ export class DocumentService {
   beforeSave$ = new Subject<any>();
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
-  afterProfileSwitch$ = new Subject<any>();
   documentOperationFinished$ = new Subject<any>();
   datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
-  reload$ = new Subject<string>();
+  reload$ = new Subject<ReloadData>();
 
   private configuration: Configuration;
   private alternateAddressTitle: (IgeDocument) => string = null;
@@ -161,9 +165,7 @@ export class DocumentService {
 
     return this.dataService.save(data, isAddress).pipe(
       filter(() => !noVisualUpdates),
-      tap((json) =>
-        this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")
-      ),
+      tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
       tap((json) => this.postSaveActions(json, isNewDoc, path, isAddress)),
       finalize(() => this.documentOperationFinished$.next(true))
     );
@@ -245,7 +247,7 @@ export class DocumentService {
     );
   }
 
-  unpublish(id: string): Observable<any> {
+  unpublish(id: string, forAddress: boolean): Observable<any> {
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
         if (error?.error?.errorCode === "POST_SAVE_ERROR") {
@@ -261,7 +263,7 @@ export class DocumentService {
       tap((json) =>
         this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
       ),
-      tap(() => this.reload$.next(id)),
+      tap(() => this.reload$.next({ id, forAddress: forAddress })),
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
@@ -310,7 +312,10 @@ export class DocumentService {
       tap((json) =>
         this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
       ),
-      tap(() => this.reload$.next(id))
+      // tap(json => this.treeStore.update(id, json[0])),
+      // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
+      tap(() => this.reload$.next({ id, forAddress: isAddress }))
+      // catchError( err => this.errorService.handle( err ) )
     );
   }
 
@@ -464,10 +469,6 @@ export class DocumentService {
     store.update({ isDocLoading: isLoading });
   }
 
-  getDocumentIcon(doc: IgeDocument): string {
-    return this.profileService.getDocumentIcon(doc);
-  }
-
   getStatistic(): Observable<StatisticResponse> {
     return this.http.get<StatisticResponse>(
       `${this.configuration.backendUrl}statistic`
@@ -559,7 +560,7 @@ export class DocumentService {
     const openedDocId = store.getValue().openedDocument?.id.toString();
     const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
     if (openedDocWasMoved) {
-      this.reload$.next(openedDocId);
+      this.reload$.next({ id: openedDocId, forAddress: isAddress });
     }
   }
 

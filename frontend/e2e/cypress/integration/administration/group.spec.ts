@@ -1,8 +1,8 @@
-import { BasePage, UserAndRights } from '../../pages/base.page';
-import { AdminGroupPage } from '../../pages/administration-group.page';
+import { UserAndRights } from '../../pages/base.page';
+import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { AddressPage } from '../../pages/address.page';
 import { ResearchPage } from '../../pages/research.page';
+import { Utils } from '../../pages/utils';
 
 describe('Group', () => {
   beforeEach(() => {
@@ -85,6 +85,10 @@ describe('Group', () => {
 
     cy.get('groups-table').contains(groupName2).click();
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    // close error box
+    cy.findByText('Verwerfen').click();
+    // make sure error box is not there anymore
+    cy.get('mat-dialog-container').should('not.exist');
   });
 
   it('should change a selected group after discard changes', () => {
@@ -196,6 +200,53 @@ describe('Group', () => {
     ResearchPage.visit();
     ResearchPage.search('Elsass, Adresse');
     ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
+  });
+
+  it('should be possible to jump between groups and associated users', () => {
+    const group = 'z_group';
+    const user = 'autor test';
+    // create a new group
+    AdminGroupPage.addNewGroup(group);
+    AdminGroupPage.getNextPage();
+    cy.get('groups-table').should('contain', group);
+    // add group to user
+    AdminUserPage.visit();
+    AdminUserPage.selectUser(user);
+    AdminUserPage.addGroupToUser(group);
+    AdminUserPage.toolbarSaveUser();
+    // jump from group to user
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.getNextPage();
+    AdminGroupPage.selectGroup(group);
+    AdminUserPage.selectAssociatedUser(user);
+    // make sure group is associated to user
+    cy.get('ige-repeat-list').should('contain', group);
+  });
+
+  it('should show correct information in group header', () => {
+    /* 1. last-edited-date */
+    // change an existing group and make sure the "last-edited" date is updated
+    AdminGroupPage.selectGroup('leere_Gruppe');
+    // edit group
+    AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
+    AdminGroupPage.toolbarSaveGroup();
+
+    // check that last-edited date has been updated
+    const dateOfToday = Utils.getFormattedDate(new Date());
+    AdminGroupPage.verifyInfoInHeader(headerKeys.EditDate, dateOfToday);
+
+    /* 2. ID */
+    // make sure ID consists of a number
+    AdminGroupPage.openUpGroupHeader();
+    cy.contains(AdminGroupPage.ID, /[0-9]+/);
+
+    /* 3. creation-date */
+    // create group and make sure the created-date is correct
+    const groupName = 'group' + Utils.randomString();
+    AdminGroupPage.addNewGroup(groupName);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.openUpGroupHeader();
+    AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, dateOfToday);
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});

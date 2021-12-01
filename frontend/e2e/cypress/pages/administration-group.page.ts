@@ -44,13 +44,23 @@ export class AdminGroupPage extends BasePage {
   }
 
   static selectGroup(groupName: string) {
+    cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
     cy.get('groups-table').contains(groupName).click();
+    cy.wait('@fetchGroupRequest');
     cy.get('#formRoles').should('be.visible');
   }
+
+  static CreationDate = '.more-info div[fxlayout="row"]:nth-child(1) > div span';
+  static LastEditedDate = '.more-info div[fxlayout="row"]:nth-child(2) > div span';
+  static ID = '.more-info div[fxlayout="row"]:nth-child(3) div:nth-child(2)';
 
   static confirmDeletingIntention() {
     cy.get('mat-dialog-container');
     cy.contains('button', 'Löschen').click();
+  }
+
+  static openUpGroupHeader() {
+    cy.get('.user-title .menu-button').eq(0).click();
   }
 
   static deleteDocumentFromGroup(docName: string, docType: string) {
@@ -90,12 +100,8 @@ export class AdminGroupPage extends BasePage {
   static addDocumentToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');
-    cy.intercept('GET', /address=false/, {
-      statusCode: 200,
-      body: {
-        title: docName
-      }
-    }).as('waitRequest');
+
+    cy.intercept('GET', '/api/datasets/**').as('waitRequest');
     cy.contains('mat-tree-node', docName).click();
     cy.get('mat-dialog-actions button').contains('Hinzufügen').click();
     cy.wait('@waitRequest');
@@ -119,8 +125,7 @@ export class AdminGroupPage extends BasePage {
 }
 
 export enum headerKeys {
-  Manager = 1,
-  CreationDate,
+  CreationDate = 1,
   EditDate,
   identification
 }

@@ -1,5 +1,9 @@
 @import "src/variables";
 
-mat-form-field {
-  width: 100%;
+:host {
+  flex: 1;
+}
+
+.comment {
+  padding-bottom: 12px;
 }

@@ -15,12 +15,8 @@ describe('Search', function () {
     DocumentPage.getSearchResults()
       .its('length')
       .then(count => {
-        DashboardPage.search('c');
-        DashboardPage.search('l');
-        DashboardPage.search('o');
-        DashboardPage.search('u');
-        DashboardPage.search('d');
-        // cy.get('.cdk-overlay-pane ige-document-list-item', {timeout: 70000}).its('length').should('be.lessThan', count);
+        DashboardPage.search('cloud');
+        cy.get('.cdk-overlay-pane ige-document-list-item').should('exist');
         cy.get('.cdk-overlay-pane ige-document-list-item').should('have.length.lessThan', count);
       });
     // TODO: as Unit tests and e2e tests only checks if functionality is there ("click on Alle-Link", ...)

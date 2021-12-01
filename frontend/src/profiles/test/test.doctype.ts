@@ -40,6 +40,21 @@ export class TestDoctype extends BaseDoctype {
             },
           },
           {
+            key: "textMaxLength",
+            type: "input",
+            wrappers: ["panel", "form-field"],
+            templateOptions: {
+              externalLabel: "Textfeld Max Länge",
+              appearance: "outline",
+              required: true,
+              maxLength: 10,
+            },
+            expressionProperties: {
+              "templateOptions.description":
+                '(model.textMaxLength||"").length+" / 10"',
+            },
+          },
+          {
             key: "optionalText",
             type: "input",
             className: "optional animated",

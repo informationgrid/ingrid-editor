@@ -222,8 +222,12 @@ export class ResearchPage {
     cy.get(`.mat-input-element[formcontrolname="${point}"]`).should('have.length', 1).clear({ force: true });
   }
 
-  static typeDateManually(point: string, date: string): void {
-    cy.get(`.mat-input-element[formcontrolname="${point}"]`).should('have.length', 1).clear({ force: true }).type(date);
+  static setDate(point: string, date: string): Chainable {
+    return cy
+      .get(`.mat-input-element[formcontrolname="${point}"]`)
+      .should('have.length', 1)
+      .clear({ force: true })
+      .type(date);
   }
 
   // call with recursion to avoid undeterministic behaviour

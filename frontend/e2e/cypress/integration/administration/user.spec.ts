@@ -4,6 +4,7 @@ import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { AdminGroupPage } from '../../pages/administration-group.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -425,40 +426,85 @@ describe('User', () => {
     //  ("gestelltvertretet")
   });
 
-  xit('should show all the users to a catalogue admin (#2671)', () => {});
+  it('should show all the users to a catalogue admin (#2671)', () => {
+    // login as super admin
+    // get number of the users
+    // logout from admin and login as catalog admin
+    // get number of users and compare the two numbers
+    cy.kcLogout();
+    cy.kcLogin('user');
+    AdminUserPage.visit();
+    cy.get('.page-title')
+      .contains('Nutzer')
+      .then($text => {
+        // get number of the users super admin
+        let txt = $text.text();
+        let regex = /\d+/g;
+        let matches = txt.match(regex);
+        cy.kcLogout();
+        cy.kcLogin('eins');
+        AdminUserPage.visit();
+        cy.intercept('GET', '/api/users').as('usersCall');
+        cy.wait('@usersCall');
+        cy.get('.page-title')
+          .contains('Nutzer')
+          .then($txtCatalog => {
+            // get number of the users catalog admin
+            let txtCatalog = $txtCatalog.text();
+            let matchesCatalog = txtCatalog.match(regex);
+            let catalogNumber = Number(matchesCatalog![0]);
+            let superUserNumber = Number(matches![0]) - 1;
+            expect(catalogNumber.toString()).to.eq(superUserNumber.toString());
+          });
+      });
+  });
 
-  xit('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+  it('Creation of a user after it has been previously deleted (#3108)', () => {
     AdminUserPage.visit();
 
-    let userLogIn = 'new-user-meta-admin';
-    let userEmail = 'new-user-meta-admin@wemove.com';
+    let userLogIn = 'user-to-be-deleted-after-creation';
+    let userEmail = 'new-user-to-be-deleted@wemove.com';
     let userRole = 'Metadaten-Administrator';
-    var psw = '';
 
     AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
+    // check user has been created
+    AdminUserPage.selectUser(userLogIn);
+    // delete user
+    AdminUserPage.deleteUser();
+    cy.get('user-table').should('not.contain', userLogIn + ' ' + userLogIn);
 
-    // get email and extract the password
-    cy.task('getLastEmail', userEmail)
-      .its('body')
-      .then(body => {
-        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+    // create user again
+    AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
 
-        psw = body.substring(body.indexOf('Passwort: ') + 'Passwort: '.length, body.indexOf('(muss') - 1);
+    // turn the page if user is not found on the current page
+    if (Cypress.$(`user-table tr .mat-row:contains("${userLogIn}")`)) {
+      cy.contains('user-table', userLogIn + ' ' + userLogIn);
+    } else {
+      AdminUserPage.getNextPage();
+      cy.contains('user-table', userLogIn + ' ' + userLogIn);
+    }
+  });
 
-        cy.kcLogout();
-        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
+  it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
+    AdminUserPage.visit();
 
-        cy.get('#username').type(userLogIn);
-        cy.get('#password').type(psw);
-        cy.get('#kc-login').click();
+    let firstUserLogIn = 'first-new-meta' + Date.now().toString();
+    let firstUserEmail = 'first-new-meta' + Date.now().toString() + '@wemove.com';
+    let secondUserLogIn = 'second-new-meta' + Date.now().toString();
+    let secondUserEmail = 'second-new-meta' + Date.now().toString() + '@wemove.com';
+    let userRole = 'Metadaten-Administrator';
 
-        cy.get('#kc-header-wrapper').should('contain', 'Update password');
-        // create new user for the created user here
-        AdminUserPage.visit();
+    // create first user
+    AdminUserPage.createNewUser(firstUserLogIn, firstUserEmail, userRole);
+    //  extract and update first user password then login
+    AdminUserPage.extractAndResetNewUserPassword(firstUserLogIn, firstUserEmail, userRole);
 
-        let userNewLogIn = 'new-user-meta-admin';
-        let userNewEmail = 'new-user-meta-admin@wemove.com';
-      });
+    AdminUserPage.visit();
+
+    // create second user
+    AdminUserPage.createNewUser(secondUserLogIn, secondUserEmail, userRole);
+    // extract and update second user password then login
+    AdminUserPage.extractAndResetNewUserPassword(secondUserLogIn, secondUserEmail, userRole);
   });
 
   //TODO: Verification emails for user!

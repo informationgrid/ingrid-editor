@@ -387,7 +387,10 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy="form-message"]').contains('gespeichert');
   }
 
-  static checkOnlyActiveToolbarButtons(buttonIds: string[]) {
+  static checkOnlyActiveToolbarButtons(buttonIds: string[], toBeIgnored: string[] = []) {
+    toBeIgnored.forEach(ignored => {
+      delete DocumentPage.Toolbar[ignored];
+    });
     Object.keys(DocumentPage.Toolbar).forEach(key => {
       if (buttonIds.indexOf(key) !== -1) {
         cy.get(DocumentPage.Toolbar[key]).should('be.enabled');

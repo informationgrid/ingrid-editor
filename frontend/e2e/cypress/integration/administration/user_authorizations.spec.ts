@@ -91,11 +91,6 @@ describe('Meta data administrator without groups', () => {
     // Also: make sure no address is displayed in the address list
     cy.get('ige-tree').contains('Leer');
   });
-
-  xit('metadata admin without groups should be able to change manager of users', () => {
-    // on hold, since manager functionality will probably be removed in the near future
-    AdminUserPage.visit();
-  });
 });
 
 // meta data administrator with groups
@@ -451,8 +446,8 @@ describe('Meta data administrator with a group', () => {
     // -1- create new document
     cy.kcLogout();
     cy.kcLogin('user');
-    const documentName = 'newDocumentToDelete';
-    const newGroup = 'new_group_to_delete';
+    const documentName = 'newDocumentToDelete' + Utils.randomString();
+    const newGroup = 'new_group_to_delete' + Utils.randomString();
     DocumentPage.visit();
     DocumentPage.createDocument(documentName);
     Tree.openNode([documentName]);
