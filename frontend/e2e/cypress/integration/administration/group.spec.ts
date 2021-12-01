@@ -230,10 +230,10 @@ describe('Group', () => {
     // edit group
     AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
     AdminGroupPage.toolbarSaveGroup();
+
     // check that last-edited date has been updated
-    const today = new Date();
-    const formatted_date = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`;
-    AdminGroupPage.verifyInfoInHeader(headerKeys.EditDate, formatted_date);
+    const dateOfToday = Utils.getFormattedDate(new Date());
+    AdminGroupPage.verifyInfoInHeader(headerKeys.EditDate, dateOfToday);
 
     /* 2. ID */
     // make sure ID consists of a number
@@ -246,7 +246,7 @@ describe('Group', () => {
     AdminGroupPage.addNewGroup(groupName);
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.openUpGroupHeader();
-    AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, formatted_date);
+    AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, dateOfToday);
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
