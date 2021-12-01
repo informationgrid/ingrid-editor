@@ -1,11 +1,5 @@
-<form
-    class="edit-email-form-class"
-    novalidate
-    [formGroup]="emailForm"
-    id="editForm"
-    (ngSubmit)="onSubmit()"
->
-    <mat-form-field appearance="outline">
+<form novalidate [formGroup]="emailForm" id="editForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="width-100">
         <input
             igeFocus
             matInput
@@ -15,19 +9,21 @@
             required
         />
         <mat-error *ngIf="formErrors.email">{{ formErrors.email }}</mat-error>
-        <mat-hint>
-            Ihre E-Mail Adresse wird für Zusendung von Benachrichtigungen oder
-            zur Passwortänderung verwendet
-        </mat-hint>
     </mat-form-field>
-    <div align="end">
+
+    <div class="comment">
+        Ihre E-Mail Adresse wird für Zusendung von Benachrichtigungen oder zur
+        Passwortänderung verwendet
+    </div>
+
+    <div fxLayoutAlign="end" fxLayoutGap="12px">
         <button
             type="button"
             mat-button
             color="primary"
             (click)="abortChange()"
         >
-            {{ "abrechen" | uppercase }}
+            Abbrechen
         </button>
 
         <button
@@ -37,7 +33,7 @@
             color="primary"
             class="mat-primary"
         >
-            {{ "übernehmen" | uppercase }}
+            Übernehmen
         </button>
     </div>
 </form>

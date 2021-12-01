@@ -1,18 +1,9 @@
 @import "src/variables";
 
-mat-form-field {
-  width: 100%;
+:host {
+  flex: 1;
 }
 
-.edit-email-form-class {
-  align-items: center;
-  margin-bottom: -100px;
-}
-
-::ng-deep .mat-form-field-subscript-wrapper {
-  padding: 0px !important;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18px;
-  letter-spacing: 0.4px;
+.comment {
+  padding-bottom: 12px;
 }
