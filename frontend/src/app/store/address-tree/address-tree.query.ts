@@ -5,6 +5,7 @@ import { DocumentAbstract } from "../document/document.model";
 import { Observable } from "rxjs";
 import { TreeState } from "../tree/tree.store";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
+import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 
 @Injectable({ providedIn: "root" })
 export class AddressTreeQuery extends QueryEntity<TreeState> {
@@ -22,6 +23,10 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
   );
   multiSelectMode$: Observable<boolean> = this.select(
     (state) => state.multiSelectMode
+  );
+
+  datasetsChanged$: Observable<UpdateDatasetInfo> = this.select(
+    (state) => state.datasetsChanged
   );
 
   constructor(protected store: AddressTreeStore) {
