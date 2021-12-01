@@ -75,11 +75,23 @@ class ResearchService {
     }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
-        return query.clauses?.clauses
+
+        val termParameters: List<Any>;
+        if (query.term.isNullOrEmpty()) {
+            termParameters = listOf()
+        } else {
+            val withWildcard = "%" + query.term + "%"
+            // third parameter is for uuid search and so must not contain wildcard
+            termParameters = listOf(withWildcard, withWildcard, query.term)
+        }
+
+        val clauseParameters = query.clauses?.clauses
             ?.mapNotNull { it.parameter }
             ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it } }
             ?.filter { it.isNotEmpty() }
             ?.flatten() ?: emptyList()
+
+        return listOf(termParameters, clauseParameters).flatten()
     }
 
     private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
@@ -110,14 +122,8 @@ class ResearchService {
         val deletedFilter = "document_wrapper.deleted = 0 AND "
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
-        // encode opening curly brace as hibernate tries to match closing tags even in string literals
-        // which produces an error. Sample query: "{"
-        // https://hibernate.atlassian.net/browse/JPA-12
-        // https://hibernate.atlassian.net/browse/HHH-2744
-        val cTerm = query.term?.replace("{", "\$que$ || CHR(123) || \$que$")
-
         val termSearch =
-            if (cTerm.isNullOrEmpty()) "" else "(t.val ILIKE \$que$%${cTerm}%\$que$ OR title ILIKE \$que$%${cTerm}%\$que$ OR document_wrapper.uuid ILIKE \$que$${cTerm}\$que$)"
+            if (query.term.isNullOrEmpty()) "" else "(t.val ILIKE ? OR title ILIKE ? OR document_wrapper.uuid ILIKE ? )"
 
         val filter = convertQuery(query.clauses)
 
