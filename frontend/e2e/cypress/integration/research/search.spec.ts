@@ -52,7 +52,7 @@ describe('Research Page', () => {
   });
 
   it('should search for documents with spatial reference', () => {
-    ResearchPage.search(' ');
+    /*ResearchPage.search(' ');*/
     ResearchPage.getSearchResultCount().then(allCount => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial1');
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
@@ -60,7 +60,7 @@ describe('Research Page', () => {
   });
 
   it('should start new search for documents after editing spatial reference', () => {
-    ResearchPage.search(' ');
+    //    ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
       ResearchPage.editSpatialReference('Mainz');
@@ -84,7 +84,7 @@ describe('Research Page', () => {
   });
 
   it('should do search with both spatial reference and selection of filter-checkboxes included', () => {
-    ResearchPage.search(' ');
+    //ResearchPage.search(' ');
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(multipleFiltered => {
