@@ -7,6 +7,7 @@ export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
   newEntry?: boolean;
+  document?: any;
 }
 
 @Component({
@@ -16,6 +17,7 @@ export interface FormDialogData {
 })
 export class FormDialogComponent implements OnInit {
   model: any;
+  document?: any;
   form = new FormGroup({});
   titleText: String;
 
@@ -23,6 +25,7 @@ export class FormDialogComponent implements OnInit {
     this.titleText = data?.newEntry
       ? "Eintrag hinzufügen"
       : "Eintrag bearbeiten";
+    data.model.document = data.document;
   }
 
   ngOnInit(): void {}

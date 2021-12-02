@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.profiles.mcloud.types
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.model.EntityType
@@ -27,6 +28,25 @@ class MCloudType : EntityType() {
 
     override fun updateReferences(doc: Document, onlyPublished: Boolean) {
         updateAddresses(doc, onlyPublished)
+    }
+
+    override fun getUploads(doc: Document): List<String> {
+        if( doc.data.get("downloads") != null) {
+            val files = doc.data.get("downloads")
+                .filter { download -> !download.get("link").get("asLink").booleanValue() }
+                .map { download -> getUploadFile(download)}
+
+            return files
+        }
+        return emptyList()
+    }
+
+    private fun getUploadFile(download: JsonNode):String{
+        if(download.get("link").get("uri") !== null){
+            return download.get("link").get("uri").textValue()
+        }else{
+            return download.get("link").get("value").textValue()
+        }
     }
 
     private fun pullLinkedAddresses(doc: Document): MutableList<Document> {

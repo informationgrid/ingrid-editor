@@ -1,0 +1,51 @@
+<ng-container #flow="flow" [flowConfig]="flowConfig"></ng-container>
+
+<div
+    [class.no-drop-zone]="showOnlyProgress"
+    [class.dragged]="isDragged"
+    (dragenter)="setDragged(true)"
+    (dragleave)="setDragged(false)"
+    (drop)="setDragged(false)"
+>
+    <div flowDrop [flow]="flow.flowJs" class="upload-content">
+        <div *ngIf="!showOnlyProgress" class="text-center">
+            <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
+            <mat-icon class="upload light" svgIcon="upload"></mat-icon>
+            <div class="alternative-text">oder</div>
+
+            <button
+                mat-button
+                mat-flat-button
+                color="primary"
+                (click)="hiddenUploadInput.click()"
+            >
+                {{ text }}
+            </button>
+        </div>
+
+        <mat-list>
+            <ige-upload-item
+                *ngFor="
+                    let file of filesForUpload | async;
+                    trackBy: getIdentifier
+                "
+                [file]="file"
+                [flow]="flow"
+                [showOnlyProgress]="showOnlyProgress"
+                (remove)="removeFile.next($event)"
+                (useExisting)="updateFileToUseExisting($event)"
+                (retryUpload)="retryUpload(file, $event)"
+            ></ige-upload-item>
+        </mat-list>
+
+        <input
+            #hiddenUploadInput
+            type="file"
+            flowButton
+            [flow]="flow.flowJs"
+            style="display: none"
+        />
+
+        <!--<button mat-button (click)="flow.upload()">Alle Hochladen</button>-->
+    </div>
+</div>

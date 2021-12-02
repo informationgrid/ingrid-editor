@@ -28,6 +28,7 @@
         mat-flat-button
         color="primary"
         data-cy="form-dialog-confirm"
+        [disabled]="form.invalid"
         [mat-dialog-close]="form.value"
     >
         Ok

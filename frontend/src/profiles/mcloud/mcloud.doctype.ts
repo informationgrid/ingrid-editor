@@ -2,9 +2,10 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
+import { Injectable, Input } from "@angular/core";
 import { CodelistStore } from "../../app/store/codelist/codelist.store";
 import { map } from "rxjs/operators";
+import { FormGroup } from "@angular/forms";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -165,32 +166,41 @@ export class McloudDoctype extends BaseDoctype {
                     label: "Link",
                     appearance: "outline",
                     required: true,
-                    formatter: (link: any) => {
+                    formatter: (link: any, form: FormGroup) => {
                       if (link.asLink) {
                         return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       } else {
-                        return `<a href="/api/upload/${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                        return `<a href="/api/upload/${form.get("_id").value}/${
+                          link.uri
+                        }" target="_blank" class="no-text-transform">${
+                          link.value
+                        }</a>`;
                       }
                     },
                   },
                 },
                 {
                   key: "type",
-                  type: "input",
+                  type: "select",
                   label: "Typ",
                   templateOptions: {
                     label: "Typ",
                     appearance: "outline",
                     required: true,
+                    options: this.getCodelistForSelect(20002, null),
+                    codelistId: 20002,
                   },
                 },
                 {
                   key: "format",
-                  type: "input",
+                  type: "autocomplete",
                   label: "Datenformat",
+                  wrappers: ["form-field"],
                   templateOptions: {
                     label: "Datenformat",
                     appearance: "outline",
+                    options: this.getCodelistForSelect(1320, null),
+                    codelistId: 1320,
                   },
                 },
               ],

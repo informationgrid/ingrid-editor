@@ -22,6 +22,8 @@ open class PersistencePayload(var action: Action, var type: EntityType, var docu
         CREATE,
         UPDATE,
         PUBLISH,
+        UNPUBLISH,
+        REVERT,
         DELETE
     }
 }
@@ -77,6 +79,30 @@ open class PostPublishPayload(type: EntityType, document: Document, wrapper: Doc
         PostPersistencePayload(Action.PUBLISH, type, document, wrapper)
 
 /**
+ * Payload holding document data before unpublishing the document
+ */
+open class PreUnpublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
+    PrePersistencePayload(Action.UNPUBLISH, type, document, wrapper)
+
+/**
+ * Payload holding document data after unpublishing the document
+ */
+open class PostUnpublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.UNPUBLISH, type, document, wrapper)
+
+/**
+ * Payload holding document data before revoking the working copy
+ */
+open class PreRevertPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
+    PrePersistencePayload(Action.REVERT, type, document, wrapper)
+
+/**
+ * Payload holding document data after revoking the working copy
+ */
+open class PostRevertPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.REVERT, type, document, wrapper)
+
+/**
  * Payload holding document data before deleting the document
  */
 open class PreDeletePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
@@ -107,6 +133,12 @@ open class PostDeletePayload(type: EntityType, document: Document, wrapper: Docu
 
 @Component class PrePublishPipe : Pipe<PrePublishPayload>("PrePublishPipe")
 @Component class PostPublishPipe : Pipe<PostPublishPayload>("PostPublishPipe")
+
+@Component class PreUnpublishPipe : Pipe<PreUnpublishPayload>("PreUnpublishPipe")
+@Component class PostUnpublishPipe : Pipe<PostUnpublishPayload>("PostUnpublishPipe")
+
+@Component class PreRevertPipe : Pipe<PreRevertPayload>("PreRevertPipe")
+@Component class PostRevertPipe : Pipe<PostRevertPayload>("PostRevertPipe")
 
 @Component class PreDeletePipe : Pipe<PreDeletePayload>("PreDeletePipe")
 @Component class PostDeletePipe : Pipe<PostDeletePayload>("PostDeletePipe")

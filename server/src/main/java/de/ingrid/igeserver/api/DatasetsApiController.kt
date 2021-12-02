@@ -66,12 +66,12 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val resultDoc = if (revert) {
-            documentService.revertDocument(catalogId, id)
+            documentService.revertDocument(principal, catalogId, id)
         } else if (unpublish) {
-            documentService.unpublishDocument(catalogId, id)
+            documentService.unpublishDocument(principal, catalogId, id)
         } else {
             val doc = documentService.convertToDocument(data)
-            documentService.updateDocument(catalogId, id, doc, publish)
+            documentService.updateDocument(principal, catalogId, id, doc, publish)
         }
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)
@@ -116,7 +116,7 @@ class DatasetsApiController @Autowired constructor(
         if (!(destCanWrite && sourceCanWrite)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        ids.forEach { id -> handleMove(catalogId, id, options) }
+        ids.forEach { id -> handleMove(principal, catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -186,7 +186,7 @@ class DatasetsApiController @Autowired constructor(
         return docs.totalHits
     }
 
-    private fun handleMove(catalogId: String, id: String, options: CopyOptions) {
+    private fun handleMove(principal: Principal, catalogId: String, id: String, options: CopyOptions) {
 
         val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
         val doc = documentService.getLatestDocument(wrapper, false, true)
@@ -203,7 +203,7 @@ class DatasetsApiController @Autowired constructor(
 
         // update document which includes updating the wrapper
         // TODO Evaluate if "republish" wanted and necessary here?
-        documentService.updateDocument(catalogId, id, doc, publish = published)
+        documentService.updateDocument(principal, catalogId, id, doc, publish = published)
 
         // update ACL parent
         documentService.aclService.updateParent(id, options.destId)

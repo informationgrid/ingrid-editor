@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -12,6 +12,11 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
+import {
+  LinkInfo,
+  UploadFilesDialogComponent,
+} from "./upload-files-dialog/upload-files-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -82,10 +87,6 @@ export class TableTypeComponent
     );
   }
 
-  addRow() {
-    this.editRow(null);
-  }
-
   removeRow(index: number) {
     this.dataSource = new MatTableDataSource<any>(
       this.dataSource.data.filter((item, indexItem) => indexItem !== index)
@@ -104,6 +105,7 @@ export class TableTypeComponent
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+          document: this.model,
           newEntry: newEntry,
         } as FormDialogData,
       })
@@ -188,8 +190,72 @@ export class TableTypeComponent
         value?.forEach((row, index) => {
           this.formattedCell.push({});
           this.formattedCell[index][column.key] =
-            column.templateOptions.formatter(value[index][column.key]);
+            column.templateOptions.formatter(
+              value[index][column.key],
+              this.form
+            );
         })
       );
+  }
+
+  showUploadFilesDialog() {
+    this.dialog
+      .open(UploadFilesDialogComponent, {
+        minWidth: 700,
+        data: {
+          currentItems: this.dataSource.data,
+        },
+      })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((files: LinkInfo[]) => this.updateTableInformation(files));
+  }
+
+  private updateTableInformation(files: LinkInfo[]) {
+    files
+      .filter((file) => this.isNotInTable(file))
+      .forEach((file) => this.addToDatasource(file));
+
+    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+    this.updateFormControl(this.dataSource.data);
+  }
+
+  private addToDatasource(file: LinkInfo) {
+    this.dataSource.data.push({
+      title: file.file,
+      link: { asLink: false, value: file.file, uri: file.uri },
+    });
+  }
+
+  private isNotInTable(file: LinkInfo) {
+    return (
+      this.dataSource.data.findIndex(
+        (tableItem) =>
+          !tableItem.link.asLink && tableItem.link.value === file.file
+      ) === -1
+    );
+  }
+
+  showAddLinkDialog() {
+    this.dialog
+      .open(LinkDialogComponent, { maxWidth: 600 })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((result) => {
+        this.dataSource.data.push({
+          title: result.title,
+          link: { asLink: true, value: result.url, uri: result.url },
+        });
+        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+        this.updateFormControl(this.dataSource.data);
+      });
+  }
+
+  update() {
+    this.value = this.formControl.value;
+  }
+
+  cancel() {
+    this.formControl.setValue(this.value);
   }
 }

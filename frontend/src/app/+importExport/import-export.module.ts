@@ -19,8 +19,8 @@ import { OverviewComponent } from "./overview.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
-import { DndDirective } from "../directives/dnd.directive";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
+import { UploadModule } from "../shared/upload/upload.module";
 
 @NgModule({
   imports: [
@@ -42,13 +42,9 @@ import { FormSharedModule } from "../+form/form-shared/form-shared.module";
     MatCheckboxModule,
     PageTemplateModule,
     FormSharedModule,
+    UploadModule,
   ],
-  declarations: [
-    OverviewComponent,
-    ImportComponent,
-    ExportComponent,
-    DndDirective,
-  ],
+  declarations: [OverviewComponent, ImportComponent, ExportComponent],
   providers: [ImportExportService],
 })
 export class ImportExportModule {}

@@ -443,10 +443,10 @@ ige-root .mat-drawer-container {
 }
 
 .mat-icon.light svg .coloring {
-  fill: #eff8ff;
+  fill: $ige-mark-color;
 }
 
-.fileover .mat-icon.light svg .coloring {
+.dragged .mat-icon.light svg .coloring {
   fill: #ffffff;
 }
 
@@ -471,7 +471,11 @@ svg {
 }
 
 .green {
-  background: $ige-check-color !important;
+  //background: $ige-check-color !important;
+
+  .coloring {
+    fill: $ige-check-color;
+  }
 }
 
 .no-selection-text {
@@ -899,3 +903,11 @@ mat-icon.wide-icon-26px {
     }
   }
 }*/
+
+/* Slide toggle (stretched) */
+.mat-slide-toggle.stretch {
+  display: block;
+  .mat-slide-toggle-label {
+    justify-content: space-between;
+  }
+}
