@@ -50,7 +50,7 @@ describe('Spatial References', () => {
     const docNameBbox = 'spatialwkt-' + Utils.randomString();
 
     // create new document
-    cy.intercept('POST', /openid-connect\/token/).as('createRequest');
+    cy.intercept('GET', /api\/codelist\/[0-9]+/).as('createRequest');
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
     cy.wait('@createRequest', { timeout: 10000 });
     // reload the page so that the new document is visible

@@ -539,8 +539,8 @@ describe('Tree', () => {
     });
 
     it('should delete multiple selected nodes', () => {
-      const title = 'multi-select-testobject-1-to-delete';
-      const title2 = 'multi-select-testobject-2-to-delete';
+      const title = 'multi-select-testobject-1-to-delete' + Utils.randomString();
+      const title2 = 'multi-select-testobject-2-to-delete' + Utils.randomString();
 
       DocumentPage.CreateFullMcloudDocumentWithAPI(title, false);
       DocumentPage.CreateFullMcloudDocumentWithAPI(title2, false);
