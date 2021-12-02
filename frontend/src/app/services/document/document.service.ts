@@ -278,13 +278,15 @@ export class DocumentService {
   delete(ids: string[], isAddress: boolean): Observable<void> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.delete(ids).pipe(
-      tap(() =>
+      tap(() => {
+        // @ts-ignore
         store.update({
-          type: UpdateType.Delete,
-          // @ts-ignore
-          data: ids.map((id) => ({ id: id })),
-        })
-      ),
+          datasetsChanged: {
+            type: UpdateType.Delete,
+            data: ids.map((id) => ({ id: id })),
+          },
+        });
+      }),
       tap(() => this.updateStoreAfterDelete(ids, isAddress)),
       catchError((error) => this.handleDeleteError(error))
     );
@@ -616,7 +618,6 @@ export class DocumentService {
     store.update({
       datasetsChanged: {
         type: UpdateType.Move,
-        // @ts-ignore
         data: ids.map((id) => ({ id: id })),
         parent: parent,
       },
