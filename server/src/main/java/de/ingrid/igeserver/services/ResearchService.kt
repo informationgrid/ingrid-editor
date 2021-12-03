@@ -46,8 +46,6 @@ class ResearchService {
     @Autowired
     private lateinit var authUtils: AuthUtils
 
-    private val specialFilter = arrayOf("selectPublished", "selectLatest")
-
     fun createFacetDefinitions(catalogType: String): Facets {
         return profiles
             .find { it.identifier == catalogType }!!
@@ -55,7 +53,7 @@ class ResearchService {
 
     }
 
-    fun query(principal: Principal, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
+    fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
         val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetUuidsFromGroups(groups)
@@ -65,7 +63,7 @@ class ResearchService {
             return ResearchResponse(0, emptyList())
         }
 
-        val sql = createQuery(dbId, query, groupIds)
+        val sql = createQuery(catalogId, query, groupIds)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
@@ -76,13 +74,12 @@ class ResearchService {
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
-        val termParameters: List<Any>;
-        if (query.term.isNullOrEmpty()) {
-            termParameters = listOf()
+        val termParameters: List<Any> = if (query.term.isNullOrEmpty()) {
+            emptyList()
         } else {
             val withWildcard = "%" + query.term + "%"
             // third parameter is for uuid search and so must not contain wildcard
-            termParameters = listOf(withWildcard, withWildcard, query.term)
+            listOf(withWildcard, withWildcard, query.term)
         }
 
         val clauseParameters = query.clauses?.clauses
@@ -91,21 +88,17 @@ class ResearchService {
             ?.filter { it.isNotEmpty() }
             ?.flatten() ?: emptyList()
 
-        return listOf(termParameters, clauseParameters).flatten()
+        return termParameters + clauseParameters
     }
 
     private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
 
-        val stateCondition = determineStateQuery(query.clauses)
-        val jsonSearch = determineJsonSearch(query.term)
-        val whereFilter = determineWhereQuery(dbId, query, groupDocUuids)
-
         return """
                 SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
                 FROM catalog, document_wrapper
-                $stateCondition
-                $jsonSearch
-                $whereFilter
+                ${createFromStatement()}
+                ${determineJsonSearch(query.term)}
+                ${determineWhereQuery(dbId, query, groupDocUuids)}
                 ORDER BY document1.title;
             """
     }
@@ -163,7 +156,6 @@ class ResearchService {
                 .mapNotNull { convertQuery(it) }
         } else {
             boolFilter.value
-                ?.filter { !specialFilter.contains(it) }
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
                 ?.map { it?.filter(boolFilter.parameter) }
         }
@@ -175,39 +167,14 @@ class ResearchService {
 
     }
 
-    private fun findSpecialFilter(boolFilter: BoolFilter?): List<String>? {
-
-        if (boolFilter == null) {
-            return null
-        }
-
-        return if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
-            boolFilter.clauses
-                .mapNotNull { findSpecialFilter(it) }
-                .flatten()
-        } else {
-            boolFilter.value
-                ?.filter { specialFilter.contains(it) }
-        }
-
-    }
-
-    private fun determineStateQuery(filter: BoolFilter?): Any {
-        val result = findSpecialFilter(filter)
-
-        val searchPublished = result?.find { it == "selectPublished" }
-        return if (searchPublished != null) {
-            "JOIN document document1 ON document_wrapper.published = document1.id"
-        } else {
-            """
+    private fun createFromStatement(): Any {
+        return """
             JOIN document document1 ON
                 CASE
                     WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
                     ELSE document_wrapper.draft = document1.id
                 END
             """.trimIndent()
-        }
-
     }
 
     private fun sendQuery(sql: String, parameter: List<Any>): List<Array<out Any?>> {

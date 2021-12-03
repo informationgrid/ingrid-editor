@@ -1,3 +1,5 @@
+import { FacetGroup, Facets } from "./research.service";
+
 export class BackendQuery {
   private readonly term: string;
   private clauses: any;
@@ -5,17 +7,26 @@ export class BackendQuery {
   constructor(
     term: string,
     model: any,
-    fieldsWithParameters: { [p: string]: any[] }
+    fieldsWithParameters: { [p: string]: any[] },
+    filters: Facets
   ) {
     this.term = term;
-    this.convert(model, fieldsWithParameters);
+
+    const allFacetGroups = filters.documents.concat(filters.addresses);
+    this.convert(model, fieldsWithParameters, allFacetGroups);
   }
 
-  private convert(model: any, fieldsWithParameters: { [x: string]: any[] }) {
+  private convert(
+    model: any,
+    fieldsWithParameters: { [p: string]: any[] },
+    allFacetGroups: FacetGroup[]
+  ) {
     let activeFilterIds = { op: "AND", clauses: [] };
 
     Object.keys(model).map((groupKey) => {
       let groupValue = model[groupKey];
+      let groupOperator =
+        allFacetGroups.find((fg) => fg.id === groupKey)?.combine ?? "OR";
       if (groupValue instanceof Object) {
         let activeItemsFromGroup = Object.keys(groupValue).filter(
           (groupId) => groupValue[groupId]
@@ -23,19 +34,22 @@ export class BackendQuery {
         if (activeItemsFromGroup.length > 0) {
           if (fieldsWithParameters.hasOwnProperty(activeItemsFromGroup[0])) {
             activeFilterIds.clauses.push({
-              op: "OR",
+              op: groupOperator,
               value: [...activeItemsFromGroup],
               parameter: fieldsWithParameters[activeItemsFromGroup[0]],
             });
           } else {
             activeFilterIds.clauses.push({
-              op: "OR",
+              op: groupOperator,
               value: [...activeItemsFromGroup],
             });
           }
         }
       } else {
-        activeFilterIds.clauses.push({ op: "OR", value: [groupValue] });
+        activeFilterIds.clauses.push({
+          op: groupOperator,
+          value: [groupValue],
+        });
       }
     });
 

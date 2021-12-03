@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component
 class Published : QuickFilter() {
     override val id = "selectPublished"
     override val label = "Nur veröffentlichte"
-    override val filter = ""
+    override val filter = "document_wrapper.published IS NOT NULL"
 }
 

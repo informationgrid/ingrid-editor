@@ -3,6 +3,7 @@
         <div class="section-title">{{ group.label }}</div>
         <div fxFlex></div>
         <button
+            *ngIf="group.label"
             mat-icon-button
             class="toggle"
             (click)="toggleSection(group.id)"
@@ -15,7 +16,7 @@
             </mat-icon>
         </button>
     </div>
-    <ng-container *ngIf="group.selection === 'RADIO'">
+    <ng-container *ngIf="group.viewComponent === 'RADIO'">
         <mat-radio-group
             [name]="group.label"
             fxLayout="column"
@@ -34,7 +35,7 @@
     </ng-container>
 
     <div
-        *ngIf="group.selection === 'CHECKBOX'"
+        *ngIf="group.viewComponent === 'CHECKBOX'"
         [class.invisible]="notExpanded[group.id]"
         fxLayout="column"
         fxLayoutGap="10px"
@@ -49,7 +50,7 @@
     </div>
 
     <div
-        *ngIf="group.selection === 'SPATIAL'"
+        *ngIf="group.viewComponent === 'SPATIAL'"
         [class.invisible]="notExpanded[group.id]"
         style="flex-direction: column"
     >
@@ -92,7 +93,7 @@
     </div>
 
     <div
-        *ngIf="group.selection === 'TIMESPAN'"
+        *ngIf="group.viewComponent === 'TIMESPAN'"
         [class.invisible]="notExpanded[group.id]"
         fxLayout="column"
         fxLayoutGap="10px"
