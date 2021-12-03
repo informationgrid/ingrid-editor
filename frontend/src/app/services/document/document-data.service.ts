@@ -31,9 +31,9 @@ export class DocumentDataService {
 
   save(data: IgeDocument, isAddress?: boolean): Observable<any> {
     const params = isAddress ? "?address=true" : "";
-    if (data._wrapperId) {
+    if (data._id) {
       return this.http.put(
-        this.configuration.backendUrl + "datasets/" + data._wrapperId + params,
+        this.configuration.backendUrl + "datasets/" + data._id + params,
         data
       );
     } else {

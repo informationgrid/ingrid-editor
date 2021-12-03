@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.*
 
 interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
 
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
-    fun findById(uuid: String): DocumentWrapper
+    override fun findById(id: Int): Optional<DocumentWrapper>
 
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findByIdAndCatalog_Identifier(id: String, catalog_identifier: String): DocumentWrapper
@@ -29,7 +30,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     ): List<DocumentWrapper>
 
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
-    fun findByParent_dbId(parent_dbId: Int): List<DocumentWrapper>
+    fun findByParent_id(parent_id: Int): List<DocumentWrapper>
 
     fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
 

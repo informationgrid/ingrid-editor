@@ -30,7 +30,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         authentication: Authentication,
         targetId: Serializable?,
         targetType: String?,
-        permission: Any
+        permission: Any,
+//        parentId: Serializable?
     ): Boolean {
         if (hasAdminRole(authentication)) {
             return true
@@ -54,10 +55,17 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return true
         }
 
+        var finalDomainObject = if (domainObject is Optional<*>) {
+            domainObject.get()
+        } else {
+            domainObject
+        }
+
         // convert HibernateProxy to real document class if necessary
-        val finalDomainObject = if (domainObject is HibernateProxy) {
-            domainObject.writeReplace()
-        } else domainObject
+        if (finalDomainObject is HibernateProxy) {
+            finalDomainObject = finalDomainObject.writeReplace()
+        }
+
 
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
         return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
@@ -105,6 +113,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
                 ) {
                     logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
                     return true
+                } else if (acl == null && permission == "WRITE") { // actually more "CREATE"
+
                 }
             } catch (nfe: NotFoundException) {
                 logger.debug("WRITE_ONLY_SUBTREE permission also not found")

@@ -100,7 +100,7 @@ open class DocumentService @Autowired constructor(
         message = "This function can return more than one result if a document is imported in more than one catalog",
         replaceWith = ReplaceWith("getWrapperByDocumentIdAndCatalog", "catalogId", "uuid")
     )
-    fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id)
+    fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
 
     fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
         try {
@@ -118,20 +118,20 @@ open class DocumentService @Autowired constructor(
         return wrapper.draft?.title ?: wrapper.published?.title ?: "???!"
     }
 
-    fun findChildrenDocs(catalogId: String, parentId: String?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
     fun findChildren(
         catalogId: String,
-        parentId: String?,
+        parentId: Int?,
         docCat: DocumentCategory = DocumentCategory.DATA
     ): FindAllResults<DocumentWrapper> {
 
         val docs = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value);
         } else {
-            docWrapperRepo.findByParent_dbId(parentId.toInt());
+            docWrapperRepo.findByParent_id(parentId.toInt())
         };
         /*val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
             catalogId,
@@ -185,8 +185,6 @@ open class DocumentService @Autowired constructor(
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
-        // create ACL before trying to save since we need the permission
-        aclService.createAclForDocument(document.uuid, preCreatePayload.wrapper.parent?.id)
 
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
@@ -200,6 +198,9 @@ open class DocumentService @Autowired constructor(
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
+
+        // create ACL before trying to save since we need the permission
+        aclService.createAclForDocument(newWrapper.id!!, preCreatePayload.wrapper.parent?.id)
 
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
@@ -390,8 +391,8 @@ open class DocumentService @Autowired constructor(
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
-        findChildrenDocs(catalogId, id, isAddress(wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.id)
+        findChildrenDocs(catalogId, id.toInt(), isAddress(wrapper)).hits.forEach {
+            deleteRecursively(catalogId, it.uuid)
         }
 
         if (generalProperties.markInsteadOfDelete) {
@@ -534,7 +535,7 @@ open class DocumentService @Autowired constructor(
     private fun getLatestDocumentVersion(wrapper: DocumentWrapper, onlyPublished: Boolean): Document {
 
         if (onlyPublished && wrapper.published == null) {
-            throw NotFoundException.withMissingPublishedVersion(wrapper.id)
+            throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
         }
 
         // TODO: check if isNull function really works or if we need a null comparison
@@ -547,7 +548,7 @@ open class DocumentService @Autowired constructor(
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-        objectNode.wrapperId = wrapper.dbId
+        objectNode.wrapperId = wrapper.id.toString()
 
         return objectNode
     }

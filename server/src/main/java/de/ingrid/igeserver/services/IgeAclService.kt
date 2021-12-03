@@ -78,10 +78,10 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<String> {
+    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
-            .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
+            .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asInt() }.orEmpty() }
             .flatten().toSet().toList()
     }
 
@@ -120,13 +120,13 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun createAclForDocument(uuid: String, parentUuid: String?) {
+    fun createAclForDocument(id: Int, parentId: Int?) {
         // first create permission ACL
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         val acl = (aclService as JdbcMutableAclService).createAcl(objIdentity)
 
-        if (parentUuid != null) {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
+        if (parentId != null) {
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
             val parentAcl = aclService.readAclById(parentObjIdentity)
             acl.setParent(parentAcl)
             (aclService as JdbcMutableAclService).updateAcl(acl)

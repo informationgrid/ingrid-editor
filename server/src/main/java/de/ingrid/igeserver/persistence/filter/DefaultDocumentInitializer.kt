@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.persistence.filter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -72,7 +71,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         val parentRef = try {
             when (parentId == null || parentId.isNull) {
                 true -> null
-                else -> docWrapperRepo.findById(parentId.asText())
+                else -> docWrapperRepo.findById(parentId.asInt()).get()
             }
         } catch (ex: EmptyResultDataAccessException) {
             // this can happen during import, when a document has a parent referenced
@@ -81,13 +80,13 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         }
 
         val documentType = payload.document.type
-        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id
+        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.uuid
 
         with(payload.wrapper) {
             catalog = catalogRef
             draft = null
             published = null
-            id = payload.document.uuid
+            uuid = payload.document.uuid
             parent = parentRef
             type = documentType
             category = payload.category

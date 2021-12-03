@@ -34,7 +34,7 @@ const initialState = {
 };
 
 @Injectable({ providedIn: "root" })
-@StoreConfig({ name: "tree", idKey: "_wrapperId" })
+@StoreConfig({ name: "tree" })
 export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
   constructor() {
     super(initialState);

@@ -20,10 +20,9 @@ import javax.persistence.Table
 class DocumentWrapper {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("_id")
-    var dbId: Int? = null
+    @JsonIgnore
+    var id: Int? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catalog_id", nullable = false)
@@ -33,7 +32,7 @@ class DocumentWrapper {
 
     // must be named "id" since getId() method is used for ACL permissions!
     @Column(name = "uuid", nullable = false)
-    var id: String = UUID.randomUUID().toString()
+    var uuid: String = UUID.randomUUID().toString()
 
     @Column(nullable = false)
     @JsonProperty("_type")
@@ -59,10 +58,13 @@ class DocumentWrapper {
     @JsonSetter("_parent")
     private var parentUuid: String? = null
 
+/*    @JsonIgnore
+    private var parentId: Int? = null*/
+
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
         if (this.parentUuid == null) {
-            this.parentUuid = parent?.id
+            this.parentUuid = parent?.uuid
         }
         return this.parentUuid
     }

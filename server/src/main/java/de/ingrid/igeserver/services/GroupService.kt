@@ -99,7 +99,7 @@ open class GroupService @Autowired constructor(
         val sid = GrantedAuthoritySid("GROUP_${group.name}")
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asInt())
             val acl = aclService.readAclById(objIdentity) as MutableAcl
 
             // new permissions will be added later
@@ -125,7 +125,7 @@ open class GroupService @Autowired constructor(
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asInt())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
             } catch (ex: org.springframework.security.acls.model.NotFoundException) {
@@ -183,8 +183,8 @@ open class GroupService @Autowired constructor(
             val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
             group.permissions?.apply {
-                documents = group.permissions?.documents?.filter { it.get("uuid").asText() != docId } ?: emptyList()
-                addresses = group.permissions?.addresses?.filter { it.get("uuid").asText() != docId } ?: emptyList()
+                documents = group.permissions?.documents?.filter { it.get("uuid").asInt() != docId.toInt() } ?: emptyList()
+                addresses = group.permissions?.addresses?.filter { it.get("uuid").asInt() != docId.toInt() } ?: emptyList()
             }
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 

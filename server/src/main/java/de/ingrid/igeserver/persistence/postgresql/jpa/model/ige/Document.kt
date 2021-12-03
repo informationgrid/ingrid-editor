@@ -32,7 +32,7 @@ class Document {
     var catalog: Catalog? = null
 
     @Column(nullable = false)
-    @JsonProperty("_id")
+    @JsonProperty("_uuid")
     var uuid: String = UUID.randomUUID().toString()
 
     @Column(nullable=false)
@@ -93,6 +93,6 @@ class Document {
     var hasOnlySubtreeWritePermission: Boolean = false
 
     @Transient
-    @JsonProperty("_wrapperId")
-    var wrapperId: Int? = null
+    @JsonProperty("_id")
+    var wrapperId: String? = null
 }

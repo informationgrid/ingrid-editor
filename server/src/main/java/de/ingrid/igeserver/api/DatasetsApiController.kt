@@ -171,7 +171,7 @@ class DatasetsApiController @Autowired constructor(
 
         // get all children of parent and save those recursively
         val parentId = parent.get(FIELD_ID)?.asText()
-        val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
+        val docs = documentService.findChildrenDocs(catalogId, origParentId.toInt(), isAddress)
 
         docs.hits.forEach { child ->
 
@@ -215,7 +215,7 @@ class DatasetsApiController @Autowired constructor(
 
         // updateWrapper
         val wrapperWithLinks = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
-        wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findById(options.destId)
+        wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findById(options.destId.toInt()).get()
         wrapperWithLinks.path = newPath
 
         docWrapperRepo.save(wrapperWithLinks)
@@ -224,11 +224,11 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: String) {
-        documentService.findChildren(catalogId, id).hits
+        documentService.findChildren(catalogId, id.toInt()).hits
             .forEach {
                 it.path = path + id
                 if (it.type == "FOLDER") {
-                    updatePathForAllChildren(catalogId, it.path, it.id)
+                    updatePathForAllChildren(catalogId, it.path, it.uuid)
                 }
                 docWrapperRepo.save(it)
             }
@@ -246,7 +246,7 @@ class DatasetsApiController @Autowired constructor(
      *  Get a list of all IDs hierarchically below a given id
      */
     private fun getAllDescendantIds(catalogId: String, id: String): List<String> {
-        val docs = documentService.findChildren(catalogId, id)
+        val docs = documentService.findChildren(catalogId, id.toInt())
         return if (docs.hits.isEmpty()) {
             emptyList()
         } else {
@@ -254,8 +254,8 @@ class DatasetsApiController @Autowired constructor(
                 .flatMap { doc ->
                     if (doc.countChildren > 0) getAllDescendantIds(
                         catalogId,
-                        doc.id
-                    ) + doc.id else listOf(doc.id)
+                        doc.uuid
+                    ) + doc.uuid else listOf(doc.uuid)
                 }
         }
     }
@@ -273,7 +273,7 @@ class DatasetsApiController @Autowired constructor(
             val userGroups = catalogService.getUser(userName)?.groups
             getRootDocsFromGroup(userGroups, dbId, isAddress)
         } else {
-            documentService.findChildrenDocs(dbId, parentId, isAddress).hits
+            documentService.findChildrenDocs(dbId, parentId?.toInt(), isAddress).hits
         }
 
         val childDocs = children
@@ -304,16 +304,16 @@ class DatasetsApiController @Autowired constructor(
                     break
                 }
             }
-            if (isRoot) actualRootIds.add(currentId)
+            if (isRoot) actualRootIds.add(currentId.toString())
         }
 
         return actualRootIds.map { uuid -> documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid) }
 
     }
 
-    private fun isChildOf(childId: String, parentId: String, dbId: String, isAddress: Boolean): Boolean {
+    private fun isChildOf(childId: Int, parentId: Int, dbId: String, isAddress: Boolean): Boolean {
 
-        val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.map { it.id }
+        val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.mapNotNull { it.id }
         if (childrenIds.contains(childId)) return true
 
         childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, dbId, isAddress)) return true }
@@ -403,7 +403,7 @@ class DatasetsApiController @Autowired constructor(
             val pathWrapper = docWrapperRepo.findByDraftUuidOrPublishedUuid(uuid, uuid)
             val title = pathWrapper.draft?.title ?: pathWrapper.published?.title ?: "???!"
             val permission = aclService.getPermissionInfo(principal as Authentication, uuid)
-            PathResponse(pathWrapper.dbId.toString(), title, permission)
+            PathResponse(pathWrapper.id.toString(), title, permission)
         }
 
         return ResponseEntity.ok(

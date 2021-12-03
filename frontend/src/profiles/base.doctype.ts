@@ -20,7 +20,7 @@ export abstract class BaseDoctype implements Doctype {
       key: "_id",
     },
     {
-      key: "_wrapperId",
+      key: "_uuid",
     },
     {
       key: "_parent",

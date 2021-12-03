@@ -20,7 +20,7 @@ class M032_createACLEntries : MigrationBase("0.32") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val insertClass = """
-        INSERT INTO acl_class VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.String')
+        INSERT INTO acl_class VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.Integer')
     """.trimIndent()
     
     private val insertSid = """

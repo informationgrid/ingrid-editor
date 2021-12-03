@@ -211,7 +211,7 @@ export class HistoryPlugin extends Plugin {
 
   private gotoNode(item: DocumentAbstract) {
     this.treeStore.update({
-      explicitActiveNode: new ShortTreeNode(item._wrapperId, item.title),
+      explicitActiveNode: new ShortTreeNode(<string>item.id, item.title),
     });
   }
 

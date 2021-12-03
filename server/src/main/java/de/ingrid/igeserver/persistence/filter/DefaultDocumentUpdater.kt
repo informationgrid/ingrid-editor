@@ -25,9 +25,6 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
     }
 
     @Autowired
-    private lateinit var dateService: DateService
-
-    @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository
 
     @Autowired
@@ -45,7 +42,7 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
         val parent = payload.document.data.get(FIELD_PARENT)
         if (!parent.isNull) {
             try {
-                payload.wrapper.parent = docWrapperRepo.findById(parent.asText())
+                payload.wrapper.parent = docWrapperRepo.findById(parent.asInt()).get()
             } catch (ex: EmptyResultDataAccessException) {
                 // in case of no permission just log information
                 log.warn("Parent Wrapper not found, possibly to read permission on parent?")
