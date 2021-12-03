@@ -29,7 +29,7 @@ export class AddressPage extends DocumentPage {
   static visit() {
     cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     cy.visit('address');
-    cy.wait('@treeCallAddress');
+    cy.wait('@treeCallAddress', { timeout: 10000 });
     cy.contains('.page-title', 'Adressen');
   }
 
