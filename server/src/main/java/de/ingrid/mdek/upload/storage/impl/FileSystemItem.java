@@ -26,6 +26,7 @@ import de.ingrid.mdek.upload.storage.Storage;
 import de.ingrid.mdek.upload.storage.StorageItem;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -162,11 +163,21 @@ public class FileSystemItem implements StorageItem {
      * @return Path
      */
     Path getRealPath() {
-        Path realPath = storage.getRealPath(catalog, document, file, storage.getDocsDir());
-        if (this.state == Scope.UNSAVED) realPath = storage.getUnsavedPath(catalog, user, document, file, storage.getDocsDir());
-        else if (this.state == Scope.UNPUBLISHED) realPath = storage.getUnpublishedPath(catalog, document, file, storage.getDocsDir());
-        else if (this.state == Scope.ARCHIVED) realPath = storage.getArchivePath(catalog, document, file, storage.getDocsDir());
-        else if (this.state == Scope.TRASH) realPath = storage.getTrashPath(catalog, document, file, storage.getDocsDir());
+        String relativePath = getRelativePath();
+        Path realPath = storage.getRealPath(catalog, document, relativePath, storage.getDocsDir());
+        if (this.state == Scope.UNSAVED) realPath = storage.getUnsavedPath(catalog, user, document, relativePath, storage.getDocsDir());
+        else if (this.state == Scope.UNPUBLISHED) realPath = storage.getUnpublishedPath(catalog, document, relativePath, storage.getDocsDir());
+        else if (this.state == Scope.ARCHIVED) realPath = storage.getArchivePath(catalog, document, relativePath, storage.getDocsDir());
+        else if (this.state == Scope.TRASH) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir());
         return realPath;
+    }
+
+    String getRelativePath() {
+        final FileSystem fileSystem = FileSystems.getDefault();
+        final String separator = fileSystem.getSeparator();
+
+        String uri = fileSystem.getPath(this.path, this.file).toString().replace(separator, URI_PATH_SEPARATOR);
+
+        return uri;
     }
 }

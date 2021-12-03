@@ -248,8 +248,8 @@ public class FileSystemStorage implements Storage {
      * @return List<StorageItem>
      * @throws IOException
      */
-    private List<StorageItem> listFiles(String catalog, String userID, String docID, String basePath, Scope scope) throws IOException {
-        final List<StorageItem> files = new ArrayList<>();
+    private List<FileSystemItem> listFiles(String catalog, String userID, String docID, String basePath, Scope scope) throws IOException {
+        final List<FileSystemItem> files = new ArrayList<>();
         Path dir = this.getRealPath(catalog, docID, "", basePath);
         if (scope == Scope.UNSAVED) dir = this.getUnsavedPath(catalog, userID, docID, "", basePath);
         else if (scope == Scope.UNPUBLISHED) dir = this.getUnpublishedPath(catalog, docID, "", basePath);
@@ -533,17 +533,17 @@ public class FileSystemStorage implements Storage {
 
     @Override
     public void saveDataset(final String catalog, String userID, String datasetID, List<String> referencedFiles) throws IOException {
-        var unsavedFiles = this.listFiles(catalog, userID, datasetID, this.docsDir, Scope.UNSAVED);
-        var existingFiles = this.listFiles(catalog, userID, datasetID, this.docsDir, Scope.UNPUBLISHED);
+        List<FileSystemItem> unsavedFiles = this.listFiles(catalog, userID, datasetID, this.docsDir, Scope.UNSAVED);
+        List<FileSystemItem> existingFiles = this.listFiles(catalog, userID, datasetID, this.docsDir, Scope.UNPUBLISHED);
 
         final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
 
 
-        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getUri())).forEach(f -> {
+        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var existingFile = ((FileSystemItem) f).getRealPath();
 
-                var trashPath = this.getTrashPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
                 Files.createDirectories(trashPath.getParent());
                 Files.move(existingFile, trashPath, copyOptions);
             }
@@ -557,10 +557,10 @@ public class FileSystemStorage implements Storage {
             }
         });
 
-        unsavedFiles.stream().filter(f -> referencedFiles.contains(f.getUri())).forEach(f -> {
+        unsavedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
-                var srcPath = this.getUnsavedPath(catalog, userID, datasetID, f.getUri(), this.docsDir);
-                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var srcPath = this.getUnsavedPath(catalog, userID, datasetID, f.getRelativePath(), this.docsDir);
+                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
 
                 if(targetPath.toFile().exists()){
                     var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir);
@@ -581,7 +581,7 @@ public class FileSystemStorage implements Storage {
             }
         });
 
-        unsavedFiles.stream().filter(f -> !referencedFiles.contains(f.getUri())).forEach(f -> {
+        unsavedFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var unsavedFile = ((FileSystemItem) f).getRealPath();
 
@@ -607,11 +607,11 @@ public class FileSystemStorage implements Storage {
         final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
 
 
-        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getUri())).forEach(f -> {
+        existingFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var existingFile = ((FileSystemItem) f).getRealPath();
 
-                var trashPath = this.getTrashPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
                 Files.createDirectories(trashPath.getParent());
                 Files.move(existingFile, trashPath, copyOptions);
             }
@@ -625,10 +625,10 @@ public class FileSystemStorage implements Storage {
             }
         });
 
-        unpublishedFiles.stream().filter(f -> referencedFiles.contains(f.getUri())).forEach(f -> {
+        unpublishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
-                var srcPath = this.getUnpublishedPath(catalog, datasetID, f.getUri(), this.docsDir);
-                var targetPath = this.getRealPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var srcPath = this.getUnpublishedPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
+                var targetPath = this.getRealPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
 
                 if(targetPath.toFile().exists()){
                     var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir);
@@ -672,10 +672,10 @@ public class FileSystemStorage implements Storage {
 
         final CopyOption[] copyOptions = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
 
-        publishedFiles.stream().filter(f -> referencedFiles.contains(f.getUri())).forEach(f -> {
+        publishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
-                var srcPath = this.getRealPath(catalog, datasetID, f.getUri(), this.docsDir);
-                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var srcPath = this.getRealPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
+                var targetPath = this.getUnpublishedPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
 
                 if(!targetPath.toFile().exists()){
                     Files.createDirectories(targetPath.getParent());
@@ -710,7 +710,7 @@ public class FileSystemStorage implements Storage {
             try {
                 var existingFile = ((FileSystemItem) f).getRealPath();
 
-                var trashPath = this.getTrashPath(catalog, datasetID, f.getUri(), this.docsDir);
+                var trashPath = this.getTrashPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
                 Files.createDirectories(trashPath.getParent());
                 Files.move(existingFile, trashPath, copyOptions);
             }
@@ -798,6 +798,14 @@ public class FileSystemStorage implements Storage {
                 zipEntry = zis.getNextEntry();
             }
             zis.closeEntry();
+
+            zis.close();
+
+            // delete archive
+            if(result.size() > 0){
+                Files.delete(path);
+                return result.stream().map(p -> p.toString()).toArray(size -> new String[size]);
+            }
         }
         catch (final Exception ex) {
             log.error("Failed to extract archive '" + path + "'. Cleaning up...", ex);
@@ -812,10 +820,7 @@ public class FileSystemStorage implements Storage {
             }
             throw ex;
         }
-
-        // delete archive
-        Files.delete(path);
-        return result.stream().map(p -> p.toString()).toArray(size -> new String[size]);
+        return new String[]{path.getFileName().toString()};
     }
 
 
