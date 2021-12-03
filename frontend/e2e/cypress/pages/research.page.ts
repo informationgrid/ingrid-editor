@@ -49,9 +49,9 @@ export class ResearchPage {
 
   static setDocumentTypeSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
-    cy.get('.mat-option-text').contains(docType).click();
-    // wait For request to complete
     cy.intercept('**/api/search/query').as('query');
+    cy.contains('.mat-option-text', docType).click();
+    // wait For request to complete
     cy.wait('@query');
   }
 
