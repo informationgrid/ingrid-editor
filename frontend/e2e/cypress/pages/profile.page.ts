@@ -18,10 +18,8 @@ export class ProfilePage {
 
     cy.get('div.page-title').next().children().eq(3).contains(role);
 
-    if (groups.length > 0) {
-      for (let i in groups) {
-        cy.get('div.page-title').next().children().eq(5).children().eq(Number(i)).contains(groups[i]);
-      }
+    for (let i in groups) {
+      cy.get('div.page-title').next().children().eq(5).children().contains(groups[i]);
     }
   }
 }
