@@ -80,7 +80,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         }
 
         val documentType = payload.document.type
-        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.uuid
+        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id.toString()
 
         with(payload.wrapper) {
             catalog = catalogRef

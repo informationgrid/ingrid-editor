@@ -82,7 +82,7 @@ class ResearchService {
             ?.flatten() ?: emptyList()
     }
 
-    private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
+    private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         val stateCondition = determineStateQuery(query.clauses)
         val jsonSearch = determineJsonSearch(query.term)
@@ -98,7 +98,7 @@ class ResearchService {
             """
     }
 
-    private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
+    private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
         val catalogFilter = createCatalogFilter(dbId)
         val groupDocUuidsString = groupDocUuids.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)

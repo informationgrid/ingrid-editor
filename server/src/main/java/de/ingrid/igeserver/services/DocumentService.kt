@@ -36,8 +36,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.security.Principal
 import javax.persistence.criteria.*
 
 @Service
@@ -101,6 +103,8 @@ open class DocumentService @Autowired constructor(
         replaceWith = ReplaceWith("getWrapperByDocumentIdAndCatalog", "catalogId", "uuid")
     )
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
+
+    fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
     fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
         try {
@@ -167,7 +171,8 @@ open class DocumentService @Autowired constructor(
     }
 
     @Transactional
-    open fun createDocument(
+    fun createDocument(
+        principal: Principal,
         catalogId: String,
         data: JsonNode,
         parentId: String?,
@@ -185,6 +190,15 @@ open class DocumentService @Autowired constructor(
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
+
+        // check for permission of parent explicitly, since save operations with no ID (create)
+        // are excluded from permission check
+        if (parentId != null) {
+            val permission = aclService.getPermissionInfo(principal as Authentication, parentId)
+            if (!permission.canWrite && !permission.canOnlyWriteSubtree) {
+                throw AccessDeniedException("No rights to create document")
+            }
+        }
 
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
@@ -298,6 +312,7 @@ open class DocumentService @Autowired constructor(
         preUpdatePayload.document.created = createdDate
 
         try {
+            preUpdatePayload.document.wrapperId = wrapper.id.toString()
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             // update wrapper to document association

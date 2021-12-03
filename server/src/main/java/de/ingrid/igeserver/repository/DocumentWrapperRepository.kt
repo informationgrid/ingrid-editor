@@ -15,6 +15,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     override fun findById(id: Int): Optional<DocumentWrapper>
 
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.id = ?1")
+    fun findByIdNoPermissionCheck(id: Int): DocumentWrapper
+
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findByIdAndCatalog_Identifier(id: String, catalog_identifier: String): DocumentWrapper
 
@@ -34,6 +37,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
 
+
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
@@ -52,7 +56,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteById(uuid: String)
 
-    @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
+    // allow if it's a new document, where id is null
+    // then a permission check should be done before!
+    @PreAuthorize("#docWrapper.id == null || hasPermission(#docWrapper, 'WRITE')")
     fun save(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")

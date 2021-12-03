@@ -64,7 +64,7 @@ class IgeAclService @Autowired constructor(
         return try {
 
             val acl = this.aclService.readAclById(
-                ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+                ObjectIdentityImpl(DocumentWrapper::class.java, uuid.toInt())
             )
             val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
@@ -81,11 +81,11 @@ class IgeAclService @Autowired constructor(
     fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
-            .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asInt() }.orEmpty() }
+            .map { permissions -> permissions?.map { permission -> permission.get("uuid").asInt() }.orEmpty() }
             .flatten().toSet().toList()
     }
 
-    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<String> {
+    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
         return groups
             .map { group ->
                 mutableListOf<JsonNode>().apply {
@@ -98,7 +98,7 @@ class IgeAclService @Autowired constructor(
                     permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
                 }
             }
-            .map { permissions -> permissions.mapNotNull { permission -> permission.get("uuid").asText() } }
+            .map { permissions -> permissions.map { permission -> permission.get("uuid").asInt() } }
             .flatten().toSet().toList()
     }
 

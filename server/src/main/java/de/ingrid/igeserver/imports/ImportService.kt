@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.nio.charset.Charset
+import java.security.Principal
 import java.util.*
 
 @Service
@@ -37,7 +38,8 @@ open class ImportService {
     }
 
     @Transactional
-    open fun importFile(
+    fun importFile(
+        principal: Principal,
         catalogId: String,
         importerId: String,
         file: MultipartFile,
@@ -62,10 +64,17 @@ open class ImportService {
         }
 
         val docObj = documentService.convertToDocument(document)
-        extractAndSaveReferences(catalogId, docObj, options)
+        extractAndSaveReferences(principal, catalogId, docObj, options)
 
         val createDocument = if (wrapper == null || options.options == "create_under_target") {
-            val doc = documentService.createDocument(catalogId, document, options.parentDocument, false, false)
+            val doc = documentService.createDocument(
+                principal,
+                catalogId,
+                document,
+                options.parentDocument,
+                false,
+                false
+            )
             documentService.convertToDocument(doc)
         } else {
             // only when version matches in updated document, it'll be overwritten
@@ -90,7 +99,7 @@ open class ImportService {
         }
     }
 
-    private fun extractAndSaveReferences(catalogId: String, doc: Document, options: ImportOptions) {
+    private fun extractAndSaveReferences(principal: Principal, catalogId: String, doc: Document, options: ImportOptions) {
 
         val refType = documentService.getDocumentType(doc.type!!)
 
@@ -108,7 +117,13 @@ open class ImportService {
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
             }
-            .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = options.parentAddress) }
+            .forEach { documentService.createDocument(
+                principal,
+                catalogId,
+                it,
+                parentId = options.parentAddress,
+                publish = false
+            ) }
 
     }
 
