@@ -37,7 +37,7 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
-            put("_version", "0.0.1")
+            put("_version", "0.0.2")
             put("resources", jacksonObjectMapper().createArrayNode().add(json))
         }
 

@@ -13,9 +13,11 @@ import { UploadService } from "../upload/upload.service";
 import { Router } from "@angular/router";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
-import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
-import { Observable, of } from "rxjs";
+import { HttpResponse } from "@angular/common/http";
+import { Observable } from "rxjs";
 import { IgeError } from "../../models/ige-error";
+import { TreeQuery } from "../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
 @Component({
   selector: "ige-import",
@@ -39,8 +41,8 @@ export class ImportComponent implements OnInit {
 
   importers: ImportTypeInfo[];
   compatibleImporters: string[] = [];
-  locationDoc: string[] = [];
-  locationAddress: string[] = [];
+  locationDoc: number[] = [];
+  locationAddress: number[] = [];
   readyForImport = false;
   chosenFiles: FileUploadModel[];
   private importedDocId: string = null;
@@ -52,7 +54,9 @@ export class ImportComponent implements OnInit {
     config: ConfigService,
     private uploadService: UploadService,
     private router: Router,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
@@ -114,22 +118,6 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  /**
-   * format bytes
-   * @param bytes (File size in bytes)
-   * @param decimals (Decimals point)
-   */
-  formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) {
-      return "0 Bytes";
-    }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
   cancel() {
     this.droppedFiles = [];
     this.stepper.selectedIndex = 0;
@@ -137,9 +125,19 @@ export class ImportComponent implements OnInit {
   }
 
   setLocation(location: string[], isAddress: boolean) {
-    isAddress
-      ? (this.locationAddress = location)
-      : (this.locationDoc = location);
+    if (isAddress) {
+      const locationId = this.addressTreeQuery
+        .getAll()
+        .filter((entity) => entity._uuid === location[0])
+        .map((entity) => <number>entity.id);
+      this.locationAddress = locationId;
+    } else {
+      const locationId = this.treeQuery
+        .getAll()
+        .filter((entity) => entity._uuid === location[0])
+        .map((entity) => <number>entity.id);
+      this.locationDoc = locationId;
+    }
     this.readyForImport =
       this.locationDoc.length === 1 && this.locationAddress.length === 1;
   }
@@ -147,7 +145,7 @@ export class ImportComponent implements OnInit {
   startImport() {
     // get path for destination for final page
     this.documentService
-      .getPath(this.locationDoc[0])
+      .getPath(this.locationDoc[0].toString())
       .subscribe((path) => (this.pathToDocument = path));
 
     this.hasImportError = false;
@@ -167,7 +165,7 @@ export class ImportComponent implements OnInit {
           tap((response) => console.log("File imported", response)),
           tap(
             (response: HttpResponse<any>) =>
-              (this.importedDocId = response.body.result._id)
+              (this.importedDocId = response.body.result._uuid)
           )
         )
         .subscribe();

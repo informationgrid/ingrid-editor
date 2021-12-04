@@ -11,6 +11,7 @@ import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -58,13 +59,15 @@ open class ImportService {
         val uuid = document.get(FIELD_ID).asText()
         // check if document already exists
         val wrapper = try {
-            documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid)
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         } catch (ex: NotFoundException) {
             null
         }
 
+        val docObjForAddresses = documentService.convertToDocument(document)
+        extractAndSaveReferences(principal, catalogId, docObjForAddresses, options)
+
         val docObj = documentService.convertToDocument(document)
-        extractAndSaveReferences(principal, catalogId, docObj, options)
 
         val createDocument = if (wrapper == null || options.options == "create_under_target") {
             val doc = documentService.createDocument(
@@ -80,8 +83,7 @@ open class ImportService {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
             docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-//            docObj.created = OffsetDateTime.now()
-            documentService.updateDocument(catalogId, uuid, docObj, false)
+            documentService.updateDocument(catalogId, wrapper.id.toString(), docObj, false)
         }
 
         // TODO: return created document instead of transformed JSON
@@ -132,9 +134,9 @@ open class ImportService {
         // TODO: optimize by caching reference information
 
         return try {
-            documentService.getWrapperByDocumentIdAndCatalog(catalogId, ref.uuid)
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.uuid)
             true
-        } catch (e: RuntimeException) {
+        } catch (e: NotFoundException) {
             false
         }
 

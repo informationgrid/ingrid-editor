@@ -43,7 +43,7 @@ export class RedirectFormGuard implements CanActivate {
 
   private getOpenedDocumentId(forAddress: boolean): string {
     const query = forAddress ? this.addressTreeQuery : this.treeQuery;
-    return query.getValue().openedDocument?.id?.toString();
+    return query.getValue().openedDocument?._uuid?.toString();
   }
 
   private handleNavigation(
