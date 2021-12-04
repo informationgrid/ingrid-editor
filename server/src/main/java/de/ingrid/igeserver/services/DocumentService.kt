@@ -106,6 +106,14 @@ open class DocumentService @Autowired constructor(
 
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
+    fun getWrapperByCatalogAndDocumentUuid(catalogIdentifier: String, uuid: String): DocumentWrapper {
+        try {
+            return docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
+        } catch (e: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(uuid, null)
+        }
+    }
+
     fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
         try {
 //            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
@@ -250,8 +258,8 @@ open class DocumentService @Autowired constructor(
             title = titleString
             type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
             version = docJson.get(FIELD_VERSION)?.asInt()
-            if (docJson.hasNonNull(FIELD_ID)) {
-                uuid = docJson.get(FIELD_ID).asText()
+            if (docJson.hasNonNull(FIELD_UUID)) {
+                uuid = docJson.get(FIELD_UUID).asText()
             }
             data = removeInternalFields(docJson as ObjectNode)
         }

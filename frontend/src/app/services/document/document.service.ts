@@ -122,10 +122,11 @@ export class DocumentService {
   load(
     id: string,
     address?: boolean,
-    updateStore = true
+    updateStore = true,
+    useUuid = false
   ): Observable<IgeDocument> {
     this.documentOperationFinished$.next(false);
-    return this.dataService.load(id).pipe(
+    return this.dataService.load(id, useUuid).pipe(
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);

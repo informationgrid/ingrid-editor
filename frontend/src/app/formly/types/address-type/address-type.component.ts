@@ -97,7 +97,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   }
 
   gotoAddress(address: AddressRef) {
-    this.router.navigate(["/address", { id: address.ref._id }]);
+    this.router.navigate(["/address", { id: address.ref._uuid }]);
   }
 
   private getAddressFromBackend(id: string) {

@@ -6,6 +6,7 @@ export class TreeNode {
 
   constructor(
     public _id: string,
+    public _uuid: string,
     public title: string = "Kein Titel",
     public type: string,
     public state: DocumentState = null,

@@ -18,6 +18,7 @@ import javax.persistence.EntityManager
 
 data class Result(
     val title: String?,
+    val id: Int,
     val uuid: String?,
     val _type: String?,
     val _created: Date?,
@@ -222,6 +223,7 @@ class ResearchService {
             .addScalar("modified")
             .addScalar("draft")
             .addScalar("category")
+            .addScalar("id")
             .resultList as List<Array<out Any?>>
     }
 
@@ -234,7 +236,7 @@ class ResearchService {
         return result.filter { item ->
             isAdmin || aclService.getPermissionInfo(
                 principal,
-                item[2] as String
+                item[8].toString() // "id"
             ).canRead
         }.map { item ->
             Result(
@@ -247,12 +249,13 @@ class ResearchService {
                 _category = (item[7] as? String),
                 hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
                     principal,
-                    item[2] as String
+                    item[8].toString()
                 ).canWrite,
                 hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
                     principal,
-                    item[2] as String
+                    item[8].toString()
                 ).canOnlyWriteSubtree,
+                id = item[8] as Int
             )
         }
     }

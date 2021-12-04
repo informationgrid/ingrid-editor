@@ -262,7 +262,7 @@ export class CreateNodeComponent implements OnInit {
     newAddress.title = this.documentService.createAddressTitle(newAddress);
     const savedDoc = await this.saveForm(newAddress);
 
-    this.navigateAfterSave(savedDoc._id);
+    this.navigateAfterSave(savedDoc._uuid);
   }
 
   private async handleDocumentCreate() {
@@ -273,7 +273,7 @@ export class CreateNodeComponent implements OnInit {
     newDocument.title = this.formGroup.get("title").value;
     const savedDoc = await this.saveForm(newDocument);
 
-    this.navigateAfterSave(savedDoc._id);
+    this.navigateAfterSave(savedDoc._uuid);
   }
 
   private saveForm(data: IgeDocument) {
@@ -283,10 +283,10 @@ export class CreateNodeComponent implements OnInit {
       .toPromise();
   }
 
-  private navigateAfterSave(id: string) {
-    this.dialogRef.close(id);
+  private navigateAfterSave(uuid: string) {
+    this.dialogRef.close(uuid);
 
     const page = this.forAddress ? "/address" : "/form";
-    this.router.navigate([page, { id: id }]);
+    this.router.navigate([page, { id: uuid }]);
   }
 }

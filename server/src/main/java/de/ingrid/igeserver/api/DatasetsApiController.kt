@@ -269,14 +269,14 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean
     ): ResponseEntity<List<JsonNode>> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         val children = if (!isCatAdmin && parentId == null) {
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups
-            getRootDocsFromGroup(userGroups, dbId, isAddress)
+            getRootDocsFromGroup(userGroups, catalogId, isAddress)
         } else {
-            documentService.findChildrenDocs(dbId, parentId?.toInt(), isAddress).hits
+            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits
         }
 
         val childDocs = children
@@ -373,15 +373,26 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(searchResult)
     }
 
+    override fun getByUUID(
+        principal: Principal,
+        uuid: String,
+        publish: Boolean?
+    ): ResponseEntity<JsonNode> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+
+        return getByID(principal, wrapper.id!!, publish)
+    }
+
     override fun getByID(
         principal: Principal,
-        id: String,
+        id: Int,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-            val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
+            val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
 
             val doc = documentService.getLatestDocument(wrapper)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
@@ -410,7 +421,7 @@ class DatasetsApiController @Autowired constructor(
 
         return ResponseEntity.ok(
             response + PathResponse(
-                id,
+                wrapper.id!!,
                 wrapper.draft?.title ?: wrapper.published?.title ?: "???",
                 PermissionInfo(true, wrapper.hasWritePermission, wrapper.hasOnlySubtreeWritePermission)
             )

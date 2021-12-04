@@ -19,7 +19,10 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun findByIdNoPermissionCheck(id: Int): DocumentWrapper
 
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
-    fun findByIdAndCatalog_Identifier(id: String, catalog_identifier: String): DocumentWrapper
+    fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
+
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.catalog.identifier = ?1 AND dw.uuid = ?2")
+    fun findByCatalog_IdentifierAndUuidNoPermissionCheck(catalog_identifier: String, uuid: String): DocumentWrapper
 
     fun existsById(uuid: String): Boolean
 

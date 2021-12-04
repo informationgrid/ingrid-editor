@@ -99,6 +99,7 @@ export class DynamicDatabase {
       (doc) =>
         new TreeNode(
           <string>doc.id,
+          doc._uuid,
           doc.title,
           doc._type,
           doc._state,

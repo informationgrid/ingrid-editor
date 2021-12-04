@@ -76,15 +76,24 @@ interface DatasetsApi {
     @RequestMapping(value = ["/datasets/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getByID(
             principal: Principal,
-            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
+            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
+            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
+
+    @Operation(description = "Retrieve a dataset by a given UUID.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @RequestMapping(value = ["/datasetsByUuid/{uuid}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
+    fun getByUUID(
+            principal: Principal,
+            @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
             @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])
     @RequestMapping(value = ["/datasets/{id}/path"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getPath(
-            principal: Principal,
-            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int): ResponseEntity<List<DatasetsApiController.PathResponse>>
+        principal: Principal,
+        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int
+    ): ResponseEntity<List<DatasetsApiController.PathResponse>>
 
     @Operation(description = "Move a dataset or tree under another dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets have been moved successfully.")])

@@ -284,22 +284,23 @@ export class DynamicFormComponent
     }
 
     const loadSubscription = this.documentService
-      .load(id, this.address)
+      .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
-        tap((doc) => (this.readonly = !doc.hasWritePermission))
+        tap((doc) => (this.readonly = !doc.hasWritePermission)),
+        tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
         (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
       );
 
-    const updateBreadcrumbSubscription = this.documentService.updateBreadcrumb(
-      id,
-      this.query,
-      this.address
-    );
-    this.loadSubscription = [loadSubscription, updateBreadcrumbSubscription];
+    // const updateBreadcrumbSubscription = this.updateBreadcrumb(id);
+    this.loadSubscription.push(loadSubscription);
+  }
+
+  private updateBreadcrumb(id: string) {
+    return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
   private handleLoadError(error: HttpErrorResponse, previousDocId) {

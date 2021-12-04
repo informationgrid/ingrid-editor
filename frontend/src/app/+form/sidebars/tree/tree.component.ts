@@ -618,7 +618,7 @@ export class TreeComponent implements OnInit {
 
     if (id) {
       this.activeNodeId = id;
-      this.activate.next([this.activeNodeId]);
+      this.activate.next([node._uuid]);
     }
   }
 }

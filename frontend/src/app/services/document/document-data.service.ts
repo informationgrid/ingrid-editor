@@ -23,10 +23,16 @@ export class DocumentDataService {
     return this.http.get<any[]>(url);
   }
 
-  load(id: string): Observable<IgeDocument> {
-    return this.http.get<IgeDocument>(
-      this.configuration.backendUrl + "datasets/" + id
-    );
+  load(id: string, useUuid = false): Observable<IgeDocument> {
+    if (useUuid) {
+      return this.http.get<IgeDocument>(
+        this.configuration.backendUrl + "datasetsByUuid/" + id
+      );
+    } else {
+      return this.http.get<IgeDocument>(
+        this.configuration.backendUrl + "datasets/" + id
+      );
+    }
   }
 
   save(data: IgeDocument, isAddress?: boolean): Observable<any> {
