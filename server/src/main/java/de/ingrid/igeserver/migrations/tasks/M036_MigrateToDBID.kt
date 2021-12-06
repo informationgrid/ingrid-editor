@@ -32,7 +32,7 @@ class M036_MigrateToDBID : MigrationBase("0.36") {
     """.trimIndent()
 
     private val sqlRootDocumentWrapper = """
-        SELECT dw.dbId FROM DocumentWrapper dw where dw.parent is null
+        SELECT dw.id FROM DocumentWrapper dw where dw.parent is null
     """.trimIndent()
 /*
     private val sqlUpdateWrapperPath = """
