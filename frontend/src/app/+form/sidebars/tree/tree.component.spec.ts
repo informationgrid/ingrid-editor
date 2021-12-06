@@ -47,6 +47,7 @@ function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
     (doc) =>
       new TreeNode(
         doc.id.toString(),
+        doc._uuid,
         doc.title,
         doc._type,
         doc._state,
@@ -561,6 +562,7 @@ describe("TreeComponent", () => {
         data: [
           {
             id: "1",
+            _uuid: "1",
             title: "",
             _type: "",
             icon: "",
@@ -572,6 +574,7 @@ describe("TreeComponent", () => {
           },
           {
             id: "2",
+            _uuid: "2",
             title: "",
             _type: "",
             icon: "",
@@ -745,6 +748,7 @@ describe("TreeComponent", () => {
       data: [
         {
           id: options.id || "123",
+          _uuid: options.id || "123",
           _type: options.type || "FOLDER",
           _parent: options.parent || null,
           _state: options.state || "W",
