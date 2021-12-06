@@ -59,6 +59,10 @@ import { CloseScrollStrategy, Overlay } from "@angular/cdk/overlay";
 import { UploadTypeComponent } from "./types/upload-type/upload-type.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { GermanDateAdapter } from "../services/german-date.adapter";
+import { LinkDialogComponent } from "./types/table/link-dialog/link-dialog.component";
+import { UploadFilesDialogComponent } from "./types/table/upload-files-dialog/upload-files-dialog.component";
+import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
+import { UploadModule } from "../shared/upload/upload.module";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
@@ -185,6 +189,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatRadioModule,
     DragDropModule,
     MatSlideToggleModule,
+    DialogTemplateModule,
+    UploadModule,
   ],
   providers: [
     {
@@ -226,6 +232,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DateRangeTypeComponent,
     RepeatDetailListComponent,
     UploadTypeComponent,
+    LinkDialogComponent,
+    UploadFilesDialogComponent,
   ],
   exports: [
     ReactiveFormsModule,

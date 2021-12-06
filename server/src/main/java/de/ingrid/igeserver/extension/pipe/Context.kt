@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.extension.pipe
 
+import java.security.Principal
+
 /**
  * Interface for contexts providing or collecting additional information when running the filters in a pipe
  */
@@ -16,6 +18,8 @@ interface Context {
      * The catalog the operation is to be executed
      */
     val catalogId: String
+
+    val principal: Principal?
 
     /**
      * Properties holding additional information that could also be shared between filters

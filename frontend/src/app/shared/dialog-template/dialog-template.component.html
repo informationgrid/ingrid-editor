@@ -1,0 +1,27 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">{{ title }}</span>
+    </h2>
+</div>
+<mat-dialog-content [style.background-color]="contentColor">
+    <ng-content select="[content]"></ng-content>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button color="primary" mat-dialog-close (click)="cancel.next()">
+        Abbrechen
+    </button>
+    <div fxFlex></div>
+    <ng-content select="[actions]"></ng-content>
+    <button
+        mat-flat-button
+        color="primary"
+        [disabled]="disabled"
+        (click)="submit.next()"
+    >
+        Übernehmen
+    </button>
+</mat-dialog-actions>

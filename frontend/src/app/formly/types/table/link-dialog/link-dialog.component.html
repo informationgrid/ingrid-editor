@@ -1,0 +1,38 @@
+<ige-dialog-template
+    title="Link angeben"
+    [formGroup]="form"
+    [disabled]="form.invalid"
+    (submit)="submit()"
+>
+    <ng-container content>
+        <div class="info">
+            Dokumente können per URL importiert werden. Geben Sie dabei die
+            vollständige Internetadresse an (http://… oder https://…).
+        </div>
+        <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Titel</mat-label>
+            <input igeFocus formControlName="title" matInput />
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>URL</mat-label>
+            <input
+                formControlName="url"
+                [errorStateMatcher]="matcher"
+                matInput
+                placeholder="z.B. https://"
+                type="url"
+            />
+            <mat-error
+                *ngIf="
+                    form.controls.url.hasError('pattern') &&
+                    !form.controls.url.hasError('required')
+                "
+            >
+                Verwenden Sie bitte eine gültige URL
+            </mat-error>
+            <mat-error *ngIf="form.controls.url.hasError('required')">
+                URL ist verpflichtend
+            </mat-error>
+        </mat-form-field>
+    </ng-container>
+</ige-dialog-template>

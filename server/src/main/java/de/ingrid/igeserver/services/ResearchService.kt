@@ -47,8 +47,6 @@ class ResearchService {
     @Autowired
     private lateinit var authUtils: AuthUtils
 
-    private val specialFilter = arrayOf("selectPublished", "selectLatest")
-
     fun createFacetDefinitions(catalogType: String): Facets {
         return profiles
             .find { it.identifier == catalogType }!!
@@ -56,7 +54,7 @@ class ResearchService {
 
     }
 
-    fun query(principal: Principal, groups: Set<Group>, dbId: String, query: ResearchQuery): ResearchResponse {
+    fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
         val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetUuidsFromGroups(groups)
@@ -66,7 +64,7 @@ class ResearchService {
             return ResearchResponse(0, emptyList())
         }
 
-        val sql = createQuery(dbId, query, groupIds)
+        val sql = createQuery(catalogId, query, groupIds)
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters)
@@ -76,25 +74,32 @@ class ResearchService {
     }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
-        return query.clauses?.clauses
+
+        val termParameters: List<Any> = if (query.term.isNullOrEmpty()) {
+            emptyList()
+        } else {
+            val withWildcard = "%" + query.term + "%"
+            // third parameter is for uuid search and so must not contain wildcard
+            listOf(withWildcard, withWildcard, query.term)
+        }
+
+        val clauseParameters = query.clauses?.clauses
             ?.mapNotNull { it.parameter }
             ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it } }
             ?.filter { it.isNotEmpty() }
             ?.flatten() ?: emptyList()
+
+        return termParameters + clauseParameters
     }
 
     private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
-        val stateCondition = determineStateQuery(query.clauses)
-        val jsonSearch = determineJsonSearch(query.term)
-        val whereFilter = determineWhereQuery(dbId, query, groupDocUuids)
-
         return """
                 SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
                 FROM catalog, document_wrapper
-                $stateCondition
-                $jsonSearch
-                $whereFilter
+                ${createFromStatement()}
+                ${determineJsonSearch(query.term)}
+                ${determineWhereQuery(dbId, query, groupDocUuids)}
                 ORDER BY document1.title;
             """
     }
@@ -111,14 +116,8 @@ class ResearchService {
         val deletedFilter = "document_wrapper.deleted = 0 AND "
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
-        // encode opening curly brace as hibernate tries to match closing tags even in string literals
-        // which produces an error. Sample query: "{"
-        // https://hibernate.atlassian.net/browse/JPA-12
-        // https://hibernate.atlassian.net/browse/HHH-2744
-        val cTerm = query.term?.replace("{", "\$que$ || CHR(123) || \$que$")
-
         val termSearch =
-            if (cTerm.isNullOrEmpty()) "" else "(t.val ILIKE \$que$%${cTerm}%\$que$ OR title ILIKE \$que$%${cTerm}%\$que$ OR document_wrapper.uuid ILIKE \$que$${cTerm}\$que$)"
+            if (query.term.isNullOrEmpty()) "" else "(t.val ILIKE ? OR title ILIKE ? OR document_wrapper.uuid ILIKE ? )"
 
         val filter = convertQuery(query.clauses)
 
@@ -158,7 +157,6 @@ class ResearchService {
                 .mapNotNull { convertQuery(it) }
         } else {
             boolFilter.value
-                ?.filter { !specialFilter.contains(it) }
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
                 ?.map { it?.filter(boolFilter.parameter) }
         }
@@ -170,39 +168,14 @@ class ResearchService {
 
     }
 
-    private fun findSpecialFilter(boolFilter: BoolFilter?): List<String>? {
-
-        if (boolFilter == null) {
-            return null
-        }
-
-        return if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
-            boolFilter.clauses
-                .mapNotNull { findSpecialFilter(it) }
-                .flatten()
-        } else {
-            boolFilter.value
-                ?.filter { specialFilter.contains(it) }
-        }
-
-    }
-
-    private fun determineStateQuery(filter: BoolFilter?): Any {
-        val result = findSpecialFilter(filter)
-
-        val searchPublished = result?.find { it == "selectPublished" }
-        return if (searchPublished != null) {
-            "JOIN document document1 ON document_wrapper.published = document1.id"
-        } else {
-            """
+    private fun createFromStatement(): Any {
+        return """
             JOIN document document1 ON
                 CASE
                     WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
                     ELSE document_wrapper.draft = document1.id
                 END
             """.trimIndent()
-        }
-
     }
 
     private fun sendQuery(sql: String, parameter: List<Any>): List<Array<out Any?>> {

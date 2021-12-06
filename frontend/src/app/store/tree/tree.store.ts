@@ -7,6 +7,7 @@ import {
 } from "@datorama/akita";
 import { DocumentAbstract } from "../document/document.model";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
+import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 
 export interface TreeState
   extends EntityState<DocumentAbstract>,
@@ -20,6 +21,7 @@ export interface TreeState
   scrollPosition: number;
   isDocLoading: boolean;
   multiSelectMode: boolean;
+  datasetsChanged: UpdateDatasetInfo;
 }
 
 const initialState = {
@@ -31,6 +33,7 @@ const initialState = {
   scrollPosition: 0,
   isDocLoading: false,
   multiSelectMode: false,
+  datasetsChanged: null,
 };
 
 @Injectable({ providedIn: "root" })

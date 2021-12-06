@@ -144,9 +144,9 @@ export class FacetsComponent implements AfterViewInit {
       }
 
       this.model[group.id] = {};
-      if (group.selection === "RADIO") {
+      if (group.viewComponent === "RADIO") {
         this.model[group.id] = group.filter[0].id;
-      } else if (group.selection === "TIMESPAN") {
+      } else if (group.viewComponent === "TIMESPAN") {
         this.model[group.id][this.timespanFilterId] = {
           start: null,
           end: null,
@@ -156,13 +156,13 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   private determineSpatialFilterId(filters: FacetGroup[]) {
-    return filters.find((group) => group.selection === "SPATIAL")?.filter[0]
+    return filters.find((group) => group.viewComponent === "SPATIAL")?.filter[0]
       ?.id;
   }
 
   private determineTimeSpanFilterId(filters: FacetGroup[]) {
-    return filters.find((group) => group.selection === "TIMESPAN")?.filter[0]
-      ?.id;
+    return filters.find((group) => group.viewComponent === "TIMESPAN")
+      ?.filter[0]?.id;
   }
 
   sendUpdate() {
@@ -294,13 +294,13 @@ export class FacetsComponent implements AfterViewInit {
     this.setDefaultModel(filter);
     this.filterGroup = filter;
 
-    if (filter.some((f) => f.selection === "SPATIAL")) {
+    if (filter.some((f) => f.viewComponent === "SPATIAL")) {
       setTimeout(() => {
         this.initLeaflet();
         this.updateSpatialFromModel(this._parameter);
       }, 200);
     }
-    if (filter.some((f) => f.selection === "TIMESPAN")) {
+    if (filter.some((f) => f.viewComponent === "TIMESPAN")) {
       this.updateTimeSpanFromModel(this._parameter);
     }
   }

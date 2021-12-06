@@ -70,6 +70,11 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
   private calculateDuration() {
     const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    if (!refreshToken) {
+      this.updateStore(-1);
+      return;
+    }
+
     const endTime = refreshToken.exp;
 
     const now = Math.ceil(new Date().getTime() / 1000);

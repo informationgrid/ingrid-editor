@@ -29,7 +29,7 @@ export class AddressPage extends DocumentPage {
   static visit() {
     cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     cy.visit('address');
-    cy.wait('@treeCallAddress');
+    cy.wait('@treeCallAddress', { timeout: 10000 });
     cy.contains('.page-title', 'Adressen');
   }
 
@@ -56,7 +56,16 @@ export class AddressPage extends DocumentPage {
   }
 
   static apiCreateAddress(json: any, published?: boolean) {
-    cy.request('POST', Cypress.config('baseUrl') + `/api/datasets?address=true&publish=${published}`, json);
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: Cypress.config('baseUrl') + `/api/datasets?address=true&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
   }
 
   static saveChanges() {

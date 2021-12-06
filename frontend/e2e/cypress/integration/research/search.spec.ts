@@ -52,7 +52,7 @@ describe('Research Page', () => {
   });
 
   it('should search for documents with spatial reference', () => {
-    ResearchPage.search(' ');
+    /*ResearchPage.search(' ');*/
     ResearchPage.getSearchResultCount().then(allCount => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial1');
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
@@ -60,7 +60,7 @@ describe('Research Page', () => {
   });
 
   it('should start new search for documents after editing spatial reference', () => {
-    ResearchPage.search(' ');
+    //    ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
       ResearchPage.editSpatialReference('Mainz');
@@ -84,7 +84,7 @@ describe('Research Page', () => {
   });
 
   it('should do search with both spatial reference and selection of filter-checkboxes included', () => {
-    ResearchPage.search(' ');
+    //ResearchPage.search(' ');
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(multipleFiltered => {
@@ -224,6 +224,45 @@ describe('Research Page', () => {
     ResearchPage.createSpatialReference('Hamburg', 'search to interrupt editing');
     ResearchPage.interruptEditingSpatialReference('Berlin');
     cy.get('div.location').contains('Hamburg');
+  });
+
+  it('should be able to create different types of saved searches', () => {
+    // create saved search with limited viewer scope
+    ResearchPage.createSpatialReference('Hamburg', 'saved search with small scope');
+    ResearchPage.saveSearchProfile('savedSearchProfileLimitedScope', 'save description to test existence and scope');
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(
+      'savedSearchProfileLimitedScope',
+      'save description to test existence and scope'
+    );
+    // check for correct search parameters
+    ResearchPage.openSavedSearch('savedSearchProfileLimitedScope', 'save description to test existence and scope');
+    cy.get('.location').should('not.be.empty');
+    // create globally visible search
+    ResearchPage.visit();
+    ResearchPage.search('das');
+    ResearchPage.saveSearchProfile(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope',
+      true
+    );
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope'
+    );
+    // log in as different user and trigger saved search
+    cy.kcLogout();
+    cy.kcLogin('meta');
+    ResearchPage.visit();
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.openSavedSearch(
+      'savedSearchProfileExtendedScope',
+      'save description to test existence and extended scope',
+      'Globale Suchanfragen'
+    );
+    cy.get('input.mat-input-element').first().should('have.value', 'das');
+    // todo: check that global search can not be deleted
   });
 
   it('should do search via Schnellsuche by using document ID', () => {

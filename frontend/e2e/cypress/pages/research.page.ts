@@ -49,9 +49,9 @@ export class ResearchPage {
 
   static setDocumentTypeSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
-    cy.get('.mat-option-text').contains(docType).click();
-    // wait For request to complete
     cy.intercept('**/api/search/query').as('query');
+    cy.contains('.mat-option-text', docType).click();
+    // wait For request to complete
     cy.wait('@query');
   }
 
@@ -169,13 +169,18 @@ export class ResearchPage {
     cy.contains('ige-result-table button', 'CSV').click();
   }
 
-  static saveSearchProfile(title: string, description: string): void {
+  static saveSearchProfile(title: string, description: string, extendedScope = false): void {
     cy.contains('.save-search-button button', 'Speichern').click();
     cy.get('[data-cy="search-name"]').type(title);
     cy.get('[data-cy="search-description"]').type(description);
-    cy.intercept('POST', /api\/search/).as('saveChanges');
+    if (extendedScope) {
+      cy.contains('label', 'Für alle sichtbar').within(_ => {
+        cy.get('.mat-checkbox-inner-container input').check({ force: true });
+      });
+    }
+    cy.intercept('POST', /api\/search\?/).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
-    cy.wait('@saveChanges').its('response.body.name').should('eq', title);
+    cy.wait('@saveChanges', { timeout: 7000 }).its('response.body.name').should('eq', title);
   }
 
   static getCSVFile(): void {
@@ -194,6 +199,12 @@ export class ResearchPage {
   static checkExistenceOfSavedSearch(title: string, description: string): void {
     cy.get('mat-selection-list.mat-selection-list').contains(title);
     cy.get('mat-selection-list.mat-selection-list').contains(description);
+  }
+
+  static openSavedSearch(title: string, description: string, section = 'Ihre Suchanfragen'): void {
+    // make sure the saved search is in the right section (limited visibility scope vs. global visibility)
+    cy.contains('mat-card-title', section).parent().should('contain', title);
+    cy.get('mat-selection-list.mat-selection-list').contains(title).click();
   }
 
   static deleteSavedSearch(title: string): void {

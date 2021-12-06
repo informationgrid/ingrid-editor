@@ -6,7 +6,7 @@ import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 describe('mCLOUD documents', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     DocumentPage.visit();
   });
 
@@ -24,7 +24,7 @@ describe('mCLOUD documents', function () {
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
       // should show exactly 6 validation errors on the following fields
-      cy.containsFormErrors(6);
+      cy.containsFormErrors(5);
 
       // TODO: check all necessary fields!
       cy.fieldIsInvalid('description', 'Dieses Feld muss ausgefüllt sein');

@@ -42,16 +42,21 @@ export class enterMcloudDocTestData {
 
   static setAddDownload(
     titleText: string = 'linkTitel',
-    linkText: string = 'link.link',
+    linkText: string = 'https://docs.cypress.io/api/this',
     typeText: string = 'linktyp',
     formatText: string = '.py'
   ) {
-    cy.get('[data-cy="Downloads-add"]').contains('Hinzufügen').click();
+    cy.contains('button span', 'Link angeben').click();
+    cy.get('input[formcontrolname="title"]').type(titleText);
+    cy.get('[formcontrolname="url"]').type(linkText);
+    cy.get('input[formcontrolname="title"]').click();
+    cy.contains('button', 'Übernehmen').click();
+    /*cy.get('[data-cy="Downloads-add"]').contains('Hinzufügen').click();
     cy.get('[data-cy="form-dialog-content"]').contains('Titel').parent().parent().type(titleText);
     cy.get('[data-cy="form-dialog-content"]').contains('Link').parent().parent().type(linkText);
     cy.get('[data-cy="form-dialog-content"]').contains('Typ').parent().parent().type(typeText);
     cy.get('[data-cy="form-dialog-content"]').contains('Datenformat').parent().parent().type(formatText);
-    cy.get('[data-cy="form-dialog-confirm"]').click();
+    cy.get('[data-cy="form-dialog-confirm"]').click();*/
   }
 
   static setLicense(license: string = 'Andere offene Lizenz') {

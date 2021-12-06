@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.GeneralProperties
@@ -77,6 +78,18 @@ open class DocumentService @Autowired constructor(
 
     @Autowired
     private lateinit var postPublishPipe: PostPublishPipe
+
+    @Autowired
+    private lateinit var preUnpublishPipe: PreUnpublishPipe
+
+    @Autowired
+    private lateinit var postUnpublishPipe: PostUnpublishPipe
+
+    @Autowired
+    private lateinit var preRevertPipe: PreRevertPipe
+
+    @Autowired
+    private lateinit var postRevertPipe: PostRevertPipe
 
     @Autowired
     private lateinit var preDeletePipe: PreDeletePipe
@@ -187,7 +200,7 @@ open class DocumentService @Autowired constructor(
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, null)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
 
@@ -297,8 +310,8 @@ open class DocumentService @Autowired constructor(
         ).forEach { json.remove(it) }
     }
 
-    fun updateDocument(catalogId: String, id: String, data: Document, publish: Boolean = false): Document {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
+    fun updateDocument(principal: Principal?, catalogId: String, id: String, data: Document, publish: Boolean = false): Document {
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
         // run pre-update pipe(s)
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
@@ -399,7 +412,7 @@ open class DocumentService @Autowired constructor(
     }
 
     fun deleteRecursively(catalogId: String, id: String) {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, null)
 
         // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
@@ -446,13 +459,19 @@ open class DocumentService @Autowired constructor(
         docWrapperRepo.save(markedDoc)
     }
 
-    fun revertDocument(catalogId: String, id: String): Document {
+    fun revertDocument(principal: Principal, catalogId: String, id: String): Document {
 
         // remove draft version
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
         // check if draft and published field are filled
         assert(wrapper.draft != null && wrapper.published != null)
+
+        // run pre-revert pipe(s)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val docType = getDocumentType(wrapper.type!!)
+        val preRevertPayload = PreRevertPayload(docType, wrapper.draft!!, wrapper)
+        preRevertPipe.runFilters(preRevertPayload, filterContext)
 
         // delete draft document
         docRepo.delete(wrapper.draft!!)
@@ -467,13 +486,23 @@ open class DocumentService @Autowired constructor(
         // if doc was modified in another folder then the previous parent would be used otherwise
         doc.data.put(FIELD_PARENT, wrapper.getParentUuid())
 
+        // run post-revert pipe(s)
+        val postRevertPayload = PostRevertPayload(docType, doc, updatedWrapper)
+        postRevertPipe.runFilters(postRevertPayload, filterContext)
+
         return doc
     }
 
-    fun unpublishDocument(catalogId: String, id: String): Document {
+    fun unpublishDocument(principal: Principal, catalogId: String, id: String): Document {
         // remove publish
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
         assert(wrapper.published != null)
+
+        // run pre-unpublish pipe(s)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val docType = getDocumentType(wrapper.type!!)
+        val preUnpublishPayload = PreUnpublishPayload(docType, wrapper.published!!, wrapper)
+        preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
         // if no draft version exists, move published version to draft
         if (wrapper.draft == null) {
@@ -490,6 +519,11 @@ open class DocumentService @Autowired constructor(
 
         // update state
         wrapper.draft!!.state = DocumentState.DRAFT.value
+
+        // run post-unpublish pipe(s)
+        val postUnpublishPayload = PostUnpublishPayload(docType, wrapper.draft!!, wrapper)
+        postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
+
         return wrapper.draft!!
     }
 
@@ -566,7 +600,11 @@ open class DocumentService @Autowired constructor(
             wrapper.published
         } else {
             wrapper.draft
-        }!!
+        }
+        
+        if (objectNode == null) {
+            throw ServerException.withReason("Document has no draft or published version: " + wrapper.id) 
+        }
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission

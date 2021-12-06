@@ -113,6 +113,8 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
+    this.database.init(this.forAddresses);
+
     this.dataSource = new DynamicDataSource(
       this.treeControl,
       this.database,

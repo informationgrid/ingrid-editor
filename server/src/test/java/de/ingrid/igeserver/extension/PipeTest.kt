@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.beInstanceOf
 import io.kotest.spring.SpringListener
+import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
@@ -43,7 +44,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadUpdate(data)
-            val context = DefaultContext("", null)
+            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
 
             val result = updatePipe.runFilters(payload, context)
 
@@ -68,7 +69,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", null)
+            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -92,7 +93,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadCreate(data)
-            val context = DefaultContext("", null)
+            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
 
             val result = createPipe.runFilters(payload, context)
 
@@ -113,7 +114,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", "profileA")
+            val context = DefaultContext("", "profileA", BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -140,7 +141,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", null)
+            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 

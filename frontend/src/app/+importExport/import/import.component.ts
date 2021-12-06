@@ -1,21 +1,15 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import {
-  ImportExportService,
-  ImportTypeInfo,
-  UploadAnalysis,
-} from "../import-export-service";
+import { ImportExportService, ImportTypeInfo } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
-import { FileUploadModel } from "../upload/upload.component";
 import { MatStepper } from "@angular/material/stepper";
-import { catchError, tap } from "rxjs/operators";
-import { UploadService } from "../upload/upload.service";
+import { tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
-import { HttpResponse } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { IgeError } from "../../models/ige-error";
+import { FileUploadModel } from "../../shared/upload/fileUploadModel";
+import { UploadComponent } from "../../shared/upload/upload.component";
+import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
@@ -26,6 +20,8 @@ import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 })
 export class ImportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;
+  @ViewChild("uploadComponent") uploadComponent: UploadComponent;
+
   file: File;
   droppedFiles: FileUploadModel[] = [];
 
@@ -44,7 +40,7 @@ export class ImportComponent implements OnInit {
   locationDoc: number[] = [];
   locationAddress: number[] = [];
   readyForImport = false;
-  chosenFiles: FileUploadModel[];
+  chosenFiles: TransfersWithErrorInfo[];
   private importedDocUuid: string = null;
   pathToDocument: ShortTreeNode[];
   hasImportError = false;
@@ -52,7 +48,6 @@ export class ImportComponent implements OnInit {
   constructor(
     private importExportService: ImportExportService,
     config: ConfigService,
-    private uploadService: UploadService,
     private router: Router,
     private documentService: DocumentService,
     private treeQuery: TreeQuery,
@@ -79,8 +74,8 @@ export class ImportComponent implements OnInit {
     );
   }
 
-  onAnalyzeComplete(info: UploadAnalysis) {
-    this.compatibleImporters = info.analysis.importer;
+  onAnalyzeComplete(info: any) {
+    this.compatibleImporters = info.importer;
     const importerControl = this.optionsFormGroup.get("importer");
     if (this.compatibleImporters.length === 1) {
       importerControl.setValue(this.compatibleImporters[0]);
@@ -95,27 +90,8 @@ export class ImportComponent implements OnInit {
     console.log(data); // We just print out data bubbled up from event emitter.
     this.analyzedData = data;
     this.step1Complete = true;
+    this.importedDocUuid = data.result._uuid;
     setTimeout(() => this.stepper.next());
-  }
-
-  /**
-   * on file drop handler
-   */
-  onFileDropped(files: FileList) {
-    console.log(files);
-    for (let index = 0; index < files.length; index++) {
-      this.droppedFiles = [
-        ...this.droppedFiles,
-        {
-          data: files.item(index),
-          state: "in",
-          inProgress: false,
-          progress: 0,
-          canRetry: false,
-          canCancel: true,
-        },
-      ];
-    }
   }
 
   cancel() {
@@ -151,33 +127,21 @@ export class ImportComponent implements OnInit {
     this.hasImportError = false;
 
     // upload each file
+    const importer = this.optionsFormGroup.get("importer").value;
+    const option = this.optionsFormGroup.get("option").value;
+    this.uploadComponent.flow.flowJs.opts.query = {
+      importerId: importer,
+      parentDoc: this.locationDoc[0],
+      parentAddress: this.locationAddress[0],
+      options: option,
+    };
     this.chosenFiles.forEach((file) => {
-      const importer = this.optionsFormGroup.get("importer").value;
-      const option = this.optionsFormGroup.get("option").value;
-      this.uploadService
-        .uploadFile(
-          file,
-          "file",
-          `api/import?importerId=${importer}&parentDoc=${this.locationDoc[0]}&parentAddress=${this.locationAddress[0]}&options=${option}`
-        )
-        .pipe(
-          catchError((error) => this.handleError(error)),
-          tap((response) => console.log("File imported", response)),
-          tap(
-            (response: HttpResponse<any>) =>
-              (this.importedDocUuid = response.body.result._uuid)
-          )
-        )
-        .subscribe();
+      this.uploadComponent.flow.flowJs.addFile(file.transfer.flowFile.file);
     });
+    this.uploadComponent.flow.upload();
   }
 
   openImportedDocument() {
     this.router.navigate(["/form", { id: this.importedDocUuid }]);
-  }
-
-  private handleError(error: IgeError): Observable<HttpResponse<any>> {
-    this.hasImportError = true;
-    throw error;
   }
 }

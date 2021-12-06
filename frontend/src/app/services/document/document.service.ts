@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
-import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
 import {
   catchError,
@@ -53,7 +52,6 @@ export class DocumentService {
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
   documentOperationFinished$ = new Subject<any>();
-  datasetsChanged$ = new Subject<UpdateDatasetInfo>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
 
@@ -213,11 +211,13 @@ export class DocumentService {
       });
     }
 
-    this.datasetsChanged$.next({
-      type: isNewDoc ? UpdateType.New : UpdateType.Update,
-      data: [info],
-      parent: parentId,
-      path: path,
+    store.update({
+      datasetsChanged: {
+        type: isNewDoc ? UpdateType.New : UpdateType.Update,
+        data: [info],
+        parent: parentId,
+        path: path,
+      },
     });
   }
 
@@ -249,6 +249,7 @@ export class DocumentService {
   }
 
   unpublish(id: string, forAddress: boolean): Observable<any> {
+    const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
         if (error?.error?.errorCode === "POST_SAVE_ERROR") {
@@ -262,7 +263,9 @@ export class DocumentService {
       }),
       map((json) => this.mapToDocumentAbstracts([json], json._parent)),
       tap((json) =>
-        this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
+        store.update({
+          datasetsChanged: { type: UpdateType.Update, data: json },
+        })
       ),
       tap(() => this.reload$.next({ id, forAddress: forAddress })),
       tap(() =>
@@ -274,12 +277,15 @@ export class DocumentService {
   }
 
   delete(ids: string[], isAddress: boolean): Observable<void> {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.delete(ids).pipe(
       tap(() => {
-        this.datasetsChanged$.next({
-          type: UpdateType.Delete,
-          // @ts-ignore
-          data: ids.map((id) => ({ id: id })),
+        // @ts-ignore
+        store.update({
+          datasetsChanged: {
+            type: UpdateType.Delete,
+            data: ids.map((id) => ({ id: id })),
+          },
         });
       }),
       tap(() => this.updateStoreAfterDelete(ids, isAddress)),
@@ -311,7 +317,9 @@ export class DocumentService {
         return json;
       }),
       tap((json) =>
-        this.datasetsChanged$.next({ type: UpdateType.Update, data: json })
+        store.update({
+          datasetsChanged: { type: UpdateType.Update, data: json },
+        })
       ),
       // tap(json => this.treeStore.update(id, json[0])),
       // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
@@ -347,6 +355,7 @@ export class DocumentService {
     includeTree: boolean,
     isAddress: boolean
   ) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
       tap((docs) => {
         this.messageService.sendInfo("Datensatz wurde kopiert");
@@ -355,12 +364,14 @@ export class DocumentService {
 
         this.updateStoreAfterCopy(infos, dest, isAddress);
 
-        this.datasetsChanged$.next({
-          type: UpdateType.New,
-          data: infos,
-          parent: dest,
-          doNotSelect: true,
-          // path: path
+        store.update({
+          datasetsChanged: {
+            type: UpdateType.New,
+            data: infos,
+            parent: dest,
+            doNotSelect: true,
+            // path: path
+          },
         });
       }),
       catchError((error) => {
@@ -397,13 +408,6 @@ export class DocumentService {
           // update internal store, but we had to make sure that the children of the destination folder
           // were already loaded, otherwise the tree won't know if children have been loaded yet
           this.updateStoreAfterMove(srcIDs, dest, isAddress);
-
-          this.datasetsChanged$.next({
-            type: UpdateType.Move,
-            // @ts-ignore
-            data: srcIDs.map((id) => ({ id: id })),
-            parent: dest,
-          });
 
           this.reloadDocumentIfOpenedChanged(isAddress, srcIDs);
         })
@@ -614,6 +618,15 @@ export class DocumentService {
         _hasChildren: true,
       });
     }
+
+    // @ts-ignore
+    store.update({
+      datasetsChanged: {
+        type: UpdateType.Move,
+        data: ids.map((id) => ({ id: id })),
+        parent: parent,
+      },
+    });
   }
 
   @transaction()

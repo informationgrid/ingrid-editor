@@ -6,7 +6,7 @@ import { Address, AddressPage } from '../../pages/address.page';
 describe('Dashboard', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     cy.visit('');
   });
 
@@ -15,9 +15,55 @@ describe('Dashboard', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  it('make sure number of published and draft documents in chart is present and greater than 0', function () {
+  it('make sure number of published and draft documents in chart is present and adds up', function () {
     cy.get('.box.working .count').countShouldBeGreaterThan(0);
     cy.get('.box .count').countShouldBeGreaterThan(0);
+    // check if sum of drafted and published documents equals the total number of displayed documents
+    let sum = 0;
+    cy.get('.count')
+      .each($element => {
+        sum += parseInt($element.text());
+      })
+      .then(_ => {
+        DashboardPage.getCount(DashboardPage.totalDisplay).then(_ => {
+          expect(sum).to.equal(_);
+        });
+      });
+  });
+
+  it('should update display after creating new documents', () => {
+    const docTitle = 'documentName' + Utils.randomString();
+    const addressFirstName = 'firstName' + Utils.randomString();
+    const addressLastName = 'firstName' + Utils.randomString();
+    const addressData = {
+      firstName: addressFirstName,
+      lastName: addressLastName,
+      organization: 'org',
+      title: 'APICreatedAddress' + Utils.randomString(),
+      _type: 'AddressDoc',
+      contact: [{ type: 1, connection: '0123456789' }]
+    };
+    // check state of display before creation of new documents
+    DashboardPage.getCount(DashboardPage.draftedDocuments).then(numberBefore => {
+      // create doc via api
+      DocumentPage.CreateFullMcloudDocumentWithAPI(docTitle, false);
+      // create address via api
+      AddressPage.apiCreateAddress(addressData, false);
+      // check last-edited-display in data section
+      DocumentPage.visit();
+      cy.get('.mat-card-content').should('contain', docTitle);
+      // check last-edited-display in address section
+      AddressPage.visit();
+      cy.get('.mat-card-content').should('contain', addressData.title);
+      // check dashboard display and see if number has increased
+      DashboardPage.visit();
+      DashboardPage.getCount(DashboardPage.draftedDocuments).then(numberAfter => {
+        cy.contains('.mat-card-content mat-selection-list', docTitle);
+        expect(numberAfter).to.be.greaterThan(numberBefore);
+        // check that the display has been increased by one (= one new data document)
+        expect(numberAfter - 1).to.equal(numberBefore);
+      });
+    });
   });
 
   it('should load a document from dashboard from latest docs box', () => {

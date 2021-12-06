@@ -23,7 +23,6 @@ import { AddButtonModule } from "./add-button/add-button.module";
 import { AddButtonComponent } from "./add-button/add-button.component";
 import { CardBoxModule } from "./card-box/card-box.module";
 import { CardBoxComponent } from "./card-box/card-box.component";
-import { UploadComponent } from "../+importExport/upload/upload.component";
 import { ChartComponent } from "../+dashboard/chart/chart.component";
 import { FocusDirective } from "../directives/focus.directive";
 import { FacetsComponent } from "../+research/+facets/facets.component";
@@ -31,6 +30,7 @@ import { SpatialListComponent } from "../formly/types/map/spatial-list/spatial-l
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatMenuModule } from "@angular/material/menu";
 import { FeatureFlagDirective } from "../directives/feature-flag.directive";
+import { DndDirective } from "../directives/dnd.directive";
 
 @NgModule({
   imports: [
@@ -60,12 +60,12 @@ import { FeatureFlagDirective } from "../directives/feature-flag.directive";
     EmptyNavigationComponent,
     TreeHeaderComponent,
     OptionListComponent,
-    UploadComponent,
     ChartComponent,
     FocusDirective,
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,
+    DndDirective,
   ],
   exports: [
     TreeComponent,
@@ -76,12 +76,12 @@ import { FeatureFlagDirective } from "../directives/feature-flag.directive";
     OptionListComponent,
     SharedDocumentItemModule,
     AddButtonComponent,
-    UploadComponent,
     ChartComponent,
     FocusDirective,
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,
+    DndDirective,
   ],
 })
 export class SharedModule {}

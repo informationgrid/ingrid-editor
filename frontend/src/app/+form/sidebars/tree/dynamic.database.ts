@@ -24,8 +24,11 @@ export class DynamicDatabase {
     private docService: DocumentService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery
-  ) {
-    this.docService.datasetsChanged$
+  ) {}
+
+  init(forAdresses: boolean): void {
+    const query = forAdresses ? this.addressTreeQuery : this.treeQuery;
+    query.datasetsChanged$
       .pipe(untilDestroyed(this))
       .subscribe((docs) => this.treeUpdates.next(docs));
   }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
+import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
@@ -57,7 +58,8 @@ class MCloudProfile : CatalogProfile {
                     Published(),
                     ExceptFolders()
                 ),
-                selection = Operator.CHECKBOX
+                viewComponent = ViewComponent.CHECKBOX,
+                combine = Operator.AND
             ),
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
@@ -69,13 +71,13 @@ class MCloudProfile : CatalogProfile {
                 "spatial", "Raumbezug", arrayOf(
                     Spatial()
                 ),
-                selection = Operator.SPATIAL
+                viewComponent = ViewComponent.SPATIAL
             ),
             FacetGroup(
                 "timeRef", "Zeitbezug", arrayOf(
                     TimeSpan()
                 ),
-                selection = Operator.TIMESPAN
+                viewComponent = ViewComponent.TIMESPAN
             )
         )
     }
@@ -87,14 +89,14 @@ class MCloudProfile : CatalogProfile {
                     Published(),
                     ExceptFolders()
                 ),
-                selection = Operator.CHECKBOX
+                viewComponent = ViewComponent.CHECKBOX
             ),
             FacetGroup(
                 "addrType", "Typ", arrayOf(
                     Organisations(),
                     Persons()
                 ),
-                selection = Operator.CHECKBOX
+                viewComponent = ViewComponent.CHECKBOX
             )
         )
     }
@@ -162,8 +164,11 @@ class MCloudProfile : CatalogProfile {
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
             "20002" -> removeAndAddCodelist(catalogId, codelist20002)
             null -> {
+                removeAndAddCodelist(catalogId, codelist20000)
                 codelistRepo.save(codelist20000)
+                removeAndAddCodelist(catalogId, codelist20001)
                 codelistRepo.save(codelist20001)
+                removeAndAddCodelist(catalogId, codelist20002)
                 codelistRepo.save(codelist20002)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")

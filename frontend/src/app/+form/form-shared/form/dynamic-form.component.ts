@@ -23,7 +23,7 @@ import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { debounceTime, filter, map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { combineLatest, merge, Subscription } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
@@ -124,13 +124,6 @@ export class DynamicFormComponent
       this.formStateName = "document";
       this.query = this.treeQuery;
     }
-
-    this.form.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        debounceTime(3000) // send request 3s after last form change
-      )
-      .subscribe(() => this.authFactory.get().refreshToken());
 
     this.query
       .select("isDocLoading")

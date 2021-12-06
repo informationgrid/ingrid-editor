@@ -11,7 +11,6 @@ import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -83,7 +82,7 @@ open class ImportService {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
             docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-            documentService.updateDocument(catalogId, wrapper.id.toString(), docObj, false)
+            documentService.updateDocument(principal, catalogId, wrapper.id.toString(), docObj, false)
         }
 
         // TODO: return created document instead of transformed JSON
@@ -101,7 +100,12 @@ open class ImportService {
         }
     }
 
-    private fun extractAndSaveReferences(principal: Principal, catalogId: String, doc: Document, options: ImportOptions) {
+    private fun extractAndSaveReferences(
+        principal: Principal,
+        catalogId: String,
+        doc: Document,
+        options: ImportOptions
+    ) {
 
         val refType = documentService.getDocumentType(doc.type!!)
 
@@ -119,13 +123,15 @@ open class ImportService {
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
             }
-            .forEach { documentService.createDocument(
-                principal,
-                catalogId,
-                it,
-                parentId = options.parentAddress,
-                publish = false
-            ) }
+            .forEach {
+                documentService.createDocument(
+                    principal,
+                    catalogId,
+                    it,
+                    parentId = options.parentAddress,
+                    publish = false
+                )
+            }
 
     }
 

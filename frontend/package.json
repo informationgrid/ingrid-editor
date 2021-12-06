@@ -37,6 +37,8 @@
     "@angular/platform-browser-dynamic": "^12.0.4",
     "@angular/router": "^12.0.4",
     "@datorama/akita": "^6.2.4",
+    "@flowjs/flow.js": "^2.14.1",
+    "@flowjs/ngx-flow": "^0.4.6",
     "@ngneat/dirty-check-forms": "^1.1.0",
     "@ngneat/until-destroy": "^8.1.4",
     "@ngx-formly/core": "5.10.21",

@@ -1,0 +1,59 @@
+@import "src/variables";
+
+ul,
+li {
+  margin: 0;
+  padding: 10px 0 0 0;
+  list-style: none;
+}
+
+#file-label {
+  display: inline-flex;
+  vertical-align: middle;
+  font-size: 12px;
+  line-height: 18px;
+  padding-top: 6px;
+}
+
+#file-label mat-icon {
+  font-size: 18px;
+  text-align: center;
+}
+
+#file-label a {
+  cursor: pointer;
+}
+
+.no-drop-zone {
+  .upload-content {
+    padding: 0;
+  }
+  mat-list {
+    padding-top: 0;
+  }
+}
+
+mat-list {
+  padding-top: 36px;
+}
+
+.upload-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 24px 0;
+  overflow: auto;
+
+  .alternative-text {
+    padding-bottom: 8px;
+  }
+
+  .mat-icon.upload {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.dragged .upload-content {
+  background-color: $ige-mark-color;
+}

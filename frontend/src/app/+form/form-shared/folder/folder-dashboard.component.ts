@@ -29,27 +29,25 @@ export class FolderDashboardComponent {
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
   private subscription: Subscription;
-  private query: TreeQuery | AddressTreeQuery;
 
   constructor(
-    treeQuery: TreeQuery,
-    addressTreeQuery: AddressTreeQuery,
-    configService: ConfigService,
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery,
+    private configService: ConfigService,
     private formToolbarService: FormToolbarService,
     private router: Router,
     private docService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog
   ) {
-    this.query = this.isAddress ? addressTreeQuery : treeQuery;
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
   }
 
   updateChildren(model) {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    const query = this.isAddress ? this.addressTreeQuery : this.treeQuery;
+
+    if (this.subscription) this.subscription.unsubscribe();
 
     if (!model._hasChildren) {
       this.numChildren = 0;
@@ -59,8 +57,8 @@ export class FolderDashboardComponent {
     // TODO switch to user specific query
 
     // wait for store changes to get children of node
-    this.subscription = this.query.selectAll().subscribe(() => {
-      const childrenFromStore = this.query.getChildren(model._id);
+    this.subscription = query.selectAll().subscribe(() => {
+      const childrenFromStore = query.getChildren(model._id);
       this.numChildren = childrenFromStore.length;
       const latestChildren = childrenFromStore
         .sort(

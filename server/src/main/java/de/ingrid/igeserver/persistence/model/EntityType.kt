@@ -68,4 +68,13 @@ abstract class EntityType {
      * Replace document/address references with their latest version
      */
     open fun updateReferences(doc: Document, onlyPublished: Boolean) {}
+
+
+
+    /**
+     * Extract referenced uploads
+     */
+    open fun getUploads(doc: Document): List<String> {
+        return emptyList()
+    }
 }

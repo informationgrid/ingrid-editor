@@ -29,7 +29,7 @@ export interface FacetGroup {
   label: string;
   filter: QuickFilter[];
   combine: "AND" | "OR";
-  selection: "CHECKBOX" | "RADIO" | "DOC_ADDRESS" | "SPATIAL" | "TIMESPAN";
+  viewComponent: "CHECKBOX" | "RADIO" | "DOC_ADDRESS" | "SPATIAL" | "TIMESPAN";
 }
 
 export class ResearchResponse {
@@ -68,7 +68,12 @@ export class ResearchService {
     model: any,
     fieldsWithParameters: { [x: string]: any[] }
   ): Observable<ResearchResponse> {
-    const backendQuery = new BackendQuery(term, model, fieldsWithParameters);
+    const backendQuery = new BackendQuery(
+      term,
+      model,
+      fieldsWithParameters,
+      this.filters
+    );
     return this.http
       .post<ResearchResponse>(
         `${this.configuration.backendUrl}search/query`,
@@ -90,7 +95,12 @@ export class ResearchService {
     model: any,
     fieldsWithParameters: { [x: string]: any[] }
   ): Observable<any> {
-    const backendQuery = new BackendQuery("", model, fieldsWithParameters);
+    const backendQuery = new BackendQuery(
+      "",
+      model,
+      fieldsWithParameters,
+      this.filters
+    );
     return this.http.post<any>(
       `${this.configuration.backendUrl}statistic/query`,
       backendQuery.get()
