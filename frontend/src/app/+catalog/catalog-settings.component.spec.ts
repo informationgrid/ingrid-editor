@@ -13,6 +13,7 @@ import { CatalogQuery } from "../store/catalog/catalog.query";
 import { ConfigService, UserInfo } from "../services/config/config.service";
 import { CatalogService } from "./services/catalog.service";
 import { UserService } from "../services/user/user.service";
+import { ActivatedRoute } from "@angular/router";
 
 describe("CatalogManagerComponent", () => {
   let spectator: Spectator<CatalogSettingsComponent>;
@@ -30,6 +31,12 @@ describe("CatalogManagerComponent", () => {
         useValue: {},
       },
       { provide: MAT_DIALOG_DATA, useValue: [] },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          snapshot: { firstChild: { url: [{ path: "xxx" }] } },
+        },
+      },
     ],
     componentMocks: [CatalogQuery],
     mocks: [CatalogService, UserService, ConfigService],

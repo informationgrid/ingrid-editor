@@ -1,8 +1,12 @@
 @import "src/variables";
 
+:host {
+  margin-top: 11px;
+}
+
 .mat-chip-list {
   display: block;
-  padding-top: 10px;
+  //padding-top: 10px;
   padding-bottom: 10px;
 
   ige-add-button {
@@ -12,7 +16,7 @@
 
 .add-button-initial {
   display: block;
-  margin: 11px 0;
+  margin-bottom: 11px;
 }
 
 .mat-chip {

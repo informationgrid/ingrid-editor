@@ -14,6 +14,7 @@
                 [parameter]="facetParameters"
                 [forAddresses]="searchClass === 'selectAddresses'"
                 [refreshView]="facetViewRefresher"
+                (isInitialized)="facetInitialized.next($event)"
                 (update)="updateFilter($event)"
             ></ige-facets>
 

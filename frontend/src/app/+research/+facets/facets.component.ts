@@ -15,8 +15,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MatInput } from "@angular/material/input";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
+import { BehaviorSubject } from "rxjs";
 
 export interface FacetUpdate {
   model: any;
@@ -36,7 +36,7 @@ export class FacetsComponent implements AfterViewInit {
   _parameter: any = {};
   @Input() set parameter(value: any) {
     this._parameter = value;
-    if (this.isInitialized) {
+    if (this.isInitialized.value) {
       // delay update for other inputs to be present
       setTimeout(() => this.updateSpatialFromModel(value));
       setTimeout(() => this.updateTimeSpanFromModel(value));
@@ -59,6 +59,7 @@ export class FacetsComponent implements AfterViewInit {
   }
 
   @Output() update = new EventEmitter<FacetUpdate>();
+  @Output() isInitialized = new BehaviorSubject<boolean>(false);
 
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
@@ -74,7 +75,6 @@ export class FacetsComponent implements AfterViewInit {
   notExpanded: any = {};
   location: SpatialLocation;
   private boxes: Rectangle[];
-  private isInitialized = false;
 
   timeSpanForm = new FormGroup({
     startDate: new FormControl(),
@@ -95,7 +95,7 @@ export class FacetsComponent implements AfterViewInit {
         tap(() => this.updateFilterGroup()),
         tap(() => this.sendUpdate()),
         tap(() => {
-          this.isInitialized = true;
+          this.isInitialized.next(true);
           this.updateSpatialFromModel(this._parameter);
           this.updateTimeSpanFromModel(this._parameter);
         })
