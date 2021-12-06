@@ -70,7 +70,7 @@ class M036_MigrateToDBID : MigrationBase("0.36") {
 
         previousUuids.add(id)
         val childrenIds = entityManager
-            .createQuery("SELECT dw.dbId FROM DocumentWrapper dw where dw.parent is not null and dw.parent.dbId is $id")
+            .createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is $id")
             .resultList
 
         childrenIds.forEach { childId ->
