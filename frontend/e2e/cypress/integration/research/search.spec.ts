@@ -12,7 +12,7 @@ describe('Research Page', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('user');
-    cy.visit('research');
+    ResearchPage.visit();
   });
 
   //Erweiterte Suche

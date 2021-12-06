@@ -3,24 +3,17 @@ import Chainable = Cypress.Chainable;
 export class ResearchPage {
   static url = '/research';
 
-  static visit(): Chainable {
-    return cy.visit('research');
+  static visit(): void {
+    cy.intercept('POST', '/api/search/query').as('search');
+    cy.visit('research');
+    cy.wait('@search');
   }
 
-  static search(query: string) {
+  static search(query: string): void {
     // version without checking server request:
-    return cy.get('.mat-form-field-infix > .mat-input-element').first().type(query).wait(4000);
-
-    /*//Alternative to make sure the search term has been typed in completely
-    cy.intercept('POST', '/api/search/query', req => {
-      expect(req.body.term).to.equal(query);
-    }).as('waitForFullSearchTerm');
-    cy.get('.mat-form-field-infix > .mat-input-element')
-      .type(query)
-      .should(el => {
-        cy.wait('@waitForFullSearchTerm');
-        return el;
-      });*/
+    cy.intercept('POST', '/api/search/query').as('search');
+    cy.get('.mat-form-field-infix > .mat-input-element').first().type(query);
+    cy.wait('@search');
   }
 
   /**
