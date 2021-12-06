@@ -41,7 +41,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.allDocuments$ = this.docQuery.selectAll();
     this.recentDocs$ = this.sessionQuery.latestDocuments$;
     this.fetchStatistic();
     this.fetchData();
@@ -91,12 +90,12 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(["/importExport/import"]);
   }
 
-  openDocument(id: number | string) {
-    this.router.navigate(["/form", { id: id }]);
+  openDocument(uuid: string) {
+    this.router.navigate(["/form", { id: uuid }]);
   }
 
-  openAddress(id: number | string) {
-    this.router.navigate(["/address", { id: id }]);
+  openAddress(uuid: string) {
+    this.router.navigate(["/address", { id: uuid }]);
   }
 
   createNewFolder() {

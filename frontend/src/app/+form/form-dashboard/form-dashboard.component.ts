@@ -45,7 +45,7 @@ export class FormDashboardComponent implements OnChanges {
 
   importDataset() {}
 
-  openDocument(id: number | string) {
-    this.router.navigate(["/form", { id: id }]);
+  openDocument(uuid: string) {
+    this.router.navigate(["/form", { id: uuid }]);
   }
 }

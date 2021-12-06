@@ -44,7 +44,7 @@
         <mat-option
             class="multiline"
             *ngFor="let doc of docs"
-            (onSelectionChange)="selectDoc.next(doc.id)"
+            (onSelectionChange)="selectDoc.next(doc._uuid)"
         >
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
         </mat-option>

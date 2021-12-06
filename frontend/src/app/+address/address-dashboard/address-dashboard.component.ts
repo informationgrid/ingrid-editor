@@ -42,7 +42,7 @@ export class AddressDashboardComponent implements OnChanges {
     this.formToolbarService.toolbarEvent$.next("NEW_DOC");
   }
 
-  openDocument(id: number | string) {
-    this.router.navigate(["/address", { id: id }]);
+  openDocument(uuid: string) {
+    this.router.navigate(["/address", { id: uuid }]);
   }
 }

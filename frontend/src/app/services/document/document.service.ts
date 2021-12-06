@@ -323,8 +323,11 @@ export class DocumentService {
   getPath(id: string): Observable<ShortTreeNode[]> {
     return this.dataService.getPath(id).pipe(
       catchError((error) => {
-        if (error.status === 404) return [];
-        else throw error;
+        if (error.status === 404) {
+          return [];
+        } else {
+          throw error;
+        }
       }),
       map((path) => this.preparePath(path))
     );
@@ -525,13 +528,13 @@ export class DocumentService {
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id,
+        id: doc._id ? doc._id.toString() : null,
         icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || "-Ohne Titel-",
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: parentId,
+        _parent: parentId ? parentId.toString() : null,
         _type: doc._type,
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
@@ -661,7 +664,7 @@ export class DocumentService {
     return result.map(
       (pathItem) =>
         new ShortTreeNode(
-          pathItem.id,
+          pathItem.id.toString(),
           pathItem.title,
           pathItem.permission.canOnlyWriteSubtree,
           !pathItem.permission.canWrite

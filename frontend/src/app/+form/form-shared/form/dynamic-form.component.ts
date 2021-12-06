@@ -274,7 +274,7 @@ export class DynamicFormComponent
 
     this.showValidationErrors = false;
 
-    let previousDocId = this.form.value._id;
+    let previousDocUuid = this.form.value._uuid;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
@@ -292,7 +292,8 @@ export class DynamicFormComponent
       )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
-        (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
+        (error: HttpErrorResponse) =>
+          this.handleLoadError(error, previousDocUuid)
       );
 
     // const updateBreadcrumbSubscription = this.updateBreadcrumb(id);
@@ -303,12 +304,12 @@ export class DynamicFormComponent
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocId) {
+  private handleLoadError(error: HttpErrorResponse, previousDocUuid) {
     if (error.status === 403) {
       // select previous document
       const target = this.address ? "/address" : "/form";
-      if (previousDocId) {
-        this.router.navigate([target, { id: previousDocId }]);
+      if (previousDocUuid) {
+        this.router.navigate([target, { id: previousDocUuid }]);
       } else {
         this.router.navigate([target]);
       }

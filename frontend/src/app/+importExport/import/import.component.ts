@@ -45,7 +45,7 @@ export class ImportComponent implements OnInit {
   locationAddress: number[] = [];
   readyForImport = false;
   chosenFiles: FileUploadModel[];
-  private importedDocId: string = null;
+  private importedDocUuid: string = null;
   pathToDocument: ShortTreeNode[];
   hasImportError = false;
 
@@ -165,7 +165,7 @@ export class ImportComponent implements OnInit {
           tap((response) => console.log("File imported", response)),
           tap(
             (response: HttpResponse<any>) =>
-              (this.importedDocId = response.body.result._uuid)
+              (this.importedDocUuid = response.body.result._uuid)
           )
         )
         .subscribe();
@@ -173,7 +173,7 @@ export class ImportComponent implements OnInit {
   }
 
   openImportedDocument() {
-    this.router.navigate(["/form", { id: this.importedDocId }]);
+    this.router.navigate(["/form", { id: this.importedDocUuid }]);
   }
 
   private handleError(error: IgeError): Observable<HttpResponse<any>> {

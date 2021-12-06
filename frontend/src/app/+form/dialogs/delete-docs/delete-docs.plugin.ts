@@ -129,7 +129,7 @@ export class DeleteDocsPlugin extends Plugin {
     const parentEntity = this.tree.getEntity(parent);
 
     if (parent && parentEntity) {
-      this.router.navigate([route, { id: currentDoc._parent }]);
+      this.router.navigate([route, { id: parentEntity._uuid }]);
     } else {
       this.router.navigate([route]);
     }
