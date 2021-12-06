@@ -504,7 +504,13 @@ ige-side-menu {
   }
 
   ige-form-label + formly-wrapper-mat-form-field {
-    display: contents;
+    display: block;
+    margin-top: 11px;
+  }
+
+  ige-form-label + formly-group {
+    display: flex;
+    margin-top: 11px;
   }
 }
 
