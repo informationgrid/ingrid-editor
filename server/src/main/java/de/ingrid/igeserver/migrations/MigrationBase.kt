@@ -32,8 +32,7 @@ abstract class MigrationBase(val versionString: String) : MigrationStrategy {
         return when {
             result < 0 -> VersionCompare.LOWER
             result == 0 -> VersionCompare.SAME
-            result > 0 -> VersionCompare.HIGHER
-            else -> throw Error("Impossible comparison result value $result")
+            else -> VersionCompare.HIGHER
         }
     }
 }
