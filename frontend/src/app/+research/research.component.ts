@@ -4,6 +4,7 @@ import {
   catchError,
   debounceTime,
   distinct,
+  filter,
   finalize,
   tap,
 } from "rxjs/operators";
@@ -25,7 +26,7 @@ import { ShortResultInfo } from "./result-table/result-table.component";
 import { logAction } from "@datorama/akita";
 import { SessionService } from "../services/session.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { of } from "rxjs";
+import { combineLatest, of, Subject } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -42,6 +43,7 @@ export class ResearchComponent implements OnInit {
 
   facetModel: any;
   facetParameters: any;
+  facetInitialized = new Subject<boolean>();
   result: ResearchResponse;
 
   error: string = null;
@@ -81,8 +83,13 @@ export class ResearchComponent implements OnInit {
       )
       .subscribe();
 
-    this.queryQuery.searchSelect$
-      .pipe(untilDestroyed(this), debounceTime(500), distinct())
+    combineLatest([this.facetInitialized, this.queryQuery.searchSelect$])
+      .pipe(
+        untilDestroyed(this),
+        filter((a) => a[0]),
+        debounceTime(500),
+        distinct()
+      )
       .subscribe(() => this.startSearch());
 
     this.queryQuery.sqlSelect$
