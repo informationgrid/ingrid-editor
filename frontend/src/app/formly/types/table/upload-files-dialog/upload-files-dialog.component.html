@@ -3,6 +3,7 @@
     contentColor="#f3f3f3"
     (submit)="submit()"
     (cancel)="cancel()"
+    [disabled]="chosenFiles.length === 0"
 >
     <ng-container content>
         <ige-file-upload
@@ -13,7 +14,7 @@
 
         <mat-slide-toggle
             labelPosition="before"
-            color="primary"
+            color="accent"
             class="stretch"
             (change)="extractZipFiles = $event.checked"
             >ZIP-Archive nach dem Übernehmen entpacken
