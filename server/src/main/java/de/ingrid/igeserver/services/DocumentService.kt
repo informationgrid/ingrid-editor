@@ -196,7 +196,7 @@ open class DocumentService @Autowired constructor(
         principal: Principal,
         catalogId: String,
         data: JsonNode,
-        parentId: String?,
+        parentId: Int?,
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
@@ -601,9 +601,9 @@ open class DocumentService @Autowired constructor(
         } else {
             wrapper.draft
         }
-        
+
         if (objectNode == null) {
-            throw ServerException.withReason("Document has no draft or published version: " + wrapper.id) 
+            throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)
         }
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()

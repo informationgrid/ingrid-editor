@@ -209,7 +209,7 @@ class ResearchService {
         return result.filter { item ->
             isAdmin || aclService.getPermissionInfo(
                 principal,
-                item[8].toString() // "id"
+                item[8] as Int // "id"
             ).canRead
         }.map { item ->
             Result(
@@ -222,11 +222,11 @@ class ResearchService {
                 _category = (item[7] as? String),
                 hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
                     principal,
-                    item[8].toString()
+                    item[8] as Int
                 ).canWrite,
                 hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
                     principal,
-                    item[8].toString()
+                    item[8] as Int
                 ).canOnlyWriteSubtree,
                 id = item[8] as Int
             )

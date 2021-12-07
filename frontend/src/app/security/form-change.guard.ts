@@ -95,7 +95,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       this.treeService.selectTreeNode(isAddress, currentId);
     } else {
       this.documentService.reload$.next({
-        id: currentId,
+        uuid: currentId,
         forAddress: isAddress,
       });
     }

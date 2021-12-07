@@ -73,7 +73,7 @@ open class ImportService {
                 principal,
                 catalogId,
                 document,
-                options.parentDocument,
+                options.parentDocument.toInt(),
                 false,
                 false
             )
@@ -128,7 +128,7 @@ open class ImportService {
                     principal,
                     catalogId,
                     it,
-                    parentId = options.parentAddress,
+                    parentId = options.parentAddress.toInt(),
                     publish = false
                 )
             }

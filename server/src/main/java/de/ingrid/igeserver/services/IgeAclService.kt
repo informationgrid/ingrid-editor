@@ -56,15 +56,17 @@ class IgeAclService @Autowired constructor(
         return isAllowed
     }
 
-    fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
+    fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {
         if (hasAdminRole(authentication)) {
             return PermissionInfo(true, true, false)
+        } else if (id == null) {
+            return PermissionInfo()
         }
 
         return try {
 
             val acl = this.aclService.readAclById(
-                ObjectIdentityImpl(DocumentWrapper::class.java, uuid.toInt())
+                ObjectIdentityImpl(DocumentWrapper::class.java, id)
             )
             val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
@@ -133,14 +135,14 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun updateParent(uuid: String, parentUuid: String?) {
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+    fun updateParent(id: Int, parentId: Int?) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         val acl = aclService.readAclById(objIdentity) as MutableAcl
 
-        if (parentUuid == null) {
+        if (parentId == null) {
             acl.setParent(null)
         } else {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
             val parentAcl = aclService.readAclById(parentObjIdentity)
             acl.setParent(parentAcl)
         }

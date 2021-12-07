@@ -100,6 +100,6 @@ interface DatasetsApi {
     @RequestMapping(value = ["/datasets/{ids}/move"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun moveDatasets(
             principal: Principal,
-            @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<String>,
+            @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
             @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions): ResponseEntity<Void>
 }

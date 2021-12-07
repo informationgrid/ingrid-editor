@@ -136,7 +136,7 @@ export class DynamicFormComponent
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
           filter((item) => item.forAddress === this.address),
-          map((item) => item.id)
+          map((item) => item.uuid)
         )
       ),
     ])

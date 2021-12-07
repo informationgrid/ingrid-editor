@@ -54,7 +54,7 @@ export class RedirectFormGuard implements CanActivate {
     if (route.params.id !== uuid) {
       this.router.navigate([forAddress ? "/address" : "/form", { id: uuid }]);
       this.documentService.reload$.next({
-        id: uuid,
+        uuid: uuid,
         forAddress: forAddress,
       });
       return false;

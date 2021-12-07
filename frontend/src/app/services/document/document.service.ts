@@ -38,7 +38,7 @@ import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 export type AddressTitleFn = (address: IgeDocument) => string;
 
 export interface ReloadData {
-  id: string;
+  uuid: string;
   forAddress: boolean;
 }
 
@@ -267,7 +267,7 @@ export class DocumentService {
           datasetsChanged: { type: UpdateType.Update, data: json },
         })
       ),
-      tap(() => this.reload$.next({ id, forAddress: forAddress })),
+      tap(() => this.reload$.next({ uuid: id, forAddress: forAddress })),
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
@@ -323,7 +323,7 @@ export class DocumentService {
       ),
       // tap(json => this.treeStore.update(id, json[0])),
       // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
-      tap(() => this.reload$.next({ id, forAddress: isAddress }))
+      tap(() => this.reload$.next({ uuid: id, forAddress: isAddress }))
       // catchError( err => this.errorService.handle( err ) )
     );
   }
@@ -566,10 +566,11 @@ export class DocumentService {
 
   private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
-    const openedDocId = store.getValue().openedDocument?.id.toString();
+    let openedDocument = store.getValue().openedDocument;
+    const openedDocId = openedDocument?.id?.toString();
     const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
     if (openedDocWasMoved) {
-      this.reload$.next({ id: openedDocId, forAddress: isAddress });
+      this.reload$.next({ uuid: openedDocument?._uuid, forAddress: isAddress });
     }
   }
 
