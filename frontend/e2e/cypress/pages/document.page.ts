@@ -103,11 +103,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(
-    title: string,
-    published?: boolean,
-    parentNode = 'a0df9837-512a-4594-b2ef-2814f7c55c81'
-  ) {
+  static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean, parentNode = 1) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
@@ -168,7 +164,7 @@ export class DocumentPage extends BasePage {
   static CreateTestDocumentWithAPI(title: string, published?: boolean) {
     const json = {
       _hasChildren: false,
-      _parent: 'a0df9837-512a-4594-b2ef-2814f7c55c81',
+      _parent: 1,
       _type: 'TestDoc',
       title: title,
       _state: 'W',
@@ -182,7 +178,7 @@ export class DocumentPage extends BasePage {
           type: '7',
           ref: {
             title: 'Published Testorganization',
-            _id: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
+            _uuid: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
             _type: 'AddressDoc',
             _version: 2,
             _created: '2020-11-05T11:12:57.000248Z',

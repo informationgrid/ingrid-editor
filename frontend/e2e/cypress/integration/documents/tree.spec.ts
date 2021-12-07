@@ -8,7 +8,7 @@ describe('Tree', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('user').as('tokens');
-    cy.visit('form');
+    DocumentPage.visit();
   });
 
   const dragAndDropFolder = "Drag'n'Drop";
