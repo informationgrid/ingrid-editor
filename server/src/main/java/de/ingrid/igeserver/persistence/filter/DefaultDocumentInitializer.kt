@@ -41,7 +41,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         if (payload.document.uuid.isEmpty()) {
             payload.document.uuid = UUID.randomUUID().toString()
         }
-        val docId = payload.document.uuid;
+        val docId = payload.document.uuid
 
         context.addMessage(Message(this, "Process document data '$docId' before insert"))
 

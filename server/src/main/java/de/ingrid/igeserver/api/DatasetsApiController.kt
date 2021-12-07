@@ -149,7 +149,7 @@ class DatasetsApiController @Autowired constructor(
 
         // remove fields that shouldn't be persisted
         // also copied docs need new ID
-        listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
+        listOf(FIELD_ID, FIELD_UUID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
 
         val copiedParent =
             documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false) as ObjectNode
