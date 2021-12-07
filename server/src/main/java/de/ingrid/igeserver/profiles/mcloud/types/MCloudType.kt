@@ -11,6 +11,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
+import java.net.URLDecoder
 
 @Component
 class MCloudType : EntityType() {
@@ -43,7 +44,7 @@ class MCloudType : EntityType() {
 
     private fun getUploadFile(download: JsonNode):String{
         if(download.get("link").get("uri") !== null){
-            return download.get("link").get("uri").textValue()
+            return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8");
         }else{
             return download.get("link").get("value").textValue()
         }
