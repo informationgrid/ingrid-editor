@@ -2,10 +2,11 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable, Input } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { CodelistStore } from "../../app/store/codelist/codelist.store";
 import { map } from "rxjs/operators";
 import { FormGroup } from "@angular/forms";
+import { UploadService } from "../../app/shared/upload/upload.service";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -21,6 +22,7 @@ export class McloudDoctype extends BaseDoctype {
   constructor(
     codelistService: CodelistService,
     codelistStore: CodelistStore,
+    private uploadService: UploadService,
     codelistQuery?: CodelistQuery
   ) {
     super(codelistService, codelistQuery);
@@ -166,15 +168,17 @@ export class McloudDoctype extends BaseDoctype {
                     label: "Link",
                     appearance: "outline",
                     required: true,
+
+                    onClick: (docUuid, uri, $event) => {
+                      this.uploadService.downloadFile(docUuid, uri, $event);
+                    },
                     formatter: (link: any, form: FormGroup) => {
                       if (link.asLink) {
                         return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
                       } else {
                         return `<a href="/api/upload/${form.get("_id").value}/${
                           link.uri
-                        }" target="_blank" class="no-text-transform">${
-                          link.value
-                        }</a>`;
+                        }" class="no-text-transform">${link.value}</a>`;
                       }
                     },
                   },

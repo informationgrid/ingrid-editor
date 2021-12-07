@@ -17,6 +17,7 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "./upload-files-dialog/upload-files-dialog.component";
+import { UploadService } from "../../../shared/upload/upload.service";
 
 @UntilDestroy()
 @Component({
@@ -45,7 +46,8 @@ export class TableTypeComponent
   constructor(
     private dialog: MatDialog,
     public contextHelpService: ContextHelpService,
-    public configService: ConfigService
+    public configService: ConfigService,
+    private uploadService: UploadService
   ) {
     super();
   }
@@ -88,10 +90,19 @@ export class TableTypeComponent
   }
 
   removeRow(index: number) {
+    this.removeFileInBackend(index);
     this.dataSource = new MatTableDataSource<any>(
       this.dataSource.data.filter((item, indexItem) => indexItem !== index)
     );
     this.updateFormControl(this.dataSource.data);
+  }
+
+  private removeFileInBackend(index: number) {
+    const link = this.dataSource.data[index].link;
+    if (link.asLink) {
+      const docUuid = this.form.get("_id").value;
+      this.uploadService.deleteUploadedFile(docUuid, link.uri);
+    }
   }
 
   editRow(index: number) {
@@ -257,5 +268,15 @@ export class TableTypeComponent
 
   cancel() {
     this.formControl.setValue(this.value);
+  }
+
+  handleCellClick(index: number, element, $event: MouseEvent) {
+    if (!element.link.asLink) {
+      const options =
+        this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
+      if (options.onClick) {
+        options.onClick(this.form.get("_id").value, element.link.uri, $event);
+      }
+    }
   }
 }

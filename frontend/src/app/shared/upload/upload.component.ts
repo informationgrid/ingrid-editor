@@ -159,8 +159,8 @@ export class UploadComponent implements OnInit {
 
     this._errors[fileIdentifier] = new UploadError(
       errorResponse.status,
-      detail.message,
-      detail.errorData
+      detail.message ?? detail.errorText,
+      detail.errorData ?? detail.errorId
     );
     this.errors.next(this._errors);
   }
@@ -177,13 +177,12 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  async retryUpload(file: TransfersWithErrorInfo, parameter: any) {
+  async retryUpload(file: TransfersWithErrorInfo, parameter: any = {}) {
     this._errors[file.transfer.id] = null;
     const flowFile = file.transfer.flowFile;
     await this.uploadService.updateAuthenticationToken([flowFile]);
     if (parameter.rename) {
       flowFile.name = parameter.altName;
-      // file.transfer.flowFile.file.name = parameter.altName;
     } else {
       flowFile.flowObj.opts.query = parameter;
     }

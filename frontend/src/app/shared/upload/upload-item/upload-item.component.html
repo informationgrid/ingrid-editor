@@ -14,7 +14,7 @@
         >error_outline
     </mat-icon>
     <div mat-line>{{ file.transfer.name }}</div>
-    <div mat-line>
+    <div mat-line class="comment">
         {{ file.transfer.size | size }}
         <span *ngIf="file.transfer.progress < 1"
             >({{ file.transfer.progress * 100 | number: ".1-1" }}%)</span
