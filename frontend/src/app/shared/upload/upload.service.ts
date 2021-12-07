@@ -73,10 +73,10 @@ export class UploadService {
     $event.stopPropagation();
     $event.preventDefault();
 
-    let start = uri.lastIndexOf("/");
-    const filename = uri.substring(start === -1 ? 0 : start);
+    let start = uri.lastIndexOf("/") + 1;
+    const filename = uri.substring(start);
     this.getFile(docUuid, uri).subscribe((data) =>
-      this.handleDownloadProcess(data, uri)
+      this.handleDownloadProcess(data, filename)
     );
   }
 
