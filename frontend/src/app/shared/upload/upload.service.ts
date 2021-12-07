@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
 import { KeycloakService } from "keycloak-angular";
+import { Observable } from "rxjs";
 
 export class UploadError {
   status: number;
@@ -64,6 +65,33 @@ export class UploadService {
       file.flowObj.opts.headers = {
         Authorization: "Bearer " + keycloakInstance.token,
       };
+    });
+  }
+
+  downloadFile(docUuid: string, uri: string, $event: MouseEvent) {
+    $event.stopImmediatePropagation();
+    $event.stopPropagation();
+    $event.preventDefault();
+
+    let start = uri.lastIndexOf("/");
+    const filename = uri.substring(start === -1 ? 0 : start);
+    this.getFile(docUuid, uri).subscribe((data) =>
+      this.handleDownloadProcess(data, uri)
+    );
+  }
+
+  private handleDownloadProcess(data: Blob, filename: string) {
+    const downloadLink = document.createElement("a");
+    downloadLink.href = window.URL.createObjectURL(new Blob([data]));
+    downloadLink.setAttribute("download", filename);
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+  }
+
+  private getFile(docUuid: string, uri: string): Observable<Blob> {
+    return this.http.get<Blob>(`${this.backendUrl}upload/${docUuid}/${uri}`, {
+      responseType: "blob" as "json",
     });
   }
 }

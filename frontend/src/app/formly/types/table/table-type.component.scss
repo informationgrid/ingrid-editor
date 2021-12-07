@@ -34,6 +34,11 @@
   .edit-mode ::ng-deep mat-cell:first-of-type {
     padding-left: 12px;
   }
+
+  mat-cell {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
 }
 
 mat-row,
