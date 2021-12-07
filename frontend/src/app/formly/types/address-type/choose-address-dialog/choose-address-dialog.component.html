@@ -35,27 +35,28 @@
     ></ige-tree>
 
     <div class="selection-divider"></div>
-
-    <div class="side-padding top-padding place-title">
-        2. Schritt: Adresstyp zuordnen
-    </div>
-    <div class="side-padding">
-        <div class="dlg-field-label required">Adresstyp*</div>
-        <mat-form-field appearance="outline" class="width-100">
-            <mat-select
-                [(value)]="selectedType"
-                placeholder="Bitte wählen ..."
-                data-cy="address-type-select"
-            >
-                <mat-option
-                    *ngFor="let type of types | async"
-                    [value]="type.value"
+    <ng-template *ngIf="showTypeSelector">
+        <div class="side-padding top-padding place-title">
+            2. Schritt: Adresstyp zuordnen
+        </div>
+        <div class="side-padding">
+            <div class="dlg-field-label required">Adresstyp*</div>
+            <mat-form-field appearance="outline" class="width-100">
+                <mat-select
+                    [(value)]="selectedType"
+                    placeholder="Bitte wählen ..."
+                    data-cy="address-type-select"
                 >
-                    {{ type.label }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+                    <mat-option
+                        *ngFor="let type of types | async"
+                        [value]="type.value"
+                    >
+                        {{ type.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </ng-template>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button

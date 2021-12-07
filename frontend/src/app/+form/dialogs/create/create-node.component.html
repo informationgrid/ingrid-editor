@@ -47,12 +47,26 @@
                 </ng-container>
 
                 <ng-template #addressForm>
-                    <div class="dlg-field-label">
-                        Legen Sie eine Person oder Organisation an.<br />Tragen
-                        Sie dafür den Namen oder die Organisationsbezeichnung
-                        ein.
+                    <div
+                        *ngIf="addressOnlyOrganization; else defaultText"
+                        class="dlg-field-label"
+                    >
+                        Legen Sie eine Organisation an.<br />Tragen Sie dafür
+                        die Organisationsbezeichnung ein.
                     </div>
-                    <div fxFlex fxLayout="row" fxLayoutGap="24px">
+                    <ng-template #defaultText>
+                        <div class="dlg-field-label">
+                            Legen Sie eine Person oder Organisation an.<br />Tragen
+                            Sie dafür den Namen oder die
+                            Organisationsbezeichnung ein.
+                        </div>
+                    </ng-template>
+                    <div
+                        *ngIf="!addressOnlyOrganization"
+                        fxFlex
+                        fxLayout="row"
+                        fxLayoutGap="24px"
+                    >
                         <mat-form-field appearance="outline" class="width-100">
                             <mat-label>Vorname</mat-label>
                             <input

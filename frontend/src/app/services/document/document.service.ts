@@ -575,6 +575,7 @@ export class DocumentService {
     } as SearchResult;
   }
 
+  @transaction()
   private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
@@ -597,6 +598,7 @@ export class DocumentService {
     });
   }
 
+  @transaction()
   private updateStoreAfterMove(
     ids: string[],
     parent: string,

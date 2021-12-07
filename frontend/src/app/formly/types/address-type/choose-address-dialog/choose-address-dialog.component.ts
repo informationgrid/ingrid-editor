@@ -17,6 +17,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { AddressRef } from "../address-card/address-card.component";
 import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
+import { CatalogService } from "../../../../+catalog/services/catalog.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
 export interface ChooseAddressResponse {
   type: string;
@@ -30,6 +32,7 @@ export interface ChooseAddressResponse {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  showTypeSelector = true;
   selection: DocumentAbstract;
   selectedType: string;
   selectedNode = new BehaviorSubject<string>(null);
@@ -48,6 +51,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) private address: AddressRef,
     private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
+    private configService: ConfigService,
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private cdr: ChangeDetectorRef,
@@ -55,6 +59,12 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.configService.getCurrentUserInfo().then((userInfo) => {
+      if (userInfo.currentCatalog.type === "mcloud") {
+        this.showTypeSelector = false;
+        this.selectedType = "10"; // Herausgeber
+      }
+    });
     this.codelistService.byId("505");
     this.recentAddresses$ = this.sessionQuery.recentAddresses$;
 
