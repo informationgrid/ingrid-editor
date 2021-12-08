@@ -305,7 +305,7 @@ describe('Research Page', () => {
     ResearchPage.changeViewNumberDocuments();
     // make sure there's an exact match (-> no substring match)
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
-    ResearchPage.checkNoSearchResults();
+    ResearchPage.getSearchResultCount().should('equal', 1);
 
     //check if search accepts potFentially problematic strings
     ResearchPage.search(',./;\'[]\\-=\n <>?:"{}|_+\n!@#$%^&*()`~');
