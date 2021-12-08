@@ -1,7 +1,10 @@
 package de.ingrid.igeserver.migrations.tasks
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -50,12 +53,45 @@ class M036_MigrateToDBID : MigrationBase("0.36") {
                 migrateAclClass()
                 migrateAclObjectIdentities()
                 migratePaths()
+                migratePermissions()
             } catch (e: Exception) {
                 it.markForRollback()
                 throw e
             }
 
         }
+    }
+
+    private fun migratePermissions() {
+
+        val groups: List<Group> = entityManager.createQuery("SELECT g FROM Group g").resultList as List<Group>
+        groups.forEach { group ->
+            // val catalogIdentifier = group.catalog?.identifier
+            val docPermissionChanges = migratePermissionFor(group.permissions?.documents)
+            val addressPermissionChanges = migratePermissionFor(group.permissions?.addresses)
+            if (docPermissionChanges || addressPermissionChanges) {
+                entityManager.persist(group)
+            }
+        }
+
+    }
+
+    private fun migratePermissionFor(permissions: List<JsonNode>?): Boolean {
+        if (permissions == null) return false
+
+        permissions.forEach { permission ->
+            permission as ObjectNode
+            val uuid = permission.get("uuid").asText()
+
+            val id = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw WHERE dw.uuid = :uuid")
+                .setParameter("uuid", uuid)
+                .singleResult as Int
+
+            permission.put("id", id)
+            permission.remove("uuid")
+        }
+
+        return permissions.isNotEmpty()
     }
 
     private fun migratePaths() {
@@ -86,6 +122,8 @@ class M036_MigrateToDBID : MigrationBase("0.36") {
 
     private fun migrateAclObjectIdentities() {
 
+        removeInvalidACLs()
+
         val objIdentities = entityManager.createNativeQuery(sqlAllObjectIdentities).resultList
 
         objIdentities.forEach { objIdentity ->
@@ -95,6 +133,16 @@ class M036_MigrateToDBID : MigrationBase("0.36") {
                 .setParameter("id", objIdentity[0])
                 .executeUpdate()
         }
+    }
+
+    private fun removeInvalidACLs() {
+
+        val numRemoved = entityManager
+            .createNativeQuery("DELETE FROM acl_object_identity WHERE id IN (SELECT acl.id FROM acl_object_identity acl LEFT OUTER JOIN document_wrapper dw ON acl.object_id_identity = dw.uuid WHERE dw.id IS NULL)")
+            .executeUpdate()
+
+        log.info("Removed $numRemoved rows from acl_object_identity, since they were not connected to a document anymore")
+
     }
 
     private fun migrateAclClass() {
