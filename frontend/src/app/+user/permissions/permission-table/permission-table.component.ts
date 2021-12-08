@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from "@angular/core";
-import { PermissionLevel } from "../../user";
+import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
@@ -33,7 +33,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   displayedColumns: string[] = ["type-icon", "title", "permission", "settings"];
 
-  val = [];
+  val: TreePermission[] = [];
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
   breadcrumb: { [x: string]: ShortTreeNode[] } = {};
@@ -88,7 +88,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   private removePermission(uuid: string) {
-    this.value = this.val.filter((entry) => uuid !== entry.uuid);
+    this.value = this.val.filter((entry) => uuid !== entry.id);
   }
 
   registerOnChange(fn: any): void {
@@ -103,16 +103,16 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.value = value;
   }
 
-  set value(val) {
+  set value(val: TreePermission[]) {
     this.val = val ?? [];
     this.val.forEach((doc) => {
-      if (!this.breadcrumb[doc.uuid]) {
+      if (!this.breadcrumb[doc.id]) {
         this.documentService
-          .getPath(doc.uuid)
-          .subscribe((path) => (this.breadcrumb[doc.uuid] = path.slice(0, -1)));
+          .getPath(doc.id)
+          .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
       }
       if (doc.isFolder === undefined)
-        this.isFolder(doc.uuid).then((isFolder) => (doc.isFolder = isFolder));
+        this.isFolder(doc.id).then((isFolder) => (doc.isFolder = isFolder));
     });
     if (this.onChange) {
       this.onChange(val);
@@ -122,9 +122,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
   }
 
-  isFolder(uuid: string): Promise<boolean> {
+  isFolder(id: string): Promise<boolean> {
     return this.documentService
-      .load(uuid, this.forAddress)
+      .load(id, this.forAddress)
       .pipe(map((doc) => doc._type === "FOLDER"))
       .toPromise();
   }

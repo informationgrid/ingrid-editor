@@ -30,6 +30,10 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   set users(val: User[]) {
     if (val) this.isLoading = false;
     this.dataSource.data = val ?? [];
+
+    // select previously selected group
+    const selectedUser = this.selection.selected[0];
+    if (selectedUser) this.setSelectionToUser(selectedUser);
   }
 
   @Input()
@@ -44,7 +48,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
 
   @Output() onUserSelect = new EventEmitter<User>();
 
-  constructor(private userService: UserService) {
+  constructor(public userService: UserService) {
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<User>(
@@ -71,9 +75,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       ? ["role-icon", "firstName"]
       : ["role-icon", "login", "firstName", "organisation"];
     this.selectedUser?.subscribe((user) => {
-      this.selection.select(
-        this.dataSource.data.find((d) => d.login == user?.login)
-      );
+      this.setSelectionToUser(user);
 
       if (this.paginator) {
         const pageNumber = Math.max(
@@ -92,6 +94,12 @@ export class UserTableComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  private setSelectionToUser(user: User) {
+    this.selection.select(
+      this.dataSource.data.find((d) => d.login == user?.login)
+    );
   }
 
   @ViewChild(MatSort) sort: MatSort;

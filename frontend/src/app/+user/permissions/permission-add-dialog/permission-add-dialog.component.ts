@@ -24,18 +24,18 @@ import { TreePermission } from "../../user";
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;
 
-  val = [];
+  val: TreePermission[] = [];
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
   selection: string[] = [];
   activeNodeSetter = new Subject();
 
   disableTreeNodes = (node: TreeNode) => {
-    return this.val.some((v) => v.uuid === node._id);
+    return this.val.some((v) => v.id === node._id);
   };
 
   isExpandable = (node: TreeNode) =>
-    !this.val.some((v) => v.uuid === node._id) && node.hasChildren;
+    !this.val.some((v) => v.id === node._id) && node.hasChildren;
 
   set value(val) {
     this.val = val ?? [];
@@ -56,13 +56,13 @@ export class PermissionAddDialogComponent implements OnInit {
   addPermission(option: string) {
     const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
     const entity = query.getEntity(this.selection[0]);
-    const uuidToAdd = this.selection[0];
+    const idToAdd = this.selection[0];
 
     // check if permission is an ancestor of an existing permission
     let descendants = [];
     this.val.forEach((permission) => {
-      this.data?.breadcrumb[permission.uuid]?.forEach((crumb) => {
-        if (uuidToAdd === crumb.id) descendants.push(permission);
+      this.data?.breadcrumb[permission.id]?.forEach((crumb) => {
+        if (idToAdd === crumb.id) descendants.push(permission);
       });
     });
 
@@ -74,7 +74,7 @@ export class PermissionAddDialogComponent implements OnInit {
       this.dialogRef.close([
         ...this.val,
         {
-          uuid: uuidToAdd,
+          id: idToAdd,
           title: entity.title,
           permission: option,
         },
@@ -108,7 +108,7 @@ export class PermissionAddDialogComponent implements OnInit {
         map((response) => {
           if (response === "confirm") {
             this.value = this.val.filter(
-              (p) => !descendants.map((d) => d.uuid).includes(p.uuid)
+              (p) => !descendants.map((d) => d.id).includes(p.id)
             );
             return true;
           } else {
@@ -121,12 +121,12 @@ export class PermissionAddDialogComponent implements OnInit {
   shouldDisableAddButton() {
     return (
       this.selection.length === 0 ||
-      this.val.some((item) => item.uuid === this.selection[0])
+      this.val.some((item) => item.id === this.selection[0])
     );
   }
 
   removePermission(item: MatListOption) {
-    this.value = this.val.filter((entry) => item.value !== entry.uuid);
+    this.value = this.val.filter((entry) => item.value !== entry.id);
     this.activeNodeSetter.next(null);
   }
 }

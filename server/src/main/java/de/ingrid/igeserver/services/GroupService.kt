@@ -27,7 +27,7 @@ import java.util.*
 
 
 @Service
-open class GroupService @Autowired constructor(
+class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
@@ -38,7 +38,7 @@ open class GroupService @Autowired constructor(
     private val log = logger()
 
     @Transactional
-    open fun create(catalogId: String, group: Group, manager: UserInfo?): Group {
+    fun create(catalogId: String, group: Group, manager: UserInfo?): Group {
         group.catalog = catalogRepo.findByIdentifier(catalogId)
         group.data = group.data ?: GroupData()
         group.data?.creationDate = Date()
@@ -73,7 +73,7 @@ open class GroupService @Autowired constructor(
     }
 
     @Transactional
-    open fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
+    fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
 
         val oldGroup = get(catalogId, id)!!
         group.apply {
@@ -99,7 +99,7 @@ open class GroupService @Autowired constructor(
         val sid = GrantedAuthoritySid("GROUP_${group.name}")
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asInt())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("id").asInt())
             val acl = aclService.readAclById(objIdentity) as MutableAcl
 
             // new permissions will be added later
@@ -125,7 +125,7 @@ open class GroupService @Autowired constructor(
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asInt())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("id").asInt())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
             } catch (ex: org.springframework.security.acls.model.NotFoundException) {
@@ -183,8 +183,8 @@ open class GroupService @Autowired constructor(
             val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
             group.permissions?.apply {
-                documents = group.permissions?.documents?.filter { it.get("uuid").asInt() != docId.toInt() } ?: emptyList()
-                addresses = group.permissions?.addresses?.filter { it.get("uuid").asInt() != docId.toInt() } ?: emptyList()
+                documents = group.permissions?.documents?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
+                addresses = group.permissions?.addresses?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
             }
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 

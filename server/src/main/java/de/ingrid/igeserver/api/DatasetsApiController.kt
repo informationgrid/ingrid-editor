@@ -283,7 +283,7 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean,
     ): List<DocumentWrapper> {
 
-        val actualRootIds = mutableListOf<String>()
+        val actualRootIds = mutableListOf<Int>()
         val potentialRootIds = aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress)
 
         for (currentId in potentialRootIds) {
@@ -295,19 +295,19 @@ class DatasetsApiController @Autowired constructor(
                     break
                 }
             }
-            if (isRoot) actualRootIds.add(currentId.toString())
+            if (isRoot) actualRootIds.add(currentId)
         }
 
-        return actualRootIds.map { uuid -> documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid) }
+        return actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
 
     }
 
-    private fun isChildOf(childId: Int, parentId: Int, dbId: String, isAddress: Boolean): Boolean {
+    private fun isChildOf(childId: Int, parentId: Int, catalogId: String, isAddress: Boolean): Boolean {
 
-        val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.mapNotNull { it.id }
+        val childrenIds = this.documentService.findChildrenDocs(catalogId, parentId, isAddress).hits.mapNotNull { it.id }
         if (childrenIds.contains(childId)) return true
 
-        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, dbId, isAddress)) return true }
+        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, catalogId, isAddress)) return true }
         return false
     }
 

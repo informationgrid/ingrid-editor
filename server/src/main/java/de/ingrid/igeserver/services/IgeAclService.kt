@@ -83,7 +83,7 @@ class IgeAclService @Autowired constructor(
     fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
-            .map { permissions -> permissions?.map { permission -> permission.get("uuid").asInt() }.orEmpty() }
+            .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
             .flatten().toSet().toList()
     }
 
@@ -100,7 +100,7 @@ class IgeAclService @Autowired constructor(
                     permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
                 }
             }
-            .map { permissions -> permissions.map { permission -> permission.get("uuid").asInt() } }
+            .map { permissions -> permissions.map { permission -> permission.get("id").asInt() } }
             .flatten().toSet().toList()
     }
 
