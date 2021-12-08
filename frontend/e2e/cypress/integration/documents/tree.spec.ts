@@ -3,6 +3,7 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { xit } from 'mocha';
+import { AddressPage } from '../../pages/address.page';
 
 describe('Tree', () => {
   beforeEach(() => {
@@ -86,6 +87,33 @@ describe('Tree', () => {
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], true);
 
       Tree.selectNodeAndCheckPath(docName, ['Daten', deepFolder, deepFolder2, deepFolder3]);
+    });
+
+    it('should move a multiple documents into a nested folder, move it back and redo it again', () => {
+      const docName1 = 'document-one-to-move';
+      const docName2 = 'document-two-to-move';
+      const deepFolder = 'Folder-for-multiple-documents';
+      let documentsArray = [docName1, docName2];
+      DocumentPage.createDocument(docName1);
+      DocumentPage.createDocument(docName2);
+      DocumentPage.createFolder(deepFolder);
+
+      Tree.multiSelectObject('mat-tree', documentsArray);
+      CopyCutUtils.dragdrop(docName1, [deepFolder], true, true);
+      // move back the documents
+      cy.get('mat-tree-node .mat-checkbox-layout').should('be.visible');
+      documentsArray.forEach(node => {
+        cy.get('mat-tree').contains(node).click();
+      });
+      CopyCutUtils.dragdrop(docName1, ['Daten'], true, true);
+
+      // just move to any page and go back without reload
+      AddressPage.visit();
+      DocumentPage.visit();
+
+      // move the documents again to original file
+      Tree.multiSelectObject('mat-tree', documentsArray);
+      CopyCutUtils.dragdrop(docName1, [deepFolder], true, true);
     });
 
     it('should move a document into a not expanded node (other children should be there)', () => {

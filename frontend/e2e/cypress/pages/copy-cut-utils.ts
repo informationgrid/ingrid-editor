@@ -40,13 +40,25 @@ export class CopyCutUtils {
     cy.wait(500);
   }
 
-  static dragdrop(dragnode: string, targetNodePath: string[], confirmChange: boolean) {
+  static dragdrop(
+    dragnode: string,
+    targetNodePath: string[],
+    confirmChange: boolean,
+    moveMultipleNodes: boolean = false
+  ) {
     targetNodePath.forEach((node, i) => {
       // with option force: true we will not do any checks and no scrolling is performed, which is important
       // for drag'n'drop tests
-      cy.get('#sidebar div:contains(' + dragnode + ')')
-        .click({ force: true })
-        .drag('#sidebar div:contains(' + node + ')', { force: true });
+
+      // if multiple nodes are selected we only need drag one of the nodes without click on it
+      // otherwise we need to click on the node before drag action
+      if (moveMultipleNodes) {
+        cy.get('#sidebar div:contains(' + dragnode + ')').drag('#sidebar div:contains(' + node + ')', { force: true });
+      } else {
+        cy.get('#sidebar div:contains(' + dragnode + ')')
+          .click({ force: true })
+          .drag('#sidebar div:contains(' + node + ')', { force: true });
+      }
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
