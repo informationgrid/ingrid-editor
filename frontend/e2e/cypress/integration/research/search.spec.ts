@@ -168,7 +168,6 @@ describe('Research Page', () => {
   });
 
   it('should delete SQL-query and subsequently return 0 results', () => {
-    cy.intercept('/api/search/query').as('query');
     cy.intercept('/api/search/querySql').as('sqlQuery');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
@@ -177,8 +176,6 @@ describe('Research Page', () => {
     // make sure a non-zero number of results is returned
     cy.wait('@sqlQuery');
     cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
-    //cy.wait('@query');
-    cy.wait('@query');
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
     // make sure query has been removed from query field and 0 results are returned
