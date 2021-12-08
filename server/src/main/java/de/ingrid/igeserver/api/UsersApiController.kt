@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
@@ -70,6 +71,9 @@ open class UsersApiController : UsersApi {
 
     @Value("#{'\${spring.profiles.active:}'.indexOf('dev') != -1}")
     private val developmentMode = false
+
+    @Autowired
+    lateinit var generalProperties: GeneralProperties
 
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<String?> {
 
@@ -236,6 +240,7 @@ open class UsersApiController : UsersApi {
                 currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0),
                 version = getVersion(),
                 lastLogin = lastLogin,
+                externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
                 permissions = catalogService.getPermissions(principal)
             )

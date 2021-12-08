@@ -162,6 +162,10 @@ mat-card-title {
     height: 44px;
   }
 
+  a.mat-menu-item {
+    text-transform: unset;
+  }
+
   .category-item {
     color: $ige-hint-color;
     font-size: 14px;
