@@ -82,7 +82,7 @@ open class ImportService {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
             docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-            documentService.updateDocument(principal, catalogId, wrapper.id.toString(), docObj, false)
+            documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj, false)
         }
 
         // TODO: return created document instead of transformed JSON

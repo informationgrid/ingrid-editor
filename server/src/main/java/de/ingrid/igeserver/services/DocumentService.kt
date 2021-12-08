@@ -44,7 +44,7 @@ import java.security.Principal
 import javax.persistence.criteria.*
 
 @Service
-open class DocumentService @Autowired constructor(
+class DocumentService @Autowired constructor(
     var docRepo: DocumentRepository,
     var userRepo: UserRepository,
     var docWrapperRepo: DocumentWrapperRepository,
@@ -138,11 +138,6 @@ open class DocumentService @Autowired constructor(
         }
     }
 
-    fun getTitleFromDocumentId(id: String): String {
-        val wrapper = docWrapperRepo.findByDraftUuidOrPublishedUuid(id, id)
-        return wrapper.draft?.title ?: wrapper.published?.title ?: "???!"
-    }
-
     fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
@@ -154,10 +149,10 @@ open class DocumentService @Autowired constructor(
     ): FindAllResults<DocumentWrapper> {
 
         val docs = if (parentId == null) {
-            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value);
+            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
         } else {
             docWrapperRepo.findByParent_id(parentId.toInt())
-        };
+        }
         /*val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
             catalogId,
             parentId,
@@ -314,14 +309,14 @@ open class DocumentService @Autowired constructor(
     fun updateDocument(
         principal: Principal?,
         catalogId: String,
-        id: String,
+        id: Int,
         data: Document,
         publish: Boolean = false
     ): Document {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
         // run pre-update pipe(s)
-        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val wrapper = getWrapperByDocumentId(id)
         val docType = getDocumentType(wrapper.type!!)
         val preUpdatePayload = PreUpdatePayload(docType, data, wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
@@ -466,10 +461,10 @@ open class DocumentService @Autowired constructor(
         docWrapperRepo.save(markedDoc)
     }
 
-    fun revertDocument(principal: Principal, catalogId: String, id: String): Document {
+    fun revertDocument(principal: Principal, catalogId: String, id: Int): Document {
 
         // remove draft version
-        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val wrapper = getWrapperByDocumentId(id)
 
         // check if draft and published field are filled
         assert(wrapper.draft != null && wrapper.published != null)
@@ -489,20 +484,16 @@ open class DocumentService @Autowired constructor(
 
         val doc = this.getLatestDocument(updatedWrapper, true)
 
-        // reverted documents must get parent ID from wrapper
-        // if doc was modified in another folder then the previous parent would be used otherwise
-        doc.data.put(FIELD_PARENT, wrapper.getParentUuid())
-
         // run post-revert pipe(s)
         val postRevertPayload = PostRevertPayload(docType, doc, updatedWrapper)
         postRevertPipe.runFilters(postRevertPayload, filterContext)
 
-        return doc
+        return postRevertPayload.document
     }
 
-    fun unpublishDocument(principal: Principal, catalogId: String, id: String): Document {
+    fun unpublishDocument(principal: Principal, catalogId: String, id: Int): Document {
         // remove publish
-        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val wrapper = getWrapperByDocumentId(id)
         assert(wrapper.published != null)
 
         // run pre-unpublish pipe(s)
@@ -522,16 +513,15 @@ open class DocumentService @Autowired constructor(
         docWrapperRepo.save(wrapper)
 
         // remove from index
-        removeFromIndex(id)
+        removeFromIndex(wrapper.uuid)
 
-        // update state
-        wrapper.draft!!.state = DocumentState.DRAFT.value
+        val doc = this.getLatestDocument(wrapper)
 
         // run post-unpublish pipe(s)
-        val postUnpublishPayload = PostUnpublishPayload(docType, wrapper.draft!!, wrapper)
+        val postUnpublishPayload = PostUnpublishPayload(docType, doc, wrapper)
         postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
 
-        return wrapper.draft!!
+        return postUnpublishPayload.document
     }
 
     private fun removeFromIndex(id: String) {

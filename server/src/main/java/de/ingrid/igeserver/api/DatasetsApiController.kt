@@ -57,7 +57,7 @@ class DatasetsApiController @Autowired constructor(
      */
     override fun updateDataset(
         principal: Principal,
-        uuid: String,
+        id: Int,
         data: JsonNode,
         publish: Boolean,
         unpublish: Boolean,
@@ -66,12 +66,12 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val resultDoc = if (revert) {
-            documentService.revertDocument(principal, catalogId, uuid)
+            documentService.revertDocument(principal, catalogId, id)
         } else if (unpublish) {
-            documentService.unpublishDocument(principal, catalogId, uuid)
+            documentService.unpublishDocument(principal, catalogId, id)
         } else {
             val doc = documentService.convertToDocument(data)
-            documentService.updateDocument(principal, catalogId, uuid, doc, publish)
+            documentService.updateDocument(principal, catalogId, id, doc, publish)
         }
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)
@@ -116,7 +116,7 @@ class DatasetsApiController @Autowired constructor(
         if (!(destCanWrite && sourceCanWrite)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        ids.forEach { id -> handleMove(principal, catalogId, id, options) }
+        ids.forEach { id -> handleMove(catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -188,24 +188,12 @@ class DatasetsApiController @Autowired constructor(
         return docs.totalHits
     }
 
-    private fun handleMove(principal: Principal, catalogId: String, id: Int, options: CopyOptions) {
-
-//        val wrapper = documentService.getWrapperByDocumentId(id)
-//        val doc = documentService.getLatestDocument(wrapper, false, true)
+    private fun handleMove(catalogId: String, id: Int, options: CopyOptions) {
 
         if (id == options.destId) {
             throw ConflictException.withReason("Cannot move '$id' to itself")
         }
         validateCopyOperation(catalogId, id, options.destId)
-/*
-        // FIXME: update parent (parent should not be managed inside document but only in wrapper
-        doc.data.put(FIELD_PARENT, options.destId)
-
-        val published = doc.state == DocumentService.DocumentState.PUBLISHED.value
-
-        // update document which includes updating the wrapper
-        // TODO Evaluate if "republish" wanted and necessary here?
-        documentService.updateDocument(principal, catalogId, id.toString(), doc, publish = published)*/
 
         // update ACL parent
         documentService.aclService.updateParent(id, options.destId)
