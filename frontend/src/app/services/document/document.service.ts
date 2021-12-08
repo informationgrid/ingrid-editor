@@ -267,7 +267,9 @@ export class DocumentService {
           datasetsChanged: { type: UpdateType.Update, data: json },
         })
       ),
-      tap(() => this.reload$.next({ uuid: id, forAddress: forAddress })),
+      tap((doc) =>
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
+      ),
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
@@ -321,10 +323,9 @@ export class DocumentService {
           datasetsChanged: { type: UpdateType.Update, data: json },
         })
       ),
-      // tap(json => this.treeStore.update(id, json[0])),
-      // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
-      tap(() => this.reload$.next({ uuid: id, forAddress: isAddress }))
-      // catchError( err => this.errorService.handle( err ) )
+      tap((doc: DocumentAbstract[]) =>
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: isAddress })
+      )
     );
   }
 
