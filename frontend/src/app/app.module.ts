@@ -89,7 +89,6 @@ export function ConfigLoader(
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
       .catch((err) => {
-        debugger;
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
           "Fehler bei der Initialisierung";

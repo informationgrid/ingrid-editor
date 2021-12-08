@@ -17,10 +17,9 @@ class MCloudComponent {
     mcloud: McloudDoctype,
     folder: FolderDoctype,
     test: TestDoctype,
-    address: AddressDoctype,
     mcloudAddress: McloudAddressDoctype
   ) {
-    const types = [mcloud, folder, test, address, mcloudAddress];
+    const types = [mcloud, folder, test, mcloudAddress];
 
     service.registerProfiles(types);
   }
