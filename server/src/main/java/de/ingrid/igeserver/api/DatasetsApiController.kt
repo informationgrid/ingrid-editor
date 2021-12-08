@@ -190,22 +190,22 @@ class DatasetsApiController @Autowired constructor(
 
     private fun handleMove(principal: Principal, catalogId: String, id: Int, options: CopyOptions) {
 
-        val wrapper = documentService.getWrapperByDocumentId(id.toInt())
-        val doc = documentService.getLatestDocument(wrapper, false, true)
+//        val wrapper = documentService.getWrapperByDocumentId(id)
+//        val doc = documentService.getLatestDocument(wrapper, false, true)
 
         if (id == options.destId) {
             throw ConflictException.withReason("Cannot move '$id' to itself")
         }
         validateCopyOperation(catalogId, id, options.destId)
-
-        // update parent
+/*
+        // FIXME: update parent (parent should not be managed inside document but only in wrapper
         doc.data.put(FIELD_PARENT, options.destId)
 
         val published = doc.state == DocumentService.DocumentState.PUBLISHED.value
 
         // update document which includes updating the wrapper
         // TODO Evaluate if "republish" wanted and necessary here?
-        documentService.updateDocument(principal, catalogId, id.toString(), doc, publish = published)
+        documentService.updateDocument(principal, catalogId, id.toString(), doc, publish = published)*/
 
         // update ACL parent
         documentService.aclService.updateParent(id, options.destId)
@@ -216,12 +216,12 @@ class DatasetsApiController @Autowired constructor(
         }
 
         // updateWrapper
-        val wrapperWithLinks = documentService.getWrapperByDocumentId(id)
-        wrapperWithLinks.parent =
-            if (options.destId == null) null else docWrapperRepo.findById(options.destId.toInt()).get()
-        wrapperWithLinks.path = newPath
+        val docWrapper = documentService.getWrapperByDocumentId(id)
+        docWrapper.parent =
+            if (options.destId == null) null else docWrapperRepo.findById(options.destId).get()
+        docWrapper.path = newPath
 
-        docWrapperRepo.save(wrapperWithLinks)
+        docWrapperRepo.save(docWrapper)
 
         updatePathForAllChildren(catalogId, newPath, id)
     }
