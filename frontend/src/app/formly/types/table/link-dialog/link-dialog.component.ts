@@ -33,16 +33,13 @@ export class LinkDialogComponent {
   private URL_REGEXP =
     "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
 
-  form = new FormGroup(
-    {
-      title: new FormControl(),
-      url: new FormControl("", [
-        Validators.required,
-        Validators.pattern(this.URL_REGEXP),
-      ]),
-    },
-    { updateOn: "blur" }
-  );
+  form = new FormGroup({
+    title: new FormControl(),
+    url: new FormControl("", [
+      Validators.required,
+      Validators.pattern(this.URL_REGEXP),
+    ]),
+  });
 
   matcher = new MyErrorStateMatcher();
 
