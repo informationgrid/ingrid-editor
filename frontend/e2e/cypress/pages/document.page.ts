@@ -63,8 +63,6 @@ export class DocumentPage extends BasePage {
       this.search(searchString);
       cy.wait(500);
       cy.get('ige-document-list-item').contains(searchString).click();
-      cy.get('[data-cy="address-type-select"]').click();
-      cy.get('mat-option').contains(addressType).click();
     }
   };
 
