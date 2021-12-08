@@ -23,10 +23,10 @@ describe('User without authorizations', () => {
   it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
     // Make sure search page shows no data when visiting
     ResearchPage.visit();
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
     // Make sure triggering search doesn't deliver search results
     ResearchPage.search('test');
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('Should be shown blank dashboard', () => {

@@ -276,7 +276,7 @@ describe('Research Page', () => {
     DashboardPage.visit();
     DashboardPage.search('556c875e-d471-4a35-8203-0c750737d296');
     cy.contains('button', 'Suchen').click();
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     cy.contains('td', 'Taunus, Adresse');
     ResearchPage.getSearchResultCount().should('equal', 1);
@@ -305,9 +305,9 @@ describe('Research Page', () => {
     ResearchPage.changeViewNumberDocuments();
     // make sure there's an exact match (-> no substring match)
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
-    ResearchPage.getSearchResultCountZeroIncluded().should('eq', 1);
+    ResearchPage.checkNoSearchResults();
 
-    //check if search accepts potentially problematic strings
+    //check if search accepts potFentially problematic strings
     ResearchPage.search(',./;\'[]\\-=\n <>?:"{}|_+\n!@#$%^&*()`~');
     cy.get('.error').should('not.exist');
 
@@ -407,7 +407,7 @@ describe('Research Page', () => {
     ResearchPage.setDate('startDate', '24.07.2021');
     ResearchPage.setDate('endDate', '22.07.2021');
     cy.wait(500);
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('timerelated search for specific document should only return it when respective date is covered by interval (#3040)', () => {
@@ -416,7 +416,7 @@ describe('Research Page', () => {
     ResearchPage.setDate('endDate', '29.06.2021');
     cy.wait(500);
     // expect to get 0 results
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
     // stretch the interval to cover the date in question
     ResearchPage.setDate('endDate', '30.06.2021');
     cy.wait(500);
