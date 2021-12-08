@@ -74,10 +74,11 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
                 else -> docWrapperRepo.findById(parentId.asInt()).get()
             }
         } catch (ex: EmptyResultDataAccessException) {
-            // this can happen during import, when a document has a parent referenced
-            payload.document.data.put(FIELD_PARENT, null as String?)
             null
         }
+
+        // remove parent from document (only store parent in wrapper)
+        payload.document.data.remove(FIELD_PARENT)
 
         val documentType = payload.document.type
         val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id.toString()

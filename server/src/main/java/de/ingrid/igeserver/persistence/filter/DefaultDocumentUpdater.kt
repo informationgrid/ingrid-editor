@@ -51,6 +51,9 @@ class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
             }
         }
 
+        // remove parent from document (only store parent in wrapper)
+        payload.document.data.remove(FIELD_PARENT)
+
         // set catalog information
         // TODO: a document does not really need this information since the document wrapper takes care of it
         payload.document.catalog = catalogRepo.findByIdentifier(context.catalogId)

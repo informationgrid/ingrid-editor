@@ -42,7 +42,7 @@ interface DatasetsApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "200", description = "Unexpected error")])
     fun updateDataset(
             principal: Principal,
-            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: String,
+            @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") uuid: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
             @Parameter(description = "If we want to unpublish a document then this parameter has to be set to true.") @RequestParam(value = "unpublish", required = false) unpublish: Boolean,

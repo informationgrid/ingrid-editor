@@ -290,7 +290,8 @@ open class DocumentService @Autowired constructor(
             "title",
             "hasWritePermission",
             "hasOnlySubtreeWritePermission",
-            "_wrapperId"
+            "_wrapperId",
+//            FIELD_PARENT // the parent is only stored in document wrapper -> still needed in default document update
         )
             .forEach { copy.remove(it) }
         return copy
@@ -310,7 +311,13 @@ open class DocumentService @Autowired constructor(
         ).forEach { json.remove(it) }
     }
 
-    fun updateDocument(principal: Principal?, catalogId: String, id: String, data: Document, publish: Boolean = false): Document {
+    fun updateDocument(
+        principal: Principal?,
+        catalogId: String,
+        id: String,
+        data: Document,
+        publish: Boolean = false
+    ): Document {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
         // run pre-update pipe(s)
@@ -610,6 +617,7 @@ open class DocumentService @Autowired constructor(
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
         objectNode.wrapperId = wrapper.id.toString()
+        objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
 
         return objectNode
     }

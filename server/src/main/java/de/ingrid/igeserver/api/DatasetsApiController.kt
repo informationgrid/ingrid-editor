@@ -57,7 +57,7 @@ class DatasetsApiController @Autowired constructor(
      */
     override fun updateDataset(
         principal: Principal,
-        id: String,
+        uuid: String,
         data: JsonNode,
         publish: Boolean,
         unpublish: Boolean,
@@ -66,12 +66,12 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val resultDoc = if (revert) {
-            documentService.revertDocument(principal, catalogId, id)
+            documentService.revertDocument(principal, catalogId, uuid)
         } else if (unpublish) {
-            documentService.unpublishDocument(principal, catalogId, id)
+            documentService.unpublishDocument(principal, catalogId, uuid)
         } else {
             val doc = documentService.convertToDocument(data)
-            documentService.updateDocument(principal, catalogId, id, doc, publish)
+            documentService.updateDocument(principal, catalogId, uuid, doc, publish)
         }
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)
@@ -112,7 +112,7 @@ class DatasetsApiController @Autowired constructor(
     ): ResponseEntity<Void> {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
             .let { it.canWrite || it.canOnlyWriteSubtree }
-        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it.toInt()).canWrite }.all { it }
+        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it).canWrite }.all { it }
         if (!(destCanWrite && sourceCanWrite)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -227,7 +227,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
-        documentService.findChildren(catalogId, id.toInt()).hits
+        documentService.findChildren(catalogId, id).hits
             .forEach {
                 it.path = path + id.toString()
                 if (it.type == "FOLDER") {
