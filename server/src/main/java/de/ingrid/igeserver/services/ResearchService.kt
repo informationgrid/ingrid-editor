@@ -92,24 +92,24 @@ class ResearchService {
         return termParameters + clauseParameters
     }
 
-    private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
+    private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
                 SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
                 FROM catalog, document_wrapper
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
-                ${determineWhereQuery(dbId, query, groupDocUuids)}
+                ${determineWhereQuery(catalogId, query, groupDocUuids)}
                 ORDER BY document1.title;
             """
     }
 
-    private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
-        val catalogFilter = createCatalogFilter(dbId)
+    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
+        val catalogFilter = createCatalogFilter(catalogId)
         val groupDocUuidsString = groupDocUuids.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
         val permissionFilter = if (groupDocUuids.isEmpty()) "" else
-            """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
+            """ AND (document_wrapper.id = ANY(('{$groupDocUuidsString}')) 
                     OR ('{$groupDocUuidsString}') && document_wrapper.path)
             """.trimIndent()
 
@@ -132,9 +132,9 @@ class ResearchService {
         }
     }
 
-    private fun createCatalogFilter(dbId: String): String {
+    private fun createCatalogFilter(catalogId: String): String {
 
-        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$dbId'"
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId'"
 
     }
 
@@ -233,11 +233,11 @@ class ResearchService {
         }
     }
 
-    fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
+    fun querySql(principal: Principal, catalogId: String, sqlQuery: String): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
         try {
-            val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
+            val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             val result = sendQuery(catalogQuery, emptyList())
             val map = filterAndMapResult(result, isAdmin, principal)
 
@@ -249,9 +249,9 @@ class ResearchService {
         }
     }
 
-    private fun restrictQueryOnCatalog(dbId: String, sqlQuery: String): String {
+    private fun restrictQueryOnCatalog(catalogId: String, sqlQuery: String): String {
 
-        val catalogFilter = createCatalogFilter(dbId)
+        val catalogFilter = createCatalogFilter(catalogId)
 
         val fromIndex = sqlQuery.indexOf("FROM")
         val whereIndex = sqlQuery.indexOf("WHERE")
