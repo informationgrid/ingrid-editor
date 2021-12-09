@@ -153,7 +153,7 @@ public class FileSystemItem implements StorageItem {
                     tmpFile += "." + extension;
                 }
             }
-            return tmpFile;
+            return Path.of(this.path,tmpFile).toString();
         }
         return Path.of(this.path, this.file).toString();
     }

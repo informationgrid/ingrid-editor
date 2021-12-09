@@ -24,6 +24,7 @@ package de.ingrid.mdek.upload.storage.impl;
 
 import de.ingrid.mdek.upload.ConflictException;
 import de.ingrid.mdek.upload.ValidationException;
+import de.ingrid.mdek.upload.storage.ConflictHandling;
 import de.ingrid.mdek.upload.storage.Storage;
 import de.ingrid.mdek.upload.storage.StorageItem;
 import de.ingrid.mdek.upload.storage.impl.Scope;
@@ -301,7 +302,7 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public StorageItem getInfo(final String catalog, final String userID, final String path, final String file) throws IOException {
+    public FileSystemItem getInfo(final String catalog, final String userID, final String path, final String file) throws IOException {
         Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
         if(realPath.toFile().exists()){
             return this.getFileInfo(catalog, userID, path, file, this.docsDir, Scope.UNSAVED);
@@ -450,20 +451,112 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public StorageItem[] extract(final String catalog, String userID, String datasetID, String file, boolean replace) throws IOException {
+    public void checkExtractConflicts(String catalog, String userID, String datasetID, String file) throws IOException, ConflictException {
         final Path realPath = this.getUnsavedPath(catalog, userID, datasetID, file, this.docsDir);
 
+        final Path dir = this.getExtractPath(realPath);
+
+        final List<StorageItem> storageItems = new ArrayList<>();
+
+
+
+        final int bufferSize = 1024;
+        // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided
+        // with a non-UTF-8 encoding.
+        try (ZipInputStream zis = new ZipInputStream(
+                new BufferedInputStream(new FileInputStream(realPath.toString()), bufferSize),
+                Charset.forName("Cp437")
+        )) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while(zipEntry != null){
+                final Path targetFilePath = Paths.get(dir.toString(), this.sanitize(zipEntry.getName(), ILLEGAL_PATH_CHARS));
+                final String targetFile = dir.getParent().relativize(targetFilePath).toString();
+                if (!zipEntry.isDirectory()) {
+                    if (this.exists(catalog, userID, datasetID, targetFile)){
+                        storageItems.add(this.getInfo(catalog, userID, datasetID, targetFile));
+                    }
+
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+
+            if(storageItems.size() > 0){
+                throw new ConflictException("At least one extracted file already exists!", storageItems.toArray(new StorageItem[storageItems.size()]), storageItems.get(0).getNextName());
+            }
+        }
+    }
+
+    @Override
+    public StorageItem[] extract(final String catalog, String userID, String datasetID, String archiveFile, ConflictHandling conflictHandling) throws IOException {
+        final Path realPath = this.getUnsavedPath(catalog, userID, datasetID, archiveFile, this.docsDir);
+
+        List<FileSystemItem> storageItems = new ArrayList<>();
+
+
         final List<CopyOption> copyOptionList = new ArrayList<>();
-        if (replace) {
+        if (conflictHandling == ConflictHandling.REPLACE) {
             copyOptionList.add(StandardCopyOption.REPLACE_EXISTING);
         }
         final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
 
-        String[] files = extract(realPath, copyOptions);
-        List<StorageItem> storageItems = new ArrayList<>();
-        for (String fileName: files) {
-            storageItems.add(this.getFileInfo(catalog, userID, datasetID, fileName, this.docsDir, Scope.UNSAVED));
+        // get the directory name from the archive name
+        final Path dir = this.getExtractPath(realPath);
+        Files.createDirectories(dir);
+
+        final int bufferSize = 1024;
+        // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided
+        // with a non-UTF-8 encoding.
+        try (ZipInputStream zis = new ZipInputStream(
+                new BufferedInputStream(new FileInputStream(realPath.toString()), bufferSize),
+                Charset.forName("Cp437")
+        )) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while(zipEntry != null){
+                Path targetFilePath = Paths.get(dir.toString(), this.sanitize(zipEntry.getName(), ILLEGAL_PATH_CHARS));
+                String targetFile = dir.getParent().relativize(targetFilePath).toString();
+                if (zipEntry.isDirectory()) {
+                    // handle directory
+                    Files.createDirectories(targetFilePath);
+                }
+                else {
+                    // handle file
+                    if(conflictHandling == ConflictHandling.RENAME){
+                        targetFile = this.getInfo(catalog, userID, datasetID, targetFile).getNextName();
+                        targetFilePath = dir.getParent().resolve(targetFile);
+                    }
+                    Files.createDirectories(targetFilePath.getParent());
+                    Files.copy(zis, targetFilePath, copyOptions);
+                    storageItems.add(this.getFileInfo(catalog, userID, datasetID, targetFile, this.docsDir, Scope.UNSAVED));
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+
+            zis.close();
+
+            // delete archive
+            if(storageItems.size() > 0){
+                Files.delete(realPath);
+            }
         }
+        catch (final Exception ex) {
+            log.error("Failed to extract archive '" + realPath + "'. Cleaning up...", ex);
+            // delete all extracted files, if one file fails
+            for (final FileSystemItem file : storageItems) {
+                try {
+                    Files.delete(file.getRealPath());
+                }
+                catch (final Exception ex1) {
+                    log.error("Could not delete '" + file + "' while cleaning up from failed extraction.");
+                }
+            }
+            throw ex;
+        }
+        if(storageItems.size() == 0){
+            storageItems.add(this.getFileInfo(catalog, userID, datasetID, archiveFile, this.docsDir, Scope.UNSAVED));
+        }
+
         return storageItems.toArray(new StorageItem[storageItems.size()]);
     }
 
@@ -759,71 +852,6 @@ public class FileSystemStorage implements Storage {
         final String mimeType = getMimeType(path);
         return mimeType.contains("zip") || mimeType.contains("compressed");
     }
-
-    /**
-     * Extract the archive file denoted by path into a directory with the same name.
-     *
-     * @param path
-     * @param copyOptions
-     * @return String[]
-     * @throws Exception
-     */
-    private String[] extract(final Path path, final CopyOption... copyOptions) throws IOException {
-        final List<Path> result = new ArrayList<>();
-
-        // get the directory name from the archive name
-        final Path dir = this.getExtractPath(path);
-        Files.createDirectories(dir);
-
-        final int bufferSize = 1024;
-        // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided
-        // with a non-UTF-8 encoding.
-        try (ZipInputStream zis = new ZipInputStream(
-                new BufferedInputStream(new FileInputStream(path.toString()), bufferSize),
-                Charset.forName("Cp437")
-            )) {
-            ZipEntry zipEntry = zis.getNextEntry();
-            while(zipEntry != null){
-                final Path file = Paths.get(dir.toString(), this.sanitize(zipEntry.getName(), ILLEGAL_PATH_CHARS));
-                if (zipEntry.isDirectory()) {
-                    // handle directory
-                    Files.createDirectories(file);
-                }
-                else {
-                    // handle file
-                    Files.createDirectories(file.getParent());
-                    Files.copy(zis, file, copyOptions);
-                    result.add(path.getParent().relativize(file));
-                }
-                zipEntry = zis.getNextEntry();
-            }
-            zis.closeEntry();
-
-            zis.close();
-
-            // delete archive
-            if(result.size() > 0){
-                Files.delete(path);
-                return result.stream().map(p -> p.toString()).toArray(size -> new String[size]);
-            }
-        }
-        catch (final Exception ex) {
-            log.error("Failed to extract archive '" + path + "'. Cleaning up...", ex);
-            // delete all extracted files, if one file fails
-            for (final Path file : result) {
-                try {
-                    Files.delete(file);
-                }
-                catch (final Exception ex1) {
-                    log.error("Could not delete '" + file + "' while cleaning up from failed extraction.");
-                }
-            }
-            throw ex;
-        }
-        return new String[]{path.getFileName().toString()};
-    }
-
-
 
     /**
      * Get the path where files from the given archive should be extracted to

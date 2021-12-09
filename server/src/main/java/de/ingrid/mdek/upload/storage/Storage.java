@@ -22,6 +22,8 @@
  */
 package de.ingrid.mdek.upload.storage;
 
+import de.ingrid.mdek.upload.ConflictException;
+import de.ingrid.mdek.upload.UploadException;
 import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem;
 
@@ -147,12 +149,23 @@ public interface Storage {
     /**
      * Restore a file
      *
+     * @param catalogId The ID of the current Catalog
+     * @param userID The ID of the current User, relevant for unsaved Scope
+     * @param docId The UUID of the dataset
+     * @param file
+     * @throws IOException, ConflictException
+     */
+    void checkExtractConflicts(String catalogId, String userID, String docId, String file) throws IOException, ConflictException;
+
+    /**
+     * Restore a file
+     *
      * @param userID The ID of the current User, relevant for unsaved Scope
      * @param datasetID The UUID of the dataset
      * @param file
      * @throws IOException
      */
-    StorageItem[] extract(String catalog, String userID, String datasetID, String file, boolean replace) throws IOException;
+    StorageItem[] extract(String catalog, String userID, String datasetID, String file, ConflictHandling conflictHandling) throws IOException;
 
     /**
      * Execute cleanup tasks, that are necessary to maintain this storage
