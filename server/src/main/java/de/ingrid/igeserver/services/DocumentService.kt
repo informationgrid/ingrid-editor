@@ -254,6 +254,8 @@ class DocumentService @Autowired constructor(
         data.fields().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
+        // convert FIELD_ID to String, since frontend needs it as string
+        node.put(FIELD_ID, node.get(FIELD_ID).asText())
         return node
 
     }
@@ -335,7 +337,7 @@ class DocumentService @Autowired constructor(
         preUpdatePayload.document.created = createdDate
 
         try {
-            preUpdatePayload.document.wrapperId = wrapper.id.toString()
+            preUpdatePayload.document.wrapperId = wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             // update wrapper to document association
@@ -606,7 +608,7 @@ class DocumentService @Autowired constructor(
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-        objectNode.wrapperId = wrapper.id.toString()
+        objectNode.wrapperId = wrapper.id
         objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
 
         return objectNode

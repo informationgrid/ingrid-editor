@@ -94,5 +94,5 @@ class Document {
 
     @Transient
     @JsonProperty("_id")
-    var wrapperId: String? = null
+    var wrapperId: Int? = null
 }

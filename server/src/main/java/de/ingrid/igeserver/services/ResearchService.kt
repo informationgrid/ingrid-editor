@@ -95,7 +95,7 @@ class ResearchService {
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
+                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category, document_wrapper.id as wrapperid
                 FROM catalog, document_wrapper
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
@@ -104,13 +104,13 @@ class ResearchService {
             """
     }
 
-    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
+    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocIds: List<Int>): String {
         val catalogFilter = createCatalogFilter(catalogId)
-        val groupDocUuidsString = groupDocUuids.joinToString(",")
+        val groupDocIdsString = groupDocIds.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
-        val permissionFilter = if (groupDocUuids.isEmpty()) "" else
-            """ AND (document_wrapper.id = ANY(('{$groupDocUuidsString}')) 
-                    OR ('{$groupDocUuidsString}') && document_wrapper.path)
+        val permissionFilter = if (groupDocIds.isEmpty()) "" else
+            """ AND (document_wrapper.id = ANY(('{$groupDocIdsString}')) 
+                    OR ('{$groupDocIdsString}') && document_wrapper.path)
             """.trimIndent()
 
         val deletedFilter = "document_wrapper.deleted = 0 AND "
@@ -134,7 +134,7 @@ class ResearchService {
 
     private fun createCatalogFilter(catalogId: String): String {
 
-        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId'"
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 
@@ -196,7 +196,7 @@ class ResearchService {
             .addScalar("modified")
             .addScalar("draft")
             .addScalar("category")
-            .addScalar("id")
+            .addScalar("wrapperid")
             .resultList as List<Array<out Any?>>
     }
 
