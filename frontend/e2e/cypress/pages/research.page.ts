@@ -30,6 +30,18 @@ export class ResearchPage {
       });
   }
 
+  static getSearchResultCountZeroIncluded(): Chainable<number> {
+    cy.wait(500);
+    return cy
+      .get('.result')
+      .contains(/[0-9]+ Ergebnisse gefunden/)
+      .then($node => {
+        // extract number from string like '12 Ergebnisse gefunden'
+
+        return parseInt($node.text().trim().split(' ')[0]);
+      });
+  }
+
   static checkNoSearchResults() {
     cy.get('.result').contains('0 Ergebnisse gefunden');
   }
