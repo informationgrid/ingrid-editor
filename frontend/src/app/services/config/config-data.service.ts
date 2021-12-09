@@ -51,6 +51,7 @@ export class ConfigDataService {
               : {},
             catalogProfile: json.catalogProfile,
             version: json.version,
+            externalHelp: json.externalHelp,
             lastLogin: new Date(json.lastLogin),
             useElasticsearch: json.useElasticsearch,
             permissions: json.permissions,
@@ -93,6 +94,7 @@ export class ConfigDataService {
             catalogProfile: undefined,
             currentCatalog: undefined,
             version: undefined,
+            externalHelp: undefined,
             useElasticsearch: false,
             permissions: [],
           };

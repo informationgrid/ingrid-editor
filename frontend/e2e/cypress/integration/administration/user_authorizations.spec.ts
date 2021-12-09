@@ -66,7 +66,7 @@ describe('Meta data administrator without groups', () => {
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
@@ -75,7 +75,7 @@ describe('Meta data administrator without groups', () => {
     cy.get('.result').contains('0 Ergebnisse gefunden');
     // Make sure triggering search doesn't deliver search results
     ResearchPage.search('test');
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
@@ -439,7 +439,7 @@ describe('Meta data administrator with a group', () => {
     // Go to Research section and make sure search doesn't return removed document
     ResearchPage.visit();
     ResearchPage.search('test_c, test_c');
-    ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('if metadata admin deletes one of his assigned groups, he should not be able to see the documents of this group', () => {
@@ -559,7 +559,7 @@ describe('Meta data administrator with a group', () => {
     // search and expect to not get a result
     ResearchPage.visit();
     ResearchPage.search(docName);
-    ResearchPage.getSearchResultCountZeroIncluded().should('equal', 0);
+    ResearchPage.checkNoSearchResults();
     // make sure display of documents has been actualized
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);

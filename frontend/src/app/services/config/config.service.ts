@@ -38,6 +38,7 @@ export interface UserInfo {
   currentCatalog: Catalog;
   lastLogin?: Date;
   version: Version;
+  externalHelp?: string;
 
   useElasticsearch?: boolean;
   permissions: string[];

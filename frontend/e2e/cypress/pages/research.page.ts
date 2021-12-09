@@ -42,6 +42,10 @@ export class ResearchPage {
       });
   }
 
+  static checkNoSearchResults() {
+    cy.get('.result').contains('0 Ergebnisse gefunden');
+  }
+
   static setDocumentTypeSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
     cy.intercept('**/api/search/query').as('query');

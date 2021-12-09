@@ -25,6 +25,7 @@ export class MainHeaderComponent implements OnInit {
   timeout$ = this.session.select("sessionTimeoutIn");
   initials: string;
   isAdmin: boolean;
+  externalHelp: string;
 
   constructor(
     private configService: ConfigService,
@@ -38,6 +39,7 @@ export class MainHeaderComponent implements OnInit {
     let userInfo = this.configService.$userInfo.getValue();
     this.isAdmin = this.configService.isAdmin();
     this.version = userInfo?.version;
+    this.externalHelp = userInfo?.externalHelp;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       map((userInfo) => userInfo?.currentCatalog?.label)

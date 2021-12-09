@@ -126,9 +126,18 @@
                     >
                     <mat-divider></mat-divider>
                 </span>
-                <span mat-menu-item>Hilfe</span>
+                <a
+                    *ngIf="externalHelp"
+                    mat-menu-item
+                    href="{{ externalHelp }}"
+                    target="_blank"
+                    >Hilfe</a
+                >
+                <span *ngIf="!externalHelp" mat-menu-item>Hilfe</span>
+                <!--
                 <mat-divider></mat-divider>
                 <span mat-menu-item>Über INGRID EDITOR</span>
+                -->
                 <mat-divider></mat-divider>
                 <div class="versioninfo">
                     <div>Version</div>

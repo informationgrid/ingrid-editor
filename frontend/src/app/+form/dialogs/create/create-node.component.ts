@@ -46,6 +46,7 @@ export class CreateNodeComponent implements OnInit {
   title = "Neuen Ordner anlegen";
   parent: string = null;
   forAddress: boolean;
+  addressOnlyOrganization = false;
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
@@ -204,6 +205,9 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private initializeForAddresses() {
+    if (this.config.$userInfo.getValue().currentCatalog.type === "mcloud") {
+      this.addressOnlyOrganization = true;
+    }
     this.formGroup = this.fb.group(
       {
         firstName: [""],

@@ -11,5 +11,6 @@ data class GeneralProperties(
     val enableCors: Boolean,
     val enableHttps: Boolean,
     val markInsteadOfDelete: Boolean,
-    val host: String
+    val host: String,
+    val externalHelp: String?
 )

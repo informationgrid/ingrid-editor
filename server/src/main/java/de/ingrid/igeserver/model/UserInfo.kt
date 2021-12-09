@@ -15,6 +15,7 @@ data class UserInfo(
     val currentCatalog: Catalog?,
     val version: Version,
     val lastLogin: Date?,
+    val externalHelp: String?,
     val useElasticsearch: Boolean?,
     val permissions: List<String>
 )

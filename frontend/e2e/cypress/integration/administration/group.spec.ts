@@ -199,7 +199,7 @@ describe('Group', () => {
     // Go to Research section and make sure search doesn't return removed document
     ResearchPage.visit();
     ResearchPage.search('Elsass, Adresse');
-    ResearchPage.getSearchResultCountZeroIncluded().should('eq', 0);
+    ResearchPage.checkNoSearchResults();
   });
 
   it('should be possible to jump between groups and associated users', () => {

@@ -1,17 +1,25 @@
+<ng-template #label>
+    <div
+        [class.hasContextHelp]="to.hasContextHelp"
+        [class.required]="to.required"
+    >
+        <ige-form-label
+            [hasContextHelp]="to?.hasContextHelp"
+            (contextHelp)="showContextHelp($event)"
+        >
+            {{ to?.externalLabel }}<span *ngIf="to?.required">*</span>
+        </ige-form-label>
+    </div>
+</ng-template>
+
 <div
     *ngIf="dataSource?.data?.length > 0"
     class="table-header"
-    [class.hasContextHelp]="to.hasContextHelp"
-    [class.required]="to.required"
     fxLayout
-    data-cy="{{ to.externalLabel }}-header"
+    [attr.data-cy]="to?.externalLabel + '-header'"
 >
-    <ige-form-label
-        [hasContextHelp]="to.hasContextHelp"
-        (contextHelp)="showContextHelp($event)"
-    >
-        {{ to.externalLabel }}<span *ngIf="to.required">*</span>
-    </ige-form-label>
+    <ng-container *ngTemplateOutlet="label"></ng-container>
+
     <ng-container *ngIf="formControl.enabled">
         <div fxFlex></div>
         <button
@@ -199,7 +207,9 @@
 </div>
 
 <div *ngIf="formControl.enabled" class="display-flex">
-    <ige-form-label></ige-form-label>
+    <ige-form-label
+        *ngIf="dataSource?.data?.length > 0; else label"
+    ></ige-form-label>
 
     <div class="button-wrapper">
         <button

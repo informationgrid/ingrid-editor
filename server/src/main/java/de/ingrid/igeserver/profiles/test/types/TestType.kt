@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 class TestType : EntityType() {
 
     override val className = "TestDoc"
-    override val profiles = listOf("mcloud").toTypedArray()
+    override val profiles = listOf("mcloud", "test").toTypedArray()
 
     val log = logger()
 
