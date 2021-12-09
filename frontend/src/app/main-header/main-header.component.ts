@@ -40,8 +40,6 @@ export class MainHeaderComponent implements OnInit {
     this.isAdmin = this.configService.isAdmin();
     this.version = userInfo?.version;
     this.externalHelp = userInfo?.externalHelp;
-    console.log("ExternalHelp: " + this.externalHelp);
-    console.log(userInfo);
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       map((userInfo) => userInfo?.currentCatalog?.label)
