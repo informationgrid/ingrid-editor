@@ -11,7 +11,7 @@ describe('Dashboard', () => {
   });
 
   it('should be shown as initial page when visiting app', () => {
-    cy.get('.welcome').should('contain.text', 'Guten Morgen');
+    cy.get('.welcome').should('contain.text', 'Guten Tag');
     cy.url().should('include', '/dashboard');
   });
 
@@ -76,9 +76,9 @@ describe('Dashboard', () => {
 
   describe('Search', () => {
     it('should open a document from a quick search result', () => {
-      DashboardPage.search('Feature-Übersicht');
+      DashboardPage.search('TestDocResearch3');
       DashboardPage.getSearchResult(1).click();
-      cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+      cy.get(DocumentPage.title).should('have.text', 'TestDocResearch3');
     });
 
     it('should show empty search input field when clicking on x-button', function () {

@@ -57,7 +57,7 @@ describe('Search', function () {
   });
 
   it('should open a document after clicking a searchresult', () => {
-    const docname = 'Feature-Übersicht';
+    const docname = 'TestDocResearch3';
     DashboardPage.search(docname);
     cy.get('.highlight').click();
     cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', docname);

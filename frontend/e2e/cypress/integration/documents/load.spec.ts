@@ -42,20 +42,20 @@ describe('Load documents', () => {
 
   it('should open a document from a tree search result on form page', () => {
     DocumentPage.visit();
-    DocumentPage.search('Feature-Übersicht');
+    DocumentPage.search('TestDocResearch1');
     // make sure search for complete search term is dispatched so that the first item of suggestion list is indeed the best match
-    cy.intercept('GET', '/api/datasets?query=' + encodeURIComponent('Feature-Übersicht') + '*').as('suggestionRequest');
+    cy.intercept('GET', '/api/datasets?query=' + encodeURIComponent('TestDocResearch1') + '*').as('suggestionRequest');
     cy.wait('@suggestionRequest');
     DocumentPage.getSearchResult().click();
-    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+    cy.get(DocumentPage.title).should('have.text', 'TestDocResearch1');
   });
 
   it('should open the previously selected document when going to another page and returning', function () {
     DocumentPage.visitSingleDoc();
-    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+    cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
     cy.get(DocumentPage.Sidemenu.Uebersicht).click();
     cy.get(DocumentPage.Sidemenu.Adressen).click();
     cy.get(DocumentPage.Sidemenu.Daten).click();
-    cy.get(DocumentPage.title).should('have.text', 'Feature-Übersicht');
+    cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
   });
 });

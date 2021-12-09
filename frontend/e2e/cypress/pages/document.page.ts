@@ -73,7 +73,7 @@ export class DocumentPage extends BasePage {
   }
 
   static visitSingleDoc() {
-    cy.visit('form;id=7e9687e8-43f4-4b95-bdcb-27647197a8cb');
+    cy.visit('form;id=d94575fa-1da9-4bfb-a4dc-3bbfcc4b49b3');
   }
 
   static createDocument(docName: string) {
