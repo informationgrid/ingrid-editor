@@ -115,7 +115,7 @@ describe('Dashboard', () => {
       cy.get('.shortcut').contains('Neue Adresse').click();
 
       const instuteName = 'Test Adresse aus dashboard button ' + Utils.randomString();
-      AddressPage.CreateDialog.fill(new Address('', '', instuteName));
+      AddressPage.CreateDialog.fill(new Address(instuteName, '', ''));
       cy.get('[data-cy=create-action]').click();
 
       cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instuteName);

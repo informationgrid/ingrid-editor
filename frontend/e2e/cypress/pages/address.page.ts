@@ -3,15 +3,19 @@ import { Tree } from './tree.partial';
 import { Utils } from './utils';
 
 export class Address {
-  constructor(public firstName?: string, public lastName?: string, public organization?: string) {}
+  constructor(
+    public organization = 'Organization' + Utils.randomString(),
+    public firstName?: string,
+    public lastName?: string
+  ) {}
 }
 export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
   static CreateDialog = class extends DocumentPage.CreateDialog {
     static fill(address: Address, targetTreePath: string[] = ['Adressen']) {
-      AddressPage.type('create-address-firstName', address.firstName);
-      AddressPage.type('create-address-lastName', address.lastName);
+      /*AddressPage.type('create-address-firstName', address.firstName);
+      AddressPage.type('create-address-lastName', address.lastName);*/
       AddressPage.type('create-address-organization', address.organization);
 
       if (targetTreePath[0] == 'Adressen') {
@@ -39,6 +43,14 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').click();
     cy.get('mat-option').contains(chooseContact).click();
     cy.get('[data-cy=Kontakt] input').type(connection);
+  }
+
+  static addOrganizationName(name: string = 'Organization' + Utils.randomString()) {
+    cy.get("[data-cy='create-address-organization']").type(name);
+  }
+
+  static addStreetName(name: string = Utils.randomdoubleDigitString() + '. Street') {
+    cy.get('[data-cy="Adresse"] input').first().type(name);
   }
 
   static createAddress(address: Address, targetTreePath?: string[]) {

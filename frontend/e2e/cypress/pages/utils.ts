@@ -3,6 +3,10 @@ export class Utils {
     return ' - ' + Math.random().toString(36).substring(2, 5);
   }
 
+  static randomdoubleDigitString(): string {
+    return Math.floor(Math.random() * 100).toString();
+  }
+
   static getFormattedDate(date: Date): string {
     let day = date.getDate().toString();
     if (day.length === 1) {
