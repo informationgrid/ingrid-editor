@@ -151,6 +151,16 @@ springBoot {
     buildInfo()
 }
 
+if (hasProperty('filename')) {
+    bootJar {
+        archiveFileName=getProperty('filename')
+    }
+}
+
+jar {
+    enabled = false
+}
+
 allOpen {
     annotation("javax.persistence.Entity")
 }
