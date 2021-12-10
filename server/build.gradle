@@ -219,7 +219,7 @@ hibernate {
     }
 }
 
-if (hasProperty('buildProfile')) {
+if (hasProperty('buildDockerImage')) {
     //tasks.assemble.dependsOn tasks.jibDockerBuild
     tasks.assemble.dependsOn tasks.jib
 }
