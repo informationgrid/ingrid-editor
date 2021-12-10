@@ -92,8 +92,11 @@ export function ConfigLoader(
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
           "Fehler bei der Initialisierung";
+
         if (err.status === 504) {
           throw new IgeError("Backend ist wohl nicht gestartet");
+        } else if (err instanceof IgeError) {
+          throw err;
         }
         throw new IgeError(err);
       });
