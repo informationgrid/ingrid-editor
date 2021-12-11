@@ -1,5 +1,5 @@
 {
-  "backendUrl": "/api/",
+  "contextPath": "/",
   "brokerUrl": null,
   "featureFlags": {
     "AP3": true,

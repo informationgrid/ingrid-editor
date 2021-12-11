@@ -1,5 +1,5 @@
 {
-  "backendUrl": "/api/",
+  "contextPath": "/",
   "brokerUrl": "ws://localhost:8550/ws",
   "featureFlags": {
     "AP3": true,

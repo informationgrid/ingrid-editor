@@ -10,7 +10,7 @@ export class ConfigDataService {
 
   constructor(private httpClient: HttpClient) {}
 
-  private getEnvironmentConfig(): Promise<any> {
+  private getEnvironmentConfig(): Promise<Configuration> {
     return this.httpClient.get<any>(environment.configFile).toPromise();
   }
 
@@ -24,7 +24,7 @@ export class ConfigDataService {
   async load(): Promise<any> {
     const config = await this.getEnvironmentConfig();
     return this.httpClient
-      .get<any>(config.backendUrl + "config")
+      .get<any>(config.contextPath + "api/config")
       .pipe(map((data) => ({ ...config, ...data })))
       .toPromise();
   }
