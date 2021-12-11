@@ -23,6 +23,11 @@
                 "output": "/assets"
               },
               {
+                "glob": "**/*.json",
+                "input": "src/profiles",
+                "output": "/assets"
+              },
+              {
                 "glob": "favicon.ico",
                 "input": "src",
                 "output": "/"

@@ -1,0 +1,15 @@
+{
+  "menu": {
+    "dashboard": "Übersicht",
+    "documents": "Daten",
+    "addresses": "Adressen",
+    "research": "Recherche",
+    "reports": "Reports",
+    "user": "Nutzer & Rechte",
+    "import_export": "Import / Export",
+    "catalog": "Katalog"
+  },
+  "dashboard": {
+    "welcome": "Guten Tag! Willkommen zurück."
+  }
+}

@@ -1,6 +1,6 @@
-<div fxFlex fxLayout="column">
+<div fxFlex fxLayout="column" *transloco="let t; read: 'dashboard'">
     <div class="welcome">
-        <div>Guten Tag! Willkommen zurück.</div>
+        <div>{{ t("welcome") }}</div>
     </div>
 
     <div class="dashboard-content">

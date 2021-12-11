@@ -1,9 +1,14 @@
-<mat-nav-list fxFlex fxLayout="column" [class.collapsed]="!menuIsExpanded">
+<mat-nav-list
+    fxFlex
+    fxLayout="column"
+    [class.collapsed]="!menuIsExpanded"
+    *transloco="let t; read: 'menu'"
+>
     <a
         mat-list-item
         *ngFor="let item of menuItems | async"
         [routerLink]="item.path"
-        [matTooltip]="item.data?.title"
+        [matTooltip]="t(item.data?.title)"
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
         [matTooltipShowDelay]="1000"
@@ -11,7 +16,7 @@
         [class.active]="currentRoute?.indexOf(item.path) === 0"
     >
         <mat-icon mat-list-icon [svgIcon]="item.data?.icon"> </mat-icon>
-        <p mat-line>{{ item.data?.title }}</p>
+        <p mat-line>{{ t(item.data?.title) }}</p>
     </a>
 
     <div class="fillVertical"></div>

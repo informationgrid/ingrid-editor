@@ -40,6 +40,7 @@
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^0.4.6",
     "@ngneat/dirty-check-forms": "^1.1.0",
+    "@ngneat/transloco": "3.1.1",
     "@ngneat/until-destroy": "^8.1.4",
     "@ngx-formly/core": "5.10.21",
     "@ngx-formly/material": "5.10.21",
