@@ -50,6 +50,11 @@ export interface UserInfo {
 export class ConfigService {
   private config: Configuration;
 
+  defaultConfig: Partial<Configuration> = {
+    backendUrl: "/api/",
+    featureFlags: {},
+  };
+
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
 
   private dataService: ConfigDataService;
@@ -63,7 +68,7 @@ export class ConfigService {
     console.log("=== ConfigService ===");
 
     return this.dataService.load().then((json) => {
-      this.config = json;
+      this.config = { ...this.defaultConfig, ...json };
       this.dataService.config = this.config;
       return this.config;
     });

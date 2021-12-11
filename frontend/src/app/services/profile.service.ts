@@ -6,7 +6,6 @@ import { ProfileStore } from "../store/profile/profile.store";
 import { ProfileAbstract } from "../store/profile/profile.model";
 import { IgeDocument } from "../models/ige-document";
 import { ContextHelpService } from "./context-help/context-help.service";
-import { ContextHelpQuery } from "../store/context-help/context-help.query";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 
@@ -78,11 +77,7 @@ export class ProfileService {
 
   registerProfiles(doctypes: Doctype[]) {
     console.log("Registering profile");
-    const notForDemo =
-      this.configService.getConfiguration().featureFlags["NotForDemo"];
-    this.doctypes = notForDemo
-      ? doctypes
-      : doctypes.filter((type) => type.id !== "TestDoc");
+    this.doctypes = doctypes;
 
     // TODO: get ContextHelpIDs of all document types at once to improve speed
     const profile = this.configService.$userInfo.value.currentCatalog.type;
