@@ -21,10 +21,14 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     return this.configService.$userInfo.pipe(
       switchMap((info) => {
         const profile = info?.currentCatalog?.type;
+        const assetsDir =
+          this.configService.getConfiguration().contextPath + "assets";
 
         return combineLatest([
-          this.http.get<Translation>(`/assets/i18n/${lang}.json`),
-          this.http.get<Translation>(`/assets/${profile}/i18n/${lang}.json`),
+          this.http.get<Translation>(`${assetsDir}/i18n/${lang}.json`),
+          this.http.get<Translation>(
+            `${assetsDir}/${profile}/i18n/${lang}.json`
+          ),
         ]).pipe(map((files) => ({ ...files[0], ...files[1] })));
       })
     );
