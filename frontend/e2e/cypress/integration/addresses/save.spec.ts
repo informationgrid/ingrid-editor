@@ -208,7 +208,7 @@ describe('General create addresses/folders', () => {
       const folderName = 'folder_to_be_deleted';
       AddressPage.visit();
       AddressPage.createFolder(folderName);
-      Tree.openNode([folderName]);
+
       cy.get(DocumentPage.title).should('have.text', folderName);
 
       // move folder to another folder (as subfolder)

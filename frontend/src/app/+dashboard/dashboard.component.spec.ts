@@ -18,6 +18,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
 import { SessionStore } from "../store/session.store";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
+import { TranslocoModule } from "@ngneat/transloco";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -29,6 +30,7 @@ describe("DashboardComponent", () => {
       MatFormFieldModule,
       MatCardModule,
       MatListModule,
+      TranslocoModule,
     ],
     declarations: [
       ChartComponent,

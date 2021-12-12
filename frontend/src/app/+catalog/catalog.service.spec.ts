@@ -25,6 +25,7 @@ describe("CatalogService", () => {
             "Test",
             "Client",
             false,
+            "/",
             "/api",
             null,
             null
