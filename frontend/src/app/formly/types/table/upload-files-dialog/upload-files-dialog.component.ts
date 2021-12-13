@@ -17,6 +17,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
+import { ConfigService } from "../../../../services/config/config.service";
 
 export interface LinkInfo {
   file: string;
@@ -31,7 +32,7 @@ export interface LinkInfo {
 })
 export class UploadFilesDialogComponent implements OnInit {
   chosenFiles: TransfersWithErrorInfo[] = [];
-  targetUrl = "/api/upload/";
+  targetUrl: string;
   docId = null;
   extractZipFiles = false;
 
@@ -40,10 +41,13 @@ export class UploadFilesDialogComponent implements OnInit {
     private dialog: MatDialog,
     formStateService: FormStateService,
     private uploadService: UploadService,
+    configService: ConfigService,
     @Inject(MAT_DIALOG_DATA) public data: { currentItems: any[] }
   ) {
     this.docId = formStateService.getForm().get("_id").value;
-    this.targetUrl += this.docId;
+    this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
+      this.docId
+    }`;
   }
 
   ngOnInit(): void {}
