@@ -1,8 +1,8 @@
 buildscript {
     ext.kotlin_version = '1.5.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.5.2'
-    ext.log4j2_version = '2.14.0'
-    ext.hibernate_version = '5.5.3.Final'
+    ext.spring_boot_version = '2.6.1'
+    ext.log4j2_version = '2.15.0'
+    ext.hibernate_version = '5.6.2.Final'
     ext.jackson_version = '2.12.3'
     ext.kotest_version = '4.6.0'
     repositories {
@@ -56,7 +56,7 @@ if (hasProperty('buildProfile')) {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.apache.logging.log4j:log4j-api-kotlin:1.0.0"
+    implementation "org.apache.logging.log4j:log4j-api-kotlin:1.1.0"
     //implementation "de.ingrid.portal:ingrid-upload-utils:1.0-SNAPSHOT"
     implementation "org.apache.tika:tika-core:1.22"
     implementation "org.glassfish.jersey.media:jersey-media-multipart:2.32"
@@ -96,12 +96,12 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'com.auth0:java-jwt:3.10.0'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.5.2' // Attention: also update SwaggerDocumentationConfig.kt
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.0' // Attention: also update SwaggerDocumentationConfig.kt
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.2.20'
     implementation "org.hibernate:hibernate-core:$hibernate_version"
-    implementation 'com.vladmihalcea:hibernate-types-52:2.11.0'
+    implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
     implementation('de.ingrid:ingrid-codelist-service:5.10.0') {

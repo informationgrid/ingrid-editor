@@ -13,26 +13,31 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
 
-@OpenAPIDefinition(info = Info(
+
+@OpenAPIDefinition(
+    info = Info(
         title = "IGE NG API",
         version = "v1",
         description = "This app provides REST APIs for the IGE NG",
-        contact = Contact(name = "André Wallat", email = "andre.wallat@wemove.com", url = "https://www.wemove.com")),
-        servers = [
-            Server(url = "http://localhost:8550", description = "Local Server"),
-            Server(url = "https://ige-ng.informationgrid.eu/", description = "Test Server")
-        ])
+        contact = Contact(name = "André Wallat", email = "andre.wallat@wemove.com", url = "https://www.wemove.com")
+    ),
+    servers = [
+        Server(url = "http://localhost:8550", description = "Local Server"),
+        Server(url = "https://ige-ng.informationgrid.eu/", description = "Test Server")
+    ]
+)
 @Configuration
 open class SwaggerDocumentationConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
-                .allowedMethods(
-                        HttpMethod.GET.toString(),
-                        HttpMethod.POST.toString(),
-                        HttpMethod.PUT.toString(),
-                        HttpMethod.DELETE.toString(),
-                        HttpMethod.OPTIONS.toString())
-                .allowedOrigins("*")
+            .allowedMethods(
+                HttpMethod.GET.toString(),
+                HttpMethod.POST.toString(),
+                HttpMethod.PUT.toString(),
+                HttpMethod.DELETE.toString(),
+                HttpMethod.OPTIONS.toString()
+            )
+            .allowedOrigins("*")
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
@@ -44,9 +49,9 @@ open class SwaggerDocumentationConfig : WebMvcConfigurer {
         val basePath = ""
         // Attention: update resource locations when changing springdoc-openapi-ui
         registry.addResourceHandler("$basePath/swagger-ui/index.html**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/index.html")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.1.3/index.html")
         registry.addResourceHandler("$basePath/swagger-ui/*")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.1.3/")
         registry.addResourceHandler("/**/*")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
