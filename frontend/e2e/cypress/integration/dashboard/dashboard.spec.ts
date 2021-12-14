@@ -11,7 +11,7 @@ describe('Dashboard', () => {
   });
 
   it('should be shown as initial page when visiting app', () => {
-    cy.get('.welcome').should('contain.text', 'Guten Tag');
+    cy.get('.welcome').should('contain.text', 'Willkommen');
     cy.url().should('include', '/dashboard');
   });
 
