@@ -20,6 +20,7 @@ export class ResearchPage {
    * Returns the searchresultcount. Fails if searchresultcount is 0
    */
   static getSearchResultCount(): Chainable<number> {
+    cy.wait(500);
     return cy
       .get('.result')
       .contains(/[1-9][0-9]* Ergebnisse gefunden/)
