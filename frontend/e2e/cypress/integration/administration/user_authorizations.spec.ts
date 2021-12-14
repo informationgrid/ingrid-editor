@@ -737,7 +737,7 @@ describe('Catalogue admin', () => {
             // get number of the groups catalog admin
             let txtCatalog = $txtCatalog.text();
             let matchesCatalog = txtCatalog.match(regex);
-            expect(matchesCatalog![0]).to.eq(matches![0]);
+            cy.wrap(matchesCatalog![0]).should('eq', matches![0]);
           });
       });
   });
