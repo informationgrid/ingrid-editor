@@ -139,7 +139,8 @@ describe('Meta data administrator with a group', () => {
     // works right now, changes necessary -> either add organisation in test or adjust db
     AddressPage.visit();
     //Tree.openNode(['Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
-    Tree.openNode(['Organisation_2']);
+    AddressPage.createAddress(new Address('Organisation_2', '', ''), ['Ordner_2.Ebene_C']);
+    Tree.openNode(['Ordner_2.Ebene_C', 'Organisation_2']);
     AddressPage.addContact();
     /*AddressPage.addTitleToProfile('Dr.');*/
     cy.wait(500);
@@ -148,7 +149,7 @@ describe('Meta data administrator with a group', () => {
     // open a random address
     Tree.openNode(['Aquitanien, Adresse']);
     // come back to initial, edited address and make sure it has been changed
-    Tree.openNode(['Organisation_2']);
+    Tree.openNode(['Ordner_2.Ebene_C', 'Organisation_2']);
     cy.contains('.required ige-repeat', 'Telefon');
   });
 
