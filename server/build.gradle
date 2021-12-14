@@ -130,6 +130,15 @@ dependencies {
     }
 }
 
+dependencyManagement {
+    dependencies {
+        dependency 'org.elasticsearch:elasticsearch:6.8.4'
+        dependency 'org.elasticsearch.client:elasticsearch-rest-client:6.8.4'
+        dependency 'org.elasticsearch.plugin:transport-netty4-client:6.8.4'
+        dependency 'org.elasticsearch.client:transport:6.8.4'
+    }
+}
+
 configurations {
     all {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
