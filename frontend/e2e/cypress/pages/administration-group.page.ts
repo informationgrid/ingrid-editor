@@ -97,6 +97,17 @@ export class AdminGroupPage extends BasePage {
     cy.get('permission-add-dialog');
   }
 
+  static addNestedDocumentToGroup(arrayPath: string[], docType: string) {
+    this.openAddDocumentsDialog(docType);
+    cy.get('permission-add-dialog');
+    for (const docName of arrayPath) {
+      cy.contains('mat-tree-node', docName).click();
+    }
+    cy.intercept('GET', '/api/datasets/**').as('waitRequest');
+    cy.get('mat-dialog-actions button').contains('Hinzufügen').click();
+    cy.wait('@waitRequest');
+  }
+
   static addDocumentToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');

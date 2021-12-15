@@ -135,30 +135,51 @@ describe('Read Only Documents', () => {
   });
 
   it('should not be able to edit fields in read only document #3512', function () {
-    const readOnlyFolder = 'Ordner_Ebene_2C';
-    const documentName = 'Datum_Ebene_4_7';
+    // logout
+    cy.kcLogout();
+
+    // login as super admin
+    cy.kcLogin('user');
+
+    // create a folder
+    // create a document inside the folder
+    const documentName = 'document-for-meta2';
+    const groupName = 'group-for-meta2';
+    const parentFolder = 'folder-for-meta2';
+
+    // go to groups create  a group
+    // add the document group
+    // assign the group to user
+    DocumentPage.visit();
+    DocumentPage.createFolder(parentFolder);
+    Tree.openNode([parentFolder]);
+    DocumentPage.createDocument(documentName);
+
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    cy.get('.user-title').contains('test_gruppe_1');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
+    AdminGroupPage.addNewGroup(groupName);
+    AdminGroupPage.addNestedDocumentToGroup([parentFolder, documentName], 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+    cy.get('.user-title').contains(groupName);
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.toolbarSaveGroup();
 
+    // assign the group to user meta2
+    AdminUserPage.goToTabmenu(UserAndRights.User);
+    AdminUserPage.selectUser('MetaAdmin mitGruppen');
+    AdminUserPage.addGroupToUser(groupName);
+    AdminUserPage.toolbarSaveUser();
+
+    // logout from super user and login as meta2
+    cy.kcLogout();
+    cy.kcLogin('meta2');
     DocumentPage.visit();
     // try to copy a document to the read-only folder
-    Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D', documentName]);
+    Tree.openNode([documentName]);
 
     // if editing is forbidden, the first and second text areas should be disabled
     cy.get('textarea').eq(1).should('be.disabled');
     cy.get('textarea').eq(2).should('be.disabled');
-
-    // set access right back to 'write'
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    cy.get('.user-title').contains('test_gruppe_1');
-    UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
   });
 });
