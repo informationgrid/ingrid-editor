@@ -17,17 +17,23 @@ describe('Read Only Documents', () => {
   // tested in dashboard
   // it('should load a document from dashboard', () => {
   it('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
+    let tempLocalFile = 'tempLocalFile';
+    let groupName = 'gruppe_mit_ortsrechten';
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A']);
+    DocumentPage.createDocument(tempLocalFile);
+
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    cy.get('.user-title').contains('test_gruppe_1');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead('Ordner_Ebene_2C', 'Daten');
+    AdminGroupPage.selectGroup(groupName);
+    cy.get('.user-title').contains(groupName);
+    UserAuthorizationPage.changeAccessRightFromWriteToRead('Ordner_Ebene_2A', 'Daten');
     AdminGroupPage.toolbarSaveGroup();
 
     // try to edit
     DocumentPage.visit();
-    Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3C', 'Datum_Ebene_4_5']);
+    Tree.openNode(['Ordner_Ebene_2A', tempLocalFile]);
     // if editing is forbidden, the form fields are disabled
     cy.get('mat-form-field.mat-form-field-disabled');
 
@@ -41,9 +47,9 @@ describe('Read Only Documents', () => {
     // set access right back to 'write'
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    cy.get('.user-title').contains('test_gruppe_1');
-    UserAuthorizationPage.changeAccessRightFromReadToWrite('Ordner_Ebene_2C', 'Daten');
+    AdminGroupPage.selectGroup(groupName);
+    cy.get('.user-title').contains(groupName);
+    UserAuthorizationPage.changeAccessRightFromReadToWrite('Ordner_Ebene_2A', 'Daten');
     AdminGroupPage.toolbarSaveGroup();
   });
 
