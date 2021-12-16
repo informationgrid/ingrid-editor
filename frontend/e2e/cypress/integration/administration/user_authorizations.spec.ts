@@ -136,18 +136,21 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin should be able to edit an address of his assigned groups', () => {
+    // works right now, changes necessary -> either add organisation in test or adjust db
     AddressPage.visit();
-    Tree.openNode(['Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
+    //Tree.openNode(['Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
+    AddressPage.createAddress(new Address('Organisation_2', '', ''), ['Ordner_2.Ebene_C']);
+    Tree.openNode(['Ordner_2.Ebene_C', 'Organisation_2']);
     AddressPage.addContact();
-    AddressPage.addTitleToProfile('Dr.');
+    /*AddressPage.addTitleToProfile('Dr.');*/
     cy.wait(500);
-    AddressPage.saveChangesOfProfile('Pays-Basque, Adresse');
+    AddressPage.saveChangesOfProfile('Organisation_2');
 
     // open a random address
     Tree.openNode(['Aquitanien, Adresse']);
     // come back to initial, edited address and make sure it has been changed
-    Tree.openNode(['Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
-    cy.contains('.mat-select-trigger', 'Dr.');
+    Tree.openNode(['Ordner_2.Ebene_C', 'Organisation_2']);
+    cy.contains('.required ige-repeat', 'Telefon');
   });
 
   it('meta data admin should be able to edit data documents of his assigned groups', () => {
@@ -643,15 +646,12 @@ describe('Catalogue admin', () => {
 
     // create root address
     AddressPage.visit();
+    let organizationName = 'Organisation' + Utils.randomString();
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
-    cy.get('[data-cy=create-address-firstName]').type('Hans');
-    cy.get('[data-cy=create-address-lastName]').type('Müller');
-    cy.get('[data-cy=create-address-organization]').type('Irgendeine_organisation');
+    AddressPage.addOrganizationName(organizationName);
     cy.get('[data-cy=create-action]').click();
-    cy.get('.firstName input').should('have.value', 'Hans');
-    cy.get('.lastName input').should('have.value', 'Müller');
-    DocumentPage.title = 'Irgendeine_organisation, Müller, Hans';
+    DocumentPage.title = organizationName;
   });
 
   it('catalogue admin should be able to see everything', () => {
@@ -737,7 +737,7 @@ describe('Catalogue admin', () => {
             // get number of the groups catalog admin
             let txtCatalog = $txtCatalog.text();
             let matchesCatalog = txtCatalog.match(regex);
-            expect(matchesCatalog![0]).to.eq(matches![0]);
+            cy.wrap(matchesCatalog![0]).should('eq', matches![0]);
           });
       });
   });

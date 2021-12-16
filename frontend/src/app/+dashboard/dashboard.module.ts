@@ -17,6 +17,7 @@ import { MatListModule } from "@angular/material/list";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatMenuModule } from "@angular/material/menu";
+import { TranslocoModule } from "@ngneat/transloco";
 
 const routes: Routes = [
   {
@@ -43,6 +44,7 @@ const routes: Routes = [
     MatListModule,
     MatAutocompleteModule,
     MatMenuModule,
+    TranslocoModule,
   ],
   declarations: [
     DashboardComponent,

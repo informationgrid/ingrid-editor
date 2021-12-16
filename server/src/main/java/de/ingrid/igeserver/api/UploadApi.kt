@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.mdek.upload.UploadResponse
+import de.ingrid.mdek.upload.storage.ConflictHandling
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -46,7 +47,7 @@ interface UploadApi {
         principal: Principal,
         @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
         @Parameter(description = "The file to be extracted", required = true) @PathVariable("file") file: String,
-        @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
+        @Parameter(description = "How to handle with Conflicts during Extraction.") @RequestParam(value = "conflict", required = false, defaultValue = "EXCEPTION") conflictHandling: ConflictHandling,
     ): ResponseEntity<UploadResponse>
 
     @GetMapping(value = ["/upload/{docId}/**"])

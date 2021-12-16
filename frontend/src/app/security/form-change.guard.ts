@@ -35,6 +35,14 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
+    // ignore navigate when navigating to the base page url
+    // as the current route results is the same as the previous one
+    // after the redirect
+    if (
+      FormChangeDeactivateGuard.basepageIsNext(currentState.url, nextState.url)
+    ) {
+      return of(false);
+    }
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
     if (
@@ -91,6 +99,10 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       await this.documentService
         .save(form, false, isAddress, null, true)
         .toPromise();
+      this.documentService.reload$.next({
+        id: currentId,
+        forAddress: isAddress,
+      });
     } else if (action === "stay") {
       this.treeService.selectTreeNode(isAddress, currentId);
     } else {
@@ -103,7 +115,11 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
 
   private static pageIsNotLeft(currentUrl: string, nextUrl: string) {
     let currentPrefix = currentUrl.substring(0, 5);
-
     return nextUrl.indexOf(currentPrefix) === 0;
+  }
+
+  private static basepageIsNext(currentUrl: string, nextUrl: string) {
+    let currentPrefix = currentUrl.substring(0, 5);
+    return nextUrl === currentPrefix;
   }
 }

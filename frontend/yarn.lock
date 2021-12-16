@@ -1975,6 +1975,26 @@
     replace-in-file "^6.2.0"
     tslib "^2.0.0"
 
+"@ngneat/transloco-utils@^3.0.1":
+  version "3.0.2"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/transloco-utils/-/transloco-utils-3.0.2.tgz#43470e314d4815eab82a5247ff3123992d2fec3c"
+  integrity sha512-NItuBldCJPfQ1FtDcbTQUGbOtfYjdoNC/IIV+M0jeUqzeKCZCYh5ajwTYhLXSXhMhG4nH4QNWCADOKwOAOVuRg==
+  dependencies:
+    cosmiconfig "^7.0.0"
+    tslib "^2.3.0"
+
+"@ngneat/transloco@3.1.1":
+  version "3.1.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/transloco/-/transloco-3.1.1.tgz#c1c08803811647c6241e38b69cbd3c7896414b43"
+  integrity sha512-AcZQzupOELLbfIHfaSz0ewxeigAfqJKK2DCzvOsSaUHNuJGqcLk5FvltX3HX+vlDe0liURzYtYvew9j59QF/+w==
+  dependencies:
+    "@ngneat/transloco-utils" "^3.0.1"
+    flat "5.0.2"
+    lodash.kebabcase "^4.1.1"
+    ora "^5.4.1"
+    replace-in-file "^6.2.0"
+    tslib "^2.2.0"
+
 "@ngneat/until-destroy@^8.1.4":
   version "8.1.4"
   resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-8.1.4.tgz#00be5396f4c1417987d09aff227c15031f5473a8"
@@ -4774,6 +4794,11 @@ find-up@^4.0.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
+flat@5.0.2:
+  version "5.0.2"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"
+  integrity sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==
+
 flatted@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
@@ -6227,6 +6252,11 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
+lodash.kebabcase@^4.1.1:
+  version "4.1.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/lodash.kebabcase/-/lodash.kebabcase-4.1.1.tgz#8489b1cb0d29ff88195cceca448ff6d6cc295c36"
+  integrity sha1-hImxyw0p/4gZXM7KRI/21swpXDY=
+
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -7147,6 +7177,21 @@ ora@5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/ora/-/ora-5.4.0.tgz#42eda4855835b9cd14d33864c97a3c95a3f56bf4"
   integrity sha512-1StwyXQGoU6gdjYkyVcqOLnVlbKj+6yPNNOxJVgpt9t4eksKjiriiHuxktLYkgllwk+D6MbC4ihH84L1udRXPg==
+  dependencies:
+    bl "^4.1.0"
+    chalk "^4.1.0"
+    cli-cursor "^3.1.0"
+    cli-spinners "^2.5.0"
+    is-interactive "^1.0.0"
+    is-unicode-supported "^0.1.0"
+    log-symbols "^4.1.0"
+    strip-ansi "^6.0.0"
+    wcwidth "^1.0.1"
+
+ora@^5.4.1:
+  version "5.4.1"
+  resolved "https://nexus.informationgrid.eu/repository/npm-group/ora/-/ora-5.4.1.tgz#1b2678426af4ac4a509008e5e4ac9e9959db9e18"
+  integrity sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ==
   dependencies:
     bl "^4.1.0"
     chalk "^4.1.0"

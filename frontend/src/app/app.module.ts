@@ -74,8 +74,9 @@ import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { RouteReuseStrategy } from "@angular/router";
-import { NgxFlowModule, FlowInjectionToken } from "@flowjs/ngx-flow";
+import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
+import { TranslocoRootModule } from "./transloco-root.module";
 
 registerLocaleData(de);
 
@@ -92,8 +93,11 @@ export function ConfigLoader(
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
           "Fehler bei der Initialisierung";
+
         if (err.status === 504) {
           throw new IgeError("Backend ist wohl nicht gestartet");
+        } else if (err instanceof IgeError) {
+          throw err;
         }
         throw new IgeError(err);
       });
@@ -163,6 +167,7 @@ export function ConfigLoader(
     MatMenuModule,
     SharedDocumentItemModule,
     FormFieldsModule,
+    TranslocoRootModule,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap

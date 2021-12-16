@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import de.ingrid.igeserver.model.FileInfo
+import de.ingrid.mdek.upload.storage.ConflictHandling
 import java.net.URLDecoder
 import javax.servlet.http.HttpServletRequest
 
@@ -144,7 +145,7 @@ class UploadApiController @Autowired constructor(
         principal: Principal,
         docId: String,
         file: String,
-        replace: Boolean
+        conflictHandling: ConflictHandling
     ): ResponseEntity<UploadResponse> {
         val canWrite = aclService.getPermissionInfo(principal as Authentication, docId.toInt()).canWrite
         if (!canWrite) {
@@ -155,7 +156,16 @@ class UploadApiController @Autowired constructor(
         val userID = principal.getName()
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val files = storage.extract(catalogId, userID, docId, file, replace)
+        if(conflictHandling != ConflictHandling.RENAME && conflictHandling != ConflictHandling.REPLACE){
+            try{
+                storage.checkExtractConflicts(catalogId, userID, docId, file)
+            }
+            catch (ex: ConflictException){
+                return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.CONFLICT)
+            }
+        }
+
+        val files = storage.extract(catalogId, userID, docId, file, conflictHandling)
 
         return this.createUploadResponse(files)
 

@@ -14,7 +14,7 @@ export const routes: Routes = [
       import("./+dashboard/dashboard.module").then((m) => m.DashboardModule),
     canActivate: [AuthGuard],
     data: {
-      title: "Übersicht",
+      title: "dashboard",
       icon: "Uebersicht",
     },
   },
@@ -24,7 +24,7 @@ export const routes: Routes = [
       import("./+form/ige-form.module").then((m) => m.IgeFormModule),
     canActivate: [AuthGuard],
     data: {
-      title: "Daten",
+      title: "documents",
       icon: "Daten",
     },
   },
@@ -34,7 +34,7 @@ export const routes: Routes = [
       import("./+address/address.module").then((m) => m.AddressModule),
     canActivate: [AuthGuard],
     data: {
-      title: "Adressen",
+      title: "addresses",
       icon: "Adressen",
     },
   },
@@ -44,7 +44,7 @@ export const routes: Routes = [
       import("./+research/research.module").then((m) => m.ResearchModule),
     canActivate: [AuthGuard],
     data: {
-      title: "Recherche",
+      title: "research",
       icon: "Recherche",
     },
   },
@@ -54,7 +54,7 @@ export const routes: Routes = [
       import("./+reports/reports.module").then((m) => m.ReportsModule),
     data: {
       onlyAdmin: true,
-      title: "Reports",
+      title: "reports",
       icon: "Reports",
     },
   },
@@ -62,7 +62,7 @@ export const routes: Routes = [
     path: "manage",
     loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
     data: {
-      title: "Nutzer & Rechte",
+      title: "user",
       onlyAdmin: true,
       permission: "manage_users",
       icon: "Nutzer",
@@ -77,7 +77,7 @@ export const routes: Routes = [
       ),
     canActivate: [AuthGuard],
     data: {
-      title: "Import / Export",
+      title: "import_export",
       onlyAdmin: true,
       permission: ["can_import", "can_export"],
       icon: "Im-Export",
@@ -88,7 +88,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./+catalog/catalog.module").then((m) => m.CatalogModule),
     data: {
-      title: "Katalog",
+      title: "catalog",
       onlyAdmin: true,
       permission: "manage_catalog",
       icon: "Katalog",

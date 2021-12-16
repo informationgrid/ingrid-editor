@@ -1,11 +1,23 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { TransfersWithErrorInfo } from "../../../../shared/upload/TransferWithErrors";
-import { UploadService } from "../../../../shared/upload/upload.service";
-import { forkJoin } from "rxjs";
+import {
+  ExtractOption,
+  UploadService,
+} from "../../../../shared/upload/upload.service";
+import { forkJoin, Observable } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { map } from "rxjs/operators";
+import { catchError, filter, map, mapTo, switchMap, tap } from "rxjs/operators";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../../dialogs/confirm/confirm-dialog.component";
+import { ConfigService } from "../../../../services/config/config.service";
 
 export interface LinkInfo {
   file: string;
@@ -20,18 +32,22 @@ export interface LinkInfo {
 })
 export class UploadFilesDialogComponent implements OnInit {
   chosenFiles: TransfersWithErrorInfo[] = [];
-  targetUrl = "/api/upload/";
+  targetUrl: string;
   docId = null;
   extractZipFiles = false;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
+    private dialog: MatDialog,
     formStateService: FormStateService,
     private uploadService: UploadService,
+    configService: ConfigService,
     @Inject(MAT_DIALOG_DATA) public data: { currentItems: any[] }
   ) {
     this.docId = formStateService.getForm().get("_id").value;
-    this.targetUrl += this.docId;
+    this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
+      this.docId
+    }`;
   }
 
   ngOnInit(): void {}
@@ -57,17 +73,20 @@ export class UploadFilesDialogComponent implements OnInit {
       .map((file) => ({ file: file.transfer.name, uri: file.transfer.name }));
   }
 
-  private extractAndCloseDialog() {
+  private extractAndCloseDialog(option?: ExtractOption) {
     forkJoin(
       this.chosenFiles.map((file) => {
         return this.uploadService.extractUploadedFilesOnServer(
           this.docId,
-          file.transfer.name
+          file.transfer.name,
+          option
         );
       })
     )
       .pipe(
         untilDestroyed(this),
+        catchError((error) => this.handleExtractError(error)),
+        filter((result) => result),
         map(UploadFilesDialogComponent.convertExtractResponse)
       )
       .subscribe((allFiles) => {
@@ -101,5 +120,33 @@ export class UploadFilesDialogComponent implements OnInit {
       this.data.currentItems.find((item) => item.link.value === fileId) !==
       undefined
     );
+  }
+
+  private handleExtractError(error: any): Observable<any> {
+    if (error.status === 409) {
+      return this.dialog
+        .open(ConfirmDialogComponent, {
+          data: <ConfirmDialogData>{
+            title: "Konflikt",
+            message:
+              "Es trat ein Konflikt beim extrahieren der ZIP-Datei auf, was möchten Sie jetzt tun?",
+            buttons: [
+              { text: "Abbrechen" },
+              { text: "Überschreiben", id: "REPLACE", alignRight: true },
+              { text: "Umbenennen", id: "RENAME", alignRight: true },
+            ],
+          },
+        })
+        .afterClosed()
+        .pipe(
+          tap((result) => {
+            if (result) {
+              this.extractAndCloseDialog(result);
+            }
+          }),
+          mapTo(null)
+        );
+    }
+    throw error;
   }
 }

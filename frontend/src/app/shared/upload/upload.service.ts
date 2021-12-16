@@ -4,6 +4,8 @@ import { ConfigService } from "../../services/config/config.service";
 import { KeycloakService } from "keycloak-angular";
 import { Observable } from "rxjs";
 
+export type ExtractOption = "RENAME" | "REPLACE";
+
 export class UploadError {
   status: number;
   message: string;
@@ -48,8 +50,15 @@ export class UploadService {
     this.http.delete(`${this.backendUrl}upload/${docId}/${fileId}`).subscribe();
   }
 
-  extractUploadedFilesOnServer(docId: string, fileId: string) {
-    return this.http.get(`${this.backendUrl}upload/extract/${docId}/${fileId}`);
+  extractUploadedFilesOnServer(
+    docId: string,
+    fileId: string,
+    option?: ExtractOption
+  ) {
+    const requestOptions = option ? `?conflict=${option}` : "";
+    return this.http.get(
+      `${this.backendUrl}upload/extract/${docId}/${fileId}${requestOptions}`
+    );
   }
 
   async updateAuthenticationToken(flowFiles: flowjs.FlowFile[]) {

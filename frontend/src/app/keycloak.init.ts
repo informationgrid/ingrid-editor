@@ -26,11 +26,9 @@ export function getUserInfo(configService: ConfigService) {
     if (!configService.isAdmin()) {
       // check if user has any assigned catalog
       if (userInfo.assignedCatalogs.length === 0) {
-        const error = new IgeError();
-        error.setMessage(
-          "The user has no assigned catalog. An administrator has to assign a catalog to this user."
+        throw new IgeError(
+          "Ihnen wurde bisher kein Katalog zugewiesen. Lassen Sie sich durch einen Administrator einen Katalog zuweisen."
         );
-        throw error;
       }
     }
   });
@@ -48,8 +46,9 @@ function getKeycloakOptions(configService: ConfigService): KeycloakOptions {
     loadUserProfileAtStartUp: false,
     initOptions: {
       onLoad: "check-sso",
-      silentCheckSsoRedirectUri:
-        window.location.origin + "/assets/silent-check-sso.html",
+      silentCheckSsoRedirectUri: `${
+        window.location.origin + config.contextPath
+      }assets/silent-check-sso.html`,
     },
   };
 }
@@ -57,6 +56,8 @@ function getKeycloakOptions(configService: ConfigService): KeycloakOptions {
 function handleKeycloakConfigError(ex, config: Configuration) {
   if (ex === undefined) {
     throw `Keycloak scheint nicht korrekt konfiguriert zu sein: ${config.keycloakUrl} (${config.keycloakClientId})`;
+  } else if (ex instanceof IgeError) {
+    throw ex;
   }
   console.error(ex);
   throw new IgeError(ex);

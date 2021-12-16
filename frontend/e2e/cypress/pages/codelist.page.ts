@@ -9,11 +9,15 @@ export class CodelistPage {
   }
 
   static confirmAddNewEntry() {
+    cy.intercept('PUT', /api\/codelist\/manage/).as('addEntry');
     cy.get('ige-update-codelist > mat-dialog-actions span.mat-button-wrapper').contains('Hinzufügen').click();
+    cy.wait('@addEntry');
   }
 
   static confirmModifiedEntry() {
+    cy.intercept('PUT', /api\/codelist\/manage/).as('modifyEntry');
     cy.get('ige-update-codelist > mat-dialog-actions span.mat-button-wrapper').contains('Ändern').click();
+    cy.wait('@modifyEntry');
   }
 
   static deleteCodelistEntry() {
@@ -61,7 +65,11 @@ export class CodelistPage {
       .find('[data-mat-icon-name=Mehr]')
       .click({ force: true })
       .then(_ => {
-        cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
+        cy.get('div.mat-menu-content')
+          .should('be.visible')
+          .then(_ => {
+            cy.get('div.mat-menu-content .mat-menu-item:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
+          });
       });
   }
 }

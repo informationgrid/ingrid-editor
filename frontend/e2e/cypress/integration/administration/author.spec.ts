@@ -157,8 +157,7 @@ describe('author with groups', () => {
     cy.get(DocumentPage.Toolbar.NewDoc).click();
     // make sure that Anlegen is disabled
     cy.get('[data-cy=create-action]').should('be.disabled');
-    AddressPage.type('create-address-firstName', 'Adresse');
-    AddressPage.type('create-address-lastName', 'Galizien');
+    AddressPage.addOrganizationName();
     // make sure that forbidden folder can not be chosen
     cy.get('[data-cy="create-changeLocation"]').click();
     cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');

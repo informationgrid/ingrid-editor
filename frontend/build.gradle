@@ -21,6 +21,11 @@ node {
   download = true
 }
 
+def buildArgs = ['run', 'prod']
+if (hasProperty('baseHref')) {
+  buildArgs = ['run', 'prod', '--base-href', getProperty('baseHref')]
+}
+
 task bundle(type: YarnTask) {
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
@@ -29,7 +34,8 @@ task bundle(type: YarnTask) {
   outputs.dir('build/dist')
 
   dependsOn yarn_install
-  args = ['run', 'prod']
+
+  args = buildArgs
 }
 
 task test(type: YarnTask) {

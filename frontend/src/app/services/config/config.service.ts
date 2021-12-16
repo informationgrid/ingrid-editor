@@ -13,6 +13,7 @@ export class Configuration {
     public keycloakClientId: string,
     public keycloakEnabled: boolean,
 
+    public contextPath: string,
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string
@@ -50,6 +51,11 @@ export interface UserInfo {
 export class ConfigService {
   private config: Configuration;
 
+  defaultConfig: Partial<Configuration> = {
+    contextPath: "/",
+    featureFlags: {},
+  };
+
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
 
   private dataService: ConfigDataService;
@@ -63,7 +69,8 @@ export class ConfigService {
     console.log("=== ConfigService ===");
 
     return this.dataService.load().then((json) => {
-      this.config = json;
+      this.config = { ...this.defaultConfig, ...json };
+      this.config.backendUrl = this.config.contextPath + "api/";
       this.dataService.config = this.config;
       return this.config;
     });

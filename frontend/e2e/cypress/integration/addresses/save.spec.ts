@@ -41,14 +41,14 @@ describe('General create addresses/folders', () => {
       createDialog.open();
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      createDialog.fill(new Address('Thomas'));
+      createDialog.fill(new Address('Thomas-Organisation'));
       cy.get('[data-cy=create-action]').should('be.enabled');
 
       createDialog.fill(new Address('', 'Herbst'));
-      cy.get('[data-cy=create-action]').should('be.enabled');
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
       createDialog.fill(new Address('', '', 'Ich AG'));
-      cy.get('[data-cy=create-action]').should('be.enabled');
+      cy.get('[data-cy=create-action]').should('be.disabled');
 
       createDialog.fill(new Address('', '', ''));
       cy.get('[data-cy=create-action]').should('be.disabled');
@@ -83,14 +83,11 @@ describe('General create addresses/folders', () => {
       cy.get('mat-dialog-container ige-breadcrumb').shouldHaveTrimmedText(`Adressen`);
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      cy.get('[data-cy=create-address-firstName]').type('Herbert');
-      cy.get('[data-cy=create-address-lastName]').type('Meier');
-      cy.get('[data-cy=create-address-organization]').type('Ich AG');
+      AddressPage.addOrganizationName('Ich AG');
 
       cy.get('[data-cy=create-action]').click();
 
-      cy.get('.firstName input').should('have.value', 'Herbert');
-      cy.get('.lastName input').should('have.value', 'Meier');
+      cy.get('.title').should('contain', 'Ich AG');
     });
 
     it('should create an address folder', () => {
@@ -103,17 +100,13 @@ describe('General create addresses/folders', () => {
     });
 
     it('should generate a title from create parameters', () => {
-      // only first name and last name
-      AddressPage.createAddress(new Address('Anton', 'Riese'));
-      Tree.containsNodeWithFolderTitle('Riese, Anton');
-
       // only organization
-      AddressPage.createAddress(new Address('', '', 'Meine Organisation'));
+      AddressPage.createAddress(new Address('Meine Organisation', '', ''));
       Tree.containsNodeWithFolderTitle('Meine Organisation');
 
-      // all
+      // organization + names
       AddressPage.createAddress(new Address('Anton', 'Riese', 'Meine Organisation'));
-      Tree.containsNodeWithFolderTitle('Meine Organisation, Riese, Anton');
+      Tree.containsNodeWithFolderTitle('Meine Organisation');
     });
 
     it('should apply initially selected item when switching location for a new folder', () => {
@@ -137,7 +130,7 @@ describe('General create addresses/folders', () => {
     });
 
     it('should create an organization', () => {
-      AddressPage.createAddress(new Address('', '', 'NewOrg'));
+      AddressPage.createAddress(new Address('NewOrg', '', ''));
       cy.get(DocumentPage.title).should('have.text', 'NewOrg');
       // check Organisation input
       cy.get('.organization input').should('have.value', 'NewOrg');
@@ -166,9 +159,7 @@ describe('General create addresses/folders', () => {
       cy.get(DocumentPage.Toolbar.NewDoc).click();
       cy.get('[data-cy=create-address-organization]').type(adr2Name);
       cy.get('[data-cy=create-action]').click();
-      cy.get('[data-cy=create-action]').should('not.exist');
-
-      cy.get('.lastName ').type('testestest');
+      AddressPage.addStreetName();
 
       // reject dialog
       // check selected tree node === previous selected node
@@ -192,7 +183,7 @@ describe('General create addresses/folders', () => {
 
       cy.get('#sidebar').findByText('Testadressen').click();
       cy.get('#sidebar').findByText(addressName).click();
-      cy.get('.lastName ').type('testestest');
+      AddressPage.addStreetName();
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
@@ -217,7 +208,7 @@ describe('General create addresses/folders', () => {
       const folderName = 'folder_to_be_deleted';
       AddressPage.visit();
       AddressPage.createFolder(folderName);
-      Tree.openNode([folderName]);
+
       cy.get(DocumentPage.title).should('have.text', folderName);
 
       // move folder to another folder (as subfolder)
@@ -252,7 +243,7 @@ describe('General create addresses/folders', () => {
 
       // create an address
       AddressPage.CreateDialog.open();
-      AddressPage.CreateDialog.fill(new Address('Adresse', 'Burgund', 'Organisation_1'));
+      AddressPage.addOrganizationName('Organisation_9');
       cy.get('[data-cy=create-action]').click();
 
       // delete the address

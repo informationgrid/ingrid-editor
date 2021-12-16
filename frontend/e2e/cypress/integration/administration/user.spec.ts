@@ -363,6 +363,8 @@ describe('User', () => {
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
+    // search for the user in case is hidden in second pagination page
+    cy.get('ige-search-field input').type('Test', { force: true });
 
     // II. make sure that a group can not be added when the same group is already assigned to user
     // (force-option is necessary because on the previous user profile a menu is still expanded)
