@@ -18,10 +18,10 @@ export class DocumentListItemComponent implements OnInit {
   @Input() hideDate = true;
   @Input() hideDivider = false;
   @Input() showSelection = false;
-  @Input() setActiveItem: Subject<DocumentAbstract>;
+  @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;
   @Output() select = new EventEmitter<DocumentAbstract>();
 
-  currentSelection: DocumentAbstract;
+  currentSelection: Partial<DocumentAbstract>;
 
   constructor() {}
 
@@ -33,7 +33,7 @@ export class DocumentListItemComponent implements OnInit {
     }
   }
 
-  private updateSelectionFromExternal(doc: DocumentAbstract) {
+  private updateSelectionFromExternal(doc: Partial<DocumentAbstract>) {
     this.currentSelection = doc;
   }
 

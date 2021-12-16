@@ -24,7 +24,6 @@ import { AddButtonComponent } from "./add-button/add-button.component";
 import { CardBoxModule } from "./card-box/card-box.module";
 import { CardBoxComponent } from "./card-box/card-box.component";
 import { ChartComponent } from "../+dashboard/chart/chart.component";
-import { FocusDirective } from "../directives/focus.directive";
 import { FacetsComponent } from "../+research/+facets/facets.component";
 import { SpatialListComponent } from "../formly/types/map/spatial-list/spatial-list.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -61,7 +60,6 @@ import { DndDirective } from "../directives/dnd.directive";
     TreeHeaderComponent,
     OptionListComponent,
     ChartComponent,
-    FocusDirective,
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,
@@ -77,7 +75,6 @@ import { DndDirective } from "../directives/dnd.directive";
     SharedDocumentItemModule,
     AddButtonComponent,
     ChartComponent,
-    FocusDirective,
     FacetsComponent,
     SpatialListComponent,
     FeatureFlagDirective,

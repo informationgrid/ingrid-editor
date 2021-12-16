@@ -12,6 +12,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatIconModule } from "@angular/material/icon";
 import { NewCatalogDialogComponent } from "./new-catalog-dialog.component";
 import { FormFieldsModule } from "../../../form-fields/form-fields.module";
+import { SharedPipesModule } from "../../../directives/shared-pipes.module";
 
 @NgModule({
   declarations: [NewCatalogDialogComponent],
@@ -28,6 +29,7 @@ import { FormFieldsModule } from "../../../form-fields/form-fields.module";
     FlexModule,
     MatIconModule,
     FormFieldsModule,
+    SharedPipesModule,
   ],
 })
 export class NewCatalogDialogModule {}

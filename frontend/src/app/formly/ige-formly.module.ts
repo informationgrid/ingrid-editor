@@ -63,6 +63,7 @@ import { LinkDialogComponent } from "./types/table/link-dialog/link-dialog.compo
 import { UploadFilesDialogComponent } from "./types/table/upload-files-dialog/upload-files-dialog.component";
 import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 import { UploadModule } from "../shared/upload/upload.module";
+import { SharedPipesModule } from "../directives/shared-pipes.module";
 
 export function IpValidator(control: FormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
@@ -191,6 +192,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatSlideToggleModule,
     DialogTemplateModule,
     UploadModule,
+    SharedPipesModule,
   ],
   providers: [
     {

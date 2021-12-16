@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { filter, tap } from "rxjs/operators";
@@ -100,13 +94,6 @@ export class CreateNodeComponent implements OnInit {
         ? this.isAdmin
         : !value[value.length - 1].disabled ||
           value[value.length - 1].hasOnlySubtreeWritePermission;
-  }
-
-  @ViewChild("title")
-  set input(element: ElementRef) {
-    if (element) {
-      setTimeout(() => element.nativeElement.focus());
-    }
   }
 
   ngOnInit() {
