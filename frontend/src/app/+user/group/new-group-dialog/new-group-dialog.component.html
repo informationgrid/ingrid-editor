@@ -9,7 +9,12 @@
 <mat-dialog-content [formGroup]="form">
     <mat-form-field appearance="outline" style="width: 100%">
         <mat-label>Gruppenname</mat-label>
-        <input matInput placeholder="Eingeben..." formControlName="name" />
+        <input
+            matInput
+            igeFocus
+            placeholder="Eingeben..."
+            formControlName="name"
+        />
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
