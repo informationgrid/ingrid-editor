@@ -94,7 +94,7 @@ class ResearchService {
     private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.category
+                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.published, document_wrapper.category
                 FROM catalog, document_wrapper
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
@@ -194,6 +194,7 @@ class ResearchService {
             .addScalar("created")
             .addScalar("modified")
             .addScalar("draft")
+            .addScalar("published")
             .addScalar("category")
             .resultList as List<Array<out Any?>>
     }
@@ -216,8 +217,8 @@ class ResearchService {
                 _type = item[3] as? String,
                 _created = item[4] as? Date,
                 _modified = item[5] as? Date,
-                _state = if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value else DocumentService.DocumentState.DRAFT.value,
-                _category = (item[7] as? String),
+                _state = determineDocumentState(item),
+                _category = (item[8] as? String),
                 hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
                     principal,
                     item[2] as String
@@ -229,6 +230,11 @@ class ResearchService {
             )
         }
     }
+
+    private fun determineDocumentState(item: Array<out Any?>) =
+        if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value
+        else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
+        else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
 
     fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
 
