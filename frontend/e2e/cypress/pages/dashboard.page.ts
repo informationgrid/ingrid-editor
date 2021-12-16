@@ -9,7 +9,7 @@ export class DashboardPage {
 
   static getLatestDocTitle(position: number) {
     return cy
-      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`)
+      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`, { timeout: 9000 })
       .invoke('text');
   }
 

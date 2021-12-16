@@ -10,7 +10,7 @@ export class AdminUserPage extends BasePage {
   static visit() {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.visit('manage/user');
-    cy.wait('@usersCall');
+    cy.wait('@usersCall', { timeout: 9000 });
     cy.get('.user-management-header').contains('Nutzer');
   }
 
@@ -65,7 +65,7 @@ export class AdminUserPage extends BasePage {
 
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
-    cy.get(this.groupSelectionField).should('be.visible');
+    cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
     cy.contains('mat-option', groupName).click();
     cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
@@ -97,7 +97,7 @@ export class AdminUserPage extends BasePage {
   static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
-    cy.get('user-table').contains(name).click();
+    cy.contains('user-table', name).click();
     cy.get('#formUser').should('be.visible');
     // sometimes further selecting goes wrong because dom is not ready -> add some time
     cy.wait(1000);
