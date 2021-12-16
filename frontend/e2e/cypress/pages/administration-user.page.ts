@@ -97,7 +97,7 @@ export class AdminUserPage extends BasePage {
   static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
-    cy.contains('user-table', name).click();
+    cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
     // sometimes further selecting goes wrong because dom is not ready -> add some time
     cy.wait(1000);
