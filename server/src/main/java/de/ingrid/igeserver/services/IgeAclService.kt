@@ -32,20 +32,20 @@ class IgeAclService @Autowired constructor(
         if (hasAdminRole(authentication)) {
             return true
         }
-        val permissionLevels = listOf<String>("writeTree", "readTree", "writeTreeExceptParent")
+        val permissionLevels = listOf("writeTree", "readTree", "writeTreeExceptParent")
         val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
         var isAllowed = false
-        permissionLevels.forEach {
-            val uuids = getAllDatasetUuidsFromGroups(listOf(group), it)
-            uuids.map { uuid ->
+        permissionLevels.forEach { permissionLevel ->
+            val permissionLevelUuids = getAllDatasetUuidsFromGroups(listOf(group), permissionLevel)
+            permissionLevelUuids.forEach { uuid ->
                 val acl = this.aclService.readAclById(
                     ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
                 )
-                when (it) {
-                    "writeTree" -> isAllowed = isAllowed(acl, BasePermission.WRITE, sids)
-                    "readTree" -> isAllowed = isAllowed(acl, BasePermission.READ, sids)
-                    "writeTreeExceptParent" -> isAllowed = isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
+                isAllowed = when (permissionLevel) {
+                    "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
+                    "readTree" -> isAllowed(acl, BasePermission.READ, sids)
+                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
                     else -> {
                         throw error("this is impossible and must not happen.")
                     }
