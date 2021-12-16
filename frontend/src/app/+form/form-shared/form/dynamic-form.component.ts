@@ -331,7 +331,7 @@ export class DynamicFormComponent
     );
   }
 
-  private updateFormWithData(data) {
+  private updateFormWithData(data: IgeDocument) {
     if (data === null) {
       return;
     }
