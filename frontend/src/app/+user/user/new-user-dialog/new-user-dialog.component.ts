@@ -6,13 +6,14 @@ import {
 } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
-import { BackendUser, FrontendUser, User } from "../../user";
+import { BackendUser, FrontendUser } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { tap } from "rxjs/operators";
+import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
+import { IgeError } from "../../../models/ige-error";
 
 @Component({
   selector: "ige-new-user-dialog",
@@ -90,41 +91,46 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   }
 
   createUser() {
-    let createUserObserver: Observable<User>;
-
     // convert roles to numbers
     // user.roles = user.roles.map(role => +role);
     this.form.disable();
     const user = this.model;
 
-    this.userService.createUser(user, !this.importExternal).subscribe(
-      () => {
-        this.dialogRef.close(user);
-      },
-      (err: any) => {
-        this.form.enable();
-        if (err.status === 409) {
-          const errorText: string = err.error.errorText;
-          if (errorText.includes("User already Exists with login")) {
-            const login = errorText.split(" ").pop();
-            this.modalService.showJavascriptError(
-              "Es existiert bereits ein Benutzer mit dem Login: " + login
-            );
-          } else if (
-            errorText.includes(
-              "New user cannot be created, because another user might have the same email address"
-            )
-          ) {
-            this.modalService.showJavascriptError(
-              "Es existiert bereits ein Benutzer mit dieser Mailadresse"
-            );
-          } else {
-            throw err;
-          }
+    this.userService
+      .createUser(user, !this.importExternal)
+      .pipe(
+        catchError((error) => this.handleCreateUserError(error)),
+        filter((user) => user)
+      )
+      .subscribe(() => this.dialogRef.close(user));
+  }
+
+  private handleCreateUserError(error: any): Observable<any> {
+    this.form.enable();
+    const errorText: string = error.error?.errorText;
+    if (error.status === 409) {
+      if (errorText.includes("User already Exists with login")) {
+        const login = errorText.split(" ").pop();
+        this.modalService.showJavascriptError(
+          "Es existiert bereits ein Benutzer mit dem Login: " + login
+        );
+        return null;
+      } else {
+        let EMAIL_NOT_UNIQUE =
+          "New user cannot be created, because another user might have the same email address";
+        if (errorText.includes(EMAIL_NOT_UNIQUE)) {
+          this.modalService.showJavascriptError(
+            "Es existiert bereits ein Benutzer mit dieser Mailadresse"
+          );
         } else {
-          throw err;
+          throw error;
         }
       }
-    );
+    } else if (errorText.includes("Mail server connection failed")) {
+      this.dialogRef.close(null);
+      throw new IgeError("Es gab ein Problem beim Versenden der Email");
+    } else {
+      throw error;
+    }
   }
 }

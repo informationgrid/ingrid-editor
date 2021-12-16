@@ -148,9 +148,13 @@ export class UserComponent
         this.dialog
           .open(NewUserDialogComponent, { hasBackdrop: true })
           .afterClosed()
+          .pipe(
+            finalize(() => {
+              this.fetchUsers().subscribe();
+            })
+          )
           .subscribe((result) => {
             if (result) {
-              this.fetchUsers().subscribe();
               this.loadUser(result.login);
               this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
                 panelClass: "green",
