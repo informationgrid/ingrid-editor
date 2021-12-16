@@ -16,6 +16,7 @@ import { AddressComponent } from "../+address/address/address.component";
 import { TreeService } from "../+form/sidebars/tree/tree.service";
 import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
+import { IgeDocument } from "../models/ige-document";
 
 @Injectable({
   providedIn: "root",
@@ -55,7 +56,8 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     const formHasChanged = this.formStateService.getForm()?.dirty;
 
     if (formHasChanged) {
-      const currentId = this.formStateService.getForm().value._id;
+      const currentId = (<IgeDocument>this.formStateService.getForm().value)
+        ._uuid;
       return this.dialog
         .open(ConfirmDialogComponent, {
           hasBackdrop: true,
@@ -100,7 +102,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         .save(form, false, isAddress, null, true)
         .toPromise();
       this.documentService.reload$.next({
-        id: currentId,
+        uuid: currentId,
         forAddress: isAddress,
       });
     } else if (action === "stay") {
