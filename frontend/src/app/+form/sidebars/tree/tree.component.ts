@@ -124,7 +124,10 @@ export class TreeComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         map((data) => data?.length > 0),
-        tap((notEmpty) => (this.hasData = notEmpty))
+        tap((notEmpty) => {
+          this.hasData = notEmpty;
+          this.cdr.markForCheck();
+        })
       )
       .subscribe();
 
