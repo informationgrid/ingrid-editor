@@ -287,34 +287,52 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be deleted (#2785)', () => {
-    // set access right to "nur Unterordner"
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
-    UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_3.Ebene_C', 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
-    // open document
+    let tempLocalAddressFolder = 'temporaryAddressFolder' + Utils.randomString();
+    let groupName = 'gruppe_mit_ortsrechten';
+    // log in as ige
+    cy.kcLogout();
+    cy.kcLogin('user');
+    // create address
     AddressPage.visit();
-    Tree.openNode(['Ordner_3.Ebene_C']);
-    UserAuthorizationPage.verifyDocumentTitle('Ordner_3.Ebene_C');
-    Tree.deleteChildren('Ordner_3.Ebene_C', 1);
-    // try to delete the folder: expect delete button to be disabled
-    Tree.openNode(['Ordner_3.Ebene_C']);
+    Tree.openNode(['Testadressen']);
+    AddressPage.createFolder(tempLocalAddressFolder, ['Testadressen']);
+    // add folder to group and set access right to "nur Unterordner"
+    AdminUserPage.visit();
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.addNestedDocumentToGroup(['Testadressen', tempLocalAddressFolder], 'Adressen');
+    UserAuthorizationPage.setButtonSubfoldersOnly(tempLocalAddressFolder, 'Adressen');
+    AdminGroupPage.toolbarSaveGroup();
+    cy.kcLogout();
+    // log in as metadata admin and try to change title
+    cy.kcLogin('meta2');
+    AddressPage.visit();
+    Tree.openNode([tempLocalAddressFolder]);
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
   });
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be renamed (#2895)', () => {
-    // set access right to "nur Unterordner"
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
-    // open document
+    let tempLocalFile = 'temporaryFolder' + Utils.randomString();
+    let groupName = 'test_gruppe_1';
+    // log in as ige
+    cy.kcLogout();
+    cy.kcLogin('user');
+    // create folder
     DocumentPage.visit();
-    Tree.openNode(['Ordner_Ebene_2C']);
-    UserAuthorizationPage.verifyDocumentTitle('Ordner_Ebene_2C');
-    // try to change title
+    Tree.openNode(['Testdokumente']);
+    DocumentPage.createFolder(tempLocalFile);
+    // add folder to group and set access right to "nur Unterordner"
+    AdminUserPage.visit();
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempLocalFile], 'Daten');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+    cy.kcLogout();
+    // log in as metadata admin and try to change title
+    cy.kcLogin('meta2');
+    DocumentPage.visit();
+    Tree.openNode([tempLocalFile]);
     cy.get('.title .label').should('not.have.class', 'editable');
     cy.get(DocumentPage.Toolbar['Save']).should('be.disabled');
   });
@@ -340,25 +358,35 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
-    // set access right to "nur Unterordner"
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('test_gruppe_1');
-    UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
-
-    // open document
+    let tempFolderToRelocate = 'temporaryFolderToRelocate' + Utils.randomString();
+    let groupName = 'test_gruppe_1';
+    // log in as ige
+    cy.kcLogout();
+    cy.kcLogin('user');
+    // create folder
     DocumentPage.visit();
-    Tree.openNode(['Ordner_Ebene_2C']);
-    UserAuthorizationPage.verifyDocumentTitle('Ordner_Ebene_2C');
+    Tree.openNode(['Testdokumente']);
+    DocumentPage.createFolder(tempFolderToRelocate);
+    // add folder to group and set access right to "nur Unterordner"
+    AdminUserPage.visit();
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempFolderToRelocate], 'Daten');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(tempFolderToRelocate, 'Daten');
+    AdminGroupPage.toolbarSaveGroup();
+    cy.kcLogout();
+    // log in as metadata admin and try to change title
+    cy.kcLogin('meta2');
+    DocumentPage.visit();
+    Tree.openNode([tempFolderToRelocate]);
+    UserAuthorizationPage.verifyDocumentTitle(tempFolderToRelocate);
     // try to move via dialogue
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_CUT"]').should('be.disabled');
     // collapse the dialogue
     cy.get('[data-cy=toolbar_COPY]').click({ force: true });
-
     // try to move via drag and drop
-    CopyCutUtils.simpleDragdropWithoutAutoExpand('Ordner_Ebene_2C', 'Ordner_Ebene_2A');
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(tempFolderToRelocate, 'Ordner_Ebene_2A');
     AdminUserPage.attemptIllegitimateMove();
     // expect error
     cy.get('error-dialog').contains('keine Berechtigung');
@@ -452,19 +480,24 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('if a meta data admin deletes a document from one of his groups, he cannot access this document anymore (neither write nor read)', () => {
-    // delete address from group and check existence
+    let groupName = 'gruppe_mit_ortsrechten';
+    // make sure address is accessible
+    AddressPage.visit();
+    Tree.openNode(['test_c, test_c']);
+    // log in as ige
+    cy.kcLogout();
+    cy.kcLogin('user');
+    // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.deleteDocumentFromGroup('test_c, test_c', 'Adressen');
     AdminGroupPage.toolbarSaveGroup();
-    // Go to "Addresses" and make sure the address is not there anymore
+    cy.kcLogout();
+    // log in as metadata admin and try find document
+    cy.kcLogin('meta2');
     AddressPage.visit();
     cy.get('ige-sidebar').should('not.contain', 'test_c, test_c');
-    // Go to Research section and make sure search doesn't return removed document
-    ResearchPage.visit();
-    ResearchPage.search('test_c, test_c');
-    ResearchPage.checkNoSearchResults();
   });
 
   it('if metadata admin deletes one of his assigned groups, he should not be able to see the documents of this group', () => {
@@ -475,7 +508,6 @@ describe('Meta data administrator with a group', () => {
     const newGroup = 'new_group_to_delete' + Utils.randomString();
     DocumentPage.visit();
     DocumentPage.createDocument(documentName);
-    Tree.openNode([documentName]);
     // -2- create new group
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -489,13 +521,22 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.addGroupToUser(newGroup);
     AdminUserPage.toolbarSaveUser();
     cy.kcLogout();
-
+    // -5- check existence of document
     cy.kcLogin('meta2');
-    // -5- delete the group
+    DocumentPage.visit();
+    Tree.openNode([documentName]);
+    UserAuthorizationPage.verifyDocumentTitle(documentName);
+
+    // -6- delete the group
+    cy.kcLogout();
+    cy.kcLogin('user');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.deleteGroup(newGroup);
-    // -6- make sure the document is no longer exist
+    AdminGroupPage.selectGroup(newGroup);
+    AdminGroupPage.deleteGroupOfOtherUsers(newGroup);
+    // -7- make sure the document is no longer existent
+    cy.kcLogout();
+    cy.kcLogin('meta2');
     DocumentPage.visit();
     cy.contains('mat-tree.mat-tree', documentName).should('not.exist');
   });
