@@ -1,8 +1,13 @@
 import { BasePage, UserAndRights } from './base.page';
+import { AdminUserPage } from './administration-user.page';
 
 export class AdminGroupPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
+    cy.intercept('POST', '**/token').as('groupTab');
     cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
+    if (tabmenu === UserAndRights.Group) {
+      cy.wait('@groupTab');
+    }
   }
 
   static applyDialog() {
@@ -16,7 +21,7 @@ export class AdminGroupPage extends BasePage {
   }
 
   static toolbarSaveGroup() {
-    cy.intercept('GET', '/api/groups/**').as('completeEditingRequest');
+    cy.intercept('PUT', '/api/groups/**').as('completeEditingRequest');
     cy.get('[data-cy=toolbar_save_group]').click();
     cy.wait('@completeEditingRequest');
   }
@@ -45,6 +50,15 @@ export class AdminGroupPage extends BasePage {
 
   static selectGroup(groupName: string) {
     cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
+    // turn the page if group is not found on the current page
+    cy.get('groups-table').then($table => {
+      if ($table.text().includes(groupName)) {
+        cy.contains('groups-table .mat-row', groupName);
+      } else {
+        AdminUserPage.getNextPage();
+        cy.contains('groups-table .mat-row', groupName);
+      }
+    });
     cy.get('groups-table').contains(groupName).click();
     cy.wait('@fetchGroupRequest');
     cy.get('#formRoles').should('be.visible');
@@ -101,7 +115,7 @@ export class AdminGroupPage extends BasePage {
     this.openAddDocumentsDialog(docType);
     cy.get('permission-add-dialog');
     for (const docName of arrayPath) {
-      cy.contains('mat-tree-node', docName).click();
+      cy.contains('mat-tree-node .label', new RegExp('^' + docName + '$')).click();
     }
     cy.intercept('GET', '/api/datasets/**').as('waitRequest');
     cy.get('mat-dialog-actions button').contains('Hinzufügen').click();

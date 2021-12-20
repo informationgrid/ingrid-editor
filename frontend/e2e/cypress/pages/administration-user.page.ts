@@ -97,6 +97,15 @@ export class AdminUserPage extends BasePage {
   static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
+    // turn the page if group is not found on the current page
+    cy.get('user-table').then($table => {
+      if ($table.text().includes(name)) {
+        cy.contains('user-table .mat-row', name);
+      } else {
+        AdminUserPage.getNextPage();
+        cy.contains('user-table .mat-row', name);
+      }
+    });
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
     // sometimes further selecting goes wrong because dom is not ready -> add some time
