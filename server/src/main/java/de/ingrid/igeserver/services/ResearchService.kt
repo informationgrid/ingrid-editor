@@ -242,17 +242,38 @@ class ResearchService {
     fun querySql(principal: Principal, catalogId: String, sqlQuery: String): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
+        var finalQuery = ""
         try {
+            assertValidQuery(sqlQuery)
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
-            val result = sendQuery(catalogQuery, emptyList())
+            finalQuery = addWrapperIdToQuery(catalogQuery)
+            
+            val result = sendQuery(finalQuery, emptyList())
             val map = filterAndMapResult(result, isAdmin, principal)
 
             return ResearchResponse(map.size, map)
         } catch (error: Exception) {
             throw ClientException.withReason(
-                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
+                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
+                data = mapOf("sql" to finalQuery)
             )
         }
+    }
+
+    private fun assertValidQuery(sqlQuery: String) {
+        val fromIndex = sqlQuery.indexOf("FROM")
+        if (fromIndex == -1) {
+            throw ClientException.withReason("Query must contain 'FROM' statement")
+        }
+        
+        // TODO: UPDATE AND DELETE IS NOT ALLOWED!
+    }
+
+    private fun addWrapperIdToQuery(query: String): String {
+        val fromIndex = query.indexOf("FROM")
+        return """
+            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid ${query.substring(fromIndex)}
+        """.trimIndent()
     }
 
     private fun restrictQueryOnCatalog(catalogId: String, sqlQuery: String): String {
@@ -260,13 +281,8 @@ class ResearchService {
         val catalogFilter = createCatalogFilter(catalogId)
 
         val fromIndex = sqlQuery.indexOf("FROM")
-        val whereIndex = sqlQuery.indexOf("WHERE")
 
-        if (fromIndex == -1) {
-            throw ClientException.withReason("Query must contain 'FROM' statement")
-        }
-
-        return when (whereIndex) {
+        return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter
