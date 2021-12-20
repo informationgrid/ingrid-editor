@@ -50,7 +50,9 @@ export class TreePermission {
   id: string;
   title: string;
   isFolder: boolean;
-  permission: string;
+  permission: string; // TODO: still used?
+  hasWritePermission: boolean;
+  hasOnlySubtreeWritePermission: boolean;
 }
 
 export enum PermissionType {

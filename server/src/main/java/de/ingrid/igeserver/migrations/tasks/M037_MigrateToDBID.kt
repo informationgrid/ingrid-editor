@@ -12,7 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M036_MigrateToDBID : MigrationBase("0.36") {
+class M037_MigrateToDBID : MigrationBase("0.37") {
 
     private var log = logger()
 
