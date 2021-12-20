@@ -31,7 +31,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static addNewUserRole(roleTitle: string) {
-    cy.get('mat-select').click();
+    cy.get('ige-new-user-dialog mat-select').click();
     cy.get('mat-option').contains(roleTitle).click();
   }
 
@@ -236,7 +236,6 @@ export class AdminUserPage extends BasePage {
 
         cy.kcLogout();
 
-        debugger;
         // Here we have to reload otherwise the because logout does not redirect to login page
         cy.reload();
         cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');

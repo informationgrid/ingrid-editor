@@ -1,10 +1,7 @@
-import { AdminUserPage, keysInHeader } from '../../pages/administration-user.page';
+import { AdminUserPage } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
-import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
-import { AddressPage } from '../../pages/address.page';
-import { DashboardPage } from '../../pages/dashboard.page';
-import { AdminGroupPage } from '../../pages/administration-group.page';
+import { Utils } from '../../pages/utils';
 
 describe('User', () => {
   beforeEach(() => {
@@ -462,8 +459,6 @@ describe('User', () => {
   });
 
   it('Creation of a user after it has been previously deleted (#3108)', () => {
-    AdminUserPage.visit();
-
     let userLogIn = 'user-to-be-deleted-after-creation';
     let userEmail = 'new-user-to-be-deleted@wemove.com';
     let userRole = 'Metadaten-Administrator';
@@ -488,12 +483,12 @@ describe('User', () => {
   });
 
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
-    AdminUserPage.visit();
-
-    let firstUserLogIn = 'first-new-meta' + Date.now().toString();
-    let firstUserEmail = 'first-new-meta' + Date.now().toString() + '@wemove.com';
-    let secondUserLogIn = 'second-new-meta' + Date.now().toString();
-    let secondUserEmail = 'second-new-meta' + Date.now().toString() + '@wemove.com';
+    const uid1 = Utils.randomdoubleDigitString();
+    const uid2 = Utils.randomdoubleDigitString();
+    let firstUserLogIn = 'first-new-meta' + uid1;
+    let firstUserEmail = 'first-new-meta' + uid1 + '@wemove.com';
+    let secondUserLogIn = 'second-new-meta' + uid2;
+    let secondUserEmail = 'second-new-meta' + uid2 + '@wemove.com';
     let userRole = 'Metadaten-Administrator';
 
     // create first user
