@@ -101,6 +101,20 @@ export class AdminGroupPage extends BasePage {
     cy.contains('button', 'Gruppe löschen').click();
   }
 
+  static deleteGroupOfOtherUsers(groupName: string) {
+    cy.contains('.mat-table .mat-row', groupName)
+      .find('button:nth-child(1) > span:nth-child(1) > mat-icon:nth-child(1)')
+      .invoke('show')
+      .click({ force: true });
+    cy.contains('button', 'Löschen').click();
+    cy.get('mat-dialog-content')
+      .contains('Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von einem Nutzer verwendet:')
+      .should('be.visible');
+    cy.intercept('DELETE', '/api/groups/**').as('deleteRequest');
+    cy.contains('button', 'Gruppe löschen').click();
+    cy.wait('@deleteRequest');
+  }
+
   static openAddDocumentsDialog(docType: string) {
     const documentType = new RegExp(docType);
     cy.contains('permission-table', documentType)
