@@ -45,7 +45,7 @@ class IndexService @Autowired constructor(
 
     fun getSinglePublishedDocument(catalogId: String, category: DocumentCategory, format: String, uuid: String): Document {
         return documentService.find(catalogId, category.value, INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
-            .map { documentService.getLatestDocument(it, true) }
+            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
             .first()
     }
 

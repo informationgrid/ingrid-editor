@@ -60,7 +60,7 @@ class TestType : EntityType() {
             }
             try {
                 val wrapper = docService.getWrapperByCatalogAndDocumentUuid(doc.catalogIdentifier!!, uuid)
-                val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
+                val latestDocument = docService.getLatestDocument(wrapper, onlyPublished, catalogId = doc.catalogIdentifier)
                 val latestDocumentJson = docService.convertToJsonNode(latestDocument)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {

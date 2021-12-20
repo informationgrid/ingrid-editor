@@ -40,7 +40,7 @@ class CatalogApiController : CatalogApi {
             )
         )
         if (!lastModifiedDoc.isEmpty) {
-            catalog.lastDocModification = documentService.getLatestDocument(lastModifiedDoc.content[0]).modified
+            catalog.lastDocModification = documentService.getLatestDocument(lastModifiedDoc.content[0], catalogId = catalog.identifier).modified
             catalog.countDocuments = lastModifiedDoc.totalElements.toInt()
         }
         return catalog

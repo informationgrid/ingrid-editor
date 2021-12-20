@@ -348,7 +348,7 @@ class DocumentService @Autowired constructor(
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
             val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish)
-            return getLatestDocument(postWrapper)
+            return getLatestDocument(postWrapper, catalogId = catalogId)
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
@@ -486,7 +486,7 @@ class DocumentService @Autowired constructor(
         wrapper.draft = null
         val updatedWrapper = docWrapperRepo.save(wrapper)
 
-        val doc = this.getLatestDocument(updatedWrapper, true)
+        val doc = this.getLatestDocument(updatedWrapper, true, catalogId = catalogId)
 
         // run post-revert pipe(s)
         val postRevertPayload = PostRevertPayload(docType, doc, updatedWrapper)
@@ -519,7 +519,7 @@ class DocumentService @Autowired constructor(
         // remove from index
         removeFromIndex(wrapper.uuid)
 
-        val doc = this.getLatestDocument(wrapper)
+        val doc = this.getLatestDocument(wrapper, catalogId = catalogId)
 
         // run post-unpublish pipe(s)
         val postUnpublishPayload = PostUnpublishPayload(docType, doc, wrapper)

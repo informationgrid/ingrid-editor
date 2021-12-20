@@ -382,7 +382,7 @@ class DatasetsApiController @Autowired constructor(
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
 
-            val doc = documentService.getLatestDocument(wrapper)
+            val doc = documentService.getLatestDocument(wrapper, catalogId = catalogId)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
             doc.data.put(FIELD_PARENT, wrapper.parent?.id)
             doc.hasWritePermission = wrapper.hasWritePermission

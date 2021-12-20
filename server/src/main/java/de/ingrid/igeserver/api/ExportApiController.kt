@@ -31,7 +31,7 @@ class ExportApiController : ExportApi {
 
         // TODO: option to export addresses too?
         val doc = documentService.getWrapperByDocumentIdAndCatalog(catalogId, data.id)
-        val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft)
+        val docVersion = documentService.getLatestDocument(doc, !data.isUseDraft, catalogId = catalogId)
 
         val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
         val result = exporter.run(docVersion)
