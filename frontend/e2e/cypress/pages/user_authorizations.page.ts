@@ -59,7 +59,7 @@ export class UserAuthorizationPage extends BasePage {
       .within(() => {
         //cy.get('.left-button.active');
         cy.get('[mattooltip="Schreibrecht"]').click();
-        cy.get('[mattooltip="Leserecht"].active');
+        cy.get('[mattooltip="Schreibrecht"].active');
       });
   }
 
