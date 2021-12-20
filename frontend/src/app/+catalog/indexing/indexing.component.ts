@@ -109,6 +109,7 @@ export class IndexingComponent implements OnInit {
   }
 
   cancelIndexing() {
+    this.indexingIsRunning = false;
     this.indexService.cancel();
   }
 }

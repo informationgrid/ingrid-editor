@@ -59,9 +59,7 @@ class TestType : EntityType() {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                // FIXME: we need to call getWrapperByDocumentIdAndCatalog
-//                val wrapper = docService.getWrapperByDocumentId(wrapperId)
-                val wrapper = docService.getWrapperByCatalogAndDocumentUuid(doc.catalog?.identifier!!, uuid)
+                val wrapper = docService.getWrapperByCatalogAndDocumentUuid(doc.catalogIdentifier!!, uuid)
                 val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
                 val latestDocumentJson = docService.convertToJsonNode(latestDocument)
                 (address as ObjectNode).replace("ref", latestDocumentJson)

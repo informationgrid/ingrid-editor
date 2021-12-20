@@ -174,10 +174,11 @@ class DocumentService @Autowired constructor(
     fun getLatestDocument(
         wrapper: DocumentWrapper,
         onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true
+        resolveLinks: Boolean = true,
+        catalogId: String? = null
     ): Document {
 
-        val doc = getLatestDocumentVersion(wrapper, onlyPublished)
+        val doc = getLatestDocumentVersion(wrapper, onlyPublished, catalogId)
 
         return prepareDocument(doc, wrapper.type!!, onlyPublished, resolveLinks)
     }
@@ -589,7 +590,7 @@ class DocumentService @Autowired constructor(
             .category
     }
 
-    private fun getLatestDocumentVersion(wrapper: DocumentWrapper, onlyPublished: Boolean): Document {
+    private fun getLatestDocumentVersion(wrapper: DocumentWrapper, onlyPublished: Boolean, catalogId: String? = null): Document {
 
         if (onlyPublished && wrapper.published == null) {
             throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
@@ -611,6 +612,7 @@ class DocumentService @Autowired constructor(
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
         objectNode.wrapperId = wrapper.id
         objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
+        objectNode.catalogIdentifier = catalogId
 
         return objectNode
     }
