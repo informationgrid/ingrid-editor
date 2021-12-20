@@ -65,12 +65,14 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
-    const currentId = this.formStateService.getForm()?.value?._id;
+    let form = this.formStateService.getForm()?.value;
+    const currentId = form?._id;
+    const currentUuid = form?._uuid;
 
     // do not load same node again
     if (
-      currentId === selectedDocUuids[0] &&
-      this.router.url.indexOf(currentId) !== -1
+      currentUuid === selectedDocUuids[0] &&
+      this.router.url.indexOf(currentUuid) !== -1
     ) {
       return;
     }
