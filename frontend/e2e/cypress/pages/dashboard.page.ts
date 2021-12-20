@@ -4,7 +4,9 @@ export class DashboardPage {
   static url = '/dashboard';
 
   static visit() {
+    cy.intercept('GET', 'api/statistic').as('getStatistic');
     cy.visit('/dashboard');
+    cy.wait('@getStatistic');
   }
 
   static getLatestDocTitle(position: number) {
