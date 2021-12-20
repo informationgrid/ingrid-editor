@@ -71,7 +71,8 @@ export class DynamicFormComponent
 
   behaviours: Behaviour[];
   error = false;
-  model: Partial<IgeDocument> = {};
+  // @ts-ignore
+  model: IgeDocument = {};
 
   paddingWithHeader: string;
 

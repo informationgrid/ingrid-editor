@@ -15,12 +15,14 @@ import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
-import de.ingrid.igeserver.research.quickfilter.*
+import de.ingrid.igeserver.research.quickfilter.DocMCloud
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
@@ -44,9 +46,6 @@ class MCloudProfile : CatalogProfile {
     @JsonIgnore
     lateinit var dateService: DateService
 
-    @Value("#{'\${spring.profiles.active:}'.indexOf('demo') != -1}")
-    private val demoMode = false
-
     override val identifier: String = "mcloud"
     override val title: String = "mCLOUD Katalog"
     override val description: String? = null
@@ -63,8 +62,7 @@ class MCloudProfile : CatalogProfile {
             ),
             FacetGroup(
                 "docType", "Dokumententyp", arrayOf(
-                    DocMCloud(),
-                    *(if (demoMode) arrayOf() else arrayOf(DocTest()))
+                    DocMCloud()
                 )
             ),
             FacetGroup(
