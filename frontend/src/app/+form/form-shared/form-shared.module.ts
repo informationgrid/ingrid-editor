@@ -44,6 +44,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { BreadcrumbComponent } from "../form-info/breadcrumb/breadcrumb.component";
 import { DestinationSelectionComponent } from "../dialogs/create/destination-selection/destination-selection.component";
 import { CreateNodeComponent } from "../dialogs/create/create-node.component";
+import { SharedPipesModule } from "../../directives/shared-pipes.module";
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { CreateNodeComponent } from "../dialogs/create/create-node.component";
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
+    SharedPipesModule,
   ],
   providers: [
     FormToolbarService,

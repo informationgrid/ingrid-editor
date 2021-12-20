@@ -46,8 +46,8 @@ export class UserAuthorizationPage extends BasePage {
       .parent()
       .within(() => {
         //cy.get('.right-button.active');
-        cy.get('.left-button').click();
-        cy.get('.left-button.active');
+        cy.get('[mattooltip="Leserecht"]').click();
+        cy.get('[mattooltip="Leserecht"].active');
       });
   }
 
@@ -58,8 +58,8 @@ export class UserAuthorizationPage extends BasePage {
       .parent()
       .within(() => {
         //cy.get('.left-button.active');
-        cy.get('.right-button').click();
-        cy.get('.right-button.active');
+        cy.get('[mattooltip="Schreibrecht"]').click();
+        cy.get('[mattooltip="Schreibrecht"].active');
       });
   }
 

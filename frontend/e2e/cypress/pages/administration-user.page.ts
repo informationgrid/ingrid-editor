@@ -10,7 +10,7 @@ export class AdminUserPage extends BasePage {
   static visit() {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.visit('manage/user');
-    cy.wait('@usersCall');
+    cy.wait('@usersCall', { timeout: 9000 });
     cy.get('.user-management-header').contains('Nutzer');
   }
 
@@ -31,7 +31,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static addNewUserRole(roleTitle: string) {
-    cy.get('mat-select').click();
+    cy.get('ige-new-user-dialog mat-select').click();
     cy.get('mat-option').contains(roleTitle).click();
   }
 
@@ -65,7 +65,7 @@ export class AdminUserPage extends BasePage {
 
   static addGroupToUser(groupName: string) {
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
-    cy.get(this.groupSelectionField).should('be.visible');
+    cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
     cy.contains('mat-option', groupName).click();
     cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
@@ -97,7 +97,7 @@ export class AdminUserPage extends BasePage {
   static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
-    cy.get('user-table').contains(name).click();
+    cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
     // sometimes further selecting goes wrong because dom is not ready -> add some time
     cy.wait(1000);
@@ -236,7 +236,6 @@ export class AdminUserPage extends BasePage {
 
         cy.kcLogout();
 
-        debugger;
         // Here we have to reload otherwise the because logout does not redirect to login page
         cy.reload();
         cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');

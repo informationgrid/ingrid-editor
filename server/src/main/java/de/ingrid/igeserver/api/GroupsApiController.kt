@@ -56,26 +56,28 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups)
         }
 
-        groups = groups.filter {
-            it.manager?.userId == userId || igeAclService.hasRightsForGroup(
-                principal as Authentication,
-                it
-            )
-        }
-/*
+        val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
 
-        // filter groups for user
-        var possibleGroupManagers = mutableListOf<String>(userId)
-        possibleGroupManagers.addAll(
-            catalogService.filterUsersForUser(
-                catalogService.getAllCatalogUsers(principal).toSet(), userId
-            ).map { user -> user.login })
-
-        groups = groups.filter { possibleGroupManagers.contains(it.manager?.userId) }
-*/
+        groups = groups
+            .filter { userDoesNotBelongToGroup(userGroupIds, it) }
+            .filter { userHasRightsForGroupsPermissions(userId, principal, it) }
 
         return ResponseEntity.ok(groups)
     }
+
+    private fun userHasRightsForGroupsPermissions(
+        userId: String,
+        principal: Principal,
+        group: Group
+    ) = group.manager?.userId == userId || igeAclService.hasRightsForGroup(
+        principal as Authentication,
+        group
+    )
+
+    private fun userDoesNotBelongToGroup(
+        userGroupIds: List<Int>,
+        group: Group
+    ) = !userGroupIds.contains(group.id!!)
 
 
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {

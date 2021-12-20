@@ -1,4 +1,5 @@
 <mat-icon
-    [ngClass]="['document-icon', getStateClass(doc)]"
-    [svgIcon]="doc.icon || doc.iconClass"
+    *ngIf="_doc"
+    [ngClass]="['document-icon', documentState]"
+    [svgIcon]="_doc.icon || _doc.iconClass"
 ></mat-icon>

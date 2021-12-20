@@ -30,7 +30,6 @@
                 matTooltip="Leserecht"
                 matTooltipShowDelay="1000"
                 (click)="updatePermission(element, permissionLevel.READ)"
-                class="left-button"
                 [class.active]="element.permission == permissionLevel.READ"
             >
                 <mat-icon>visibility</mat-icon>
@@ -38,7 +37,11 @@
             <mat-button
                 matTooltip="Nur Unterordner"
                 matTooltipShowDelay="1000"
-                *ngIf="element.isFolder"
+                *ngIf="
+                    element.isFolder &&
+                    (element.hasWritePermission ||
+                        element.hasOnlySubtreeWritePermission)
+                "
                 (click)="
                     updatePermission(
                         element,
@@ -55,10 +58,10 @@
                 ></mat-icon>
             </mat-button>
             <mat-button
+                *ngIf="element.hasWritePermission"
                 matTooltip="Schreibrecht"
                 matTooltipShowDelay="1000"
                 (click)="updatePermission(element, permissionLevel.WRITE)"
-                class="right-button"
                 [class.active]="element.permission == permissionLevel.WRITE"
             >
                 <mat-icon>edit</mat-icon>

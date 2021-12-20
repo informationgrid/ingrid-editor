@@ -54,14 +54,13 @@ mat-button {
     vertical-align: middle;
     margin-bottom: 2px;
   }
+}
 
-  &.left-button {
-    border-radius: 5px 0 0 5px;
-  }
-
-  &.right-button {
-    border-radius: 0 5px 5px 0;
-  }
+td mat-button:last-of-type {
+  border-radius: 0 5px 5px 0;
+}
+td mat-button:first-of-type {
+  border-radius: 5px 0 0 5px;
 }
 
 .permission-table-footer {

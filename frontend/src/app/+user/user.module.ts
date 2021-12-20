@@ -35,6 +35,7 @@ import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { RouterModule } from "@angular/router";
+import { SharedPipesModule } from "../directives/shared-pipes.module";
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import { RouterModule } from "@angular/router";
     MatChipsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    SharedPipesModule,
   ],
   declarations: [
     UserComponent,

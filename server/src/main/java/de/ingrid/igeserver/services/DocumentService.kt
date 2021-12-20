@@ -105,7 +105,8 @@ class DocumentService @Autowired constructor(
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
-        DRAFT("W")
+        DRAFT("W"),
+        DRAFT_AND_PUBLISHED("PW")
     }
 
     /**

@@ -9,7 +9,13 @@ import { DocumentUtils } from "../../services/document.utils";
   styleUrls: ["./document-icon.component.scss"],
 })
 export class DocumentIconComponent implements OnInit {
-  @Input() doc: any;
+  _doc: any;
+  @Input() set doc(value: any) {
+    this._doc = value;
+    this.documentState = this.getStateClass(value);
+  }
+
+  documentState: string;
 
   @HostBinding("className") componentClass: string;
 

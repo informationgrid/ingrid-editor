@@ -19,7 +19,7 @@ import { FormStateService } from "../form-state.service";
 export class SidebarComponent implements OnInit {
   @Input() address = false;
 
-  @Input() set activeId(id) {
+  @Input() set activeId(id: string) {
     this.activeTreeNode.next(id);
   }
 

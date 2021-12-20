@@ -4,12 +4,14 @@ export class DashboardPage {
   static url = '/dashboard';
 
   static visit() {
+    cy.intercept('GET', 'api/statistic').as('getStatistic');
     cy.visit('/dashboard');
+    cy.wait('@getStatistic');
   }
 
   static getLatestDocTitle(position: number) {
     return cy
-      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`)
+      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`, { timeout: 9000 })
       .invoke('text');
   }
 

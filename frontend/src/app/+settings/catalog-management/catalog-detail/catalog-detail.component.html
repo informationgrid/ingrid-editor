@@ -27,8 +27,10 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button matDialogClose>Abbrechen</button>
+    <button mat-button color="primary" matDialogClose>Abbrechen</button>
     <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
     <div fxFlex></div>
-    <button mat-button color="primary" (click)="submit()">Aktualisieren</button>
+    <button mat-flat-button color="primary" (click)="submit()">
+        Aktualisieren
+    </button>
 </mat-dialog-actions>

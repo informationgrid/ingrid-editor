@@ -11,6 +11,7 @@ import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 import { DocumentService } from "../../../services/document/document.service";
 import { map } from "rxjs/operators";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
+import { IgeDocument } from "../../../models/ige-document";
 
 @Component({
   selector: "permission-table",
@@ -111,8 +112,24 @@ export class PermissionTableComponent implements ControlValueAccessor {
           .getPath(doc.id)
           .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
       }
-      if (doc.isFolder === undefined)
-        this.isFolder(doc.id).then((isFolder) => (doc.isFolder = isFolder));
+      // if not initialized
+      if (
+        doc.isFolder === undefined ||
+        doc.hasWritePermission === undefined ||
+        doc.hasOnlySubtreeWritePermission === undefined
+      ) {
+        this.getDocument(doc.id).then((igeDoc) => {
+          doc.hasWritePermission = igeDoc.hasWritePermission;
+          doc.hasOnlySubtreeWritePermission =
+            igeDoc.hasOnlySubtreeWritePermission;
+          doc.isFolder = igeDoc._type === "FOLDER";
+
+          // downgrade permission if rights are not sufficient
+          this.adjustPermission(doc);
+        });
+      }
+
+      console.log(doc);
     });
     if (this.onChange) {
       this.onChange(val);
@@ -122,11 +139,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
   }
 
-  isFolder(id: string): Promise<boolean> {
-    return this.documentService
-      .load(id, this.forAddress)
-      .pipe(map((doc) => doc._type === "FOLDER"))
-      .toPromise();
+  getDocument(id: string): Promise<IgeDocument> {
+    return this.documentService.load(id, this.forAddress).toPromise();
   }
 
   getIcon(element) {
@@ -142,5 +156,25 @@ export class PermissionTableComponent implements ControlValueAccessor {
   updatePermission(element, level: PermissionLevel) {
     element.permission = level;
     this.onChange(this.val);
+  }
+
+  private adjustPermission(doc: any) {
+    console.log("permissions", doc.permission);
+    // all permissions are allowed
+    if (doc.hasWritePermission) return;
+
+    // adjust permission if only subtree rights are available and permission was WRITE
+    if (
+      doc.hasOnlySubtreeWritePermission &&
+      doc.permission === PermissionLevel.WRITE
+    ) {
+      console.log("adjusting permission");
+      doc.permission = PermissionLevel.WRITE_EXCEPT_PARENT;
+    }
+
+    //only read permission is allowed
+    if (!doc.hasWritePermission && !doc.hasOnlySubtreeWritePermission) {
+      doc.permission = PermissionLevel.READ;
+    }
   }
 }

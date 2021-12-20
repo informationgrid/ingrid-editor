@@ -49,7 +49,6 @@ describe('Research Page', () => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Test);
       // since there are no Test documents in this catalog, expect result to be 0
       ResearchPage.checkNoSearchResults();
-      ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
     });
   });
 

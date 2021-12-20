@@ -119,7 +119,8 @@ describe('Meta data administrator with a group', () => {
     ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
-  it('meta data administrator with group(s) should see his group(s)', () => {
+  /* We may implement this test in the future
+ it('meta data administrator with group(s) should see his group(s)', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     // check for existence of one of user's groups
@@ -127,7 +128,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     // check for existence of group not belonging to user
     cy.get('groups-table').should('not.contain', 'test_gruppe_2');
-  });
+  });*/
 
   it('meta data administrator should be able to open documents that belongs to one of his groups', () => {
     AddressPage.visit();
@@ -167,6 +168,10 @@ describe('Meta data administrator with a group', () => {
   });
 
   it('meta data admin with groups should not be able to edit/move/delete an address of his assigned groups if access is read-only', () => {
+    // log in as user who created the group
+    cy.kcLogout();
+    cy.kcLogin('user');
+
     // set access right to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -174,6 +179,10 @@ describe('Meta data administrator with a group', () => {
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead('test_z, test_z', 'Adressen');
     AdminGroupPage.toolbarSaveGroup();
+
+    // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
+    cy.kcLogout();
+    cy.kcLogin('meta2');
 
     // try to edit
     AddressPage.visit();
@@ -189,6 +198,8 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
+    cy.kcLogout();
+    cy.kcLogin('user');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
@@ -202,6 +213,10 @@ describe('Meta data administrator with a group', () => {
     const folderToMove = 'Ordner_2.Ebene_C';
     const documentToMove = 'Aquitanien, Adresse';
 
+    // log in as user who created the group
+    cy.kcLogout();
+    cy.kcLogin('user');
+
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -209,6 +224,10 @@ describe('Meta data administrator with a group', () => {
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Adressen');
     AdminGroupPage.toolbarSaveGroup();
+
+    // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
+    cy.kcLogout();
+    cy.kcLogin('meta2');
 
     // try to move a folder to the read-only folder
     AddressPage.visit();
@@ -240,6 +259,8 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.closeErrorBox();
 
     // set access right back to 'write'
+    cy.kcLogout();
+    cy.kcLogin('user');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
@@ -248,7 +269,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.toolbarSaveGroup();
   });
 
-  it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
+  /* it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
@@ -256,11 +277,11 @@ describe('Meta data administrator with a group', () => {
     // make sure the not-addable document is not in the list of the add dialogue
     cy.contains('mat-tree-node', 'Elsass, Adresse').should('not.exist');
   });
-
+*/
   it('meta data admin should be able to add documents to groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    AdminGroupPage.addNewGroup('new_group_to_have_address');
     AdminGroupPage.addDocumentToGroup('Franken, Adresse', 'Adressen');
     cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'Franken, Adresse');
   });
@@ -325,6 +346,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('test_gruppe_1');
     UserAuthorizationPage.setButtonSubfoldersOnly('Ordner_Ebene_2C', 'Daten');
     AdminGroupPage.toolbarSaveGroup();
+
     // open document
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2C']);

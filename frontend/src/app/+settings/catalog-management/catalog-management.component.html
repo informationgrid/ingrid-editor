@@ -1,12 +1,7 @@
 <page-template label="Katalogverwaltung">
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
-    <div main-header fxFlex fxLayoutAlign="start center">
-        <p *ngIf="noAssignedCatalogs">
-            Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog
-            angehören, können Sie zusätzliche Operationen ausführen.
-        </p>
-
+    <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
         <div *ngIf="profiles">
             <button
                 mat-flat-button
@@ -16,6 +11,10 @@
                 Hinzufügen
             </button>
         </div>
+        <p *ngIf="noAssignedCatalogs">
+            Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog
+            angehören, können Sie zusätzliche Operationen ausführen.
+        </p>
     </div>
 
     <div main-content>
