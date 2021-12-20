@@ -154,7 +154,6 @@ describe('Read Only Documents', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup([parentFolder, documentName], 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
     cy.get('.user-title').contains(groupName);
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.toolbarSaveGroup();
