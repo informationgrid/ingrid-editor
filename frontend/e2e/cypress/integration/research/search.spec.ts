@@ -11,7 +11,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Research Page', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     ResearchPage.visit();
   });
 
@@ -43,7 +43,8 @@ describe('Research Page', () => {
     });
   });
 
-  it('should filter search to show only documents with Test document type', () => {
+  // Test document type does not exist in mCLOUD-profile anymore and does not need to be tested
+  xit('should filter search to show only documents with Test document type', () => {
     ResearchPage.search('er');
     ResearchPage.getSearchResultCount().then(allCount => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Test);
@@ -102,17 +103,11 @@ describe('Research Page', () => {
     cy.get('ige-header-title-row').find('span > span').should('have.text', 'Test mCLOUD Dokument');
   });
 
-  it('should delete document/address via the dialogue accessible from the search result list', () => {
-    DocumentPage.visit();
-    DocumentPage.createDocument('testToDeleteFromResearchPage');
-    ResearchPage.visit();
-    ResearchPage.search('test');
-    ResearchPage.changeViewNumberDocuments();
+  it('should delete a document from search result list', () => {
+    DocumentPage.CreateFullMcloudDocumentWithAPI('testToDeleteFromResearchPage');
+    ResearchPage.search('testToDeleteFromResearchPage');
     ResearchPage.openContextMenuOfSearchResult('testToDeleteFromResearchPage', contextActionSearchResult.Delete);
     ResearchPage.deleteObjectFromSearchResultList();
-    ResearchPage.visit();
-    ResearchPage.search('test');
-    ResearchPage.changeViewNumberDocuments();
     cy.contains('td', 'testToDeleteFromResearchPage').should('not.exist');
   });
 

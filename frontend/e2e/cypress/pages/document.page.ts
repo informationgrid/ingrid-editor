@@ -101,7 +101,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(title: string, published?: boolean, parentNode = 1) {
+  static CreateFullMcloudDocumentWithAPI(title: string, published = false, parentNode = 1) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
