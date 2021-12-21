@@ -62,7 +62,7 @@ export const routes: Routes = [
     path: "manage",
     loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
     data: {
-      title: "user",
+      title: "user-permissions",
       onlyAdmin: true,
       permission: "manage_users",
       icon: "Nutzer",
