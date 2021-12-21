@@ -13,11 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "9.1.0",
+    "cypress": "9.1.1",
     "gremlins.js": "^2.2.0",
     "mocha": "^9.1.3",
     "mochawesome": "^7.0.1",
-    "mochawesome-merge": "^4.2.0",
+    "mochawesome-merge": "^4.2.1",
     "mochawesome-report-generator": "^6.0.1",
     "smtp-tester": "^1.2.0",
     "typescript": "^3.8.3"
