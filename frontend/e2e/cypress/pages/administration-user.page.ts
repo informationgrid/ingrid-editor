@@ -2,6 +2,16 @@ import { BasePage, UserAndRights } from './base.page';
 import { DashboardPage } from './dashboard.page';
 import Chainable = Cypress.Chainable;
 
+export interface UserFormData {
+  login: string;
+  role: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  organisation: string;
+  groups: string[];
+}
+
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
     cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
@@ -57,9 +67,22 @@ export class AdminUserPage extends BasePage {
     cy.wait('@failingAttempt').its('response.statusCode').should('eq', 403);
   }
 
-  static toolbarSaveUser() {
+  static saveUser() {
     cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait(100);
+  }
+
+  static updateUser(data: Partial<UserFormData>, save = true) {
+    if (data.firstName) {
+      cy.get('[data-cy=Name] .firstName input').clear().type(data.firstName);
+    }
+    if (data.email) {
+      cy.get('[data-cy=E-Mail]  formly-field-mat-input input').clear().type(data.email);
+    }
+
+    if (save) {
+      AdminUserPage.saveUser();
+    }
   }
 
   static addGroupToUser(groupName: string) {
@@ -95,15 +118,34 @@ export class AdminUserPage extends BasePage {
 
   static groupSelectionField = '.mat-select-panel-wrap';
 
+  // TODO: select user by unique property like email!
   static selectUser(name: string) {
+    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
+    this.selectUserNoWait(name);
+    cy.wait('@fetchUserGroupsRequest');
+  }
+
+  static selectUserNoWait(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
 
     // TODO: this request might change, since groups should not be fetched every time
     //       a user is loaded. Then a /api/users/** call should be enough
-    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
-    cy.wait('@fetchUserGroupsRequest');
+  }
+
+  static clearSearch() {
+    cy.get('[data-cy=search]').clear();
+  }
+
+  static userShouldNotExist(email: string) {
+    cy.get('[data-cy=search]').clear().type(email);
+    cy.get('user-table .mat-row').should('have.length', 0);
+  }
+
+  static userShouldExist(email: string) {
+    cy.get('[data-cy=search]').clear().type(email);
+    cy.get('user-table .mat-row').should('have.length', 1);
   }
 
   static selectAssociatedUser(name: string) {

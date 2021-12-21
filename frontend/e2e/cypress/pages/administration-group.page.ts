@@ -15,16 +15,27 @@ export class AdminGroupPage extends BasePage {
     cy.wait(100);
   }
 
-  static toolbarSaveGroup() {
+  static saveGroup() {
     cy.intercept('PUT', '/api/groups/**').as('completeEditingRequest');
     cy.get('[data-cy=toolbar_save_group]').click();
     cy.wait('@completeEditingRequest');
   }
 
+  // TODO: duplicate function, should be in administration-user.page
   static saveUser() {
     cy.intercept('PUT', '/api/users/**').as('completeEditingRequest');
     cy.get('[data-cy=toolbar_save_user]').click();
     cy.wait('@completeEditingRequest');
+  }
+
+  static userShouldNotExist(name: string) {
+    cy.get('[data-cy=search]').clear().type(name);
+    cy.get('groups-table .mat-row').should('have.length', 0);
+  }
+
+  static userShouldExist(name: string) {
+    cy.get('[data-cy=search]').clear().type(name);
+    cy.get('groups-table .mat-row').should('have.length', 1);
   }
 
   static addNewGroup(groupname: string) {
@@ -45,10 +56,18 @@ export class AdminGroupPage extends BasePage {
 
   static selectGroup(groupName: string) {
     cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
-    cy.get('[data-cy=search]').clear().type(groupName);
-    cy.get('groups-table').contains(groupName).click();
+    AdminGroupPage.selectGroupNoWait(groupName);
     cy.wait('@fetchGroupRequest');
+  }
+
+  static selectGroupNoWait(name: string) {
+    cy.get('[data-cy=search]').clear().type(name);
+    cy.get('groups-table').contains(name).click();
     cy.get('#formRoles').should('be.visible');
+  }
+
+  static clearSearch() {
+    cy.get('[data-cy=search]').clear();
   }
 
   static CreationDate = '.more-info div[fxlayout="row"]:nth-child(1) > div span';

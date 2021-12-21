@@ -40,7 +40,7 @@ describe('Meta data administrator without groups', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
     // try to add documents
     AdminGroupPage.selectGroup(newGroup);
@@ -178,7 +178,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead('test_z, test_z', 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
     cy.kcLogout();
@@ -205,7 +205,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite('test_z, test_z', 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
   });
 
   it('meta data admin with groups should not be able to move an address document to a read-only folder', () => {
@@ -223,7 +223,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
     cy.kcLogout();
@@ -266,7 +266,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     cy.get('.user-title').contains('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
   });
 
   /* it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
@@ -302,7 +302,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testadressen', tempLocalAddressFolder], 'Adressen');
     UserAuthorizationPage.setButtonSubfoldersOnly(tempLocalAddressFolder, 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     cy.kcLogout();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2');
@@ -327,7 +327,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempLocalFile], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     cy.kcLogout();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2');
@@ -373,7 +373,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempFolderToRelocate], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempFolderToRelocate, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     cy.kcLogout();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2');
@@ -453,7 +453,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
     AdminUserPage.addGroupToUser(groupName2);
     cy.get('[data-cy=Gruppen]').should('contain', groupName2);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
     // log in as user and make sure groups are available; (geht erst, wenn Email-Versand klappt)
     cy.writeFile('cypress/fixtures/users/meta4.json', { username: 'meta4', password: 'meta4' });
     cy.kcLogout();
@@ -475,7 +475,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.addNewGroup(newGroup);
     AdminGroupPage.addGroupDescription(description);
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
   });
 
@@ -492,7 +492,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.deleteDocumentFromGroup('test_c, test_c', 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     cy.kcLogout();
     // log in as metadata admin and try find document
     cy.kcLogin('meta2');
@@ -514,12 +514,12 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.addNewGroup(newGroup);
     // -3- assign folder to the group
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     // -4- assign group  to user
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser('MetaAdmin mitGruppen');
     AdminUserPage.addGroupToUser(newGroup);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
     cy.kcLogout();
     // -5- check existence of document
     cy.kcLogin('meta2');
@@ -757,7 +757,7 @@ describe('Catalogue admin', () => {
     AdminGroupPage.openAddDocumentsDialog('Daten');
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], true);
     cy.get('mat-dialog-actions button').eq(1).click();
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // add folder higher up in the hierarchy
     AdminGroupPage.openAddDocumentsDialog('Daten');

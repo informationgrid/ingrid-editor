@@ -40,35 +40,31 @@ describe('User', () => {
     cy.get('#formUser [data-mat-icon-name=catalog-admin]').should('be.visible');
   });
 
-  it('should be possible to rename a user', () => {
-    const firstname = 'Meta';
-    const fullName = 'Meta Admin';
-    const modifiedFullName = 'Mario Admin';
-    const modified = 'Mario';
+  it('should be possible to modify a user', () => {
+    const email = 'metaadmin@wemove.com';
+    const newEmail = 'metaadmin_modified@wemove.com';
 
-    AdminUserPage.selectUser(fullName);
+    AdminUserPage.selectUser(email);
     // modify name of a user
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.updateUser({ email: newEmail });
 
     // check modified entries were saved
-    cy.get('user-table').should('not.contain', 'Meta Admin');
-    cy.get('user-table').should('contain', modified);
+    AdminUserPage.userShouldNotExist(email);
+    AdminUserPage.userShouldExist(newEmail);
+    AdminUserPage.selectUser(newEmail);
 
-    // reverse changes
-    AdminUserPage.selectUser(modifiedFullName);
-
-    cy.get('[data-cy=Name] .firstName').click().clear().type(firstname);
-    AdminUserPage.toolbarSaveUser();
+    // revert changes
+    AdminUserPage.updateUser({ email: email });
 
     // check changes were returned
-    cy.get('user-table').should('contain', 'Meta Admin');
-    cy.get('user-table').should('not.contain', modified);
+    AdminUserPage.userShouldNotExist(newEmail);
+    AdminUserPage.userShouldExist(email);
   });
 
   it('should not be possible to empty a mandatory field and save (#2595)', () => {
     AdminUserPage.selectUser('Majid Ercan');
 
+    // TODO: use updateUser-function to modify user form (see above)
     cy.get('[data-cy=E-Mail]  formly-field-mat-input').click().clear();
     // clicking another field is needed to activate the error-message
     cy.get('[data-cy=Name] .firstName').click().clear();
@@ -84,31 +80,28 @@ describe('User', () => {
   });
 
   it('should display the discard dialog, when changes on user entries are not saved (#2675)', () => {
-    const UserLogin = 'eins';
+    let name = 'Katalog Admin1';
 
-    AdminUserPage.selectUser('Katalog Admin1');
+    AdminUserPage.selectUser(name);
     // change name, then interrupt editing by trying to switch to another user
     // after canceling the prompt to discard changes, we are still in editing mode
-    cy.get('.firstName').click().clear().type('Tralala');
-    cy.get('user-table').contains('Majid').click();
+    AdminUserPage.updateUser({ firstName: 'Modified' }, false);
+    AdminUserPage.selectUserNoWait('Majid');
     AdminUserPage.cancelChanges();
+    AdminUserPage.clearSearch();
+
     // check that firstname-Entry is not changed to the original value and that user is still selected
     cy.get('.firstName input').should('not.have.value', 'Katalog');
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
-    cy.get('.user-title').contains('Tralala Admin1');
-    //wait for new user being selected is reversed (no network request involved to intercept)
-    cy.wait(2000);
-    cy.get('user-table .selected').contains(UserLogin);
+    cy.get('.user-title').contains('Modified Admin1');
+    cy.get('user-table .selected').contains(name);
 
     // try to switch to another user, this time discarding all changes -> changes are undone, new user can be selected
-    cy.get('user-table').contains('Majid').click();
+    AdminUserPage.selectUserNoWait('Majid');
     AdminUserPage.discardChanges();
-    cy.intercept('GET', '/api/users/ige2').as('fetchInformationRequest');
-    // wait for the request that prepares switching to new user
-    cy.wait('@fetchInformationRequest');
 
     // go back to original user profile and make sure data is unchanged
-    AdminUserPage.selectUser('Katalog Admin1');
+    AdminUserPage.selectUser(name);
     cy.get('.firstName input').should('have.value', 'Katalog');
     cy.get('.lastName input').should('have.value', 'Admin1');
   });
@@ -322,7 +315,7 @@ describe('User', () => {
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
 
     AdminUserPage.addGroupToUser(groupName2);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
 
     // check groups were connected
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
@@ -330,10 +323,10 @@ describe('User', () => {
 
     // remove group-connection from user
     AdminUserPage.removeGroupFromUser(groupName);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
     cy.get('[data-cy=Gruppen]').should('contain', groupName2);
     AdminUserPage.removeGroupFromUser(groupName2);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
 
     // check groups are not connected anymore
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName);

@@ -21,7 +21,7 @@ describe('Group', () => {
     AdminGroupPage.addNewGroup(newGroup);
     cy.get('groups-table').should('contain', newGroup);
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     cy.get('groups-table').should('contain', description);
   });
@@ -60,18 +60,19 @@ describe('Group', () => {
     // modify groupname, add description and save
     cy.get('#formRoles mat-form-field input').click().clear().type(modifiedGroupName);
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // check groupname has changed
-    cy.get('groups-table').should('not.contain', groupName);
-    cy.get('groups-table').should('contain', modifiedGroupName);
+    AdminGroupPage.userShouldNotExist(groupName);
+    AdminGroupPage.userShouldExist(modifiedGroupName);
 
     // revert changes and check
     cy.get('#formRoles mat-form-field input').click().clear().type(groupName);
     cy.get('textarea').click().clear();
-    AdminGroupPage.toolbarSaveGroup();
-    cy.get('groups-table').should('not.contain', modifiedGroupName);
-    cy.get('groups-table').should('contain', groupName);
+    AdminGroupPage.saveGroup();
+
+    AdminGroupPage.userShouldNotExist(modifiedGroupName);
+    AdminGroupPage.userShouldExist(groupName);
   });
 
   it('should show discard dialog after changes and another group was selected', () => {
@@ -83,7 +84,7 @@ describe('Group', () => {
 
     cy.get('textarea').click().clear().type(description);
 
-    cy.get('groups-table').contains(groupName2).click();
+    AdminGroupPage.selectGroupNoWait(groupName2);
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     // close error box
     cy.findByText('Verwerfen').click();
@@ -100,7 +101,7 @@ describe('Group', () => {
     AdminGroupPage.selectGroup(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    cy.get('groups-table').contains(groupName2).click();
+    AdminGroupPage.selectGroupNoWait(groupName2);
     AdminUserPage.discardChanges();
 
     cy.get('groups-table .selected').contains(groupName2);
@@ -119,10 +120,10 @@ describe('Group', () => {
     cy.get('groups-table .selected').contains(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    cy.get('groups-table').contains(groupName2).click();
+    AdminGroupPage.selectGroupNoWait(groupName2);
     AdminUserPage.cancelChanges();
+    AdminGroupPage.clearSearch();
 
-    cy.wait(500);
     // selected group must be the same as before
     cy.get('groups-table .selected').contains(groupName);
   });
@@ -194,7 +195,7 @@ describe('Group', () => {
     // go back to group and delete document, this time with pushing save button
     AdminGroupPage.selectGroup('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // Go to Research section and make sure search doesn't return removed document
     ResearchPage.visit();
@@ -210,13 +211,12 @@ describe('Group', () => {
     AdminGroupPage.getNextPage();
     cy.get('groups-table').should('contain', group);
     // add group to user
-    AdminUserPage.visit();
+    AdminGroupPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser(user);
     AdminUserPage.addGroupToUser(group);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
     // jump from group to user
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.getNextPage();
     AdminGroupPage.selectGroup(group);
     AdminUserPage.selectAssociatedUser(user);
     // make sure group is associated to user
@@ -229,7 +229,7 @@ describe('Group', () => {
     AdminGroupPage.selectGroup('leere_Gruppe');
     // edit group
     AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // check that last-edited date has been updated
     const dateOfToday = Utils.getFormattedDate(new Date());

@@ -30,7 +30,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.addDocumentToGroup(tempLocalFile, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
     cy.kcLogout();
 
     // try to edit
@@ -63,7 +63,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.addDocumentToGroup(readOnlyFolder, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // login as meta2
     cy.kcLogout();
@@ -108,7 +108,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.selectGroup('gruppe_nur_daten');
     cy.get('.user-title').contains('gruppe_nur_daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     DocumentPage.visit();
     // try to copy a document from the read-only folder to another folder
@@ -125,7 +125,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.selectGroup('gruppe_nur_daten');
     cy.get('.user-title').contains('gruppe_nur_daten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
   });
 
   it('should not be able to edit fields in read only document #3512', function () {
@@ -156,13 +156,13 @@ describe('Read Only Documents', () => {
     AdminGroupPage.addNestedDocumentToGroup([parentFolder, documentName], 'Daten');
     cy.get('.user-title').contains(groupName);
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
-    AdminGroupPage.toolbarSaveGroup();
+    AdminGroupPage.saveGroup();
 
     // assign the group to user meta2
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser('MetaAdmin mitGruppen');
     AdminUserPage.addGroupToUser(groupName);
-    AdminUserPage.toolbarSaveUser();
+    AdminUserPage.saveUser();
 
     // logout from super user and login as meta2
     cy.kcLogout();
