@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 const val FIELD_STATE = "_state"
 const val FIELD_DOCUMENT_TYPE = "_type"
 const val FIELD_ID = "_id"
+const val FIELD_UUID = "_uuid"
 const val PARENT_ID = "_parent"
 const val FIELD_CREATED = "_created"
 const val FIELD_MODIFIED = "_modified"

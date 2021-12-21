@@ -419,7 +419,8 @@ export class TreeComponent implements OnInit {
           });
         } else {
           if (resetSelection) {
-            this.activate.next(id ? [id] : []);
+            const uuid = this.dataSource.getNode(id)?._uuid;
+            this.activate.next(uuid ? [uuid] : []);
           }
           // TODO: id can never be null here!
           if (id) {
@@ -554,7 +555,8 @@ export class TreeComponent implements OnInit {
 
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
-    this.activate.next([id]);
+    const uuid = this.dataSource.getNode(id)._uuid;
+    this.activate.next([uuid]);
   }
 
   /**
@@ -623,7 +625,7 @@ export class TreeComponent implements OnInit {
 
     if (id) {
       this.activeNodeId = id;
-      this.activate.next([this.activeNodeId]);
+      this.activate.next([node._uuid]);
     }
   }
 }

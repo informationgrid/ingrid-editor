@@ -45,14 +45,14 @@ class IndexService @Autowired constructor(
 
     fun getSinglePublishedDocument(catalogId: String, category: DocumentCategory, format: String, uuid: String): Document {
         return documentService.find(catalogId, category.value, INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
-            .map { documentService.getLatestDocument(it, true) }
+            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
             .first()
     }
 
     fun getPublishedDocuments(catalogId: String, category: String, format: String, currentPage: Int = 0): Page<Document> {
         val page = PageRequest.of(currentPage, 10)
         val docsToIndex = documentService.find(catalogId, category, INDEX_PUBLISHED_DOCUMENTS(format).dbFilter, page)
-            .map { documentService.getLatestDocument(it, true) }
+            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
 
         return if (docsToIndex.isEmpty) {
             log.warn("No documents found for indexing")

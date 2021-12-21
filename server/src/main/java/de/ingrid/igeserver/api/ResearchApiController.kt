@@ -48,25 +48,25 @@ class ResearchApiController @Autowired constructor(
 
     override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val userName = authUtils.getUsernameFromPrincipal(principal)
         val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
 
-        val result = researchService.query(principal, userGroups, dbId, query)
+        val result = researchService.query(principal, userGroups, catalogId, query)
         return ResponseEntity.ok(result)
 
     }
 
     override fun searchSql(principal: Principal, sqlQuery: String): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = researchService.querySql(principal, dbId, sqlQuery)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = researchService.querySql(principal, catalogId, sqlQuery)
         return ResponseEntity.ok(result)
     }
 
     override fun getQuickFilter(principal: Principal): ResponseEntity<Facets> {
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val dbType = catalogService.getCatalogById(dbId).type
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val dbType = catalogService.getCatalogById(catalogId).type
 
         val facets = researchService.createFacetDefinitions(dbType)
         return ResponseEntity.ok(facets)

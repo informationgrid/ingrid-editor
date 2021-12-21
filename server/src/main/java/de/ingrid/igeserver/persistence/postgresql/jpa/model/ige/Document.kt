@@ -31,8 +31,17 @@ class Document {
     @JsonIgnore
     var catalog: Catalog? = null
 
+    /**
+     * This is used as information during indexing, where we don't want to request database for each document
+     * we want to index. This can be removed, if we use the catalog id instead or database id of the document.
+     * Since references in profiles are stored as uuids we need the catalog id(entifier)!
+     */
+    @Transient
+    @JsonIgnore
+    var catalogIdentifier: String? = null
+
     @Column(nullable = false)
-    @JsonProperty("_id")
+    @JsonProperty("_uuid")
     var uuid: String = UUID.randomUUID().toString()
 
     @Column(nullable=false)
@@ -91,4 +100,8 @@ class Document {
 
     @Transient
     var hasOnlySubtreeWritePermission: Boolean = false
+
+    @Transient
+    @JsonProperty("_id")
+    var wrapperId: Int? = null
 }

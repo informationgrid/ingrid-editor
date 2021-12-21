@@ -4,7 +4,12 @@ import {
   UserInfo,
   Version,
 } from "../services/config/config.service";
-import { NavigationEnd, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+} from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
@@ -32,7 +37,8 @@ export class MainHeaderComponent implements OnInit {
     private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -48,7 +54,8 @@ export class MainHeaderComponent implements OnInit {
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         this.showShadow = this.router.url !== "/dashboard";
-        this.pageTitle = this.getPageTitleFromRoute(this.router.url);
+        let firstChild = this.route.snapshot.firstChild;
+        this.pageTitle = this.getTitleFromDeepestChild(firstChild);
       }
     });
   }
@@ -63,16 +70,13 @@ export class MainHeaderComponent implements OnInit {
     return initials.length === 0 ? "??" : initials;
   }
 
-  private getPageTitleFromRoute(url: string) {
-    const firstPart = url.split(";")[0].substring(1);
-
-    return (
-      this.router.config.find((route) => route.path === firstPart)?.data
-        ?.title ?? ""
-    );
-  }
-
   openProfileSettings() {
     this.router.navigate(["/profile"]);
+  }
+
+  private getTitleFromDeepestChild(child: ActivatedRouteSnapshot): string {
+    if (child.children.length > 0)
+      return this.getTitleFromDeepestChild(child.firstChild);
+    return child.data.title;
   }
 }

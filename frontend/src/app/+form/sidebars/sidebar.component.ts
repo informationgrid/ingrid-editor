@@ -57,20 +57,22 @@ export class SidebarComponent implements OnInit {
     this.clearTreeStore();
   }
 
-  async handleLoad(selectedDocIds: string[]) {
+  async handleLoad(selectedDocUuids: string[]) {
     // id: string, profile?: string, forceLoad?: boolean) {
 
     // when multiple nodes were selected then do not show any form
-    if (selectedDocIds.length !== 1) {
+    if (selectedDocUuids.length !== 1) {
       return;
     }
 
-    const currentId = this.formStateService.getForm()?.value?._id;
+    let form = this.formStateService.getForm()?.value;
+    const currentId = form?._id;
+    const currentUuid = form?._uuid;
 
     // do not load same node again
     if (
-      currentId === selectedDocIds[0] &&
-      this.router.url.indexOf(currentId) !== -1
+      currentUuid === selectedDocUuids[0] &&
+      this.router.url.indexOf(currentUuid) !== -1
     ) {
       return;
     }
@@ -86,7 +88,7 @@ export class SidebarComponent implements OnInit {
     );
 
     if (handled) {
-      this.router.navigate([this.path, { id: selectedDocIds[0] }]);
+      this.router.navigate([this.path, { id: selectedDocUuids[0] }]);
     } else {
       this.activeId = currentId;
     }

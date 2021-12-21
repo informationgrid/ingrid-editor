@@ -17,12 +17,18 @@ class ClosableTransaction(private val tm: PlatformTransactionManager, private va
 
     private var status: TransactionStatus
 
+    private var doRollback: Boolean = false
+
     init {
         status = tm.getTransaction(definition)
     }
 
     override fun close() {
-        tm.commit(status)
+        if (doRollback) tm.rollback(status) else tm.commit(status)
         callback?.invoke()
+    }
+
+    fun markForRollback() {
+        doRollback = true
     }
 }

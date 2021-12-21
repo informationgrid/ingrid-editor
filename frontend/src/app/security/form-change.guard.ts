@@ -13,9 +13,9 @@ import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
-import { TreeService } from "../+form/sidebars/tree/tree.service";
 import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
+import { IgeDocument } from "../models/ige-document";
 
 @Injectable({
   providedIn: "root",
@@ -24,8 +24,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
   constructor(
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private formStateService: FormStateService,
-    private treeService: TreeService
+    private formStateService: FormStateService
   ) {}
 
   // TODO: find another way to reset form instead of reloading, which makes a backend request
@@ -47,46 +46,51 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       return of(true);
     }
 
-    const type = target instanceof FormComponent ? "document" : "address";
     const formHasChanged = this.formStateService.getForm()?.dirty;
 
-    if (formHasChanged) {
-      const currentId = this.formStateService.getForm().value._id;
-      return this.dialog
-        .open(ConfirmDialogComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: "Änderungen speichern?",
-            message:
-              "Möchten Sie die Änderungen speichern bevor Sie die Seite verlassen?\nSie können die Änderungen auch verwerfen oder auf der Seite bleiben.",
-            buttons: [
-              { text: "Auf Seite bleiben", id: "stay" },
-              { text: "Seite verlassen", id: "leave", alignRight: true },
-              {
-                text: "Speichern und verlassen",
-                id: "save",
-                emphasize: true,
-                alignRight: true,
-              },
-            ],
-          } as ConfirmDialogData,
-        })
-        .afterClosed()
-        .pipe(
-          tap((response) =>
-            response ? this.handleAction(response, type, currentId) : null
-          ),
-          map((response) => response === "leave" || response === "save")
-        );
+    if (!formHasChanged) {
+      return of(true);
     }
-    return of(true);
+    return this.handleFormHasChanged(target);
+  }
+
+  private handleFormHasChanged(target: any) {
+    const type = target instanceof FormComponent ? "document" : "address";
+    const currentUuid = (<IgeDocument>this.formStateService.getForm().value)
+      ._uuid;
+    return this.dialog
+      .open(ConfirmDialogComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: "Änderungen speichern?",
+          message:
+            "Möchten Sie die Änderungen speichern bevor Sie die Seite verlassen?\nSie können die Änderungen auch verwerfen oder auf der Seite bleiben.",
+          buttons: [
+            { text: "Auf Seite bleiben", id: "stay" },
+            { text: "Seite verlassen", id: "leave", alignRight: true },
+            {
+              text: "Speichern und verlassen",
+              id: "save",
+              emphasize: true,
+              alignRight: true,
+            },
+          ],
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .pipe(
+        tap((response) =>
+          response ? this.handleAction(response, type, currentUuid) : null
+        ),
+        map((response) => response === "leave" || response === "save")
+      );
   }
 
   private async handleAction(
     action: undefined | "save" | "stay",
     type: "document" | "address",
-    currentId
+    currentUuid: string
   ) {
     const isAddress = type === "address";
 
@@ -96,14 +100,14 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         .save(form, false, isAddress, null, true)
         .toPromise();
       this.documentService.reload$.next({
-        id: currentId,
+        uuid: currentUuid,
         forAddress: isAddress,
       });
     } else if (action === "stay") {
-      this.treeService.selectTreeNode(isAddress, currentId);
+      // do nothing
     } else {
       this.documentService.reload$.next({
-        id: currentId,
+        uuid: currentUuid,
         forAddress: isAddress,
       });
     }

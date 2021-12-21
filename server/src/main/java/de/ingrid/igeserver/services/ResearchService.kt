@@ -18,6 +18,7 @@ import javax.persistence.EntityManager
 
 data class Result(
     val title: String?,
+    val id: Int,
     val uuid: String?,
     val _type: String?,
     val _created: Date?,
@@ -91,25 +92,25 @@ class ResearchService {
         return termParameters + clauseParameters
     }
 
-    private fun createQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
+    private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.published, document_wrapper.category
+                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.published, document_wrapper.category, document_wrapper.id as wrapperid
                 FROM catalog, document_wrapper
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
-                ${determineWhereQuery(dbId, query, groupDocUuids)}
+                ${determineWhereQuery(catalogId, query, groupDocUuids)}
                 ORDER BY document1.title;
             """
     }
 
-    private fun determineWhereQuery(dbId: String, query: ResearchQuery, groupDocUuids: List<String>): String {
-        val catalogFilter = createCatalogFilter(dbId)
-        val groupDocUuidsString = groupDocUuids.joinToString(",")
+    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocIds: List<Int>): String {
+        val catalogFilter = createCatalogFilter(catalogId)
+        val groupDocIdsString = groupDocIds.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
-        val permissionFilter = if (groupDocUuids.isEmpty()) "" else
-            """ AND (document_wrapper.uuid = ANY(('{$groupDocUuidsString}')) 
-                    OR ('{$groupDocUuidsString}') && document_wrapper.path)
+        val permissionFilter = if (groupDocIds.isEmpty()) "" else
+            """ AND (document_wrapper.id = ANY(('{$groupDocIdsString}')) 
+                    OR ('{$groupDocIdsString}') && document_wrapper.path)
             """.trimIndent()
 
         val deletedFilter = "document_wrapper.deleted = 0 AND "
@@ -131,9 +132,9 @@ class ResearchService {
         }
     }
 
-    private fun createCatalogFilter(dbId: String): String {
+    private fun createCatalogFilter(catalogId: String): String {
 
-        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$dbId'"
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 
@@ -196,6 +197,7 @@ class ResearchService {
             .addScalar("draft")
             .addScalar("published")
             .addScalar("category")
+            .addScalar("wrapperid")
             .resultList as List<Array<out Any?>>
     }
 
@@ -208,7 +210,7 @@ class ResearchService {
         return result.filter { item ->
             isAdmin || aclService.getPermissionInfo(
                 principal,
-                item[2] as String
+                item[9] as Int // "id"
             ).canRead
         }.map { item ->
             Result(
@@ -221,12 +223,13 @@ class ResearchService {
                 _category = (item[8] as? String),
                 hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
                     principal,
-                    item[2] as String
+                    item[9] as Int
                 ).canWrite,
                 hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
                     principal,
-                    item[2] as String
+                    item[9] as Int
                 ).canOnlyWriteSubtree,
+                id = item[9] as Int
             )
         }
     }
@@ -235,35 +238,51 @@ class ResearchService {
         if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value
         else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
         else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
-
-    fun querySql(principal: Principal, dbId: String, sqlQuery: String): ResearchResponse {
+    
+    fun querySql(principal: Principal, catalogId: String, sqlQuery: String): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
+        var finalQuery = ""
         try {
-            val catalogQuery = restrictQueryOnCatalog(dbId, sqlQuery)
-            val result = sendQuery(catalogQuery, emptyList())
+            assertValidQuery(sqlQuery)
+            val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
+            finalQuery = addWrapperIdToQuery(catalogQuery)
+            
+            val result = sendQuery(finalQuery, emptyList())
             val map = filterAndMapResult(result, isAdmin, principal)
 
             return ResearchResponse(map.size, map)
         } catch (error: Exception) {
             throw ClientException.withReason(
-                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage
+                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
+                data = mapOf("sql" to finalQuery)
             )
         }
     }
 
-    private fun restrictQueryOnCatalog(dbId: String, sqlQuery: String): String {
-
-        val catalogFilter = createCatalogFilter(dbId)
-
+    private fun assertValidQuery(sqlQuery: String) {
         val fromIndex = sqlQuery.indexOf("FROM")
-        val whereIndex = sqlQuery.indexOf("WHERE")
-
         if (fromIndex == -1) {
             throw ClientException.withReason("Query must contain 'FROM' statement")
         }
+        
+        // TODO: UPDATE AND DELETE IS NOT ALLOWED!
+    }
 
-        return when (whereIndex) {
+    private fun addWrapperIdToQuery(query: String): String {
+        val fromIndex = query.indexOf("FROM")
+        return """
+            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid ${query.substring(fromIndex)}
+        """.trimIndent()
+    }
+
+    private fun restrictQueryOnCatalog(catalogId: String, sqlQuery: String): String {
+
+        val catalogFilter = createCatalogFilter(catalogId)
+
+        val fromIndex = sqlQuery.indexOf("FROM")
+
+        return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter

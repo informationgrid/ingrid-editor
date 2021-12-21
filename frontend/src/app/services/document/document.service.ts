@@ -38,7 +38,7 @@ import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 export type AddressTitleFn = (address: IgeDocument) => string;
 
 export interface ReloadData {
-  id: string;
+  uuid: string;
   forAddress: boolean;
 }
 
@@ -120,10 +120,11 @@ export class DocumentService {
   load(
     id: string,
     address?: boolean,
-    updateStore = true
+    updateStore = true,
+    useUuid = false
   ): Observable<IgeDocument> {
     this.documentOperationFinished$.next(false);
-    return this.dataService.load(id).pipe(
+    return this.dataService.load(id, useUuid).pipe(
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);
@@ -266,7 +267,9 @@ export class DocumentService {
           datasetsChanged: { type: UpdateType.Update, data: json },
         })
       ),
-      tap(() => this.reload$.next({ id, forAddress: forAddress })),
+      tap((doc) =>
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
+      ),
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
@@ -320,18 +323,20 @@ export class DocumentService {
           datasetsChanged: { type: UpdateType.Update, data: json },
         })
       ),
-      // tap(json => this.treeStore.update(id, json[0])),
-      // tap(json => this.updateOpenedDocumentInTreestore(null, isAddress)),
-      tap(() => this.reload$.next({ id, forAddress: isAddress }))
-      // catchError( err => this.errorService.handle( err ) )
+      tap((doc: DocumentAbstract[]) =>
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: isAddress })
+      )
     );
   }
 
   getPath(id: string): Observable<ShortTreeNode[]> {
     return this.dataService.getPath(id).pipe(
       catchError((error) => {
-        if (error.status === 404) return [];
-        else throw error;
+        if (error.status === 404) {
+          return [];
+        } else {
+          throw error;
+        }
       }),
       map((path) => this.preparePath(path))
     );
@@ -528,12 +533,13 @@ export class DocumentService {
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id,
+        id: doc._id ? doc._id.toString() : null,
         icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || "-Ohne Titel-",
+        _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: parentId,
+        _parent: parentId ? parentId.toString() : null,
         _type: doc._type,
         _modified: doc._modified,
         hasWritePermission: doc.hasWritePermission ?? false,
@@ -561,10 +567,11 @@ export class DocumentService {
 
   private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
-    const openedDocId = store.getValue().openedDocument?.id.toString();
+    let openedDocument = store.getValue().openedDocument;
+    const openedDocId = openedDocument?.id?.toString();
     const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
     if (openedDocWasMoved) {
-      this.reload$.next({ id: openedDocId, forAddress: isAddress });
+      this.reload$.next({ uuid: openedDocument?._uuid, forAddress: isAddress });
     }
   }
 
@@ -674,7 +681,7 @@ export class DocumentService {
     return result.map(
       (pathItem) =>
         new ShortTreeNode(
-          pathItem.id,
+          pathItem.id.toString(),
           pathItem.title,
           pathItem.permission.canOnlyWriteSubtree,
           !pathItem.permission.canWrite

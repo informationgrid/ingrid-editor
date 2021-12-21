@@ -71,7 +71,8 @@ export class DynamicFormComponent
 
   behaviours: Behaviour[];
   error = false;
-  model: Partial<IgeDocument> = {};
+  // @ts-ignore
+  model: IgeDocument = {};
 
   paddingWithHeader: string;
 
@@ -136,7 +137,7 @@ export class DynamicFormComponent
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
           filter((item) => item.forAddress === this.address),
-          map((item) => item.id)
+          map((item) => item.uuid)
         )
       ),
     ])
@@ -267,7 +268,7 @@ export class DynamicFormComponent
 
     this.showValidationErrors = false;
 
-    let previousDocId = this.form.value._id;
+    let previousDocUuid = this.form.value._uuid;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
@@ -277,30 +278,32 @@ export class DynamicFormComponent
     }
 
     const loadSubscription = this.documentService
-      .load(id, this.address)
+      .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
-        tap((doc) => (this.readonly = !doc.hasWritePermission))
+        tap((doc) => (this.readonly = !doc.hasWritePermission)),
+        tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
-        (error: HttpErrorResponse) => this.handleLoadError(error, previousDocId)
+        (error: HttpErrorResponse) =>
+          this.handleLoadError(error, previousDocUuid)
       );
 
-    const updateBreadcrumbSubscription = this.documentService.updateBreadcrumb(
-      id,
-      this.query,
-      this.address
-    );
-    this.loadSubscription = [loadSubscription, updateBreadcrumbSubscription];
+    // const updateBreadcrumbSubscription = this.updateBreadcrumb(id);
+    this.loadSubscription.push(loadSubscription);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocId) {
+  private updateBreadcrumb(id: string) {
+    return this.documentService.updateBreadcrumb(id, this.query, this.address);
+  }
+
+  private handleLoadError(error: HttpErrorResponse, previousDocUuid) {
     if (error.status === 403) {
       // select previous document
       const target = this.address ? "/address" : "/form";
-      if (previousDocId) {
-        this.router.navigate([target, { id: previousDocId }]);
+      if (previousDocUuid) {
+        this.router.navigate([target, { id: previousDocUuid }]);
       } else {
         this.router.navigate([target]);
       }

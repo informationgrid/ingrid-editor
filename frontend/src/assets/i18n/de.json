@@ -5,9 +5,17 @@
     "addresses": "Adressen",
     "research": "Recherche",
     "reports": "Reports",
-    "user": "Nutzer & Rechte",
+    "user-permissions": "Nutzer & Rechte",
+    "user": "Nutzer",
+    "group": "Gruppen & Rechte",
     "import_export": "Import / Export",
-    "catalog": "Katalog"
+    "catalog": "Katalog",
+    "codelists": "Codelisten",
+    "form-behaviour": "Formulare",
+    "catalog-behaviour": "Katalogverhalten",
+    "indexing": "Indizierung",
+    "general": "Allgemein",
+    "codelist": "Codelist Repository"
   },
   "dashboard": {
     "welcome": "Guten Tag! Willkommen zurück."

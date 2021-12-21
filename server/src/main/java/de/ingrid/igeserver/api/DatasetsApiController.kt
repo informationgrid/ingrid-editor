@@ -47,8 +47,8 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val parent = data.get(FIELD_PARENT)
-        val parentId = if (parent == null || parent.isNull) null else parent.asText()
-        val resultDoc = documentService.createDocument(catalogId, data, parentId, address, publish)
+        val parentId = if (parent == null || parent.isNull) null else parent.asInt()
+        val resultDoc = documentService.createDocument(principal, catalogId, data, parentId, address, publish)
         return ResponseEntity.ok(resultDoc)
     }
 
@@ -57,7 +57,7 @@ class DatasetsApiController @Autowired constructor(
      */
     override fun updateDataset(
         principal: Principal,
-        id: String,
+        id: Int,
         data: JsonNode,
         publish: Boolean,
         unpublish: Boolean,
@@ -94,49 +94,50 @@ class DatasetsApiController @Autowired constructor(
         ids: List<String>,
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
-        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "")
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
             .let { it.canWrite || it.canOnlyWriteSubtree }
-        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
+        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it.toInt()).canRead }.all { it }
         if (!(destCanWrite && sourceCanRead)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val results = ids.map { id -> handleCopy(catalogId, id, options) }
+        val results = ids.map { id -> handleCopy(principal, catalogId, id, options) }
         return ResponseEntity.ok(results)
     }
 
     override fun moveDatasets(
         principal: Principal,
-        ids: List<String>,
+        ids: List<Int>,
         options: CopyOptions
     ): ResponseEntity<Void> {
-        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId ?: "")
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
             .let { it.canWrite || it.canOnlyWriteSubtree }
         val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it).canWrite }.all { it }
         if (!(destCanWrite && sourceCanWrite)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        ids.forEach { id -> handleMove(principal, catalogId, id, options) }
+        ids.forEach { id -> handleMove(catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
     }
 
-    private fun handleCopy(catalogId: String, id: String, options: CopyOptions): JsonNode {
+    private fun handleCopy(principal: Principal, catalogId: String, id: String, options: CopyOptions): JsonNode {
 
         val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
 
         val doc = documentService.getLatestDocument(wrapper, false, false)
 
         if (options.includeTree) {
-            validateCopyOperation(catalogId, id, options.destId)
+            validateCopyOperation(catalogId, id.toInt(), options.destId)
         }
 
         val docJson = documentService.convertToJsonNode(doc)
         (docJson as ObjectNode).put(FIELD_PARENT, options.destId)
 
-        return createCopyAndHandleSubTree(catalogId, docJson, options, documentService.isAddress(wrapper))
+        return createCopyAndHandleSubTree(principal, catalogId, docJson, options, documentService.isAddress(wrapper))
     }
 
     private fun createCopyAndHandleSubTree(
+        principal: Principal,
         catalogId: String,
         doc: JsonNode,
         options: CopyOptions,
@@ -148,13 +149,13 @@ class DatasetsApiController @Autowired constructor(
 
         // remove fields that shouldn't be persisted
         // also copied docs need new ID
-        listOf(FIELD_ID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
+        listOf(FIELD_ID, FIELD_UUID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
 
         val copiedParent =
-            documentService.createDocument(catalogId, doc, options.destId, isAddress, false) as ObjectNode
+            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false) as ObjectNode
 
         if (options.includeTree) {
-            val count = handleCopySubTree(catalogId, copiedParent, origParentId, options, isAddress)
+            val count = handleCopySubTree(principal, catalogId, copiedParent, origParentId, options, isAddress)
             copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
@@ -162,6 +163,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun handleCopySubTree(
+        principal: Principal,
         catalogId: String,
         parent: JsonNode,
         origParentId: String,
@@ -170,8 +172,8 @@ class DatasetsApiController @Autowired constructor(
     ): Long {
 
         // get all children of parent and save those recursively
-        val parentId = parent.get(FIELD_ID)?.asText()
-        val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
+        val parentId = parent.get(FIELD_ID)?.asInt()
+        val docs = documentService.findChildrenDocs(catalogId, origParentId.toInt(), isAddress)
 
         docs.hits.forEach { child ->
 
@@ -179,62 +181,51 @@ class DatasetsApiController @Autowired constructor(
                 val childDoc = documentService.getLatestDocument(it, false, false)
                 val childVersion = (documentService.convertToJsonNode(childDoc) as ObjectNode)
                     .put(FIELD_PARENT, parentId)
-                createCopyAndHandleSubTree(catalogId, childVersion, CopyOptions(parentId, true), isAddress)
+                createCopyAndHandleSubTree(principal, catalogId, childVersion, CopyOptions(parentId, true), isAddress)
             }
 
         }
         return docs.totalHits
     }
 
-    private fun handleMove(principal: Principal, catalogId: String, id: String, options: CopyOptions) {
-
-        val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
-        val doc = documentService.getLatestDocument(wrapper, false, true)
+    private fun handleMove(catalogId: String, id: Int, options: CopyOptions) {
 
         if (id == options.destId) {
             throw ConflictException.withReason("Cannot move '$id' to itself")
         }
         validateCopyOperation(catalogId, id, options.destId)
 
-        // update parent
-        doc.data.put(FIELD_PARENT, options.destId)
-
-        val published = doc.state == DocumentService.DocumentState.PUBLISHED.value
-
-        // update document which includes updating the wrapper
-        // TODO Evaluate if "republish" wanted and necessary here?
-        documentService.updateDocument(principal, catalogId, id, doc, publish = published)
-
         // update ACL parent
         documentService.aclService.updateParent(id, options.destId)
 
         // get new parent path
         val newPath = if (options.destId == null) emptyList() else {
-            getPathFromWrapper(catalogId, options.destId) + options.destId
+            getPathFromWrapper(catalogId, options.destId.toString()) + options.destId.toString()
         }
 
         // updateWrapper
-        val wrapperWithLinks = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
-        wrapperWithLinks.parent = if (options.destId == null) null else docWrapperRepo.findById(options.destId)
-        wrapperWithLinks.path = newPath
+        val docWrapper = documentService.getWrapperByDocumentId(id)
+        docWrapper.parent =
+            if (options.destId == null) null else docWrapperRepo.findById(options.destId).get()
+        docWrapper.path = newPath
 
-        docWrapperRepo.save(wrapperWithLinks)
+        docWrapperRepo.save(docWrapper)
 
         updatePathForAllChildren(catalogId, newPath, id)
     }
 
-    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: String) {
+    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
         documentService.findChildren(catalogId, id).hits
             .forEach {
-                it.path = path + id
+                it.path = path + id.toString()
                 if (it.type == "FOLDER") {
-                    updatePathForAllChildren(catalogId, it.path, it.id)
+                    updatePathForAllChildren(catalogId, it.path, it.id!!)
                 }
                 docWrapperRepo.save(it)
             }
     }
 
-    private fun validateCopyOperation(catalogId: String, sourceId: String, destinationId: String?) {
+    private fun validateCopyOperation(catalogId: String, sourceId: Int, destinationId: Int?) {
         // check destination is not part of source
         val descIds = getAllDescendantIds(catalogId, sourceId)
         if (descIds.contains(destinationId) || sourceId == destinationId) {
@@ -245,7 +236,7 @@ class DatasetsApiController @Autowired constructor(
     /**
      *  Get a list of all IDs hierarchically below a given id
      */
-    private fun getAllDescendantIds(catalogId: String, id: String): List<String> {
+    private fun getAllDescendantIds(catalogId: String, id: Int): List<Int> {
         val docs = documentService.findChildren(catalogId, id)
         return if (docs.hits.isEmpty()) {
             emptyList()
@@ -254,8 +245,8 @@ class DatasetsApiController @Autowired constructor(
                 .flatMap { doc ->
                     if (doc.countChildren > 0) getAllDescendantIds(
                         catalogId,
-                        doc.id
-                    ) + doc.id else listOf(doc.id)
+                        doc.id!!
+                    ) + doc.id!! else listOf(doc.id!!)
                 }
         }
     }
@@ -266,14 +257,14 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean
     ): ResponseEntity<List<JsonNode>> {
 
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         val children = if (!isCatAdmin && parentId == null) {
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups
-            getRootDocsFromGroup(userGroups, dbId, isAddress)
+            getRootDocsFromGroup(userGroups, catalogId, isAddress)
         } else {
-            documentService.findChildrenDocs(dbId, parentId, isAddress).hits
+            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits
         }
 
         val childDocs = children
@@ -292,7 +283,7 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean,
     ): List<DocumentWrapper> {
 
-        val actualRootIds = mutableListOf<String>()
+        val actualRootIds = mutableListOf<Int>()
         val potentialRootIds = aclService.getDatasetUuidsFromGroups(userGroups!!, isAddress)
 
         for (currentId in potentialRootIds) {
@@ -307,16 +298,16 @@ class DatasetsApiController @Autowired constructor(
             if (isRoot) actualRootIds.add(currentId)
         }
 
-        return actualRootIds.map { uuid -> documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid) }
+        return actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
 
     }
 
-    private fun isChildOf(childId: String, parentId: String, dbId: String, isAddress: Boolean): Boolean {
+    private fun isChildOf(childId: Int, parentId: Int, catalogId: String, isAddress: Boolean): Boolean {
 
-        val childrenIds = this.documentService.findChildrenDocs(dbId, parentId, isAddress).hits.map { it.id }
+        val childrenIds = this.documentService.findChildrenDocs(catalogId, parentId, isAddress).hits.mapNotNull { it.id }
         if (childrenIds.contains(childId)) return true
 
-        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, dbId, isAddress)) return true }
+        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, catalogId, isAddress)) return true }
         return false
     }
 
@@ -370,17 +361,28 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(searchResult)
     }
 
+    override fun getByUUID(
+        principal: Principal,
+        uuid: String,
+        publish: Boolean?
+    ): ResponseEntity<JsonNode> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+
+        return getByID(principal, wrapper.id!!, publish)
+    }
+
     override fun getByID(
         principal: Principal,
-        id: String,
+        id: Int,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-            val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
+            val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
 
-            val doc = documentService.getLatestDocument(wrapper)
+            val doc = documentService.getLatestDocument(wrapper, catalogId = catalogId)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
             doc.data.put(FIELD_PARENT, wrapper.parent?.id)
             doc.hasWritePermission = wrapper.hasWritePermission
@@ -395,21 +397,21 @@ class DatasetsApiController @Autowired constructor(
 
     override fun getPath(
         principal: Principal,
-        id: String
+        id: Int
     ): ResponseEntity<List<PathResponse>> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val wrapper = documentService.getWrapperByDocumentId(id)
         val path = wrapper.path
 
-        val response = path.map { uuid ->
-            val title = documentService.getTitleFromDocumentId(uuid)
-            val permission = aclService.getPermissionInfo(principal as Authentication, uuid)
-            PathResponse(uuid, title, permission)
+        val response = path.map { pathId ->
+            val pathWrapper = docWrapperRepo.findByIdNoPermissionCheck(pathId.toInt())
+            val title = pathWrapper.draft?.title ?: pathWrapper.published?.title ?: "???!"
+            val permission = aclService.getPermissionInfo(principal as Authentication, pathId.toInt())
+            PathResponse(pathId.toInt(), title, permission)
         }
 
         return ResponseEntity.ok(
             response + PathResponse(
-                id,
+                wrapper.id!!,
                 wrapper.draft?.title ?: wrapper.published?.title ?: "???",
                 PermissionInfo(true, wrapper.hasWritePermission, wrapper.hasOnlySubtreeWritePermission)
             )
@@ -417,7 +419,7 @@ class DatasetsApiController @Autowired constructor(
 
     }
 
-    data class PathResponse(val id: String, val title: String, val permission: PermissionInfo? = null)
+    data class PathResponse(val id: Int, val title: String, val permission: PermissionInfo? = null)
 
     private fun getPathFromWrapper(catalogId: String, id: String) =
         documentService.getWrapperByDocumentIdAndCatalog(catalogId, id).path

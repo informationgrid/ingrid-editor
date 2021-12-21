@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.nio.charset.Charset
+import java.security.Principal
 import java.util.*
 
 @Service
@@ -37,7 +38,8 @@ open class ImportService {
     }
 
     @Transactional
-    open fun importFile(
+    fun importFile(
+        principal: Principal,
         catalogId: String,
         importerId: String,
         file: MultipartFile,
@@ -56,23 +58,31 @@ open class ImportService {
         val uuid = document.get(FIELD_ID).asText()
         // check if document already exists
         val wrapper = try {
-            documentService.getWrapperByDocumentIdAndCatalog(catalogId, uuid)
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         } catch (ex: NotFoundException) {
             null
         }
 
+        val docObjForAddresses = documentService.convertToDocument(document)
+        extractAndSaveReferences(principal, catalogId, docObjForAddresses, options)
+
         val docObj = documentService.convertToDocument(document)
-        extractAndSaveReferences(catalogId, docObj, options)
 
         val createDocument = if (wrapper == null || options.options == "create_under_target") {
-            val doc = documentService.createDocument(catalogId, document, options.parentDocument, false, false)
+            val doc = documentService.createDocument(
+                principal,
+                catalogId,
+                document,
+                options.parentDocument.toInt(),
+                false,
+                false
+            )
             documentService.convertToDocument(doc)
         } else {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
             docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-//            docObj.created = OffsetDateTime.now()
-            documentService.updateDocument(null, catalogId, uuid, docObj, false)
+            documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj, false)
         }
 
         // TODO: return created document instead of transformed JSON
@@ -90,7 +100,12 @@ open class ImportService {
         }
     }
 
-    private fun extractAndSaveReferences(catalogId: String, doc: Document, options: ImportOptions) {
+    private fun extractAndSaveReferences(
+        principal: Principal,
+        catalogId: String,
+        doc: Document,
+        options: ImportOptions
+    ) {
 
         val refType = documentService.getDocumentType(doc.type!!)
 
@@ -108,7 +123,15 @@ open class ImportService {
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
             }
-            .forEach { documentService.createDocument(catalogId, it, publish = false, parentId = options.parentAddress) }
+            .forEach {
+                documentService.createDocument(
+                    principal,
+                    catalogId,
+                    it,
+                    parentId = options.parentAddress.toInt(),
+                    publish = false
+                )
+            }
 
     }
 
@@ -117,9 +140,9 @@ open class ImportService {
         // TODO: optimize by caching reference information
 
         return try {
-            documentService.getWrapperByDocumentIdAndCatalog(catalogId, ref.uuid)
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.uuid)
             true
-        } catch (e: RuntimeException) {
+        } catch (e: NotFoundException) {
             false
         }
 

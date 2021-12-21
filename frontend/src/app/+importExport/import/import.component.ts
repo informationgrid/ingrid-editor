@@ -10,6 +10,8 @@ import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
 import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
+import { TreeQuery } from "../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
 @Component({
   selector: "ige-import",
@@ -35,11 +37,11 @@ export class ImportComponent implements OnInit {
 
   importers: ImportTypeInfo[];
   compatibleImporters: string[] = [];
-  locationDoc: string[] = [];
-  locationAddress: string[] = [];
+  locationDoc: number[] = [];
+  locationAddress: number[] = [];
   readyForImport = false;
   chosenFiles: TransfersWithErrorInfo[];
-  private importedDocId: string = null;
+  private importedDocUuid: string = null;
   pathToDocument: ShortTreeNode[];
   hasImportError = false;
 
@@ -47,7 +49,9 @@ export class ImportComponent implements OnInit {
     private importExportService: ImportExportService,
     config: ConfigService,
     private router: Router,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
@@ -86,7 +90,7 @@ export class ImportComponent implements OnInit {
     console.log(data); // We just print out data bubbled up from event emitter.
     this.analyzedData = data;
     this.step1Complete = true;
-    this.importedDocId = data.result._id;
+    this.importedDocUuid = data.result._uuid;
     setTimeout(() => this.stepper.next());
   }
 
@@ -97,9 +101,19 @@ export class ImportComponent implements OnInit {
   }
 
   setLocation(location: string[], isAddress: boolean) {
-    isAddress
-      ? (this.locationAddress = location)
-      : (this.locationDoc = location);
+    if (isAddress) {
+      const locationId = this.addressTreeQuery
+        .getAll()
+        .filter((entity) => entity._uuid === location[0])
+        .map((entity) => <number>entity.id);
+      this.locationAddress = locationId;
+    } else {
+      const locationId = this.treeQuery
+        .getAll()
+        .filter((entity) => entity._uuid === location[0])
+        .map((entity) => <number>entity.id);
+      this.locationDoc = locationId;
+    }
     this.readyForImport =
       this.locationDoc.length === 1 && this.locationAddress.length === 1;
   }
@@ -107,7 +121,7 @@ export class ImportComponent implements OnInit {
   startImport() {
     // get path for destination for final page
     this.documentService
-      .getPath(this.locationDoc[0])
+      .getPath(this.locationDoc[0].toString())
       .subscribe((path) => (this.pathToDocument = path));
 
     this.hasImportError = false;
@@ -128,6 +142,6 @@ export class ImportComponent implements OnInit {
   }
 
   openImportedDocument() {
-    this.router.navigate(["/form", { id: this.importedDocId }]);
+    this.router.navigate(["/form", { id: this.importedDocUuid }]);
   }
 }

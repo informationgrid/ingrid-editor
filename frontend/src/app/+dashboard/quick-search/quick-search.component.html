@@ -44,7 +44,7 @@
         <mat-option
             class="multiline"
             *ngFor="let doc of docs"
-            (onSelectionChange)="selectDoc.next(doc.id)"
+            (onSelectionChange)="selectDoc.next(doc._uuid)"
         >
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
         </mat-option>
@@ -67,7 +67,7 @@
         <div class="result-title">Adressen ({{ numAddresses }})</div>
         <mat-option
             *ngFor="let address of addresses"
-            (onSelectionChange)="selectAddress.next(address.id)"
+            (onSelectionChange)="selectAddress.next(address._uuid)"
         >
             <ige-document-list-item [doc]="address"></ige-document-list-item>
         </mat-option>

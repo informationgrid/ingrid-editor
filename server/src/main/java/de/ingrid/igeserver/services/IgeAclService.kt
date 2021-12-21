@@ -56,15 +56,17 @@ class IgeAclService @Autowired constructor(
         return isAllowed
     }
 
-    fun getPermissionInfo(authentication: Authentication, uuid: String): PermissionInfo {
+    fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {
         if (hasAdminRole(authentication)) {
             return PermissionInfo(true, true, false)
+        } else if (id == null) {
+            return PermissionInfo()
         }
 
         return try {
 
             val acl = this.aclService.readAclById(
-                ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+                ObjectIdentityImpl(DocumentWrapper::class.java, id)
             )
             val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
@@ -78,14 +80,14 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<String> {
+    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
-            .map { permissions -> permissions?.mapNotNull { permission -> permission.get("uuid").asText() }.orEmpty() }
+            .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
             .flatten().toSet().toList()
     }
 
-    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<String> {
+    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
         return groups
             .map { group ->
                 mutableListOf<JsonNode>().apply {
@@ -98,7 +100,7 @@ class IgeAclService @Autowired constructor(
                     permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
                 }
             }
-            .map { permissions -> permissions.mapNotNull { permission -> permission.get("uuid").asText() } }
+            .map { permissions -> permissions.map { permission -> permission.get("id").asInt() } }
             .flatten().toSet().toList()
     }
 
@@ -120,27 +122,27 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun createAclForDocument(uuid: String, parentUuid: String?) {
+    fun createAclForDocument(id: Int, parentId: Int?) {
         // first create permission ACL
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         val acl = (aclService as JdbcMutableAclService).createAcl(objIdentity)
 
-        if (parentUuid != null) {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
+        if (parentId != null) {
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
             val parentAcl = aclService.readAclById(parentObjIdentity)
             acl.setParent(parentAcl)
             (aclService as JdbcMutableAclService).updateAcl(acl)
         }
     }
 
-    fun updateParent(uuid: String, parentUuid: String?) {
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+    fun updateParent(id: Int, parentId: Int?) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         val acl = aclService.readAclById(objIdentity) as MutableAcl
 
-        if (parentUuid == null) {
+        if (parentId == null) {
             acl.setParent(null)
         } else {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentUuid)
+            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
             val parentAcl = aclService.readAclById(parentObjIdentity)
             acl.setParent(parentAcl)
         }

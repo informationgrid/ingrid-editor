@@ -22,6 +22,13 @@ export class UserService {
     { label: "Autor", value: "author" },
   ];
 
+  roleIcon = {
+    "ige-super-admin": "catalog-admin",
+    "cat-admin": "catalog-admin",
+    "md-admin": "meta-admin",
+    author: "author",
+  };
+
   selectedUser$ = new BehaviorSubject<User>(null);
 
   constructor(
@@ -29,10 +36,11 @@ export class UserService {
     private groupService: GroupService,
     private configService: ConfigService
   ) {
-    if (!this.configService.isAdmin())
+    if (!this.configService.isAdmin()) {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin"
       );
+    }
   }
 
   getUsers(): Observable<FrontendUser[]> {
@@ -122,17 +130,5 @@ export class UserService {
 
   sendPasswordChangeRequest(login: string) {
     return this.dataService.sendPasswordChangeRequest(login);
-  }
-
-  getRoleIcon(role: string) {
-    switch (true) {
-      case role === "ige-super-admin":
-      case role === "cat-admin":
-        return "catalog-admin";
-      case role.includes("admin"):
-        return "meta-admin";
-      default:
-        return "author";
-    }
   }
 }

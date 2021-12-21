@@ -153,7 +153,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     const group = this.form.value;
     this.groupService.updateGroup(group).subscribe((group) => {
       if (group) {
-        this.groupService.selectedGroup$.next(group);
         this.form.markAsPristine();
         this.loadGroup(group.id);
       }

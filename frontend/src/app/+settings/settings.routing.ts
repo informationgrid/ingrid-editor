@@ -16,14 +16,23 @@ export const routing = RouterModule.forChild([
       {
         path: "general",
         component: GeneralSettingsComponent,
+        data: {
+          title: "general",
+        },
       },
       {
         path: "codelist",
         component: CodelistsComponent,
+        data: {
+          title: "codelist",
+        },
       },
       {
         path: "catalog",
         component: CatalogManagementComponent,
+        data: {
+          title: "catalog",
+        },
       },
     ],
   },

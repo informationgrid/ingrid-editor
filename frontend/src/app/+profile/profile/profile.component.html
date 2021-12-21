@@ -12,7 +12,7 @@
         <div class="side-title">Rolle</div>
         <div class="side-item">
             <mat-icon
-                [svgIcon]="this.userService.getRoleIcon(userInfo.role)"
+                [svgIcon]="this.userService.roleIcon[userInfo.role]"
             ></mat-icon>
             {{ getRoleLabel(userInfo.role) }}
         </div>

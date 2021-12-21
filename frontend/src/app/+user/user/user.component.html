@@ -71,7 +71,9 @@
                     <div class="document-type">
                         <mat-icon
                             [svgIcon]="
-                                getRoleIcon(this.form.get('role')?.value)
+                                userService.roleIcon[
+                                    this.form.get('role')?.value
+                                ]
                             "
                         ></mat-icon>
                     </div>

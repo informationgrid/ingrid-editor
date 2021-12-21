@@ -20,18 +20,30 @@ export const routing = RouterModule.forChild([
       {
         path: "codelists",
         component: CatalogCodelistsComponent,
+        data: {
+          title: "codelists",
+        },
       },
       {
         path: "form-behaviours",
         component: BehavioursComponent,
+        data: {
+          title: "form-behaviour",
+        },
       },
       {
         path: "catalog-behaviours",
         component: BehavioursComponent,
+        data: {
+          title: "catalog-behaviour",
+        },
       },
       {
         path: "indexing",
         component: IndexingComponent,
+        data: {
+          title: "indexing",
+        },
       },
     ],
   },

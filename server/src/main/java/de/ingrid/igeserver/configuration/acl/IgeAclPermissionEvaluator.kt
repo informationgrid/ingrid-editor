@@ -1,14 +1,12 @@
 package de.ingrid.igeserver.configuration.acl
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
-import org.springframework.security.acls.domain.BasePermission
-import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl
-import org.springframework.security.acls.domain.PermissionFactory
-import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
+import org.springframework.security.acls.domain.*
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import java.io.Serializable
@@ -30,7 +28,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         authentication: Authentication,
         targetId: Serializable?,
         targetType: String?,
-        permission: Any
+        permission: Any,
+//        parentId: Serializable?
     ): Boolean {
         if (hasAdminRole(authentication)) {
             return true
@@ -41,7 +40,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return false
         }
 
-        val objectIdentity = this.objectIdentityGenerator.createObjectIdentity(targetId, targetType)
+        val objectIdentity = objectIdentityGenerator.createObjectIdentity(targetId, targetType)
         return checkPermission(authentication, objectIdentity, permission, null)
     }
 
@@ -54,13 +53,30 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return true
         }
 
-        // convert HibernateProxy to real document class if necessary
-        val finalDomainObject = if (domainObject is HibernateProxy) {
-            domainObject.writeReplace()
-        } else domainObject
+        var finalDomainObject = if (domainObject is Optional<*>) {
+            domainObject.get()
+        } else {
+            domainObject
+        }
 
-        val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
-        return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        // convert HibernateProxy to real document class if necessary
+        if (finalDomainObject is HibernateProxy) {
+            finalDomainObject = finalDomainObject.writeReplace()
+        }
+
+//        try {
+            val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
+            return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        /*} catch (ex: IdentityUnavailableException) {
+            // in this case we probably want to create document where the DB-ID is not known yet
+            // check for permission for parent
+            val objectIdentity = if (finalDomainObject is DocumentWrapper) {
+                objectIdentityGenerator.createObjectIdentity(finalDomainObject.parent.id!!)
+            } else if (finalDomainObject is Document) {
+                objectIdentityGenerator.createObjectIdentity(finalDomainObject.parent.id)
+            }
+            return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        }*/
     }
 
     private fun hasAdminRole(authentication: Authentication): Boolean {
@@ -105,6 +121,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
                 ) {
                     logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
                     return true
+                } else if (acl == null && permission == "WRITE") { // actually more "CREATE"
+
                 }
             } catch (nfe: NotFoundException) {
                 logger.debug("WRITE_ONLY_SUBTREE permission also not found")

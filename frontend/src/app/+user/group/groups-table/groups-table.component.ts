@@ -24,6 +24,10 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   set groups(val: Group[]) {
     if (val) this.isLoading = false;
     this.dataSource.data = val ?? [];
+
+    // select previously selected group
+    const selectedGroup = this.selection.selected[0];
+    if (selectedGroup) this.setSelectionToGroup(selectedGroup);
   }
 
   @Input()
@@ -38,7 +42,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   selection: SelectionModel<Group>;
 
   @Output() onGroupSelect = new EventEmitter<Group>();
-  @Output() onDelete = new EventEmitter<string>();
+  @Output() onDelete = new EventEmitter<number>();
 
   isLoading = true;
 
@@ -60,9 +64,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.selectedGroup.subscribe((group) => {
-      this.selection.select(
-        this.dataSource.data.find((d) => d.id == group?.id)
-      );
+      this.setSelectionToGroup(group);
       if (this.paginator) {
         const pageNumber = Math.max(
           0,
@@ -82,6 +84,10 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private setSelectionToGroup(group: Group) {
+    this.selection.select(this.dataSource.data.find((d) => d.id == group?.id));
+  }
+
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -93,16 +99,5 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   trySelect(element) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
-  }
-
-  getRoleIcon(group: FrontendGroup): "group" | "group-standin" {
-    // TODO possibly also mark created groups as own groups
-    /*
-    if (this.userGroupNames?.includes(group.name)) return "group";
-    return "group-standin";
-    */
-
-    //only use standard icon for now
-    return "group";
   }
 }

@@ -1,12 +1,17 @@
 package de.ingrid.igeserver.imports.internal
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import javax.management.ObjectName
 
 @Service
 class InternalImporter : IgeImporter {
@@ -17,7 +22,30 @@ class InternalImporter : IgeImporter {
 
     override fun run(data: Any): JsonNode {
         val json = mapperService.getJsonNode((data as String))
-        return json.get("resources")
+        val version = json.get("_version").asText()
+
+        var documents = json.get("resources")
+        if (version == "0.0.1") {
+           documents = migrateDocumentsFrom(version, documents as ArrayNode)
+        }
+        return documents
+    }
+
+    private fun migrateDocumentsFrom(version: String, documents: ArrayNode): ArrayNode {
+
+
+        documents.forEach { document ->
+            document as ObjectNode
+            document.put(FIELD_UUID, document.get(FIELD_ID).asText())
+            val addresses = document.get("addresses") as ArrayNode
+            addresses.forEach { address ->
+                val ref = (address as ObjectNode).get("ref") as ObjectNode
+                ref.put(FIELD_UUID, ref.get(FIELD_ID).asText())
+            }
+        }
+
+        return documents
+
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

@@ -19,8 +19,8 @@ open class ClientException: IgeException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null) : ClientException {
-            return ClientException(STATUS_CODE, ERROR_CODE, reason, null, cause)
+        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null) : ClientException {
+            return ClientException(STATUS_CODE, ERROR_CODE, reason, data, cause)
         }
     }
 }

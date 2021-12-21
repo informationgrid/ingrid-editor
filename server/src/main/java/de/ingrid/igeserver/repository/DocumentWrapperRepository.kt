@@ -8,14 +8,21 @@ import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
+import java.util.*
 
 interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
 
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
-    fun findById(uuid: String): DocumentWrapper
+    override fun findById(id: Int): Optional<DocumentWrapper>
+
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.id = ?1")
+    fun findByIdNoPermissionCheck(id: Int): DocumentWrapper
 
     @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
-    fun findByIdAndCatalog_Identifier(id: String, catalog_identifier: String): DocumentWrapper
+    fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
+
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.catalog.identifier = ?1 AND dw.uuid = ?2")
+    fun findByCatalog_IdentifierAndUuidNoPermissionCheck(catalog_identifier: String, uuid: String): DocumentWrapper
 
     fun existsById(uuid: String): Boolean
 
@@ -28,7 +35,11 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    fun findByParent_id(parent_id: Int): List<DocumentWrapper>
+
     fun findByDraftUuidOrPublishedUuid(draft_uuid: String, published_uuid: String): DocumentWrapper
+
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
@@ -48,7 +59,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteById(uuid: String)
 
-    @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
+    // allow if it's a new document, where id is null
+    // then a permission check should be done before!
+    @PreAuthorize("#docWrapper.id == null || hasPermission(#docWrapper, 'WRITE')")
     fun save(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")

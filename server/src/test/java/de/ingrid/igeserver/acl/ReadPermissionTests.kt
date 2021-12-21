@@ -46,7 +46,7 @@ class ReadPermissionTests : AnnotationSpec() {
 
     @Test
     fun readAllowedToRootDocumentInGroup() {
-        val doc = docWrapperRepo.findById(rootUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         assertNotNull(doc)
         Assertions.assertFalse(doc.hasWritePermission)
         Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
@@ -57,7 +57,7 @@ class ReadPermissionTests : AnnotationSpec() {
      */
     @Test
     fun readAllowedToSubDocumentInGroup() {
-        val doc = docWrapperRepo.findById(childUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         assertNotNull(doc)
         Assertions.assertFalse(doc.hasWritePermission)
         Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
@@ -65,7 +65,7 @@ class ReadPermissionTests : AnnotationSpec() {
 
     @Test
     fun readAllowedToDocumentInGroupButNoReadToParent() {
-        val doc = docWrapperRepo.findById(rootUuidNoParentRead)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuidNoParentRead)
         assertNotNull(doc)
         Assertions.assertFalse(doc.hasWritePermission)
         Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
@@ -73,7 +73,7 @@ class ReadPermissionTests : AnnotationSpec() {
 
     @Test
     fun readAllowedToSubDocumentInGroupButNoReadToParent() {
-        val doc = docWrapperRepo.findById(childUuidNoParentRead)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuidNoParentRead)
         assertNotNull(doc)
         Assertions.assertFalse(doc.hasWritePermission)
         Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
@@ -81,18 +81,18 @@ class ReadPermissionTests : AnnotationSpec() {
 
     @Test(expected = AccessDeniedException::class)
     fun readNotAllowedToDocumentNotInGroup() {
-        docWrapperRepo.findById(excludedUuid)
+        docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun writeNotAllowedToRootDocumentInGroup() {
-        val doc = docWrapperRepo.findById(rootUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         docWrapperRepo.save(doc)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun writeNotAllowedToSubDocumentInGroup() {
-        val doc = docWrapperRepo.findById(childUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         docWrapperRepo.save(doc)
     }
 

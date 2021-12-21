@@ -78,7 +78,7 @@ export class FolderDashboardComponent {
     this.formToolbarService.toolbarEvent$.next("NEW_DOC");
   }
 
-  async openDocument(id: number | string) {
+  async openDocument(uuid: string) {
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService.getForm(),
       this.docService,
@@ -88,9 +88,9 @@ export class FolderDashboardComponent {
 
     if (handled) {
       if (this.isAddress) {
-        this.router.navigate(["/address", { id: id }]);
+        this.router.navigate(["/address", { id: uuid }]);
       } else {
-        this.router.navigate(["/form", { id: id }]);
+        this.router.navigate(["/form", { id: uuid }]);
       }
     }
   }

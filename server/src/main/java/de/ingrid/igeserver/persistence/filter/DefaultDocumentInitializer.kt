@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.persistence.filter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -42,7 +41,7 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         if (payload.document.uuid.isEmpty()) {
             payload.document.uuid = UUID.randomUUID().toString()
         }
-        val docId = payload.document.uuid;
+        val docId = payload.document.uuid
 
         context.addMessage(Message(this, "Process document data '$docId' before insert"))
 
@@ -72,22 +71,23 @@ class DefaultDocumentInitializer : Filter<PreCreatePayload> {
         val parentRef = try {
             when (parentId == null || parentId.isNull) {
                 true -> null
-                else -> docWrapperRepo.findById(parentId.asText())
+                else -> docWrapperRepo.findById(parentId.asInt()).get()
             }
         } catch (ex: EmptyResultDataAccessException) {
-            // this can happen during import, when a document has a parent referenced
-            payload.document.data.put(FIELD_PARENT, null as String?)
             null
         }
 
+        // remove parent from document (only store parent in wrapper)
+        payload.document.data.remove(FIELD_PARENT)
+
         val documentType = payload.document.type
-        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id
+        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id.toString()
 
         with(payload.wrapper) {
             catalog = catalogRef
             draft = null
             published = null
-            id = payload.document.uuid
+            uuid = payload.document.uuid
             parent = parentRef
             type = documentType
             category = payload.category

@@ -4,6 +4,9 @@ export class IgeDocument {
   // the ID of the document, which can be undefined for new documents
   _id?: string;
 
+  // the ID of the wrapper document, which contains this document
+  _uuid?: string;
+
   // the title of the document, which also can be dynamically added by other fields
   title?: string;
 

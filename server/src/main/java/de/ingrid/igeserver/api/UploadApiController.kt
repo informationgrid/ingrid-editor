@@ -57,7 +57,7 @@ class UploadApiController @Autowired constructor(
         flowIdentifier: String,
         flowFilename: String,
     ): ResponseEntity<UploadResponse> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId.toInt()).canWrite
         if (!canWrite) {
             val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
             return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
@@ -147,7 +147,7 @@ class UploadApiController @Autowired constructor(
         file: String,
         conflictHandling: ConflictHandling
     ): ResponseEntity<UploadResponse> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId.toInt()).canWrite
         if (!canWrite) {
             val uploadResponse = UploadResponse(ForbiddenException.withAccessRights("No access to referenced dataset"))
             return ResponseEntity<UploadResponse>(uploadResponse, HttpStatus.FORBIDDEN)
@@ -181,7 +181,7 @@ class UploadApiController @Autowired constructor(
         val idx = requestURI.indexOf(docId)
         val file = URLDecoder.decode(requestURI.substring(idx + docId.length + 1), "UTF-8")
 
-        val canRead = aclService.getPermissionInfo(principal as Authentication, docId).canRead
+        val canRead = aclService.getPermissionInfo(principal as Authentication, docId.toInt()).canRead
         if (!canRead) {
             throw ForbiddenException.withAccessRights("No access to referenced dataset")
         }
@@ -208,7 +208,7 @@ class UploadApiController @Autowired constructor(
     }
 
     override fun deleteFile(principal: Principal, docId: String, file: String): ResponseEntity<Unit> {
-        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId).canWrite
+        val canWrite = aclService.getPermissionInfo(principal as Authentication, docId.toInt()).canWrite
         if (!canWrite) {
             throw ForbiddenException.withAccessRights("No access to referenced dataset")
         }

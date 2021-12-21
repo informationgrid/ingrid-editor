@@ -183,24 +183,24 @@ INSERT INTO public.acl_sid (id, principal, sid) VALUES (2, false, 'GROUP_WRITETR
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (3, false, 'GROUP_WRITESUBTREE');
 
 -- add entity class to protect
-INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.String');
+INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.Integer');
 
 -- add documents for protection
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (1, 1, '5d2ff598-45fd-4516-b843-0b1787bd8264', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (2, 1, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 1, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (3, 1, 'c689240d-e7a9-45cc-b761-44eda0cda1f1', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (4, 1, '3fae0d5e-087f-4c26-a580-f59e54296b38', 3, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (5, 1, 'e80b856b-dbea-4f88-99e6-c554bf18480e', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (6, 1, 'e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d', 5, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (7, 1, '3ce4cf2e-2baf-4ec9-9439-9a9b7afee087', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (8, 1, '7289c68d-f036-4d61-932c-855ac408bde1', 7, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (9, 1, '5c065bb7-ec46-4cab-bb02-8de2a814230b', 8, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (10, 1, 'a211c074-6952-41ed-846c-824ed630a4e9', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (11, 1, '7a97b378-b01c-4da7-88e3-623a092d83c1', 10, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (12, 1, '0516d6de-9043-4439-a1e6-6b5b9c7bd6d5', 11, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (13, 1, '96c339ea-5caa-487a-a35d-4129f2fb9e06', null, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (14, 1, 'b304f85d-b8ff-470c-828c-700f384e3bcd', 13, 1, true);
-INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (15, 1, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 14, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (1, 1, 2000, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (2, 1, 2010, 1, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (3, 1, 2100, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (4, 1, 2110, 3, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (5, 1, 2200, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (6, 1, 2210, 5, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (7, 1, 2300, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (8, 1, 2310, 7, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (9, 1, 2320, 8, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (10, 1, 2400, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (11, 1, 2410, 10, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (12, 1, 2420, 11, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (13, 1, 2500, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (14, 1, 2510, 13, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (15, 1, 2520, 14, 1, true);
 
 -- connect documents with permission groups
 -- read access for GROUP_READTREE

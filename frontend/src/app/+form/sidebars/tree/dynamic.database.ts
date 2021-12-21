@@ -101,7 +101,8 @@ export class DynamicDatabase {
     return docs.map(
       (doc) =>
         new TreeNode(
-          doc.id.toString(),
+          <string>doc.id,
+          doc._uuid,
           doc.title,
           doc._type,
           doc._state,

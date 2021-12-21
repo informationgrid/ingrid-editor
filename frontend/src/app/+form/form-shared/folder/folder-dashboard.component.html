@@ -32,7 +32,7 @@
         <ige-document-list-item
             [docs]="childDocs$"
             [hideDate]="false"
-            (select)="openDocument($event.id)"
+            (select)="openDocument($event._uuid)"
         ></ige-document-list-item>
     </ige-card-box>
 </div>

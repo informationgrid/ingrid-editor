@@ -20,11 +20,17 @@ export const routing = RouterModule.forChild([
         path: "user",
         component: UserComponent,
         canDeactivate: [DeactivateGuard],
+        data: {
+          title: "user",
+        },
       },
       {
         path: "group",
         component: GroupComponent,
         canDeactivate: [DeactivateGuard],
+        data: {
+          title: "group",
+        },
       },
     ],
   },

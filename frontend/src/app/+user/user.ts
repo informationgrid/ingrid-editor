@@ -47,9 +47,12 @@ export class Permissions {
 }
 
 export class TreePermission {
-  uuid: string;
+  id: string;
   title: string;
-  permission: string;
+  isFolder: boolean;
+  permission: string; // TODO: still used?
+  hasWritePermission: boolean;
+  hasOnlySubtreeWritePermission: boolean;
 }
 
 export enum PermissionType {

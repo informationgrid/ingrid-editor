@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -39,10 +39,10 @@ class TestType : EntityType() {
         val addresses = doc.data.path("addresses")
         for (address in addresses) {
             val addressJson = address.path("ref")
-            val id = addressJson.path(FIELD_ID).textValue()
+            val uuid = addressJson.path(FIELD_UUID).textValue()
             val addressDoc = docService.convertToDocument(addressJson)
             addressDocs.add(addressDoc)
-            (address as ObjectNode).put("ref", id)
+            (address as ObjectNode).put("ref", uuid)
         }
         return addressDocs
     }
@@ -50,22 +50,22 @@ class TestType : EntityType() {
     private fun updateAddresses(doc: Document, onlyPublished: Boolean) {
         val addresses = doc.data.path("addresses")
         for (address in addresses) {
-            val wrapperId = if (address.path("ref").isTextual) {
+            val uuid = if (address.path("ref").isTextual) {
                 address.path("ref").asText()
             } else {
                 // fix used because references have not been saved with ID but full address
                 // this can be removed later
-                address.path("ref").path("_id").asText()
+                log.warn("Address reference is stored in a wrong way")
+                address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                // FIXME: we need to call getWrapperByDocumentIdAndCatalog
-                val wrapper = docService.getWrapperByDocumentId(wrapperId)
-                val latestDocument = docService.getLatestDocument(wrapper, onlyPublished)
+                val wrapper = docService.getWrapperByCatalogAndDocumentUuid(doc.catalogIdentifier!!, uuid)
+                val latestDocument = docService.getLatestDocument(wrapper, onlyPublished, catalogId = doc.catalogIdentifier)
                 val latestDocumentJson = docService.convertToJsonNode(latestDocument)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
-                log.error("Referenced address was not found: $wrapperId -> Should we remove it?")
+                log.error("Referenced address was not found: $uuid -> Should we remove it?")
                 continue
             }
         }
