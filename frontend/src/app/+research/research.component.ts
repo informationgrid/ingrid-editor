@@ -256,7 +256,7 @@ export class ResearchComponent implements OnInit {
       .subscribe((result) => {
         if (result) {
           this.documentService
-            .delete([hit.uuid], this.isAddress(hit))
+            .delete([hit.id], this.isAddress(hit))
             .subscribe(() => this.startSearch());
         }
       });
