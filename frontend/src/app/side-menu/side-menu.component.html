@@ -16,7 +16,7 @@
         [class.active]="currentRoute?.indexOf(item.path) === 0"
     >
         <mat-icon mat-list-icon [svgIcon]="item.data?.icon"> </mat-icon>
-        <p mat-line>{{ t(item.data?.title) }}</p>
+        <p mat-line>{{ t(item.path) }}</p>
     </a>
 
     <div class="fillVertical"></div>

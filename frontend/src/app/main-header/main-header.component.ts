@@ -4,12 +4,7 @@ import {
   UserInfo,
   Version,
 } from "../services/config/config.service";
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  NavigationEnd,
-  Router,
-} from "@angular/router";
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
@@ -54,8 +49,7 @@ export class MainHeaderComponent implements OnInit {
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         this.showShadow = this.router.url !== "/dashboard";
-        let firstChild = this.route.snapshot.firstChild;
-        this.pageTitle = this.getTitleFromDeepestChild(firstChild);
+        this.pageTitle = this.route.snapshot.firstChild.routeConfig.path;
       }
     });
   }
@@ -72,11 +66,5 @@ export class MainHeaderComponent implements OnInit {
 
   openProfileSettings() {
     this.router.navigate(["/profile"]);
-  }
-
-  private getTitleFromDeepestChild(child: ActivatedRouteSnapshot): string {
-    if (child.children.length > 0)
-      return this.getTitleFromDeepestChild(child.firstChild);
-    return child.data.title;
   }
 }
