@@ -413,7 +413,7 @@ export class DocumentPage extends BasePage {
     return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
   }
 
-  static reloadPage() {
+  static reloadTree() {
     cy.get('.reload-button').click();
   }
 

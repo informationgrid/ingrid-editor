@@ -2,7 +2,6 @@ import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Tree } from '../../pages/tree.partial';
-import Doc = Mocha.reporters.Doc;
 import { AddressPage } from '../../pages/address.page';
 
 describe('Spatial References', () => {
@@ -52,7 +51,7 @@ describe('Spatial References', () => {
     // create new document
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
     // reload the page so that the new document is visible
-    DocumentPage.reloadPage();
+    DocumentPage.reloadTree();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);

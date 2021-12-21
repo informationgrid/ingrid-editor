@@ -102,10 +102,8 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createFolder(folderName, [parentFolder]);
       Tree.containsNodeWithFolderTitle(folderName, 2);
-      // without the reload the breadcrumb doesn't seem to be built correctly
-      cy.intercept('GET', '/api/tree/children').as('treeCall');
-      DocumentPage.reloadPage();
-      cy.wait('@treeCall');
+
+      // shouldHaveTrimmedText should wait for correct breadcrumb now
       cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
     });
 
