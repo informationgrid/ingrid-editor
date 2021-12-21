@@ -96,7 +96,9 @@ export class DocumentPage extends BasePage {
     Tree.getNumberOfNodes().then(length => {
       beforeLength = length;
       cy.log('nodes count before: ' + length);
+      cy.intercept('GET', '/api/datasets/**').as('waitForFile');
       this.fillCreateDialog(title);
+      cy.wait('@waitForFile');
       cy.get('mat-tree mat-tree-node').should('have.length.at.least', beforeLength + 1);
     });
   }
