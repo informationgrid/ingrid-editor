@@ -86,6 +86,8 @@ export class AdminUserPage extends BasePage {
   }
 
   static addGroupToUser(groupName: string) {
+    // TODO: remove wait when we find another way to wait for field to be initialized
+    cy.wait(200);
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
     cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
     cy.contains('mat-option', groupName).click();
@@ -126,7 +128,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static selectUserNoWait(name: string) {
-    cy.get('[data-cy=search]').clear().type(name);
+    cy.get('[data-cy=search]').clear({ force: true }).type(name);
 
     // TODO: this request might change, since groups should not be fetched every time
     //       a user is loaded. Then a /api/users/** call should be enough
@@ -135,16 +137,16 @@ export class AdminUserPage extends BasePage {
   }
 
   static clearSearch() {
-    cy.get('[data-cy=search]').clear();
+    cy.get('[data-cy=search]').clear({ force: true });
   }
 
   static userShouldNotExist(email: string) {
-    cy.get('[data-cy=search]').clear().type(email);
+    cy.get('[data-cy=search]').clear({ force: true }).type(email);
     cy.get('user-table .mat-row').should('have.length', 0);
   }
 
   static userShouldExist(email: string) {
-    cy.get('[data-cy=search]').clear().type(email);
+    cy.get('[data-cy=search]').clear({ force: true }).type(email);
     cy.get('user-table .mat-row').should('have.length', 1);
   }
 
