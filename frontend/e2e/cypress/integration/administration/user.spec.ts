@@ -344,19 +344,16 @@ describe('User', () => {
     AdminUserPage.addGroupToUser(groupName);
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
 
-    //sometimes '[data-cy=Gruppen] mat-select' is hidden because the list from the previous adding group action
+    // sometimes '[data-cy=Gruppen] mat-select' is hidden because the list from the previous adding group action
     // is still expanded; therefore the additional wait
+    // TODO: prevent wait
     cy.wait(500);
 
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
-    // search for the user in case is hidden in second pagination page
-    cy.get('ige-search-field input').type('Test', { force: true });
 
-    // II. make sure that a group can not be added when the same group is already assigned to user
-    // (force-option is necessary because on the previous user profile a menu is still expanded)
-    cy.get('user-table').contains('Test Verantwortlicher2').click({ force: true });
+    AdminUserPage.selectUserNoWait('Test Verantwortlicher2');
     AdminUserPage.discardChanges();
     cy.get('[data-cy=Gruppen]').should('contain', 'gruppe_mit_ortsrechten');
     // check if 'gruppe_mit_ortsrechten' is not selectable
@@ -381,9 +378,9 @@ describe('User', () => {
     const modified = 'Vorname';
 
     AdminUserPage.selectUser(username);
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    AdminUserPage.updateUser({ firstName: modified }, false);
 
-    AdminUserPage.selectUser(username2);
+    AdminUserPage.selectUserNoWait(username2);
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
 
     // when overlay is findable, other entries are not clickable
@@ -396,8 +393,8 @@ describe('User', () => {
     const modified = 'Vorname';
 
     AdminUserPage.selectUser(username);
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
-    AdminUserPage.selectUser(username2);
+    AdminUserPage.updateUser({ firstName: modified }, false);
+    AdminUserPage.selectUserNoWait(username2);
 
     // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();
@@ -459,18 +456,13 @@ describe('User', () => {
     AdminUserPage.selectUser(userLogIn);
     // delete user
     AdminUserPage.deleteUser();
-    cy.get('user-table').should('not.contain', userLogIn + ' ' + userLogIn);
+
+    AdminUserPage.userShouldNotExist(userLogIn + ' ' + userLogIn);
 
     // create user again
     AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
 
-    // turn the page if user is not found on the current page
-    if (Cypress.$(`user-table tr .mat-row:contains("${userLogIn}")`)) {
-      cy.contains('user-table', userLogIn + ' ' + userLogIn);
-    } else {
-      AdminUserPage.getNextPage();
-      cy.contains('user-table', userLogIn + ' ' + userLogIn);
-    }
+    AdminUserPage.userShouldExist(userLogIn + ' ' + userLogIn);
   });
 
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
