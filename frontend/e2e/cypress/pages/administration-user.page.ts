@@ -11,7 +11,6 @@ export class AdminUserPage extends BasePage {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.visit('manage/user');
     cy.wait('@usersCall', { timeout: 9000 });
-    cy.get('.user-management-header').contains('Nutzer');
   }
 
   static addNewUserLogin(login: string) {

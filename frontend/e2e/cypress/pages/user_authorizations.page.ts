@@ -1,5 +1,4 @@
 import { BasePage } from './base.page';
-import Chainable = Cypress.Chainable;
 
 export class UserAuthorizationPage extends BasePage {
   static tryChangeFolderwithoutFoldersAccessible() {
@@ -51,6 +50,7 @@ export class UserAuthorizationPage extends BasePage {
       });
   }
 
+  // TODO: don't use tooltips for selectors (check whole file!), since they can change easily
   static changeAccessRightFromReadToWrite(objectTitle: string, objectType: string) {
     cy.get('[label="Berechtigungen ' + objectType + '"]')
       .contains(objectTitle)
@@ -73,6 +73,7 @@ export class UserAuthorizationPage extends BasePage {
       });
   }
 
+  // TODO: use better selectors by adding data-cy attributes to the fields
   static ProfileElements: Record<string, string> = {
     Title: '.left-side .page-title',
     Role: 'div.side-item:nth-child(2)',

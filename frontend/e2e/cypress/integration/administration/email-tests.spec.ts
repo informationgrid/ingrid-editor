@@ -5,7 +5,6 @@ describe('Email-tests', () => {
     cy.kcLogout();
     cy.kcLogin('user');
     AdminUserPage.visit();
-    cy.get('.page-title').contains('Nutzer');
 
     cy.task('resetEmails');
   });

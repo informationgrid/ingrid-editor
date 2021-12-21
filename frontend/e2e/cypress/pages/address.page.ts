@@ -1,5 +1,4 @@
-import { DocumentPage, SEPARATOR } from './document.page';
-import { Tree } from './tree.partial';
+import { DocumentPage } from './document.page';
 import { Utils } from './utils';
 
 export class Address {
@@ -34,7 +33,6 @@ export class AddressPage extends DocumentPage {
     cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     cy.visit('address');
     cy.wait('@treeCallAddress', { timeout: 10000 });
-    cy.contains('.page-title', 'Adressen');
   }
 
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789') {

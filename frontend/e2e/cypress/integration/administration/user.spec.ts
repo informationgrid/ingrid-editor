@@ -148,7 +148,6 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal logins', () => {
-    cy.get('.page-title').contains('Nutzer');
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('ige');
     AdminUserPage.addNewUserFirstname('Son');
@@ -164,7 +163,6 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal email addresses', () => {
-    cy.get('.page-title').contains('Nutzer');
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
     AdminUserPage.addNewUserLogin('logingt');
     AdminUserPage.addNewUserFirstname('Son');
