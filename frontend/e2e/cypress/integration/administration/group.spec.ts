@@ -139,7 +139,7 @@ describe('Group', () => {
 
     AdminUserPage.selectUser(username);
     AdminUserPage.addGroupToUser(groupName);
-    AdminGroupPage.toolbarSaveUser();
+    AdminGroupPage.saveUser();
 
     // go back to groups
     AdminGroupPage.goToTabmenu(UserAndRights.Group);

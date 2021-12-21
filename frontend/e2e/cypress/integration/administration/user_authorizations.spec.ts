@@ -1,4 +1,4 @@
-import { AdminUserPage, keysInHeader } from '../../pages/administration-user.page';
+import { AdminUserPage } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
@@ -6,7 +6,7 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
-import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
+import { AdminGroupPage } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Utils } from '../../pages/utils';
 
@@ -669,7 +669,7 @@ describe('Catalogue admin', () => {
     cy.get('.page-title').contains('Nutzer');
     AdminUserPage.selectUser('Autor_mit Gruppen');
     AdminUserPage.addGroupToUser('test_gruppe_4');
-    AdminGroupPage.toolbarSaveUser();
+    AdminGroupPage.saveUser();
     // log in as the other user
     cy.kcLogout();
     cy.kcLogin('autor2');

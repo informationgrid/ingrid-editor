@@ -1,6 +1,6 @@
 import { BasePage, UserAndRights } from './base.page';
-import Chainable = Cypress.Chainable;
 import { DashboardPage } from './dashboard.page';
+import Chainable = Cypress.Chainable;
 
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
@@ -97,19 +97,14 @@ export class AdminUserPage extends BasePage {
   static groupSelectionField = '.mat-select-panel-wrap';
 
   static selectUser(name: string) {
-    // turn the page if group is not found on the current page
-    cy.get('user-table').then($table => {
-      if ($table.text().includes(name)) {
-        cy.contains('user-table .mat-row', name);
-      } else {
-        AdminUserPage.getNextPage();
-        cy.contains('user-table .mat-row', name);
-      }
-    });
+    cy.get('[data-cy=search]').clear().type(name);
+
+    // TODO: this request might change, since groups should not be fetched every time
+    //       a user is loaded. Then a /api/users/** call should be enough
+    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
-    // sometimes further selecting goes wrong because dom is not ready -> add some time
-    cy.wait(1000);
+    cy.wait('@fetchUserGroupsRequest');
   }
 
   static selectAssociatedUser(name: string) {
