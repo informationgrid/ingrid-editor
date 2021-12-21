@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
-import { BehaviorSubject, combineLatest, Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { catchError, map } from "rxjs/operators";
 import { SelectOptionUi } from "../codelist/codelist.service";
@@ -9,7 +9,6 @@ import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 import { IgeError } from "../../models/ige-error";
 
 @Injectable({
@@ -105,6 +104,16 @@ export class UserService {
     return this.dataService.getExternalUsers();
   }
 
+  private getExternalUsersAsSelectOptions(): Observable<SelectOptionUi[]> {
+    return this.getExternalUsers().pipe(
+      map((users) =>
+        users.map((user) => {
+          return { label: user.login, value: user.login };
+        })
+      )
+    );
+  }
+
   getUserFormFields(
     groupClickCallback: (id: number) => void = undefined
   ): FormlyFieldConfig[] {
@@ -118,13 +127,7 @@ export class UserService {
   getNewUserFormFields(): FormlyFieldConfig[] {
     return getNewUserFormFields(
       this.availableRoles,
-      this.getExternalUsers().pipe(
-        map((users) =>
-          users.map((user) => {
-            return { label: user.login, value: user.login };
-          })
-        )
-      )
+      this.getExternalUsersAsSelectOptions()
     );
   }
 

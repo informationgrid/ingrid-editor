@@ -15,6 +15,7 @@
                 autocomplete="off"
                 igeFocus
                 [(ngModel)]="model.name"
+                (keyup.enter)="catForm.form.valid && dialogRef.close(model)"
                 name="name"
                 required
             />

@@ -187,15 +187,9 @@ export class DynamicFormComponent
   }
 
   private handleJsonViewPlugin() {
-    const jsonViewIsActive = this.formPlugins.plugins.find(
-      (p) => p.id === "plugin.show.json"
-    ).isActive;
-
-    if (jsonViewIsActive) {
-      this.session.showJSONView$
-        .pipe(untilDestroyed(this))
-        .subscribe((show) => (this.showJson = show));
-    }
+    this.session.showJSONView$
+      .pipe(untilDestroyed(this))
+      .subscribe((show) => (this.showJson = show));
   }
 
   private handleServerSideValidationErrors() {
