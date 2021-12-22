@@ -44,6 +44,30 @@ export class AdminUserPage extends BasePage {
     cy.get('mat-option').contains(roleTitle).click();
   }
 
+  static addNewUser(data: Partial<UserFormData>, save = true) {
+    if (data.firstName) {
+      this.addNewUserFirstname(data.firstName);
+    }
+    if (data.lastName) {
+      this.addNewUserLastname(data.lastName);
+    }
+
+    if (data.login) {
+      this.addNewUserLogin(data.login);
+    }
+
+    if (data.email) {
+      this.addNewUserEmail(data.email);
+    }
+    if (data.role) {
+      this.addNewUserRole(data.role);
+    }
+
+    if (save) {
+      AdminUserPage.confirmAddUserDialog();
+      this.userShouldExist(data.email!);
+    }
+  }
   static confirmAddUserDialog() {
     this.applyDialog();
     cy.get('error-dialog').should('not.exist');

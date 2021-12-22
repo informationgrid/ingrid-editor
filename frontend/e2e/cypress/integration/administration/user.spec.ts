@@ -1,4 +1,4 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
+import { AdminUserPage, UserFormData } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
@@ -12,20 +12,28 @@ describe('User', () => {
 
   it('should create a new user', () => {
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('loginz');
-    AdminUserPage.addNewUserFirstname('Son');
-    AdminUserPage.addNewUserLastname('Goku');
 
+    let user: UserFormData = {
+      firstName: 'Son',
+      lastName: 'Goku',
+      email: '',
+      login: 'loginz',
+      role: '',
+      groups: [],
+      organisation: ''
+    };
+
+    AdminUserPage.addNewUser(user, false);
     // check "OK"-button not clickable, when mandatory fields are not filled
     cy.get('button').contains('Anlegen').parent().should('have.class', 'mat-button-disabled');
 
     // all mandatory fields must be filled
-    AdminUserPage.addNewUserEmail('test@wemove.com');
-    AdminUserPage.addNewUserRole('Katalog-Administrator');
+    user.email = 'test@wemove.com';
+    user.role = 'Katalog-Administrator';
+    AdminUserPage.addNewUser(user, false);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
 
     AdminUserPage.confirmAddUserDialog();
-
     // check if user has been added to user list
     cy.contains('user-table', 'loginz');
   });
@@ -142,11 +150,17 @@ describe('User', () => {
 
   it('should not be possible for two users to have equal logins', () => {
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('ige');
-    AdminUserPage.addNewUserFirstname('Son');
-    AdminUserPage.addNewUserLastname('Goku');
-    AdminUserPage.addNewUserEmail('test@wemove.com');
-    AdminUserPage.addNewUserRole('Katalog-Administrator');
+    let user: UserFormData = {
+      firstName: 'Son',
+      lastName: 'Goku',
+      email: 'test@wemove.com',
+      login: 'ige',
+      role: 'Katalog-Administrator',
+      groups: [],
+      organisation: ''
+    };
+
+    AdminUserPage.addNewUser(user, false);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.attemptIllegitimateApplyDialog();
 
@@ -157,11 +171,17 @@ describe('User', () => {
 
   it('should not be possible for two users to have equal email addresses', () => {
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('logingt');
-    AdminUserPage.addNewUserFirstname('Son');
-    AdminUserPage.addNewUserLastname('Goten');
-    AdminUserPage.addNewUserEmail('me@wemove.com');
-    AdminUserPage.addNewUserRole('Autor');
+    let user: UserFormData = {
+      firstName: 'Son',
+      lastName: 'Goten',
+      email: 'me@wemove.com',
+      login: 'logingt',
+      role: 'Autor',
+      groups: [],
+      organisation: ''
+    };
+
+    AdminUserPage.addNewUser(user, false);
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.attemptIllegitimateApplyDialog();
 
@@ -221,12 +241,18 @@ describe('User', () => {
     const toDelete = 'todelete inthistest';
     // create user
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('autor112');
-    AdminUserPage.addNewUserFirstname('todelete');
-    AdminUserPage.addNewUserLastname('inthistest');
-    AdminUserPage.addNewUserEmail('autor112@wemove.com');
-    AdminUserPage.addNewUserRole('Autor');
-    AdminUserPage.confirmAddUserDialog();
+
+    let user: UserFormData = {
+      firstName: 'todelete',
+      lastName: 'inthistest',
+      email: 'autor112@wemove.com',
+      login: 'autor112',
+      role: 'Autor',
+      groups: [],
+      organisation: ''
+    };
+
+    AdminUserPage.addNewUser(user, true);
     // check user has been created
     AdminUserPage.selectUser(toDelete);
     // delete user

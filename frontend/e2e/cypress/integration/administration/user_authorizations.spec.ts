@@ -1,4 +1,4 @@
-import { AdminUserPage } from '../../pages/administration-user.page';
+import { AdminUserPage, UserFormData } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
@@ -432,13 +432,17 @@ describe('Meta data administrator with a group', () => {
   it('meta data admin should be able to create authors', () => {
     AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('some_random_authorlogin');
-    AdminUserPage.addNewUserFirstname('random');
-    AdminUserPage.addNewUserLastname('author');
-    AdminUserPage.addNewUserEmail('test@thisauthor.com');
-    AdminUserPage.addNewUserRole('Autor');
-    cy.contains('button', 'Anlegen').should('be.enabled');
-    AdminUserPage.confirmAddUserDialog();
+
+    let user: UserFormData = {
+      firstName: 'random',
+      lastName: 'author',
+      email: 'test@thisauthor.com',
+      login: 'some_random_authorlogin',
+      role: 'Autor',
+      groups: [],
+      organisation: ''
+    };
+    AdminUserPage.addNewUser(user, true);
   });
 
   xit('meta data admin should be able to create other metadata administrators and assign them groups', () => {
@@ -447,13 +451,17 @@ describe('Meta data administrator with a group', () => {
     //create user
     AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('meta4');
-    AdminUserPage.addNewUserFirstname('Metadaten');
-    AdminUserPage.addNewUserLastname('Vier');
-    AdminUserPage.addNewUserEmail('MD4@wemove.com');
-    AdminUserPage.addNewUserRole('Metadaten-Administrator');
-    cy.get('button').contains('Anlegen').parent().should('not.be.disabled');
-    AdminUserPage.confirmAddUserDialog();
+    let user: UserFormData = {
+      firstName: 'Metadaten',
+      lastName: 'Vier',
+      email: 'MD4@wemove.com',
+      login: 'meta4',
+      role: 'Metadaten-Administrator',
+      groups: [],
+      organisation: ''
+    };
+    AdminUserPage.addNewUser(user, true);
+
     //assign groups to user
     AdminUserPage.addGroupToUser(groupName);
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
@@ -574,12 +582,16 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.visit();
     // create a new user
     cy.contains('button', 'Hinzufügen').click();
-    AdminUserPage.addNewUserLogin('autor7');
-    AdminUserPage.addNewUserFirstname('Autor_for_MD_test');
-    AdminUserPage.addNewUserLastname('Test_autor');
-    AdminUserPage.addNewUserEmail('testmd@wemove.com');
-    AdminUserPage.addNewUserRole('Autor');
-    AdminUserPage.confirmAddUserDialog();
+    let user: UserFormData = {
+      firstName: 'Autor_for_MD_test',
+      lastName: 'Test_autor',
+      email: 'testmd@wemove.com',
+      login: 'autor7',
+      role: 'Metadaten-Administrator',
+      groups: [],
+      organisation: ''
+    };
+    AdminUserPage.addNewUser(user, true);
 
     // log in as another metadata admin
     cy.kcLogout();
