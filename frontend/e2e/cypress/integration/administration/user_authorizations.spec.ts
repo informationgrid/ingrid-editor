@@ -410,6 +410,12 @@ describe('Meta data administrator with a group', () => {
     Tree.openNode(['Ordner_2.Ebene_C', 'Ordner_3.Ebene_F']);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
 
+    /*
+     When the loading is slow, there is an error message with "Sie haben keine Schreibrechte auf Adressen" displayed shortly
+     before the breadcrumb with the path is shown.
+    */
+    cy.contains('.error-box', 'Sie haben keine Schreibrechte');
+    cy.get('.error-box', { timeout: 8000 }).should('not.exist');
     // make sure the parts of the path that point to not-allowed folders are disabled
     cy.get('mat-tab-group .mat-tooltip-trigger')
       .filter('.disabled')
