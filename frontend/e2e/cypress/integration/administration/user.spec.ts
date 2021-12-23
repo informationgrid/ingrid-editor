@@ -2,6 +2,7 @@ import { AdminUserPage, UserFormData } from '../../pages/administration-user.pag
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
+import { AdminGroupPage } from '../../pages/administration-group.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -365,22 +366,17 @@ describe('User', () => {
 
     // I. make sure that same group cannot be added twice consecutively
     AdminUserPage.selectUser(username);
-
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
     AdminUserPage.addGroupToUser(groupName);
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
-
-    // sometimes '[data-cy=Gruppen] mat-select' is hidden because the list from the previous adding group action
-    // is still expanded; therefore the additional wait
-    // TODO: prevent wait
-    cy.wait(500);
+    cy.get('.mat-select-panel-wrap').should('not.exist', { timeout: 10000 });
 
     // check if 'Testgruppe' is not selectable a second time
     cy.get('[data-cy=Gruppen] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
 
+    AdminUserPage.visit();
     AdminUserPage.selectUserNoWait('Test Verantwortlicher2');
-    AdminUserPage.discardChanges();
     cy.get('[data-cy=Gruppen]').should('contain', 'gruppe_mit_ortsrechten');
     // check if 'gruppe_mit_ortsrechten' is not selectable
     cy.get('[data-cy=Gruppen] mat-select').click();
