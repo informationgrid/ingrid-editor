@@ -103,8 +103,7 @@ describe('General create documents/folders', () => {
       DocumentPage.createFolder(folderName, [parentFolder]);
       Tree.containsNodeWithFolderTitle(folderName, 2);
 
-      // shouldHaveTrimmedText should wait for correct breadcrumb now
-      cy.get('ige-form-info ige-breadcrumb').shouldHaveTrimmedText(`${ROOT}${SEPARATOR}${parentFolder}`);
+      cy.get('ige-form-info ige-breadcrumb').should('have.text', `${ROOT}${SEPARATOR}${parentFolder}`);
     });
 
     it('should delete a folder with no children', () => {
