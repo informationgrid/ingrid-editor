@@ -180,10 +180,9 @@ describe('Group', () => {
     cy.get('[data-cy=toolbar_save_group]').should('be.enabled');
   });
 
-  it('should delete a document from a group when deleting action is performed and the save button is pressed (#3469)', () => {
+  // FIXME: This test does not do what ticket #3469 describes
+  xit('should delete a document from a group when deleting action is performed and the save button is pressed (#3469)', () => {
     // delete address from group
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
 

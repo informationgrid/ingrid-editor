@@ -131,6 +131,8 @@ describe('Research Page', () => {
     ResearchPage.getCSVFile();
     cy.wait('@csvRequest');
     const downloadsFolder = Cypress.config('downloadsFolder');
+    // make sure file is completely downloaded
+    cy.wait(1000);
     cy.readFile(downloadsFolder + '/research.csv', { timeout: 10000 }).should('exist');
   });
 
