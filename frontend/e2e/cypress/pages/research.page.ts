@@ -80,8 +80,6 @@ export class ResearchPage {
 
   //check first radio button, only if a list with suggestions is offered
   static chooseFirstLocationSuggestionByRadioButton(location: string): void {
-    cy.intercept('/search/' + location + '*').as('waitForSuggestions');
-    cy.wait('@waitForSuggestions', { timeout: 10000 });
     cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
   }
 
@@ -97,7 +95,9 @@ export class ResearchPage {
 
   static addTitleAndLocationForSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     if (location !== undefined) {
+      cy.intercept('/search/' + location + '*').as('waitForSuggestions');
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
+      cy.wait('@waitForSuggestions', { timeout: 10000 });
       this.chooseFirstLocationSuggestionByRadioButton(location);
     }
     if (title !== undefined) {
@@ -111,7 +111,9 @@ export class ResearchPage {
 
   static interruptEditingSpatialReference(location = 'Stuttgart', title = 'testSpatial'): void {
     ResearchPage.openContextMenuSpatialReference(contextActionSpatial.Edit);
+    cy.intercept('/search/' + location + '*').as('waitForSuggestions');
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
+    cy.wait('@waitForSuggestions', { timeout: 10000 });
     this.chooseFirstLocationSuggestionByRadioButton(location);
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //enter title
     cy.get('button').contains('Abbrechen').click();
@@ -163,7 +165,9 @@ export class ResearchPage {
   }
 
   static downloadCSVFile(): void {
+    cy.intercept('GET', /\/[\w-.]+.js/).as('getCSV');
     cy.contains('ige-result-table button', 'CSV').click();
+    cy.wait('@getCSV');
   }
 
   static saveSearchProfile(title: string, description: string, extendedScope = false): void {
