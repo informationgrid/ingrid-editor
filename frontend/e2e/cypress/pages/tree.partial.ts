@@ -50,10 +50,10 @@ export class Tree {
     });
   }
 
-  static openNode(targetNodePath: string[], isInsideDialog: boolean = false, terminal: boolean = true) {
+  static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
-      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1, terminal);
+      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1);
     });
     if (!isInsideDialog) {
       this.determineRootAndCheckPath(targetNodePath);
@@ -74,7 +74,6 @@ export class Tree {
     exact = true,
     hierarchyLevel?: number,
     forceClick?: boolean,
-    terminal?: boolean
   ) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
@@ -86,14 +85,24 @@ export class Tree {
         .should('contain.text', nodeTitle) // assert here to wait for tree to be updated in case node has been moved
         .contains('.label span', query)
         .then(node => {
-          const treeNodeParent = node.parent().parent().parent();
-          if (forceClick || !treeNodeParent.hasClass('expanded')) {
-            cy.log('Clicking on node: ' + nodeTitle);
-            node.trigger('click');
-            // give some time to add open state. Parent might be selected otherwise again instead of child
-            if (!isInsideDialog && forceClick && terminal) {
+          const treeNode = node.parents('mat-tree-node');
+          const nodeIsSelected = treeNode.hasClass('active');
+          const nodeIsExpanded = treeNode.hasClass('expanded');
+
+          if (forceClick) {
+            if (!isInsideDialog && !nodeIsSelected) {
+              // wait for document loaded, otherwise check might fail
+              cy.intercept('GET', '/api/datasetsByUuid/*').as('documentFetched');
+              node.trigger('click');
+              cy.wait("@documentFetched")
               cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
+            } else {
+              node.trigger('click');
+            }
+          } else {
+            if (!nodeIsExpanded) {
+              node.trigger('click');
             }
           }
         });
