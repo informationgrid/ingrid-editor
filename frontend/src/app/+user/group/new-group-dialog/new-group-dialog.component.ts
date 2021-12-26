@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { GroupService } from "../../../services/role/group.service";
 import { Group } from "../../../models/user-group";
 import { ModalService } from "../../../services/modal/modal.service";
 import { MatDialogRef } from "@angular/material/dialog";
+import { GroupQuery } from "../../../store/group/group.query";
 
 @Component({
   selector: "ige-new-group-dialog",
@@ -14,17 +15,16 @@ export class NewGroupDialogComponent implements OnInit {
     name: new FormControl("", Validators.required),
   });
 
-  groups: Group[];
+  groups = this.groupQuery.getAll();
 
   constructor(
     private groupService: GroupService,
+    private groupQuery: GroupQuery,
     private modalService: ModalService,
     public dialogRef: MatDialogRef<NewGroupDialogComponent>
   ) {}
 
-  ngOnInit(): void {
-    this.groupService.getGroups().subscribe((groups) => (this.groups = groups));
-  }
+  ngOnInit(): void {}
 
   createGroup() {
     const newGroup = new Group({

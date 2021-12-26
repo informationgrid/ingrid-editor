@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { Group } from "../../models/user-group";
@@ -40,7 +40,7 @@ export class GroupDataService {
       return this.http.get<Group[]>(this.configuration.backendUrl + "groups");
     } catch (e) {
       console.error("Could not get groups");
-      return Observable.create([]);
+      return of([]);
     }
   }
 

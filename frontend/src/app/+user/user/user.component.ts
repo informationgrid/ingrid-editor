@@ -25,6 +25,7 @@ import { SessionQuery } from "../../store/session.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
+import { GroupQuery } from "../../store/group/group.query";
 
 @UntilDestroy()
 @Component({
@@ -52,6 +53,7 @@ export class UserComponent
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,
+    private groupQuery: GroupQuery,
     private configService: ConfigService,
     private router: Router,
     public userManagementService: UserManagementService,
@@ -61,17 +63,25 @@ export class UserComponent
   ) {
     this.model = new FrontendUser();
     this.searchQuery = "";
-    this.formlyFieldConfig = this.userService.getUserFormFields(
-      this.groupSelectCallback
-    );
+    this.groupService.getGroups();
+    this.groupQuery.selectAll().subscribe((groups) => {
+      this.formlyFieldConfig = this.userService.getUserFormFields(
+        groups,
+        this.groupSelectCallback
+      );
+    });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 
-  groupSelectCallback = (groupId: number) =>
+  groupSelectCallback = (groupIdString: string) => {
+    const groupId = +groupIdString;
+    const doReload = this.groupQuery.getActiveId() === groupId;
     this.groupService.getGroup(groupId).subscribe((group) => {
-      this.groupService.selectedGroup$.next(group);
       this.router.navigate(["/manage/group"]);
+
+      if (doReload) this.groupService.forceReload$.next();
     });
+  };
 
   ngAfterViewInit(): void {
     this.tableWidth = this.session.getValue().ui.userTableWidth;

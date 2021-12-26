@@ -6,8 +6,8 @@ import { Group } from "../../models/user-group";
 
 export const getUserFormFields = (
   roles: SelectOptionUi[],
-  groups: Observable<Group[]>,
-  groupClickCallback: (id: number) => void = undefined
+  groups: Group[],
+  groupClickCallback: (id: string) => void = undefined
 ): FormlyFieldConfig[] => {
   return [
     {
@@ -96,16 +96,12 @@ export const getUserFormFields = (
       templateOptions: {
         externalLabel: "Gruppen",
         placeholder: "Gruppe wählen...",
-        options: groups.pipe(
-          map((groups) => {
-            return groups.map((group) => {
-              return {
-                label: group.name,
-                value: group.id + "",
-              };
-            });
-          })
-        ),
+        options: groups.map((group) => {
+          return {
+            label: group.name,
+            value: group.id + "",
+          };
+        }),
         onItemClick: groupClickCallback,
         noDrag: true,
         elementIcon: "group",

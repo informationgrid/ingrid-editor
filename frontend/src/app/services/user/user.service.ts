@@ -115,13 +115,11 @@ export class UserService {
   }
 
   getUserFormFields(
-    groupClickCallback: (id: number) => void = undefined
+    groups,
+    groupClickCallback: (id: string) => void = undefined
   ): FormlyFieldConfig[] {
-    return getUserFormFields(
-      this.availableRoles,
-      this.groupService.getGroups(),
-      groupClickCallback
-    );
+    console.log("get user form fields");
+    return getUserFormFields(this.availableRoles, groups, groupClickCallback);
   }
 
   getNewUserFormFields(): FormlyFieldConfig[] {

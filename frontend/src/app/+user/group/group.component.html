@@ -2,7 +2,7 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Gruppen {{ groups ? "(" + groups.length + ")" : "" }}
+                Gruppen ({{ (groups | async)?.length }})
             </div>
             <mat-toolbar>
                 <mat-toolbar-row>
@@ -50,10 +50,10 @@
         >
             <groups-table
                 [query]="searchQuery"
-                [groups]="groups"
+                [groups]="groups | async"
                 [userGroupNames]="userGroupNames"
-                [selectedGroup]="groupService.selectedGroup$"
-                (onGroupSelect)="loadGroup($event.id)"
+                [selectedGroup]="groupQuery.selectActiveId()"
+                (onGroupSelect)="groupService.setActive($event.id)"
                 (onDelete)="deleteGroup($event)"
             ></groups-table>
         </as-split-area>

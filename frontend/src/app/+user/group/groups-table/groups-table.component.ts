@@ -11,8 +11,8 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
-import { FrontendGroup, Group } from "../../../models/user-group";
-import { Subject } from "rxjs";
+import { Group } from "../../../models/user-group";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "groups-table",
@@ -27,7 +27,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
     // select previously selected group
     const selectedGroup = this.selection.selected[0];
-    if (selectedGroup) this.setSelectionToGroup(selectedGroup);
+    if (selectedGroup) this.setSelectionToGroup(selectedGroup.id);
   }
 
   @Input()
@@ -35,7 +35,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filter;
   }
 
-  @Input() selectedGroup: Subject<Group>;
+  @Input() selectedGroup: Observable<number>;
   @Input() userGroupNames: string[];
   displayedColumns: string[] = ["role-icon", "name", "settings"];
   dataSource = new MatTableDataSource([]);
@@ -63,13 +63,13 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.selectedGroup.subscribe((group) => {
-      this.setSelectionToGroup(group);
+    this.selectedGroup.subscribe((groupId) => {
+      this.setSelectionToGroup(groupId);
       if (this.paginator) {
         const pageNumber = Math.max(
           0,
           Math.floor(
-            this.dataSource.data.findIndex((d) => d.id === group?.id) /
+            this.dataSource.data.findIndex((d) => d.id === groupId) /
               this.paginator.pageSize
           )
         );
@@ -84,8 +84,8 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private setSelectionToGroup(group: Group) {
-    this.selection.select(this.dataSource.data.find((d) => d.id == group?.id));
+  private setSelectionToGroup(groupId: number) {
+    this.selection.select(this.dataSource.data.find((d) => d.id == groupId));
   }
 
   @ViewChild(MatSort) sort: MatSort;
