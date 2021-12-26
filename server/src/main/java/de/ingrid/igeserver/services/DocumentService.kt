@@ -434,7 +434,7 @@ class DocumentService @Autowired constructor(
         //       it somehow
 
         findChildrenDocs(catalogId, id.toInt(), isAddress(wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.uuid)
+            deleteRecursively(catalogId, it.id.toString())
         }
 
         if (generalProperties.markInsteadOfDelete) {
