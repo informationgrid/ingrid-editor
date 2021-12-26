@@ -146,16 +146,19 @@ export class AdminUserPage extends BasePage {
 
   // TODO: select user by unique property like email!
   static selectUser(name: string) {
-    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
-    this.selectUserNoWait(name);
-    cy.wait('@fetchUserGroupsRequest');
-  }
-
-  static selectUserNoWait(name: string) {
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
+
+    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
 
     // TODO: this request might change, since groups should not be fetched every time
     //       a user is loaded. Then a /api/users/** call should be enough
+    cy.contains('user-table .mat-row', name).click();
+    cy.get('#formUser').should('be.visible');
+    cy.wait('@fetchUserGroupsRequest');
+  }
+
+  static selectUserNoWait(name: string, ) {
+    cy.get('[data-cy=search]').clear({ force: true }).type(name);
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
   }
