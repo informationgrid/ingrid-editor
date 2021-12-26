@@ -55,9 +55,9 @@ export class AdminGroupPage extends BasePage {
   }
 
   static selectGroup(groupName: string) {
-    cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
+    //cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
     AdminGroupPage.selectGroupNoWait(groupName);
-    cy.wait('@fetchGroupRequest');
+    //cy.wait('@fetchGroupRequest');
   }
 
   static selectGroupNoWait(name: string) {

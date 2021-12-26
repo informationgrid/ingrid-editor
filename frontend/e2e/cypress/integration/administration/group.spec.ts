@@ -15,12 +15,12 @@ describe('Group', () => {
   });
 
   it('should create a new group', () => {
-    const newGroup = 'neue_Gruppe';
+    const newGroup = 'neue_Gruppe' + Utils.randomString();
     const description = 'Eine Beschreibung';
 
     AdminGroupPage.addNewGroup(newGroup);
     cy.get('groups-table').should('contain', newGroup);
-    cy.get('textarea').click().clear().type(description);
+    cy.get('textarea').clear().type(description);
     AdminGroupPage.saveGroup();
 
     cy.get('groups-table').should('contain', description);
@@ -41,7 +41,7 @@ describe('Group', () => {
 
     // check titles are unique
     AdminGroupPage.selectGroup(groupName2);
-    cy.get('[formcontrolname=name]').click().clear().type(groupName);
+    cy.get('[formcontrolname=name] input').clear().type(groupName);
     // clicking another field is needed to activate the error-message
     cy.get('textarea').click();
 
@@ -58,8 +58,8 @@ describe('Group', () => {
     AdminGroupPage.selectGroup(groupName);
 
     // modify groupname, add description and save
-    cy.get('#formRoles mat-form-field input').click().clear().type(modifiedGroupName);
-    cy.get('textarea').click().clear().type(description);
+    cy.get('#formRoles [formcontrolname=name]').clear().type(modifiedGroupName);
+    cy.get('textarea').clear().type(description);
     AdminGroupPage.saveGroup();
 
     // check groupname has changed
@@ -67,8 +67,8 @@ describe('Group', () => {
     AdminGroupPage.userShouldExist(modifiedGroupName);
 
     // revert changes and check
-    cy.get('#formRoles mat-form-field input').click().clear().type(groupName);
-    cy.get('textarea').click().clear();
+    cy.get('#formRoles [formcontrolname=name]').clear().type(groupName);
+    cy.get('textarea').clear();
     AdminGroupPage.saveGroup();
 
     AdminGroupPage.userShouldNotExist(modifiedGroupName);
@@ -169,7 +169,7 @@ describe('Group', () => {
     cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
   });
 
-  it('should be enable save button, when group entries changed (#2569)', () => {
+  it('should have save button be enabled, when group entries changed (#2569)', () => {
     const group = 'test_gruppe_1';
     const description = 'eine Beschreibung';
 
@@ -206,10 +206,14 @@ describe('Group', () => {
   it('should be possible to jump between groups and associated users', () => {
     const group = 'z_group';
     const user = 'autor test';
+    const groupOther = 'test_gruppe_1';
+
     // create a new group
     AdminGroupPage.addNewGroup(group);
-    AdminGroupPage.getNextPage();
-    cy.get('groups-table').should('contain', group);
+
+    // TODO: remove this when refresh of group is fixed, after a user is assigned the group which is already opened
+    AdminGroupPage.selectGroup(groupOther);
+
     // add group to user
     AdminGroupPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser(user);
@@ -220,6 +224,7 @@ describe('Group', () => {
     AdminGroupPage.selectGroup(group);
     AdminUserPage.selectAssociatedUser(user);
     // make sure group is associated to user
+    cy.get('#formUser').should('be.visible');
     cy.get('ige-repeat-list').should('contain', group);
   });
 

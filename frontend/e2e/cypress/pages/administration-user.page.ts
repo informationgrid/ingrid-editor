@@ -92,8 +92,9 @@ export class AdminUserPage extends BasePage {
   }
 
   static saveUser() {
+    cy.intercept('PUT', '/api/users/*').as('saveUser');
     cy.get('[data-cy=toolbar_save_user]').click();
-    cy.wait(100);
+    cy.wait('@saveUser');
   }
 
   static updateUser(data: Partial<UserFormData>, save = true) {
@@ -148,16 +149,16 @@ export class AdminUserPage extends BasePage {
   static selectUser(name: string) {
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
 
-    cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
+    //cy.intercept('GET', '/api/groups').as('fetchUserGroupsRequest');
 
     // TODO: this request might change, since groups should not be fetched every time
     //       a user is loaded. Then a /api/users/** call should be enough
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
-    cy.wait('@fetchUserGroupsRequest');
+    //cy.wait('@fetchUserGroupsRequest');
   }
 
-  static selectUserNoWait(name: string, ) {
+  static selectUserNoWait(name: string) {
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
