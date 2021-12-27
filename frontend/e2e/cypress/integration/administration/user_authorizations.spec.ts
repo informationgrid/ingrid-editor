@@ -434,10 +434,10 @@ describe('Meta data administrator with a group', () => {
     cy.contains('button', 'Hinzufügen').click();
 
     let user: UserFormData = {
-      firstName: 'random',
-      lastName: 'author',
-      email: 'test@thisauthor.com',
-      login: 'some_random_authorlogin',
+      firstName: 'random' + Utils.randomString(),
+      lastName: 'author' + Utils.randomString(),
+      email: 'test' + Utils.randomdoubleDigitString() + '@thisauthor.com',
+      login: 'some_random_authorlogin' + Utils.randomString(),
       role: 'Autor',
       groups: [],
       organisation: ''
