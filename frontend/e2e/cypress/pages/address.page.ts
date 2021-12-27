@@ -1,5 +1,6 @@
 import { DocumentPage } from './document.page';
 import { Utils } from './utils';
+import { Tree } from './tree.partial';
 
 export class Address {
   constructor(
@@ -12,11 +13,12 @@ export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
   static CreateDialog = class extends DocumentPage.CreateDialog {
-    static fill(address: Address, targetTreePath: string[] = ['Adressen']) {
-      /*AddressPage.type('create-address-firstName', address.firstName);
-      AddressPage.type('create-address-lastName', address.lastName);*/
+    static fill(address: Address, targetTreePath: string[] = ['Adressen'], testType: boolean = false) {
+      if (testType) {
+        AddressPage.type('create-address-firstName', address.firstName);
+        AddressPage.type('create-address-lastName', address.lastName);
+      }
       AddressPage.type('create-address-organization', address.organization);
-
       if (targetTreePath[0] == 'Adressen') {
         cy.get('[data-cy=create-changeLocation]').click();
         cy.get('ige-destination-selection mat-list-option').click();
@@ -41,6 +43,19 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').click();
     cy.get('mat-option').contains(chooseContact).click();
     cy.get('[data-cy=Kontakt] input').type(connection);
+  }
+
+  static addAddressToTestDocument(path: string[], addressType: string) {
+    cy.get('[data-cy="Addresses"] button').first().click();
+    Tree.openNode(path, true);
+    cy.get('[data-cy="address-type-select"]').click();
+    cy.contains('[role="listbox"] mat-option', addressType).click();
+    cy.contains('button', 'Übernehmen').click();
+  }
+
+  static deleteAddressFromTestDocument() {
+    cy.get('ige-address-card button').click();
+    cy.get('.mat-menu-content button').eq(2).click();
   }
 
   static addOrganizationName(name: string = 'Organization' + Utils.randomString()) {
