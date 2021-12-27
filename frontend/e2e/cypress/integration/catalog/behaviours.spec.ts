@@ -22,36 +22,6 @@ describe('Behaviours', () => {
   });
 
   describe('System', () => {
-    it('should change the sorting of the tree', () => {
-      /*Hinweis: in the process of refactoring, needs to be adjusted
-      It's working for now, but the functionality of sorting documents in the tree by document type needs to be tested
-        inside a Test catalogue (with the newly created ige3, that will be assigned to a Test document catalogue)*/
-      const firstDoc = 'AAA_testDocForSortingCheck_API';
-      const lastDoc = 'ZZZ_mCloudDocForSortingCheck_API';
-
-      cy.get(DocumentPage.Sidemenu.Daten).click();
-      DocumentPage.CreateSpatialWKTWithAPI(firstDoc, false);
-      DocumentPage.CreateFullMcloudDocumentWithAPI(lastDoc, false);
-
-      Tree.openNode(['Neue Testdokumente', lastDoc]);
-      cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
-      //Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente']);
-      //cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
-      // check second element contains AAA before changing sorting of the tree
-      //cy.get('mat-tree-node> div > span:nth-child(2)').contains(firstDoc);
-
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
-
-      cy.get(DocumentPage.Sidemenu.Daten).click();
-      Tree.openNode(['Neue Testdokumente', lastDoc]);
-      // check second element contains ZZZ after changing sorting of the tree
-      cy.get('mat-tree-node> div > span:nth-child(2)').contains(lastDoc);
-
-      BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
-    });
-
     it('should change the template for the address generation', () => {
       /*Hinweis: right now first name and last name are not even part of address creation for mcloud documents so
        * the template can't make first name appear in title: "Kein Titel" is shown instead */
