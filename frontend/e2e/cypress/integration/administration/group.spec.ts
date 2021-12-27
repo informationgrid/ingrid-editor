@@ -204,7 +204,7 @@ describe('Group', () => {
   });
 
   it('should be possible to jump between groups and associated users', () => {
-    const group = 'z_group';
+    const group = 'z_group' + Utils.randomString();
     const user = 'autor test';
     const groupOther = 'test_gruppe_1';
 
@@ -222,6 +222,7 @@ describe('Group', () => {
     // jump from group to user
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(group);
+    cy.contains('.user-title', group, { timeout: 10000 });
     AdminUserPage.selectAssociatedUser(user);
     // make sure group is associated to user
     cy.get('#formUser').should('be.visible');
