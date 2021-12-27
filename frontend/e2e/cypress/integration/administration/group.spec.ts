@@ -30,7 +30,7 @@ describe('Group', () => {
     const groupName = 'test_gruppe_1';
     const groupName2 = 'test_gruppe_2';
 
-    cy.get('groups-table').should('contain', groupName);
+    AdminGroupPage.groupShouldExist(groupName);
     AdminGroupPage.addNewGroup(groupName);
     cy.get('error-dialog').contains('Es existiert bereits eine Gruppe mit diesem Namen');
 
@@ -41,7 +41,7 @@ describe('Group', () => {
 
     // check titles are unique
     AdminGroupPage.selectGroup(groupName2);
-    cy.get('[formcontrolname=name] input').clear().type(groupName);
+    AdminGroupPage.updateGroup({ name: groupName }, false);
     // clicking another field is needed to activate the error-message
     cy.get('textarea').click();
 
@@ -63,16 +63,16 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
 
     // check groupname has changed
-    AdminGroupPage.userShouldNotExist(groupName);
-    AdminGroupPage.userShouldExist(modifiedGroupName);
+    AdminGroupPage.groupShouldNotExist(groupName);
+    AdminGroupPage.groupShouldExist(modifiedGroupName);
 
     // revert changes and check
     cy.get('#formRoles [formcontrolname=name]').clear().type(groupName);
     cy.get('textarea').clear();
     AdminGroupPage.saveGroup();
 
-    AdminGroupPage.userShouldNotExist(modifiedGroupName);
-    AdminGroupPage.userShouldExist(groupName);
+    AdminGroupPage.groupShouldNotExist(modifiedGroupName);
+    AdminGroupPage.groupShouldExist(groupName);
   });
 
   it('should show discard dialog after changes and another group was selected', () => {
@@ -84,7 +84,7 @@ describe('Group', () => {
 
     cy.get('textarea').click().clear().type(description);
 
-    AdminGroupPage.selectGroupNoWait(groupName2);
+    AdminGroupPage.selectGroup(groupName2);
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
     // close error box
     cy.findByText('Verwerfen').click();
@@ -101,7 +101,7 @@ describe('Group', () => {
     AdminGroupPage.selectGroup(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.selectGroupNoWait(groupName2);
+    AdminGroupPage.selectGroup(groupName2);
     AdminUserPage.discardChanges();
 
     cy.get('groups-table .selected').contains(groupName2);
@@ -120,7 +120,7 @@ describe('Group', () => {
     cy.get('groups-table .selected').contains(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.selectGroupNoWait(groupName2);
+    AdminGroupPage.selectGroup(groupName2);
     AdminUserPage.cancelChanges();
     AdminGroupPage.clearSearch();
 

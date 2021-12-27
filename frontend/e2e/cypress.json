@@ -1,10 +1,12 @@
 {
-  "baseUrl": "http://192.168.0.228",
+  "baseUrl": "http://localhost:4300",
   "reporter": "mochawesome",
   "ignoreTestFiles": "**/*.local.ts",
   "reporterOptions": {
     "reportDir": "./cypress/mochawesome-reports",
-    "files": ["./cypress/mochawesome-reports"],
+    "files": [
+      "./cypress/mochawesome-reports"
+    ],
     "overwrite": false,
     "html": false,
     "json": true,

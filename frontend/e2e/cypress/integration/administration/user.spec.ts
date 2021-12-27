@@ -95,7 +95,7 @@ describe('User', () => {
     // change name, then interrupt editing by trying to switch to another user
     // after canceling the prompt to discard changes, we are still in editing mode
     AdminUserPage.updateUser({ firstName: 'Modified' }, false);
-    AdminUserPage.selectUserNoWait('Majid');
+    AdminUserPage.selectUser('Majid');
     AdminUserPage.cancelChanges();
     AdminUserPage.clearSearch();
 
@@ -106,7 +106,7 @@ describe('User', () => {
     cy.get('user-table .selected').contains(name);
 
     // try to switch to another user, this time discarding all changes -> changes are undone, new user can be selected
-    AdminUserPage.selectUserNoWait('Majid');
+    AdminUserPage.selectUser('Majid');
     AdminUserPage.discardChanges();
 
     // go back to original user profile and make sure data is unchanged
@@ -376,7 +376,7 @@ describe('User', () => {
     cy.get('.mat-option-disabled').should('contain', groupName);
 
     AdminUserPage.visit();
-    AdminUserPage.selectUserNoWait('Test Verantwortlicher2');
+    AdminUserPage.selectUser('Test Verantwortlicher2');
     cy.get('[data-cy=Gruppen]').should('contain', 'gruppe_mit_ortsrechten');
     // check if 'gruppe_mit_ortsrechten' is not selectable
     cy.get('[data-cy=Gruppen] mat-select').click();
@@ -402,7 +402,7 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
     AdminUserPage.updateUser({ firstName: modified }, false);
 
-    AdminUserPage.selectUserNoWait(username2);
+    AdminUserPage.selectUser(username2);
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
 
     // when overlay is findable, other entries are not clickable
@@ -416,7 +416,7 @@ describe('User', () => {
 
     AdminUserPage.selectUser(username);
     AdminUserPage.updateUser({ firstName: modified }, false);
-    AdminUserPage.selectUserNoWait(username2);
+    AdminUserPage.selectUser(username2);
 
     // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();

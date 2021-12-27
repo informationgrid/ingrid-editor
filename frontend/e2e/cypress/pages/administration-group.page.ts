@@ -1,5 +1,12 @@
 import { BasePage, UserAndRights } from './base.page';
 
+export interface GroupFormData {
+  name: string;
+  description: string;
+  permissionsData: string[];
+  permissionsAddress: string[];
+}
+
 export class AdminGroupPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
     cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
@@ -28,12 +35,12 @@ export class AdminGroupPage extends BasePage {
     cy.wait('@completeEditingRequest');
   }
 
-  static userShouldNotExist(name: string) {
+  static groupShouldNotExist(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table .mat-row').should('have.length', 0);
   }
 
-  static userShouldExist(name: string) {
+  static groupShouldExist(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table .mat-row').should('have.length', 1);
   }
@@ -51,16 +58,23 @@ export class AdminGroupPage extends BasePage {
   }
 
   static addGroupDescription(description: string) {
-    cy.get('textarea').click().clear().type(description);
+    cy.get('textarea').clear().type(description);
   }
 
-  static selectGroup(groupName: string) {
-    //cy.intercept('GET', '/api/groups/**').as('fetchGroupRequest');
-    AdminGroupPage.selectGroupNoWait(groupName);
-    //cy.wait('@fetchGroupRequest');
+  static updateGroup(data: Partial<GroupFormData>, save = true) {
+    if (data.name) {
+      cy.get('#formRoles [formcontrolname=name]').clear().type(data.name);
+    }
+    if (data.description) {
+      cy.get('#formRoles [formcontrolname=description]').clear().type(data.description);
+    }
+
+    if (save) {
+      AdminGroupPage.saveGroup();
+    }
   }
 
-  static selectGroupNoWait(name: string) {
+  static selectGroup(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table').contains(name).click();
     cy.get('#formRoles').should('be.visible');

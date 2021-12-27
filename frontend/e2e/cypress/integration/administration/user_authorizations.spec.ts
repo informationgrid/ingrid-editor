@@ -754,9 +754,7 @@ describe('Catalogue admin', () => {
     cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Nutzer & Rechte');
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.getNumberOfUsers().should('be.greaterThan', 0);
-    cy.intercept('/api/groups').as('loadingGroups');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    cy.wait('@loadingGroups');
     AdminUserPage.getNumberOfGroups().should('be.greaterThan', 0);
   });
 
@@ -796,9 +794,7 @@ describe('Catalogue admin', () => {
     cy.kcLogout();
     cy.kcLogin('user');
     AdminUserPage.visit();
-    cy.intercept('GET', '/api/groups').as('superAdminGroups');
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    cy.wait('@superAdminGroups');
     cy.get('.page-title')
       .contains('Gruppen')
       .then($text => {
@@ -809,9 +805,7 @@ describe('Catalogue admin', () => {
         cy.kcLogout();
         cy.kcLogin('eins');
         AdminUserPage.visit();
-        cy.intercept('GET', '/api/groups').as('catalogAdminGroups');
         AdminGroupPage.goToTabmenu(UserAndRights.Group);
-        cy.wait('@catalogAdminGroups');
         cy.get('.page-title')
           .contains('Gruppen')
           .then($txtCatalog => {

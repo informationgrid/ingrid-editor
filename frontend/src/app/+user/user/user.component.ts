@@ -63,7 +63,6 @@ export class UserComponent
   ) {
     this.model = new FrontendUser();
     this.searchQuery = "";
-    this.groupService.getGroups();
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,

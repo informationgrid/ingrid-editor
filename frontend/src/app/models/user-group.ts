@@ -1,7 +1,6 @@
 import { Permissions } from "../+user/user";
-import { GroupModel } from "../store/group/group.model";
 
-export class Group implements GroupModel {
+export class Group {
   id: number;
   name: string;
   description: string;

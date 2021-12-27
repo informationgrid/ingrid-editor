@@ -81,8 +81,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
       permissions: [],
     });
 
-    this.fetchGroups();
-
     this.groupService.forceReload$
       .pipe(untilDestroyed(this))
       .subscribe(() => this.loadGroup(this.previousGroupId));
@@ -100,10 +98,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.userInfo$
       .pipe(untilDestroyed(this))
       .subscribe((info) => (this.userGroupNames = info.groups));
-  }
-
-  fetchGroups(): void {
-    this.groupService.getGroups();
   }
 
   openAddGroupDialog() {

@@ -5,6 +5,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { SessionService } from "../../services/session.service";
 import { filter } from "rxjs/operators";
+import { GroupService } from "../../services/role/group.service";
 
 @UntilDestroy()
 @Component({
@@ -20,7 +21,11 @@ export class UserManagementComponent implements OnInit {
     { label: "Gruppen & Rechte", path: "group" },
   ];
 
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+    private groupService: GroupService
+  ) {}
 
   @HostListener("window:beforeunload", ["$event"])
   unloadHandler() {
@@ -32,6 +37,8 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.groupService.getGroups();
+
     this.sessionService
       .observeTabChange("manage")
       .pipe(untilDestroyed(this))
