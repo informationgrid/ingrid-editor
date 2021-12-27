@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:4300",
+  "baseUrl": "http://192.168.0.228",
   "reporter": "mochawesome",
   "ignoreTestFiles": "**/*.local.ts",
   "reporterOptions": {
