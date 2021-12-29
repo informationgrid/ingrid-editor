@@ -65,6 +65,7 @@ export class ResearchPage {
   }
 
   static openSearchOptionTab(option: SearchOptionTabs): void {
+    cy.get('.mat-ripple.mat-tab-label', { timeout: 10000 }).should('have.length', 3);
     cy.get('.mat-ripple.mat-tab-label:nth-child(' + option + ')').click();
   }
 
