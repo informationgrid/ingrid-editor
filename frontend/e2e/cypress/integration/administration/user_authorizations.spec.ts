@@ -686,7 +686,7 @@ describe('Catalogue admin', () => {
     cy.get('.page-title').contains('Nutzer');
     AdminUserPage.selectUser('Autor_mit Gruppen');
     AdminUserPage.addGroupToUser('test_gruppe_4');
-    AdminGroupPage.saveUser();
+    AdminUserPage.saveUser();
     // log in as the other user
     cy.kcLogout();
     cy.kcLogin('autor2');

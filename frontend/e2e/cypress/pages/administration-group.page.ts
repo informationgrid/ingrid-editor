@@ -28,13 +28,6 @@ export class AdminGroupPage extends BasePage {
     cy.wait('@completeEditingRequest');
   }
 
-  // TODO: duplicate function, should be in administration-user.page
-  static saveUser() {
-    cy.intercept('PUT', '/api/users/**').as('completeEditingRequest');
-    cy.get('[data-cy=toolbar_save_user]').click();
-    cy.wait('@completeEditingRequest');
-  }
-
   static groupShouldNotExist(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table .mat-row').should('have.length', 0);
