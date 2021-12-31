@@ -35,7 +35,7 @@ describe('mCLOUD documents', function () {
 
       DocumentPage.createDocument(docName);
 
-      enterMcloudDocTestData.enterNecessaryData();
+      enterMcloudDocTestData.CreateDialog.enterNecessaryData();
 
       DocumentPage.publishNow();
     });
@@ -51,7 +51,7 @@ describe('mCLOUD documents', function () {
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.checkAddressSelectable(addressName, false);
+      enterMcloudDocTestData.CreateDialog.checkAddressSelectable(addressName, false);
     });
 
     it('should create a complete mcloud document', () => {
@@ -66,19 +66,19 @@ describe('mCLOUD documents', function () {
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.setDescription();
-      enterMcloudDocTestData.setAddress(PUBLISHED_ADDRESS);
-      enterMcloudDocTestData.setUsageInstructions();
-      enterMcloudDocTestData.setCategory();
-      enterMcloudDocTestData.setOpenDataCategory();
-      enterMcloudDocTestData.setAddDownload();
-      enterMcloudDocTestData.setLicense();
-      enterMcloudDocTestData.setSourceNote();
-      enterMcloudDocTestData.setMfund();
-      enterMcloudDocTestData.setSpatialWKT();
-      enterMcloudDocTestData.setTimeReference();
-      enterMcloudDocTestData.setPeriodOfTime('von - bis', previousDate, dateNow);
-      enterMcloudDocTestData.setPeriodicity();
+      enterMcloudDocTestData.CreateDialog.setDescription();
+      enterMcloudDocTestData.CreateDialog.setAddress(PUBLISHED_ADDRESS);
+      enterMcloudDocTestData.CreateDialog.setUsageInstructions();
+      enterMcloudDocTestData.CreateDialog.setCategory();
+      enterMcloudDocTestData.CreateDialog.setOpenDataCategory();
+      enterMcloudDocTestData.CreateDialog.setAddDownload();
+      enterMcloudDocTestData.CreateDialog.setLicense();
+      enterMcloudDocTestData.CreateDialog.setSourceNote();
+      enterMcloudDocTestData.CreateDialog.setMfund();
+      enterMcloudDocTestData.CreateDialog.setSpatialWKT();
+      enterMcloudDocTestData.CreateDialog.setTimeReference();
+      enterMcloudDocTestData.CreateDialog.setPeriodOfTime('von - bis', previousDate, dateNow);
+      enterMcloudDocTestData.CreateDialog.setPeriodicity();
 
       // needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
@@ -98,11 +98,11 @@ describe('mCLOUD documents', function () {
 
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
-      enterMcloudDocTestData.setPeriodOfTime(option, previousDate, dateNow);
+      enterMcloudDocTestData.CreateDialog.setPeriodOfTime(option, previousDate, dateNow);
       DocumentPage.saveDocument();
       cy.reload();
 
-      enterMcloudDocTestData.checkPeriodOfTimeSelectedValue(option);
+      enterMcloudDocTestData.CreateDialog.checkPeriodOfTimeSelectedValue(option);
     });
 
     it('should create a published address with an API-Call', () => {
