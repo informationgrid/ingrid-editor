@@ -258,4 +258,35 @@ export class enterMcloudDocTestData {
     //   // Periodizität
     // }
   };
+
+  static openDownloadDialog() {
+    cy.contains('button', 'Dateien hochladen').click();
+  }
+
+  static uploadFile(filePath: string) {
+    this.addFile(filePath);
+    this.assertFileUpload();
+  }
+
+  static addFile(filePath: string) {
+    cy.intercept('POST', /api\/upload/).as('upload');
+    cy.get('[type="file"]').attachFile(filePath);
+    cy.wait('@upload', { timeout: 10000 });
+    cy.get('.upload-content').should('contain', filePath);
+  }
+
+  static assertFileUpload() {
+    cy.contains('button', 'Übernehmen').click();
+  }
+
+  static DownloadFileAddedToDocument(fileName: string) {
+    cy.intercept('GET', /api\/upload/).as('download');
+    //cy.get(`[href=${fileName}]`).click();
+    cy.contains('.no-text-transform', fileName).click();
+    cy.wait('@download', { timeout: 10000 });
+  }
+
+  static verifyExistenceOfDownloadedFile(fileName: string) {
+    cy.readFile('cypress/downloads/' + fileName);
+  }
 }
