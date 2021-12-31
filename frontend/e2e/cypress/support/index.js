@@ -1,6 +1,7 @@
 import '@testing-library/cypress/add-commands';
 import 'cypress-keycloak-commands';
 import './drag-and-drop';
+import 'cypress-file-upload';
 
 const addContext = require('mochawesome/addContext');
 
