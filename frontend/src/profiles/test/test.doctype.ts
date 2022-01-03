@@ -195,6 +195,7 @@ export class TestDoctype extends BaseDoctype {
             key: "multiInputs",
             type: "repeat",
             wrappers: ["panel"],
+            defaultValue: [{}],
             templateOptions: {
               externalLabel: "Multi-Repeat",
               required: true,
