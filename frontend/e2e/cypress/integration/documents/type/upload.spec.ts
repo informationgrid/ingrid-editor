@@ -97,4 +97,21 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
     enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
   });
+
+  it('should upload a zip-file (#3575 (6))', () => {
+    const fileTitle = 'Test.zip';
+
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
+    // check no file has been added yet
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    // upload file
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.uploadFile(fileTitle);
+    // check entry in table
+    cy.contains('[data-cy="Downloads-table"]', fileTitle);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+    // download file
+    enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
+    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
+  });
 });
