@@ -281,12 +281,11 @@ export class enterMcloudDocTestData {
 
   static DownloadFileAddedToDocument(fileName: string) {
     cy.intercept('GET', /api\/upload/).as('download');
-    //cy.get(`[href=${fileName}]`).click();
     cy.contains('.no-text-transform', fileName).click();
     cy.wait('@download', { timeout: 10000 });
   }
 
   static verifyExistenceOfDownloadedFile(fileName: string) {
-    cy.readFile('cypress/downloads/' + fileName);
+    cy.readFile('cypress/downloads/' + fileName, { timeout: 15000 });
   }
 }
