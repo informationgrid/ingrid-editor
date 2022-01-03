@@ -78,11 +78,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     const endTime = refreshToken.exp;
 
     const now = Math.ceil(new Date().getTime() / 1000);
-    const durationRefresh = endTime - now;
-
-    console.log(`Endtime Refresh: ${durationRefresh}`);
-
-    return durationRefresh;
+    return endTime - now;
   }
 
   private updateStore(time: number) {

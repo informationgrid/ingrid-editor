@@ -38,7 +38,7 @@ import { FormsModule } from "@angular/forms";
 import de from "@angular/common/locales/de";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { AngularSplitModule } from "angular-split";
-import { FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
@@ -104,6 +104,14 @@ export function ConfigLoader(
   };
 }
 
+export function animationExtension(field: FormlyFieldConfig) {
+  if (field.wrappers && field.wrappers.includes("animation")) {
+    return;
+  }
+
+  field.wrappers = ["animation", ...(field.wrappers || [])];
+}
+
 @NgModule({
   // directives, components, and pipes owned by this NgModule
   declarations: [
@@ -144,7 +152,9 @@ export function ConfigLoader(
         { name: "section", component: SectionWrapper },
         { name: "animation", component: AnimationWrapperComponent },
       ],
-      manipulators: [{ class: AnimationWrapper, method: "run" }],
+      extensions: [
+        { name: "animation", extension: { onPopulate: animationExtension } },
+      ],
     }),
     FormlyMaterialModule,
     // Material

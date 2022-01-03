@@ -8,7 +8,7 @@
         mat-list-item
         *ngFor="let item of menuItems | async"
         [routerLink]="item.path"
-        [matTooltip]="t(item.data?.title)"
+        [matTooltip]="t(item.path)"
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
         [matTooltipShowDelay]="1000"

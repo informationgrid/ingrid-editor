@@ -5,7 +5,7 @@
     >
         <img src="assets/icons/logo.svg" height="32" />
         <span class="page-title-general"><strong>INGRID</strong> EDITOR</span>
-        <span class="main-page-title">{{ t(pageTitle) }}</span>
+        <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
 
         <div fxFlex="grow" class="center-header">
             <ige-session-timeout-info
