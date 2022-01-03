@@ -301,6 +301,9 @@ export class enterMcloudDocTestData {
   static handleExistingFile(action: FileHandlingOptions) {
     cy.intercept('POST', /api\/upload/).as('fileUpload');
     cy.get(action).click();
+    if (action === FileHandlingOptions.UseExisting) {
+      return;
+    }
     cy.wait('@fileUpload', { timeout: 10000 }).its('response.body.success').should('eq', true);
   }
 

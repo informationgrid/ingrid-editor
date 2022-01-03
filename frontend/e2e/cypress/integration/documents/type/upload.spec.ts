@@ -41,7 +41,7 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    // try to upload same file
+    // try to upload file with same name
     enterMcloudDocTestData.openDownloadDialog();
     enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
     // choose option "Überschreiben"
@@ -49,5 +49,52 @@ describe('Upload Tests', () => {
     cy.contains('button', 'Übernehmen').click();
     // make sure that there is still only one entry in the table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+  });
+
+  it('should rename uploaded file when uploading file with same name (#3575 (4))', () => {
+    const fileTitle = 'Test.pdf';
+    const newFileTitle = 'Test-1.pdf';
+
+    // upload file
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.uploadFile(fileTitle);
+    // check entry in table
+    cy.contains('[data-cy="Downloads-table"]', fileTitle);
+    // try to upload file with same name
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
+    // choose option "Umbenennen"
+    enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.Rename);
+    cy.contains('button', 'Übernehmen').click();
+    // make sure the file name has been changed and new entry has been added
+    cy.contains('[data-cy="Downloads-table"]', newFileTitle);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 2);
+    // download new entry
+    enterMcloudDocTestData.DownloadFileAddedToDocument(newFileTitle);
+    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(newFileTitle);
+  });
+
+  it('should choose existing file when uploading file with same name (#3575 (5))', () => {
+    const fileTitle = 'Test.pdf';
+
+    // upload file
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_7']);
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.uploadFile(fileTitle);
+    // check entry in table
+    cy.contains('[data-cy="Downloads-table"]', fileTitle);
+    // try to upload file with same name
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
+    // choose option "Existierende verwenden"
+    enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.UseExisting);
+    cy.contains('button', 'Übernehmen').click();
+    // make sure no file name has been changed and no new entry has been added
+    cy.contains('[data-cy="Downloads-table"]', fileTitle);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+    // download old entry
+    enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
+    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
   });
 });
