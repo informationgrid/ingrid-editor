@@ -31,7 +31,12 @@
     <section main-content fxFlex>
         <div class="info-header-row" fxLayout="row">
             <h3>Persönliche Daten</h3>
-            <button mat-button color="primary" (click)="openChangeNameDialog()">
+            <button
+                data-cy="change-full-name-id"
+                mat-button
+                color="primary"
+                (click)="openChangeNameDialog()"
+            >
                 Ändern
             </button>
         </div>
@@ -57,6 +62,7 @@
             <ng-template #editMail>
                 <div>{{ userInfo.email }}</div>
                 <button
+                    data-cy="change-email-id"
                     mat-button
                     color="primary"
                     (click)="editingEmail = true"
@@ -71,6 +77,7 @@
             <div>Passwort</div>
             <div>••••••</div>
             <button
+                data-cy="change-password-id"
                 mat-button
                 color="primary"
                 (click)="openResetPasswordDialog()"
