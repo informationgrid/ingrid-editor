@@ -4,7 +4,6 @@ import { ProfileComponent } from "./profile/profile.component";
 import { routing } from "./profile.routing";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { SharedModule } from "../shared/shared.module";
-import { ChangeEmailDialogComponent } from "./change-email-dialog/change-email-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -14,7 +13,6 @@ import { EmailformComponent } from "../emailform/emailform.component";
 @NgModule({
   declarations: [
     ProfileComponent,
-    ChangeEmailDialogComponent,
     ChangeNameDialogComponent,
     EmailformComponent,
   ],

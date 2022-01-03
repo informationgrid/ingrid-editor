@@ -6,10 +6,13 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { ChangeEmailDialogComponent } from "../change-email-dialog/change-email-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ChangeNameDialogComponent } from "../change-name-dialog/change-name-dialog.component";
 import { FrontendUser } from "../../+user/user";
+import { catchError } from "rxjs/operators";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { IgeError } from "../../models/ige-error";
 
 @Component({
   selector: "ige-profile",
@@ -37,28 +40,14 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  openChangeEmailDialog(): void {
-    this.dialog
-      .open(ChangeEmailDialogComponent, {
-        data: {
-          email: this.userInfo$.value.email,
-        },
-        hasBackdrop: true,
-      })
-      .afterClosed()
-      .subscribe((user) => {
-        if (user)
-          this.configService.getCurrentUserInfo().then(() =>
-            this.snackBar.open("E-Mail Adresse wurde geändert.", "", {
-              panelClass: "green",
-            })
-          );
-      });
-  }
-
   changeEmail(newMail: string): void {
+    this.editingEmail = false;
+
     if (!newMail) return;
+
     newMail = newMail.trim();
+
+    // TODO: remove default properties
     this.userService
       .updateCurrentUser(
         new FrontendUser({

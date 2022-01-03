@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service
 import java.io.Closeable
 import java.security.Principal
 import java.util.*
+import javax.ws.rs.ClientErrorException
 import javax.ws.rs.core.Response
 import kotlin.NoSuchElementException
 
@@ -239,7 +240,7 @@ class KeycloakService : UserManagementService {
             mapToKeycloakUser(user, kcUser)
 
             val userResource = client.realm().users().get(kcUser.id)
-            userResource.update(kcUser)
+            updateKeycloakUser(userResource, kcUser)
             if (userHasAdminRole(user)) {
                 userResource.apply {
                     val roles = client.realm().roles()
@@ -248,6 +249,16 @@ class KeycloakService : UserManagementService {
             }
         }
 
+    }
+
+    private fun updateKeycloakUser(userResource: UserResource, kcUser: UserRepresentation) {
+        try {
+            userResource.update(kcUser)
+        } catch (e: ClientErrorException) {
+            if (e.response.status == 409) {
+                throw ConflictException.withReason("Conflicting email address")
+            }
+        }
     }
 
     private fun userHasAdminRole(user: User): Boolean {

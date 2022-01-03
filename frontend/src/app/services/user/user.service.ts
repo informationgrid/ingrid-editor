@@ -10,6 +10,7 @@ import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
@@ -81,9 +82,22 @@ export class UserService {
   }
 
   updateCurrentUser(user: User): Observable<FrontendUser> {
-    return this.dataService
-      .saveCurrentUser(user)
-      .pipe(map((u) => new FrontendUser(u)));
+    return this.dataService.saveCurrentUser(user).pipe(
+      catchError((error) => UserService.handleChangeEmailError(error)),
+      map((u) => new FrontendUser(u))
+    );
+  }
+
+  private static handleChangeEmailError(
+    response: HttpErrorResponse
+  ): Observable<any> {
+    if (response.error.errorText === "Conflicting email address") {
+      throw new IgeError(
+        "Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus."
+      );
+    }
+
+    throw response;
   }
 
   createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {

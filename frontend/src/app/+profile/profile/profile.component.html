@@ -51,7 +51,7 @@
             <ige-emailform
                 *ngIf="editingEmail; else editMail"
                 [initialEmail]="userInfo.email"
-                (onClose)="editingEmail = false; changeEmail($event)"
+                (onClose)="changeEmail($event)"
             >
             </ige-emailform>
             <ng-template #editMail>
