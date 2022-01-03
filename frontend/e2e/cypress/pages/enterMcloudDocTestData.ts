@@ -275,8 +275,21 @@ export class enterMcloudDocTestData {
     cy.get('.upload-content').should('contain', filePath);
   }
 
+  static addAlreadyExistingFile(filePath: string) {
+    cy.intercept('POST', /api\/upload/).as('tryUpload');
+    cy.get('[type="file"]').attachFile(filePath);
+    cy.wait('@tryUpload', { timeout: 10000 }).its('response.body.message').should('eq', 'The file already exists.');
+    cy.get('.mat-line.mat-error').should('contain', 'Die Datei existiert bereits');
+  }
+
   static assertFileUpload() {
     cy.contains('button', 'Übernehmen').click();
+  }
+
+  static removeFileFromUploadDialog() {
+    cy.intercept('DELETE', /api\/upload/).as('deleteFile');
+    cy.get('[data-mat-icon-name="Entfernen"]').click();
+    cy.wait('@deleteFile');
   }
 
   static DownloadFileAddedToDocument(fileName: string) {
@@ -285,7 +298,19 @@ export class enterMcloudDocTestData {
     cy.wait('@download', { timeout: 10000 });
   }
 
+  static handleExistingFile(action: FileHandlingOptions) {
+    cy.intercept('POST', /api\/upload/).as('fileUpload');
+    cy.get(action).click();
+    cy.wait('@fileUpload', { timeout: 10000 }).its('response.body.success').should('eq', true);
+  }
+
   static verifyExistenceOfDownloadedFile(fileName: string) {
     cy.readFile('cypress/downloads/' + fileName, { timeout: 15000 });
   }
+}
+
+export enum FileHandlingOptions {
+  Overwrite = 'button:contains("Überschreiben")',
+  Rename = 'button:contains("Umbenennen")',
+  UseExisting = 'button:contains("Existierende verwenden")'
 }
