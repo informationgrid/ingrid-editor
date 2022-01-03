@@ -44,6 +44,12 @@ export class ResearchPage {
     cy.get('.result').contains('0 Ergebnisse gefunden');
   }
 
+  static openDocumentFromResultList(docTitle: string) {
+    cy.intercept('GET', /api\/datasetsByUuid/).as('openDoc');
+    cy.contains('td', docTitle).click();
+    cy.wait('@openDoc').its('response.body.title').should('eq', docTitle);
+  }
+
   static setDocumentTypeSearchFilter(docType: string): void {
     cy.get('.main-header .mat-select').click();
     cy.intercept('**/api/search/query').as('query');
@@ -54,8 +60,8 @@ export class ResearchPage {
 
   static activateCheckboxSearchFilter(FilterType: FilterExtendedSearch): void {
     //without forcing cypress to click it doesn't find checkbox
-    cy.get(FilterType).click({ force: true });
     cy.intercept('/api/search/query').as('filterRequest');
+    cy.get(FilterType).click({ force: true });
     cy.wait('@filterRequest');
   }
 

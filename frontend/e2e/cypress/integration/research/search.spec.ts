@@ -7,6 +7,7 @@ import {
 import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AddressPage } from '../../pages/address.page';
+import { Menu } from '../../pages/menu';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -86,21 +87,18 @@ describe('Research Page', () => {
   });
 
   it('should do search with both spatial reference and selection of filter-checkboxes included', () => {
-    //ResearchPage.search(' ');
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
-    ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(multipleFiltered => {
-      ResearchPage.visit();
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
-      ResearchPage.getSearchResultCount().should('be.greaterThan', multipleFiltered);
+      ResearchPage.createSpatialReference('Deutschland');
+      ResearchPage.getSearchResultCount().should('be.lessThan', multipleFiltered);
     });
   });
 
   it('should open respective document/address when clicking on search result', () => {
-    ResearchPage.search('Test');
+    ResearchPage.search('Test mCLOUD');
     ResearchPage.changeViewNumberDocuments();
-    cy.contains('td', 'Test mCLOUD Dokument').click();
-    cy.get('ige-header-title-row').find('span > span').should('have.text', 'Test mCLOUD Dokument');
+    ResearchPage.openDocumentFromResultList('Test mCLOUD Dokument');
+    cy.get('.title').should('contain', 'Test mCLOUD Dokument');
   });
 
   it('should delete a document from search result list', () => {
