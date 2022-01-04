@@ -17,26 +17,31 @@ describe('Profile', () => {
     let lastName = 'VerantwortlicherUpdated';
     cy.kcLogin('drei').as('tokens');
     ProfilePage.visit();
-    cy.get('[data-cy="change-full-name-id"]').click();
-    cy.get('ige-change-name-dialog').find('input').first().clear().type(firstName);
-    cy.get('ige-change-name-dialog').find('input').eq(1).clear().type(lastName);
-    cy.intercept('GET', 'api/info/currentUser').as('getUser');
-    cy.get('ige-change-name-dialog').find('button').contains('Ändern').first().click();
-    cy.wait('@getUser');
-    cy.get('div .main-content').contains(firstName);
-    cy.get('div .main-content').contains(lastName);
+    ProfilePage.changeUserFirstLastName(firstName, lastName, true);
   });
 
   xit('should update user password', () => {
     // ToDo request a change password
   });
 
-  xit('should update user email', () => {
-    cy.kcLogin('meta2').as('tokens');
+  it('should update user email', () => {
+    cy.kcLogin('drei').as('tokens');
     ProfilePage.visit();
+    let invalidEmail = 'katalogadmintest@###something.com';
+    let validEmail = 'katalogadmintest@123omething.com';
+    ProfilePage.changeUserEmail(invalidEmail, false);
+    cy.get('button[type="submit"]').should('be.disabled');
+    cy.get('input[type="email"]').clear().type(validEmail);
+    cy.get('button').contains(' Abbrechen ').click();
+    ProfilePage.changeUserEmail(validEmail, true);
   });
 
-  xit('should not update user email with already exist one', () => {
-    cy.kcLogin('meta2').as('tokens');
+  it('should not update user email with already exist one', () => {
+    cy.kcLogin('drei').as('tokens');
+    ProfilePage.visit();
+    let existEmail = 'andre.wallat@wemove.com';
+    ProfilePage.changeUserEmail(existEmail, false);
+    cy.get('button[type="submit"]').click();
+    cy.get('mat-dialog-container').contains('Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus.');
   });
 });
