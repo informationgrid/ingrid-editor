@@ -3,5 +3,45 @@ export class ExportPage {
     cy.intercept('GET', 'api/tree/children').as('treeCallAddress');
     cy.visit('importExport/export');
     cy.wait('@treeCallAddress');
+    cy.get('.mat-tab-links a').contains('Export').click();
+  }
+
+  static continue(waitForPreview: boolean = false) {
+    if (waitForPreview) {
+      cy.intercept('POST', 'api/export').as('previewJsonData');
+      cy.get('div .action-bar').contains('Weiter').click({ force: true });
+      cy.wait('@previewJsonData');
+    } else {
+      cy.get('form').next().contains('Weiter').click({ force: true });
+    }
+  }
+
+  static back() {
+    cy.get('div .action-bar').contains('Zurück').click();
+  }
+
+  static cancel() {
+    cy.get('div .action-bar').contains('Abbrechen').click();
+  }
+
+  static preview() {
+    cy.get('ige-export button').contains('Vorschau').click();
+  }
+
+  static closePreview() {
+    cy.get('[data-cy="confirm-dialog-cancel"]').click();
+  }
+
+  static exportFile() {
+    cy.get('div .action-bar').contains('Exportieren').click();
+  }
+
+  static checkForFileDownload(fileName: string) {
+    cy.readFile('cypress\\downloads\\' + fileName, { timeout: 15000 });
+    cy.get('ige-export').contains('Die Datei wurde in Ihrem Download-Ordner abgelegt.');
+  }
+
+  static newExport() {
+    cy.get('div .action-bar').contains('Neuer Export').click();
   }
 }

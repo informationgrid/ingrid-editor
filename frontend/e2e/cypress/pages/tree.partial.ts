@@ -50,10 +50,17 @@ export class Tree {
     });
   }
 
-  static openNode(targetNodePath: string[], isInsideDialog: boolean = false) {
+  static openNode(targetNodePath: string[], isInsideDialog: boolean = false, isExportTree: boolean = false) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
-      Tree.selectNodeWithTitle(node, isInsideDialog, true, index + 1, index === targetNodePath.length - 1);
+      Tree.selectNodeWithTitle(
+        node,
+        isInsideDialog,
+        true,
+        index + 1,
+        index === targetNodePath.length - 1,
+        isExportTree
+      );
     });
     if (!isInsideDialog) {
       this.determineRootAndCheckPath(targetNodePath);
@@ -74,6 +81,7 @@ export class Tree {
     exact = true,
     hierarchyLevel?: number,
     forceClick?: boolean,
+    isExportTree: boolean = false
   ) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
@@ -92,11 +100,17 @@ export class Tree {
           if (forceClick) {
             if (!isInsideDialog && !nodeIsSelected) {
               // wait for document loaded, otherwise check might fail
-              cy.intercept('GET', '/api/datasetsByUuid/*').as('documentFetched');
+              if (isExportTree) {
+                cy.intercept('GET', '/api/datasets/*/path').as('documentFetched');
+              } else {
+                cy.intercept('GET', '/api/datasetsByUuid/*').as('documentFetched');
+              }
               node.trigger('click');
-              cy.wait("@documentFetched")
-              cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
-              cy.get(DocumentPage.title).should('have.text', nodeTitle);
+              cy.wait('@documentFetched');
+              if (!isExportTree) {
+                cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
+                cy.get(DocumentPage.title).should('have.text', nodeTitle);
+              }
             } else {
               node.trigger('click');
             }
