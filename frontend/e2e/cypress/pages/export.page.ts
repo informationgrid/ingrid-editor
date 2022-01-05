@@ -19,6 +19,14 @@ export class ExportPage {
   static back() {
     cy.get('div .action-bar').contains('Zurück').click();
   }
+  static checkDraftOption() {
+    cy.get('form  .mat-checkbox-input').check({ force: true });
+  }
+
+  static selectOption(option: string) {
+    cy.get('form mat-select').click();
+    cy.get('mat-option').contains(option).click();
+  }
 
   static cancel() {
     cy.get('div .action-bar').contains('Abbrechen').click();
