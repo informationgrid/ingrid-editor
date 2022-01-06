@@ -263,6 +263,16 @@ export class enterMcloudDocTestData {
     cy.contains('button', 'Dateien hochladen').click();
   }
 
+  static openAddURLDialog() {
+    cy.contains('button', 'Link angeben').click();
+  }
+
+  static fillFieldsOfAddURLDialog(title: string, url: string) {
+    cy.get('input[formcontrolname="title"]').type(title);
+    cy.get('[formcontrolname="url"]').type(url);
+    //cy.get('input[formcontrolname="title"]').click();
+  }
+
   static uploadFile(filePath: string) {
     this.addFile(filePath);
     this.assertFileUpload();
@@ -275,6 +285,19 @@ export class enterMcloudDocTestData {
     cy.get('.upload-content').should('contain', filePath);
   }
 
+  static addFileWithRename(filePath: string, newName: string) {
+    cy.intercept('POST', /api\/upload/).as('uploadRenamedFile');
+    cy.get('[type="file"]').attachFile({ filePath: filePath, fileName: newName });
+    cy.wait('@uploadRenamedFile', { timeout: 10000 });
+    cy.get('.upload-content').should('contain', newName);
+  }
+
+  static addAlreadyExistingFileWithRename(filePath: string, newName: string) {
+    cy.intercept('GET', /api\/upload/).as('tryUpload');
+    cy.get('[type="file"]').attachFile({ filePath: filePath, fileName: newName });
+    cy.wait('@tryUpload', { timeout: 10000 }).should('have.property', 'status', 409);
+  }
+
   static addAlreadyExistingFile(filePath: string) {
     cy.intercept('POST', /api\/upload/).as('tryUpload');
     cy.get('[type="file"]').attachFile(filePath);
@@ -284,6 +307,11 @@ export class enterMcloudDocTestData {
 
   static assertFileUpload() {
     cy.contains('button', 'Übernehmen').click();
+  }
+
+  static unzipArchiveAfterUpload() {
+    cy.get('mat-dialog-content .mat-slide-toggle-thumb').click();
+    cy.get('mat-dialog-content .mat-slide-toggle-input').invoke('attr', 'aria-checked').should('eq', 'true');
   }
 
   static removeFileFromUploadDialog() {
@@ -304,6 +332,13 @@ export class enterMcloudDocTestData {
     if (action === FileHandlingOptions.UseExisting) {
       return;
     }
+    cy.wait('@fileUpload', { timeout: 10000 }).its('response.body.success').should('eq', true);
+  }
+
+  static solveZIPExtractionConflict(action: FileHandlingOptions) {
+    cy.contains('mat-dialog-container', 'Es trat ein Konflikt beim extrahieren der ZIP-Datei auf');
+    cy.intercept('GET', /api\/upload\/extract/).as('fileUpload');
+    cy.get(action).click();
     cy.wait('@fileUpload', { timeout: 10000 }).its('response.body.success').should('eq', true);
   }
 
