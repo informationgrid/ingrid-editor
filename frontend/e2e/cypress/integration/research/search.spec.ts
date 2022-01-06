@@ -266,7 +266,7 @@ describe('Research Page', () => {
     DashboardPage.visit();
     DashboardPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
     cy.contains('button', 'Suchen').click();
-    cy.contains('td', 'TestDocResearch1');
+    ResearchPage.checkDocumentInSearchResults('TestDocResearch1');
     ResearchPage.getSearchResultCount().should('equal', 1);
 
     DashboardPage.visit();
@@ -274,7 +274,7 @@ describe('Research Page', () => {
     cy.contains('button', 'Suchen').click();
     ResearchPage.checkNoSearchResults();
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
-    cy.contains('td', 'Taunus, Adresse');
+    ResearchPage.checkDocumentInSearchResults('Taunus, Adresse');
     ResearchPage.getSearchResultCount().should('equal', 1);
 
     // Schnellsuche in Address Page:

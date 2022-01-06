@@ -44,6 +44,10 @@ export class ResearchPage {
     cy.get('.result').contains('0 Ergebnisse gefunden');
   }
 
+  static checkDocumentInSearchResults(term: string) {
+    cy.contains('ige-result-table tr', term, { timeout: 10000 });
+  }
+
   static openDocumentFromResultList(docTitle: string) {
     cy.intercept('GET', /api\/datasetsByUuid/).as('openDoc');
     cy.contains('td', docTitle).click();
