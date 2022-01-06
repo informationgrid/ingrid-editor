@@ -448,6 +448,14 @@ export class DocumentPage extends BasePage {
     cy.get('ige-formly--type mat-list div.mat-line').contains(spatialName).click({ force: true });
   }
 
+  static jumpFromDocumentToAddress(addressTitle: string) {
+    cy.get('ige-address-card [svgicon="Mehr"]').click();
+    cy.get('.mat-menu-content', { timeout: 10000 }).should('exist');
+    cy.intercept('GET', /api\/datasetsByUuid/).as('fetchAddress');
+    cy.contains('button', 'Hinspringen', { timeout: 10000 }).click();
+    cy.wait('@fetchAddress', { timeout: 8000 }).its('response.body.title').should('eq', addressTitle);
+  }
+
   static clickLeafletMapResetBtn() {
     cy.get('path.leaflet-interactive').should('exist');
     cy.get('formly-field .mat-button-wrapper').contains('Zurücksetzen').click();
