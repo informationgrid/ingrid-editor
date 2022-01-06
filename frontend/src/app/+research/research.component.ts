@@ -3,6 +3,7 @@ import { ResearchResponse, ResearchService } from "./research.service";
 import {
   catchError,
   debounceTime,
+  delay,
   distinct,
   filter,
   finalize,
@@ -69,7 +70,13 @@ export class ResearchComponent implements OnInit {
     this.researchService.updateUIState({
       search: { query: query, category: type },
     });
-    this.updateControlsFromState();
+
+    this.facetInitialized
+      .pipe(
+        filter((isInitialized) => isInitialized),
+        delay(0)
+      )
+      .subscribe(() => this.updateControlsFromState());
 
     this.researchService.fetchQueries();
 
