@@ -12,12 +12,11 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { AddressRef } from "../address-card/address-card.component";
 import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
-import { CatalogService } from "../../../../+catalog/services/catalog.service";
 import { ConfigService } from "../../../../services/config/config.service";
 
 export interface ChooseAddressResponse {
@@ -37,10 +36,12 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selectedType: string;
   selectedNode = new BehaviorSubject<string>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
+  placeholder: string;
 
-  types = this.codelistQuery
-    .selectEntity("505")
-    .pipe(map(CodelistService.mapToSelectSorted));
+  types = this.codelistQuery.selectEntity("505").pipe(
+    map(CodelistService.mapToSelectSorted),
+    tap(() => (this.placeholder = "Bitte wählen ..."))
+  );
 
   disabledCondition: (TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";

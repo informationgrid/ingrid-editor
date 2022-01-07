@@ -19,6 +19,17 @@ export class BasePage {
     Katalogverwaltung: '[href="/catalogs"]',
     Skalieren: '.mat-list-item[mattooltip="Vergrößern"]'
   };
+
+  // TODO: use this function for all select inputs
+  static selectOptionAsync(selectDataCyName: string, label: string, placeholder = 'Bitte wählen ...') {
+    cy.get(`[data-cy="${selectDataCyName}"]`)
+      .contains(placeholder) // placeholder should appear after data has been fetched for select
+      .wait(500) // wait for field to be populated
+      .click()
+      .get('[role="listbox"] mat-option')
+      .contains(label)
+      .click();
+  }
 }
 
 export enum CatalogsTabmenu {
