@@ -3,13 +3,15 @@
     "application": "mCLOUD",
     "logo": "assets/profiles/mcloud/assets/icons/logo.svg",
     "dashboard": "Übersicht",
-    "documents": "Daten",
-    "addresses": "Adressen",
+    "form": "Daten",
+    "address": "Adressen",
     "research": "Recherche",
     "reports": "Reports",
-    "user": "Nutzer & Rechte",
-    "import_export": "Import / Export",
-    "catalog": "Katalog"
+    "manage": "Nutzer & Rechte",
+    "importExport": "Import / Export",
+    "settings": "Einstellungen",
+    "profile": "Profil verwalten",
+    "catalogs": "Katalog"
   },
   "dashboard": {
     "welcome": "Willkommen im mCLOUD Editor",
