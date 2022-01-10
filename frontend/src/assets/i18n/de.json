@@ -1,5 +1,7 @@
 {
   "menu": {
+    "application": "INGRID",
+    "logo": "assets/icons/logo.svg",
     "dashboard": "Übersicht",
     "form": "Daten",
     "address": "Adressen",
@@ -12,6 +14,7 @@
     "catalogs": "Katalog"
   },
   "dashboard": {
-    "welcome": "Guten Tag! Willkommen zurück."
+    "welcome": "Guten Tag! Willkommen zurück.",
+    "application": "INGRID"
   }
 }

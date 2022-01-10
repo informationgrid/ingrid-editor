@@ -36,6 +36,11 @@
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images/",
                 "output": "/assets"
+              },
+              {
+                "glob": "*/assets/**/*",
+                "input": "src/profiles",
+                "output": "/assets/profiles"
               }
             ],
             "styles": [

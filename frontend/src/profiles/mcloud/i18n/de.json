@@ -1,5 +1,18 @@
 {
+  "menu": {
+    "application": "mCLOUD",
+    "logo": "assets/profiles/mcloud/assets/icons/logo.svg",
+    "dashboard": "Übersicht",
+    "documents": "Daten",
+    "addresses": "Adressen",
+    "research": "Recherche",
+    "reports": "Reports",
+    "user": "Nutzer & Rechte",
+    "import_export": "Import / Export",
+    "catalog": "Katalog"
+  },
   "dashboard": {
-    "welcome": "Willkommen beim mCLOUD IGE-NG Editor"
+    "welcome": "Willkommen im mCLOUD Editor",
+    "application": "mCLOUD"
   }
 }

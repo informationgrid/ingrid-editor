@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   sodipodi:docname="mcloud.svg"
+   id="svg4"
+   version="1.1"
+   height="29"
+   width="45">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     showgrid="false"
+     id="namedview6"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <path
+     sodipodi:nodetypes="scccccssccccsscsccsccscsccccscccccss"
+     id="path2"
+     fill="#004f80"
+     fill-rule="nonzero"
+     d="m 38.652022,17.722 c 0,0.605 -0.088,1.407 -0.26,2.381 l -1.35,8.256 h -4.413 l 1.339,-8.185 c 0.21,-1.284 0.331,-2.325 0.36,-3.097 0.898,-0.799 1.862,-1.204 2.869,-1.204 0.624,0 1.455,0.192 1.455,1.849 z m -19.512,10.606 -0.006,0.03 H 7.7900234 l -0.022,0.002 c -3.638,0 -6.586,-2.898 -6.586,-6.474 0,-3.575 2.948,-6.473 6.586,-6.473 0.648,0 1.273,0.096 1.864,0.268 0,-0.037 -0.005,-0.071 -0.005,-0.108 0,-4.798 3.9559986,-8.687 8.8369986,-8.687 1.421389,-9.671e-4 2.822383,0.338138 4.086,0.989 1.488,-4.135 5.498,-7.095 10.213,-7.095 5.984,0 10.717,4.682 10.835,10.65 0.02227,1.558081 -0.09554,3.11501 -0.352,4.652 -0.235,-2.669 -1.635,-4.024 -4.18,-4.024 -2.036,0 -3.783,0.71 -5.2,2.111 -0.606,-1.401 -1.813,-2.11 -3.59,-2.11 -1.72,0 -3.29,0.7 -4.672,2.086 l 0.27,-1.699 h -4.18 z m 10.557,-10.606 c 0,0.568 -0.087,1.37 -0.259,2.382 l -1.345,8.222 -0.006,0.033 h -4.412 l 1.787,-11.24 c 0.898,-0.827 1.845,-1.246 2.814,-1.246 0.61,0 1.421,0.192 1.421,1.849 z" />
+</svg>

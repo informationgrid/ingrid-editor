@@ -3,8 +3,10 @@
         class="header-row medium-spacing"
         [class.showShadow]="showShadow"
     >
-        <img src="assets/icons/logo.svg" height="32" />
-        <span class="page-title-general"><strong>INGRID</strong> EDITOR</span>
+        <img src="{{ t('logo') }}" height="32" />
+        <span class="page-title-general"
+            ><strong>{{ t("application") }}</strong> EDITOR</span
+        >
         <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
 
         <div fxFlex="grow" class="center-header">
@@ -101,7 +103,8 @@
             <mat-menu #menuInfo="matMenu" class="info-menu user-popup-menu">
                 <div class="user-popup-header">
                     <mat-card-title
-                        ><strong>INGRID</strong> EDITOR</mat-card-title
+                        ><strong>{{ t("application") }}</strong>
+                        EDITOR</mat-card-title
                     >
                 </div>
                 <span *ngIf="isAdmin">
@@ -136,7 +139,7 @@
                 <span *ngIf="!externalHelp" mat-menu-item>Hilfe</span>
                 <!--
                 <mat-divider></mat-divider>
-                <span mat-menu-item>Über INGRID EDITOR</span>
+                <span mat-menu-item>Über {{t("application")}} EDITOR</span>
                 -->
                 <mat-divider></mat-divider>
                 <div class="versioninfo">
