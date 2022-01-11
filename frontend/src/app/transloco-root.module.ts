@@ -12,6 +12,7 @@ import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config/config.service";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { combineLatest, of } from "rxjs";
+import { deepMerge } from "./services/utils";
 
 @Injectable({ providedIn: "root" })
 export class TranslocoHttpLoader implements TranslocoLoader {
@@ -29,7 +30,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
           this.http
             .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
             .pipe(catchError(() => of({}))),
-        ]).pipe(map((files) => ({ ...files[0], ...files[1] })));
+        ]).pipe(map((files) => deepMerge(files[0], files[1])));
       })
     );
   }
