@@ -4,9 +4,9 @@ export class ResearchPage {
   static url = '/research';
 
   static visit(): void {
-    cy.intercept('POST', '/api/search/query').as('search');
+    cy.intercept({ method: 'POST', url: '/api/search/query', times: 1 }).as('searchOnVisit');
     cy.visit('research');
-    cy.wait('@search', { timeout: 10000 });
+    cy.wait('@searchOnVisit', { timeout: 10000 });
   }
 
   static search(query: string): void {
@@ -107,12 +107,12 @@ export class ResearchPage {
   static addTitleAndLocationForSpatialReference(location = 'Deutschland', title = 'testSpatial'): void {
     if (location !== undefined) {
       cy.intercept('/search/' + location + '*').as('waitForSuggestions');
-      cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
+      cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').clear().type(location); //search term
       cy.wait('@waitForSuggestions', { timeout: 10000 });
       this.chooseFirstLocationSuggestionByRadioButton(location);
     }
     if (title !== undefined) {
-      cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //title
+      cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').clear().type(title); //title
     }
     cy.get('ige-spatial-dialog').find('[data-cy="confirm-dialog-save"]').click();
     //wait for the application of the filtering
