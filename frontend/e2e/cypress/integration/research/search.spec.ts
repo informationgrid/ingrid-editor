@@ -219,7 +219,7 @@ describe('Research Page', () => {
   it('should return to state of originally saved search when editing search is discontinued', () => {
     ResearchPage.createSpatialReference('Hamburg', 'search to interrupt editing');
     ResearchPage.interruptEditingSpatialReference('Berlin');
-    cy.get('div.location').contains('Hamburg');
+    cy.get('div.location').contains('search to interrupt editing');
   });
 
   it('should be able to create different types of saved searches', () => {
