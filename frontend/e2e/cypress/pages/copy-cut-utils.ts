@@ -33,11 +33,13 @@ export class CopyCutUtils {
     } else {
       cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
     }
+
+    cy.intercept('POST', 'api/datasets/**').as('copyOrMoveRequest');
     cy.get('[data-cy=create-applyLocation]').click();
 
     // wait for tree being refreshed with new node information
     // otherwise we might get an "detached from the DOM"-error
-    cy.wait(500);
+    cy.wait('@copyOrMoveRequest');
   }
 
   static dragdrop(
