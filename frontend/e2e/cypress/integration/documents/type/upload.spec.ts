@@ -126,7 +126,7 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     // check unzipped files in table
-    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 3);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
   });
 
   // should fail, but passes
