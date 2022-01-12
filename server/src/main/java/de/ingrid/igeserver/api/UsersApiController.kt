@@ -5,6 +5,7 @@ import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.FindOptions
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.UserRepository
@@ -13,10 +14,7 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
-import org.apache.commons.codec.binary.Base64.decodeBase64
 import org.apache.logging.log4j.kotlin.logger
-import org.keycloak.RSATokenVerifier
-import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
@@ -27,7 +25,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.lang.Math.ceil
 import java.security.Principal
 import java.util.*
 import kotlin.time.ExperimentalTime
@@ -168,16 +165,23 @@ open class UsersApiController : UsersApi {
         // return all users of assigned groups and subgroups for non-katadmins
         val filteredUsers = mutableSetOf<User>()
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        groupService.getAll(catalogId).filter {
-            igeAclService.hasRightsForGroup(
-                principal as Authentication,
-                it
-            )
-        }.forEach {
-            filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal))
-        }
-        return ResponseEntity.ok(filteredUsers.toList())
+        groupService.getAll(catalogId)
+            .filter { hasRightsForGroup(principal, it) }
+            .forEach { filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal)) }
+        
+        val usersWithNoGroups = catalogService.getAllCatalogUsers(principal)
+            .filter { it.groups.isEmpty() }
+        
+        return ResponseEntity.ok(filteredUsers.toList() + usersWithNoGroups)
     }
+
+    private fun hasRightsForGroup(
+        principal: Principal,
+        group: Group
+    ) = igeAclService.hasRightsForGroup(
+        principal as Authentication,
+        group
+    )
 
     override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
         val filteredUsers = catalogService.getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
@@ -376,7 +380,6 @@ open class UsersApiController : UsersApi {
         return ResponseEntity.ok().build()
 
     }
-
 
 
 }
