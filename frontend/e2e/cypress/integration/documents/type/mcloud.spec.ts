@@ -107,11 +107,9 @@ describe('mCLOUD documents', function () {
 
     it('should create a published address with an API-Call', () => {
       const json = {
-        firstName: 'vor',
-        lastName: 'nach',
-        organization: 'org',
-        title: 'APICallPublishedAdr',
-        _type: 'AddressDoc',
+        organization: 'PublishedAdressWithAPI',
+        title: 'PublishedAdressWithAPI',
+        _type: 'McloudAddressDoc',
         contact: [{ type: 1, connection: '0123456789' }]
       };
 
@@ -120,7 +118,8 @@ describe('mCLOUD documents', function () {
 
       AddressPage.visit();
       DocumentPage.checkURL('/address');
-      Tree.containsNodeWithObjectTitle('APICallPublishedAdr');
+      Tree.containsNodeWithObjectTitle('PublishedAdressWithAPI');
+      Tree.openNode(['PublishedAdressWithAPI']);
     });
   });
 });
