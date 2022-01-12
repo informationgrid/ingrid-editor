@@ -4,11 +4,11 @@ import { Tree } from '../../pages/tree.partial';
 describe('Export', () => {
   beforeEach(() => {
     cy.kcLogout();
+    cy.kcLogin('user').as('tokens');
+    ExportPage.visit();
   });
 
   it('should export a single published document with options "Nur diesen Datensatz", "IGE" ', () => {
-    cy.kcLogin('user').as('tokens');
-    ExportPage.visit();
     Tree.openNode(['TestDocResearch4'], false, true);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
@@ -30,8 +30,6 @@ describe('Export', () => {
   });
 
   it('should export a single published document with options "Nur diesen Datensatz","IGE" and "Auch Entwürfe exportieren" ', () => {
-    cy.kcLogin('user').as('tokens');
-    ExportPage.visit();
     Tree.openNode(['TestDocResearch4'], false, true);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
@@ -47,8 +45,6 @@ describe('Export', () => {
   });
 
   it('should export a completed document with option "mCLOUD Portal" ', () => {
-    cy.kcLogin('user').as('tokens');
-    ExportPage.visit();
     Tree.openNode(['TestDocResearch4'], false, true);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
