@@ -60,8 +60,6 @@ describe('Export', () => {
   });
 
   it('should export a completed document with option "mCLOUD DCAT-AP.de" ', () => {
-    cy.kcLogin('user').as('tokens');
-    ExportPage.visit();
     Tree.openNode(['TestDocResearch4'], false, true);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
@@ -70,6 +68,7 @@ describe('Export', () => {
     // go to preview step
     ExportPage.continue();
     ExportPage.preview();
+    // TODO: check for content
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
