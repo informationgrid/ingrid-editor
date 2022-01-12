@@ -25,6 +25,14 @@ class GroupsApiController @Autowired constructor(
 
     override fun createGroup(principal: Principal, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        // check if user has permission to create group
+        if (!igeAclService.hasRightsForGroup(
+                principal as Authentication,
+                group
+            )
+        ) {
+            return ResponseEntity(HttpStatus.FORBIDDEN)
+        }
         val manager = catalogService.getUser(authUtils.getUsernameFromPrincipal(principal))
         return ResponseEntity.ok(groupService.create(catalogId, group, manager))
     }

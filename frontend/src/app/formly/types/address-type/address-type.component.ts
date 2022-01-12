@@ -71,6 +71,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
       .open(ChooseAddressDialogComponent, {
         minWidth: 500,
         data: address,
+        hasBackdrop: true,
       })
       .afterClosed()
       .pipe(filter((data) => data));

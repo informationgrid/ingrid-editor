@@ -18,12 +18,14 @@ import { AddressRef } from "../address-card/address-card.component";
 import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 export interface ChooseAddressResponse {
   type: string;
   address: DocumentAbstract;
 }
 
+@UntilDestroy()
 @Component({
   selector: "ige-choose-address-dialog",
   templateUrl: "./choose-address-dialog.component.html",
@@ -60,12 +62,14 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.configService.getCurrentUserInfo().then((userInfo) => {
-      if (userInfo.currentCatalog.type === "mcloud") {
-        this.showTypeSelector = false;
-        this.selectedType = "10"; // Herausgeber
-      }
-    });
+    this.configService.$userInfo
+      .pipe(untilDestroyed(this))
+      .subscribe((userInfo) => {
+        if (userInfo.currentCatalog.type === "mcloud") {
+          this.showTypeSelector = false;
+          this.selectedType = "10"; // Herausgeber
+        }
+      });
     this.codelistService.byId("505");
     this.recentAddresses$ = this.sessionQuery.recentAddresses$;
 
