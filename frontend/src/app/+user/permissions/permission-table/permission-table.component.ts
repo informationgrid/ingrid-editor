@@ -63,33 +63,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
       });
   }
 
-  callRemovePermissionDialog(uuid: string) {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          message: `Möchten Sie die Berechtigung wirklich löschen?`,
-          title: "Löschen",
-          buttons: [
-            { text: "Abbrechen" },
-            {
-              text: "Löschen",
-              alignRight: true,
-              id: "confirm",
-              emphasize: true,
-            },
-          ],
-        },
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (!result) return;
-
-        this.removePermission(uuid);
-      });
-  }
-
-  private removePermission(uuid: string) {
-    this.value = this.val.filter((entry) => uuid !== entry.id);
+  removePermission(id: string) {
+    this.value = this.val.filter((entry) => id !== entry.id);
   }
 
   registerOnChange(fn: any): void {
