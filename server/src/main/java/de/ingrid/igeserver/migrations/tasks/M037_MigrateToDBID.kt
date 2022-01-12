@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 @Service
 class M037_MigrateToDBID : MigrationBase("0.37") {
@@ -83,12 +84,17 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
             permission as ObjectNode
             val uuid = permission.get("uuid").asText()
 
-            val id = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw WHERE dw.uuid = :uuid")
-                .setParameter("uuid", uuid)
-                .singleResult as Int
 
-            permission.put("id", id)
-            permission.remove("uuid")
+            try {
+                val id = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw WHERE dw.uuid = :uuid")
+                    .setParameter("uuid", uuid)
+                    .singleResult as Int
+
+                permission.put("id", id)
+                permission.remove("uuid")
+            } catch (e: NoResultException) {
+                // document does not exist to permission and can be ignored
+            }
         }
 
         return permissions.isNotEmpty()
