@@ -34,6 +34,7 @@ import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { AuthenticationFactory } from "../../../security/auth.factory";
+import { MatDialog } from "@angular/material/dialog";
 
 @UntilDestroy()
 @Component({
@@ -102,7 +103,8 @@ export class DynamicFormComponent
     private profileQuery: ProfileQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -401,7 +403,17 @@ export class DynamicFormComponent
     });
   }
 
-  handleDrop(event: any) {
+  async handleDrop(event: any) {
+    let handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.address
+    );
+
+    if (!handled) {
+      return;
+    }
     this.documentService
       .move(event.srcIds, event.destination, this.address, true)
       .subscribe();

@@ -19,6 +19,8 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { filter, switchMap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
+import { FormUtils } from "../../form.utils";
+import { FormStateService } from "../../form-state.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -43,6 +45,7 @@ export class CopyCutPastePlugin extends Plugin {
     private config: ConfigService,
     private toolbarService: FormToolbarService,
     private documentService: DocumentService,
+    private formStateService: FormStateService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private modalService: ModalService,
@@ -166,7 +169,18 @@ export class CopyCutPastePlugin extends Plugin {
     }
   }
 
-  copy(includeTree = false) {
+  async copy(includeTree = false) {
+    let handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
+
+    if (!handled) {
+      return;
+    }
+
     // remove last remembered copied documents
     this.showDialog("Kopieren")
       .pipe(
@@ -185,7 +199,17 @@ export class CopyCutPastePlugin extends Plugin {
       .subscribe();
   }
 
-  cut() {
+  async cut() {
+    let handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
+
+    if (!handled) {
+      return;
+    }
     // remove last remembered copied documents
     this.showDialog("Verschieben")
       .pipe(
