@@ -35,11 +35,14 @@ export class CopyCutUtils {
     }
 
     cy.intercept('POST', 'api/datasets/**').as('copyOrMoveRequest');
+    cy.intercept('GET', 'api/datasets/*/path').as('nextPathRequest');
     cy.get('[data-cy=create-applyLocation]').click();
 
     // wait for tree being refreshed with new node information
     // otherwise we might get an "detached from the DOM"-error
     cy.wait('@copyOrMoveRequest');
+    // wait for next path after moving node
+    cy.wait('@nextPathRequest');
   }
 
   static dragdrop(

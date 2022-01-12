@@ -108,11 +108,11 @@ export class Tree {
             if (!isInsideDialog && !nodeIsSelected) {
               // wait for document loaded, otherwise check might fail
               if (isExportTree) {
-                cy.intercept('GET', '/api/datasets/*/path').as('documentFetched');
+                cy.intercept({ method: 'GET', url: '/api/datasets/*/path', times: 1 }).as('documentFetched');
               } else if (isImportTree) {
-                cy.intercept('GET', /api\/tree/).as('documentFetched');
+                cy.intercept({ method: 'GET', url: /api\/tree/, times: 1 }).as('documentFetched');
               } else {
-                cy.intercept('GET', '/api/datasetsByUuid/*').as('documentFetched');
+                cy.intercept({ method: 'GET', url: '/api/datasetsByUuid/*', times: 1 }).as('documentFetched');
               }
               node.trigger('click');
               cy.wait('@documentFetched');
@@ -126,6 +126,8 @@ export class Tree {
           } else {
             if (!nodeIsExpanded) {
               node.trigger('click');
+            } else {
+              cy.log('Node already expanded (no click needed)');
             }
           }
         });
