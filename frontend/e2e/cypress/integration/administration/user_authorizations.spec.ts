@@ -683,7 +683,6 @@ describe('Catalogue admin', () => {
     // assign a user an additional group so that data overlap exists
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.User);
-    cy.get('.page-title').contains('Nutzer');
     AdminUserPage.selectUser('Autor_mit Gruppen');
     AdminUserPage.addGroupToUser('test_gruppe_4');
     AdminUserPage.saveUser();

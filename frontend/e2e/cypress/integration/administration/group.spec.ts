@@ -136,7 +136,6 @@ describe('Group', () => {
 
     // go to a user and connect the created group
     AdminGroupPage.goToTabmenu(UserAndRights.User);
-    cy.get('.page-title').contains('Nutzer');
 
     AdminUserPage.selectUser(username);
     AdminUserPage.addGroupToUser(groupName);
@@ -161,7 +160,6 @@ describe('Group', () => {
 
     // back to users and check connection is deleted
     AdminGroupPage.goToTabmenu(UserAndRights.User);
-    cy.get('.page-title').contains('Nutzer');
 
     AdminUserPage.selectUser(username);
 

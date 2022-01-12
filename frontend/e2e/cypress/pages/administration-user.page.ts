@@ -149,6 +149,7 @@ export class AdminUserPage extends BasePage {
 
   // TODO: select user by unique property like email!
   static selectUser(name: string) {
+    cy.get('.page-title').contains('Nutzer (');
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
     cy.contains('user-table .mat-row', name).click();
     cy.get('#formUser').should('be.visible');
