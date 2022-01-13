@@ -1,0 +1,49 @@
+{
+  "_export_date" : "2022-01-12T16:15:49.322435+01:00",
+  "_version" : "0.0.2",
+  "resources" : [ {
+    "title" : "document_import_43",
+    "_uuid" : "12345a0e-0473-4a73-b0ff-c7764c8a25db",
+    "_type" : "mCloudDoc",
+    "_id": "723",
+    "usage" : null,
+    "events" : [ ],
+    "origin" : null,
+    "keywords" : [ ],
+    "mfundFKZ" : null,
+    "_parent": "2",
+    "timeSpan" : {
+      "rangeType" : null,
+      "timeSpanDate" : null
+    },
+    "addresses" : [ {
+      "ref" : {
+        "title" : "Sibirien, Adresse",
+        "hasWritePermission" : true,
+        "hasOnlySubtreeWritePermission" : false,
+        "_uuid" : "98764b77-5cc4-404f-be1f-a478458a617c",
+        "_type" : "McloudAddressDoc",
+        "_version" : 1,
+        "_created" : "2021-08-26T13:51:33.333215+02:00",
+        "_modified" : "2021-12-15T15:23:26.868866+01:00",
+        "_state" : "W",
+        "_id" : "902",
+        "_parent" : "8",
+        "address" : {
+          "PO" : null,
+          "plz" : null,
+          "city" : null,
+          "po-box" : null,
+          "street" : null
+        },
+        "contact" : [ ],
+        "organization" : "Sibirien, Adresse"
+      },
+      "type" : "10"
+    } ],
+    "periodicity" : null,
+    "mfundProject" : null,
+    "mCloudCategories" : [ ],
+    "openDataCategories" : [ ]
+  } ]
+}

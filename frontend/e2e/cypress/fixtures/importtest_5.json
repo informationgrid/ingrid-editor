@@ -1,0 +1,53 @@
+{
+  "_export_date" : "2022-01-12T16:15:49.322435+01:00",
+  "_version" : "0.0.2",
+  "resources" : [ {
+    "title" : "Tiefes Dokument",
+    "_uuid" : "9b264daf-3044-441d-864c-699b44c46dc1",
+    "_type" : "mCloudDoc",
+    "_id" : "4",
+    "usage" : null,
+    "events" : [ ],
+    "origin" : null,
+    "_parent" : "3",
+    "license" : null,
+    "keywords" : [ ],
+    "mfundFKZ" : null,
+    "timeSpan" : {
+      "rangeType" : null,
+      "timeSpanDate" : null
+    },
+    "addresses" : [ {
+      "ref" : {
+        "title" : "Franken, Adresse",
+        "hasWritePermission" : true,
+        "hasOnlySubtreeWritePermission" : false,
+        "_uuid" : "b59aebd7-f987-4bc9-ae51-3d1b74d2be7d",
+        "_type" : "McloudAddressDoc",
+        "_version" : 1,
+        "_created" : "2021-08-26T13:59:46.1496+02:00",
+        "_modified" : "2021-12-15T15:26:22.054598+01:00",
+        "_state" : "W",
+        "_id" : "82",
+        "_parent" : "58",
+        "address" : {
+          "PO" : null,
+          "plz" : null,
+          "city" : null,
+          "po-box" : null,
+          "street" : null
+        },
+        "contact" : [ ],
+        "organization" : "Franken, Adresse"
+      },
+      "type" : "10"
+    } ],
+    "downloads" : null,
+    "description" : null,
+    "periodicity" : null,
+    "mfundProject" : null,
+    "mCloudCategories" : [ ],
+    "geoReferenceVisual" : null,
+    "openDataCategories" : [ ]
+  } ]
+}
