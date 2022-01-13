@@ -150,4 +150,13 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
   }
+
+  static tryIllegitimatDelete() {
+    cy.get(AddressPage.Toolbar['Delete']).click();
+    cy.intercept('DELETE', /api\/datasets/, {
+      statusCode: 500
+    }).as('deleteRequest');
+    cy.get('[data-cy="confirm-dialog-confirm"]').click();
+    cy.wait('@deleteRequest', { timeout: 10000 });
+  }
 }
