@@ -48,6 +48,10 @@
 }
 
 .save-buttons {
+  .toolbar-save-button {
+    background: white;
+  }
+
   button.btnPublish,
   button.btnPublishMore {
     &:not([disabled]):hover {

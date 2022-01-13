@@ -76,6 +76,7 @@
                 <button
                     *ngIf="button.label && !button.isPrimary"
                     mat-stroked-button
+                    class="toolbar-save-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
                     [matTooltipShowDelay]="1000"
