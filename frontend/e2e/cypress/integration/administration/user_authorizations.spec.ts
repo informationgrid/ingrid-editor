@@ -26,10 +26,11 @@ describe('Meta data administrator without groups', () => {
     cy.get('ige-tree ige-empty-navigation');
   });
 
-  it('should show no groups to a metadata-administrator without groups', () => {
+  it('should show only empty groups to a metadata-administrator without groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    cy.get('.user-management-header').contains('Gruppen (0)');
+    // as of now, there are 4 empty groups
+    cy.get('.user-management-header').contains('Gruppen (4)');
   });
   it('metadata admin without groups should be able to create groups of his own, but not add documents', () => {
     // create group
