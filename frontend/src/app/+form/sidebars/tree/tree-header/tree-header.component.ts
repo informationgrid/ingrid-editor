@@ -13,7 +13,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
   styleUrls: ["./tree-header.component.scss"],
 })
 export class TreeHeaderComponent implements OnInit {
-  @Input() showReloadButton = true;
+  @Input() showReloadButton = false;
   @Input() isAddress = false;
   @Input() showOptions = true;
   @Input() showOnlyFolders = false;
