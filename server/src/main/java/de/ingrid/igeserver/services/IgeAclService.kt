@@ -50,10 +50,12 @@ class IgeAclService @Autowired constructor(
                         throw error("this is impossible and must not happen.")
                     }
                 }
+                // if one permission is not allowed, we can stop here
                 if (!isAllowed) return false
             }
         }
-        return isAllowed
+        // if we are here, all permissions are allowed
+        return true
     }
 
     fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {
