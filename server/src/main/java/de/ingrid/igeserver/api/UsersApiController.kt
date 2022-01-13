@@ -171,8 +171,10 @@ open class UsersApiController : UsersApi {
         
         val usersWithNoGroups = catalogService.getAllCatalogUsers(principal)
             .filter { it.groups.isEmpty() }
-        
-        return ResponseEntity.ok(filteredUsers.toList() + usersWithNoGroups)
+        filteredUsers.addAll(usersWithNoGroups)
+
+        // remove superadmins from list
+        return ResponseEntity.ok(filteredUsers.filter { it.role != "ige-super-admin" })
     }
 
     private fun hasRightsForGroup(
