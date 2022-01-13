@@ -4,13 +4,12 @@ import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.GroupService
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.spring.SpringListener
+import io.kotest.extensions.spring.SpringExtension
 import org.apache.http.auth.BasicUserPrincipal
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts=["/test_data_acl.sql"], config= SqlConfig(encoding="UTF-8"))
-class WritePermissionTests: AnnotationSpec() {
+@Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
+class WritePermissionTests : AnnotationSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository

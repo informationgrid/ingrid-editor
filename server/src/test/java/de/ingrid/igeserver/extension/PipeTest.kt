@@ -4,28 +4,30 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.beInstanceOf
-import io.kotest.spring.SpringListener
 import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 
 @ContextConfiguration(classes = [(PipeTestConfig::class)])
-@TestPropertySource(properties = [
-    "pipes.filter.order={'PublishPipe': {" +
-            "'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'," +
-            "'de.ingrid.igeserver.extension.TestValidatePublishFilter'" +
-    "} }",
-    "pipes.filter.disabled={'CreatePipe': {" +
-            "'de.ingrid.igeserver.extension.TestValidateCreateFilter'" +
-    "} }"
-])
+@TestPropertySource(
+    properties = [
+        "pipes.filter.order={'PublishPipe': {" +
+                "'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'," +
+                "'de.ingrid.igeserver.extension.TestValidatePublishFilter'" +
+                "} }",
+        "pipes.filter.disabled={'CreatePipe': {" +
+                "'de.ingrid.igeserver.extension.TestValidateCreateFilter'" +
+                "} }"
+    ]
+)
 class PipeTest : FunSpec() {
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     lateinit var createPipe: Pipe<TestPayloadCreate>
@@ -52,12 +54,12 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 6
             arrayOf(
-                    TestUpdatePipe::class            to "Running filters on pipe 'UpdatePipe' for profile 'null'",
-                    TestUpdatePipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidateUpdateFilter'",
-                    TestValidateUpdateFilter::class  to "Validate data on persist",
-                    TestValidateUpdateFilter::class  to "Validate data on update",
-                    TestUpdatePipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
-                    TestValidatePublishFilter::class to "Filter does not apply"
+                TestUpdatePipe::class to "Running filters on pipe 'UpdatePipe' for profile 'null'",
+                TestUpdatePipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidateUpdateFilter'",
+                TestValidateUpdateFilter::class to "Validate data on persist",
+                TestValidateUpdateFilter::class to "Validate data on update",
+                TestUpdatePipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                TestValidatePublishFilter::class to "Filter does not apply"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)
@@ -77,11 +79,11 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 7
             arrayOf(
-                    TestPublishPipe::class            to "Running filters on pipe 'PublishPipe' for profile 'null'",
-                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
-                    TestAuthorizePublishFilter::class to "Authorize on publish",
-                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
-                    TestValidatePublishFilter::class  to "Validate data on publish"
+                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                TestAuthorizePublishFilter::class to "Authorize on publish",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                TestValidatePublishFilter::class to "Validate data on publish"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)
@@ -101,8 +103,8 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 2
             arrayOf(
-                    TestCreatePipe::class to "Running filters on pipe 'CreatePipe' for profile 'null'",
-                    TestCreatePipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestValidateCreateFilter' because it is disabled by configuration"
+                TestCreatePipe::class to "Running filters on pipe 'CreatePipe' for profile 'null'",
+                TestCreatePipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestValidateCreateFilter' because it is disabled by configuration"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)
@@ -122,14 +124,14 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 8
             arrayOf(
-                    TestPublishPipe::class                    to "Running filters on pipe 'PublishPipe' for profile 'profileA'",
-                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
-                    TestAuthorizePublishFilter::class         to "Authorize on publish",
-                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
-                    TestValidatePublishFilter::class          to "Validate data on publish",
-                    TestPublishPipe::class                    to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter'",
-                    TestAuthorizePublishProfileAFilter::class to "Authorize on publish for 'profileA'",
-                    TestPublishPipe::class                    to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'profileA'"
+                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile 'profileA'",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                TestAuthorizePublishFilter::class to "Authorize on publish",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                TestValidatePublishFilter::class to "Validate data on publish",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter'",
+                TestAuthorizePublishProfileAFilter::class to "Authorize on publish for 'profileA'",
+                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'profileA'"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)
@@ -149,13 +151,13 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 7
             arrayOf(
-                    TestPublishPipe::class            to "Running filters on pipe 'PublishPipe' for profile 'null'",
-                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
-                    TestAuthorizePublishFilter::class to "Authorize on publish",
-                    TestPublishPipe::class            to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
-                    TestValidatePublishFilter::class  to "Validate data on publish",
-                    TestPublishPipe::class            to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter' because it does not apply to profile 'null'",
-                    TestPublishPipe::class            to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'null'"
+                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
+                TestAuthorizePublishFilter::class to "Authorize on publish",
+                TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
+                TestValidatePublishFilter::class to "Validate data on publish",
+                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter' because it does not apply to profile 'null'",
+                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'null'"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)

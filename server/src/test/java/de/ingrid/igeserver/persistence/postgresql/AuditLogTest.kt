@@ -4,7 +4,7 @@ import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.AuditLogRepository
 import de.ingrid.igeserver.services.AuditLogger
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.spring.SpringListener
+import io.kotest.extensions.spring.SpringExtension
 import org.assertj.core.api.Assertions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -16,14 +16,14 @@ import org.springframework.test.context.jdbc.SqlConfig
 @SpringBootTest(classes = [IgeServer::class])
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts=["/test_data.sql"], config=SqlConfig(encoding="UTF-8"))
+@Sql(scripts = ["/test_data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class AuditLogTest : AnnotationSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var auditLog: AuditLogger
-    
+
     @Autowired
     private lateinit var auditRepo: AuditLogRepository
 

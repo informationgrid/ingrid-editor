@@ -3,8 +3,8 @@ package de.ingrid.igeserver.research
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.IgeServer
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeExactly
-import io.kotest.spring.SpringListener
 import org.hibernate.query.NativeQuery
 import org.intellij.lang.annotations.Language
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ import javax.persistence.EntityManager
 @Sql(scripts = ["/test_data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class ResearchTest : ShouldSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var entityManager: EntityManager

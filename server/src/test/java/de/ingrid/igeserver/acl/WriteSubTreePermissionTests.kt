@@ -3,13 +3,12 @@ package de.ingrid.igeserver.acl
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.spring.SpringListener
+import io.kotest.extensions.spring.SpringExtension
 import org.apache.http.auth.BasicUserPrincipal
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -26,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 class WriteSubTreePermissionTests : AnnotationSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository

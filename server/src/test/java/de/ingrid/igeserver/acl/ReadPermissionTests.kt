@@ -3,7 +3,7 @@ package de.ingrid.igeserver.acl
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.spring.SpringListener
+import io.kotest.extensions.spring.SpringExtension
 import org.apache.http.auth.BasicUserPrincipal
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -25,7 +25,7 @@ import org.springframework.test.context.jdbc.SqlConfig
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 class ReadPermissionTests : AnnotationSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository

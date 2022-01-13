@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import javax.validation.Valid
+import kotlin.time.ExperimentalTime
 
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
@@ -70,6 +71,7 @@ interface UsersApi {
     )
     @Operation(description = "Get the user with the given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
+    @ExperimentalTime
     fun getUser(
         principal: Principal,
         @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String

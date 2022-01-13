@@ -7,7 +7,7 @@ import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.spring.SpringListener
+import io.kotest.extensions.spring.SpringExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +26,7 @@ import javax.transaction.Transactional
 @Transactional
 class JpaTest : AnnotationSpec() {
 
-    override fun listeners() = listOf(SpringListener)
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var em: EntityManager
@@ -130,7 +130,7 @@ class JpaTest : AnnotationSpec() {
         // we convert the date to ignore milliseconds
         assertThat(convertDate(loadedDoc.modified)).isEqualTo(convertDate(loadedDoc.created))
 
-        val addressData = loadedDoc.data as ObjectNode
+        val addressData = loadedDoc.data
         assertThat(addressData).isNotNull
         assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
         assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")

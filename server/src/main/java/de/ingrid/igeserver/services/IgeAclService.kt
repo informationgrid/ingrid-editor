@@ -5,7 +5,6 @@ import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.repository.GroupRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.ObjectIdentityImpl
@@ -24,7 +23,6 @@ data class PermissionInfo(
 @Service
 class IgeAclService @Autowired constructor(
     val aclService: AclService,
-    val groupRepo: GroupRepository,
     val docWrapperRepo: DocumentWrapperRepository
 ) {
 
@@ -35,7 +33,7 @@ class IgeAclService @Autowired constructor(
         val permissionLevels = listOf("writeTree", "readTree", "writeTreeExceptParent")
         val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
-        var isAllowed = false
+        var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
             val permissionLevelUuids = getAllDatasetUuidsFromGroups(listOf(group), permissionLevel)
             permissionLevelUuids.forEach { uuid ->
@@ -46,9 +44,7 @@ class IgeAclService @Autowired constructor(
                     "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
                     "readTree" -> isAllowed(acl, BasePermission.READ, sids)
                     "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
-                    else -> {
-                        throw error("this is impossible and must not happen.")
-                    }
+                    else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
                 if (!isAllowed) return false
