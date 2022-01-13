@@ -1,6 +1,5 @@
 package de.ingrid.mdek.upload.configuration;
 
-import com.tngtech.configbuilder.ConfigBuilder;
 import de.ingrid.mdek.upload.Config;
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage;
 import de.ingrid.mdek.upload.storage.validate.Validator;
@@ -14,14 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = "de.ingrid.igeserver")
+@ComponentScan(basePackages = {"de.ingrid.igeserver", "de.ingrid.mdek"})
 public class SpringConfiguration {
-
-    @Bean
-    public Config globalConfig() {
-        Config config = new ConfigBuilder<Config>(Config.class).build();
-        return config;
-    }
 
     @Bean
     public FileSystemStorage storage(Config config) {

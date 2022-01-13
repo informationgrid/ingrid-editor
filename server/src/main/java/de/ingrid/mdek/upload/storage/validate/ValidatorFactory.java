@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,43 +45,44 @@ public class ValidatorFactory {
 
     /**
      * Constructor.
-     *
+     * <p>
      * Initialize the factory with a JSON formatted configuration string of the form:
-     *
+     * <p>
      * {
-     *   "validatorA":{
-     *     "impl":"de.ingrid.mdek.upload.validate.ValidatorA",
-     *     "properties":{
-     *       "propA": "configuration property A"
-     *     }
-     *   },
-     *   ...
+     * "validatorA":{
+     * "impl":"de.ingrid.mdek.upload.validate.ValidatorA",
+     * "properties":{
+     * "propA": "configuration property A"
+     * }
+     * },
+     * ...
      * }
      *
-     * @param configuration
+     * @param config
      */
-    public ValidatorFactory(final String configuration) {
+    public ValidatorFactory(final Map<String, Map<String, Object>> config) {
         validatorMap.clear();
         try {
-            final ObjectMapper mapper = new ObjectMapper();
-            final TypeFactory typeFactory = mapper.getTypeFactory();
-            final MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, ValidatorDef.class);
-            final HashMap<String, ValidatorDef> encodedConfiguration = mapper.readValue(configuration, mapType);
-            for (final Map.Entry<String, ValidatorDef> validatorsEntry : encodedConfiguration.entrySet()) {
+            for (final Map.Entry<String, Map<String, Object>> validatorsEntry : config.entrySet()) {
                 final String validatorName = validatorsEntry.getKey();
-                final ValidatorDef validatorDef = validatorsEntry.getValue();
-                final Validator instance = (Validator)Class.forName(validatorDef.impl).newInstance();
-                instance.initialize(validatorDef.properties);
+                final Map<String, Object> validatorDef = validatorsEntry.getValue();
+                final Validator instance = (Validator) Class.forName(validatorDef.get("impl").toString()).newInstance();
+                Object properties = validatorDef.get("properties");
+                if (properties instanceof List) {
+                    instance.initialize(new HashMap<>());
+                } else {
+                    instance.initialize((Map)properties);
+                }
                 validatorMap.put(validatorName, instance);
             }
-        }
-        catch (final Exception e) {
-            throw new IllegalArgumentException("Could not parse configuration value '"+configuration+"' into validator list.", e);
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Could not parse configuration value into validator list.", e);
         }
     }
 
     /**
      * Get all validator names
+     *
      * @return Set<String>
      */
     public Set<String> getValidatorNames() {
@@ -89,6 +91,7 @@ public class ValidatorFactory {
 
     /**
      * Get the validator with the given name
+     *
      * @param name
      * @return Validator
      */
@@ -96,6 +99,6 @@ public class ValidatorFactory {
         if (validatorMap.containsKey(name)) {
             return validatorMap.get(name);
         }
-        throw new IllegalArgumentException("A validator with name '"+name+"' does not exist.");
+        throw new IllegalArgumentException("A validator with name '" + name + "' does not exist.");
     }
 }

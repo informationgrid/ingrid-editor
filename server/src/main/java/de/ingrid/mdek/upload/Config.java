@@ -22,29 +22,23 @@
  */
 package de.ingrid.mdek.upload;
 
-import com.tngtech.configbuilder.annotation.configuration.LoadingOrder;
-import com.tngtech.configbuilder.annotation.propertyloaderconfiguration.PropertiesFiles;
-import com.tngtech.configbuilder.annotation.propertyloaderconfiguration.PropertyLocations;
-import com.tngtech.configbuilder.annotation.typetransformer.CharacterSeparatedStringToStringListTransformer;
-import com.tngtech.configbuilder.annotation.typetransformer.TypeTransformers;
-import com.tngtech.configbuilder.annotation.valueextractor.CommandLineValue;
-import com.tngtech.configbuilder.annotation.valueextractor.DefaultValue;
-import com.tngtech.configbuilder.annotation.valueextractor.EnvironmentVariableValue;
-import com.tngtech.configbuilder.annotation.valueextractor.PropertyValue;
-import com.tngtech.configbuilder.annotation.valueextractor.SystemPropertyValue;
 import de.ingrid.mdek.upload.storage.validate.Validator;
+import de.ingrid.mdek.upload.storage.validate.ValidatorFactory;
 import net.weta.components.communication.configuration.XPathService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PropertiesFiles({ "mdek" })
-@PropertyLocations(fromClassLoader = true)
-@LoadingOrder({CommandLineValue.class, SystemPropertyValue.class, PropertyValue.class, EnvironmentVariableValue.class, DefaultValue.class})
+@Configuration
+@ConfigurationProperties("upload")
 public class Config {
 
     @SuppressWarnings("unused")
@@ -53,86 +47,77 @@ public class Config {
     /**
      * MAIL
      */
-    @PropertyValue("system.mail.receiver")
-    @DefaultValue("")
+    @Value("${system.mail.receiver:}")
     public String systemMailReceiver;
 
-    @PropertyValue("workflow.mail.sender")
-    @DefaultValue("")
+    @Value("${workflow.mail.sender:}")
     public String workflowMailSender;
 
-    @PropertyValue("workflow.mail.receiver")
-    @DefaultValue("")
+    @Value("${workflow.mail.receiver:}")
     public String workflowMailReceiver;
 
-    @PropertyValue("workflow.mail.smtp")
-    @DefaultValue("")
+    @Value("${workflow.mail.smtp:}")
     public String workflowMailSmtpHost;
 
-    @PropertyValue("workflow.mail.smtp.user")
-    @DefaultValue("")
+    @Value("${workflow.mail.smtp.user:}")
     public String workflowMailSmtpUser;
 
-    @PropertyValue("workflow.mail.smtp.password")
-    @DefaultValue("")
+    @Value("${workflow.mail.smtp.password:}")
     public String workflowMailSmtpPassword;
 
-    @PropertyValue("workflow.mail.smtp.port")
-    @DefaultValue("")
+    @Value("${workflow.mail.smtp.port:}")
     public String workflowMailSmtpPort;
 
-    @PropertyValue("workflow.mail.smtp.ssl")
-    @DefaultValue("false")
+    @Value("${workflow.mail.smtp.ssl:false}")
     public boolean workflowMailSmtpSSL;
 
-    @PropertyValue("workflow.mail.smtp.protocol")
-    @DefaultValue("smtp")
+    @Value("${workflow.mail.smtp.protocol:smtp}")
     public String workflowMailSmtpProtocol;
 
     /**
      * UPLOAD
      */
-    @PropertyValue("upload.impl")
-    @DefaultValue("de.ingrid.mdek.upload.storage.impl.FileSystemStorage")
+    @Value("${upload.impl:de.ingrid.mdek.upload.storage.impl.FileSystemStorage}")
     public String uploadImpl;
 
-    @PropertyValue("upload.docsdir")
-    @DefaultValue("")
+    @Value("${upload.docsdir:}")
     public String uploadDocsDir;
 
-    @PropertyValue("upload.partsdir")
-    @DefaultValue("")
+    @Value("${upload.partsdir:}")
     public String uploadPartsDir;
 
-    @PropertyValue("upload.tempdir")
-    @DefaultValue("")
+    @Value("${upload.tempdir:}")
     public String uploadTempDir;
 
-    @PropertyValue("upload.validators")
-    @TypeTransformers(CharacterSeparatedStringToStringListTransformer.class)
+    @Value("${upload.validators:}")
     public List<String> uploadValidators;
 
-    @PropertyValue("upload.validators.config")
-    @TypeTransformers(de.ingrid.mdek.upload.storage.validate.config.StringToValidatorTransformer.class)
+//    @TypeTransformers(de.ingrid.mdek.upload.storage.validate.config.StringToValidatorTransformer.class)
     public Map<String, Validator> uploadValidatorMap;
 
-    @PropertyValue("upload.trash.retentionTime")
-    @DefaultValue("0")
+    @Autowired
+    public void setUploadValidators(@Value("#{${upload.validators.config}}") Map<String, Map<String, Object>> values) {
+        final Map<String, Validator> result = new HashMap<>();
+        final ValidatorFactory factory = new ValidatorFactory(values);
+        for (final String name : factory.getValidatorNames()) {
+            result.put(name, factory.getValidator(name));
+        }
+        uploadValidatorMap = result;
+    }
+
+    @Value("${upload.trash.retentionTime:0}")
     public int uploadTrashRetentionTime;
 
-    @PropertyValue("upload.trash.retentionTime")
-    @DefaultValue("24")
+    @Value("${upload.trash.retentionTime:24}")
     public int uploadUnsavedRetentionTime;
 
     /**
      * VARIOUS
      */
-    @PropertyValue("installation.standalone")
-    @DefaultValue("false")
+    @Value("${installation.standalone:false}")
     public boolean noPortal;
 
-    @PropertyValue("mdek.directLink")
-    @DefaultValue("")
+    @Value("${mdek.directLink:}")
     public String mdekDirectLink;
 
 
