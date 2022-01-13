@@ -8,7 +8,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
 import { merge } from "rxjs";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { catchError, filter } from "rxjs/operators";
+import { catchError, filter, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
 
@@ -86,11 +86,12 @@ export class SavePlugin extends SaveBase {
       .pipe(
         catchError((error) =>
           this.handleError(error, formData, this.forAddress)
+        ),
+        finalize(() =>
+          this.formToolbarService.setButtonState("toolBtnSave", true)
         )
       )
-      .subscribe(() =>
-        this.formToolbarService.setButtonState("toolBtnSave", true)
-      );
+      .subscribe();
   }
 
   unregister() {

@@ -67,7 +67,8 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private getMessage(error: HttpErrorResponse): string {
-    switch (error.error.errorText) {
+    let errorText = error.error?.errorText ?? null;
+    switch (errorText) {
       case "No access to referenced dataset":
         return "Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.";
       case "No read access to document":
