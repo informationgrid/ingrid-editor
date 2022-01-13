@@ -184,7 +184,7 @@ export class Tree {
   }
 
   static checkTitleOfSelectedNode(nodeTitle: string) {
-    cy.get('ige-header-title-row').contains(nodeTitle);
+    cy.contains('ige-header-title-row', nodeTitle, { timeout: 8000 });
   }
 
   static checkNodeHasChildren(nodeTitle: string) {
