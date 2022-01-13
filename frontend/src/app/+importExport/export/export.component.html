@@ -20,7 +20,10 @@
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="datasetSelected">
                 <ng-template matStepLabel>Datensatz wählen</ng-template>
-                <ige-tree (selected)="selectDatasets($event)"></ige-tree>
+                <ige-tree
+                    #treeComponent
+                    (selected)="selectDatasets($event)"
+                ></ige-tree>
 
                 <mat-divider></mat-divider>
 

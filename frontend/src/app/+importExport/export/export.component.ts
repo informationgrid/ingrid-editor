@@ -18,6 +18,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
+import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
 
 @Component({
   selector: "ige-export",
@@ -26,6 +27,7 @@ import { IgeException } from "../../server-validation.util";
 })
 export class ExportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;
+  @ViewChild("treeComponent") treeComponent: TreeComponent;
 
   selection: any[] = [];
   optionsFormGroup: FormGroup;
@@ -62,9 +64,9 @@ export class ExportComponent implements OnInit {
   }
 
   selectDatasets(ids: string[]) {
-    this.datasetSelected = true;
     this.selectedIds = ids;
     if (ids.length > 0) {
+      this.datasetSelected = true;
       this.docService.getPath(ids[0]).subscribe((path) => (this.path = path));
     }
   }
@@ -112,7 +114,10 @@ export class ExportComponent implements OnInit {
 
   cancel() {
     this.stepper.selectedIndex = 0;
-    this.datasetSelected = false;
+    this.treeComponent.jumpToNode(null).then(() => {
+      this.datasetSelected = false;
+      this.path = null;
+    });
   }
 
   showPreview() {
