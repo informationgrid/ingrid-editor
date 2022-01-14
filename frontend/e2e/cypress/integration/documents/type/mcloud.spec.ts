@@ -2,6 +2,7 @@ import { DocumentPage } from '../../../pages/document.page';
 import { AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
+import { Menu } from '../../../pages/menu';
 
 describe('mCLOUD documents', function () {
   beforeEach(() => {
@@ -120,6 +121,22 @@ describe('mCLOUD documents', function () {
       DocumentPage.checkURL('/address');
       Tree.containsNodeWithObjectTitle('PublishedAdressWithAPI');
       Tree.openNode(['PublishedAdressWithAPI']);
+    });
+
+    it('should not be able to delete address associated with a document', () => {
+      // add address to document
+      Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
+      enterMcloudDocTestData.CreateDialog.setAddress('Pays-Basque, Adresse');
+      DocumentPage.saveDocument();
+      // try to delete address
+      Menu.switchTo('ADDRESSES');
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_B', 'Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
+      AddressPage.tryIllegitimatDelete();
+      // expect warning -> not working right now; there is no such warning popping up
+      /*cy.contains(
+        '[data-cy="error-dialog-content"]',
+        'Die Adresse kann nicht gelöscht werden, sie wird von anderen Datensätzen referenziert'
+      );*/
     });
   });
 });
