@@ -50,8 +50,8 @@ describe('Spatial References', () => {
 
     // create new document
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
-    // reload the page so that the new document is visible
-    DocumentPage.reloadTree();
+    // reload page to see added document in tree
+    cy.reload();
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.CreateDialog.setSpatialWKT('add spatial reference, wkt-2', poly);

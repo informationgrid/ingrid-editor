@@ -413,19 +413,11 @@ export class DocumentPage extends BasePage {
     return cy.get('.cdk-overlay-pane').find('ige-document-list-item');
   }
 
-  static reloadTree() {
-    cy.get('.reload-button').click();
-  }
-
   static deleteLoadedNode() {
     cy.get(DocumentPage.Toolbar['Delete']).click();
     cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
-  }
-
-  static refreshDashboard() {
-    return cy.get('[data-cy=reload-button]').click();
   }
 
   static checkSpatialEntrytNotEmpty() {
