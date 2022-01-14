@@ -3,16 +3,22 @@ import { FacetGroup, Facets } from "./research.service";
 export class BackendQuery {
   private readonly term: string;
   private clauses: any;
+  private orderByField = "title";
+  private orderByDirection = "ASC";
 
   constructor(
     term: string,
     model: any,
     fieldsWithParameters: { [p: string]: any[] },
-    filters: Facets
+    filters: Facets,
+    orderByField = "title",
+    orderByDirection = "ASC"
   ) {
     this.term = term;
+    this.orderByField = orderByField;
+    this.orderByDirection = orderByDirection;
 
-    const allFacetGroups = filters.documents.concat(filters.addresses);
+    const allFacetGroups = filters?.documents?.concat(filters?.addresses);
     this.convert(model, fieldsWithParameters, allFacetGroups);
   }
 
@@ -26,7 +32,7 @@ export class BackendQuery {
     Object.keys(model).map((groupKey) => {
       let groupValue = model[groupKey];
       let groupOperator =
-        allFacetGroups.find((fg) => fg.id === groupKey)?.combine ?? "OR";
+        allFacetGroups?.find((fg) => fg.id === groupKey)?.combine ?? "OR";
       if (groupValue instanceof Object) {
         let activeItemsFromGroup = Object.keys(groupValue).filter(
           (groupId) => groupValue[groupId]
@@ -60,6 +66,8 @@ export class BackendQuery {
     return {
       term: this.term,
       clauses: this.clauses,
+      orderByField: this.orderByField,
+      orderByDirection: this.orderByDirection,
     };
   }
 }

@@ -66,13 +66,17 @@ export class ResearchService {
   search(
     term: string,
     model: any,
-    fieldsWithParameters: { [x: string]: any[] }
+    fieldsWithParameters: { [x: string]: any[] },
+    orderByField = "title",
+    orderByDirection = "ASC"
   ): Observable<ResearchResponse> {
     const backendQuery = new BackendQuery(
       term,
       model,
       fieldsWithParameters,
-      this.filters
+      this.filters,
+      orderByField,
+      orderByDirection
     );
     return this.http
       .post<ResearchResponse>(

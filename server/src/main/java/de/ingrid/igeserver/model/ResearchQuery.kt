@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.model
 
-data class ResearchQuery(val term: String?, val clauses: BoolFilter?)
+data class ResearchQuery(val term: String?, val clauses: BoolFilter?, val orderByField: String? = "title", val orderByDirection: String? = "ASC")
 
 data class BoolFilter(
     val op: String,

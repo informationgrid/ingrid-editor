@@ -100,7 +100,7 @@ class ResearchService {
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
-                ORDER BY document1.title;
+                ORDER BY document1.${query.orderByField} ${query.orderByDirection};
             """
     }
 
