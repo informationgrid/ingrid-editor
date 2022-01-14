@@ -3,27 +3,27 @@ export type Page = 'DASHBOARD' | 'DOCUMENTS' | 'ADDRESSES' | 'RESEARCH' | 'REPOR
 export class Menu {
   static switchTo(page: Page) {
     const routerLink = Menu.mapPageToRouterLink(page);
-    cy.get(`[ng-reflect-router-link=${routerLink}]`).click();
+    cy.get(`[href="${routerLink}"]`).click();
   }
 
   private static mapPageToRouterLink(page: Page) {
     switch (page) {
       case 'DASHBOARD':
-        break;
+        return '/dashboard';
       case 'DOCUMENTS':
-        return 'form';
+        return '/form';
       case 'ADDRESSES':
-        return 'address';
+        return '/address';
       case 'RESEARCH':
-        return 'research';
+        return '/research';
       case 'REPORTS':
-        return 'reports';
+        return '/reports';
       case 'USERS':
-        return 'manage';
+        return '/manage';
       case 'IMPORT':
-        return 'importExport';
+        return '/importExport';
       case 'CATALOG':
-        return 'catalogs';
+        return '/catalogs';
     }
   }
 }
