@@ -7,7 +7,6 @@ import {
 import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AddressPage } from '../../pages/address.page';
-import { Menu } from '../../pages/menu';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -258,7 +257,25 @@ describe('Research Page', () => {
       'Globale Suchanfragen'
     );
     cy.get('input.mat-input-element').first().should('have.value', 'das');
-    // todo: check that global search can not be deleted
+  });
+
+  it('non-catadmin user should not be able to delete a global saved search he did not create', () => {
+    ResearchPage.search('die');
+    ResearchPage.saveSearchProfile('savedSearchNotToBeDeleted', 'to test that global search can not be deleted', true);
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(
+      'savedSearchNotToBeDeleted',
+      'to test that global search can not be deleted'
+    );
+    // log in as different user
+    cy.kcLogout();
+    cy.kcLogin('meta');
+    // make sure global search can not be deleted
+    ResearchPage.visit();
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    cy.contains('mat-card-content .mat-list-item', 'savedSearchNotToBeDeleted').within(() => {
+      cy.get('[svgicon="Mehr"]').should('not.exist');
+    });
   });
 
   it('should do search via Schnellsuche by using document ID', () => {
