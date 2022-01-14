@@ -34,6 +34,7 @@ import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { ResearchService } from "../../+research/research.service";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -68,7 +69,8 @@ export class DocumentService {
     private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,
     private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore
+    private addressTreeStore: AddressTreeStore,
+    private researchService: ResearchService
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -84,11 +86,10 @@ export class DocumentService {
   }
 
   findRecent(): void {
-    this.http
-      .get<ServerSearchResult>(
-        `${this.configuration.backendUrl}datasets?query=&sort=modified&sortOrder=DESC&size=5`
-      )
+    this.researchService
+      .search("", { type: "selectDocuments" }, null, "modified", "DESC")
       .pipe(
+        // @ts-ignore
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
       )

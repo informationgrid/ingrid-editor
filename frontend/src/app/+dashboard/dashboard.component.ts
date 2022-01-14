@@ -13,6 +13,7 @@ import {
   CreateNodeComponent,
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
+import { map, take } from "rxjs/operators";
 
 @Component({
   templateUrl: "./dashboard.component.html",
@@ -41,7 +42,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.recentDocs$ = this.sessionQuery.latestDocuments$;
+    this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
+      map((docs) => docs.slice(0, 5))
+    );
     this.fetchStatistic();
     this.fetchData();
   }
