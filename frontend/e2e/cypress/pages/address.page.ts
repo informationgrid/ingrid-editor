@@ -113,30 +113,12 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy=confirm-dialog-cancel]').click();
   }
 
-  static publishNow() {
-    // sometimes we're too fast, so that the form is not synched with the store
-    cy.wait(100);
-    cy.get('[data-cy=toolbar_publish_now]').click();
-    cy.get('[data-cy=confirm-dialog-confirm]').click();
-    cy.get('[data-cy="form-message"]').contains('Das Dokument wurde veröffentlicht.');
-  }
-
   static publishIsUnsuccessful() {
     // sometimes we're too fast, so that the form is not synched with the store
     cy.wait(100);
     cy.get('[data-cy=toolbar_publish_now]').click();
     cy.hasErrorDialog('Es müssen alle Felder korrekt');
     cy.get('[data-cy="error-dialog-close"]').click();
-  }
-
-  static publishLater() {
-    cy.get(DocumentPage.Toolbar.Publish).click();
-    cy.get('[data-cy=toolbar_publish_later]').click();
-  }
-
-  static publishRevert() {
-    cy.get(DocumentPage.Toolbar.Publish).click();
-    cy.get('[data-cy=toolbar_publish_revert]').click();
   }
 
   static addTitleToProfile(title: string) {

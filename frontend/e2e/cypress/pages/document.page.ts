@@ -1,5 +1,6 @@
 import { BasePage } from './base.page';
 import { Tree } from './tree.partial';
+import { headerKeys } from './administration-group.page';
 
 export const SEPARATOR = 'chevron_right';
 export const ROOT = `Daten`;
@@ -364,14 +365,9 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy="form-message"]').contains('veröffentlicht');
   }
 
-  static publishLater() {
+  static choosePublishOption(option: PublishOptions) {
     cy.get(DocumentPage.Toolbar.Publish).click();
-    cy.get('[data-cy=toolbar_publish_later]').click();
-  }
-
-  static publishRevert() {
-    cy.get(DocumentPage.Toolbar.Publish).click();
-    cy.get('[data-cy=toolbar_publish_revert]').click();
+    cy.get(option).click();
   }
 
   static saveDocument() {
@@ -469,4 +465,30 @@ export class DocumentPage extends BasePage {
     cy.get(DocumentPage.Toolbar.Save).click();
     cy.wait('@saveChanges').its('response.body.title').should('eq', docTitle);
   }
+
+  static openUpDocumentHeader() {
+    cy.get('.title .menu-button').click();
+  }
+
+  static verifyInfoInDocumentHeader(key: headerElements, value: string) {
+    cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
+      cy.get('div')
+        .eq(1)
+        .should($el => expect($el.text().trim()).to.equal(value));
+    });
+  }
+}
+
+export enum PublishOptions {
+  PlanPublish = '[data-cy="toolbar_PLAN"]',
+  RevertPublish = '[data-cy="toolbar_REVERT"]',
+  Unpublish = '[data-cy="toolbar_UNPUBLISH"]'
+}
+
+export enum headerElements {
+  Status = 1,
+  Type,
+  ID,
+  CreationDate,
+  EditDate
 }

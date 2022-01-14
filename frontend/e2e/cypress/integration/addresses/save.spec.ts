@@ -1,4 +1,4 @@
-import { DocumentPage } from '../../pages/document.page';
+import { DocumentPage, headerElements, PublishOptions } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
@@ -7,7 +7,7 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 describe('General create addresses/folders', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     AddressPage.visit();
   });
 
@@ -148,6 +148,28 @@ describe('General create addresses/folders', () => {
 
       cy.get('[data-cy="Kontakt"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
       AddressPage.deleteLoadedNode();
+    });
+
+    it('should withdraw publication of published address', () => {
+      const json = {
+        organization: 'Thessalien, Adresse',
+        title: 'Thessalien, Adresse',
+        _type: 'McloudAddressDoc',
+        contact: [{ type: 1, connection: '0123456789' }]
+      };
+
+      // create published address via api
+      AddressPage.apiCreateAddress(json, true);
+      // open address and withdraw publication
+      Tree.openNode(['Thessalien, Adresse']);
+      DocumentPage.choosePublishOption(PublishOptions.Unpublish);
+      cy.contains('mat-dialog-container', 'Veröffentlichung zurückziehen');
+      cy.contains('button', 'Zurückziehen').click();
+      // check header
+      cy.get('.title mat-icon.working').should('exist');
+      AddressPage.openUpDocumentHeader();
+      AddressPage.verifyInfoInDocumentHeader(headerElements.Status, 'In Bearbeitung');
+      AddressPage.verifyInfoInDocumentHeader(headerElements.EditDate, Utils.getFormattedDate(new Date()));
     });
   });
 
