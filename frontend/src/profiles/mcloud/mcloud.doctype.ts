@@ -182,7 +182,7 @@ export class McloudDoctype extends BaseDoctype {
                           this.configService.getConfiguration().backendUrl
                         }upload/${form.get("_id").value}/${
                           link.uri
-                        }" class="no-text-transform">${link.value}</a>`;
+                        }" class="no-text-transform">${link.uri}</a>`;
                       }
                     },
                   },
