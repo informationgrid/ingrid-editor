@@ -207,8 +207,7 @@ export class McloudDoctype extends BaseDoctype {
                   templateOptions: {
                     label: "Datenformat",
                     appearance: "outline",
-                    options: this.getCodelistForSelect(1320, null),
-                    codelistId: 1320,
+                    options: this.getCodelistForSelect(20003, null),
                   },
                 },
               ],
