@@ -160,6 +160,7 @@ describe('General create addresses/folders', () => {
 
       // create published address via api
       AddressPage.apiCreateAddress(json, true);
+      cy.reload();
       // open address and withdraw publication
       Tree.openNode(['Thessalien, Adresse']);
       DocumentPage.choosePublishOption(PublishOptions.Unpublish);
