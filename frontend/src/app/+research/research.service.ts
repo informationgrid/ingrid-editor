@@ -12,6 +12,7 @@ import { BackendQuery } from "./backend-query.model";
 import { BackendStoreQuery } from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
 import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
+import { IgeDocument } from "../models/ige-document";
 
 export interface QuickFilter {
   id: string;
@@ -34,7 +35,7 @@ export interface FacetGroup {
 
 export class ResearchResponse {
   totalHits: number;
-  hits: any[];
+  hits: IgeDocument[];
 }
 
 @Injectable({

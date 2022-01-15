@@ -14,6 +14,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
+import { IgeDocument } from "../../models/ige-document";
 
 export interface ShortResultInfo {
   uuid: string;
@@ -82,9 +83,9 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  openDataset(element) {
+  openDataset(element: IgeDocument) {
     this.open.emit({
-      uuid: element.uuid,
+      uuid: element._uuid,
       isAddress: element._category === "address",
     });
   }

@@ -34,7 +34,10 @@ import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
-import { ResearchService } from "../../+research/research.service";
+import {
+  ResearchResponse,
+  ResearchService,
+} from "../../+research/research.service";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -89,7 +92,6 @@ export class DocumentService {
     this.researchService
       .search("", { type: "selectDocuments" }, null, "modified", "DESC")
       .pipe(
-        // @ts-ignore
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
       )
@@ -576,7 +578,9 @@ export class DocumentService {
     }
   }
 
-  private mapSearchResults(result: ServerSearchResult): SearchResult {
+  private mapSearchResults(
+    result: ServerSearchResult | ResearchResponse
+  ): SearchResult {
     return {
       totalHits: result.totalHits,
       hits: this.mapToDocumentAbstracts(result.hits, null),
