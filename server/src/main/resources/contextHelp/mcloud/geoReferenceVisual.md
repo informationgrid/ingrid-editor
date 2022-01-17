@@ -19,5 +19,5 @@ Beispiel:
 >  POINT(10 10)  
 >  LINESTRING (10 10, 20 20, 30 40)  
 
-## Geografischer Name
+## Nur Titel
 Geben Sie die geographische Bezeichnung oder auch den Eigennamen des Raumbezugs an.

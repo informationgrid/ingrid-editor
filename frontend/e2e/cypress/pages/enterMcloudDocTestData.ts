@@ -147,7 +147,7 @@ export class enterMcloudDocTestData {
     static setSpatialGeoName(title: string = 'Spaaaaatiaaal') {
       cy.get('[data-cy=spatialButton]').click();
       cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
-      this.selectSpatialType('Geografischer Name');
+      this.selectSpatialType('Nur Titel');
       cy.get('[data-cy=confirm-dialog-save]').click();
       DocumentPage.checkSpatialEntrytNotEmpty();
     }

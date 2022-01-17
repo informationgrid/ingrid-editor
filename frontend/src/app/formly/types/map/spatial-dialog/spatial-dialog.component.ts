@@ -46,7 +46,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     { id: "free", label: "Freier Raumbezug" },
     { id: "wkt", label: "Raumbezug (WKT)" },
     // {id: 'draw', label: 'Auf Karte zeichnen'},
-    { id: "geo-name", label: "Geografischer Name" },
+    { id: "geo-name", label: "Nur Titel" },
   ];
   view: SpatialLocationType;
 
