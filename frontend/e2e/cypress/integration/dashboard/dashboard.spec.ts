@@ -2,6 +2,8 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
+import { Tree } from '../../pages/tree.partial';
+import { Menu } from '../../pages/menu';
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -29,6 +31,22 @@ describe('Dashboard', () => {
           expect(sum).to.equal(_);
         });
       });
+  });
+
+  it('should check last updated document from latest docs box', () => {
+    DocumentPage.visit();
+    let docName = 'TestDocResearch1';
+    Tree.openNode([docName]);
+    DocumentPage.addDescription('description');
+    DocumentPage.saveDocument();
+    DashboardPage.visit();
+    Menu.switchTo('DASHBOARD');
+    DashboardPage.getLatestDocTitle(1).then(text => {
+      expect(text).contains(docName);
+    });
+    DashboardPage.getLatestDocEditTime(1).then(text => {
+      expect(text).contains('Gerade eben');
+    });
   });
 
   it('should update display after creating new documents', () => {

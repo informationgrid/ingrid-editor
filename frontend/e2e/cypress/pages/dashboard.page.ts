@@ -15,6 +15,13 @@ export class DashboardPage {
       .invoke('text');
   }
 
+  static getLatestDocEditTime(position: number) {
+    return cy
+      .get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position}) .card-title`, { timeout: 9000 })
+      .next()
+      .invoke('text');
+  }
+
   static clickOnLatestDoc(position: number) {
     cy.get(`[data-cy=card-latest-docs] .mat-selection-list > :nth-child(${position})`).click();
   }
