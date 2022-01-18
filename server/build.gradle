@@ -120,7 +120,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:5.11.0-SNAPSHOT')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.11.0')
 
     implementation('de.ingrid:ingrid-ibus-client:5.11.0-SNAPSHOT') {
         exclude group: 'org.apache.logging.log4j'
