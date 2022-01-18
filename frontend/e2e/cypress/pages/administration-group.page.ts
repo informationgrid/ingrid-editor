@@ -103,15 +103,18 @@ export class AdminGroupPage extends BasePage {
     //this.confirmDeletingIntention();
   }
 
-  static deleteGroup(groupName: string) {
+  static deleteGroup(groupName: string, deleteConfirm: boolean = true) {
     cy.contains('.mat-table .mat-row', groupName)
       .find('button:nth-child(1) > span:nth-child(1) > mat-icon:nth-child(1)')
       .invoke('show')
       .click({ force: true });
     cy.contains('button', 'Löschen').click();
     cy.get('mat-dialog-container');
-    cy.intercept('DELETE', '/api/groups/**');
-    cy.contains('button', 'Gruppe löschen').click();
+    if (deleteConfirm) {
+      cy.intercept('DELETE', '/api/groups/**').as('deleteGroup');
+      cy.contains('button', 'Gruppe löschen').click();
+      cy.wait('@deleteGroup');
+    }
   }
 
   static deleteGroupOfOtherUsers(groupName: string) {

@@ -226,6 +226,14 @@ describe('Group', () => {
     cy.get('#formUser').should('be.visible');
     cy.get('ige-repeat-list').should('contain', group);
   });
+  it('should show warning message when user try to delete a group that is assigned to other users', () => {
+    let groupName = 'gruppe_mit_datenrechten';
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.deleteGroup(groupName, false);
+    cy.get('mat-dialog-content').contains(
+      'Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von einem Nutzer verwendet'
+    );
+  });
 
   it('should show correct information in group header', () => {
     /* 1. last-edited-date */
