@@ -201,6 +201,18 @@ describe('General create addresses/folders', () => {
       cy.get(DocumentPage.title).should('have.text', adr1Name);
     });
 
+    it('should check address header information', () => {
+      let newOrgName = 'Franken, Adressetwo';
+      Tree.openNode(['Neue Testadressen', 'Franken, Adresse']);
+
+      AddressPage.editOrganizationName('Franken, Adressetwo');
+      AddressPage.saveChangesOfProfile(newOrgName);
+
+      // check that last-edited date has been updated
+      const dateOfToday = Utils.getFormattedDate(new Date());
+      AddressPage.checkHeaderInformation(dateOfToday);
+    });
+
     it('should show a dialog when an address was modified and the page was changed', () => {
       const addressName = 'Testorganisation';
 

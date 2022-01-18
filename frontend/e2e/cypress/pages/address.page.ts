@@ -31,6 +31,13 @@ export class AddressPage extends DocumentPage {
     }
   };
 
+  static checkHeaderInformation(editDate: string) {
+    cy.get('ige-header-title-row button').click();
+    cy.get('ige-header-more').children().first().eq(0).contains('In Bearbeitung');
+    cy.get('ige-header-more').children().contains('Adresse');
+    cy.get('ige-header-more').children().last().contains(editDate);
+  }
+
   static visit() {
     cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
     cy.visit('address');
@@ -59,6 +66,10 @@ export class AddressPage extends DocumentPage {
 
   static addOrganizationName(name: string = 'Organization' + Utils.randomString()) {
     cy.get("[data-cy='create-address-organization']").type(name);
+  }
+
+  static editOrganizationName(name: string = 'Organization' + Utils.randomString()) {
+    cy.get("[data-cy='Organisation'] input").clear().type(name);
   }
 
   static addStreetName(name: string = Utils.randomdoubleDigitString() + '. Street') {
