@@ -6,13 +6,13 @@
     "_uuid" : "12345a0e-0473-4a73-b0ff-c7764c8a25db",
     "_type" : "mCloudDoc",
     "_id": "723",
-    "usage" : null,
+    "accessRights" : null,
     "events" : [ ],
     "origin" : null,
     "keywords" : [ ],
     "mfundFKZ" : null,
     "_parent": "2",
-    "timeSpan" : {
+    "temporal" : {
       "rangeType" : null,
       "timeSpanDate" : null
     },
@@ -44,6 +44,6 @@
     "periodicity" : null,
     "mfundProject" : null,
     "mCloudCategories" : [ ],
-    "openDataCategories" : [ ]
+    "DCATThemes" : [ ]
   } ]
 }

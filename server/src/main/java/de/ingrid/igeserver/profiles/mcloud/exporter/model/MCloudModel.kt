@@ -24,7 +24,7 @@ data class MCloudModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
-    override val downloads: List<DownloadModel>?,
+    override val distributions: List<DownloadModel>?,
     override val license: String?,
 ) : DCAT {
 
@@ -62,8 +62,8 @@ data class MCloudModel(
         }
 
     fun getThemes(): List<String> {
-        if (data.openDataCategories == null) return emptyList()
-        return data.openDataCategories
+        if (data.DCATThemes == null) return emptyList()
+        return data.DCATThemes
             .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
     }
 

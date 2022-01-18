@@ -30,11 +30,11 @@
         "organization": "{{ model.getPublisher().organization }}",
         "homepage": "{{ model.getPublisher().getHomepage() }}"
     },
-    {% if model.data.usage %}
-        "access_rights": ["{{ model.data.usage }}"],
+    {% if model.data.accessRights %}
+        "access_rights": ["{{ model.data.accessRights }}"],
     {% endif %}
     "distribution": [
-    {% for download in model.data.downloads %}
+    {% for download in model.data.distributions %}
         {
             "format": ["{{ download.type }}"],
             "accessURL": "{{ download.link.value }}",
@@ -93,13 +93,13 @@
             "spatial_text": "{{ model.spatialTitels | join(',') }}",
         {% endif %}
         "temporal": [
-         {% if model.data.timeSpan.start or model.data.timeSpan.end %}
+         {% if model.data.temporal.start or model.data.temporal.end %}
         {
-            {% if model.data.timeSpan.start %}
-                "gte": "{{model.data.timeSpan.start}}"{% if model.data.timeSpan.end %},{% endif %}
+            {% if model.data.temporal.start %}
+                "gte": "{{model.data.temporal.start}}"{% if model.data.temporal.end %},{% endif %}
             {% endif %}
-            {% if model.data.timeSpan.end %}
-                "lte": "{{model.data.timeSpan.end}}"
+            {% if model.data.temporal.end %}
+                "lte": "{{model.data.temporal.end}}"
             {% endif %}
             }
          {% endif %}],

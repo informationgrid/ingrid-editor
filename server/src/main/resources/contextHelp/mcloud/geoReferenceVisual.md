@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: geoReferenceVisual
+id: spatial
 docType: mCloudDoc
 profile: mcloud
 ---

@@ -117,15 +117,15 @@ export class DocumentPage extends BasePage {
           ref: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10'
         }
       ],
-      usage: 'Nutzungshinweise',
+      accessRights: 'Nutzungshinweise',
       mCloudCategories: ['roads'],
-      openDataCategories: ['TRAN'],
-      downloads: [{ link: { value: 'link.link', asLink: true }, type: 'linktyp' }],
+      DCATThemes: ['TRAN'],
+      distributions: [{ link: { value: 'link.link', asLink: true }, type: 'linktyp' }],
       license: 'Andere offene Lizenz',
       origin: 'Vermerk',
       mfundProject: 'Projekt',
       mfundFKZ: 'FKZ',
-      geoReferenceVisual: [
+      spatial: [
         {
           value: {
             lat1: 53.01147838269375,
@@ -138,7 +138,7 @@ export class DocumentPage extends BasePage {
         }
       ],
       events: [{ text: '1', date: '2020-10-25T23:00:00.000Z' }],
-      timeSpan: {
+      temporal: {
         rangeType: 'range',
         timeSpanRange: {
           start: '2020-04-30T22:00:00.000Z',
@@ -231,11 +231,11 @@ export class DocumentPage extends BasePage {
 
   static CreateSpatialBboxWithAPI(title: string, published?: boolean) {
     const json = {
-      openDataCategories: [],
+      DCATThemes: [],
       _type: 'mCloudDoc',
       title: 'api-' + title,
       mCloudCategories: [],
-      geoReferenceVisual: [
+      spatial: [
         {
           value: {
             lat1: 53.01147838269375,
@@ -263,11 +263,11 @@ export class DocumentPage extends BasePage {
 
   static CreateSpatialWKTWithAPI(title: string, published?: boolean) {
     const json = {
-      openDataCategories: [],
+      DCATThemes: [],
       _type: 'mCloudDoc',
       title: 'api-' + title,
       mCloudCategories: [],
-      geoReferenceVisual: [
+      spatial: [
         {
           wkt: 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))',
           title: 'create spatial reference, wkt-1',
@@ -290,11 +290,11 @@ export class DocumentPage extends BasePage {
 
   static CreateSpatialBboxAndWktEntrysWithAPI(title: string, published?: boolean) {
     const json = {
-      openDataCategories: [],
+      DCATThemes: [],
       _type: 'mCloudDoc',
       title: 'api-' + title,
       mCloudCategories: [],
-      geoReferenceVisual: [
+      spatial: [
         {
           value: {
             lat1: 53.01147838269375,

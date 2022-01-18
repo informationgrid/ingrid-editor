@@ -6,14 +6,14 @@
     "_uuid" : "bc4e0d68-3023-444c-9e31-df858baceeef",
     "_type" : "mCloudDoc",
     "_id" : "44",
-    "usage" : null,
+    "accessRights" : null,
     "events" : [ ],
     "origin" : null,
     "_parent" : "36",
     "license" : null,
     "keywords" : [ ],
     "mfundFKZ" : null,
-    "timeSpan" : {
+    "temporal" : {
       "rangeType" : null,
       "timeSpanDate" : null
     },
@@ -39,12 +39,12 @@
       },
       "type" : "10"
     } ],
-    "downloads" : null,
+    "distributions" : null,
     "description" : null,
     "periodicity" : null,
     "mfundProject" : null,
     "mCloudCategories" : [ ],
-    "geoReferenceVisual" : null,
-    "openDataCategories" : [ ]
+    "spatial" : null,
+    "DCATThemes" : [ ]
   } ]
 }

@@ -106,7 +106,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         fieldGroup: [
           {
-            key: "usage",
+            key: "accessRights",
             type: "textarea",
             wrappers: ["panel", "form-field"],
             templateOptions: {
@@ -130,7 +130,7 @@ export class McloudDoctype extends BaseDoctype {
             },
           },
           {
-            key: "openDataCategories",
+            key: "DCATThemes",
             type: "repeatChip",
             wrappers: ["panel"],
             templateOptions: {
@@ -139,12 +139,12 @@ export class McloudDoctype extends BaseDoctype {
               appearance: "outline",
               required: true,
               useDialog: true,
-              options: this.getCodelistForSelect(20001, "openDataCategories"),
+              options: this.getCodelistForSelect(20001, "DCATThemes"),
               codelistId: 20001,
             },
           },
           {
-            key: "downloads",
+            key: "distributions",
             type: "table",
             templateOptions: {
               externalLabel: "Downloads",
@@ -275,7 +275,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         fieldGroup: [
           {
-            key: "geoReferenceVisual",
+            key: "spatial",
             type: "leaflet",
             wrappers: [],
             templateOptions: {
@@ -331,7 +331,7 @@ export class McloudDoctype extends BaseDoctype {
           {
             fieldGroupClassName: "display-flex",
             wrappers: ["panel"],
-            key: "timeSpan",
+            key: "temporal",
             templateOptions: {
               externalLabel: "Zeitspanne",
             },

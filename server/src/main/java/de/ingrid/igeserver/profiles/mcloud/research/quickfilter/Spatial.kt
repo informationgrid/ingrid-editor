@@ -16,9 +16,9 @@ class Spatial : QuickFilter() {
 
     @Language("PostgreSQL")
     override val filter = """document1.type = 'mCloudDoc'
-  AND jsonb_path_exists(jsonb_strip_nulls(data), '$.geoReferenceVisual')
+  AND jsonb_path_exists(jsonb_strip_nulls(data), '$.spatial')
   AND EXISTS(SELECT
-             FROM jsonb_array_elements(data -> 'geoReferenceVisual') as s
+             FROM jsonb_array_elements(data -> 'spatial') as s
              WHERE (s -> 'value' ->> 'lat1')\:\:numeric >= ? - $errorMargin
                  AND (s -> 'value' ->> 'lon1')\:\:numeric >= ? - $errorMargin
                  AND (s -> 'value' ->> 'lat2')\:\:numeric <= ? + $errorMargin

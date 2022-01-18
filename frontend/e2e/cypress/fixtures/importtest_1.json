@@ -4,12 +4,12 @@
   "resources" : [ {
     "title" : "document_import_12",
     "_type" : "mCloudDoc",
-    "usage" : null,
+    "accessRights" : null,
     "events" : [ ],
     "origin" : null,
     "keywords" : [ ],
     "mfundFKZ" : null,
-    "timeSpan" : {
+    "temporal" : {
       "rangeType" : null,
       "timeSpanDate" : null
     },
@@ -41,6 +41,6 @@
     "periodicity" : null,
     "mfundProject" : null,
     "mCloudCategories" : [ ],
-    "openDataCategories" : [ ]
+    "DCATThemes" : [ ]
   } ]
 }

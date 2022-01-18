@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: usage
+id: accessRights
 docType: mCloudDoc
 profile: mcloud
 ---

@@ -31,8 +31,8 @@ class MCloudType : EntityType() {
     }
 
     override fun getUploads(doc: Document): List<String> {
-        if( doc.data.get("downloads") != null) {
-            val files = doc.data.get("downloads")
+        if( doc.data.get("distributions") != null) {
+            val files = doc.data.get("distributions")
                 .filter { download -> !download.get("link").get("asLink").booleanValue() }
                 .map { download -> getUploadFile(download)}
 

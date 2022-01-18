@@ -14,7 +14,7 @@
     <dcat:dataset>
       <dcat:Dataset rdf:about="http://mcloud-qs.wemove.com/web/guest/suche/-/results/detail/{{ model.uuid }}#dataset">
         <dct:title>{{ model.title }}</dct:title>
-        {% for download in model.downloads %}
+        {% for download in model.distributions %}
         <dcat:distribution rdf:resource="{{ download.link }}#distribution"/>
         {% endfor %}
         <dcat:contactPoint>
@@ -34,7 +34,7 @@
     </dct:publisher>
     <dct:title>mCLOUD Portal</dct:title>
   </dcat:Catalog>
-  {% for download in model.downloads %}
+  {% for download in model.distributions %}
   <dcat:Distribution rdf:about="{{ download.link }}#distribution">
     <dcat:downloadURL rdf:resource="{{ download.link }}"/>
     <dcat:accessURL rdf:resource="{{ download.link }}"/>

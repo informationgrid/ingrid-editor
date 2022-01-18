@@ -6,7 +6,7 @@ interface DCAT {
 
     val uuid: String
     val title: String
-    val downloads: List<Download>?
+    val distributions: List<Download>?
     val description: String?
     val publisher: AddressModel?
     val license: String?

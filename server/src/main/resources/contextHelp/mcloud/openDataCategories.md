@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: openDataCategories
+id: DCATThemes
 docType: mCloudDoc
 profile: mcloud
 ---

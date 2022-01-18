@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: timeSpan
+id: temporal
 docType: mCloudDoc
 profile: mcloud
 ---

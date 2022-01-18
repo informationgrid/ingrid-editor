@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: downloads
+id: distributions
 docType: mCloudDoc
 profile: mcloud
 
