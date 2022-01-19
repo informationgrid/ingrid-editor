@@ -102,7 +102,7 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.11.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-codelist-service:5.11.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -122,7 +122,7 @@ dependencies {
     // iBus communication
     implementation('de.ingrid:ingrid-elasticsearch-tools:5.11.0')
 
-    implementation('de.ingrid:ingrid-ibus-client:5.11.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-ibus-client:5.11.0') {
         exclude group: 'org.apache.logging.log4j'
     }
 }
