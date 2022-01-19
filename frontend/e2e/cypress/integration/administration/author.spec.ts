@@ -125,7 +125,7 @@ describe('author with groups', () => {
   });
 
   it('Section "Nutzer und Rechte" should not be visible to an author (#2670)', () => {
-    cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+    UserAuthorizationPage.checkUsersTabExist(false);
   });
 
   it('author with groups should be able to jump to documents via the "last edited"-section of the dashboard, addresses and data page', () => {

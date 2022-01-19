@@ -9,6 +9,7 @@ import { Tree } from '../../pages/tree.partial';
 import { AdminGroupPage } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Utils } from '../../pages/utils';
+import { Menu } from '../../pages/menu';
 
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
@@ -814,5 +815,25 @@ describe('Catalogue admin', () => {
             cy.wrap(matchesCatalog![0]).should('eq', matches![0]);
           });
       });
+  });
+
+  it('downgrade catalog user and make sure of the lost rights', () => {
+    // change catalog admin role to author
+    AdminUserPage.visit();
+    let userLogin = 'drei';
+    AdminUserPage.selectUser(userLogin);
+    AdminUserPage.changeUserRole('Autor', true);
+    // login with new role and check if the new author does not have admin rights
+    cy.kcLogout();
+    cy.kcLogin('drei');
+    DocumentPage.visit();
+    UserAuthorizationPage.checkUsersTabExist(false);
+    DocumentPage.checkEmptyDocumentTree();
+    cy.kcLogout();
+    // change the role back again to catalog admin
+    cy.kcLogin('eins');
+    AdminUserPage.visit();
+    AdminUserPage.selectUser(userLogin);
+    AdminUserPage.changeUserRole('Katalog-Administrator', true);
   });
 });

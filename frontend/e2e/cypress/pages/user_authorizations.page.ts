@@ -63,6 +63,14 @@ export class UserAuthorizationPage extends BasePage {
       });
   }
 
+  static checkUsersTabExist(shouldExist: boolean = false) {
+    if (shouldExist) {
+      cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Nutzer & Rechte');
+    } else {
+      cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+    }
+  }
+
   static setButtonSubfoldersOnly(objectTitle: string, objectType: string) {
     cy.get('[label="Berechtigungen ' + objectType + '"]')
       .contains(objectTitle)

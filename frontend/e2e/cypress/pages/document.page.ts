@@ -421,7 +421,7 @@ export class DocumentPage extends BasePage {
   }
 
   static checkSpatialEntryNumber(count: number) {
-    cy.get('div.mat-line.spatial-title').should('have.length', count);
+    cy.get('div.mat-line.spatial-title', { timeout: 8000 }).should('have.length', count);
   }
 
   static checkSpatialEntryExists(spatialName: string) {
@@ -470,6 +470,9 @@ export class DocumentPage extends BasePage {
     cy.get('.title .menu-button').click();
   }
 
+  static checkEmptyDocumentTree() {
+    cy.get('ige-empty-navigation').contains('Leer');
+  }
   static verifyInfoInDocumentHeader(key: headerElements, value: string) {
     cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
       cy.get('div')

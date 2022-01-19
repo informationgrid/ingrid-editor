@@ -239,6 +239,13 @@ export class AdminUserPage extends BasePage {
     cy.wait(100);
   }
 
+  static changeUserRole(newRole: string, confirm: boolean = false) {
+    cy.get('formly-field-mat-select mat-select').first().click();
+    cy.get('mat-option').contains(newRole).click();
+    if (confirm) {
+      this.saveUser();
+    }
+  }
   static getNumberOfUsers(): Chainable<number> {
     return cy
       .get('.user-management-header .page-title')
