@@ -65,7 +65,7 @@ describe('Research Page', () => {
     //    ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
-      ResearchPage.editSpatialReference('Mainz');
+      ResearchPage.editSpatialReference('Rheinland-Pfalz');
       ResearchPage.getSearchResultCount().should('be.lessThan', filteredResult).and('be.greaterThan', 0);
     });
   });
@@ -86,7 +86,7 @@ describe('Research Page', () => {
   });
 
   it('should do search with both spatial reference and selection of filter-checkboxes included', () => {
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
     ResearchPage.getSearchResultCount().then(multipleFiltered => {
       ResearchPage.createSpatialReference('Deutschland');
       ResearchPage.getSearchResultCount().should('be.lessThan', multipleFiltered);
@@ -461,8 +461,8 @@ describe('Research Page', () => {
   });
 
   it('should do timerelated search together with spatial reference search (#3040)', () => {
-    ResearchPage.setDate('startDate', '20.06.2021');
-    ResearchPage.setDate('endDate', '29.07.2021');
+    ResearchPage.setDate('startDate', '20.01.2020');
+    ResearchPage.setDate('endDate', '29.12.2021');
     cy.wait(500);
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial10');
