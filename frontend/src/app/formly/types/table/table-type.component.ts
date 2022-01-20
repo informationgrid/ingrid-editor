@@ -241,8 +241,7 @@ export class TableTypeComponent
   private isNotInTable(file: LinkInfo) {
     return (
       this.dataSource.data.findIndex(
-        (tableItem) =>
-          !tableItem.link.asLink && tableItem.link.value === file.file
+        (tableItem) => !tableItem.link.asLink && tableItem.link.uri === file.uri
       ) === -1
     );
   }
