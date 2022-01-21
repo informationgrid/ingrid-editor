@@ -1,3 +1,5 @@
+package de.ingrid.igeserver.migrations.tasks
+
 import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
