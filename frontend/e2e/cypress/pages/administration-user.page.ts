@@ -240,7 +240,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static changeUserRole(newRole: string, confirm: boolean = false) {
-    cy.get('formly-field-mat-select mat-select').first().click();
+    cy.get('[data-cy="Rolle"]').click();
     cy.get('mat-option').contains(newRole).click();
     if (confirm) {
       this.saveUser();
