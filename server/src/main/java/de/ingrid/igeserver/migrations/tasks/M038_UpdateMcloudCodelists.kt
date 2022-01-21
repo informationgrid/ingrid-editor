@@ -25,13 +25,18 @@ class M038_UpdateMcloudCodelists : MigrationBase("0.38") {
 
     override fun exec() {
         log.info("Update mCLOUD Codelists!")
-        var mCloudProfile = catalogService.getCatalogProfile("mcloud")
-        catalogRepo.findAll()
-            .filter { catalog: Catalog -> catalog.type.equals(mCloudProfile.identifier) }
-            .forEach { catalog: Catalog ->
-                log.info("Update Catalog: "+catalog.name)
-                catalogService.initializeCodelists(catalog.identifier, catalog.type)
-            }
+
+        try {
+            val mCloudProfile = catalogService.getCatalogProfile("mcloud")
+            catalogRepo.findAll()
+                .filter { catalog: Catalog -> catalog.type == mCloudProfile.identifier }
+                .forEach { catalog: Catalog ->
+                    log.info("Update Catalog: "+catalog.name)
+                    catalogService.initializeCodelists(catalog.identifier, catalog.type)
+                }
+        } catch (e: NullPointerException) {
+            log.debug("Cannot update mcloud codelists, since mcloud profile is not activated")
+        }
     }
 
 }
