@@ -22,5 +22,6 @@
   "videoUploadOnPasses": false,
   "viewportHeight": 1080,
   "viewportWidth": 1920,
+  "videoCompression": 15,
   "chromeWebSecurity": false
 }
