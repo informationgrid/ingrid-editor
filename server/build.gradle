@@ -1,7 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.6.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.6.2'
-    ext.log4j2_version = '2.17.1'
+    ext.spring_boot_version = '2.6.3'
     ext.hibernate_version = '5.6.2.Final'
     ext.jackson_version = '2.13.1'
     ext.kotest_version = '5.0.3'
@@ -73,6 +72,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -92,7 +92,6 @@ dependencies {
     implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.16.1"
     implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.16.1"
 
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'com.auth0:java-jwt:3.10.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.0' // Attention: also update SwaggerDocumentationConfig.kt
 
@@ -106,8 +105,6 @@ dependencies {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation "org.apache.logging.log4j:log4j-api:$log4j2_version"
-    implementation "org.apache.logging.log4j:log4j-core:$log4j2_version"
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.9'
 
@@ -142,10 +139,6 @@ configurations {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
         exclude group: 'com.sun.mail', module: 'javax.mail'
         exclude group: 'javax.mail', module: 'mailapi'
-        resolutionStrategy {
-            force "org.apache.logging.log4j:log4j-api:$log4j2_version"
-            force "org.apache.logging.log4j:log4j-core:$log4j2_version"
-        }
     }
 }
 
