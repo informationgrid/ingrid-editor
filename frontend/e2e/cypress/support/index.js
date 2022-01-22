@@ -16,6 +16,11 @@ Cypress.on('test:after:run', (test, runnable) => {
       item = item.parent;
     }
 
+    // when an error inside a hook happens then the hook name is part of the screenshot file
+    if (runnable.hookName) {
+      nameParts.push(`${runnable.hookName} hook`);
+    }
+
     const fullTestName = nameParts
       .filter(Boolean)
       .join(' -- ') // this is how cypress joins the test title fragments
@@ -25,7 +30,7 @@ Cypress.on('test:after:run', (test, runnable) => {
     const firstTestStart = runnable.parent.tests[0].wallClockStartedAt;
     const startTimeOffset = Math.round((test.wallClockStartedAt - firstTestStart) / 1000);
 
-    addContext({ test }, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`);
+    addContext({ test }, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`.replace('  ', ' '));
     addContext({ test }, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);
   }
 });
