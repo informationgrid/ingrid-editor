@@ -1,69 +1,63 @@
 {
   "analysis": {
     "filter": {
-      "decomp": {
-        "type": "decompound"
+      "german_stop": {
+        "type": "stop",
+        "stopwords": "_german_"
       },
       "german_stemmer": {
         "type": "stemmer",
-        "name": "light_german"
+        "language": "light_german"
       },
-      "decomp_shingle": {
-        "type": "shingle",
-        "max_shingle_size": "8",
-        "output_unigrams": "false"
+      "ngram": {
+        "type": "ngram",
+        "min_gram": 3,
+        "max_gram": 50
       },
-      "suggest_shingle": {
-        "type": "shingle",
-        "max_shingle_size": "5",
-        "output_unigrams": "true"
+      "edge_ngram": {
+        "type": "edge_ngram",
+        "min_gram": 2,
+        "max_gram": 50
       }
     },
     "analyzer": {
-      "decomp": {
+      "ngram": {
         "type": "custom",
         "tokenizer": "standard",
         "filter": [
-          "decomp",
+          "lowercase",
+          "german_stop",
           "german_normalization",
+          "german_stemmer",
+          "ngram",
+          "unique"
+        ]
+      },
+      "edge_ngram": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_stop",
+          "german_normalization",
+          "german_stemmer",
+          "edge_ngram",
+          "unique"
+        ]
+      },
+      "ngram_phrase": {
+        "type": "custom",
+        "tokenizer": "keyword",
+        "filter": [
+          "lowercase",
+          "ngram"
+        ]
+      },
+      "phrase": {
+        "type": "custom",
+        "tokenizer": "keyword",
+        "filter": [
           "lowercase"
-        ]
-      },
-      "german_simple": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "german_normalization",
-          "german_stemmer"
-        ]
-      },
-      "decomp_german": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "decomp",
-          "german_normalization",
-          "german_stemmer"
-        ]
-      },
-      "decomp_shingles": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "decomp",
-          "german_normalization",
-          "decomp_shingle"
-        ]
-      },
-      "suggest_shingles": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "suggest_shingle"
         ]
       }
     }
