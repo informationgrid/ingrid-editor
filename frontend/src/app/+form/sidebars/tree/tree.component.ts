@@ -23,6 +23,7 @@ import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ConfigService } from "../../../services/config/config.service";
+import { HttpErrorResponse } from "@angular/common/http";
 
 export enum TreeActionType {
   ADD,
@@ -55,6 +56,7 @@ export class TreeComponent implements OnInit {
   @Output() activate = new EventEmitter<string[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
+  @Output() error = new EventEmitter<HttpErrorResponse>();
 
   @ViewChild("treeComponent", { read: ElementRef })
   treeContainerElement: ElementRef;
@@ -155,7 +157,7 @@ export class TreeComponent implements OnInit {
       if (this.activeNodeId === id) {
         return;
       }
-      this.jumpToNode(id);
+      this.jumpToNode(id).catch((e) => this.error.next(e));
     });
   }
 
