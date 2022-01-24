@@ -14,9 +14,7 @@ import { IgeError } from "../../../../models/ige-error";
 import { filter, map, take } from "rxjs/operators";
 import { Observable } from "rxjs";
 
-@Injectable({
-  providedIn: "root",
-})
+@Injectable()
 export class DeleteEmptyFoldersBehaviour extends Plugin {
   id = "plugin.delete.empty.folders";
   name = "Nur leere Ordner löschen";
