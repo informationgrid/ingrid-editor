@@ -31,6 +31,10 @@ export class SessionService {
     });
   }
 
+  resetRecentAddresses() {
+    this.sessionStore.update({ recentAddresses: [] });
+  }
+
   observeTabChange(page: TabPage): Observable<number> {
     return this.sessionQuery.select((state) => state.ui.currentTab[page]);
   }

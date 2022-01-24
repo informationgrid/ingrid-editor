@@ -90,7 +90,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   getResult(): void {
-    this.documentService.addToRecentAdresses(this.selection);
+    this.documentService.addToRecentAddresses(this.selection);
 
     this.dlgRef.close({
       type: this.selectedType,

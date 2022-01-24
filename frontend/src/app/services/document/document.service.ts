@@ -487,7 +487,7 @@ export class DocumentService {
     );
   }
 
-  public addToRecentAdresses(address: DocumentAbstract) {
+  public addToRecentAddresses(address: DocumentAbstract) {
     let addresses = this.sessionQuery.recentAddresses.slice();
     addresses = addresses.filter((ad) => ad.id !== address.id);
     addresses.unshift(address);

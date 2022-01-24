@@ -14,6 +14,7 @@ import {
 import { NewCatalogDialogComponent } from "./new-catalog/new-catalog-dialog.component";
 import { map, tap } from "rxjs/operators";
 import { combineLatest } from "rxjs";
+import { SessionService } from "../../services/session.service";
 
 @Component({
   selector: "ige-catalog-management",
@@ -56,6 +57,7 @@ export class CatalogManagementComponent implements OnInit {
   constructor(
     private catalogService: CatalogService,
     private configService: ConfigService,
+    private sessionService: SessionService,
     private catalogQuery: CatalogQuery,
     private dialog: MatDialog
   ) {}
@@ -113,6 +115,7 @@ export class CatalogManagementComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id).subscribe(() => {
+      this.sessionService.resetRecentAddresses();
       window.location.reload();
     });
   }
