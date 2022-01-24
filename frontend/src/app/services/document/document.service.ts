@@ -492,13 +492,25 @@ export class DocumentService {
     const recentAddresses = this.sessionQuery.recentAddresses;
 
     let addresses = recentAddresses[catalogId]?.slice() ?? [];
-    addresses = addresses.filter((ad) => ad.id !== address.id);
+    addresses = addresses.filter((address) => address.id !== address.id);
     addresses.unshift(address);
 
     // only store 5 most recent addresses
     if (addresses.length > 5) {
       addresses = addresses.slice(0, 5);
     }
+
+    this.sessionStore.update({
+      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+    });
+  }
+
+  public removeFromRecentAddresses(id: string) {
+    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
+    const recentAddresses = this.sessionQuery.recentAddresses;
+
+    let addresses = recentAddresses[catalogId]?.slice() ?? [];
+    addresses = addresses.filter((address) => address.id !== id);
 
     this.sessionStore.update({
       recentAddresses: { ...recentAddresses, [catalogId]: addresses },

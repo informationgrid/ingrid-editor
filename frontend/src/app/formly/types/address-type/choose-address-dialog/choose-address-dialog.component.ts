@@ -5,6 +5,7 @@ import {
   Inject,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -19,6 +20,9 @@ import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { IgeError } from "../../../../models/ige-error";
+import { HttpErrorResponse } from "@angular/common/http";
+import { MatSelect } from "@angular/material/select";
 
 export interface ChooseAddressResponse {
   type: string;
@@ -33,6 +37,8 @@ export interface ChooseAddressResponse {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  @ViewChild(MatSelect) recentAddressSelect: MatSelect;
+
   showTypeSelector = true;
   selection: DocumentAbstract;
   selectedType: string;
@@ -114,4 +120,19 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
+
+  handleTreeError(error: HttpErrorResponse) {
+    console.error(error);
+    if (error.error.errorText === "No value present") {
+      // TODO: remove address from recentAddresses
+      this.documentService.removeFromRecentAddresses(
+        this.recentAddressSelect.value.id
+      );
+      this.recentAddressSelect.value = null;
+      throw new IgeError(
+        "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt."
+      );
+    }
+    throw error;
+  }
 }
