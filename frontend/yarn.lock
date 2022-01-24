@@ -174,12 +174,12 @@
   dependencies:
     tslib "^2.1.0"
 
-"@angular/cdk-experimental@^11.2.5":
-  version "11.2.13"
-  resolved "https://registry.yarnpkg.com/@angular/cdk-experimental/-/cdk-experimental-11.2.13.tgz#112abc826134722017168db889cfe90495214ad3"
-  integrity sha512-Fx0OG+8QjecSyof1RjPIPxC8vJxICBMUeQr1+BAyyWSPRu/gJC0BEgIqpsFTAiEf59HwuSJE6jKpl0vIR2gg7g==
+"@angular/cdk-experimental@^12.0.4":
+  version "12.2.13"
+  resolved "https://registry.yarnpkg.com/@angular/cdk-experimental/-/cdk-experimental-12.2.13.tgz#3e0b56e4a15fc03245e558a33873d7594c21a49c"
+  integrity sha512-kqHx3LmHTXz1cDR+GPHmP0uu2l4VvZdMoVyKyCQJmEdC+SxC/SGE9tErWhb+gTnOr3pROdA6TC+2cqs1vkktEQ==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.2.0"
 
 "@angular/cdk@^12.0.4":
   version "12.0.5"
@@ -1983,10 +1983,10 @@
     cosmiconfig "^7.0.0"
     tslib "^2.3.0"
 
-"@ngneat/transloco@3.1.1":
-  version "3.1.1"
-  resolved "https://nexus.informationgrid.eu/repository/npm-group/@ngneat/transloco/-/transloco-3.1.1.tgz#c1c08803811647c6241e38b69cbd3c7896414b43"
-  integrity sha512-AcZQzupOELLbfIHfaSz0ewxeigAfqJKK2DCzvOsSaUHNuJGqcLk5FvltX3HX+vlDe0liURzYtYvew9j59QF/+w==
+"@ngneat/transloco@3.1.3":
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@ngneat/transloco/-/transloco-3.1.3.tgz#359cd87917447c158e9d05851d7b3d27073e2166"
+  integrity sha512-Qij0510+Hf4b3cIdMuHft4m4FfIaMveGAuAWcahl1WaqT/Efu5yeTjW2Dfms3EhAYLqBNj6eO9UmpHjCfSo8Lg==
   dependencies:
     "@ngneat/transloco-utils" "^3.0.1"
     flat "5.0.2"
@@ -1995,12 +1995,12 @@
     replace-in-file "^6.2.0"
     tslib "^2.2.0"
 
-"@ngneat/until-destroy@^8.1.4":
-  version "8.1.4"
-  resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-8.1.4.tgz#00be5396f4c1417987d09aff227c15031f5473a8"
-  integrity sha512-Bk+jS0ZyCKvW2wLJPMJ8jr6lhYlDVVbE2/WbQ5L3eBcwmem82649o6s7G68tDNA+5UeHtfW7fbpK4Bhj8r+B9g==
+"@ngneat/until-destroy@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-9.0.0.tgz#62f478beb625a051bb72ddb677e90593da575bbc"
+  integrity sha512-6NJNJJIIr9qo3fTDI6yeLAKmyvbS1gV0PynIT0ofktq5L4BehlGGxCextcfh2uIltx+fhj9TYpC7ndwnD/3RPA==
   dependencies:
-    tslib "^2.2.0"
+    tslib "^2.3.0"
 
 "@ngtools/webpack@12.0.5":
   version "12.0.5"
@@ -2009,17 +2009,17 @@
   dependencies:
     enhanced-resolve "5.7.0"
 
-"@ngx-formly/core@5.10.21":
-  version "5.10.21"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.10.21.tgz#315a711db31196ab36047d0c100b876c8cfbd74a"
-  integrity sha512-a3A9S0QccEHMMKRMP0+E782w3eSkZk+oenhXGBtO0SVKCeVqZwh3pcWwn+mvW20FW1D3czkHkAZmig3E0wQNqw==
+"@ngx-formly/core@5.10.30":
+  version "5.10.30"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.10.30.tgz#6e6cfcf51f097e839bb4d928c3458106cb6f46f6"
+  integrity sha512-w31+pYyUNwbC+hmERpl1JWTYnQkE0UejRfgAIYrH7PVtg3sEf69p0t0Qp6MnpXQ1C8ekVx71mSTYsEkEXobUIQ==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@5.10.21":
-  version "5.10.21"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.10.21.tgz#a2e3b4ca81040e3a2c40fc68b6ccb1e50e2227f8"
-  integrity sha512-bfjxPhdg5HW17gc9GJLN0ZhN0czjikWB/QDNH+25aSO1ntbd2uKrrv37HimrwaCVwGnzP2ne/glJx/mPZOujHw==
+"@ngx-formly/material@5.10.30":
+  version "5.10.30"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.10.30.tgz#1721748c7f2e2779ea0ac314f60f171b0a402a95"
+  integrity sha512-L1zzxv7Gv+1CMdP4wjLLEYd2FbT0Re+XqP4zNLMUdzQ2f8SFEYvV0MBh/dL4kmC+95agfUuv9cxqAnMySN3nIA==
   dependencies:
     tslib "^1.9.0"
 
