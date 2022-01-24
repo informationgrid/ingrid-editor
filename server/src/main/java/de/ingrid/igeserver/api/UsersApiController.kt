@@ -155,9 +155,8 @@ open class UsersApiController : UsersApi {
     override fun list(principal: Principal): ResponseEntity<List<User>> {
 
 
-        // return all users for katadmins
-        val isCatAdmin = authUtils.isAdmin(principal)
-        if (isCatAdmin) {
+        // return all users for superadmins and katadmins
+        if (authUtils.isAdmin(principal)) {
             val allUsers = catalogService.getAllCatalogUsers(principal)
             return ResponseEntity.ok(allUsers)
         }
@@ -168,13 +167,13 @@ open class UsersApiController : UsersApi {
         groupService.getAll(catalogId)
             .filter { hasRightsForGroup(principal, it) }
             .forEach { filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal)) }
-        
+
         val usersWithNoGroups = catalogService.getAllCatalogUsers(principal)
             .filter { it.groups.isEmpty() }
         filteredUsers.addAll(usersWithNoGroups)
 
-        // remove superadmins from list
-        return ResponseEntity.ok(filteredUsers.filter { it.role != "ige-super-admin" })
+        // remove admin users (superadmins and catalog katadmins)
+        return ResponseEntity.ok(filteredUsers.filter { it.role != "ige-super-admin" && it.role != "cat-admin" })
     }
 
     private fun hasRightsForGroup(
