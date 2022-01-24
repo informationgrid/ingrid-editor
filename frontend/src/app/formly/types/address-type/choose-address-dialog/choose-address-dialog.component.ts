@@ -71,7 +71,13 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         }
       });
     this.codelistService.byId("505");
-    this.recentAddresses$ = this.sessionQuery.recentAddresses$;
+    this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
+      map((allRecent) => {
+        const catalogId =
+          this.configService.$userInfo.getValue().currentCatalog.id;
+        return allRecent[catalogId] ?? [];
+      })
+    );
 
     // the tree is not updated correctly
     // FIXME: Find out why tree is not updated

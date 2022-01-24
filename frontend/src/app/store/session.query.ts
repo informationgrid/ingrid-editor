@@ -19,7 +19,7 @@ export class SessionQuery extends Query<SessionState> {
     super(store);
   }
 
-  get recentAddresses(): DocumentAbstract[] {
+  get recentAddresses(): { [catalogId: string]: DocumentAbstract[] } {
     return this.getValue().recentAddresses;
   }
 }

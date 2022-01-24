@@ -64,7 +64,7 @@ export class DocumentService {
 
   constructor(
     private http: HttpClient,
-    configService: ConfigService,
+    private configService: ConfigService,
     private modalService: ModalService,
     private dataService: DocumentDataService,
     private messageService: MessageService,
@@ -488,7 +488,10 @@ export class DocumentService {
   }
 
   public addToRecentAddresses(address: DocumentAbstract) {
-    let addresses = this.sessionQuery.recentAddresses.slice();
+    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
+    const recentAddresses = this.sessionQuery.recentAddresses;
+
+    let addresses = recentAddresses[catalogId]?.slice() ?? [];
     addresses = addresses.filter((ad) => ad.id !== address.id);
     addresses.unshift(address);
 
@@ -496,7 +499,10 @@ export class DocumentService {
     if (addresses.length > 5) {
       addresses = addresses.slice(0, 5);
     }
-    this.sessionStore.update({ recentAddresses: addresses });
+
+    this.sessionStore.update({
+      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+    });
   }
 
   updateBreadcrumb(

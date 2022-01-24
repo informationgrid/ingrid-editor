@@ -115,7 +115,6 @@ export class CatalogManagementComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id).subscribe(() => {
-      this.sessionService.resetRecentAddresses();
       window.location.reload();
     });
   }
