@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@angular/core";
 import { EventManager } from "@angular/platform-browser";
 import { Plugin } from "../../+catalog/+behaviours/plugin";
 import { ProfileService } from "../profile.service";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { BehaviorDataService } from "./behavior-data.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
 import { SessionQuery } from "../../store/session.query";
@@ -17,11 +17,18 @@ export interface BehaviourFormatBackend {
   data?: any;
 }
 
+export interface BehaviourRegistration {
+  register: boolean;
+  address: boolean;
+}
+
 @Injectable({
   providedIn: "root",
 })
 export class BehaviourService {
   behaviours: Behaviour[] = [];
+
+  registerState$ = new Subject<BehaviourRegistration>();
 
   theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
   backendBehaviourStates: BehaviourFormatBackend[];

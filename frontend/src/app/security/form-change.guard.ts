@@ -16,6 +16,7 @@ import { AddressComponent } from "../+address/address/address.component";
 import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
+import { BehaviourService } from "../services/behavior/behaviour.service";
 
 @Injectable({
   providedIn: "root",
@@ -24,7 +25,8 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
   constructor(
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private formStateService: FormStateService
+    private formStateService: FormStateService,
+    private behaviourService: BehaviourService
   ) {}
 
   // TODO: find another way to reset form instead of reloading, which makes a backend request
@@ -34,6 +36,27 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
+    // TODO: unsubscribe from form plugins
+    if (
+      currentState.url.indexOf("/form") === 0 &&
+      nextState.url.indexOf("/form") === -1
+    ) {
+      console.log("redirect from form");
+      this.behaviourService.registerState$.next({
+        register: false,
+        address: false,
+      });
+    } else if (
+      currentState.url.indexOf("/address") === 0 &&
+      nextState.url.indexOf("/address") === -1
+    ) {
+      console.log("redirect from address");
+      this.behaviourService.registerState$.next({
+        register: false,
+        address: true,
+      });
+    }
+
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
     if (

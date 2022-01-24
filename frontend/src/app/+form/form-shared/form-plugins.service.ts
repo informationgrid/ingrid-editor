@@ -3,6 +3,7 @@ import { Plugin } from "../../+catalog/+behaviours/plugin";
 import { Router } from "@angular/router";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
 import { FormPluginToken } from "../../tokens/plugin.token";
+import { filter } from "rxjs/operators";
 
 @Injectable()
 export class FormPluginsService {
@@ -15,10 +16,13 @@ export class FormPluginsService {
   ) {
     const forAddress = router.url.indexOf("/address") !== -1;
 
-    behaviourService.behaviours$.subscribe(() => {
-      this.unregisterAll();
-      this.init(forAddress);
-    });
+    behaviourService.registerState$
+      .pipe(filter((value) => value.address === forAddress))
+      .subscribe((value) =>
+        value.register ? this.init(forAddress) : this.unregisterAll()
+      );
+
+    this.init(forAddress);
   }
 
   private init(forAddress: boolean) {

@@ -10,6 +10,7 @@ import {
 import { TreeQuery } from "../store/tree/tree.query";
 import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 import { DocumentService } from "../services/document/document.service";
+import { BehaviourService } from "../services/behavior/behaviour.service";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +20,8 @@ export class RedirectFormGuard implements CanActivate {
     private router: Router,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private behaviourService: BehaviourService
   ) {}
 
   canActivate(
@@ -31,9 +33,21 @@ export class RedirectFormGuard implements CanActivate {
     | boolean
     | UrlTree {
     if (state.url === "/form") {
+      if (this.router.url.indexOf("/form") !== 0) {
+        this.behaviourService.registerState$.next({
+          register: true,
+          address: false,
+        });
+      }
       const previousOpenedDocId = this.getOpenedDocumentId(false);
       return this.handleNavigation(route, previousOpenedDocId, false);
     } else if (state.url === "/address") {
+      if (this.router.url.indexOf("/address") !== 0) {
+        this.behaviourService.registerState$.next({
+          register: true,
+          address: true,
+        });
+      }
       const previousOpenedDocId = this.getOpenedDocumentId(true);
       return this.handleNavigation(route, previousOpenedDocId, true);
     }
