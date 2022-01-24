@@ -251,6 +251,10 @@ export class DynamicFormComponent
    * @param {string} id is the ID of document to be loaded
    */
   loadDocument(id: string) {
+    // create new form group since it can become corrupted, probably because of page caching
+    // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
+    this.form = new FormGroup({});
+
     // update form here instead of onInit, because of caching problem, where no onInit method is called
     // after revisiting the page
     this.formStateService.updateForm(this.form);
