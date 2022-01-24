@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
@@ -11,7 +11,9 @@ import { FormStateService } from "../../form-state.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",
@@ -28,7 +30,6 @@ export class FolderDashboardComponent {
   canCreateDataset: boolean;
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
-  private subscription: Subscription;
 
   constructor(
     private treeQuery: TreeQuery,
@@ -47,8 +48,6 @@ export class FolderDashboardComponent {
   updateChildren(model) {
     const query = this.isAddress ? this.addressTreeQuery : this.treeQuery;
 
-    if (this.subscription) this.subscription.unsubscribe();
-
     if (!model._hasChildren) {
       this.numChildren = 0;
       return;
@@ -57,17 +56,21 @@ export class FolderDashboardComponent {
     // TODO switch to user specific query
 
     // wait for store changes to get children of node
-    this.subscription = query.selectAll().subscribe(() => {
-      const childrenFromStore = query.getChildren(model._id);
-      this.numChildren = childrenFromStore.length;
-      const latestChildren = childrenFromStore
-        .sort(
-          (c1, c2) =>
-            new Date(c2._modified).getTime() - new Date(c1._modified).getTime()
-        )
-        .slice(0, 5);
-      this.childDocs$.next(latestChildren);
-    });
+    query
+      .selectAll()
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        const childrenFromStore = query.getChildren(model._id);
+        this.numChildren = childrenFromStore.length;
+        const latestChildren = childrenFromStore
+          .sort(
+            (c1, c2) =>
+              new Date(c2._modified).getTime() -
+              new Date(c1._modified).getTime()
+          )
+          .slice(0, 5);
+        this.childDocs$.next(latestChildren);
+      });
   }
 
   createNewFolder() {
