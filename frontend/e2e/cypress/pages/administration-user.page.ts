@@ -291,13 +291,16 @@ export class AdminUserPage extends BasePage {
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.confirmAddUserDialog();
   }
-
-  static checkContainsCatalogAdmins(shouldContain: boolean = false) {
+  /**
+   * Check whether a user can see and access to other users with specific role
+   * shouldContain is a boolean to check if the role should be included in the list of users or not
+   */
+  static checkContainsUserRole(role: string, shouldContain: boolean = false) {
     if (shouldContain) {
       let found = false;
       cy.get('user-table table mat-icon')
         .each(($el, index, $list) => {
-          if ($el.attr('data-mat-icon-name') == 'catalog-admin') {
+          if ($el.attr('data-mat-icon-name') == role) {
             found = true;
           }
         })
@@ -306,9 +309,20 @@ export class AdminUserPage extends BasePage {
         });
     } else {
       cy.get('user-table table mat-icon').each(($el, index, $list) => {
-        cy.wrap($el).invoke('attr', 'data-mat-icon-name').should('not.eq', 'catalog-admin');
+        cy.wrap($el).invoke('attr', 'data-mat-icon-name').should('not.eq', role);
       });
     }
+  }
+
+  static checkForEmptyGroupDropdown() {
+    // if the dropdown contains no group, then the first child
+    // should be the MAT-FORM-FIELD that represents the dropdown
+    cy.get('[data-cy=Gruppen] ')
+      .get('ige-repeat-list')
+      .children()
+      .eq(0)
+      .should('have.prop', 'tagName')
+      .should('eq', 'MAT-FORM-FIELD');
   }
 
   static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {

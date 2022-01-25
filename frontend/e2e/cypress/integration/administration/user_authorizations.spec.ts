@@ -27,9 +27,9 @@ describe('Meta data administrator without groups', () => {
     cy.get('ige-tree ige-empty-navigation');
   });
 
-  it('meta data administrator should not see Catalog-admins', () => {
+  it('meta data administrator should not access Catalog-admins', () => {
     AdminUserPage.visit();
-    AdminUserPage.checkContainsCatalogAdmins(false);
+    AdminUserPage.checkContainsUserRole('catalog-admin', false);
   });
 
   it('should show only empty groups to a metadata-administrator without groups', () => {
@@ -115,6 +115,12 @@ describe('Meta data administrator with a group', () => {
     ResearchPage.search('Harz');
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     ResearchPage.getSearchResultCount().should('equal', 1);
+  });
+
+  it('meta data administrator should access to meta admin without group', () => {
+    AdminUserPage.visit();
+    AdminUserPage.selectUser('metaadmin@wemove.com');
+    AdminUserPage.checkForEmptyGroupDropdown();
   });
 
   it('meta data administrator with group should be able to see the data of his group and search for it', () => {
