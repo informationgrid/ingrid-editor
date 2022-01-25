@@ -31,8 +31,8 @@
         "_id" : "82",
         "_parent" : "58",
         "address" : {
-          "PO" : null,
-          "plz" : null,
+          "zip-po-box" : null,
+          "zip-code" : null,
           "city" : null,
           "po-box" : null,
           "street" : null

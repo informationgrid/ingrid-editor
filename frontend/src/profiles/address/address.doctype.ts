@@ -243,7 +243,7 @@ export class AddressDoctype extends BaseDoctype {
                     },
                   },
                   {
-                    key: "PO",
+                    key: "zip-po-box",
                     className: "flex-3",
                     type: "input",
                     templateOptions: {
@@ -257,7 +257,7 @@ export class AddressDoctype extends BaseDoctype {
                 fieldGroupClassName: "display-flex",
                 fieldGroup: [
                   {
-                    key: "plz",
+                    key: "zip-code",
                     className: "flex-1",
                     type: "input",
                     templateOptions: {

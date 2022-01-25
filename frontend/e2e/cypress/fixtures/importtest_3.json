@@ -30,8 +30,8 @@
         "_id" : "902",
         "_parent" : "8",
         "address" : {
-          "PO" : null,
-          "plz" : null,
+          "zip-po-box" : null,
+          "zip-code" : null,
           "city" : null,
           "po-box" : null,
           "street" : null

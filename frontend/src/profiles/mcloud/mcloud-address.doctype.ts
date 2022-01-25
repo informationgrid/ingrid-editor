@@ -130,7 +130,7 @@ export class McloudAddressDoctype extends BaseDoctype {
                 fieldGroupClassName: "display-flex",
                 fieldGroup: [
                   {
-                    key: "plz",
+                    key: "zip-code",
                     className: "flex-1",
                     type: "input",
                     templateOptions: {
@@ -153,7 +153,7 @@ export class McloudAddressDoctype extends BaseDoctype {
                 fieldGroupClassName: "display-flex",
                 fieldGroup: [
                   {
-                    key: "PO",
+                    key: "zip-po-box",
                     className: "flex-1",
                     type: "input",
                     templateOptions: {
