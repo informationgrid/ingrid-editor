@@ -292,6 +292,25 @@ export class AdminUserPage extends BasePage {
     AdminUserPage.confirmAddUserDialog();
   }
 
+  static checkContainsCatalogAdmins(shouldContain: boolean = false) {
+    if (shouldContain) {
+      let found = false;
+      cy.get('user-table table mat-icon')
+        .each(($el, index, $list) => {
+          if ($el.attr('data-mat-icon-name') == 'catalog-admin') {
+            found = true;
+          }
+        })
+        .then($lis => {
+          expect(found).to.equal(true);
+        });
+    } else {
+      cy.get('user-table table mat-icon').each(($el, index, $list) => {
+        cy.wrap($el).invoke('attr', 'data-mat-icon-name').should('not.eq', 'catalog-admin');
+      });
+    }
+  }
+
   static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {
     //Here we want to wait after user creation to get the email
     //Because it takes some time to receive welcoming email

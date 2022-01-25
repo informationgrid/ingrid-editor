@@ -27,6 +27,11 @@ describe('Meta data administrator without groups', () => {
     cy.get('ige-tree ige-empty-navigation');
   });
 
+  it('meta data administrator should not see Catalog-admins', () => {
+    AdminUserPage.visit();
+    AdminUserPage.checkContainsCatalogAdmins(false);
+  });
+
   it('should show only empty groups to a metadata-administrator without groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
