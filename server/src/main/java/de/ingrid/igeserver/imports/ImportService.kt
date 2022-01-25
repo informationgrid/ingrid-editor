@@ -8,6 +8,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,7 +56,7 @@ open class ImportService {
 
         log.debug("Transformed document: $document")
 
-        val uuid = document.get(FIELD_ID).asText()
+        val uuid = document.get(FIELD_UUID).asText()
         // check if document already exists
         val wrapper = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)

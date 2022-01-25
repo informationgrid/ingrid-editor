@@ -129,12 +129,12 @@ export class ImportComponent implements OnInit {
     // upload each file
     const importer = this.optionsFormGroup.get("importer").value;
     const option = this.optionsFormGroup.get("option").value;
-    this.uploadComponent.flow.flowJs.opts.query = {
+    this.uploadComponent.setAdditionalUploadParameter({
       importerId: importer,
       parentDoc: this.locationDoc[0],
       parentAddress: this.locationAddress[0],
       options: option,
-    };
+    });
     this.chosenFiles.forEach((file) => {
       this.uploadComponent.flow.flowJs.addFile(file.transfer.flowFile.file);
     });

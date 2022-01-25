@@ -66,6 +66,9 @@ export class UploadComponent implements OnInit {
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
 
+  // parameters to send with the upload information
+  private additionalParameters: any;
+
   constructor(private uploadService: UploadService) {}
 
   ngOnInit() {
@@ -150,6 +153,11 @@ export class UploadComponent implements OnInit {
     this.errors.next(this._errors);
   }
 
+  setAdditionalUploadParameter(params: any) {
+    this.additionalParameters = params;
+    this.flow.flowJs.opts.query = params;
+  }
+
   private handleUploadError(event: flowjs.FlowEventFromEventName<any>) {
     const errorResponse = event[2].xhr;
 
@@ -184,9 +192,12 @@ export class UploadComponent implements OnInit {
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {
-      flowFile.flowObj.opts.query = parameter;
+      flowFile.flowObj.opts.query = {
+        ...this.additionalParameters,
+        ...parameter,
+      };
     }
     flowFile.retry();
-    flowFile.flowObj.opts.query = {};
+    flowFile.flowObj.opts.query = { ...this.additionalParameters };
   }
 }

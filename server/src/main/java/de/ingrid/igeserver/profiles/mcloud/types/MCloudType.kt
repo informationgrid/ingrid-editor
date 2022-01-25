@@ -57,10 +57,14 @@ class MCloudType : EntityType() {
         val addresses = doc.data.path("addresses")
         for (address in addresses) {
             val addressJson = address.path("ref")
-            val uuid = addressJson.path(FIELD_UUID).textValue()
-            val addressDoc = docService.convertToDocument(addressJson)
-            addressDocs.add(addressDoc)
-            (address as ObjectNode).put("ref", uuid)
+            // during import address already is replaced by UUID
+            // TODO: improve import process so we don't need this
+            if (addressJson is ObjectNode) {
+                val uuid = addressJson.path(FIELD_UUID).textValue()
+                val addressDoc = docService.convertToDocument(addressJson)
+                addressDocs.add(addressDoc)
+                (address as ObjectNode).put("ref", uuid)
+            }
         }
         return addressDocs
     }
