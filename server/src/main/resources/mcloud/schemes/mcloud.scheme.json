@@ -1,0 +1,248 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/MCLOUD",
+  "definitions": {
+    "MCLOUD": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "origin": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "spatial": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Spatial"
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mfundFKZ": {
+          "type": "string"
+        },
+        "temporal": {
+          "$ref": "#/definitions/Temporal"
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Address"
+          }
+        },
+        "DCATThemes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "periodicity": {
+          "type": "string",
+          "format": "integer"
+        },
+        "accessRights": {
+          "type": "string"
+        },
+        "mfundProject": {
+          "type": "string"
+        },
+        "distributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          }
+        },
+        "mCloudCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "addresses",
+        "mCloudCategories",
+        "DCATThemes",
+        "distributions",
+        "license"
+      ],
+      "title": "MCLOUD"
+    },
+    "Address": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "format": "integer"
+        }
+      },
+      "required": [
+        "ref",
+        "type"
+      ],
+      "title": "Address"
+    },
+    "Distribution": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "link": {
+          "$ref": "#/definitions/Link"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "link",
+        "title",
+        "type"
+      ],
+      "title": "Distribution"
+    },
+    "Link": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "asLink": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asLink",
+        "uri",
+        "value"
+      ],
+      "title": "Link"
+    },
+    "Event": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "text": {
+          "type": "string",
+          "format": "integer"
+        }
+      },
+      "required": [
+        "date",
+        "text"
+      ],
+      "title": "Event"
+    },
+    "Spatial": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/definitions/Value"
+        }
+      },
+      "required": [
+        "title",
+        "type",
+        "value"
+      ],
+      "title": "Spatial"
+    },
+    "Value": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "lat1": {
+          "type": "number"
+        },
+        "lat2": {
+          "type": "number"
+        },
+        "lon1": {
+          "type": "number"
+        },
+        "lon2": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat1",
+        "lat2",
+        "lon1",
+        "lon2"
+      ],
+      "title": "Value"
+    },
+    "Temporal": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "rangeType": {
+          "type": "string"
+        },
+        "timeSpanDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "rangeType",
+        "timeSpanDate"
+      ],
+      "title": "Temporal"
+    }
+  }
+}

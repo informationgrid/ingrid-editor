@@ -31,6 +31,11 @@ abstract class EntityType {
     abstract val profiles: Array<String>?
 
     /**
+     * Location of the json schema file to be used for validation
+     */
+    open val jsonSchema: String? = null
+    
+    /**
      * Check if the entity type is used in the given profile
      */
     open fun usedInProfile(profileId: String): Boolean {
@@ -68,7 +73,6 @@ abstract class EntityType {
      * Replace document/address references with their latest version
      */
     open fun updateReferences(doc: Document, onlyPublished: Boolean) {}
-
 
 
     /**

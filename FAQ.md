@@ -343,3 +343,12 @@ New Icons added to IGE-NG should be integrated the following way:
   * **coloring-stroke**: for changing the stroke style
   
 For easier editing you can format the file but remember to minimize it afterwards (IntelliJ: Select all + "Join Lines")
+
+# Add a new JSON schema file
+
+For validation of a JSON-document, before it's being saved to the database, you need to create a JSON schema file under 
+`src/main/resources/<profile>/schemas`.
+
+For schema creation you can use the online generator https://app.quicktype.io/ and insert a JSON presentation of
+your document type. The backend entity of your document has to reference this file by overriding the field `jsonSchema`
+with the location of the schema file.
