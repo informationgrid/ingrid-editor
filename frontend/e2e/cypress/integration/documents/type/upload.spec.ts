@@ -129,24 +129,16 @@ describe('Upload Tests', () => {
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
   });
 
-  // should fail, but passes
-  xit('should upload and unzip new zip archive and overwrite duplicate zip archive files (zip files have same name) (#3575 (8))', () => {
+  it('should upload and unzip new zip archive and overwrite duplicate zip archive files (zip files have same name) (#3575 (8))', () => {
     const fileTitle = 'Test2.zip';
-    const toBeOverwritten = 'Test.zip';
-    const unzippedFiles: string[] = [
-      'test_file_1.PNG',
-      'test_file_2.PNG',
-      'test_file_3.PNG',
-      'test_image_1',
-      'test_image_6'
-    ];
+    const unzippedFiles: string[] = ['test_file_1.PNG', 'test_file_2.PNG', 'test_file_3.PNG', 'test_image_6.PNG'];
 
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3C', 'Datum_Ebene_4_6']);
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
     enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(toBeOverwritten);
+    enterMcloudDocTestData.addFile(fileTitle);
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     // check unzipped files in table
@@ -158,8 +150,9 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     // here should appear a dialog pointing to the file extraction conflict!
+    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Overwrite);
     // check number of unzipped files in table (3 files with same name, 1 file specific to each zip archive)
-    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 5);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
       cy.wrap(item).should('contain.text', unzippedFiles[index]);
     });
@@ -200,19 +193,17 @@ describe('Upload Tests', () => {
     });
   });
 
-  // upload does not work as it should: second zip file isn't uploaded properly
-  xit('should upload and unzip new zip archive and rename duplicate zip archive files(#3575 (9))', () => {
+  it('should upload and unzip new zip archive and rename duplicate zip archive files(#3575 (9))', () => {
     const fileTitle = 'Test2.zip';
-    const toBeOverwritten = 'Test.zip';
     const unzippedFiles: string[] = [
       'test_file_1.PNG',
       'test_file_2.PNG',
       'test_file_3.PNG',
-      'test_image_1',
+      'test_image_6.PNG',
       'test_file_1-1.PNG',
       'test_file_2-1.PNG',
       'test_file_3-1.PNG',
-      'test_image_6'
+      'test_image_6-1.PNG'
     ];
 
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
@@ -220,7 +211,7 @@ describe('Upload Tests', () => {
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
     enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(toBeOverwritten);
+    enterMcloudDocTestData.addFile(fileTitle);
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     // check number of unzipped files in table
@@ -228,11 +219,11 @@ describe('Upload Tests', () => {
 
     // upload file and activate unzip option
     enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFileWithRename(fileTitle, 'Test.zip');
+    enterMcloudDocTestData.addFile(fileTitle);
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Rename);
-    // check number of unzipped files in table (3 files with original name, 3 files with modified name, 1 file specific to each zip archive)
+    // check number of unzipped files in table (4 files with original name, 4 files with modified name)
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 8);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
       cy.wrap(item).should('contain.text', unzippedFiles[index]);
