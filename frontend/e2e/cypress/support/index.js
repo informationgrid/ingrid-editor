@@ -25,6 +25,7 @@ Cypress.on('test:after:run', (test, runnable) => {
       .filter(Boolean)
       .join(' -- ') // this is how cypress joins the test title fragments
       .replaceAll('#', '%23') // fix encoding for hashtags used for ticket ids
+      .replaceAll('"', '') // remove quotations from test name
       .replaceAll('/', ''); // remove slashes from test name
 
     const firstTestStart = runnable.parent.tests[0].wallClockStartedAt;
