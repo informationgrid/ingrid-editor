@@ -590,7 +590,7 @@ describe('Meta data administrator with a group', () => {
     });
   });
 
-  xit('metadata admin should not be able to see the users other metadata admins created', () => {
+  it('metadata admin should not be able to see the users that other metadata admins created with groups', () => {
     AdminUserPage.visit();
     // create a new user
     cy.contains('button', 'Hinzufügen').click();
@@ -599,7 +599,33 @@ describe('Meta data administrator with a group', () => {
       lastName: 'Test_autor',
       email: 'testmd@wemove.com',
       login: 'autor7',
-      role: 'Metadaten-Administrator',
+      role: 'Autor',
+      groups: [],
+      organisation: ''
+    };
+    AdminUserPage.addNewUser(user, true);
+
+    AdminUserPage.addGroupToUser(' gruppe_nur_Adressen ');
+    AdminUserPage.saveUser();
+    // log in as another metadata admin
+    cy.kcLogout();
+    cy.kcLogin('meta');
+
+    // make sure user created by previous metadata admin is not visible
+    AdminUserPage.visit();
+    cy.contains('user-table', 'autor7').should('not.exist');
+  });
+
+  it('metadata admin should be able to see the users that other metadata admins created without groups', () => {
+    AdminUserPage.visit();
+    // create a new user
+    cy.contains('button', 'Hinzufügen').click();
+    let user: UserFormData = {
+      firstName: 'Autor',
+      lastName: 'WithoutGroup',
+      email: 'testautorwithoutgroup@wemove.com',
+      login: 'autor8',
+      role: 'Autor',
       groups: [],
       organisation: ''
     };
@@ -611,7 +637,7 @@ describe('Meta data administrator with a group', () => {
 
     // make sure user created by previous metadata admin is not visible
     AdminUserPage.visit();
-    cy.contains('user-table', 'autor5').should('not.exist');
+    cy.contains('user-table', 'autor8').should('exist');
   });
 
   it('meta data admin should not be able to create a catalog administrator (#2875)', () => {
