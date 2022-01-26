@@ -457,9 +457,8 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.addNewUser(user, true);
   });
 
-  xit('meta data admin should be able to create other metadata administrators and assign them groups', () => {
-    const groupName = 'test_gruppe_1';
-    const groupName2 = 'gruppe_mit_ortsrechten';
+  it('meta data admin should be able to create other metadata administrators and assign them groups', () => {
+    const groupName = 'gruppe_nur_Adressen ';
     //create user
     AdminUserPage.visit();
     cy.contains('button', 'Hinzufügen').click();
@@ -477,18 +476,7 @@ describe('Meta data administrator with a group', () => {
     //assign groups to user
     AdminUserPage.addGroupToUser(groupName);
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
-    AdminUserPage.addGroupToUser(groupName2);
-    cy.get('[data-cy=Gruppen]').should('contain', groupName2);
     AdminUserPage.saveUser();
-    // log in as user and make sure groups are available; (geht erst, wenn Email-Versand klappt)
-    cy.writeFile('cypress/fixtures/users/meta4.json', { username: 'meta4', password: 'meta4' });
-    cy.kcLogout();
-    cy.kcLogin('meta4');
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(groupName);
-    AdminGroupPage.selectGroup(groupName2);
-    cy.kcLogout();
   });
 
   xit('meta data admin should have the same access right to documents further down in the tree as the users to which the access rights were granted', () => {});
