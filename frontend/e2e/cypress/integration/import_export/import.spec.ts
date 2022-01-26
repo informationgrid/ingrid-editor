@@ -65,7 +65,7 @@ describe('Import Tests', () => {
     Tree.checkPath(['Adressen', 'Testadressen']);
   });
 
-  xit('should import json document (existing document, new address) with option "identische Metadaten überschreiben"', () => {
+  it('should import json document (existing document, new address) with option "identische Metadaten überschreiben"', () => {
     const fileTitle = 'importtest_4.json';
 
     ImportPage.addFile(fileTitle);
@@ -83,7 +83,7 @@ describe('Import Tests', () => {
     Tree.checkPath(['Adressen', 'Testadressen']);
   });
 
-  xit('should import json document (existing document, existing address) with option "identische Metadaten überschreiben"', () => {
+  it('should import json document (existing document, existing address) with option "identische Metadaten überschreiben"', () => {
     const fileTitle = 'importtest_5.json';
 
     // add address to document
