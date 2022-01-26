@@ -56,10 +56,16 @@ open class ImportService {
 
         log.debug("Transformed document: $document")
 
-        val uuid = document.get(FIELD_UUID).asText()
+        // TODO: should we fail if there's no UUID? Imported document might not have a unique ID!?
+        val uuid = document.get(FIELD_UUID)?.asText()
+        
         // check if document already exists
         val wrapper = try {
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+            if (uuid == null) {
+                null
+            } else {
+                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+            }
         } catch (ex: NotFoundException) {
             null
         }

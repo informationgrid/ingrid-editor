@@ -299,6 +299,7 @@ class DocumentService @Autowired constructor(
     // TODO: refactor since removeInternalFields does almost the same, find out difference and why
     fun removeInternalFieldsForImport(json: ObjectNode) {
         listOf(
+            FIELD_ID,
             FIELD_VERSION,
             FIELD_CREATED,
             FIELD_MODIFIED,
