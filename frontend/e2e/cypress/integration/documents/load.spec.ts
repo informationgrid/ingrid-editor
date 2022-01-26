@@ -1,5 +1,8 @@
 import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
 import { beforeEach } from 'mocha';
+import { Tree } from '../../pages/tree.partial';
+import { AddressPage } from '../../pages/address.page';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
 describe('Load documents', () => {
   beforeEach(() => {
@@ -57,5 +60,29 @@ describe('Load documents', () => {
     cy.get(DocumentPage.Sidemenu.Adressen).click();
     cy.get(DocumentPage.Sidemenu.Daten).click();
     cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
+  });
+
+  it('should only show last used addresses of same catalog when adding address to document (#3335)', () => {
+    // add address to document
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
+    enterMcloudDocTestData.CreateDialog.setAddress('Limousin, Adresse');
+    DocumentPage.saveDocument();
+    // visit new catalog and make sure recently added address is not among the suggestions
+    cy.kcLogout();
+    cy.kcLogin('ige3');
+    DocumentPage.visit();
+    // add an address to a document so that afterwards the 'last used addresses' field contains this address
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
+    AddressPage.addAddressToTestDocument(['Testadressen', 'Organisation_30, Nachname30, Name30'], 'Ansprechpartner');
+    AddressPage.saveDocument();
+    // open document, open add-address-dialog and check "last used addresses"-field
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_2']);
+    cy.get('[data-cy="Adressen"] button').first().click();
+    cy.get('[data-cy="recent-address-select"]').click();
+    cy.get('[role="listbox"]').should(list => {
+      expect(list).to.contain('Organisation_30, Nachname30, Name30');
+      expect(list).to.not.contain('Limousin, Adresse');
+    });
   });
 });
