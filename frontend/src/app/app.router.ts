@@ -1,6 +1,7 @@
 import {
   ActivatedRouteSnapshot,
   DetachedRouteHandle,
+  Route,
   RouteReuseStrategy,
   RouterModule,
   Routes,
@@ -127,44 +128,45 @@ export const routing = RouterModule.forRoot(routes, {
 });
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
-  routesToCache: string[] = ["form", "address", "manageuser", "managegroup"];
-  storedRouteHandles = new Map<string, DetachedRouteHandle>();
+  routesToCache: string[] = [
+    "/form",
+    "/address",
+    "/manage/user",
+    "/manage/group",
+  ];
+  private handlers: Map<Route, DetachedRouteHandle> = new Map();
 
-  // Decides if the route should be stored
-  shouldDetach(route: ActivatedRouteSnapshot): boolean {
-    return this.routesToCache.indexOf(this.getKey(route)) > -1;
+  constructor() {}
+
+  public shouldDetach(_route: ActivatedRouteSnapshot): boolean {
+    return this.routesToCache.some(
+      // @ts-ignore
+      (definiton) => _route._routerState.url.indexOf(definiton) === 0
+    );
   }
 
-  //Store the information for the route we're destructing
-  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
-    // this.storedRouteHandles.set(route.data[key].path, handle);
-    this.storedRouteHandles.set(this.getKey(route), handle);
+  public store(
+    route: ActivatedRouteSnapshot,
+    handle: DetachedRouteHandle
+  ): void {
+    if (!route.routeConfig) return;
+    this.handlers.set(route.routeConfig, handle);
   }
 
-  //Return true if we have a stored route object for the next route
-  shouldAttach(route: ActivatedRouteSnapshot): boolean {
-    return this.storedRouteHandles.has(this.getKey(route));
+  public shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.routeConfig && !!this.handlers.get(route.routeConfig);
   }
 
-  //If we returned true in shouldAttach(), now return the actual route data for restoration
-  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
-    return this.storedRouteHandles.get(this.getKey(route));
+  public retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+    if (!route.routeConfig || !this.handlers.has(route.routeConfig))
+      return null;
+    return this.handlers.get(route.routeConfig)!;
   }
 
-  //Reuse the route if we're going to and from the same route
-  shouldReuseRoute(
+  public shouldReuseRoute(
     future: ActivatedRouteSnapshot,
     curr: ActivatedRouteSnapshot
   ): boolean {
     return future.routeConfig === curr.routeConfig;
-  }
-
-  private getKey(route: ActivatedRouteSnapshot): string {
-    return route.pathFromRoot
-      .map((el: ActivatedRouteSnapshot) =>
-        el.routeConfig ? el.routeConfig.path : ""
-      )
-      .filter((str) => str.length > 0)
-      .join("");
   }
 }
