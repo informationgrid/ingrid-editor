@@ -1,6 +1,5 @@
 import { BasePage } from './base.page';
 import { Tree } from './tree.partial';
-import { headerKeys } from './administration-group.page';
 
 export const SEPARATOR = 'chevron_right';
 export const ROOT = `Daten`;
@@ -437,18 +436,11 @@ export class DocumentPage extends BasePage {
   }
 
   static jumpFromDocumentToAddress(addressTitle: string, id?: number) {
+    cy.get('ige-address-card').should('exist');
     cy.get('ige-address-card [svgicon="Mehr"]').click();
     cy.get('.mat-menu-content', { timeout: 10000 }).should('exist');
-    if (id) {
-      const path = new RegExp(`api/datasets/${id}/path`);
-      cy.intercept('GET', path).as('fetchAddress');
-    } else {
-      cy.intercept('GET', /api\/datasets\?query=&address=true/).as('fetchAddress');
-    }
     cy.contains('button', 'Hinspringen', { timeout: 10000 }).click();
-    cy.wait('@fetchAddress', {
-      timeout: 8000
-    });
+    cy.get(DocumentPage.title).should('have.text', addressTitle);
   }
 
   static clickLeafletMapResetBtn() {

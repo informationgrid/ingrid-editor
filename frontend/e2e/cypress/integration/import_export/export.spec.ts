@@ -9,7 +9,7 @@ describe('Export', () => {
   });
 
   it('should export a single published document with options "Nur diesen Datensatz", "IGE" ', () => {
-    Tree.openNode(['TestDocResearch4'], false, true);
+    Tree.openNode(['TestDocResearch4'], false, false);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
     //  --------------
@@ -18,7 +18,7 @@ describe('Export', () => {
     ExportPage.continue();
     ExportPage.cancel();
     // click on the node again
-    Tree.openNode(['TestDocResearch4'], false, true);
+    Tree.openNode(['TestDocResearch4'], false, false);
     ExportPage.continue();
     // go to preview step
     ExportPage.continue();
@@ -26,11 +26,10 @@ describe('Export', () => {
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
-    ExportPage.newExport();
   });
 
   it('should export a single published document with options "Nur diesen Datensatz","IGE" and "Auch Entwürfe exportieren" ', () => {
-    Tree.openNode(['TestDocResearch4'], false, true);
+    Tree.openNode(['TestDocResearch4'], false, false);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
     //  --------------
@@ -41,11 +40,10 @@ describe('Export', () => {
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
-    ExportPage.newExport();
   });
 
   it('should export a completed document with option "mCLOUD Portal" ', () => {
-    Tree.openNode(['TestDocResearch4'], false, true);
+    Tree.openNode(['TestDocResearch4'], false, false);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
     //  --------------
@@ -56,11 +54,10 @@ describe('Export', () => {
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
-    ExportPage.newExport();
   });
 
   it('should export a completed document with option "mCLOUD DCAT-AP.de" ', () => {
-    Tree.openNode(['TestDocResearch4'], false, true);
+    Tree.openNode(['TestDocResearch4'], false, false);
     ExportPage.continue();
     // TODO select "Nur diesen Datensatz"
     //  --------------
@@ -72,6 +69,5 @@ describe('Export', () => {
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
-    ExportPage.newExport();
   });
 });

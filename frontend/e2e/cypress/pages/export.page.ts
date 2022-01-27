@@ -12,7 +12,9 @@ export class ExportPage {
       cy.get('div .action-bar').contains('Weiter').click({ force: true });
       cy.wait('@previewJsonData');
     } else {
-      cy.get('form').next().contains('Weiter').click({ force: true });
+      cy.get('button:visible').contains('Weiter').click();
+      // wait for page animation
+      cy.wait(300);
     }
   }
 

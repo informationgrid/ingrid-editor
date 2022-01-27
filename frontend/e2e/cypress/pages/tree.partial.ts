@@ -50,12 +50,7 @@ export class Tree {
     });
   }
 
-  static openNode(
-    targetNodePath: string[],
-    isInsideDialog: boolean = false,
-    isExportTree: boolean = false,
-    isImportTree: boolean = false
-  ) {
+  static openNode(targetNodePath: string[], isInsideDialog = false, waitForShownInForm = true) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
       Tree.selectNodeWithTitle(
@@ -64,20 +59,8 @@ export class Tree {
         true,
         index + 1,
         index === targetNodePath.length - 1,
-        isExportTree,
-        isImportTree
+        waitForShownInForm
       );
-    });
-    if (!isInsideDialog) {
-      this.determineRootAndCheckPath(targetNodePath);
-    }
-  }
-
-  // check if opened node has correct breadcrumb so we loaded correct document
-  private static determineRootAndCheckPath(nodePath: string[]) {
-    cy.url().then(url => {
-      const docRoot = url.indexOf('/form') !== -1 ? 'Daten' : 'Adressen';
-      //this.checkPath([docRoot, ...nodePath.filter((item, index) => index !== nodePath.length - 1)]);
     });
   }
 
@@ -87,8 +70,7 @@ export class Tree {
     exact = true,
     hierarchyLevel?: number,
     forceClick?: boolean,
-    isExportTree: boolean = false,
-    isImportTree: boolean = false
+    waitForShownInForm: boolean = true
   ) {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? this.getRegExp(nodeTitle) : nodeTitle;
@@ -105,23 +87,11 @@ export class Tree {
           const nodeIsExpanded = treeNode.hasClass('expanded');
 
           if (forceClick) {
-            if (!isInsideDialog && !nodeIsSelected) {
+            node.trigger('click');
+            if (waitForShownInForm && !isInsideDialog && !nodeIsSelected) {
               // wait for document loaded, otherwise check might fail
-              if (isExportTree) {
-                cy.intercept({ method: 'GET', url: '/api/datasets/*/path', times: 1 }).as('documentFetched');
-              } else if (isImportTree) {
-                cy.intercept({ method: 'GET', url: /api\/tree/, times: 1 }).as('documentFetched');
-              } else {
-                cy.intercept({ method: 'GET', url: '/api/datasetsByUuid/*', times: 1 }).as('documentFetched');
-              }
-              node.trigger('click');
-              cy.wait('@documentFetched');
-              if (!isExportTree && !isImportTree) {
-                cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
-                cy.get(DocumentPage.title).should('have.text', nodeTitle);
-              }
-            } else {
-              node.trigger('click');
+              cy.contains(DocumentPage.title, nodeTitle, { timeout: 10000 }).should('be.visible');
+              cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
           } else {
             if (!nodeIsExpanded) {

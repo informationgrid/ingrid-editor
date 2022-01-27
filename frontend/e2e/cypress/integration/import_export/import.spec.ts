@@ -18,12 +18,12 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.CreateUnderTarget);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false, true);
-    Tree.openNode(['Neue Testadressen'], false, false, true);
+    Tree.openNode(['Testdokumente'], false, false);
+    Tree.openNode(['Neue Testadressen'], false, false);
     ImportPage.closeDialogAndImport();
     ImportPage.jumpToDocument('document_import_32');
     Tree.checkPath(['Daten', 'Testdokumente']);
-    cy.get('ige-address-card').should('exist');
+
     DocumentPage.jumpFromDocumentToAddress('Transsilvanien, Adresse');
     Tree.checkTitleOfSelectedNode('Transsilvanien, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen']);
@@ -36,13 +36,13 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.CreateUnderTarget);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false, true);
-    Tree.openNode(['Testadressen'], false, false, true);
+    Tree.openNode(['Testdokumente'], false, false);
+    Tree.openNode(['Testadressen'], false, false);
     ImportPage.closeDialogAndImport();
     ImportPage.jumpToDocument('document_import_12');
     Tree.checkPath(['Daten', 'Testdokumente']);
-    cy.get('ige-address-card').should('exist');
-    DocumentPage.jumpFromDocumentToAddress('Aquitanien, Adresse', 73);
+
+    DocumentPage.jumpFromDocumentToAddress('Aquitanien, Adresse');
     Tree.checkTitleOfSelectedNode('Aquitanien, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen', 'Ordner 2. Ebene']);
   });
@@ -54,12 +54,12 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false, true);
-    Tree.openNode(['Testadressen'], false, false, true);
+    Tree.openNode(['Testdokumente'], false, false);
+    Tree.openNode(['Testadressen'], false, false);
     ImportPage.closeDialogAndImport();
+
     ImportPage.jumpToDocument('document_import_43');
     Tree.checkPath(['Daten', 'Testdokumente']);
-    cy.get('ige-address-card').should('exist');
     DocumentPage.jumpFromDocumentToAddress('Sibirien, Adresse');
     Tree.checkTitleOfSelectedNode('Sibirien, Adresse');
     Tree.checkPath(['Adressen', 'Testadressen']);
@@ -72,12 +72,12 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], false, false, true);
-    Tree.openNode(['Testadressen'], false, false, true);
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], false, false);
+    Tree.openNode(['Testadressen'], false, false);
     ImportPage.closeDialogAndImport();
+
     ImportPage.jumpToDocument('Datum_Ebene_4_4');
     Tree.checkPath(['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
-    cy.get('ige-address-card').should('exist');
     DocumentPage.jumpFromDocumentToAddress('Schlesien, Adresse');
     Tree.checkTitleOfSelectedNode('Schlesien, Adresse');
     Tree.checkPath(['Adressen', 'Testadressen']);
@@ -97,11 +97,13 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], false, false, true);
-    Tree.openNode(['Neue Testadressen'], false, false, true);
+    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], false, false);
+    Tree.openNode(['Neue Testadressen'], false, false);
     ImportPage.closeDialogAndImport();
+
     ImportPage.jumpToDocument('Tiefes Dokument');
-    DocumentPage.jumpFromDocumentToAddress('Franken, Adresse', 82);
+    DocumentPage.jumpFromDocumentToAddress('Franken, Adresse');
+
     Tree.checkTitleOfSelectedNode('Franken, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen']);
   });
