@@ -277,6 +277,11 @@ export class ResearchPage {
         });
     }
   }
+
+  static waitForSearch() {
+    cy.get('.mat-spinner').should('exist');
+    cy.get('.mat-spinner').should('not.exist');
+  }
 }
 
 export enum FilterExtendedSearch {
