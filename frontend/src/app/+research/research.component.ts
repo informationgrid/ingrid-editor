@@ -125,11 +125,10 @@ export class ResearchComponent implements OnInit {
         )
         .pipe(
           catchError((err) => this.handleSearchError(err)),
-          finalize(() => (this.isSearching = false))
+          // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
+          finalize(() => setTimeout(() => (this.isSearching = false), 300))
         )
-        .subscribe((result) => {
-          this.updateHits(result);
-        });
+        .subscribe((result) => this.updateHits(result));
     });
   }
 
