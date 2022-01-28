@@ -60,6 +60,7 @@ export class ResearchPage {
     cy.contains('.mat-option-text', docType).click();
     // wait For request to complete
     cy.wait('@query');
+    cy.contains('[role="combobox"]', docType).should('exist', { timeout: 10000 });
   }
 
   static activateCheckboxSearchFilter(FilterType: FilterExtendedSearch): void {
