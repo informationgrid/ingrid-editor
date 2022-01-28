@@ -90,19 +90,10 @@ export class TableTypeComponent
   }
 
   removeRow(index: number) {
-    this.removeFileInBackend(index);
     this.dataSource = new MatTableDataSource<any>(
       this.dataSource.data.filter((item, indexItem) => indexItem !== index)
     );
     this.updateFormControl(this.dataSource.data);
-  }
-
-  private removeFileInBackend(index: number) {
-    const link = this.dataSource.data[index].link;
-    if (link.asLink) {
-      const docUuid = this.form.get("_id").value;
-      this.uploadService.deleteUploadedFile(docUuid, link.uri);
-    }
   }
 
   editRow(index: number) {
