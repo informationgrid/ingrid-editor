@@ -98,6 +98,20 @@ describe('Meta data administrator without groups', () => {
     // Also: make sure no address is displayed in the address list
     cy.get('ige-tree').contains('Leer');
   });
+
+  xit('non-catadmin user should be able to delete a global saved search he created (#3379)', () => {
+    const searchName = 'savedSearchToBeDeleted';
+    const searchDescription = 'to test that global search can be deleted';
+    ResearchPage.visit();
+    ResearchPage.search('das');
+    ResearchPage.saveSearchProfile(searchName, searchDescription, true);
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.checkExistenceOfSavedSearch(searchName, searchDescription);
+    // make sure global search can be deleted
+    cy.contains('mat-card-content .mat-list-item', searchName).within(() => {
+      cy.get('[svgicon="Mehr"]').should('exist');
+    });
+  });
 });
 
 // meta data administrator with groups
