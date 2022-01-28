@@ -49,11 +49,11 @@ export class ShowJsonBehaviour extends Plugin {
     this.subscriptions.push(toolbarEventSubscription);
   }
 
-  private toggleJSONView() {
+  private toggleJSONView(forceState?: boolean) {
     this.sessionStore.update((state) => ({
       ui: {
         ...state.ui,
-        showJSONView: !state.ui.showJSONView,
+        showJSONView: forceState ?? !state.ui.showJSONView,
       },
     }));
   }
@@ -63,5 +63,7 @@ export class ShowJsonBehaviour extends Plugin {
 
     this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
     this.formToolbarService.removeButton("toolBtnShowJson");
+
+    this.toggleJSONView(false);
   }
 }
