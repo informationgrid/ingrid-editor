@@ -7,6 +7,7 @@ import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { AddressPage } from '../../pages/address.page';
 
 describe('Read Only Documents', () => {
   beforeEach(() => {
@@ -51,7 +52,7 @@ describe('Read Only Documents', () => {
   it('meta data admin with groups should not be able to move a data document to a read-only folder', () => {
     const readOnlyFolder = 'Folder_for_meta2' + Utils.randomString();
     const folderToMove = 'Ordner_Ebene_3D';
-    const documentToMove = 'Datum_Ebene_4_1';
+    const documentToMove = 'Datum_Ebene_3_3';
 
     // create new folder
     cy.kcLogout();
@@ -85,7 +86,7 @@ describe('Read Only Documents', () => {
     UserAuthorizationPage.closeErrorBox();
 
     // try to move a document to the read-only folder
-    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToMove]);
+    Tree.openNode(['Ordner_Ebene_2A', documentToMove]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
     cy.contains('mat-dialog-content', 'Folder_for_meta2').should('not.exist');
@@ -101,7 +102,7 @@ describe('Read Only Documents', () => {
 
   it('should be able to copy a read only document #3512', function () {
     const readOnlyFolder = 'Ordner_Ebene_2A';
-    const documentToCopy = 'Datum_Ebene_4_1';
+    const documentToCopy = 'Datum_Ebene_3_3';
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -112,13 +113,13 @@ describe('Read Only Documents', () => {
 
     DocumentPage.visit();
     // try to copy a document from the read-only folder to another folder
-    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy]);
+    Tree.openNode(['Ordner_Ebene_2A', documentToCopy]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
-    Tree.openNode(['Ordner_Ebene_2A'], true);
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A'], true);
     Tree.confirmCopy();
 
-    Tree.openNode(['Ordner_Ebene_2A', documentToCopy], false);
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy], false);
     // set access right back to 'write'
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
