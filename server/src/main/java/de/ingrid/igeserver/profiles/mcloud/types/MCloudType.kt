@@ -22,7 +22,7 @@ class MCloudType : EntityType() {
     @Autowired
     lateinit var docService: DocumentService
 
-    override val jsonSchema = "/mcloud/schemes/mcloud.scheme.json"
+    override val jsonSchema = "/mcloud/schemes/mcloud.schema.json"
     
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)

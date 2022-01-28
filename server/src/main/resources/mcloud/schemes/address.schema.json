@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Address",
+  "definitions": {
+    "Address": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hasWritePermission": {
+          "type": "boolean"
+        },
+        "hasOnlySubtreeWritePermission": {
+          "type": "boolean"
+        },
+        "_version": {
+          "type": "integer"
+        },
+        "_created": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "_modified": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/AddressClass"
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contact"
+          },
+          "minItems": 1
+        },
+        "organization": {
+          "type": "string"
+        },
+        "_parent": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "organization",
+        "contact"
+      ],
+      "title": "Address"
+    },
+    "AddressClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "type": ["string", "null"]
+        },
+        "po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "street": {
+          "type": ["string", "null"]
+        },
+        "zip-code": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "zip-po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        }
+      },
+      "required": [
+      ],
+      "title": "AddressClass"
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "integer"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "connection",
+        "type"
+      ],
+      "title": "Contact"
+    }
+  }
+}

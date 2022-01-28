@@ -14,6 +14,8 @@ class McloudAddressType : EntityType() {
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
 
+    override val jsonSchema = "/mcloud/schemes/address.schema.json"
+
     companion object {
         @JvmStatic
         protected val CATEGORY = DocumentCategory.ADDRESS
@@ -22,7 +24,7 @@ class McloudAddressType : EntityType() {
         protected val TYPE = "McloudAddressDoc"
 
         @JvmStatic
-        protected val PROFILES = arrayOf<String>("mcloud")
+        protected val PROFILES = arrayOf("mcloud")
     }
 
     override val category: String
