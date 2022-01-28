@@ -1,9 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocumentUtils } from "../../services/document.utils";
+import { MatSelectionList } from "@angular/material/list";
 
 @UntilDestroy()
 @Component({
@@ -20,6 +28,8 @@ export class DocumentListItemComponent implements OnInit {
   @Input() showSelection = false;
   @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;
   @Output() select = new EventEmitter<DocumentAbstract>();
+
+  @ViewChild(MatSelectionList) list: MatSelectionList;
 
   currentSelection: Partial<DocumentAbstract>;
 
@@ -38,8 +48,11 @@ export class DocumentListItemComponent implements OnInit {
   }
 
   makeSelection(doc: DocumentAbstract) {
-    this.select.next(doc);
+    // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
+    // come back to this component (clicking on root folder)
+    if (this.list) this.list.deselectAll();
     this.currentSelection = doc;
+    this.select.next(doc);
   }
 
   getStateClass(doc: DocumentAbstract | TreeNode) {
