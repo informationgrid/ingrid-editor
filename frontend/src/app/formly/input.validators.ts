@@ -14,7 +14,6 @@ export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
   const connectionType = control.parent.value.type;
   // if connection type is email
   if (connectionType === "3") {
-    console.log(EmailValidator(control));
     return EmailValidator(control);
   }
 }

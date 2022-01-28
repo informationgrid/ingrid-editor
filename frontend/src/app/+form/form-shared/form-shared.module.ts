@@ -45,6 +45,8 @@ import { BreadcrumbComponent } from "../form-info/breadcrumb/breadcrumb.componen
 import { DestinationSelectionComponent } from "../dialogs/create/destination-selection/destination-selection.component";
 import { CreateNodeComponent } from "../dialogs/create/create-node.component";
 import { SharedPipesModule } from "../../directives/shared-pipes.module";
+import { DashboardDocsHeaderComponent } from "../form-dashboard/dashboard-docs-header/dashboard-docs-header.component";
+import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-address-header/dashboard-address-header.component";
 
 @NgModule({
   declarations: [
@@ -61,6 +63,8 @@ import { SharedPipesModule } from "../../directives/shared-pipes.module";
     DynamicFormComponent,
     SidebarComponent,
     FormDashboardComponent,
+    DashboardDocsHeaderComponent,
+    DashboardAddressHeaderComponent,
     FolderDashboardComponent,
   ],
   imports: [
@@ -110,6 +114,7 @@ import { SharedPipesModule } from "../../directives/shared-pipes.module";
     DestinationSelectionComponent,
     DynamicFormComponent,
     HeaderTitleRowComponent,
+    FormDashboardComponent,
   ],
 })
 export class FormSharedModule {}

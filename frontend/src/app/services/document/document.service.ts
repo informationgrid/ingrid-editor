@@ -98,16 +98,14 @@ export class DocumentService {
       .subscribe();
   }
 
-  findRecentAddresses(): Observable<DocumentAbstract[]> {
-    return this.http
-      .get<ServerSearchResult>(
-        `${this.configuration.backendUrl}datasets?query=&address=true&sort=modified&sortOrder=DESC&size=5`
-      )
+  findRecentAddresses(): void {
+    this.researchService
+      .search("", { type: "selectAddresses" }, null, "modified", "DESC")
       .pipe(
-        map((result) => this.mapSearchResults(result).hits)
-        // TODO create and use latestAddresses Sessionstore
-        // tap(docs => this.sessionStore.update({latestDocuments: docs.hits}))
-      );
+        map((result) => this.mapSearchResults(result)),
+        tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits }))
+      )
+      .subscribe();
   }
 
   getChildren(

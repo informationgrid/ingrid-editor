@@ -6,12 +6,11 @@ import { AngularSplitModule } from "angular-split";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FormlyModule } from "@ngx-formly/core";
 import { FlexModule } from "@angular/flex-layout";
-import { AddressDashboardComponent } from "./address-dashboard/address-dashboard.component";
 import { SharedModule } from "../shared/shared.module";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 
 @NgModule({
-  declarations: [AddressComponent, AddressDashboardComponent],
+  declarations: [AddressComponent],
   imports: [
     routing,
     CommonModule,

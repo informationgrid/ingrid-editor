@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { QueryEntity } from "@datorama/akita";
-import { TreeState, TreeStore } from "./tree.store";
+import { TreeStore } from "./tree.store";
 import { DocumentAbstract } from "../document/document.model";
 import { Observable } from "rxjs";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
+import { TreeState } from "./tree.state";
 
 @Injectable({
   providedIn: "root",

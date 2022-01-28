@@ -172,6 +172,8 @@ export class DynamicFormComponent
     );
 
     showFormDashboard$.subscribe(() => {
+      // when clicking on root node in breadcrumb we need to set opened document to null
+      // otherwise the last one will be loaded again
       this.documentService.updateOpenedDocumentInTreestore(null, this.address);
       this.router.navigate([this.address ? "/address" : "/form"]);
     });

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { EntityStore, StoreConfig } from "@datorama/akita";
-import { TreeState } from "../tree/tree.store";
+import { TreeState } from "../tree/tree.state";
 
 const initialState = {
   active: [],

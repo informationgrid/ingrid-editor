@@ -31,7 +31,7 @@ export abstract class Plugin {
   }
 
   unregister(): void {
-    console.log("Unregister: ", name);
+    console.log("Unregister: ", this.name);
     this.isActive = false;
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];

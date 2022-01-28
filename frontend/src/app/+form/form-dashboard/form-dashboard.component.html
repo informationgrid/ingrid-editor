@@ -1,40 +1,16 @@
-<h1 class="text-center">Daten</h1>
+<dashboard-address-header
+    [canCreateAddress]="canCreateAddress"
+    [canImport]="canImport"
+    *ngIf="address; else docsHeader"
+></dashboard-address-header>
+<ng-template #docsHeader>
+    <dashboard-docs-header
+        [canCreateDatasets]="canCreateDatasets"
+        [canImport]="canImport"
+    ></dashboard-docs-header>
+</ng-template>
 
-<div class="text-center shortcut">
-    <button
-        mat-button
-        (click)="createNewFolder()"
-        [disabled]="!canCreateDatasets"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="outline-create_new_folder-24px"
-        ></mat-icon>
-        <span>Neuer Ordner</span>
-    </button>
-    <button
-        mat-button
-        (click)="createNewDataset()"
-        [disabled]="!canCreateDatasets"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="Neuer-Datensatz"
-        ></mat-icon>
-        <span>Neuer Datensatz</span>
-    </button>
-    <button
-        mat-button
-        (click)="importDataset()"
-        disabled
-        [disabled]="!canImport"
-    >
-        <mat-icon>import_export</mat-icon>
-        <span>Datensatz Import</span>
-    </button>
-</div>
-
-<div *ngIf="(childDocs$ | async)?.length">
+<div *ngIf="(childDocs$ | async)?.length > 0">
     <ige-card-box fxFlex label="Zuletzt bearbeitet" data-cy="card-latest-docs">
         <ige-document-list-item
             [docs]="childDocs$"
@@ -48,10 +24,11 @@
     <div class="circle-wrapper">
         <mat-icon svgIcon="image-banner-dataset"></mat-icon>
     </div>
-    <h2>Kein Ordner oder Datensatz vorhanden</h2>
+    <h2>Kein Ordner oder {{ address ? "Adresse" : "Datensatz" }} vorhanden</h2>
     <p>
-        Legen Sie einen neuen Ordner oder Datensatz an oder importieren Sie
-        Datensätze.
+        Legen Sie einen neuen Ordner oder
+        {{ address ? "Adresse" : "Datensatz" }} an oder importieren Sie
+        {{ address ? "Adressen" : "Datensätze" }}.
     </p>
     <p>
         Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in

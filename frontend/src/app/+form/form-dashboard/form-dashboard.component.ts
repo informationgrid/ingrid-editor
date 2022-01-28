@@ -1,4 +1,4 @@
-import { Component, OnChanges } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { FormToolbarService } from "../form-shared/toolbar/form-toolbar.service";
 import { DocumentAbstract } from "../../store/document/document.model";
@@ -6,15 +6,23 @@ import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
+import { TreeQuery } from "../../store/tree/tree.query";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter } from "rxjs/operators";
+import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 
+@UntilDestroy()
 @Component({
   selector: "ige-form-dashboard",
   templateUrl: "./form-dashboard.component.html",
   styleUrls: ["./form-dashboard.component.scss"],
 })
-export class FormDashboardComponent implements OnChanges {
+export class FormDashboardComponent implements OnInit {
+  @Input() address = false;
+
   childDocs$: Observable<DocumentAbstract[]>;
   canCreateDatasets: boolean;
+  canCreateAddress: boolean;
   canImport: boolean;
 
   constructor(
@@ -22,30 +30,36 @@ export class FormDashboardComponent implements OnChanges {
     private formToolbarService: FormToolbarService,
     private router: Router,
     private sessionQuery: SessionQuery,
-    private docService: DocumentService
+    private docService: DocumentService,
+    private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery
   ) {
     // TODO switch to user specific query
-    this.childDocs$ = this.sessionQuery.latestDocuments$;
-    this.docService.findRecent();
     this.canCreateDatasets = configService.hasPermission("can_create_dataset");
+    this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canImport = configService.hasPermission("can_import");
   }
 
-  ngOnChanges() {
-    this.docService.findRecent();
-  }
+  ngOnInit(): void {
+    const query = this.address ? this.addressTreeQuery : this.treeQuery;
+    this.childDocs$ = this.address
+      ? this.sessionQuery.latestAddresses$
+      : this.sessionQuery.latestDocuments$;
 
-  createNewFolder() {
-    this.formToolbarService.toolbarEvent$.next("CREATE_FOLDER");
+    query.openedDocument$
+      .pipe(
+        untilDestroyed(this),
+        filter((doc) => doc === null)
+      )
+      .subscribe(() => {
+        this.address
+          ? this.docService.findRecentAddresses()
+          : this.docService.findRecent();
+      });
   }
-
-  createNewDataset() {
-    this.formToolbarService.toolbarEvent$.next("NEW_DOC");
-  }
-
-  importDataset() {}
 
   openDocument(uuid: string) {
-    this.router.navigate(["/form", { id: uuid }]);
+    const target = this.address ? "/address" : "/form";
+    this.router.navigate([target, { id: uuid }]);
   }
 }

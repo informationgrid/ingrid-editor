@@ -9,6 +9,7 @@ export class SessionQuery extends Query<SessionState> {
   sidebarWidth$ = this.select((state) => state.ui.sidebarWidth);
   userTableWidth$ = this.select((state) => state.ui.userTableWidth);
   latestDocuments$ = this.select((state) => state.latestDocuments);
+  latestAddresses$ = this.select((state) => state.latestAddresses);
   recentAddresses$ = this.select((state) => state.recentAddresses);
   showJSONView$ = this.select((state) => state.ui.showJSONView);
   selectServerValidationErrors$ = this.select(

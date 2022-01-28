@@ -3,9 +3,9 @@ import { QueryEntity } from "@datorama/akita";
 import { AddressTreeStore } from "./address-tree.store";
 import { DocumentAbstract } from "../document/document.model";
 import { Observable } from "rxjs";
-import { TreeState } from "../tree/tree.store";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
+import { TreeState } from "../tree/tree.state";
 
 @Injectable({ providedIn: "root" })
 export class AddressTreeQuery extends QueryEntity<TreeState> {
