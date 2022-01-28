@@ -6,18 +6,18 @@ ige-session-timeout-info {
 
 .header-row {
   color: $ige-secondary;
+
+  &:hover ige-session-timeout-info,
+  ige-session-timeout-info.show {
+    display: inline-block;
+  }
 }
 
 .center-header {
   height: inherit;
   display: flex;
   align-items: center;
-  justify-content: end;
-
-  &:hover ige-session-timeout-info,
-  ige-session-timeout-info.show {
-    display: inline-block;
-  }
+  justify-content: flex-end;
 }
 
 .header-info {
