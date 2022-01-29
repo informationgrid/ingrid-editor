@@ -94,7 +94,7 @@ describe('Meta data administrator without groups', () => {
 
     // Go to address section and make sure no single address is displayed
     AddressPage.visit();
-    cy.get('ige-address-dashboard').contains('Kein Ordner oder Adresse vorhanden');
+    cy.get('ige-form-dashboard').contains('Kein Ordner oder Adresse vorhanden');
     // Also: make sure no address is displayed in the address list
     cy.get('ige-tree').contains('Leer');
   });

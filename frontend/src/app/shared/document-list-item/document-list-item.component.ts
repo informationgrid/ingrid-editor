@@ -26,6 +26,8 @@ export class DocumentListItemComponent implements OnInit {
   @Input() hideDate = true;
   @Input() hideDivider = false;
   @Input() showSelection = false;
+  // this is only needed to prevent expression has changed exception and might be removed later
+  @Input() removeSelectionAfter = false;
   @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;
   @Output() select = new EventEmitter<DocumentAbstract>();
 
@@ -50,7 +52,7 @@ export class DocumentListItemComponent implements OnInit {
   makeSelection(doc: DocumentAbstract) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
-    if (this.list) this.list.deselectAll();
+    if (this.removeSelectionAfter && this.list) this.list.deselectAll();
     this.currentSelection = doc;
     this.select.next(doc);
   }

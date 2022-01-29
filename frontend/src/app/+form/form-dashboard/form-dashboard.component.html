@@ -15,6 +15,7 @@
         <ige-document-list-item
             [docs]="childDocs$"
             [hideDate]="false"
+            [removeSelectionAfter]="true"
             (select)="openDocument($event._uuid)"
         ></ige-document-list-item>
     </ige-card-box>
