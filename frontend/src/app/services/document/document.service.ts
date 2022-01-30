@@ -80,10 +80,11 @@ export class DocumentService {
 
   find(query: string, size = 10, address = false): Observable<SearchResult> {
     // TODO: use general sort filter
-    const encodedQuery = encodeURI(query).replace(/#/g, "%23");
-    return this.http
-      .get<ServerSearchResult>(
-        `${this.configuration.backendUrl}datasets?query=${encodedQuery}&sort=title&size=${size}&address=${address}`
+    return this.researchService
+      .search(
+        query,
+        { type: address ? "selectAddresses" : "selectDocuments" },
+        null
       )
       .pipe(map((result) => this.mapSearchResults(result)));
   }
