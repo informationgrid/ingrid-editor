@@ -23,7 +23,8 @@ class CatalogApiController : CatalogApi {
 
     override fun catalogs(): ResponseEntity<List<Catalog>> {
         val catalogs = catalogService.getCatalogs()
-            .map { catalog -> addStatisticData(catalog) }
+        // FIXME: function takes too long when there is a lot of documents (e.g. 10000)
+//            .map { catalog -> addStatisticData(catalog) }
 
         return ResponseEntity.ok().body(catalogs)
     }
