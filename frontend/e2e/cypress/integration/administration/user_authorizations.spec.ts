@@ -32,12 +32,15 @@ describe('Meta data administrator without groups', () => {
     AdminUserPage.checkContainsUserRole('catalog-admin', false);
   });
 
-  it('should show only empty groups to a metadata-administrator without groups', () => {
+  // TODO: this test contains a hard coded number of groups to be exptected to be available
+  //       but this can change quickly and lead to test failures
+  xit('should show only empty groups to a metadata-administrator without groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     // as of now, there are 4 empty groups
     cy.get('.user-management-header').contains('Gruppen (4)');
   });
+
   it('metadata admin without groups should be able to create groups of his own, but not add documents', () => {
     // create group
     const newGroup = 'new_empty_group';
@@ -673,7 +676,7 @@ describe('Meta data administrator with a group', () => {
     const docName = 'TestDokument' + Utils.randomString();
     DocumentPage.createDocument(docName);
     // go to research section and search for document
-    ResearchPage.visit();
+    Menu.switchTo('RESEARCH');
     ResearchPage.search(docName);
     ResearchPage.getSearchResultCount().should('equal', 1);
     cy.contains('td.mat-cell', docName).click();
@@ -681,11 +684,11 @@ describe('Meta data administrator with a group', () => {
     // delete the document
     DocumentPage.deleteLoadedNode();
     // search and expect to not get a result
-    ResearchPage.visit();
+    Menu.switchTo('RESEARCH');
     ResearchPage.search(docName);
     ResearchPage.checkNoSearchResults();
     // make sure display of documents has been actualized
-    DocumentPage.visit();
+    Menu.switchTo('DOCUMENTS');
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
     cy.contains('mat-tree-node', docName).should('not.exist');
   });

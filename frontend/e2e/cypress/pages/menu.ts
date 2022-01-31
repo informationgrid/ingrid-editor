@@ -1,9 +1,12 @@
+import { ResearchPage } from './research.page';
+
 export type Page = 'DASHBOARD' | 'DOCUMENTS' | 'ADDRESSES' | 'RESEARCH' | 'REPORTS' | 'USERS' | 'IMPORT' | 'CATALOG';
 
 export class Menu {
   static switchTo(page: Page) {
     const routerLink = Menu.mapPageToRouterLink(page);
     cy.get(`[href="${routerLink}"]`).click();
+    Menu.waitForPage(page);
   }
 
   private static mapPageToRouterLink(page: Page) {
@@ -24,6 +27,29 @@ export class Menu {
         return '/importExport';
       case 'CATALOG':
         return '/catalogs';
+    }
+  }
+
+  private static waitForPage(page: Page) {
+    switch (page) {
+      case 'DASHBOARD':
+        cy.get('.welcome').should('contain', 'Willkommen');
+        return;
+      case 'DOCUMENTS':
+        return;
+      case 'ADDRESSES':
+        return;
+      case 'RESEARCH':
+        ResearchPage.waitForSearch();
+        return;
+      case 'REPORTS':
+        return;
+      case 'USERS':
+        return;
+      case 'IMPORT':
+        return;
+      case 'CATALOG':
+        return;
     }
   }
 }

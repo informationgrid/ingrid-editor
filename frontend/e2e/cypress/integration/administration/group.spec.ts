@@ -129,10 +129,10 @@ describe('Group', () => {
   });
 
   it('should delete a group and all user connections must be deleted automatically', () => {
-    const groupName = 'neue_Gruppe';
+    const groupName = 'Gruppe zum Löschen' + Utils.randomString();
     const username = 'Katalog Admin1';
 
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.addNewGroup(groupName);
 
     // go to a user and connect the created group
     AdminGroupPage.goToTabmenu(UserAndRights.User);
