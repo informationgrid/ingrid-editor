@@ -46,7 +46,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   displayedColumns: string[];
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
   isLoading = true;
 
@@ -88,7 +88,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       const pageNumber = Math.max(
         0,
         Math.floor(
-          this.dataSource.data.findIndex((d) => d.id === id) /
+          this.dataSource.data.findIndex((d) => d.login === id) /
             this.paginator.pageSize
         )
       );
