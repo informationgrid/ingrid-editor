@@ -77,7 +77,29 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       ? ["role-icon", "firstName"]
       : ["role-icon", "login", "firstName", "organisation"];
 
-    this.selectedUser?.subscribe((user) => this.setSelectionToUser(user));
+    this.selectedUser?.subscribe((user) => {
+      this.setSelectionToUser(user);
+      this.updatePaginator(user?.login);
+    });
+  }
+
+  private updatePaginator(id) {
+    if (this.paginator) {
+      const pageNumber = Math.max(
+        0,
+        Math.floor(
+          this.dataSource.data.findIndex((d) => d.id === id) /
+            this.paginator.pageSize
+        )
+      );
+
+      this.paginator.pageIndex = pageNumber;
+      this.paginator.page.next({
+        pageIndex: pageNumber,
+        pageSize: this.paginator.pageSize,
+        length: this.paginator.length,
+      });
+    }
   }
 
   private setSelectionToUser(user: User) {

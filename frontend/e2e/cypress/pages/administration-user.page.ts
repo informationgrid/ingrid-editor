@@ -170,9 +170,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static selectAssociatedUser(name: string) {
-    cy.intercept('GET', /api\/groups/).as('openUser');
     cy.contains('user-table tbody tr', name).click();
-    cy.wait('@openUser');
   }
 
   static changeManager(name: string) {

@@ -69,13 +69,36 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.selectedGroup
       .pipe(filter((groupId) => this.selection.selected[0]?.id !== groupId))
-      .subscribe((groupId) => this.setSelectionToGroup(groupId));
+      .subscribe((groupId) => {
+        this.setSelectionToGroup(groupId);
+        this.updatePaginator(groupId);
+      });
   }
 
   private setSelectionToGroup(groupId: number) {
     this.selection.select(
       this.dataSource.data.find((group) => group.id == groupId)
     );
+  }
+
+  // TODO: refactor to use same generic function in user and groups table
+  private updatePaginator(id) {
+    if (this.paginator) {
+      const pageNumber = Math.max(
+        0,
+        Math.floor(
+          this.dataSource.data.findIndex((d) => d.id === id) /
+            this.paginator.pageSize
+        )
+      );
+
+      this.paginator.pageIndex = pageNumber;
+      this.paginator.page.next({
+        pageIndex: pageNumber,
+        pageSize: this.paginator.pageSize,
+        length: this.paginator.length,
+      });
+    }
   }
 
   ngAfterViewInit() {

@@ -124,7 +124,7 @@ export class AdminGroupPage extends BasePage {
       .click({ force: true });
     cy.contains('button', 'Löschen').click();
     cy.get('mat-dialog-content')
-      .contains('Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von einem Nutzer verwendet:')
+      .contains(`Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Nutzer verwendet:`)
       .should('be.visible');
     cy.intercept('DELETE', '/api/groups/**').as('deleteRequest');
     cy.contains('button', 'Gruppe löschen').click();
