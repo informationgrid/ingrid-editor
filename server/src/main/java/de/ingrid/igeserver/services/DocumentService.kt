@@ -20,6 +20,7 @@ import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -635,7 +636,7 @@ class DocumentService @Autowired constructor(
             val refType = getDocumentType(docType)
 
             try {
-                refType.updateReferences(docData, onlyPublished)
+                refType.updateReferences(docData, UpdateReferenceOptions(onlyPublished))
             } catch (ex: AccessDeniedException) {
                 throw ForbiddenException.withAccessRights("No access to referenced dataset")
             }
@@ -644,6 +645,7 @@ class DocumentService @Autowired constructor(
         return docData
     }
 
+    @Deprecated("Search is really slow with lot of data", ReplaceWith("ResearchService"))
     fun find(
         catalogId: String,
         category: String = "data",

@@ -67,7 +67,7 @@ class ResearchService {
         val sql = createQuery(catalogId, query, groupIds)
         val parameters = getParameters(query)
 
-        val result = sendQuery(sql, parameters)
+        val result = sendQuery(sql, parameters, query.pagination)
         val map = filterAndMapResult(result, isAdmin, principal)
 
         return ResearchResponse(map.size, map)
@@ -100,7 +100,7 @@ class ResearchService {
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
-                ORDER BY document1.${query.orderByField} ${query.orderByDirection};
+                ORDER BY document1.${query.orderByField} ${query.orderByDirection}
             """
     }
 
@@ -155,10 +155,12 @@ class ResearchService {
         val filterString: List<String?>? = if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
             boolFilter.clauses
                 .mapNotNull { convertQuery(it) }
-        } else {
+        } else if (boolFilter.isFacet) {
             boolFilter.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
                 ?.map { it?.filter(boolFilter.parameter) }
+        } else {
+            boolFilter.value
         }
 
         return when (filterString?.size) {
@@ -178,7 +180,7 @@ class ResearchService {
             """.trimIndent()
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>): List<Array<out Any?>> {
+    private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
         for ((index, it) in parameter.withIndex()) {
@@ -198,6 +200,8 @@ class ResearchService {
             .addScalar("published")
             .addScalar("category")
             .addScalar("wrapperid")
+            .setFirstResult((paging.page - 1) * paging.pageSize)
+            .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
     }
 
@@ -238,7 +242,7 @@ class ResearchService {
         if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value
         else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
         else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
-    
+
     fun querySql(principal: Principal, catalogId: String, sqlQuery: String): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
@@ -247,8 +251,8 @@ class ResearchService {
             assertValidQuery(sqlQuery)
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
-            
-            val result = sendQuery(finalQuery, emptyList())
+
+            val result = sendQuery(finalQuery, emptyList(), ResearchPaging())
             val map = filterAndMapResult(result, isAdmin, principal)
 
             return ResearchResponse(map.size, map)
@@ -265,7 +269,7 @@ class ResearchService {
         if (fromIndex == -1) {
             throw ClientException.withReason("Query must contain 'FROM' statement")
         }
-        
+
         // TODO: UPDATE AND DELETE IS NOT ALLOWED!
     }
 
