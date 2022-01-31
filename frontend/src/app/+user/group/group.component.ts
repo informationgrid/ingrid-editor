@@ -6,12 +6,11 @@ import { Observable, of } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
-import { map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
@@ -43,8 +42,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   form: FormGroup;
 
-  // TODO: what is the use of this form control?
-  selectedGroupForm = new FormControl();
   selectedGroup: FrontendGroup;
   isLoading = false;
   showMore = false;
@@ -155,7 +152,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   async deleteGroup(id: number) {
     this.groupService.getUsersOfGroup(id).subscribe((users) => {
-      const data = GroupComponent.createDeleteDialogData(users);
+      const group = this._groups.find((group) => group.id === id);
+      const data = GroupComponent.createDeleteDialogData(users, group);
 
       this.dialog
         .open(ConfirmDialogComponent, {
@@ -164,9 +162,12 @@ export class GroupComponent implements OnInit, AfterViewInit {
         .afterClosed()
         .subscribe((result) => {
           if (result) {
-            this.groupService.deleteGroup(id).subscribe(() => {
-              this.groupService.setActive(null);
-            });
+            this.groupService
+              .deleteGroup(id)
+              .pipe(filter(() => id === this.groupQuery.getActiveId()))
+              .subscribe(() => {
+                this.groupService.setActive(null);
+              });
           }
         });
     });
@@ -206,7 +207,10 @@ export class GroupComponent implements OnInit, AfterViewInit {
     };
   }
 
-  private static createDeleteDialogData(users: User[]): ConfirmDialogData {
+  private static createDeleteDialogData(
+    users: User[],
+    group: Group
+  ): ConfirmDialogData {
     return {
       title: "Gruppe löschen",
       buttons: [
@@ -222,10 +226,12 @@ export class GroupComponent implements OnInit, AfterViewInit {
       ],
       message:
         users.length > 0
-          ? `Möchten Sie die Gruppe wirklich löschen? Die Gruppe wird von ${
+          ? `Möchten Sie die Gruppe "${
+              group.name
+            }" wirklich löschen? Die Gruppe wird von ${
               users.length === 1 ? "einem Nutzer" : users.length + " Nutzern"
             } verwendet:`
-          : "Möchten Sie die Gruppe wirklich löschen?",
+          : `Möchten Sie die Gruppe "${group.name}" wirklich löschen?`,
       list: users.map((user) => user.login),
     };
   }

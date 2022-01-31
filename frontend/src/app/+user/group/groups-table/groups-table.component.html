@@ -2,13 +2,7 @@
     <!-- Role Column -->
     <ng-container matColumnDef="role-icon" class="thin-column">
         <th class="thin-column" mat-header-cell *matHeaderCellDef>Rolle</th>
-        <td
-            class="thin-column"
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td class="thin-column" mat-cell *matCellDef="let element">
             <mat-icon [svgIcon]="'group'"></mat-icon>
         </td>
     </ng-container>
@@ -18,12 +12,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>
             Bezeichnung / Beschreibung
         </th>
-        <td
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell *matCellDef="let element" (click)="select(element)">
             <div>{{ element.name }}</div>
             <div class="td-subtitle">{{ element.description }}</div>
         </td>
@@ -32,13 +21,7 @@
     <!-- Settings -->
     <ng-container matColumnDef="settings">
         <th mat-header-cell *matHeaderCellDef class="thin-column"></th>
-        <td
-            mat-cell
-            class="thin-column"
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell class="thin-column" *matCellDef="let element">
             <button
                 mat-icon-button
                 class="menu dark menu-button"
@@ -56,7 +39,12 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.selected]="selection.isSelected(row)"
+        (click)="select(row)"
+    ></tr>
 </table>
 <div *ngIf="isLoading" class="table-spinner">
     <mat-spinner> </mat-spinner>
@@ -64,7 +52,6 @@
 <mat-paginator
     [pageSize]="10"
     [hidePageSize]="true"
-    matPaginator
     showFirstLastButtons
 ></mat-paginator>
 <!-- Legend is removed as only one icon is used for now-->

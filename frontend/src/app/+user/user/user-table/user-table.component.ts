@@ -21,10 +21,7 @@ import { UserService } from "../../../services/user/user.service";
   styleUrls: ["../../user.styles.scss"],
 })
 export class UserTableComponent implements OnInit, AfterViewInit {
-  isLoading = true;
-
-  @Input()
-  simple = false;
+  @Input() simple = false;
 
   @Input()
   set users(val: User[]) {
@@ -42,11 +39,16 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   }
 
   @Input() selectedUser: Subject<User>;
+
+  @Output() onUserSelect = new EventEmitter<User>();
+
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   displayedColumns: string[];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<User>;
-
-  @Output() onUserSelect = new EventEmitter<User>();
+  isLoading = true;
 
   constructor(public userService: UserService) {
     const initialSelection = [];
@@ -77,6 +79,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.selectedUser?.subscribe((user) => {
       this.setSelectionToUser(user);
 
+      // TODO: adapt to groups table!
       if (this.paginator) {
         const pageNumber = Math.max(
           0,
@@ -101,9 +104,6 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       this.dataSource.data.find((d) => d.login == user?.login)
     );
   }
-
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

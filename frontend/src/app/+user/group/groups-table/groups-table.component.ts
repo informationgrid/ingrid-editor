@@ -13,6 +13,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
 import { Observable } from "rxjs";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "groups-table",
@@ -37,13 +38,16 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
   @Input() selectedGroup: Observable<number>;
   @Input() userGroupNames: string[];
-  displayedColumns: string[] = ["role-icon", "name", "settings"];
-  dataSource = new MatTableDataSource([]);
-  selection: SelectionModel<Group>;
 
   @Output() onGroupSelect = new EventEmitter<Group>();
   @Output() onDelete = new EventEmitter<number>();
 
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  displayedColumns: string[] = ["role-icon", "name", "settings"];
+  dataSource = new MatTableDataSource([]);
+  selection: SelectionModel<Group>;
   isLoading = true;
 
   constructor() {
@@ -63,40 +67,23 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.selectedGroup.subscribe((groupId) => {
-      this.setSelectionToGroup(groupId);
-      if (this.paginator) {
-        const pageNumber = Math.max(
-          0,
-          Math.floor(
-            this.dataSource.data.findIndex((d) => d.id === groupId) /
-              this.paginator.pageSize
-          )
-        );
-
-        this.paginator.pageIndex = pageNumber;
-        this.paginator.page.next({
-          pageIndex: pageNumber,
-          pageSize: this.paginator.pageSize,
-          length: this.paginator.length,
-        });
-      }
-    });
+    this.selectedGroup
+      .pipe(filter((groupId) => this.selection.selected[0]?.id !== groupId))
+      .subscribe((groupId) => this.setSelectionToGroup(groupId));
   }
 
   private setSelectionToGroup(groupId: number) {
-    this.selection.select(this.dataSource.data.find((d) => d.id == groupId));
+    this.selection.select(
+      this.dataSource.data.find((group) => group.id == groupId)
+    );
   }
-
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
 
-  trySelect(element) {
+  select(element) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
   }
