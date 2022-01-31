@@ -8,6 +8,7 @@ import { filter } from "rxjs/operators";
 @Injectable()
 export class FormPluginsService {
   plugins: Plugin[] = [];
+  private registered = false;
 
   constructor(
     private behaviourService: BehaviourService,
@@ -26,6 +27,8 @@ export class FormPluginsService {
   }
 
   private init(forAddress: boolean) {
+    if (this.registered) return;
+
     this.behaviourService.applyActiveStates(this.autoPlugins);
     this.plugins = [...this.autoPlugins];
 
@@ -34,6 +37,8 @@ export class FormPluginsService {
     }
 
     this.plugins.filter((p) => p.isActive).forEach((p) => p.register());
+
+    this.registered = true;
   }
 
   // on destroy must be called manually from provided component since it may not be
@@ -44,5 +49,6 @@ export class FormPluginsService {
 
   private unregisterAll() {
     this.plugins.forEach((p) => p.unregister());
+    this.registered = false;
   }
 }

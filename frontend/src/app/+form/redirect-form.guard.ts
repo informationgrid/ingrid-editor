@@ -32,7 +32,8 @@ export class RedirectFormGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (state.url === "/form") {
+    if (state.url.indexOf("/form") === 0) {
+      // in case we come from a different page
       if (this.router.url.indexOf("/form") !== 0) {
         this.behaviourService.registerState$.next({
           register: true,
@@ -41,7 +42,8 @@ export class RedirectFormGuard implements CanActivate {
       }
       const previousOpenedDocId = this.getOpenedDocumentId(false);
       return this.handleNavigation(route, previousOpenedDocId, false);
-    } else if (state.url === "/address") {
+    } else if (state.url.indexOf("/address") === 0) {
+      // in case we come from a different page
       if (this.router.url.indexOf("/address") !== 0) {
         this.behaviourService.registerState$.next({
           register: true,
@@ -65,7 +67,7 @@ export class RedirectFormGuard implements CanActivate {
     uuid: string,
     forAddress: boolean
   ): boolean {
-    if (route.params.id !== uuid) {
+    if (uuid && route.params.id !== uuid) {
       this.router.navigate([forAddress ? "/address" : "/form", { id: uuid }]);
       this.documentService.reload$.next({
         uuid: uuid,
