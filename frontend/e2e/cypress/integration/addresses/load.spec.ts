@@ -1,5 +1,6 @@
 import { DocumentPage, SEPARATOR } from '../../pages/document.page';
 import { AddressPage, ROOT } from '../../pages/address.page';
+import { Tree } from '../../pages/tree.partial';
 
 describe('Load addresses', () => {
   beforeEach(() => {
@@ -43,8 +44,7 @@ describe('Load addresses', () => {
 
   it('should open the previously selected address when going to another page and returning', () => {
     const addressTitle = 'Testorganisation';
-    cy.get('#sidebar').findByText('Testadressen').click();
-    cy.get('#sidebar').findByText(addressTitle).click();
+    Tree.openNode(['Testadressen', addressTitle]);
     cy.get(AddressPage.title).should('have.text', addressTitle);
     cy.get(AddressPage.Sidemenu.Uebersicht).click();
     cy.get(AddressPage.Sidemenu.Daten).click();

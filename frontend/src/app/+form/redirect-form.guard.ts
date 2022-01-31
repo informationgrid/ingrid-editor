@@ -40,8 +40,10 @@ export class RedirectFormGuard implements CanActivate {
           address: false,
         });
       }
-      const previousOpenedDocId = this.getOpenedDocumentId(false);
-      return this.handleNavigation(route, previousOpenedDocId, false);
+      if (!route.params.id) {
+        const previousOpenedDocId = this.getOpenedDocumentId(false);
+        return this.handleNavigation(route, previousOpenedDocId, false);
+      }
     } else if (state.url.indexOf("/address") === 0) {
       // in case we come from a different page
       if (this.router.url.indexOf("/address") !== 0) {
@@ -50,8 +52,10 @@ export class RedirectFormGuard implements CanActivate {
           address: true,
         });
       }
-      const previousOpenedDocId = this.getOpenedDocumentId(true);
-      return this.handleNavigation(route, previousOpenedDocId, true);
+      if (!route.params.id) {
+        const previousOpenedDocId = this.getOpenedDocumentId(true);
+        return this.handleNavigation(route, previousOpenedDocId, true);
+      }
     }
 
     return true;
