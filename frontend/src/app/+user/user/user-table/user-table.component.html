@@ -2,13 +2,7 @@
     <!-- Role Column -->
     <ng-container matColumnDef="role-icon" class="thin-column">
         <th class="thin-column" mat-header-cell *matHeaderCellDef>Rolle</th>
-        <td
-            class="thin-column"
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td class="thin-column" mat-cell *matCellDef="let element">
             <mat-icon [svgIcon]="userService.roleIcon[element.role]"></mat-icon>
         </td>
     </ng-container>
@@ -16,12 +10,7 @@
     <!-- Login -->
     <ng-container matColumnDef="login">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Login</th>
-        <td
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell *matCellDef="let element">
             {{ element.login }}
         </td>
     </ng-container>
@@ -29,12 +18,7 @@
     <!-- Name/email Column -->
     <ng-container matColumnDef="firstName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name / E-Mail</th>
-        <td
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell *matCellDef="let element">
             <div>{{ element.firstName + " " + element.lastName }}</div>
             <div class="td-subtitle">{{ element.email }}</div>
         </td>
@@ -43,12 +27,7 @@
     <!-- Organisation -->
     <ng-container matColumnDef="organisation">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Organisation</th>
-        <td
-            mat-cell
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell *matCellDef="let element">
             {{ element.organisation }}
         </td>
     </ng-container>
@@ -60,13 +39,7 @@
                 <mat-icon>settings</mat-icon>
             </button>
         </th>
-        <td
-            mat-cell
-            class="thin-column"
-            *matCellDef="let element"
-            (click)="trySelect(element)"
-            [class.selected]="selection.isSelected(element)"
-        >
+        <td mat-cell class="thin-column" *matCellDef="let element">
             <button
                 mat-icon-button
                 class="menu dark menu-button"
@@ -83,7 +56,12 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="select(row)"
+        [class.selected]="selection.isSelected(row)"
+    ></tr>
 </table>
 <div *ngIf="isLoading" class="table-spinner">
     <mat-spinner> </mat-spinner>
@@ -92,7 +70,6 @@
     [class.hide]="simple && dataSource.data?.length < 10"
     [pageSize]="10"
     [hidePageSize]="true"
-    matPaginator
     showFirstLastButtons
 ></mat-paginator>
 <div *ngIf="!simple" class="legend">

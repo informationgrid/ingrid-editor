@@ -76,27 +76,8 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.displayedColumns = this.simple
       ? ["role-icon", "firstName"]
       : ["role-icon", "login", "firstName", "organisation"];
-    this.selectedUser?.subscribe((user) => {
-      this.setSelectionToUser(user);
 
-      // TODO: adapt to groups table!
-      if (this.paginator) {
-        const pageNumber = Math.max(
-          0,
-          Math.floor(
-            this.dataSource.data.findIndex((d) => d.login === user?.login) /
-              this.paginator.pageSize
-          )
-        );
-
-        this.paginator.pageIndex = pageNumber;
-        this.paginator.page.next({
-          pageIndex: pageNumber,
-          pageSize: this.paginator.pageSize,
-          length: this.paginator.length,
-        });
-      }
-    });
+    this.selectedUser?.subscribe((user) => this.setSelectionToUser(user));
   }
 
   private setSelectionToUser(user: User) {
@@ -110,7 +91,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  trySelect(element) {
+  select(element) {
     this.selection.select(element);
     this.onUserSelect.emit(element);
   }
