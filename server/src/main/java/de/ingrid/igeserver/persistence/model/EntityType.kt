@@ -1,7 +1,14 @@
 package de.ingrid.igeserver.persistence.model
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import org.springframework.beans.factory.annotation.Autowired
+
+
+
 
 /**
  * Base interface for all entity types
@@ -11,6 +18,10 @@ abstract class EntityType {
     companion object {
         private val CATEGORY = DocumentCategory.DATA
     }
+    
+    @Autowired
+    lateinit var documentService: DocumentService
+
 
     /**
      * Category of the entity type
@@ -72,7 +83,7 @@ abstract class EntityType {
     /**
      * Replace document/address references with their latest version
      */
-    open fun updateReferences(doc: Document, onlyPublished: Boolean) {}
+    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
 
 
     /**
@@ -81,4 +92,20 @@ abstract class EntityType {
     open fun getUploads(doc: Document): List<String> {
         return emptyList()
     }
+    
+    fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+        val latestDocument = documentService.getLatestDocument(wrapper, options.onlyPublished, catalogId = catalogId)
+        val latestDocumentJson = documentService.convertToJsonNode(latestDocument)
+
+        if (options.forExport) {
+            documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
+        }
+        return latestDocumentJson
+    }
 }
+
+data class UpdateReferenceOptions(
+    val onlyPublished: Boolean = false,
+    val forExport: Boolean = false
+)

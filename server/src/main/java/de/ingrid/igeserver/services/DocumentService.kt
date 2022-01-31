@@ -184,6 +184,18 @@ class DocumentService @Autowired constructor(
         return prepareDocument(doc, wrapper.type!!, onlyPublished, resolveLinks)
     }
 
+    // TODO: consolidate function with above
+    fun getLatestDocument(
+        wrapper: DocumentWrapper,
+        options: UpdateReferenceOptions,
+        catalogId: String? = null
+    ): Document {
+
+        val doc = getLatestDocumentVersion(wrapper, options.onlyPublished, catalogId)
+
+        return prepareDocument(doc, wrapper.type!!, options.onlyPublished, options.forExport, options)
+    }
+
     fun getDocumentType(docType: String): EntityType {
 
         return checkNotNull(documentTypes.find { it.className == docType })
@@ -623,7 +635,8 @@ class DocumentService @Autowired constructor(
         docData: Document,
         docType: String,
         onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true
+        resolveLinks: Boolean = true,
+        options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
     ): Document {
         // set empty parent fields explicitly to null
         val parent = docData.data.has(FIELD_PARENT)
@@ -636,7 +649,7 @@ class DocumentService @Autowired constructor(
             val refType = getDocumentType(docType)
 
             try {
-                refType.updateReferences(docData, UpdateReferenceOptions(onlyPublished))
+                refType.updateReferences(docData, options)
             } catch (ex: AccessDeniedException) {
                 throw ForbiddenException.withAccessRights("No access to referenced dataset")
             }
