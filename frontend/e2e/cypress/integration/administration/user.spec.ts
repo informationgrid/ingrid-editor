@@ -301,7 +301,7 @@ describe('User', () => {
     // meta-admin
     AdminUserPage.selectUser(username);
     // check user was selected
-    cy.get('td.selected').contains(username);
+    cy.get('tr.selected').contains(username);
     // check user informations were loaded
     cy.get('#formUser').should('be.visible');
     // check user role
@@ -310,7 +310,7 @@ describe('User', () => {
     //catalog-admin
     AdminUserPage.selectUser(username2);
     // check user was selected
-    cy.get('td.selected').contains(username2);
+    cy.get('tr.selected').contains(username2);
     // check user informations were loaded
     cy.get('#formUser').should('be.visible');
     // check user role
@@ -319,7 +319,7 @@ describe('User', () => {
     //author
     AdminUserPage.selectUser(username3);
     // check user was selected
-    cy.contains('td.selected', username3);
+    cy.contains('tr.selected', username3);
     // check user informations were loaded
     cy.get('#formUser').should('be.visible');
     // check user role
