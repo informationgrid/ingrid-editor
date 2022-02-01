@@ -811,21 +811,15 @@ describe('Catalogue admin', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('leere_Gruppe');
-    cy.get('.user-title').contains('leere_Gruppe');
     AdminGroupPage.openAddDocumentsDialog('Daten');
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], true);
-    cy.get('mat-dialog-actions button').eq(1).click();
-    AdminGroupPage.saveGroup();
+    Tree.openNodeInsideDialog(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
+    cy.get('[data-cy=permission-dialog-add]').click();
 
     // add folder higher up in the hierarchy
     AdminGroupPage.openAddDocumentsDialog('Daten');
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A'], true);
-    cy.get('mat-dialog-actions button').eq(1).click();
+    Tree.openNodeInsideDialog(['Neue Testdokumente', 'Ordner_Ebene_2A']);
+    cy.get('[data-cy=permission-dialog-add]').click();
     cy.contains('mat-dialog-container', 'Achtung! Überschreibt folgende Unterrechte:');
-    // close warning box
-    cy.get('mat-dialog-actions button').eq(2).click();
-    // close box for adding documents
-    cy.contains('mat-dialog-actions button', 'Abbrechen').click;
   });
 
   it('should show all the groups to a catalogue admin (#2670)', () => {

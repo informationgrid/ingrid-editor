@@ -64,6 +64,13 @@ export class Tree {
     });
   }
 
+  static openNodeInsideDialog(targetNodePath: string[]) {
+    cy.log('Open node in dialog: ' + targetNodePath.join(' -> '));
+    targetNodePath.forEach((node, index) => {
+      Tree.selectNodeWithTitle(node, true, true, index + 1, index === targetNodePath.length - 1, false);
+    });
+  }
+
   private static selectNodeWithTitle(
     nodeTitle: string,
     isInsideDialog = false,

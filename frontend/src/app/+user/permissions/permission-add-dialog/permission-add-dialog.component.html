@@ -18,11 +18,18 @@
     ></ige-tree>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close cdkFocusInitial color="primary">
+    <button
+        mat-button
+        mat-dialog-close
+        cdkFocusInitial
+        color="primary"
+        data-cy="permission-dialog-cancel"
+    >
         Abbrechen
     </button>
     <div fxFlex></div>
     <button
+        data-cy="permission-dialog-add"
         mat-flat-button
         color="primary"
         [disabled]="shouldDisableAddButton()"
