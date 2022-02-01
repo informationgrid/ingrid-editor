@@ -3,6 +3,7 @@ package de.ingrid.igeserver.utils
 import org.keycloak.KeycloakPrincipal
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.context.annotation.Profile
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -22,9 +23,12 @@ class KeycloakAuthUtils : AuthUtils {
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
-        principal as KeycloakAuthenticationToken
-        // check in keycloak role (which contains prefix "ROLE_") and in additional roles defined by application
-        return principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
+        return if (principal is UsernamePasswordAuthenticationToken) {
+            principal.authorities.contains(SimpleGrantedAuthority(role))
+        } else {
+            principal as KeycloakAuthenticationToken
+            principal.account.roles.contains(role)
+        }
     }
 
     override fun isAdmin(principal: Principal): Boolean {
