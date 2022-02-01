@@ -187,7 +187,7 @@ describe('General create documents/folders', () => {
     });
 
     it('should not remember last dirty state when page has been left (#2121)', () => {
-      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument'], false);
+      Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument']);
       enterMcloudDocTestData.CreateDialog.setDescription('modified test description');
 
       cy.wait(500);

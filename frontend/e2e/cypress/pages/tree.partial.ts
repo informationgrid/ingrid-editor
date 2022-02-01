@@ -50,17 +50,10 @@ export class Tree {
     });
   }
 
-  static openNode(targetNodePath: string[], isInsideDialog = false, waitForShownInForm = true) {
+  static openNode(targetNodePath: string[], waitForShownInForm = true) {
     cy.log('Open node: ' + targetNodePath.join(' -> '));
     targetNodePath.forEach((node, index) => {
-      Tree.selectNodeWithTitle(
-        node,
-        isInsideDialog,
-        true,
-        index + 1,
-        index === targetNodePath.length - 1,
-        waitForShownInForm
-      );
+      Tree.selectNodeWithTitle(node, false, true, index + 1, index === targetNodePath.length - 1, waitForShownInForm);
     });
   }
 

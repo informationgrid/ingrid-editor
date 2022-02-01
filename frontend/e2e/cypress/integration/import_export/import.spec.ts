@@ -18,8 +18,8 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.CreateUnderTarget);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false);
-    Tree.openNode(['Neue Testadressen'], false, false);
+    Tree.openNode(['Testdokumente'], false);
+    Tree.openNode(['Neue Testadressen'], false);
     ImportPage.closeDialogAndImport();
     ImportPage.jumpToDocument('document_import_32');
     Tree.checkPath(['Daten', 'Testdokumente']);
@@ -36,8 +36,8 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.CreateUnderTarget);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false);
-    Tree.openNode(['Testadressen'], false, false);
+    Tree.openNode(['Testdokumente'], false);
+    Tree.openNode(['Testadressen'], false);
     ImportPage.closeDialogAndImport();
     ImportPage.jumpToDocument('document_import_12');
     Tree.checkPath(['Daten', 'Testdokumente']);
@@ -54,8 +54,8 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente'], false, false);
-    Tree.openNode(['Testadressen'], false, false);
+    Tree.openNode(['Testdokumente'], false);
+    Tree.openNode(['Testadressen'], false);
     ImportPage.closeDialogAndImport();
 
     ImportPage.jumpToDocument('document_import_43');
@@ -72,8 +72,8 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], false, false);
-    Tree.openNode(['Testadressen'], false, false);
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B'], false);
+    Tree.openNode(['Testadressen'], false);
     ImportPage.closeDialogAndImport();
 
     ImportPage.jumpToDocument('Datum_Ebene_4_4');
@@ -97,8 +97,8 @@ describe('Import Tests', () => {
     ImportPage.continue();
     ImportPage.chooseImportOption(ImportOptions.OverwriteMetadata);
     ImportPage.continue();
-    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], false, false);
-    Tree.openNode(['Neue Testadressen'], false, false);
+    Tree.openNode(['Testdokumente', 'Ordner 2. Ebene'], false);
+    Tree.openNode(['Neue Testadressen'], false);
     ImportPage.closeDialogAndImport();
 
     ImportPage.jumpToDocument('Tiefes Dokument');

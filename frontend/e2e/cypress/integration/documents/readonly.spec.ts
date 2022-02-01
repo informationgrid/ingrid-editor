@@ -119,7 +119,7 @@ describe('Read Only Documents', () => {
     Tree.openNodeInsideDialog(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
     Tree.confirmCopy();
 
-    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy], false);
+    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy]);
     // set access right back to 'write'
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
