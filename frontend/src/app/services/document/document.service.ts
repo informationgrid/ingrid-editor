@@ -79,12 +79,14 @@ export class DocumentService {
   }
 
   find(query: string, size = 10, address = false): Observable<SearchResult> {
-    // TODO: use general sort filter
     return this.researchService
       .search(
         query,
         { type: address ? "selectAddresses" : "selectDocuments" },
-        null
+        null,
+        "modified",
+        "DESC",
+        { page: 1, pageSize: size }
       )
       .pipe(map((result) => this.mapSearchResults(result)));
   }

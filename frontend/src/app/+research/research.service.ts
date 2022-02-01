@@ -69,7 +69,11 @@ export class ResearchService {
     model: any,
     fieldsWithParameters: { [x: string]: any[] },
     orderByField = "title",
-    orderByDirection = "ASC"
+    orderByDirection = "ASC",
+    pagination?: {
+      page: number;
+      pageSize: number;
+    }
   ): Observable<ResearchResponse> {
     const backendQuery = new BackendQuery(
       term,
@@ -77,7 +81,8 @@ export class ResearchService {
       fieldsWithParameters,
       this.filters,
       orderByField,
-      orderByDirection
+      orderByDirection,
+      pagination
     );
     return this.http
       .post<ResearchResponse>(

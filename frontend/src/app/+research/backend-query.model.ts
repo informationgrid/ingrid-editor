@@ -5,6 +5,7 @@ export class BackendQuery {
   private clauses: any;
   private orderByField = "title";
   private orderByDirection = "ASC";
+  private pagination: any;
 
   constructor(
     term: string,
@@ -12,11 +13,16 @@ export class BackendQuery {
     fieldsWithParameters: { [p: string]: any[] },
     filters: Facets,
     orderByField = "title",
-    orderByDirection = "ASC"
+    orderByDirection = "ASC",
+    pagination?: {
+      page: number;
+      pageSize: number;
+    }
   ) {
     this.term = term;
     this.orderByField = orderByField;
     this.orderByDirection = orderByDirection;
+    this.pagination = pagination;
 
     const allFacetGroups = filters?.documents?.concat(filters?.addresses);
     this.convert(model, fieldsWithParameters, allFacetGroups);
@@ -68,6 +74,7 @@ export class BackendQuery {
       clauses: this.clauses,
       orderByField: this.orderByField,
       orderByDirection: this.orderByDirection,
+      pagination: this.pagination,
     };
   }
 }
