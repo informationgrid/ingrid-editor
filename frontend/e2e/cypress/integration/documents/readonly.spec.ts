@@ -116,7 +116,7 @@ describe('Read Only Documents', () => {
     Tree.openNode(['Ordner_Ebene_2A', documentToCopy]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
-    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A'], true);
+    Tree.openNodeInsideDialog(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
     Tree.confirmCopy();
 
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy], false);

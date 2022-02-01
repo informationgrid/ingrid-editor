@@ -29,7 +29,7 @@ export class CopyCutUtils {
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get(option).click();
     if (targetNodePath) {
-      Tree.openNode(targetNodePath, true);
+      Tree.openNodeInsideDialog(targetNodePath);
     } else {
       cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
     }

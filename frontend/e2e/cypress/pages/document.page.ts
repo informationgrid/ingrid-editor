@@ -15,7 +15,7 @@ export class DocumentPage extends BasePage {
     }
 
     static setLocation(nodeTitle: string) {
-      Tree.openNode([nodeTitle], true);
+      Tree.openNodeInsideDialog([nodeTitle]);
       cy.get('[data-cy=create-applyLocation]').click();
     }
 
@@ -348,7 +348,7 @@ export class DocumentPage extends BasePage {
   static changeLocation(targetNodePath: string[]) {
     cy.get('[data-cy=create-changeLocation]').click();
     if (targetNodePath.length > 0) {
-      Tree.openNode(targetNodePath, true);
+      Tree.openNodeInsideDialog(targetNodePath);
     } else {
       // cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
       cy.get('ige-destination-selection mat-list-option').click();

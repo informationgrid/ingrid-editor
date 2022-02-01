@@ -162,7 +162,7 @@ describe('author with groups', () => {
     cy.get('[data-cy="create-changeLocation"]').click();
     cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');
     // change Folder
-    Tree.openNode(['Ordner 2. Ebene', 'Ordner_3.Ebene_A'], true);
+    Tree.openNodeInsideDialog(['Ordner 2. Ebene', 'Ordner_3.Ebene_A']);
     cy.get('[data-cy=create-applyLocation]').click();
     DocumentPage.CreateDialog.execute();
   });
@@ -178,7 +178,7 @@ describe('author with groups', () => {
     cy.get('[data-cy="create-changeLocation"]').click();
     cy.get('mat-tab-group ige-tree').should('not.contain', 'Ordner_2.Ebene_B');
     // change Folder
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C'], true);
+    Tree.openNodeInsideDialog(['Neue Testdokumente', 'Ordner_Ebene_2C']);
     cy.get('[data-cy=create-applyLocation]').click();
     cy.get('[data-cy=create-action]').click();
     // search for the newly created document
