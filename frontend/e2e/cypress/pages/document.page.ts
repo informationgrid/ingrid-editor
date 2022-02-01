@@ -397,9 +397,9 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy="Beschreibung"] textarea').clear().type(text);
   }
 
-  static getSearchResult(number?: number) {
-    number = number === undefined ? 1 : number;
+  static getSearchResult(number = 1) {
     return this.getSearchResults()
+      .should('have.length.gte', 1)
       .eq(number - 1)
       .parent();
   }

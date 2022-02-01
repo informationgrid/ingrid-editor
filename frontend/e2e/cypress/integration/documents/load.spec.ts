@@ -46,9 +46,6 @@ describe('Load documents', () => {
   it('should open a document from a tree search result on form page', () => {
     DocumentPage.visit();
     DocumentPage.search('TestDocResearch1');
-    // make sure search for complete search term is dispatched so that the first item of suggestion list is indeed the best match
-    cy.intercept('GET', '/api/datasets?query=' + encodeURIComponent('TestDocResearch1') + '*').as('suggestionRequest');
-    cy.wait('@suggestionRequest');
     DocumentPage.getSearchResult().click();
     cy.get(DocumentPage.title).should('have.text', 'TestDocResearch1');
   });

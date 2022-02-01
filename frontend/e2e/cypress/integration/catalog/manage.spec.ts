@@ -67,7 +67,6 @@ describe('Catalog management', () => {
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
-    cy.wait(300);
 
     ManageSpec.openCatalogCardMenu(catalogTitle);
     cy.get('button').contains('Bearbeiten').click();
