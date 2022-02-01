@@ -19,7 +19,7 @@
   },
   "screenshotsFolder": "cypress/mochawesome-reports/assets",
   "videosFolder": "cypress/mochawesome-reports/assets",
-  "video": false,
+  "video": true,
   "videoUploadOnPasses": false,
   "viewportHeight": 1080,
   "viewportWidth": 1920,
