@@ -1,5 +1,7 @@
 import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
+import { AdminUserPage, UserFormData } from '../../pages/administration-user.page';
+import { Utils } from '../../pages/utils';
 
 describe('Catalog management', () => {
   beforeEach(() => {
@@ -86,27 +88,23 @@ describe('Catalog management', () => {
     cy.get('ige-catalog-management mat-card').contains(catalogTitle).should('not.exist');
   });
 
-  xit('should add a catalog administrator', () => {
-    // TODO cat admin is now only set in user management. rewrite test accordingly
-    const catalogTitle = 'new Catalog';
+  it('should add a catalog administrator', () => {
+    AdminUserPage.visit();
+    cy.contains('button', 'Hinzufügen').click();
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
+    let catalogFirstname = 'catalog' + Utils.randomString();
+    let user: UserFormData = {
+      firstName: catalogFirstname,
+      lastName: 'temp' + Utils.randomString(),
+      email: 'testcatalog' + Utils.randomdoubleDigitString() + '@thisauthor.com',
+      login: 'some_random_catalohlogin' + Utils.randomString(),
+      role: 'Katalog-Administrator',
+      groups: [],
+      organisation: ''
+    };
+    AdminUserPage.addNewUser(user, true);
 
-    ManageSpec.openCatalogCardMenu(catalogTitle);
-    cy.get('button').contains('Bearbeiten').click();
-
-    cy.get('mat-list').contains('Andre Wallat');
-    cy.get('mat-dialog-content button').contains('Hinzufügen').click();
-    cy.get('mat-list-option').contains('Majid Ercan').click();
-    cy.get('.mat-button-wrapper').contains('Ok').click().wait(100);
-    cy.get('.mat-button-wrapper').contains('Aktualisieren').click().wait(100);
-
-    ManageSpec.openCatalogCardMenu(catalogTitle);
-    cy.get('button').contains('Bearbeiten').click();
-
-    // check 'Majid Ercan' is listed as cat-admin
-    cy.get('mat-list').contains('Majid Ercan');
+    AdminUserPage.selectUser(catalogFirstname);
   });
 
   it('should switch between two catalogs', () => {
