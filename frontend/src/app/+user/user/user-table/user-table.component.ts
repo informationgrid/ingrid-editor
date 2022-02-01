@@ -14,6 +14,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "user-table",
@@ -77,20 +78,22 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       ? ["role-icon", "firstName"]
       : ["role-icon", "login", "firstName", "organisation"];
 
-    this.selectedUser?.subscribe((user) => {
-      this.setSelectionToUser(user);
-      this.updatePaginator(user?.login);
-    });
+    this.selectedUser
+      .pipe(filter((user) => this.selection.selected[0]?.login !== user?.login))
+      .subscribe((user) => {
+        this.setSelectionToUser(user);
+        this.updatePaginator(user?.login);
+      });
   }
 
   private updatePaginator(id) {
     if (this.paginator) {
+      let indexInDatasource = this.dataSource.data.findIndex(
+        (d) => d.login === id
+      );
       const pageNumber = Math.max(
         0,
-        Math.floor(
-          this.dataSource.data.findIndex((d) => d.login === id) /
-            this.paginator.pageSize
-        )
+        Math.floor(indexInDatasource / this.paginator.pageSize)
       );
 
       this.paginator.pageIndex = pageNumber;

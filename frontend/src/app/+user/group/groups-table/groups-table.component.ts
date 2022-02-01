@@ -84,12 +84,12 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   // TODO: refactor to use same generic function in user and groups table
   private updatePaginator(id) {
     if (this.paginator) {
+      let indexInDatasource = this.dataSource.data.findIndex(
+        (d) => d.id === id
+      );
       const pageNumber = Math.max(
         0,
-        Math.floor(
-          this.dataSource.data.findIndex((d) => d.id === id) /
-            this.paginator.pageSize
-        )
+        Math.floor(indexInDatasource / this.paginator.pageSize)
       );
 
       this.paginator.pageIndex = pageNumber;
