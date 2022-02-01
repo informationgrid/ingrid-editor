@@ -678,6 +678,7 @@ describe('Meta data administrator with a group', () => {
     // go to research section and search for document
     Menu.switchTo('RESEARCH');
     ResearchPage.search(docName);
+    ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().should('equal', 1);
     cy.contains('td.mat-cell', docName).click();
     cy.contains('.label', docName);
@@ -686,6 +687,7 @@ describe('Meta data administrator with a group', () => {
     // search and expect to not get a result
     Menu.switchTo('RESEARCH');
     ResearchPage.search(docName);
+    ResearchPage.waitForSearch();
     ResearchPage.checkNoSearchResults();
     // make sure display of documents has been actualized
     Menu.switchTo('DOCUMENTS');
