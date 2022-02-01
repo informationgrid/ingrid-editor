@@ -78,6 +78,12 @@ export class UserTableComponent implements OnInit, AfterViewInit {
       ? ["role-icon", "firstName"]
       : ["role-icon", "login", "firstName", "organisation"];
 
+    this.updateUserOnSelectionBehaviour();
+  }
+
+  private updateUserOnSelectionBehaviour() {
+    if (!this.selectedUser) return;
+
     this.selectedUser
       .pipe(filter((user) => this.selection.selected[0]?.login !== user?.login))
       .subscribe((user) => {
