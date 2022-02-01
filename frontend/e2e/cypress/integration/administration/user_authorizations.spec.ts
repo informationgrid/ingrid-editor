@@ -872,4 +872,24 @@ describe('Catalogue admin', () => {
     AdminUserPage.selectUser(userLogin);
     AdminUserPage.changeUserRole('Katalog-Administrator', true);
   });
+
+  it('upgrade author user and make sure of the added rights', () => {
+    // change catalog admin role to author
+    AdminUserPage.visit();
+    let userLogin = 'autornew';
+    AdminUserPage.selectUser(userLogin);
+    AdminUserPage.changeUserRole('Metadaten-Administrator', true);
+    // login with new role and check if the new author does not have admin rights
+    cy.kcLogout();
+    cy.kcLogin(userLogin);
+    AdminUserPage.visit();
+    // check if the user able to access users page and select a user
+    AdminUserPage.selectUser('metanew');
+    cy.kcLogout();
+    // change the role back again to catalog admin
+    cy.kcLogin('eins');
+    AdminUserPage.visit();
+    AdminUserPage.selectUser(userLogin);
+    AdminUserPage.changeUserRole('Autor', true);
+  });
 });
