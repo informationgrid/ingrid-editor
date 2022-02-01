@@ -69,8 +69,14 @@ class ResearchService {
 
         val result = sendQuery(sql, parameters, query.pagination)
         val map = filterAndMapResult(result, isAdmin, principal)
+        
+        val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
+            getTotalHits(sql, parameters)
+        } else {
+            map.size
+        }
 
-        return ResearchResponse(map.size, map)
+        return ResearchResponse(totalHits, map)
     }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
@@ -203,6 +209,18 @@ class ResearchService {
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
+    }
+
+
+    private fun getTotalHits(sql: String, parameter: List<Any>): Int {
+        val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
+            .substring(sql.indexOf("FROM"))
+            .substringBeforeLast("ORDER BY")
+        val countQuery = entityManager.createNativeQuery(countSQL)
+        for ((index, it) in parameter.withIndex()) {
+            countQuery.setParameter(index + 1, it)
+        }
+        return (countQuery.singleResult as Number).toInt()
     }
 
     private fun filterAndMapResult(
