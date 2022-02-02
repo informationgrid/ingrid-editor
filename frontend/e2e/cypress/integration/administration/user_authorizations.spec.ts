@@ -35,8 +35,10 @@ describe('Meta data administrator without groups', () => {
   it('should show only empty groups to a metadata-administrator without groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
+    // iterate through groups and check if they are empty
     cy.get('groups-table tbody tr').each(element => {
       cy.wrap(element).click();
+      // an empty group does not contains rows in either of the permission tables
       cy.get('permission-table tbody .mat-row').should('not.exist');
     });
   });
