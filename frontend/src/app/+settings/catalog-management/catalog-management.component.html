@@ -116,10 +116,16 @@
         <mat-card-subtitle *ngIf="!cat.lastDocModification">
             Erstellt am {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
         </mat-card-subtitle>
-        <mat-card-content>
+        <mat-card-content
+            *ngIf="cat.countDocuments !== undefined; else spinner"
+        >
             <div class="content">
                 {{ cat.countDocuments | number }} Datensätze
             </div>
         </mat-card-content>
+        <ng-template #spinner>
+            <mat-spinner diameter="18"></mat-spinner>
+            Hole Statistik
+        </ng-template>
     </ng-template>
 </page-template>

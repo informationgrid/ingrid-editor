@@ -37,13 +37,9 @@ export class CatalogService {
     return this.http
       .get<any[]>(this.configuration.backendUrl + "catalogs")
       .pipe(
-        map((catalogs) => {
-          const result = [];
-          catalogs.forEach((cat) => result.push(new Catalog(cat)));
-          return result;
-        }),
-        tap((items) => this.catalogStore.set(items))
-        // catchError( err => this.errorService.handle( err ) )
+        map((catalogs) => catalogs.map((cat) => new Catalog(cat))),
+        tap((catalogs) => this.catalogStore.set(catalogs)),
+        tap((catalogs) => this.handleCatalogStatistics(catalogs))
       );
   }
 
@@ -87,5 +83,28 @@ export class CatalogService {
 
   getCatalogProfiles(): Observable<Profile[]> {
     return this.http.get<Profile[]>(this.configuration.backendUrl + "profiles");
+  }
+
+  private getCatalogStatistics(identifier: string) {
+    return this.http.get<any>(
+      `${this.configuration.backendUrl}catalogStatistic/${identifier}`
+    );
+  }
+
+  private handleCatalogStatistics(catalogs: Catalog[]) {
+    catalogs.forEach((catalog) => {
+      this.getCatalogStatistics(catalog.id).subscribe((statistic) =>
+        this.addStatisticToStore(catalog.id, statistic)
+      );
+    });
+  }
+
+  private addStatisticToStore(catalogId: string, statistic: any) {
+    this.catalogStore.update(catalogId, (state) => {
+      return {
+        ...state,
+        ...statistic,
+      };
+    });
   }
 }

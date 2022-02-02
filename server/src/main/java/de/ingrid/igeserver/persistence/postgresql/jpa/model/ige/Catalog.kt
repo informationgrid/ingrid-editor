@@ -68,14 +68,6 @@ class Catalog {
     fun setUpdateDate() {
         modified = dateService?.now()
     }
-
-    /* Properties only used for JSON enrichment */
-    
-    @Transient
-    var countDocuments: Int = 0
-    
-    @Transient
-    var lastDocModification: OffsetDateTime? = null
     
     companion object {
         private val dateService: DateService? by lazy {

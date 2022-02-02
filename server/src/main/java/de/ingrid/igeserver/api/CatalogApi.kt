@@ -59,4 +59,8 @@ interface CatalogApi {
             required = true
         ) @PathVariable("name") name: String
     ): ResponseEntity<Void>
+
+    @GetMapping(value = ["/catalogStatistic/{identifier}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(responses = [], summary = "Get static of a catalog")
+    fun catalogStatistic(@PathVariable identifier: String): ResponseEntity<CatalogStatistic>
 }
