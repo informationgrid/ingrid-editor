@@ -27,7 +27,7 @@ class KeycloakAuthUtils : AuthUtils {
             principal.authorities.contains(SimpleGrantedAuthority(role))
         } else {
             principal as KeycloakAuthenticationToken
-            principal.account.roles.contains(role)
+            principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
         }
     }
 
