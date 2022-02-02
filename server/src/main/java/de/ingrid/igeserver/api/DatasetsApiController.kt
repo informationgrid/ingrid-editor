@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -251,29 +253,36 @@ class DatasetsApiController @Autowired constructor(
         }
     }
 
+    @ExperimentalTime
     override fun getChildren(
         principal: Principal,
         parentId: String?,
         isAddress: Boolean
     ): ResponseEntity<List<JsonNode>> {
 
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val isCatAdmin = authUtils.isAdmin(principal)
-        val children = if (!isCatAdmin && parentId == null) {
-            val userName = authUtils.getUsernameFromPrincipal(principal)
-            val userGroups = catalogService.getUser(userName)?.groups
-            getRootDocsFromGroup(userGroups, catalogId, isAddress)
-        } else {
-            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits
-        }
-
-        val childDocs = children
-            .map { doc ->
-                val latest = documentService.getLatestDocument(doc, resolveLinks = false)
-                latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
-                latest.data.put(FIELD_PARENT, doc.parent?.id)
-                documentService.convertToJsonNode(latest)
+        val childDocs: List<JsonNode>
+        val timer = measureTime {
+            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            val isCatAdmin = authUtils.isAdmin(principal)
+            val children = if (!isCatAdmin && parentId == null) {
+                val userName = authUtils.getUsernameFromPrincipal(principal)
+                val userGroups = catalogService.getUser(userName)?.groups
+                getRootDocsFromGroup(userGroups, catalogId, isAddress)
+            } else {
+                documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits
             }
+
+            childDocs = children
+                .map { doc ->
+                    val latest = documentService.getLatestDocument(doc, resolveLinks = false)
+                    latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
+                    latest.data.put(FIELD_PARENT, doc.parent?.id)
+                    documentService.convertToJsonNode(latest)
+                }
+
+        }
+        
+        log.info("Get children took: $timer ms")
         return ResponseEntity.ok(childDocs)
     }
 
