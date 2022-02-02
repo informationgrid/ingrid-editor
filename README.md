@@ -78,6 +78,14 @@ For the client just run `npm start` in the frontend directory. When developing f
 
 You are all set. Run server and frontend with the appropriate run configuration.
 
+### Update dependencies
+
+To get a list of new versions of our dependencies you can run the following command:
+
+```shell
+gradlew :server:dependencyUpdates
+```
+
 ## Apache Configuration
 
 For the apache configuration use the following settings:

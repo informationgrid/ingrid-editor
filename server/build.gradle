@@ -3,7 +3,7 @@ buildscript {
     ext.spring_boot_version = '2.6.3'
     ext.hibernate_version = '5.6.2.Final'
     ext.jackson_version = '2.13.1'
-    ext.kotest_version = '5.0.3'
+    ext.kotest_version = '5.1.0'
     repositories {
         mavenCentral()
     }
@@ -25,6 +25,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.2.0'
     id "com.gorylenko.gradle-git-properties" version "2.2.2"
     id 'io.kotest' version '0.3.9'
+    id "com.github.ben-manes.versions" version "0.41.0"
 }
 
 apply plugin: 'kotlin' // Required for Kotlin integration
@@ -91,20 +92,20 @@ dependencies {
     implementation 'org.keycloak:keycloak-admin-client:12.0.4'
 
     // Markdown
-    implementation "com.atlassian.commonmark:commonmark:0.16.1"
-    implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.16.1"
-    implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.16.1"
+    implementation "com.atlassian.commonmark:commonmark:0.17.0"
+    implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.17.0"
+    implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.17.0"
 
-    implementation 'com.auth0:java-jwt:3.10.0'
+    implementation 'com.auth0:java-jwt:3.18.3'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.0' // Attention: also update SwaggerDocumentationConfig.kt
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.2.20'
+    implementation 'org.postgresql:postgresql:42.3.2'
     implementation "org.hibernate:hibernate-core:$hibernate_version"
     implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.11.0') {
+    implementation('de.ingrid:ingrid-codelist-service:5.11.1') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
