@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MCloudModel(
-    @JsonProperty("_id") override val uuid: String,
+    @JsonProperty("_uuid") override val uuid: String,
     override val title: String,
     override val description: String?,
     val data: DataModel,

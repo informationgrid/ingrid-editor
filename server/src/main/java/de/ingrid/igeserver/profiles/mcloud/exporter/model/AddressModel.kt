@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
-        @JsonProperty("_id") val uuid: String,
+        @JsonProperty("_uuid") val uuid: String,
         val firstName: String?,
         val lastName: String?,
         val organization: String?,
