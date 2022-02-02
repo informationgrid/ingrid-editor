@@ -22,7 +22,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '2.7.1'
+    id 'com.google.cloud.tools.jib' version '3.2.0'
     id "com.gorylenko.gradle-git-properties" version "2.2.2"
     id 'io.kotest' version '0.3.9'
 }
