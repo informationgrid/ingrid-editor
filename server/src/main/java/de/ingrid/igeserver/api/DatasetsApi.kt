@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import javax.validation.Valid
-import kotlin.time.ExperimentalTime
 
 @Tag(name = "Datasets", description = "the datasets API")
 interface DatasetsApi {
@@ -64,7 +63,6 @@ interface DatasetsApi {
             principal: Principal,
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: Array<String>): ResponseEntity<Unit>
 
-    @ExperimentalTime
     @Operation(description = "Get child datasets of a given parent document/folder")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Child Datasets found")])
     @RequestMapping(value = ["/tree/children"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
