@@ -51,9 +51,9 @@ class IndexService @Autowired constructor(
         format: String,
         uuid: String
     ): Document {
-        return documentService.find(catalogId, category.value, INDEX_SINGLE_PUBLISHED_DOCUMENT(format, uuid).dbFilter)
-            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
-            .first()
+        val doc = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+        assert(doc.published != null)
+        return documentService.getLatestDocument(doc, true, catalogId = catalogId)
     }
 
     fun getPublishedDocuments(
@@ -63,7 +63,7 @@ class IndexService @Autowired constructor(
         currentPage: Int = 0
     ): Page<Document> {
         val auth = SecurityContextHolder.getContext().authentication
-        val filter = BoolFilter("AND", listOf("category = 'data'", "published IS NOT NULL"), null, null, false)
+        val filter = BoolFilter("AND", listOf("category = 'data'", "published IS NOT NULL", "deleted = 0"), null, null, false)
         val response = researchService.query(
             auth,
             emptySet(),
