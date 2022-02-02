@@ -178,27 +178,13 @@ describe('Group', () => {
     cy.get('[data-cy=toolbar_save_group]').should('be.enabled');
   });
 
-  // FIXME: This test does not do what ticket #3469 describes
-  xit('should delete a document from a group when deleting action is performed and the save button is pressed (#3469)', () => {
+  it('should remove a document from a group as soon as deleting action is performed (#3469)', () => {
     // delete address from group
     AdminGroupPage.selectGroup('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
-
-    // try to switch to different group; because save button has not been pressed, the deletion has not taken place
-    AdminGroupPage.selectGroup('leere_Gruppe');
-    cy.contains('mat-dialog-content', 'Wollen Sie die Änderungen verwerfen?');
-    cy.contains('button', 'Verwerfen').click();
-    cy.contains('.label', 'leere_Gruppe');
-    // go back to group and delete document, this time with pushing save button
-    AdminGroupPage.selectGroup('test_gruppe_2');
-    AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
-    AdminGroupPage.saveGroup();
-
-    // Go to Research section and make sure search doesn't return removed document
-    ResearchPage.visit();
-    ResearchPage.search('Elsass, Adresse');
-    ResearchPage.setDocumentTypeSearchFilter('Adressen');
-    ResearchPage.checkNoSearchResults();
+    // make sure address is visually removed from group without prompt to affirm intention to delete document
+    cy.get('mat-dialog-container').should('not.exist');
+    cy.contains('permission-table tr', 'Elsass, Adresse').should('not.exist');
   });
 
   it('should be possible to jump between groups and associated users', () => {
