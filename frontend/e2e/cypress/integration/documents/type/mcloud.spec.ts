@@ -41,6 +41,21 @@ describe('mCLOUD documents', function () {
       DocumentPage.publishNow();
     });
 
+    // right now not working because of bug needing to be fixed
+    xit('after catalog admin has added address to document, the document can still be accessed by authorized users (#3446)', () => {
+      // add address to document
+      DocumentPage.visit();
+      Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
+      enterMcloudDocTestData.CreateDialog.setAddress('Normandie, Adresse');
+      DocumentPage.saveDocument();
+      // log in as user with limited access rights and check access
+      cy.kcLogout();
+      cy.kcLogin('meta2');
+      DocumentPage.visit();
+      Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
+      cy.get('.error').should('not.exist');
+    });
+
     it('should not be able to choose address folder as address', () => {
       const addressName = 'testordner_1';
       const docName = 'mCloudfullDoc1';
