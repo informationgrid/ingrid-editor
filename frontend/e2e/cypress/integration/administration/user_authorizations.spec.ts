@@ -32,13 +32,13 @@ describe('Meta data administrator without groups', () => {
     AdminUserPage.checkContainsUserRole('catalog-admin', false);
   });
 
-  // TODO: this test contains a hard coded number of groups to be exptected to be available
-  //       but this can change quickly and lead to test failures
-  xit('should show only empty groups to a metadata-administrator without groups', () => {
+  it('should show only empty groups to a metadata-administrator without groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    // as of now, there are 4 empty groups
-    cy.get('.user-management-header').contains('Gruppen (4)');
+    cy.get('groups-table tbody tr').each(element => {
+      cy.wrap(element).click();
+      cy.get('permission-table tbody .mat-row').should('not.exist');
+    });
   });
 
   it('metadata admin without groups should be able to create groups of his own, but not add documents', () => {
