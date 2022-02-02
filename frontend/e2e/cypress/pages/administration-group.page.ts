@@ -138,12 +138,10 @@ export class AdminGroupPage extends BasePage {
       .within(() => {
         cy.get('button').click();
       });
-    cy.get('permission-add-dialog');
   }
 
   static addNestedDocumentToGroup(arrayPath: string[], docType: string) {
     this.openAddDocumentsDialog(docType);
-    cy.get('permission-add-dialog');
     for (const docName of arrayPath) {
       cy.contains('mat-tree-node .label', new RegExp('^' + docName + '$')).click();
     }
@@ -154,7 +152,6 @@ export class AdminGroupPage extends BasePage {
 
   static addDocumentToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
-    cy.get('permission-add-dialog');
 
     cy.intercept('GET', '/api/datasets/**').as('waitRequest');
     cy.contains('mat-tree-node', docName).click();
@@ -164,7 +161,6 @@ export class AdminGroupPage extends BasePage {
 
   static tryIllegitimateAddToGroup(docName: string, docType: string) {
     this.openAddDocumentsDialog(docType);
-    cy.get('permission-add-dialog');
     cy.contains('mat-tree-node', docName).should('have.class', 'disabled');
     cy.get('mat-dialog-actions button').contains('Hinzufügen').parent().should('have.class', 'mat-button-disabled');
   }
