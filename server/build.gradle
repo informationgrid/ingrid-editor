@@ -3,7 +3,7 @@ buildscript {
     ext.spring_boot_version = '2.6.3'
     ext.hibernate_version = '5.6.2.Final'
     ext.jackson_version = '2.13.1'
-    ext.kotest_version = '5.1.0'
+    ext.kotest_version = '5.0.3' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
     repositories {
         mavenCentral()
     }
