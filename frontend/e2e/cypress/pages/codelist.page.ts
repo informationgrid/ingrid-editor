@@ -24,6 +24,11 @@ export class CodelistPage {
     cy.get('mat-dialog-actions button').contains('Löschen').click();
   }
 
+  static chooseDataFormat(format: Formats) {
+    cy.get('mat-select').click();
+    cy.get('mat-option').contains(format).click();
+  }
+
   static cancelDlg() {
     cy.get('ige-update-codelist > mat-dialog-actions span.mat-button-wrapper').contains('Abbrechen').click();
   }
@@ -72,4 +77,11 @@ export class CodelistPage {
           });
       });
   }
+}
+
+export enum Formats {
+  DownloadFormat = 'Download Typ',
+  DownloadTyp = 'Download Format',
+  mCLOUD = 'mCLOUD Kategorien',
+  OpenData = 'OpenData Kategorien'
 }

@@ -20,7 +20,7 @@ describe('Indexing', () => {
     cy.get('.main-header .menu-button').should('exist');
 
     // also check that content of status changes
-    BehavioursPage.openIndexStatusBox();
+    IndexingPage.openIndexStatusBox();
     const statusEntry = cy.get('div.status').invoke('text');
 
     // wait a bit after last indexing
@@ -34,7 +34,7 @@ describe('Indexing', () => {
     const cron = '*/10 * * * * *';
 
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
-    BehavioursPage.openIndexStatusBox();
+    IndexingPage.openIndexStatusBox();
     IndexingPage.getStatusContent().then(previousContent => {
       cy.get('mat-form-field input').clear().type(cron);
 
@@ -64,8 +64,7 @@ describe('Indexing', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Indizierung);
 
     IndexingPage.indexAndWait();
-    // TODO: function does not belong to BehavioursPage!
-    BehavioursPage.openIndexStatusBox();
+    IndexingPage.openIndexStatusBox();
 
     cy.get('.status span[data-cy=count-documents]')
       .invoke('text')

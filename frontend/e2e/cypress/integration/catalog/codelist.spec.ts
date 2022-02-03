@@ -1,6 +1,6 @@
 import { BehavioursPage } from '../../pages/behaviours.page';
 import { CatalogsTabmenu, CodelistSubMenu } from '../../pages/base.page';
-import { CodelistPage } from '../../pages/codelist.page';
+import { CodelistPage, Formats } from '../../pages/codelist.page';
 
 describe('Codelist', () => {
   beforeEach(() => {
@@ -14,9 +14,7 @@ describe('Codelist', () => {
     const changedTitle = 'Straßen_everywhere_9000';
     const toDelete = 'Bahn';
 
-    // TODO: refactor to generic function
-    cy.get('mat-select').click();
-    cy.get('mat-option').contains('mCLOUD Kategorien').click();
+    CodelistPage.chooseDataFormat(Formats.mCLOUD);
 
     // add new codelist-entry
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Codelisten);
