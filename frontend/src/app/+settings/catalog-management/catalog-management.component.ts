@@ -85,9 +85,8 @@ export class CatalogManagementComponent implements OnInit {
         if (catalog) {
           try {
             this.showSpinner = true;
-            this.catalogService
-              .createCatalog(catalog)
-              .subscribe((catResponse: Catalog) => {
+            this.catalogService.createCatalog(catalog).subscribe(
+              (catResponse: Catalog) => {
                 this.configService.getCurrentUserInfo().then((info) => {
                   if (!info.currentCatalog?.id) {
                     this.chooseCatalog(catResponse.id);
@@ -101,7 +100,19 @@ export class CatalogManagementComponent implements OnInit {
                     (err) => (this.showSpinner = false),
                     () => (this.showSpinner = false)
                   );
-              });
+              },
+              (err) => {
+                const httpError = err.error;
+                const matches = httpError.errorText?.match(
+                  /^Catalog '(.*)' already exists$/
+                );
+                if (matches?.length > 1) {
+                  httpError.errorText = `Katalog '${matches[1]}' ist bereits vorhanden`;
+                }
+                err.error = httpError;
+                throw err;
+              }
+            );
           } catch (error) {
             // handle error, only executed in case of error
             this.showSpinner = false;
