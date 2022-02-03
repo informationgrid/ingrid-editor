@@ -1,9 +1,9 @@
 import { Configuration, UserInfo } from "./config.service";
-import { Catalog } from "../../+catalog/services/catalog.model";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
+import { CatalogService } from "../../+catalog/services/catalog.service";
 
 export class ConfigDataService {
   config: Configuration;
@@ -77,9 +77,7 @@ export class ConfigDataService {
       role: json.role ?? "",
       groups: json.groups ?? [],
       userId: json.userId,
-      currentCatalog: json.currentCatalog
-        ? new Catalog(json.currentCatalog)
-        : {},
+      currentCatalog: CatalogService.mapCatalog(json.currentCatalog) ?? {},
       catalogProfile: json.catalogProfile,
       version: json.version,
       externalHelp: json.externalHelp,

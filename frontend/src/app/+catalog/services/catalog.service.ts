@@ -37,7 +37,9 @@ export class CatalogService {
     return this.http
       .get<any[]>(this.configuration.backendUrl + "catalogs")
       .pipe(
-        map((catalogs) => catalogs.map((cat) => new Catalog(cat))),
+        map((catalogs) =>
+          catalogs.map((cat) => CatalogService.mapCatalog(cat))
+        ),
         tap((catalogs) => this.catalogStore.set(catalogs)),
         tap((catalogs) => this.handleCatalogStatistics(catalogs))
       );
@@ -60,7 +62,7 @@ export class CatalogService {
     return this.http
       .put(
         this.configuration.backendUrl + "catalogs/" + catalog.id,
-        Catalog.prepareForBackend(catalog)
+        CatalogService.prepareForBackend(catalog)
       )
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
@@ -106,5 +108,23 @@ export class CatalogService {
         ...statistic,
       };
     });
+  }
+
+  static mapCatalog(catalog: any): Catalog {
+    if (!catalog) return null;
+
+    return {
+      ...catalog,
+      label: catalog.name,
+    };
+  }
+
+  private static prepareForBackend(catalog: Catalog) {
+    return {
+      id: catalog.id,
+      name: catalog.label,
+      description: catalog.description,
+      type: catalog.type,
+    };
   }
 }

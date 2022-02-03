@@ -18,7 +18,7 @@ describe("ProfileService", () => {
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject<UserInfo>({
           assignedCatalogs: [],
-          currentCatalog: new Catalog({}),
+          currentCatalog: {},
           name: "x",
           firstName: "x",
           lastName: "x",

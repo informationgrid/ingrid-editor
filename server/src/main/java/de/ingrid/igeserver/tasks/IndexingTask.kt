@@ -257,7 +257,7 @@ class IndexingTask @Autowired constructor(
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
-        val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, "ige-ng-test")
+        val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, elasticsearchAlias)
         indexManager.createIndex(
             newIndex,
             "base",
@@ -349,7 +349,7 @@ class IndexingTask @Autowired constructor(
         executor.shutdownNow()
     }
 
-    fun initScheduler(): TaskScheduler {
+    private fun initScheduler(): TaskScheduler {
         val scheduler = ThreadPoolTaskScheduler()
         scheduler.poolSize = 10
         scheduler.afterPropertiesSet()
