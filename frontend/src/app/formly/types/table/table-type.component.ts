@@ -17,7 +17,6 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "./upload-files-dialog/upload-files-dialog.component";
-import { UploadService } from "../../../shared/upload/upload.service";
 
 @UntilDestroy()
 @Component({
@@ -46,8 +45,7 @@ export class TableTypeComponent
   constructor(
     private dialog: MatDialog,
     public contextHelpService: ContextHelpService,
-    public configService: ConfigService,
-    private uploadService: UploadService
+    public configService: ConfigService
   ) {
     super();
   }

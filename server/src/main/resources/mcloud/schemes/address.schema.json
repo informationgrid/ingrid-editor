@@ -19,9 +19,15 @@
           "type": ["string", "null"],
           "format": "date-time"
         },
+        "_createdBy": {
+          "type": ["string", "null"]
+        },
         "_modified": {
           "type": ["string", "null"],
           "format": "date-time"
+        },
+        "_modifiedBy": {
+          "type": ["string", "null"]
         },
         "_state": {
           "type": [
