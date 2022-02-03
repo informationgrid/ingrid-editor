@@ -55,7 +55,7 @@ export class ResearchPage {
   }
 
   static setDocumentTypeSearchFilter(docType: string): void {
-    cy.get('.main-header .mat-select').click();
+    cy.get('.main-header .mat-select').should('not.have.class', 'mat-select-disabled').click();
     cy.intercept('**/api/search/query').as('query');
     cy.contains('.mat-option-text', docType).click();
     // wait For request to complete

@@ -390,7 +390,7 @@ export class DocumentPage extends BasePage {
   }
 
   static search(searchTerm: string) {
-    cy.get(DocumentPage.treeSearchBar).type(searchTerm);
+    cy.get(DocumentPage.treeSearchBar).should('be.enabled').type(searchTerm);
   }
 
   static addDescription(text: string) {

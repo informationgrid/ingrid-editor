@@ -36,8 +36,10 @@ export class Menu {
         cy.get('.welcome').should('contain', 'Willkommen');
         return;
       case 'DOCUMENTS':
+        cy.get('.main-page-title').should('contain', 'Daten');
         return;
       case 'ADDRESSES':
+        cy.get('.main-page-title').should('contain', 'Adressen');
         return;
       case 'RESEARCH':
         ResearchPage.waitForSearch();

@@ -7,6 +7,7 @@ import {
 import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AddressPage } from '../../pages/address.page';
+import { Menu } from '../../pages/menu';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -280,13 +281,13 @@ describe('Research Page', () => {
 
   it('should do search via Schnellsuche by using document ID', () => {
     // Schnellsuche in Dashboard:
-    DashboardPage.visit();
+    Menu.switchTo('DASHBOARD');
     DashboardPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
     cy.contains('button', 'Suchen').click();
     ResearchPage.checkDocumentInSearchResults('TestDocResearch1');
     ResearchPage.getSearchResultCount().should('equal', 1);
 
-    DashboardPage.visit();
+    Menu.switchTo('DASHBOARD');
     DashboardPage.search('556c875e-d471-4a35-8203-0c750737d296');
     cy.contains('button', 'Suchen').click();
     ResearchPage.checkNoSearchResults();
@@ -295,13 +296,13 @@ describe('Research Page', () => {
     ResearchPage.getSearchResultCount().should('equal', 1);
 
     // Schnellsuche in Address Page:
-    AddressPage.visit();
+    Menu.switchTo('ADDRESSES');
     AddressPage.search('556c875e-d471-4a35-8203-0c750737d296');
     cy.contains('mat-option .doc-item', 'Taunus').click();
     cy.contains('.title', 'Taunus');
 
     // Schnellsuche in Document Page:
-    DocumentPage.visit();
+    Menu.switchTo('DOCUMENTS');
     DocumentPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
     cy.contains('mat-option .doc-item', 'TestDocResearch1').click();
     cy.contains('.title', 'TestDocResearch');
