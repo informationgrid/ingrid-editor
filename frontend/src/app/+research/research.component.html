@@ -29,6 +29,7 @@
                         <mat-select
                             (selectionChange)="changeSearchClass($event.value)"
                             [(ngModel)]="searchClass"
+                            [disabled]="!(facetInitialized | async)"
                         >
                             <mat-option value="selectDocuments"
                                 >Dokumente

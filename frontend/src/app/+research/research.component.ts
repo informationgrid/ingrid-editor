@@ -40,7 +40,7 @@ export class ResearchComponent implements OnInit {
 
   query = new FormControl("");
 
-  searchClass: "selectDocuments" | "selectAddresses";
+  searchClass: "selectDocuments" | "selectAddresses" = "selectDocuments";
 
   facetModel: any;
   facetParameters: any;
