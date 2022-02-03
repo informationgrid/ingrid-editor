@@ -2,45 +2,34 @@ import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AdminUserPage, UserFormData } from '../../pages/administration-user.page';
 import { Utils } from '../../pages/utils';
+import { Menu } from '../../pages/menu';
+import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('user');
-    cy.visit('');
+    ManageCatalogPage.visit();
   });
 
   it('should create a new catalog', () => {
     const catalogTitle = 'ng-universe_cat';
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
-
-    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
-    cy.get('mat-dialog-container input').type(catalogTitle);
-    cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
-    cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait('@setNewCatalogue');
-    cy.contains('ige-catalog-management mat-card', catalogTitle);
+    ManageCatalogPage.addCatalog(catalogTitle);
+    cy.get('ige-catalog-management mat-card').should('contain', catalogTitle);
   });
 
   it('should not be able to create a new catalogue with an existing name (#3463)', () => {
     const catalogTitle = 'no_duplicates';
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
     // create catalogue
-    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
-    cy.get('mat-dialog-container input').type(catalogTitle);
-    cy.intercept('POST', '/api/catalogs').as('setNewCatalogue');
-    cy.get('mat-dialog-actions button').contains('Anlegen').click();
-    cy.wait('@setNewCatalogue');
-    cy.contains('ige-catalog-management mat-card', catalogTitle);
+    ManageCatalogPage.addCatalog(catalogTitle);
 
     // try to create new catalogue with existing name
-    cy.get('.main-header button').contains('Hinzufügen').wait(100).click();
+    cy.get('.main-header button').contains('Hinzufügen').click();
     cy.get('mat-dialog-container input').type(catalogTitle);
     cy.intercept('/api/info/setCatalogAdmin').as('setNewCatalogue');
     cy.get('mat-dialog-actions button').contains('Anlegen').click();
+
     // except failing server communication
     cy.wait('@setNewCatalogue').its('response.statusCode').should('not.eq', 200);
   });
@@ -49,27 +38,22 @@ describe('Catalog management', () => {
     const catalogTitle = 'ng-universe_cat';
     const catalogTitleModified = '-Modified';
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
-
-    ManageSpec.openCatalogCardMenu(catalogTitle);
+    ManageCatalogPage.openCatalogCardMenu(catalogTitle);
 
     cy.get('button').contains('Bearbeiten').click();
+    cy.get('mat-menu-panel').should('not.exist');
     cy.get('mat-form-field:nth-child(1)').type(catalogTitleModified);
     cy.get('button').contains('Aktualisieren').click();
-    cy.wait(300);
 
-    cy.get('[data-cy="' + catalogTitle + catalogTitleModified + '"]').contains(catalogTitle);
+    cy.get('[data-cy="' + catalogTitle + catalogTitleModified + '"]').should('contain', catalogTitle);
   });
 
   it('should delete an existing catalog', () => {
     const catalogTitle = 'ng-universe_cat-Modified';
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
-
-    ManageSpec.openCatalogCardMenu(catalogTitle);
+    ManageCatalogPage.openCatalogCardMenu(catalogTitle);
     cy.get('button').contains('Bearbeiten').click();
+    cy.get('mat-menu-panel').should('not.exist');
     cy.get('button').contains('Löschen').click();
 
     // deletion should only work by typing word "Löschen" -- test with wrong word
@@ -88,7 +72,7 @@ describe('Catalog management', () => {
   });
 
   it('should add a catalog administrator', () => {
-    AdminUserPage.visit();
+    Menu.switchTo('USERS');
     cy.contains('button', 'Hinzufügen').click();
 
     let catalogFirstname = 'catalog' + Utils.randomString();
@@ -109,13 +93,7 @@ describe('Catalog management', () => {
   it('should switch between two catalogs', () => {
     const catalogTitle = 'new Catalog';
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
-
-    ManageSpec.openCatalogCardMenu(catalogTitle);
-    // use "Verwenden" button on catalog to switch to new catalog
-    cy.get('button').contains('Verwenden').click();
-    cy.wait(100);
+    ManageCatalogPage.switchToCatalog(catalogTitle);
 
     // check if new created catalog is active
     cy.get('.catalog-title').contains(catalogTitle);
@@ -129,12 +107,8 @@ describe('Catalog management', () => {
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
-    cy.wait(300);
 
-    ManageSpec.openCatalogCardMenu('Test');
-    // use "Verwenden" button on catalog to switch to new catalog
-    cy.get('button').contains('Verwenden').click();
-    cy.wait(100);
+    ManageCatalogPage.switchToCatalog('Test');
 
     // check if 'Test' catalog is active
     cy.get('.catalog-title').contains('Test');
@@ -145,31 +119,21 @@ describe('Catalog management', () => {
     cy.get('div.result').should('not.have.text', '0 Ergebnisse gefunden');
   });
 
-  it('test the right catalog is selected, switch if necessary', () => {
-    // when we use the wrong catalog, it could happen that some tests fail, because pre-created objects are missing
+  // make sure we use the correct catalog for the other tests
+  after(() => {
+    cy.kcLogout();
+    cy.kcLogin('user');
+    ManageCatalogPage.visit();
     cy.get('.catalog-title').then($info => {
       const headerInfo = $info.text();
 
       if (headerInfo === 'Test') {
         cy.get('.catalog-title').contains('Test');
       } else {
-        cy.get('[data-cy=header-info-button]').click();
-        cy.get('button').contains('Katalogverwaltung').click();
-        cy.wait(300);
-
-        ManageSpec.openCatalogCardMenu('Test');
-        // use "Verwenden" button on catalog to switch to new catalog
-        cy.get('button').contains('Verwenden').click();
-        cy.wait(100);
+        ManageCatalogPage.switchToCatalog('Test');
 
         cy.get('.catalog-title').contains('Test');
       }
     });
   });
 });
-
-class ManageSpec {
-  static openCatalogCardMenu(title: string) {
-    cy.get(`[data-cy="${title}"]`).trigger('mouseover').parent().find('button.mat-menu-trigger').click({ force: true });
-  }
-}

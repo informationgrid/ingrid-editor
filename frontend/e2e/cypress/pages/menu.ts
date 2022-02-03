@@ -45,6 +45,7 @@ export class Menu {
       case 'REPORTS':
         return;
       case 'USERS':
+        cy.get('.page-title').should('contain', 'Nutzer');
         return;
       case 'IMPORT':
         return;
