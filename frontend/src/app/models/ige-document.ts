@@ -22,6 +22,12 @@ export class IgeDocument {
   // the last modified date
   _modified?: string;
 
+  // the name of the creator
+  _createdBy?: string;
+
+  // the name of the last modifier
+  _modifiedBy?: string;
+
   // shows if the document has child documents
   _hasChildren?: boolean;
 

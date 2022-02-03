@@ -216,6 +216,7 @@ class DocumentService @Autowired constructor(
 
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
+        document.createdby = principal.name
 
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
@@ -297,6 +298,8 @@ class DocumentService @Autowired constructor(
             FIELD_VERSION,
             FIELD_CREATED,
             FIELD_MODIFIED,
+            FIELD_CREATED_BY,
+            FIELD_MODIFIED_BY,
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
             "title",
@@ -347,10 +350,14 @@ class DocumentService @Autowired constructor(
         // save document with same ID or new one, if no draft version exists (because the last version is published)
         val draftId = preUpdatePayload.wrapper.draft?.id
         val createdDate = preUpdatePayload.wrapper.draft?.created ?: preUpdatePayload.wrapper.published?.created
+        val createdBy = preUpdatePayload.wrapper.draft?.createdby ?: preUpdatePayload.wrapper.published?.createdby
 
         // set server side fields from previous document version
         preUpdatePayload.document.id = preUpdatePayload.document.id ?: draftId
         preUpdatePayload.document.created = createdDate
+        preUpdatePayload.document.createdby = createdBy
+
+        preUpdatePayload.document.modifiedby = principal?.name
 
         try {
             preUpdatePayload.document.wrapperId = wrapper.id

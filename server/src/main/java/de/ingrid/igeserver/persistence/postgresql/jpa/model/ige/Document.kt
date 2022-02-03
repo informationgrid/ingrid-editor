@@ -85,6 +85,14 @@ class Document {
         modified = dateService?.now()
     }
 
+    @Column
+    @JsonProperty("_createdBy")
+    var createdby: String? = null
+
+    @Column
+    @JsonProperty("_modifiedBy")
+    var modifiedby: String? = null
+
     @Transient
     @JsonProperty("_state")
     var state: String? = null
