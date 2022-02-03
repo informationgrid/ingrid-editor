@@ -33,6 +33,20 @@ Cypress.on('test:after:run', (test, runnable) => {
 
     addContext({ test }, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`.replace('  ', ' '));
     addContext({ test }, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);
+    addContext(
+      { test },
+      {
+        title: 'test:',
+        value: runnable.parent.title + '/' + test.title
+      }
+    );
+    addContext(
+      { test },
+      {
+        title: 'time of test execution:',
+        value: new Date(Date.now()).toISOString()
+      }
+    );
   }
 });
 
