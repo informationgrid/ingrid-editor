@@ -22,7 +22,11 @@ import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { HeaderMoreComponent } from "./user/header-more/header-more.component";
 import { UserTableComponent } from "./user/user-table/user-table.component";
 import { MatTableModule } from "@angular/material/table";
-import { MatPaginatorModule } from "@angular/material/paginator";
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from "@angular/material/paginator";
+import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { MatSortModule } from "@angular/material/sort";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -80,6 +84,12 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
     IgeSearchField,
   ],
   exports: [RouterModule],
-  providers: [UserManagementService],
+  providers: [
+    UserManagementService,
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
+    },
+  ],
 })
 export class UserModule {}
