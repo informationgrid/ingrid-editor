@@ -12,8 +12,8 @@ import {
   CatalogDetailResponse,
 } from "./catalog-detail/catalog-detail.component";
 import { NewCatalogDialogComponent } from "./new-catalog/new-catalog-dialog.component";
-import { map, tap } from "rxjs/operators";
-import { combineLatest } from "rxjs";
+import { catchError, filter, finalize, map, tap } from "rxjs/operators";
+import { combineLatest, Observable } from "rxjs";
 import { SessionService } from "../../services/session.service";
 
 @Component({
@@ -68,7 +68,7 @@ export class CatalogManagementComponent implements OnInit {
     this.configService.$userInfo.subscribe((info) => {
       this.currentUserID = info.userId;
       this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
-      this.currentCatalog = info.currentCatalog.id;
+      this.currentCatalog = info.currentCatalog?.id;
     });
   }
 
@@ -81,47 +81,36 @@ export class CatalogManagementComponent implements OnInit {
         data: this.profiles,
       })
       .afterClosed()
-      .subscribe((catalog: Catalog) => {
-        if (catalog) {
-          try {
-            this.showSpinner = true;
-            this.catalogService.createCatalog(catalog).subscribe(
-              (catResponse: Catalog) => {
-                this.configService.getCurrentUserInfo().then((info) => {
-                  if (!info.currentCatalog?.id) {
-                    this.chooseCatalog(catResponse.id);
-                  }
-                });
+      .pipe(filter((catalog) => catalog))
+      .subscribe((catalog: Catalog) => this.createCatalog(catalog));
+  }
 
-                this.catalogService
-                  .setCatalogAdmin(catResponse.id, [this.currentUserID])
-                  .subscribe(
-                    (res) => (this.showSpinner = false),
-                    (err) => (this.showSpinner = false),
-                    () => (this.showSpinner = false)
-                  );
-              },
-              (err) => {
-                const httpError = err.error;
-                const matches = httpError.errorText?.match(
-                  /^Catalog '(.*)' already exists$/
-                );
-                if (matches?.length > 1) {
-                  httpError.errorText = `Katalog '${matches[1]}' ist bereits vorhanden`;
-                }
-                err.error = httpError;
-                throw err;
-              }
-            );
-          } catch (error) {
-            // handle error, only executed in case of error
-            this.showSpinner = false;
-            console.log(error);
-          } finally {
-            this.showSpinner = false;
-          }
-        }
-      });
+  private createCatalog(catalog: Catalog) {
+    this.showSpinner = true;
+    this.catalogService
+      .createCatalog(catalog)
+      .pipe(
+        tap((response: Catalog) =>
+          this.catalogService.setCatalogAdmin(response.id, [this.currentUserID])
+        ),
+        tap((response: Catalog) =>
+          this.switchCatalogIfNoCurrentCatalog(response)
+        ),
+        finalize(() => (this.showSpinner = false)),
+        catchError((err) => this.handleCreateError(err))
+      )
+      .subscribe();
+  }
+
+  private switchCatalogIfNoCurrentCatalog(response: Catalog) {
+    if (!this.currentCatalog) {
+      this.chooseCatalog(response.id);
+    }
+  }
+
+  private handleCreateError(err): Observable<Error> {
+    this.showSpinner = false;
+    throw err;
   }
 
   chooseCatalog(id: string) {

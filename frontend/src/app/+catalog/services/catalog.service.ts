@@ -5,7 +5,7 @@ import {
   Configuration,
 } from "../../services/config/config.service";
 import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { CatalogDataService } from "./catalog-data.service";
 import { HttpClient } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
@@ -55,7 +55,20 @@ export class CatalogService {
   createCatalog(catalog: Catalog) {
     return this.http
       .post(this.configuration.backendUrl + "catalogs", catalog)
-      .pipe(tap(() => this.getCatalogs().subscribe()));
+      .pipe(
+        catchError((err) => {
+          const httpError = err.error;
+          const matches = httpError.errorText?.match(
+            /^Catalog '(.*)' already exists$/
+          );
+          if (matches?.length > 1) {
+            httpError.errorText = `Katalog '${matches[1]}' ist bereits vorhanden`;
+          }
+          err.error = httpError;
+          throw err;
+        }),
+        tap(() => this.getCatalogs().subscribe())
+      );
   }
 
   updateCatalog(catalog: Catalog) {
