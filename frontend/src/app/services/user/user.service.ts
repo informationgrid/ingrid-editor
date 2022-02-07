@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { BehaviorSubject, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
-import { catchError, map } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
@@ -11,6 +11,7 @@ import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.
 import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -34,7 +35,8 @@ export class UserService {
   constructor(
     private dataService: UserDataService,
     private groupService: GroupService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private snackBar: MatSnackBar
   ) {
     if (!this.configService.isAdmin()) {
       this.availableRoles = this.availableRoles.filter(
@@ -101,9 +103,14 @@ export class UserService {
   }
 
   createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {
-    return this.dataService
-      .createUser(user, isNewExternalUser)
-      .pipe(map((u) => new FrontendUser(u)));
+    return this.dataService.createUser(user, isNewExternalUser).pipe(
+      map((u) => new FrontendUser(u)),
+      tap(() => {
+        this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
+          panelClass: "green",
+        });
+      })
+    );
   }
 
   deleteUser(login: string): Observable<any> {

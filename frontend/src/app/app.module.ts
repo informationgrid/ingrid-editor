@@ -63,7 +63,10 @@ import {
   AnimationWrapper,
   AnimationWrapperComponent,
 } from "./animation-wrapper.component";
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from "@angular/material/snack-bar";
+import {
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBarModule,
+} from "@angular/material/snack-bar";
 import {
   InjectableRxStompConfig,
   RxStompService,
@@ -135,6 +138,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     AngularSplitModule,
     MatTooltipModule,
     MatDialogModule,
+    MatSnackBarModule,
     // ReactiveFormsModule,
     // angular
     BrowserModule,

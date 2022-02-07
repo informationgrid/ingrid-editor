@@ -18,6 +18,7 @@ export const getNewUserFormFields = (
         required: true,
         options: logins,
       },
+      // focus: true, // throws expression has changed error
       validators: {
         validation: ["lowercase"],
       },

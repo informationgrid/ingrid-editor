@@ -91,8 +91,6 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   }
 
   createUser() {
-    // convert roles to numbers
-    // user.roles = user.roles.map(role => +role);
     this.form.disable();
     const user = this.model;
 

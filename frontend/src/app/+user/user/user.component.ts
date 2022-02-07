@@ -19,10 +19,9 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, finalize, map, tap } from "rxjs/operators";
+import { filter, finalize, map, switchMap, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
@@ -58,7 +57,6 @@ export class UserComponent
     private router: Router,
     public userManagementService: UserManagementService,
     private session: SessionQuery,
-    private snackBar: MatSnackBar,
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
@@ -157,20 +155,16 @@ export class UserComponent
         this.dialog
           .open(NewUserDialogComponent, { hasBackdrop: true })
           .afterClosed()
-          .pipe(
-            finalize(() => {
-              this.fetchUsers().subscribe();
-            })
-          )
-          .subscribe((result) => {
-            if (result) {
-              this.loadUser(result.login);
-              this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
-                panelClass: "green",
-              });
-            }
-          });
+          .subscribe((result) => this.updateUsersAndLoad(result));
     });
+  }
+
+  private updateUsersAndLoad(result) {
+    if (result) {
+      this.fetchUsers().subscribe(() => this.loadUser(result.login));
+    } else {
+      this.fetchUsers().subscribe();
+    }
   }
 
   deleteUser(login: string) {
@@ -182,14 +176,14 @@ export class UserComponent
         } as ConfirmDialogData,
       })
       .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.userService.deleteUser(login).subscribe(() => {
-            this.userService.selectedUser$.next(null);
-            this.selectedUser = null;
-            this.fetchUsers().subscribe();
-          });
-        }
+      .pipe(
+        filter((result) => result),
+        switchMap(() => this.userService.deleteUser(login))
+      )
+      .subscribe(() => {
+        this.userService.selectedUser$.next(null);
+        this.selectedUser = null;
+        this.fetchUsers().subscribe();
       });
   }
 
