@@ -1,4 +1,11 @@
-<table mat-table [dataSource]="dataSource" matSort class="width-100 hover-list">
+<table
+    mat-table
+    [dataSource]="dataSource"
+    matSortActive="name"
+    matSortDirection="asc"
+    matSort
+    class="width-100 hover-list"
+>
     <!-- Role Column -->
     <ng-container matColumnDef="role-icon" class="thin-column">
         <th class="thin-column" mat-header-cell *matHeaderCellDef>Rolle</th>

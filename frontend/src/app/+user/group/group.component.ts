@@ -103,12 +103,11 @@ export class GroupComponent implements OnInit, AfterViewInit {
         this.dialog
           .open(NewGroupDialogComponent, { hasBackdrop: true })
           .afterClosed()
-          .subscribe((group) => {
-            if (group?.id) {
-              this.form.markAsPristine();
-              this.loadGroup(group.id);
-            }
-          });
+          .pipe(
+            filter((group) => group?.id),
+            map((group) => JSON.parse(JSON.stringify(group))) // group needs to be extensible
+          )
+          .subscribe((group) => this.updateUserOnPage(group));
     });
   }
 
@@ -117,22 +116,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
       if (confirmed) {
         this.isLoading = true;
         this.form.disable();
-        console.log("Load group");
-        this.groupService.getGroup(id).subscribe((fetchedGroup) => {
-          if (!fetchedGroup.permissions) {
-            fetchedGroup.permissions = new Permissions();
-          }
-          this.selectedGroup = fetchedGroup;
-          // this.groupService.selectedGroup$.next(fetchedGroup);
-          this.form.reset(fetchedGroup);
-          this.form.markAsPristine();
-          this.form.enable();
-          this.isLoading = false;
-          this.groupService.getGroupManager(id).subscribe((manager) => {
-            if (this.selectedGroup) this.selectedGroup.manager = manager.login;
-          });
-          this.loadGroupUsers(id);
-        });
+        this.groupService
+          .getGroup(id)
+          .subscribe((fetchedGroup) => this.updateUserOnPage(fetchedGroup));
       } else {
         this.groupService.setActive(this.previousGroupId);
       }
@@ -140,14 +126,34 @@ export class GroupComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private updateUserOnPage(group: Group) {
+    if (!group.permissions) {
+      group.permissions = new Permissions();
+    }
+    this.selectedGroup = group;
+    this.form.reset(group);
+    this.form.markAsPristine();
+    this.form.enable();
+    this.isLoading = false;
+    this.groupService.getGroupManager(group.id).subscribe((manager) => {
+      if (this.selectedGroup) this.selectedGroup.manager = manager.login;
+    });
+    this.loadGroupUsers(group.id);
+  }
+
   saveGroup(): void {
     const group = this.form.value;
-    this.groupService.updateGroup(group).subscribe((group) => {
-      if (group) {
-        this.form.markAsPristine();
-        this.loadGroup(group.id);
-      }
-    });
+    this.groupService
+      .updateGroup(group)
+      .pipe(
+        filter((group) => group),
+        map((group) => JSON.parse(JSON.stringify(group)))
+      )
+      .subscribe((group) => {
+        if (group) {
+          this.updateUserOnPage(group);
+        }
+      });
   }
 
   async deleteGroup(id: number) {
