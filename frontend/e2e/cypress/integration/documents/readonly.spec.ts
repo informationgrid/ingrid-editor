@@ -97,7 +97,6 @@ describe('Read Only Documents', () => {
     AdminUserPage.attemptIllegitimateMove();
     // expect error
     cy.get('error-dialog').contains('keine Berechtigung');
-    UserAuthorizationPage.closeErrorBox();
   });
 
   it('should be able to copy a read only document #3512', function () {
@@ -121,6 +120,7 @@ describe('Read Only Documents', () => {
 
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy]);
     // set access right back to 'write'
+    // TODO: use new group to prevent reset action
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup('gruppe_nur_daten');

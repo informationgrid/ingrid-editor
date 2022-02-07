@@ -33,15 +33,6 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
-      pages: this.fb.group(
-        this.router.config
-          .filter((route) => route.data)
-          .reduce((prev, curr) => {
-            prev[curr.path] = this.fb.control(false);
-            return prev;
-          }, {})
-      ),
-      actions: this.fb.group({ demo: [false], test: [false] }),
       documents: this.fb.control([]),
       addresses: this.fb.control([]),
     });

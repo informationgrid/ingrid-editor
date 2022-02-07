@@ -285,16 +285,20 @@ class CatalogService @Autowired constructor(
 
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
         val catalogUsers = getUserOfCatalog(catalogId)
-        val filteredUsers = keyCloakUsers
+        return keyCloakUsers
             .filter { user -> catalogUsers.any { it.userId == user.login } }
-            .onEach { user ->
+            .map { user ->
                 val catUser = catalogUsers.find { it.userId == user.login }!!
-                user.groups = catUser.groups.sortedBy { it.name }.map { it.id!! }
-                user.creationDate = catUser.data?.creationDate ?: Date(0)
-                user.modificationDate = catUser.data?.modificationDate ?: Date(0)
-                user.role = catUser.role?.name ?: ""
-                user.organisation = catUser.data?.organisation ?: ""
+                applyIgeUserInfo(user, catUser)
             }
-        return filteredUsers
+    }
+    
+    fun applyIgeUserInfo(user: User, igeUser: UserInfo): User {
+        user.groups = igeUser.groups.sortedBy { it.name }.map { it.id!! }
+        user.creationDate = igeUser.data?.creationDate ?: Date(0)
+        user.modificationDate = igeUser.data?.modificationDate ?: Date(0)
+        user.role = igeUser.role?.name ?: ""
+        user.organisation = igeUser.data?.organisation ?: ""
+        return user
     }
 }

@@ -40,8 +40,6 @@ export class BackendUser extends User {
 }
 
 export class Permissions {
-  pages: { [x: string]: boolean } = {};
-  actions: { [x: string]: boolean } = {};
   documents: TreePermission[] = [];
   addresses: TreePermission[] = [];
 }

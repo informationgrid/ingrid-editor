@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @RestController
@@ -120,40 +119,24 @@ open class UsersApiController : UsersApi {
 
     }
 
-    @ExperimentalTime
     override fun getUser(principal: Principal, userId: String): ResponseEntity<User> {
 
-        var user: User
-        val durationALl = measureTime {
-            keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient(principal).use { client ->
 
-                val durationGetUser = measureTime {
-                    user = keycloakService.getUser(client, userId)
-                }
-                val frontendUser =
-                    userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+            val user = keycloakService.getUser(client, userId)
 
-                val durationGetLatestLoginDate = measureTime {
-                    user.latestLogin = keycloakService.getLatestLoginDate(client, userId)
-                }
-                user.groups = frontendUser.groups.sortedBy { it.name }.map { it.id!! }
-                user.creationDate = frontendUser.data?.creationDate ?: Date(0)
-                user.modificationDate = frontendUser.data?.modificationDate ?: Date(0)
-                user.role = frontendUser.role?.name ?: ""
-                user.organisation = frontendUser.data?.organisation ?: ""
+            val frontendUser =
+                userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-                logger.info("getUser: $durationGetUser")
-                logger.info("getLatestLoginDate: $durationGetLatestLoginDate")
-            }
+            user.latestLogin = keycloakService.getLatestLoginDate(client, userId)
+
+            catalogService.applyIgeUserInfo(user, frontendUser)
+            return ResponseEntity.ok(user)
         }
-
-        logger.info("all: $durationALl")
-        return ResponseEntity.ok(user)
 
     }
 
     override fun list(principal: Principal): ResponseEntity<List<User>> {
-
 
         // return all users for superadmins and katadmins
         if (authUtils.isAdmin(principal)) {
