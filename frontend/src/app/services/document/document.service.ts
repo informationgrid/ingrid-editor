@@ -84,7 +84,7 @@ export class DocumentService {
         query,
         { type: address ? "selectAddresses" : "selectDocuments" },
         null,
-        "modified",
+        null,
         "DESC",
         { page: 1, pageSize: size }
       )

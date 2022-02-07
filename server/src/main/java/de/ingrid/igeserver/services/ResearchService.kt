@@ -106,8 +106,9 @@ class ResearchService {
                 ${createFromStatement()}
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
+            """ + if (query.orderByField != null) """
                 ORDER BY document1.${query.orderByField} ${query.orderByDirection}
-            """
+            """.trimIndent() else ""
     }
 
     private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocIds: List<Int>): String {
@@ -123,7 +124,7 @@ class ResearchService {
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
         val termSearch =
-            if (query.term.isNullOrEmpty()) "" else "(t.val ILIKE ? OR title ILIKE ? OR document_wrapper.uuid ILIKE ? )"
+            if (query.term.isNullOrEmpty()) "" else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ? )"
 
         val filter = convertQuery(query.clauses)
 
