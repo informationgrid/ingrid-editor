@@ -215,5 +215,37 @@ describe('General create documents/folders', () => {
 
       cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
     });
+
+    it('check for ordering and sorting for tables and lists in the mCLOUD document', () => {
+      let category1 = 'Bahn';
+      let category2 = 'Straßen';
+      let category3 = 'Luft- und Raumfahrt';
+
+      Tree.openNode(['New Folder For New Users', 'New Document']);
+      enterMcloudDocTestData.scrollToSection('mCLOUD');
+      enterMcloudDocTestData.CreateDialog.setCategory(category1);
+      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category1);
+
+      enterMcloudDocTestData.CreateDialog.setCategory(category2, false);
+      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category2);
+
+      enterMcloudDocTestData.CreateDialog.setCategory(category3, false);
+      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category3);
+
+      // change the order of mCloud categories by dragging then save
+      enterMcloudDocTestData.dragCategory('mCLOUD Kategorie', 2, -200, 0);
+      DocumentPage.saveDocument();
+
+      // check for the order after reload
+      cy.reload();
+
+      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category3, 0);
+      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category2, 2);
+      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category1, 1);
+
+      // TODO to continue the test for other input data
+      //enterMcloudDocTestData.CreateDialog.setOpenDataCategory();
+      // enterMcloudDocTestData.CreateDialog.setAddDownload();
+    });
   });
 });

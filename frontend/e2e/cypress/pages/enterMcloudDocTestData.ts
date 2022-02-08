@@ -29,12 +29,16 @@ export class enterMcloudDocTestData {
       cy.get('[data-cy=Nutzungshinweise]').find('mat-form-field').type(text);
     }
 
-    static setCategory(optionText: string = 'Bahn') {
-      cy.get('[data-cy="mCLOUD Kategorie"]').contains('Hinzufügen').click();
+    static setCategory(optionText: string = 'Bahn', isFirstCategory: boolean = true) {
+      if (!isFirstCategory) {
+        cy.get('[data-cy="mCLOUD Kategorie"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+      } else {
+        cy.get('[data-cy="mCLOUD Kategorie"]').contains('Hinzufügen').click();
+      }
+
       cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
       cy.get('[data-cy="chip-dialog-confirm"]').click();
     }
-
     static setOpenDataCategory(optionText: string = 'Verkehr') {
       cy.get('[data-cy="OpenData Kategorie"]').contains('Hinzufügen').click();
       cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
@@ -267,6 +271,9 @@ export class enterMcloudDocTestData {
     cy.contains('button', 'Link angeben').click();
   }
 
+  static scrollToSection(section: string) {
+    cy.get('ige-header-navigation').contains('mCLOUD').click();
+  }
   static fillFieldsOfAddURLDialog(title: string, url: string) {
     cy.get('input[formcontrolname="title"]').type(title);
     cy.get('[formcontrolname="url"]').type(url);
@@ -292,6 +299,39 @@ export class enterMcloudDocTestData {
     cy.get('.upload-content').should('contain', newName);
   }
 
+  /**
+   * @param {number} xCoordinate is how much the chip should be dragged horizontally
+   * @param {number} yCoordinate is how much the chip should be dragged vertically
+   */
+  static dragCategory(chipListName: string, indexOfDraggedCategory: number, xCoordinate: number, yCoordinate: number) {
+    // it is supposed to use trigger dragstart and trigger start drop, but it does not work here with categories
+    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
+      .eq(indexOfDraggedCategory)
+      .drag('[data-cy="' + chipListName + '"] mat-chip-list:last', {
+        force: true // applied to both the source and target element
+      })
+      .then(success => {
+        assert.isTrue(success);
+      });
+
+    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
+      .eq(indexOfDraggedCategory)
+      .trigger('mousemove', xCoordinate, yCoordinate, { force: true });
+
+    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
+      .eq(indexOfDraggedCategory)
+      .trigger('mouseup', { force: true });
+  }
+
+  static checkOfExistingCategoryInFile(categoryListName: string, categoryName: string, index: number = -1) {
+    if (index != -1) {
+      cy.get('[data-cy="' + categoryListName + '"] mat-chip-list mat-chip')
+        .eq(index)
+        .contains(categoryName);
+    } else {
+      cy.get('[data-cy="' + categoryListName + '"] mat-chip-list mat-chip').contains(categoryName);
+    }
+  }
   static addAlreadyExistingFileWithRename(filePath: string, newName: string) {
     cy.intercept('GET', /api\/upload/).as('tryUpload');
     cy.get('[type="file"]').attachFile({ filePath: filePath, fileName: newName });
