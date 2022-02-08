@@ -4,6 +4,7 @@ import { AdminUserPage, UserFormData } from '../../pages/administration-user.pag
 import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
+import { ResearchPage } from '../../pages/research.page';
 
 describe('Catalog management', () => {
   beforeEach(() => {
@@ -100,10 +101,10 @@ describe('Catalog management', () => {
 
     // check dataset are different
     // check if search only gets documents from the correct catalog
-    cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-    DashboardPage.search('a');
-    cy.get('button').contains('Suchen').click();
-    cy.get('div.result').contains('0 Ergebnisse gefunden');
+    Menu.switchTo('RESEARCH');
+    ResearchPage.search('a');
+    ResearchPage.waitForSearch();
+    ResearchPage.checkNoSearchResults();
 
     cy.get('[data-cy=header-info-button]').click();
     cy.get('button').contains('Katalogverwaltung').click();
@@ -113,10 +114,10 @@ describe('Catalog management', () => {
     // check if 'Test' catalog is active
     cy.get('.catalog-title').contains('Test');
 
-    cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-    DashboardPage.search('a');
-    cy.get('button').contains('Suchen').click();
-    cy.get('div.result').should('not.have.text', '0 Ergebnisse gefunden');
+    Menu.switchTo('RESEARCH');
+    ResearchPage.search('a');
+    ResearchPage.waitForSearch();
+    ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
   });
 
   // make sure we use the correct catalog for the other tests
