@@ -262,6 +262,8 @@ class DatasetsApiController @Autowired constructor(
         val children = if (!isCatAdmin && parentId == null) {
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups
+                ?.filter { it.catalog?.identifier == catalogId }
+                ?.toMutableSet()
             getRootDocsFromGroup(userGroups, catalogId, isAddress)
         } else {
             documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits

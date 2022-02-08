@@ -202,11 +202,6 @@ open class UsersApiController : UsersApi {
 
     override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
         principal as Authentication
-/*
-        val refreshToken = (principal.details as SimpleKeycloakAccount).keycloakSecurityContext.refreshToken
-        RSATokenVerifier.create(refreshToken).token.exp
-*/
-
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
@@ -219,7 +214,7 @@ open class UsersApiController : UsersApi {
             val userInfo = UserInfo(
                 userId = user.login,
                 name = user.firstName + ' ' + user.lastName,
-                lastName = user.lastName, //keycloakService.getName(principal as KeycloakAuthenticationToken?),
+                lastName = user.lastName,
                 firstName = user.firstName,
                 email = user.email,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),

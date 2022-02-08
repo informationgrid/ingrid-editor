@@ -39,17 +39,7 @@ export class ConfigDataService {
         .then(ConfigDataService.mapUserInformation)
         .catch((e: IgeException | XMLHttpRequest | string) => {
           if (typeof e === "string") {
-            if (e.indexOf("Cannot GET /sso/login") !== -1) {
-              console.error(
-                "Not logged in to keycloak. Please login first from IgeServer (localhost:8550)"
-              );
-              if (!environment.production) {
-                window.location.href = "http://localhost:8550";
-              }
-              return null;
-            } else if (
-              e.indexOf("Error occurred while trying to proxy to") !== -1
-            ) {
+            if (e.indexOf("Error occurred while trying to proxy to") !== -1) {
               console.error("No running backend");
               throw new Error("Backend does not seem to run");
             } else {
@@ -58,6 +48,10 @@ export class ConfigDataService {
           } else if ((<XMLHttpRequest>e).status === 401) {
             throw new Error(
               "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein"
+            );
+          } else if ((<XMLHttpRequest>e).status === 403) {
+            throw new Error(
+              "Sie sind kein IGE-Nutzer. Bitte wenden Sie sich an einen Administrator."
             );
           } else {
             throw new Error((<IgeException>e).errorText);
