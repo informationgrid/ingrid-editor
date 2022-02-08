@@ -9,22 +9,27 @@ interface CatalogProfile {
     val identifier: String
     val title: String
     val description: String?
-    
+
     @JsonIgnore
-    fun getFacetDefinitionsForDocuments(): Array<FacetGroup> 
-    
+    fun getFacetDefinitionsForDocuments(): Array<FacetGroup>
+
     @JsonIgnore
-    fun getFacetDefinitionsForAddresses(): Array<FacetGroup> 
-    
+    fun getFacetDefinitionsForAddresses(): Array<FacetGroup>
+
     @JsonIgnore
     fun initCatalogCodelists(catalogId: String, codelistId: String? = null)
-        
+
     @JsonIgnore
     fun initCatalogQueries(catalogId: String)
-    
+
     @JsonIgnore
     fun getElasticsearchMapping(format: String): String
 
     @JsonIgnore
     fun getElasticsearchSetting(format: String): String
+
+    @JsonIgnore
+    fun profileSpecificPermissions(permissions: List<String>): List<String>{
+        return permissions
+    }
 }

@@ -22,6 +22,7 @@ import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.Permissions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -410,6 +411,12 @@ class MCloudProfile : CatalogProfile {
             put("localisations", jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)
             })
+        }
+    }
+
+    override fun profileSpecificPermissions(permissions: List<String>): List<String>{
+        return permissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
+                                                    && !permission.equals(Permissions.can_export.name))
         }
     }
 }

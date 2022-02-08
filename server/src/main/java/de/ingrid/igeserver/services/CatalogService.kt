@@ -230,7 +230,9 @@ class CatalogService @Autowired constructor(
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
-        return if (isCatAdmin) {
+        val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
+
+        val permissions = if (isCatAdmin) {
             listOf(
                 Permissions.manage_catalog.name,
                 Permissions.manage_users.name,
@@ -248,7 +250,14 @@ class CatalogService @Autowired constructor(
                 Permissions.can_create_address.name,
             )
         } else {
-            return determineNonAdminUserPermissions(principal)
+            determineNonAdminUserPermissions(principal)
+        }
+
+        return if(user != null && user!!.catalogs.size > 0){
+            val catalogProfile = getCatalogProfile(getCurrentCatalogForPrincipal(principal))
+            catalogProfile.profileSpecificPermissions(permissions)
+        } else {
+            permissions
         }
     }
 
@@ -292,7 +301,7 @@ class CatalogService @Autowired constructor(
                 applyIgeUserInfo(user, catUser)
             }
     }
-    
+
     fun applyIgeUserInfo(user: User, igeUser: UserInfo): User {
         user.groups = igeUser.groups.sortedBy { it.name }.map { it.id!! }
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
