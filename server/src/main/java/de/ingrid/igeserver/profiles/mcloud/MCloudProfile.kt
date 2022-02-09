@@ -25,6 +25,7 @@ import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.Permissions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service()
@@ -414,9 +415,15 @@ class MCloudProfile : CatalogProfile {
         }
     }
 
-    override fun profileSpecificPermissions(permissions: List<String>): List<String>{
-        return permissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
-                                                    && !permission.equals(Permissions.can_export.name))
+    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
+        val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
+
+        return  if(isSuperAdmin) {
+            permissions
+        } else {
+            permissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
+                    && !permission.equals(Permissions.can_export.name))
+            }
         }
     }
 }

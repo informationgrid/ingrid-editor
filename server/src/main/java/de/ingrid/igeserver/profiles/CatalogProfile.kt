@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.model.FacetGroup
+import org.springframework.security.core.Authentication
 
 interface CatalogProfile {
     @get:JsonProperty("id")
@@ -29,7 +30,7 @@ interface CatalogProfile {
     fun getElasticsearchSetting(format: String): String
 
     @JsonIgnore
-    fun profileSpecificPermissions(permissions: List<String>): List<String>{
+    fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
         return permissions
     }
 }

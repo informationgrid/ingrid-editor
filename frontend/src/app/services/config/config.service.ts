@@ -110,13 +110,6 @@ export class ConfigService {
       neededPermission,
       user
     );
-    if (!hasExplicitPermission && this.isAdministrator) {
-      console.debug(
-        "Superadmin does not explicitly have all requested permissions: ",
-        neededPermission
-      );
-      return true;
-    }
     return hasExplicitPermission;
   }
 

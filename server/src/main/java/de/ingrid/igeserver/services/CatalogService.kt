@@ -230,9 +230,10 @@ class CatalogService @Autowired constructor(
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
+        val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
         val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
 
-        val permissions = if (isCatAdmin) {
+        val permissions = if (isCatAdmin || isSuperAdmin) {
             listOf(
                 Permissions.manage_catalog.name,
                 Permissions.manage_users.name,
@@ -256,7 +257,7 @@ class CatalogService @Autowired constructor(
         return if(user != null && user.catalogs.size > 0){
             val catalog = getCatalogById(getCurrentCatalogForPrincipal(principal))
             val catalogProfile = getCatalogProfile(catalog.type)
-            catalogProfile.profileSpecificPermissions(permissions)
+            catalogProfile.profileSpecificPermissions(permissions, principal)
         } else {
             permissions
         }
