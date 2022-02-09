@@ -239,22 +239,7 @@ describe('User', () => {
   });
 
   it('should be possible to delete a user', () => {
-    const toDelete = 'todelete inthistest';
-    // create user
-    cy.contains('button', 'Hinzufügen').click();
-
-    let user: UserFormData = {
-      firstName: 'todelete',
-      lastName: 'inthistest',
-      email: 'autor112@wemove.com',
-      login: 'autor112',
-      role: 'Autor',
-      groups: [],
-      organisation: ''
-    };
-
-    AdminUserPage.addNewUser(user, true);
-    // check user has been created
+    const toDelete = 'todel';
     AdminUserPage.selectUser(toDelete);
     // delete user
     AdminUserPage.deleteUser();
