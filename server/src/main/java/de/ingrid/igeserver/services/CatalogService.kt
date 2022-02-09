@@ -253,8 +253,9 @@ class CatalogService @Autowired constructor(
             determineNonAdminUserPermissions(principal)
         }
 
-        return if(user != null && user!!.catalogs.size > 0){
-            val catalogProfile = getCatalogProfile(getCurrentCatalogForPrincipal(principal))
+        return if(user != null && user.catalogs.size > 0){
+            val catalog = getCatalogById(getCurrentCatalogForPrincipal(principal))
+            val catalogProfile = getCatalogProfile(catalog.type)
             catalogProfile.profileSpecificPermissions(permissions)
         } else {
             permissions
