@@ -121,20 +121,18 @@ describe('Catalog management', () => {
   });
 
   // make sure we use the correct catalog for the other tests
+  // send an API call to set current catalog to 'test'
   after(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
-    ManageCatalogPage.visit();
-    cy.get('.catalog-title').then($info => {
-      const headerInfo = $info.text();
-
-      if (headerInfo === 'Test') {
-        cy.get('.catalog-title').contains('Test');
-      } else {
-        ManageCatalogPage.switchToCatalog('Test');
-
-        cy.get('.catalog-title').contains('Test');
-      }
+    cy.kcLogin('user').as('tokens');
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/user/catalog/test`,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
     });
   });
 });

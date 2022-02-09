@@ -1,18 +1,22 @@
 export class ManageCatalogPage {
   static visit() {
-    cy.intercept({ method: 'GET', url: '/api/catalogs', times: 1 }).as('catalogs');
     cy.visit('settings/catalog');
-    cy.wait('@catalogs');
+    cy.get('ige-catalog-management .page-title').should('contain.text', 'Katalogverwaltung');
   }
 
   static openCatalogCardMenu(title: string) {
-    cy.get(`[data-cy="${title}"]`).trigger('mouseover').parent().find('button.mat-menu-trigger').click({ force: true });
+    cy.get(`[data-cy="${title}"]`, { timeout: 10000 })
+      .should('exist')
+      .scrollIntoView()
+      .trigger('mouseover')
+      .find('button.mat-menu-trigger')
+      .click({ force: true });
   }
 
   static switchToCatalog(title: string) {
     ManageCatalogPage.openCatalogCardMenu(title);
     // use "Verwenden" button on catalog to switch to new catalog
-    cy.get('button').contains('Verwenden').click();
+    cy.get('button.mat-menu-item').contains('Verwenden').click();
     cy.wait(1000);
   }
 
