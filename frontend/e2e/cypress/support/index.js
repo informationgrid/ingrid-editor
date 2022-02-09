@@ -5,6 +5,28 @@ import 'cypress-file-upload';
 
 const addContext = require('mochawesome/addContext');
 
+Cypress.on('test:before:run', (test, runnable) => {
+  const currentTime = new Date(Date.now());
+  addContext(
+    { test },
+    {
+      title: 'start of test execution',
+      value:
+        currentTime.getFullYear() +
+        '-' +
+        (currentTime.getMonth() + 1) +
+        '-' +
+        currentTime.getDate() +
+        ' ' +
+        currentTime.getHours() +
+        ':' +
+        currentTime.getMinutes() +
+        ':' +
+        currentTime.getSeconds()
+    }
+  );
+});
+
 Cypress.on('test:after:run', (test, runnable) => {
   if (test.state === 'failed') {
     let item = runnable;
@@ -30,21 +52,33 @@ Cypress.on('test:after:run', (test, runnable) => {
 
     const firstTestStart = runnable.parent.tests[0].wallClockStartedAt;
     const startTimeOffset = Math.round((test.wallClockStartedAt - firstTestStart) / 1000);
+    const currentTime = new Date(Date.now());
 
     addContext({ test }, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`.replace('  ', ' '));
     addContext({ test }, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);
     addContext(
       { test },
       {
-        title: 'test:',
-        value: runnable.parent.title + '/' + test.title
+        title: 'test',
+        value: test.title
       }
     );
     addContext(
       { test },
       {
-        title: 'time of test execution:',
-        value: new Date(Date.now()).toISOString()
+        title: 'end of test execution',
+        value:
+          currentTime.getFullYear() +
+          '-' +
+          (currentTime.getMonth() + 1) +
+          '-' +
+          currentTime.getDate() +
+          ' ' +
+          currentTime.getHours() +
+          ':' +
+          currentTime.getMinutes() +
+          ':' +
+          currentTime.getSeconds()
       }
     );
   }
