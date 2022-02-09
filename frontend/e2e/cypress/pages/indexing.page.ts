@@ -26,10 +26,10 @@ export class IndexingPage {
   }
 
   static indexAndWait(timeout = 30000) {
-    cy.intercept('POST', '/api/index').as('indexRequest');
     cy.get('.start-index').click();
     cy.get('.cancel-index', { timeout: timeout }).should('not.exist');
-    cy.wait('@indexRequest');
+    // after indexing we should wait some time to make sure new index is available
+    cy.wait(1000);
   }
 
   static openIndexStatusBox() {

@@ -71,8 +71,7 @@ describe('Spatial References', () => {
     const docName = 'spatial-' + Utils.randomString();
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
-    // give application time to show the api-created document
-    AddressPage.visit();
+    // reload page to see new Document
     DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 

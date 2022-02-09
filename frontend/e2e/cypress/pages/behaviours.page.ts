@@ -14,7 +14,8 @@ export class BehavioursPage extends BasePage {
 
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
     cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click({ force: true });
-    cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')').click();
+    // use a longer timeout since element is currently animating error could occur
+    cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
   }
 
   private static toggleCatalogSetting(title: string): void {
