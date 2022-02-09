@@ -1,5 +1,6 @@
 import { KeycloakOptions, KeycloakService } from "keycloak-angular";
 import { AuthenticationService } from "./authentication.service";
+import { IgeError } from "../models/ige-error";
 
 export class AuthKeycloakService extends AuthenticationService {
   constructor(private keycloak: KeycloakService) {
@@ -7,7 +8,9 @@ export class AuthKeycloakService extends AuthenticationService {
   }
 
   refreshToken() {
-    this.keycloak.updateToken(60);
+    this.keycloak.updateToken(60).catch((error) => {
+      throw new IgeError(error);
+    });
   }
 
   logout() {
