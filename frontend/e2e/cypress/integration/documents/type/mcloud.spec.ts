@@ -41,8 +41,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.publishNow();
     });
 
-    // right now not working because of bug needing to be fixed
-    xit('after catalog admin has added address to document, the document can still be accessed by authorized users (#3446)', () => {
+    it('after adding address to document, the document can not be accessed anymore by users not authorized to access address', () => {
       // add address to document
       DocumentPage.visit();
       Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
@@ -52,8 +51,13 @@ describe('mCLOUD documents', function () {
       cy.kcLogout();
       cy.kcLogin('meta2');
       DocumentPage.visit();
-      Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
-      cy.get('.error').should('not.exist');
+      // open folder containing document in question
+      Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D']);
+      // try to open document
+      cy.contains('mat-tree-node', 'Datum_Ebene_4_8').click();
+      // expect error
+      cy.get('.error').should('exist');
+      cy.contains('mat-dialog-content', 'Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben');
     });
 
     it('should not be able to choose address folder as address', () => {
