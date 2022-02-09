@@ -39,8 +39,12 @@ export class enterMcloudDocTestData {
       cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
       cy.get('[data-cy="chip-dialog-confirm"]').click();
     }
-    static setOpenDataCategory(optionText: string = 'Verkehr') {
-      cy.get('[data-cy="OpenData Kategorie"]').contains('Hinzufügen').click();
+    static setOpenDataCategory(optionText: string = 'Verkehr', isFirstCategory: boolean = true) {
+      if (!isFirstCategory) {
+        cy.get('[data-cy="OpenData Kategorie"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+      } else {
+        cy.get('[data-cy="OpenData Kategorie"]').contains('Hinzufügen').click();
+      }
       cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
       cy.get('[data-cy="chip-dialog-confirm"]').click();
     }
@@ -303,33 +307,33 @@ export class enterMcloudDocTestData {
    * @param {number} xCoordinate is how much the chip should be dragged horizontally
    * @param {number} yCoordinate is how much the chip should be dragged vertically
    */
-  static dragCategory(chipListName: string, indexOfDraggedCategory: number, xCoordinate: number, yCoordinate: number) {
+  static dragItem(
+    sourceNode: string,
+    targetNode: string,
+    indexOfDraggedCategory: number,
+    xCoordinate: number,
+    yCoordinate: number
+  ) {
     // it is supposed to use trigger dragstart and trigger start drop, but it does not work here with categories
-    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
+    cy.get(sourceNode)
       .eq(indexOfDraggedCategory)
-      .drag('[data-cy="' + chipListName + '"] mat-chip-list:last', {
+      .drag(targetNode, {
         force: true // applied to both the source and target element
       })
       .then(success => {
         assert.isTrue(success);
       });
 
-    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
-      .eq(indexOfDraggedCategory)
-      .trigger('mousemove', xCoordinate, yCoordinate, { force: true });
+    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
 
-    cy.get('[data-cy="' + chipListName + '"] mat-chip-list mat-chip')
-      .eq(indexOfDraggedCategory)
-      .trigger('mouseup', { force: true });
+    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
   }
 
-  static checkOfExistingCategoryInFile(categoryListName: string, categoryName: string, index: number = -1) {
+  static checkOfExistingItemInmCLOUD(node: string, itemName: string, index: number = -1) {
     if (index != -1) {
-      cy.get('[data-cy="' + categoryListName + '"] mat-chip-list mat-chip')
-        .eq(index)
-        .contains(categoryName);
+      cy.get(node).eq(index).contains(itemName);
     } else {
-      cy.get('[data-cy="' + categoryListName + '"] mat-chip-list mat-chip').contains(categoryName);
+      cy.get(node).contains(itemName);
     }
   }
   static addAlreadyExistingFileWithRename(filePath: string, newName: string) {

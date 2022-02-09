@@ -216,36 +216,99 @@ describe('General create documents/folders', () => {
       cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
     });
 
-    it('check for ordering and sorting for tables and lists in the mCLOUD document', () => {
+    it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
       let category1 = 'Bahn';
       let category2 = 'Straßen';
       let category3 = 'Luft- und Raumfahrt';
 
+      let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
+
       Tree.openNode(['New Folder For New Users', 'New Document']);
       enterMcloudDocTestData.scrollToSection('mCLOUD');
       enterMcloudDocTestData.CreateDialog.setCategory(category1);
-      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category1);
+      cy.get(mCLOUDSelector).contains(category1);
 
       enterMcloudDocTestData.CreateDialog.setCategory(category2, false);
-      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category2);
+      cy.get(mCLOUDSelector).contains(category2);
 
       enterMcloudDocTestData.CreateDialog.setCategory(category3, false);
-      cy.get('[data-cy="mCLOUD Kategorie"] mat-chip-list').contains(category3);
+      cy.get(mCLOUDSelector).contains(category3);
 
       // change the order of mCloud categories by dragging then save
-      enterMcloudDocTestData.dragCategory('mCLOUD Kategorie', 2, -200, 0);
+      enterMcloudDocTestData.dragItem(
+        mCLOUDSelector + ' mat-chip',
+        '[data-cy="mCLOUD Kategorie"] mat-chip-list:last',
+        2,
+        -200,
+        0
+      );
       DocumentPage.saveDocument();
 
       // check for the order after reload
       cy.reload();
 
-      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category3, 0);
-      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category2, 2);
-      enterMcloudDocTestData.checkOfExistingCategoryInFile('mCLOUD Kategorie', category1, 1);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category3, 0);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category2, 2);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category1, 1);
 
-      // TODO to continue the test for other input data
-      //enterMcloudDocTestData.CreateDialog.setOpenDataCategory();
-      // enterMcloudDocTestData.CreateDialog.setAddDownload();
+      enterMcloudDocTestData.scrollToSection('mCLOUD');
+      // add openData categories and check of the order after drag and drop
+      let openDataCategory1 = 'Energie';
+      let openDataCategory2 = 'Gesundheit';
+      let openDataCategory3 = 'Internationale Themen';
+
+      let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
+      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory1);
+      cy.get(openDataSelector).contains(openDataCategory1);
+
+      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory2, false);
+      cy.get(openDataSelector).contains(openDataCategory2);
+
+      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory3, false);
+      cy.get(openDataSelector).contains(openDataCategory3);
+
+      // change the order of mCloud categories by dragging then save
+      enterMcloudDocTestData.dragItem(
+        openDataSelector + ' mat-chip',
+        '[data-cy="OpenData Kategorie"] mat-chip-list:last',
+        2,
+        -200,
+        0
+      );
+      DocumentPage.saveDocument();
+
+      // reload and make sure of ordering
+      cy.reload();
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory3, 0);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory2, 2);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory1, 1);
+    });
+
+    it('check for ordering and sorting mCloud address lists in the mCLOUD document', () => {
+      let address1 = 'mclould_address';
+      let address2 = 'Published Testorganization';
+      let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
+
+      Tree.openNode(['New Folder For New Users', 'New Document']);
+      enterMcloudDocTestData.CreateDialog.setAddress(address1);
+      enterMcloudDocTestData.CreateDialog.setAddress(address2);
+
+      enterMcloudDocTestData.scrollToSection('Allgemeines');
+
+      enterMcloudDocTestData.dragItem(
+        addressSelector,
+        '[data-cy="Adressen"] .address-cards .address-card-wrapper',
+        1,
+        -200,
+        0
+      );
+
+      DocumentPage.saveDocument();
+
+      // reload and make sure of ordering
+      cy.reload();
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(addressSelector, address2, 0);
+      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(addressSelector, address1, 1);
     });
   });
 });
