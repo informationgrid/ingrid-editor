@@ -46,7 +46,18 @@ export class DashboardPage {
     });
   }
 
+  static startShortcutAction(option: Shortcuts) {
+    cy.contains('.shortcut button', option, { timeout: 10000 }).click();
+  }
+
   static draftedDocuments = '.box.working .count';
   static publishedDocuments = '.box .count';
   static totalDisplay = '.circular-chart .text';
+}
+
+export enum Shortcuts {
+  NewFolder = 'Neuer Ordner',
+  NewAddress = 'Neue Adresse',
+  NewDataset = 'Neuer Datensatz',
+  ImportDataset = 'Datensatz importieren'
 }

@@ -1,4 +1,4 @@
-import { DashboardPage } from '../../pages/dashboard.page';
+import { DashboardPage, Shortcuts } from '../../pages/dashboard.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
@@ -34,7 +34,7 @@ describe('Dashboard', () => {
   });
 
   it('should check last updated document from latest docs box', () => {
-    DocumentPage.visit();
+    Menu.switchTo('DOCUMENTS');
     let docName = 'TestDocResearch1';
     Tree.openNode([docName]);
     DocumentPage.addDescription('description');
@@ -68,13 +68,13 @@ describe('Dashboard', () => {
       // create address via api
       AddressPage.apiCreateAddress(addressData, false);
       // check last-edited-display in data section
-      DocumentPage.visit();
+      Menu.switchTo('DOCUMENTS');
       cy.get('.mat-card-content').should('contain', docTitle);
       // check last-edited-display in address section
-      AddressPage.visit();
+      Menu.switchTo('ADDRESSES');
       cy.get('.mat-card-content').should('contain', addressData.title);
       // check dashboard display and see if number has increased
-      DashboardPage.visit();
+      Menu.switchTo('DASHBOARD');
       DashboardPage.getCount(DashboardPage.draftedDocuments).then(numberAfter => {
         cy.contains('.mat-card-content mat-selection-list', docTitle);
         expect(numberAfter).to.be.greaterThan(numberBefore);
@@ -100,9 +100,9 @@ describe('Dashboard', () => {
     });
 
     it('should show empty search input field when clicking on x-button', function () {
-      const searchterm = 'whatever';
-      DashboardPage.search(searchterm);
-      cy.get('ige-quick-search').get('input').should('have.value', searchterm);
+      const searchTerm = 'whatever';
+      DashboardPage.search(searchTerm);
+      cy.get('ige-quick-search input').should('have.value', searchTerm);
       DashboardPage.clearSearch();
       cy.get('ige-quick-search').get('input').should('have.value', '');
     });
@@ -110,33 +110,25 @@ describe('Dashboard', () => {
 
   describe('Action Buttons', () => {
     it('should create a new folder', () => {
-      cy.get('.shortcut', { timeout: 10000 }).contains('Neuer Ordner').click();
-
       const folderName = 'Test Ordner aus dashboard button' + Utils.randomString();
-      cy.get('[data-cy=create-title]').type(folderName);
-      cy.get('[data-cy=create-action]').click();
-
+      DashboardPage.startShortcutAction(Shortcuts.NewFolder);
+      DocumentPage.fillCreateDialog(folderName);
       cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', folderName);
     });
 
     it('should create a new document', () => {
-      cy.get('.shortcut', { timeout: 10000 }).contains('Neuer Datensatz').click();
-
       const dataName = 'Test Datensatz aus dashboard button' + Utils.randomString();
-      cy.get('[data-cy=create-title]').type(dataName);
-      cy.get('[data-cy=create-action]').click();
-
+      DashboardPage.startShortcutAction(Shortcuts.NewDataset);
+      DocumentPage.fillCreateDialog(dataName);
       cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', dataName);
     });
 
     it('should create a new address', () => {
-      cy.get('.shortcut').contains('Neue Adresse').click();
-
-      const instuteName = 'Test Adresse aus dashboard button ' + Utils.randomString();
-      AddressPage.CreateDialog.fill(new Address(instuteName, '', ''));
-      cy.get('[data-cy=create-action]').click();
-
-      cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instuteName);
+      const instituteName = 'Test Adresse aus dashboard button ' + Utils.randomString();
+      DashboardPage.startShortcutAction(Shortcuts.NewAddress);
+      AddressPage.CreateDialog.fill(new Address(instituteName, '', ''));
+      DocumentPage.CreateDialog.execute();
+      cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instituteName);
     });
   });
 });
