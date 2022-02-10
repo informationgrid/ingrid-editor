@@ -1018,11 +1018,11 @@ public class FileSystemStorage implements Storage {
         final String itemPath = ((isArchived ? 1 : 0) < nameCount-1)?strippedPath.subpath((isArchived ? 1 : 0), nameCount-1).toString():"";
         final String itemFile = strippedPath.getName(nameCount-1).toString();
 
-        final String mimeType = getMimeType(filePath);
-        final long fileSize = Files.size(filePath);
+        final String mimeType = filePath.toFile().exists()?getMimeType(filePath):"";
+        final long fileSize = filePath.toFile().exists()?Files.size(filePath):0;
 
         // get last modified date of file and take care of timezone correctly, since LocalDateTime does not store time zone information (#745)
-        final LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(Files.getLastModifiedTime(filePath).toInstant(), TimeZone.getDefault().toZoneId());
+        final LocalDateTime lastModifiedTime = filePath.toFile().exists()?LocalDateTime.ofInstant(Files.getLastModifiedTime(filePath).toInstant(), TimeZone.getDefault().toZoneId()):null;
 
         return new FileSystemItem(this, catalog, docID, userID, itemPath, itemFile, mimeType, fileSize, lastModifiedTime,
                 isArchived, scope);
