@@ -18,23 +18,13 @@ import java.util.*
  * Filter for processing document data send from the client before insert
  */
 @Component
-class DefaultDocumentInitializer : Filter<PreCreatePayload> {
+class DefaultDocumentInitializer @Autowired constructor(
+    val dateService: DateService,
+    val docWrapperRepo: DocumentWrapperRepository,
+    val catalogRepo: CatalogRepository
+) : Filter<PreCreatePayload> {
 
-    companion object {
-        private val PROFILES = arrayOf<String>()
-    }
-
-    @Autowired
-    private lateinit var dateService: DateService
-
-    @Autowired
-    private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    @Autowired
-    private lateinit var catalogRepo: CatalogRepository
-
-    override val profiles: Array<String>?
-        get() = PROFILES
+    override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PreCreatePayload, context: Context): PreCreatePayload {
         // initialize id

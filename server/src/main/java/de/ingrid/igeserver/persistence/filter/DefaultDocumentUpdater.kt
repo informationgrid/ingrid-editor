@@ -5,7 +5,7 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -16,22 +16,14 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before update
  */
 @Component
-class DefaultDocumentUpdater : Filter<PreUpdatePayload> {
+class DefaultDocumentUpdater @Autowired constructor(
+    val docWrapperRepo: DocumentWrapperRepository,
+    val catalogRepo: CatalogRepository
+) : Filter<PreUpdatePayload> {
 
     val log = logger()
 
-    companion object {
-        private val PROFILES = arrayOf<String>()
-    }
-
-    @Autowired
-    private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    @Autowired
-    private lateinit var catalogRepo: CatalogRepository
-
-    override val profiles: Array<String>?
-        get() = PROFILES
+    override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
         val docId = payload.document.uuid

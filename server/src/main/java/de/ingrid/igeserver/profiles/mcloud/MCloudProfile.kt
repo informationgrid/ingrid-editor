@@ -30,23 +30,12 @@ import org.springframework.stereotype.Service
 
 @Service()
 @Profile("mcloud")
-class MCloudProfile : CatalogProfile {
-
-    @Autowired
-    @JsonIgnore
-    lateinit var codelistRepo: CodelistRepository
-
-    @Autowired
-    @JsonIgnore
-    lateinit var catalogRepo: CatalogRepository
-
-    @Autowired
-    @JsonIgnore
-    lateinit var query: QueryRepository
-
-    @Autowired
-    @JsonIgnore
-    lateinit var dateService: DateService
+class MCloudProfile @Autowired constructor(
+    @JsonIgnore val codelistRepo: CodelistRepository,
+    @JsonIgnore val catalogRepo: CatalogRepository,
+    @JsonIgnore val query: QueryRepository,
+    @JsonIgnore val dateService: DateService
+) : CatalogProfile {
 
     override val identifier: String = "mcloud"
     override val title: String = "mCLOUD Katalog"

@@ -13,23 +13,17 @@ import org.springframework.stereotype.Component
  * NOTE This class uses AuditLogger to create and log messages
  */
 @Component
-class DataHistoryLogger : Filter<PostPersistencePayload> {
+class DataHistoryLogger @Autowired constructor(
+    var auditLogger: AuditLogger,
+    var documentService: DocumentService
+) : Filter<PostPersistencePayload> {
 
     companion object {
-        private val PROFILES = arrayOf<String>()
-
         const val LOGGER_NAME = "audit.data-history"
         const val LOG_CATEGORY = "data-history"
     }
 
-    @Autowired
-    private lateinit var auditLogger: AuditLogger
-
-    @Autowired
-    private lateinit var documentService: DocumentService
-
-    override val profiles: Array<String>?
-        get() = PROFILES
+    override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PostPersistencePayload, context: Context): PostPersistencePayload {
         val docId = payload.document.uuid

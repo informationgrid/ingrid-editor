@@ -5,8 +5,6 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.repository.DocumentRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 /**
@@ -21,9 +19,6 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
 
     override val profiles: Array<String>?
         get() = PROFILES
-
-    @Autowired
-    private lateinit var documentRepo: DocumentRepository
 
     override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
         val docId = payload.document.uuid
@@ -51,7 +46,8 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
             if (version != null && publishedVersion != null && publishedVersion > version) {
                 throw ConcurrentModificationException.withConflictingResource(
                     published.id.toString(),
-                    published.version!!, version)
+                    published.version!!, version
+                )
             }
         }
     }
