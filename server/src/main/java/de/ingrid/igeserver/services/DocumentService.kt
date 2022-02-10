@@ -29,6 +29,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.utils.AuthUtils
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -52,7 +53,8 @@ class DocumentService @Autowired constructor(
     var catalogRepo: CatalogRepository,
     var aclService: IgeAclService,
     var groupService: GroupService,
-    var generalProperties: GeneralProperties
+    var generalProperties: GeneralProperties,
+    var authUtils: AuthUtils,
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -216,7 +218,7 @@ class DocumentService @Autowired constructor(
 
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
-        document.createdby = principal.name
+        document.createdby = authUtils.getUsernameFromPrincipal(principal)
 
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
@@ -357,7 +359,10 @@ class DocumentService @Autowired constructor(
         preUpdatePayload.document.created = createdDate
         preUpdatePayload.document.createdby = createdBy
 
-        preUpdatePayload.document.modifiedby = principal?.name
+        if(principal != null) {
+            preUpdatePayload.document.modifiedby = authUtils.getUsernameFromPrincipal(principal)
+        }
+
 
         try {
             preUpdatePayload.document.wrapperId = wrapper.id
