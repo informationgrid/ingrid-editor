@@ -11,6 +11,7 @@ describe('Search', function () {
   });
 
   it('should show quicksearch results while entering a searchterm', () => {
+    // check and compare number of search result suggestions when typing in search term
     DashboardPage.search('m');
     DocumentPage.getSearchResults()
       .its('length')
@@ -19,22 +20,16 @@ describe('Search', function () {
         cy.get('.cdk-overlay-pane ige-document-list-item').should('exist');
         cy.get('.cdk-overlay-pane ige-document-list-item').should('have.length.lessThan', count);
       });
-    // TODO: as Unit tests and e2e tests only checks if functionality is there ("click on Alle-Link", ...)
+
+    // search results should contain both docs and addresses
     DashboardPage.clearSearch();
     DashboardPage.search('t');
-    // result should show docs and addresses
     cy.get('.result-title')
       .contains(/Daten \([1-9][0-9]*\)/)
       .should('exist');
     cy.get('.result-title')
       .contains(/Adressen \([1-9][0-9]*\)/)
       .should('exist');
-
-    // TODO does not work if at the end of this test. investigate!
-    // result should show "All" link when more than 5 results for docs / addresses
-    DashboardPage.clearSearch();
-    DashboardPage.search('t');
-    cy.get('a').contains('Alle').should('exist');
 
     // result should show only docs
     DashboardPage.clearSearch();
@@ -45,6 +40,7 @@ describe('Search', function () {
     cy.get('.result-title')
       .contains(/Adressen \(0\)/)
       .should('exist');
+
     // result should show only addresses
     DashboardPage.clearSearch();
     DashboardPage.search('adresse');
@@ -54,27 +50,32 @@ describe('Search', function () {
     cy.get('.result-title')
       .contains(/Adressen \([1-9][0-9]*\)/)
       .should('exist');
+
+    // result should show "Alle" link when more than 5 results for docs and addresses
+    DashboardPage.clearSearch();
+    DashboardPage.search('a');
+    cy.get('a[data-cy*="all-link-"]').should('have.length', 2);
   });
 
   it('should open a document after clicking a searchresult', () => {
-    const docname = 'TestDocResearch3';
-    DashboardPage.search(docname);
+    const docName = 'TestDocResearch3';
+    DashboardPage.search(docName);
     cy.get('.highlight').click();
-    cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', docname);
+    cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', docName);
   });
 
   it('should find addresses and open it', () => {
-    const addressname = 'Testorganisation';
-    DashboardPage.search(addressname);
+    const addressName = 'Testorganisation';
+    DashboardPage.search(addressName);
     cy.get('.highlight').click();
-    cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', addressname);
+    cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', addressName);
   });
 
   it('should find folders and open it', () => {
-    const foldername = 'Neue Testdokumente';
-    DashboardPage.search(foldername);
+    const folderName = 'Neue Testdokumente';
+    DashboardPage.search(folderName);
     cy.get('.highlight').click();
-    cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', foldername);
+    cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', folderName);
   });
 
   it('should switch to research page after click "Erweiterte Suche" and show all documents/addresses', () => {
