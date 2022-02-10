@@ -252,4 +252,42 @@ describe('Upload Tests', () => {
     cy.contains('mat-error', 'Verwenden Sie bitte eine gültige URL');
     cy.contains('button', 'Übernehmen').should('be.disabled');
   });
+
+  it('should upload and unzip new zip archive and rename duplicate zip archive files while keeping non-duplicate files with unmodified name (#3346)', () => {
+    const fileTitle = 'Test2.zip';
+    const toBeRenamed = 'Test.zip';
+    const unzippedFiles: string[] = [
+      'test_file_1.PNG',
+      'test_file_2.PNG',
+      'test_file_3.PNG',
+      'test_image_6.PNG',
+      'test_file_1-1.PNG',
+      'test_file_2-1.PNG',
+      'test_file_3-1.PNG',
+      'test_image_1.PNG'
+    ];
+
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_2']);
+    // check no file has been added yet
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    // upload file and activate unzip option
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.addFile(fileTitle);
+    enterMcloudDocTestData.unzipArchiveAfterUpload();
+    enterMcloudDocTestData.assertFileUpload();
+    // check number of unzipped files in table
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
+
+    // upload file and activate unzip option
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.addFileWithRename(toBeRenamed, 'Test2.zip');
+    enterMcloudDocTestData.unzipArchiveAfterUpload();
+    enterMcloudDocTestData.assertFileUpload();
+    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Rename);
+    // check number of unzipped files in table (5 files with original name, 3 files with modified name)
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 8);
+    cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
+      cy.wrap(item).should('contain.text', unzippedFiles[index]);
+    });
+  });
 });
