@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, merge, Observable } from "rxjs";
+import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { CollectionViewer, SelectionChange } from "@angular/cdk/collections";
@@ -20,6 +20,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 @Injectable()
 export class DynamicDataSource {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
+  nodeExpanded$ = new Subject<string>();
 
   private forAddress = false;
 
@@ -117,6 +118,7 @@ export class DynamicDataSource {
           // notify the change
           this.dataChange.next(this.data);
         }
+        this.nodeExpanded$.next(node._id);
       });
   }
 

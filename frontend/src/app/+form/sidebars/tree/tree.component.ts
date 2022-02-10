@@ -170,31 +170,27 @@ export class TreeComponent implements OnInit {
     //        triggered by dataChange, which mixes up resolveNextTime timing
 
     return new Promise((resolve) => {
-      const changeObserver = this.dataSource.dataChange.subscribe((data) => {
-        if (resolveNextTime) {
-          setTimeout(() => changeObserver.unsubscribe(), 0);
-          resolve();
-          return;
-        }
-        if (data === null) {
-          return;
-        }
-
-        if (ids.length > 0) {
-          nextId = ids.shift();
-          const nodeToExpand = data.filter((node) => node._id === nextId)[0];
+      const initialId = ids.shift();
+      const expanderSubscription = this.dataSource.nodeExpanded$.subscribe(
+        (nodeId) => {
+          console.log("Expanded: " + nodeId);
+          const nextId = ids.shift();
+          if (!nextId) {
+            expanderSubscription.unsubscribe();
+            resolve();
+            return;
+          }
+          const nodeToExpand = this.dataSource.data.filter(
+            (node) => node._id === nextId
+          )[0];
           this.treeControl.expand(nodeToExpand);
         }
-        if (ids.length === 0) {
-          const folderAlreadyExpanded =
-            data.find((d) => d.parent === nextId) !== undefined;
-          if (folderAlreadyExpanded) {
-            setTimeout(() => changeObserver.unsubscribe(), 0);
-            resolve();
-          }
-          resolveNextTime = true;
-        }
-      });
+      );
+
+      const nodeToExpand = this.dataSource.data.filter(
+        (node) => node._id === initialId
+      )[0];
+      this.treeControl.expand(nodeToExpand);
     });
   }
 
@@ -398,50 +394,46 @@ export class TreeComponent implements OnInit {
     return DocumentUtils.getStateClass(node.state, node.type);
   }
 
-  jumpToNode(id: string, resetSelection = true): Promise<void> {
+  async jumpToNode(id: string, resetSelection = true): Promise<void> {
     if (resetSelection) {
       this.selection.model.clear();
     }
 
-    if (id !== null && id !== undefined) {
-      // TODO: do not always request path, when not needed
-      return this.database.getPath(id).then((path) => {
-        // skip last node which does not need to be expanded
-        path.pop();
-
-        if (path.length > 0) {
-          return this.handleExpandNodes(path).then(() => {
-            const node = this.dataSource.getNode(id);
-            if (node) {
-              if (resetSelection) {
-                this.selectNode(node);
-              }
-              this.scrollToActiveElement();
-            }
-          });
-        } else {
-          if (resetSelection) {
-            const uuid = this.dataSource.getNode(id)?._uuid;
-            this.activate.next(uuid ? [uuid] : []);
-          }
-          // TODO: id can never be null here!
-          if (id) {
-            const node = this.dataSource.getNode(id);
-            if (node) {
-              if (resetSelection) {
-                this.selectNode(node);
-              }
-              this.scrollToActiveElement();
-            }
-          } else {
-            console.error("ID cannot be null!?", id);
-          }
-        }
-      });
-    } else {
+    if (id === null || id === undefined) {
       this.activeNodeId = null;
       return Promise.resolve();
     }
+
+    // TODO: do not always request path, when not needed
+    const path = await this.database.getPath(id);
+    // skip last node which does not need to be expanded
+    path.pop();
+
+    if (path.length > 0) {
+      return this.handleExpandNodes(path).then(() =>
+        this.selectAndScrollToNode(id, resetSelection)
+      );
+    } else {
+      this.handleJumpToRootNode(resetSelection, id);
+    }
+  }
+
+  private selectAndScrollToNode(id: string, resetSelection: boolean) {
+    const node = this.dataSource.getNode(id);
+    if (node) {
+      if (resetSelection) {
+        this.selectNode(node);
+      }
+      this.scrollToActiveElement();
+    }
+  }
+
+  private handleJumpToRootNode(resetSelection: boolean, id: string) {
+    if (resetSelection) {
+      const uuid = this.dataSource.getNode(id)?._uuid;
+      this.activate.next(uuid ? [uuid] : []);
+    }
+    this.selectAndScrollToNode(id, resetSelection);
   }
 
   private scrollToActiveElement() {

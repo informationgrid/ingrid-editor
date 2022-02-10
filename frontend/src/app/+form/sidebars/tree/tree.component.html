@@ -82,7 +82,7 @@
         (click)="handleFolderClick(node, $event)"
         [class.drop]="isDragging && dragManager.dragNodeExpandOverNode === node"
         [class.active]="node._id === activeNodeId"
-        [class.expanded]="treeControl.isExpanded(node)"
+        [class.expanded]="node.isExpanded"
         [class.readonly]="!node.hasWritePermission"
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
