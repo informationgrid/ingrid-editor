@@ -263,7 +263,7 @@ export class TableTypeComponent
       const options =
         this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
       if (options.onClick) {
-        options.onClick(this.form.get("_id").value, element.link.uri, $event);
+        options.onClick(this.form.get("_uuid").value, element.link.uri, $event);
       }
     }
   }

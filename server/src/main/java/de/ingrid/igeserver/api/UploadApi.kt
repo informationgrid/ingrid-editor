@@ -29,7 +29,7 @@ interface UploadApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully uploaded"), ApiResponse(responseCode = "500", description = "An error occurred during upload")])
     fun uploadFile(
         principal: Principal,
-        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
         @Parameter(description = "The file to be uploaded", required = true) @RequestParam("file") file: MultipartFile,
         @Parameter(description = "If we want to overwrite an existing File with this Name then this parameter has to be set to true.") @RequestParam(value = "replace", required = false) replace: Boolean,
         @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
@@ -45,7 +45,7 @@ interface UploadApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
     fun extractFile(
         principal: Principal,
-        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
         @Parameter(description = "The file to be extracted", required = true) @PathVariable("file") file: String,
         @Parameter(description = "How to handle with Conflicts during Extraction.") @RequestParam(value = "conflict", required = false, defaultValue = "EXCEPTION") conflictHandling: ConflictHandling,
     ): ResponseEntity<UploadResponse>
@@ -56,7 +56,7 @@ interface UploadApi {
     fun getFile(
         request: HttpServletRequest,
         principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String
+            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String
             //@Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
         ): ResponseEntity<StreamingResponseBody>
 
@@ -65,7 +65,7 @@ interface UploadApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully deleted"), ApiResponse(responseCode = "500", description = "An error occurred during deletion")])
     fun deleteFile(
             principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docId: String,
+            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
             @Parameter(description = "The file to delete", required = true) @PathVariable("file") file: String
         ): ResponseEntity<Unit>
 }

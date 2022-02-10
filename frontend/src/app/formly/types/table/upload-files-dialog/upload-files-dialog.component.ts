@@ -33,7 +33,7 @@ export interface LinkInfo {
 export class UploadFilesDialogComponent implements OnInit {
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: string;
-  docId = null;
+  docUuid = null;
   extractZipFiles = false;
 
   constructor(
@@ -44,9 +44,9 @@ export class UploadFilesDialogComponent implements OnInit {
     configService: ConfigService,
     @Inject(MAT_DIALOG_DATA) public data: { currentItems: any[] }
   ) {
-    this.docId = formStateService.getForm().get("_id").value;
+    this.docUuid = formStateService.getForm().get("_uuid").value;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
-      this.docId
+      this.docUuid
     }`;
   }
 
@@ -55,7 +55,7 @@ export class UploadFilesDialogComponent implements OnInit {
   removeUploadedFile(fileId: string) {
     const fileNotReferenced = this.fileExistsInTable(fileId);
     if (!fileNotReferenced) {
-      this.uploadService.deleteUploadedFile(this.docId, fileId);
+      this.uploadService.deleteUploadedFile(this.docUuid, fileId);
     }
   }
 
@@ -77,7 +77,7 @@ export class UploadFilesDialogComponent implements OnInit {
     forkJoin(
       this.chosenFiles.map((file) => {
         return this.uploadService.extractUploadedFilesOnServer(
-          this.docId,
+          this.docUuid,
           file.transfer.name,
           option
         );

@@ -66,7 +66,7 @@ export class UploadTypeComponent extends FieldType implements OnInit {
       asLink: true,
       value: value,
       uri: value,
-      documentID: this.model.document._id,
+      documentID: this.model.document._uuid,
     };
   }
 
