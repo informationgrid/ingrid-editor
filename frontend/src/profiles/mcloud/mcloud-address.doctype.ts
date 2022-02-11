@@ -21,161 +21,112 @@ export class McloudAddressDoctype extends BaseDoctype {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "Organisationsdaten",
-        },
-        fieldGroup: [
-          {
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Organisation",
-              required: true,
-            },
-            fieldGroup: [
-              {
-                fieldGroupClassName: "",
-                fieldGroup: [
-                  {
-                    key: "organization",
-                    className: "width-100 organization",
-                    type: "input",
-                    templateOptions: {
-                      label: "Organisation",
-                      appearance: "outline",
-                      required: true,
-                    },
-                  },
-                ],
-              },
-            ],
+      this.addSection("Organisationsdaten", [
+        {
+          wrappers: ["panel"],
+          templateOptions: {
+            externalLabel: "Organisation",
+            required: true,
           },
-        ],
-      },
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "Kommunikation",
-        },
-        fieldGroup: [
-          {
-            key: "contact",
-            type: "repeat",
-            wrappers: ["panel"],
-            className: "contact",
-            templateOptions: {
-              externalLabel: "Kontakt",
-              required: true,
-              minLength: 1,
-            },
-            fieldArray: {
-              fieldGroupClassName: "display-flex",
+          fieldGroup: [
+            {
+              fieldGroupClassName: "",
               fieldGroup: [
-                {
-                  key: "type",
-                  type: "select",
-                  className: "flex-1",
-                  templateOptions: {
-                    label: "Art",
-                    appearance: "outline",
-                    required: true,
-                    options: this.getCodelistForSelect(4430, "type").pipe(
-                      map((items) =>
-                        items.filter(
-                          (item) => item.value !== "5" && item.value !== "6"
-                        )
-                      )
-                    ),
-                  },
-                },
-                {
-                  key: "connection",
-                  type: "input",
-                  className: "flex-3",
-                  templateOptions: {
-                    label: "Verbindung",
-                    appearance: "outline",
-                    required: true,
-                  },
-                  validators: {
-                    validation: ["emailInRepeat"],
-                  },
-                },
+                this.addInput("organization", null, {
+                  fieldLabel: "Organisation",
+                  required: true,
+                  wrappers: null,
+                  className: "width-100 organization",
+                }),
               ],
             },
+          ],
+        },
+      ]),
+      this.addSection("Kommunikation", [
+        {
+          key: "contact",
+          type: "repeat",
+          wrappers: ["panel"],
+          className: "contact",
+          templateOptions: {
+            externalLabel: "Kontakt",
+            required: true,
+            minLength: 1,
           },
-          {
-            key: "address",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Adresse",
-            },
+          fieldArray: {
+            fieldGroupClassName: "display-flex",
             fieldGroup: [
-              {
-                fieldGroupClassName: "display-flex",
-                fieldGroup: [
-                  {
-                    key: "street",
-                    className: "width-100",
-                    type: "input",
-                    templateOptions: {
-                      label: "Straße/Hausnummer",
-                      appearance: "outline",
-                    },
-                  },
-                ],
-              },
-              {
-                fieldGroupClassName: "display-flex",
-                fieldGroup: [
-                  {
-                    key: "zip-code",
-                    className: "flex-1",
-                    type: "input",
-                    templateOptions: {
-                      label: "PLZ",
-                      appearance: "outline",
-                    },
-                  },
-                  {
-                    key: "city",
-                    className: "flex-3",
-                    type: "input",
-                    templateOptions: {
-                      label: "Ort",
-                      appearance: "outline",
-                    },
-                  },
-                ],
-              },
-              {
-                fieldGroupClassName: "display-flex",
-                fieldGroup: [
-                  {
-                    key: "zip-po-box",
-                    className: "flex-1",
-                    type: "input",
-                    templateOptions: {
-                      label: "PLZ (Postfach)",
-                      appearance: "outline",
-                    },
-                  },
-                  {
-                    key: "po-box",
-                    className: "flex-3",
-                    type: "input",
-                    templateOptions: {
-                      label: "Postfach",
-                      appearance: "outline",
-                    },
-                  },
-                ],
-              },
+              this.addSelect("type", null, {
+                className: "flex-1",
+                wrappers: null,
+                fieldLabel: "Art",
+                required: true,
+                options: this.getCodelistForSelect(4430, "type").pipe(
+                  map((items) =>
+                    items.filter(
+                      (item) => item.value !== "5" && item.value !== "6"
+                    )
+                  )
+                ),
+              }),
+              this.addInput("connection", null, {
+                fieldLabel: "Verbindung",
+                required: true,
+                className: "flex-3",
+                validators: {
+                  validation: ["emailInRepeat"],
+                },
+              }),
             ],
           },
-        ],
-      },
+        },
+        this.addGroup(
+          "address",
+          "Adresse",
+          [
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("street", null, {
+                  fieldLabel: "Straße/Hausnummer",
+                  wrappers: null,
+                  className: "width-100",
+                }),
+              ],
+            },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("zip-code", null, {
+                  fieldLabel: "PLZ",
+                  wrappers: null,
+                }),
+                this.addInput("city", null, {
+                  fieldLabel: "Ort",
+                  wrappers: null,
+                  className: "flex-3",
+                }),
+              ],
+            },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("zip-po-box", null, {
+                  fieldLabel: "PLZ (Postfach)",
+                  wrappers: null,
+                }),
+                this.addInput("po-box", null, {
+                  fieldLabel: "Postfach",
+                  wrappers: null,
+                  className: "flex-3",
+                }),
+              ],
+            },
+          ],
+          { fieldGroupClassName: null }
+        ),
+      ]),
     ];
 
   constructor(

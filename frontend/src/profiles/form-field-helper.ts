@@ -11,10 +11,11 @@ export class FormFieldHelper {
     };
   }
 
-  addGroup(id: string, label: string, fields: any[]) {
+  addGroup(id: string, label: string, fields: any[], options?) {
     return {
       key: id,
-      fieldGroupClassName: "display-flex",
+      fieldGroupClassName:
+        options?.fieldGroupClassName === null ? undefined : "display-flex",
       wrappers: ["panel"],
       templateOptions: {
         externalLabel: label,
@@ -87,13 +88,16 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "input",
-      className: "flex-1",
-      wrappers: ["form-field", "inline-help"],
+      className: options?.className ?? "flex-1",
+      wrappers:
+        options?.wrappers === null ? undefined : ["form-field", "inline-help"],
       templateOptions: {
-        label: label,
+        label: options?.fieldLabel,
+        required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
       },
+      validators: options?.validators,
     };
   }
 
