@@ -410,12 +410,9 @@ export class TreeComponent implements OnInit {
     path.pop();
 
     if (path.length > 0) {
-      return this.handleExpandNodes(path).then(() =>
-        this.selectAndScrollToNode(id, resetSelection)
-      );
-    } else {
-      this.handleJumpToRootNode(resetSelection, id);
+      await this.handleExpandNodes(path);
     }
+    this.selectAndScrollToNode(id, resetSelection);
   }
 
   private selectAndScrollToNode(id: string, resetSelection: boolean) {
@@ -424,16 +421,9 @@ export class TreeComponent implements OnInit {
       if (resetSelection) {
         this.selectNode(node);
       }
-      this.scrollToActiveElement();
+      // we need to scroll after the selection is done in DOM
+      setTimeout(() => this.scrollToActiveElement());
     }
-  }
-
-  private handleJumpToRootNode(resetSelection: boolean, id: string) {
-    if (resetSelection) {
-      const uuid = this.dataSource.getNode(id)?._uuid;
-      this.activate.next(uuid ? [uuid] : []);
-    }
-    this.selectAndScrollToNode(id, resetSelection);
   }
 
   private scrollToActiveElement() {

@@ -49,7 +49,9 @@ export class TreeHeaderComponent implements OnInit {
   search(value: string) {
     if (!value) {
       return;
-    } else if (value.length === 0) {
+    }
+
+    if (value.length === 0) {
       this.searchResult.next([]);
       return;
     }
@@ -61,7 +63,6 @@ export class TreeHeaderComponent implements OnInit {
   }
 
   loadResultDocument(doc: TreeNode) {
-    console.log("Loading document", doc);
     this.open.next(doc._id);
   }
 
