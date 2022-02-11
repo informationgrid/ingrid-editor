@@ -151,8 +151,13 @@ export class FormFieldHelper {
       key: id,
       type: "datepicker",
       className: "flex-1",
+      wrappers:
+        options?.wrappers === undefined
+          ? ["panel", "form-field"]
+          : options?.wrappers,
       templateOptions: {
         label: options?.fieldLabel,
+        externalLabel: label,
         placeholder: options?.placeholder ?? "TT.MM.JJJJ",
         appearance: "outline",
         required: options?.required,
@@ -172,6 +177,20 @@ export class FormFieldHelper {
         appearance: "outline",
       },
       hideExpression: options?.hideExpression,
+    };
+  }
+
+  addCheckbox(id, label, options?) {
+    return {
+      key: id,
+      type: "checkbox",
+      wrappers: ["panel", "form-field", "inline-help"],
+      templateOptions: {
+        externalLabel: label,
+        label: options?.fieldLabel,
+        indeterminate: false,
+        required: options?.required,
+      },
     };
   }
 }

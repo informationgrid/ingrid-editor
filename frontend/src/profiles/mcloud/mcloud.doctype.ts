@@ -141,10 +141,12 @@ export class McloudDoctype extends BaseDoctype {
         }),
         this.addTextArea("origin", "Quellenvermerk"),
         this.addGroup(null, "mFUND", [
-          this.addInput("mfundProject", "mFUND Projekt", {
+          this.addInput("mfundProject", null, {
+            fieldLabel: "mFUND Projekt",
             hasInlineContextHelp: true,
           }),
-          this.addInput("mfundFKZ", "mFUND Förderkennzeichen", {
+          this.addInput("mfundFKZ", null, {
+            fieldLabel: "mFUND Förderkennzeichen",
             hasInlineContextHelp: true,
           }),
         ]),
@@ -161,8 +163,10 @@ export class McloudDoctype extends BaseDoctype {
           fieldArray: {
             fieldGroupClassName: "display-flex",
             fieldGroup: [
-              this.addDatepicker("date", "Datum", {
+              this.addDatepicker("date", null, {
+                fieldLabel: "Datum",
                 required: true,
+                wrappers: null,
               }),
               this.addSelect("text", "Typ", {
                 required: true,
@@ -191,6 +195,7 @@ export class McloudDoctype extends BaseDoctype {
           }),
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
+            wrappers: null,
             hideExpression: (model: any) =>
               model && model.rangeType === "range",
           }),
