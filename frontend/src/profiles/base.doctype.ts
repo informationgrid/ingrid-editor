@@ -7,8 +7,9 @@ import {
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
+import { FormFieldHelper } from "./form-field-helper";
 
-export abstract class BaseDoctype implements Doctype {
+export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fields = <FormlyFieldConfig[]>[
     {
       key: "title",
@@ -65,7 +66,9 @@ export abstract class BaseDoctype implements Doctype {
   constructor(
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery
-  ) {}
+  ) {
+    super();
+  }
 
   abstract documentFields(): FormlyFieldConfig[];
 

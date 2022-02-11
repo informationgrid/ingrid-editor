@@ -1,0 +1,173 @@
+import { FormGroup } from "@angular/forms";
+
+export class FormFieldHelper {
+  addSection(label: string, fields: any[]) {
+    return {
+      wrappers: ["section"],
+      templateOptions: {
+        label: label,
+      },
+      fieldGroup: fields,
+    };
+  }
+
+  addGroup(id: string, label: string, fields: any[]) {
+    return {
+      key: id,
+      fieldGroupClassName: "display-flex",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: label,
+      },
+      fieldGroup: fields,
+    };
+  }
+
+  addTextArea(id, label, options?) {
+    return {
+      key: id,
+      type: "textarea",
+      className: id,
+      wrappers: ["panel", "form-field"],
+      templateOptions: {
+        externalLabel: label,
+        autosize: true,
+        autosizeMinRows: 3,
+        autosizeMaxRows: 8,
+        appearance: "outline",
+        required: options?.required,
+      },
+    };
+  }
+
+  addAddressCard(id, label, options?) {
+    return {
+      key: id,
+      type: "address-card",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: label,
+        required: options?.required,
+      },
+      validators: options?.validators,
+    };
+  }
+
+  addRepeatChip(id, label, options?) {
+    return {
+      key: id,
+      type: "repeatChip",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: label,
+        required: options?.required,
+        useDialog: options?.useDialog,
+        options: options?.options,
+        codelistId: options?.codelistId,
+      },
+    };
+  }
+
+  addAutocomplete(id, label, options?) {
+    return {
+      key: id,
+      type: "autocomplete",
+      wrappers: ["panel", "form-field"],
+      templateOptions: {
+        externalLabel: label,
+        placeholder: "Bitte wählen",
+        appearance: "outline",
+        required: options?.required,
+        options: options?.options,
+      },
+    };
+  }
+
+  addInput(id, label, options?) {
+    return {
+      key: id,
+      type: "input",
+      className: "flex-1",
+      wrappers: ["form-field", "inline-help"],
+      templateOptions: {
+        label: label,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        appearance: "outline",
+      },
+    };
+  }
+
+  addSelect(id, label, options?) {
+    return {
+      key: id,
+      type: "select",
+      className: options?.className,
+      wrappers:
+        options?.wrappers === undefined
+          ? ["panel", "form-field"]
+          : options?.wrappers,
+      templateOptions: {
+        placeholder: "Wählen...",
+        label: options?.fieldLabel,
+        externalLabel: options?.externalLabel === null ? undefined : label,
+        appearance: "outline",
+        required: options?.required,
+        options: options?.options,
+      },
+    };
+  }
+
+  addTable(id, label, options?) {
+    return {
+      key: id,
+      type: "table",
+      templateOptions: {
+        externalLabel: label,
+        required: options?.required,
+        columns: options?.columns,
+      },
+    };
+  }
+
+  addSpatial(id, label, options?) {
+    return {
+      key: id,
+      type: "leaflet",
+      wrappers: [],
+      templateOptions: {
+        mapOptions: {},
+        externalLabel: label,
+        height: 386,
+      },
+    };
+  }
+
+  addDatepicker(id, label, options?) {
+    return {
+      key: id,
+      type: "datepicker",
+      className: "flex-1",
+      templateOptions: {
+        label: options?.fieldLabel,
+        placeholder: options?.placeholder ?? "TT.MM.JJJJ",
+        appearance: "outline",
+        required: options?.required,
+      },
+      hideExpression: options?.hideExpression,
+    };
+  }
+
+  addDateRange(id, label, options?) {
+    return {
+      key: id,
+      type: "date-range",
+      className: "flex-1",
+      wrappers: ["form-field"],
+      templateOptions: {
+        placeholder: "Zeitraum eingeben ...",
+        appearance: "outline",
+      },
+      hideExpression: options?.hideExpression,
+    };
+  }
+}

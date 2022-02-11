@@ -32,368 +32,176 @@ export class McloudDoctype extends BaseDoctype {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "Allgemeines",
-        },
-        fieldGroup: [
-          {
-            key: "description",
-            type: "textarea",
-            className: "description",
-            wrappers: ["panel", "form-field"],
-            templateOptions: {
-              externalLabel: "Beschreibung",
-              autosize: true,
-              autosizeMinRows: 3,
-              autosizeMaxRows: 8,
-              appearance: "outline",
-              required: true,
+      this.addSection("Allgemeines", [
+        this.addTextArea("description", "Beschreibung", { required: true }),
+        this.addAddressCard("addresses", "Adressen", {
+          required: true,
+          validators: {
+            needPublisher: {
+              expression: (ctrl) =>
+                ctrl.value
+                  ? ctrl.value.some((row) => row.type === "10")
+                  : false,
+              message: "Es muss ein Herausgeber als Adresse angegeben sein",
             },
-            validators: {
-              /*requiredMe: {
-            expression: (c) => {
-              // debugger;
-              return c.root.publish && c.value && c.value.trim().length > 0;
-              // return !c.root.publish || (c.root.publish && c.value && c.value.trim().length > 0);
-            },
-            message: (error, field: FormlyFieldConfig) => `This field is required`,
-          }*/
+            publisherPublished: {
+              expression: (ctrl) =>
+                ctrl.value
+                  ? ctrl.value.every((row) => row.ref._state === "P")
+                  : false,
+              message: "Alle Adressen müssen veröffentlicht sein",
             },
           },
-          {
-            key: "addresses",
-            type: "address-card",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Adressen",
-              required: true,
-            },
-            validators: {
-              needPublisher: {
-                expression: (ctrl) =>
-                  ctrl.value
-                    ? ctrl.value.some((row) => row.type === "10")
-                    : false,
-                message: "Es muss ein Herausgeber als Adresse angegeben sein",
-              },
-              publisherPublished: {
-                expression: (ctrl) =>
-                  ctrl.value
-                    ? ctrl.value.every((row) => row.ref._state === "P")
-                    : false,
-                message: "Alle Adressen müssen veröffentlicht sein",
+        }),
+        this.addRepeatChip("keywords", "Schlagworte"),
+      ]),
+      this.addSection("mCLOUD", [
+        this.addTextArea("accessRights", "Nutzungshinweise"),
+        this.addRepeatChip("mCloudCategories", "mCLOUD Kategorie", {
+          required: true,
+          useDialog: true,
+          options: this.getCodelistForSelect(20000, "mCloudCategories"),
+          codelistId: 20000,
+        }),
+        this.addRepeatChip("DCATThemes", "OpenData Kategorie", {
+          required: true,
+          useDialog: true,
+          options: this.getCodelistForSelect(20001, "DCATThemes"),
+          codelistId: 20001,
+        }),
+        this.addTable("distributions", "Downloads", {
+          required: true,
+          columns: [
+            {
+              key: "title",
+              type: "input",
+              label: "Titel",
+              focus: true,
+              class: "flex-2",
+              templateOptions: {
+                label: "Titel",
+                appearance: "outline",
               },
             },
-          },
-          {
-            key: "keywords",
-            type: "repeatChip",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Schlagworte",
-              required: false,
-              useDialog: false,
-            },
-          },
-        ],
-      },
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "mCLOUD",
-        },
-        fieldGroup: [
-          {
-            key: "accessRights",
-            type: "textarea",
-            wrappers: ["panel", "form-field"],
-            templateOptions: {
-              externalLabel: "Nutzungshinweise",
-              rows: 3,
-              appearance: "outline",
-            },
-          },
-          {
-            key: "mCloudCategories",
-            type: "repeatChip",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "mCLOUD Kategorie",
-              placeholder: "Bitte wählen",
-              appearance: "outline",
-              required: true,
-              useDialog: true,
-              options: this.getCodelistForSelect(20000, "mCloudCategories"),
-              codelistId: 20000,
-            },
-          },
-          {
-            key: "DCATThemes",
-            type: "repeatChip",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "OpenData Kategorie",
-              placeholder: "Bitte wählen",
-              appearance: "outline",
-              required: true,
-              useDialog: true,
-              options: this.getCodelistForSelect(20001, "DCATThemes"),
-              codelistId: 20001,
-            },
-          },
-          {
-            key: "distributions",
-            type: "table",
-            templateOptions: {
-              externalLabel: "Downloads",
-              required: true,
-              columns: [
-                {
-                  key: "title",
-                  type: "input",
-                  label: "Titel",
-                  focus: true,
-                  class: "flex-2",
-                  templateOptions: {
-                    label: "Titel",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "link",
-                  type: "upload",
-                  label: "Link",
-                  class: "flex-2",
-                  templateOptions: {
-                    label: "Link",
-                    appearance: "outline",
-                    required: true,
+            {
+              key: "link",
+              type: "upload",
+              label: "Link",
+              class: "flex-2",
+              templateOptions: {
+                label: "Link",
+                appearance: "outline",
+                required: true,
 
-                    onClick: (docUuid, uri, $event) => {
-                      this.uploadService.downloadFile(docUuid, uri, $event);
-                    },
-                    formatter: (link: any, form: FormGroup) => {
-                      if (link.asLink) {
-                        return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
-                      } else {
-                        return `<a href="${
-                          this.configService.getConfiguration().backendUrl
-                        }upload/${form.get("_uuid").value}/${
-                          link.uri
-                        }" class="no-text-transform">${link.uri}</a>`;
-                      }
-                    },
-                  },
+                onClick: (docUuid, uri, $event) => {
+                  this.uploadService.downloadFile(docUuid, uri, $event);
                 },
-                {
-                  key: "type",
-                  type: "select",
-                  label: "Typ",
-                  templateOptions: {
-                    label: "Typ",
-                    appearance: "outline",
-                    required: true,
-                    options: this.getCodelistForSelect(20002, null),
-                    codelistId: 20002,
-                  },
+                formatter: (link: any, form: FormGroup) => {
+                  if (link.asLink) {
+                    return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                  } else {
+                    return `<a href="${
+                      this.configService.getConfiguration().backendUrl
+                    }upload/${form.get("_uuid").value}/${
+                      link.uri
+                    }" class="no-text-transform">${link.uri}</a>`;
+                  }
                 },
-                {
-                  key: "format",
-                  type: "autocomplete",
-                  label: "Datenformat",
-                  wrappers: ["form-field"],
-                  templateOptions: {
-                    label: "Datenformat",
-                    appearance: "outline",
-                    options: this.getCodelistForSelect(20003, null),
-                  },
-                },
-              ],
+              },
             },
-          },
-          {
-            key: "license",
-            type: "autocomplete",
-            wrappers: ["panel", "form-field"],
-            templateOptions: {
-              externalLabel: "Lizenz",
-              placeholder: "Bitte wählen",
-              appearance: "outline",
-              required: true,
-              options: this.getCodelistForSelect(6500, "license"),
+            // this.addSelect("type", "Typ")
+            {
+              key: "type",
+              type: "select",
+              label: "Typ",
+              templateOptions: {
+                label: "Typ",
+                appearance: "outline",
+                required: true,
+                options: this.getCodelistForSelect(20002, null),
+                codelistId: 20002,
+              },
             },
-          },
-          {
-            key: "origin",
-            type: "textarea",
-            wrappers: ["panel", "form-field"],
-            templateOptions: {
-              externalLabel: "Quellenvermerk",
-              rows: 3,
-              appearance: "outline",
+            {
+              key: "format",
+              type: "autocomplete",
+              label: "Datenformat",
+              wrappers: ["form-field"],
+              templateOptions: {
+                label: "Datenformat",
+                appearance: "outline",
+                options: this.getCodelistForSelect(20003, null),
+              },
             },
+          ],
+        }),
+        this.addAutocomplete("license", "Lizenz", {
+          required: true,
+          options: this.getCodelistForSelect(6500, "license"),
+        }),
+        this.addTextArea("origin", "Quellenvermerk"),
+        this.addGroup(null, "mFUND", [
+          this.addInput("mfundProject", "mFUND Projekt", {
+            hasInlineContextHelp: true,
+          }),
+          this.addInput("mfundFKZ", "mFUND Förderkennzeichen", {
+            hasInlineContextHelp: true,
+          }),
+        ]),
+      ]),
+      this.addSection("Raumbezüge", [this.addSpatial("spatial", "Raumbezüge")]),
+      this.addSection("Zeitbezüge", [
+        {
+          key: "events",
+          type: "repeat",
+          wrappers: ["panel"],
+          templateOptions: {
+            externalLabel: "Zeitbezug der Ressource",
           },
-          {
+          fieldArray: {
             fieldGroupClassName: "display-flex",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "mFUND",
-            },
             fieldGroup: [
-              {
-                key: "mfundProject",
-                type: "input",
+              this.addDatepicker("date", "Datum", {
+                required: true,
+              }),
+              this.addSelect("text", "Typ", {
+                required: true,
                 className: "flex-1",
-                wrappers: ["form-field", "inline-help"],
-                templateOptions: {
-                  label: "mFUND Projekt",
-                  hasInlineContextHelp: true,
-                  appearance: "outline",
-                },
-              },
-              {
-                key: "mfundFKZ",
-                type: "input",
-                className: "flex-1",
-                wrappers: ["form-field", "inline-help"],
-                templateOptions: {
-                  label: "mFUND Förderkennzeichen",
-                  hasInlineContextHelp: true,
-                  appearance: "outline",
-                },
-              },
+                wrappers: null,
+                externalLabel: null,
+                options: this.getCodelistForSelect(502, "text").pipe(
+                  map((items) => items.filter((it) => it.value !== "2"))
+                ),
+              }),
             ],
           },
-        ],
-      },
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "Raumbezüge",
         },
-        fieldGroup: [
-          {
-            key: "spatial",
-            type: "leaflet",
-            wrappers: [],
-            templateOptions: {
-              mapOptions: {},
-              externalLabel: "Raumbezüge",
-              height: 386,
-            },
-          },
-        ],
-      },
-      {
-        wrappers: ["section"],
-        templateOptions: {
-          label: "Zeitbezüge",
-        },
-        fieldGroup: [
-          {
-            key: "events",
-            type: "repeat",
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Zeitbezug der Ressource",
-            },
-            fieldArray: {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                {
-                  key: "date",
-                  type: "datepicker",
-                  className: "flex-1",
-                  templateOptions: {
-                    label: "Datum",
-                    appearance: "outline",
-                    required: true,
-                  },
-                },
-                {
-                  key: "text",
-                  type: "select",
-                  className: "flex-1",
-                  templateOptions: {
-                    label: "Typ",
-                    appearance: "outline",
-                    required: true,
-                    options: this.getCodelistForSelect(502, "text").pipe(
-                      map((items) => items.filter((it) => it.value !== "2"))
-                    ),
-                  },
-                },
-              ],
-            },
-          },
-          {
-            fieldGroupClassName: "display-flex",
-            wrappers: ["panel"],
-            key: "temporal",
-            templateOptions: {
-              externalLabel: "Zeitspanne",
-            },
-            fieldGroup: [
-              {
-                key: "rangeType",
-                type: "select",
-                className: "flex-1",
-                wrappers: ["form-field"],
-                templateOptions: {
-                  placeholder: "Wählen...",
-                  appearance: "outline",
-                  options: [
-                    { label: "", value: undefined },
-                    { label: "am", value: "at" },
-                    { label: "seit", value: "since" },
-                    { label: "bis", value: "till" },
-                    { label: "von - bis", value: "range" },
-                  ],
-                },
-              },
-              {
-                key: "timeSpanDate",
-                type: "datepicker",
-                className: "flex-1",
-                wrappers: ["form-field"],
-                templateOptions: {
-                  placeholder: "TT.MM.JJJJ",
-                  appearance: "outline",
-                },
-                hideExpression: (model: any) =>
-                  model && model.rangeType === "range",
-              },
-              {
-                key: "timeSpanRange",
-                type: "date-range",
-                className: "flex-1",
-                wrappers: ["form-field"],
-                templateOptions: {
-                  placeholder: "Zeitraum eingeben ...",
-                  appearance: "outline",
-                },
-                hideExpression: (model: any) =>
-                  model && model.rangeType !== "range",
-              },
+        this.addGroup("temporal", "Zeitspanne", [
+          this.addSelect("rangeType", null, {
+            required: true,
+            className: "flex-1",
+            wrappers: null,
+            options: [
+              { label: "", value: undefined },
+              { label: "am", value: "at" },
+              { label: "seit", value: "since" },
+              { label: "bis", value: "till" },
+              { label: "von - bis", value: "range" },
             ],
-          },
-          {
-            key: "periodicity",
-            type: "select",
-            wrappers: ["panel", "form-field"],
-            templateOptions: {
-              externalLabel: "Periodizität",
-              appearance: "outline",
-              placeholder: "Wählen...",
-              options: this.getCodelistForSelectWithEmtpyOption(
-                518,
-                "periodicity"
-              ),
-            },
-          },
-        ],
-      },
+          }),
+          this.addDatepicker("timeSpanDate", null, {
+            placeholder: "TT.MM.JJJJ",
+            hideExpression: (model: any) =>
+              model && model.rangeType === "range",
+          }),
+          this.addDateRange("timeSpanRange", null, {
+            hideExpression: (model: any) =>
+              model && model.rangeType !== "range",
+          }),
+        ]),
+        this.addSelect("periodicity", "Periodizität", {
+          options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
+        }),
+      ]),
     ];
 }
