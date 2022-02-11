@@ -224,7 +224,7 @@ describe('General create documents/folders', () => {
       let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
-      enterMcloudDocTestData.scrollToSection('mCLOUD');
+      DocumentPage.scrollToSection('mCLOUD');
       enterMcloudDocTestData.CreateDialog.setCategory(category1);
       cy.get(mCLOUDSelector).contains(category1);
 
@@ -235,7 +235,7 @@ describe('General create documents/folders', () => {
       cy.get(mCLOUDSelector).contains(category3);
 
       // change the order of mCloud categories by dragging then save
-      enterMcloudDocTestData.dragItem(
+      DocumentPage.dragItem(
         mCLOUDSelector + ' mat-chip',
         '[data-cy="mCLOUD Kategorie"] mat-chip-list:last',
         2,
@@ -247,11 +247,11 @@ describe('General create documents/folders', () => {
       // check for the order after reload
       cy.reload();
 
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category3, 0);
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category2, 2);
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(mCLOUDSelector + ' mat-chip', category1, 1);
+      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category3, 0);
+      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category2, 2);
+      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category1, 1);
 
-      enterMcloudDocTestData.scrollToSection('mCLOUD');
+      DocumentPage.scrollToSection('mCLOUD');
       // add openData categories and check of the order after drag and drop
       let openDataCategory1 = 'Energie';
       let openDataCategory2 = 'Gesundheit';
@@ -268,7 +268,7 @@ describe('General create documents/folders', () => {
       cy.get(openDataSelector).contains(openDataCategory3);
 
       // change the order of mCloud categories by dragging then save
-      enterMcloudDocTestData.dragItem(
+      DocumentPage.dragItem(
         openDataSelector + ' mat-chip',
         '[data-cy="OpenData Kategorie"] mat-chip-list:last',
         2,
@@ -279,9 +279,9 @@ describe('General create documents/folders', () => {
 
       // reload and make sure of ordering
       cy.reload();
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory3, 0);
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory2, 2);
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(openDataSelector + ' mat-chip', openDataCategory1, 1);
+      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory3, 0);
+      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory2, 2);
+      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 1);
     });
 
     it('check for ordering and sorting mCloud address lists in the mCLOUD document', () => {
@@ -293,22 +293,37 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.CreateDialog.setAddress(address1);
       enterMcloudDocTestData.CreateDialog.setAddress(address2);
 
-      enterMcloudDocTestData.scrollToSection('Allgemeines');
+      DocumentPage.scrollToSection('Allgemeines');
 
-      enterMcloudDocTestData.dragItem(
-        addressSelector,
-        '[data-cy="Adressen"] .address-cards .address-card-wrapper',
-        1,
-        -200,
-        0
-      );
+      DocumentPage.dragItem(addressSelector, '[data-cy="Adressen"] .address-cards .address-card-wrapper', 1, -200, 0);
 
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
       cy.reload();
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(addressSelector, address2, 0);
-      enterMcloudDocTestData.checkOfExistingItemInmCLOUD(addressSelector, address1, 1);
+      DocumentPage.checkOfExistingItem(addressSelector, address2, 0);
+      DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
+    });
+
+    it('check for ordering and sorting mCloud address lists in the mCLOUD document', () => {
+      let address1 = 'mclould_address';
+      let address2 = 'Published Testorganization';
+      let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
+
+      Tree.openNode(['New Folder For New Users', 'New Document']);
+      enterMcloudDocTestData.CreateDialog.setAddress(address1);
+      enterMcloudDocTestData.CreateDialog.setAddress(address2);
+
+      DocumentPage.scrollToSection('Allgemeines');
+
+      DocumentPage.dragItem(addressSelector, '[data-cy="Adressen"] .address-cards .address-card-wrapper', 1, -200, 0);
+
+      DocumentPage.saveDocument();
+
+      // reload and make sure of ordering
+      cy.reload();
+      DocumentPage.checkOfExistingItem(addressSelector, address2, 0);
+      DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
     });
   });
 });

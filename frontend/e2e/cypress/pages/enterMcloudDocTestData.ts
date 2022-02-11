@@ -275,9 +275,6 @@ export class enterMcloudDocTestData {
     cy.contains('button', 'Link angeben').click();
   }
 
-  static scrollToSection(section: string) {
-    cy.get('ige-header-navigation').contains('mCLOUD').click();
-  }
   static fillFieldsOfAddURLDialog(title: string, url: string) {
     cy.get('input[formcontrolname="title"]').type(title);
     cy.get('[formcontrolname="url"]').type(url);
@@ -303,39 +300,6 @@ export class enterMcloudDocTestData {
     cy.get('.upload-content').should('contain', newName);
   }
 
-  /**
-   * @param {number} xCoordinate is how much the chip should be dragged horizontally
-   * @param {number} yCoordinate is how much the chip should be dragged vertically
-   */
-  static dragItem(
-    sourceNode: string,
-    targetNode: string,
-    indexOfDraggedCategory: number,
-    xCoordinate: number,
-    yCoordinate: number
-  ) {
-    // it is supposed to use trigger dragstart and trigger start drop, but it does not work here with categories
-    cy.get(sourceNode)
-      .eq(indexOfDraggedCategory)
-      .drag(targetNode, {
-        force: true // applied to both the source and target element
-      })
-      .then(success => {
-        assert.isTrue(success);
-      });
-
-    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
-
-    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
-  }
-
-  static checkOfExistingItemInmCLOUD(node: string, itemName: string, index: number = -1) {
-    if (index != -1) {
-      cy.get(node).eq(index).contains(itemName);
-    } else {
-      cy.get(node).contains(itemName);
-    }
-  }
   static addAlreadyExistingFileWithRename(filePath: string, newName: string) {
     cy.intercept('GET', /api\/upload/).as('tryUpload');
     cy.get('[type="file"]').attachFile({ filePath: filePath, fileName: newName });
