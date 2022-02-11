@@ -182,7 +182,6 @@ export class McloudDoctype extends BaseDoctype {
         },
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
-            required: true,
             className: "flex-1",
             wrappers: null,
             options: [
