@@ -233,12 +233,12 @@ export class Tree {
 
   static goForward() {
     cy.get(DocumentPage.Toolbar.Next).click();
-    cy.wait(100);
+    cy.wait(500);
   }
 
   static goBack() {
     cy.get(DocumentPage.Toolbar.Previous).click();
-    cy.wait(100);
+    cy.wait(500);
   }
 
   static multiSelectObject(cssItem: string, nodelist: string[]) {
