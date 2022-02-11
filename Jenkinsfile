@@ -6,9 +6,11 @@ pipeline {
         POSTGRES_PASSWORD = 'admin'
     }
 
+/* // not needed since Jenkins is running on a later JDK 11 
     tools {
         jdk 'jdk11'
     }
+ */
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
