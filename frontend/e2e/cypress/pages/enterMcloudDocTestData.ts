@@ -161,14 +161,18 @@ export class enterMcloudDocTestData {
     }
     // *****************************************************
 
-    static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung') {
+    static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung', index: number = 0) {
       cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').click();
-      cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field').contains('Typ').click({ force: true });
+      cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat ')
+        .find('mat-select')
+        .eq(index)
+
+        .click({ force: true });
       cy.get('.mat-option-text').contains(choose).click();
-      this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose);
+      this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose, undefined, index);
     }
 
-    static selectDate(area: string, date: Date, choose: string, until?: Date) {
+    static selectDate(area: string, date: Date, choose: string, until?: Date, index: number = 0) {
       const year = date.getFullYear();
       const monthNumber = date.getMonth();
       const day = date.getDate();
@@ -177,7 +181,7 @@ export class enterMcloudDocTestData {
 
       // TODO: always use strict equality operator '===' and '!==' (check whole code!)
       //       (see: https://developer.mozilla.org/de/docs/Web/JavaScript/Vergleiche_auf_Gleichheit_und_deren_Verwendung)
-      if (choose == 'von - bis' && until != null) {
+      if (choose == 'von - bis' && until != null && until != undefined) {
         const year2 = until.getFullYear();
         const monthNumber2 = until.getMonth() + 1;
         const day2 = until.getDate();
@@ -187,7 +191,7 @@ export class enterMcloudDocTestData {
         this.selectDateInCalendar(year, month, day);
         this.selectDateInCalendar(year2, month2, day2);
       } else {
-        cy.get(area).find('mat-form-field mat-datepicker-toggle button').first().click();
+        cy.get(area).find('mat-form-field mat-datepicker-toggle button').eq(index).click();
         this.selectDateInCalendar(year, month, day);
       }
     }

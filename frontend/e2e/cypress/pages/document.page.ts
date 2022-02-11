@@ -398,7 +398,7 @@ export class DocumentPage extends BasePage {
   }
 
   static scrollToSection(section: string) {
-    cy.get('ige-header-navigation').contains('mCLOUD').click();
+    cy.get('ige-header-navigation').contains(section).click();
   }
 
   /**
