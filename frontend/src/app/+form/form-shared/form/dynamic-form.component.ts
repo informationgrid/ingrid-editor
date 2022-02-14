@@ -1,5 +1,4 @@
 import {
-  AfterContentChecked,
   AfterViewInit,
   Component,
   ElementRef,
@@ -25,7 +24,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { StickyHeaderInfo } from "../../form-info/form-info.component";
 import { filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { combineLatest, merge, Subscription } from "rxjs";
+import { combineLatest, merge, Observable, Subscription } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
@@ -45,9 +44,7 @@ import { MatDialog } from "@angular/material/dialog";
   providers: [FormPluginsService],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DynamicFormComponent
-  implements OnInit, OnDestroy, AfterViewInit, AfterContentChecked
-{
+export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
@@ -66,7 +63,7 @@ export class DynamicFormComponent
     },
   };
 
-  sections: string[];
+  sections: Observable<string[]> = this.formularService.sections$;
 
   form = new FormGroup({});
 
@@ -243,11 +240,6 @@ export class DynamicFormComponent
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
   }
 
-  ngAfterContentChecked() {
-    // TODO check if performance is impacted
-    this.sections = this.formularService.getSectionsFromProfile(this.fields);
-  }
-
   /**
    * Load a document and prepare the form for the data.
    * @param {string} id is the ID of document to be loaded
@@ -359,9 +351,7 @@ export class DynamicFormComponent
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
         this.fields = this.switchProfile(profile);
-        this.sections = this.formularService.getSectionsFromProfile(
-          this.fields
-        );
+        this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields =
           this.profileQuery.getProfile(profile).hasOptionalFields;
       }

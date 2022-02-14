@@ -10,6 +10,7 @@ import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MessageService } from "../services/message.service";
 import { ProfileQuery } from "../store/profile/profile.query";
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Injectable()
 export class FormularService {
@@ -18,6 +19,9 @@ export class FormularService {
   currentProfile: string;
 
   profileDefinitions: Doctype[];
+
+  sections$ = new BehaviorSubject<string[]>([]);
+  private profileSections: string[] = [];
 
   constructor(
     private dialog: MatDialog,
@@ -82,13 +86,16 @@ export class FormularService {
     }));
   }
 
-  getSectionsFromProfile(profile: FormlyFieldConfig[]): string[] {
-    const sections = [];
-    for (const item of profile) {
-      if (item.wrappers && item.wrappers.indexOf("section") !== -1) {
-        sections.push(item.templateOptions.label);
-      }
-    }
-    return sections;
+  getSectionsFromProfile(profile: FormlyFieldConfig[]): void {
+    const sections = profile
+      .filter((item) => item.wrappers?.indexOf("section") >= 0)
+      .map((item) => item.templateOptions.label);
+
+    this.profileSections = sections;
+    this.sections$.next(sections);
+  }
+
+  setAdditionalSections(sections: string[]) {
+    this.sections$.next([...this.profileSections, ...sections]);
   }
 }

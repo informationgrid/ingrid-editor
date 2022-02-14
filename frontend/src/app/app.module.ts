@@ -159,6 +159,9 @@ export function animationExtension(field: FormlyFieldConfig) {
       extensions: [
         { name: "animation", extension: { onPopulate: animationExtension } },
       ],
+      extras: {
+        lazyRender: true,
+      },
     }),
     FormlyMaterialModule,
     // Material
