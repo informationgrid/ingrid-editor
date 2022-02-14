@@ -46,6 +46,17 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
             required: false,
           }
         ),
+        {
+          key: "processingSteps",
+          type: "uvpPhases",
+          fieldArray: {
+            fieldGroup: [
+              this.addPublicDisclosure(),
+              this.addPublicHearing(),
+              this.addDecisionOfAdmission(),
+            ],
+          },
+        },
       ]),
     ];
 
@@ -55,5 +66,71 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
     codelistQuery: CodelistQuery
   ) {
     super(codelistService, codelistQuery);
+  }
+
+  private addPublicDisclosure() {
+    return {
+      name: "publicDisclosure",
+      hideExpression: 'model.type !== "publicDisclosure"',
+      templateOptions: {
+        label: "Öffentliche Auslegung",
+      },
+      fieldGroup: [
+        this.addSection("Öffentliche Auslegung", [
+          { key: "type" },
+          {
+            key: "telephoneNumber",
+            type: "input",
+            templateOptions: {
+              label: "TelephoneNumber",
+            },
+          },
+        ]),
+      ],
+    };
+  }
+
+  private addPublicHearing() {
+    return {
+      name: "publicHearing",
+      hideExpression: 'model.type !== "publicHearing"',
+      templateOptions: {
+        label: "Erörterungstermin",
+      },
+      fieldGroup: [
+        this.addSection("Erörterungstermin", [
+          { key: "type" },
+          {
+            key: "telephoneNumber",
+            type: "input",
+            templateOptions: {
+              label: "TelephoneNumber",
+            },
+          },
+        ]),
+      ],
+    };
+  }
+
+  private addDecisionOfAdmission() {
+    return {
+      name: "decisionOfAdmission",
+      hideExpression: 'model.type !== "decisionOfAdmission"',
+      templateOptions: {
+        label: "Entscheidung über die Zulassung",
+      },
+      fieldGroup: [
+        this.addSection("Entscheidung über die Zulassung", [
+          { key: "type" },
+          {
+            key: "url",
+            type: "input",
+            templateOptions: {
+              label: "URL",
+            },
+          },
+        ]),
+      ],
+    };
   }
 }

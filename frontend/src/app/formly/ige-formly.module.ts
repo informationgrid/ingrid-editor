@@ -65,6 +65,7 @@ import {
   IpValidator,
   LowercaseValidator,
 } from "./input.validators";
+import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -130,6 +131,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "upload",
           component: UploadTypeComponent,
+        },
+        {
+          name: "uvpPhases",
+          component: UvpSectionsComponent,
         },
       ],
       validators: [
@@ -212,6 +217,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UploadTypeComponent,
     LinkDialogComponent,
     UploadFilesDialogComponent,
+    UvpSectionsComponent,
   ],
   exports: [
     ReactiveFormsModule,

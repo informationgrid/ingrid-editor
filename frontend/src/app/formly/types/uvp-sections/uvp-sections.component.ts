@@ -1,0 +1,61 @@
+import { Component, OnInit } from "@angular/core";
+import { FieldArrayType } from "@ngx-formly/core";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { filter, map, tap } from "rxjs/operators";
+import { FormularService } from "../../../+form/formular.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+
+@UntilDestroy()
+@Component({
+  selector: "ige-uvp-sections",
+  templateUrl: "./uvp-sections.component.html",
+  styleUrls: ["./uvp-sections.component.scss"],
+})
+export class UvpSectionsComponent extends FieldArrayType implements OnInit {
+  markSection = {};
+  constructor(private dialog: MatDialog, private formService: FormularService) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.formControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        tap((a) => console.log(a)),
+        map((values) =>
+          values
+            .map((value) =>
+              this.field.fieldArray.fieldGroup.find(
+                (item) => item.name === value.type
+              )
+            )
+            .map((value) => value.templateOptions.label)
+        )
+      )
+      .subscribe((value) => {
+        console.log(value);
+        this.formService.setAdditionalSections(value);
+      });
+  }
+
+  removeSection(index: number) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Schritt entfernen",
+          message: "Wollen Sie den Schritt wirklich entfernen?",
+        },
+      })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe(() => this.remove(index));
+  }
+
+  addSection(name: string) {
+    this.add(null, { type: name });
+  }
+}
