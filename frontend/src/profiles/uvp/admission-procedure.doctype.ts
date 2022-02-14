@@ -39,13 +39,19 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
         this.addRepeatChip("eiaNumber", "UVP-Nummer", {
           required: true,
         }),
-        this.addCheckbox(
-          "prelimAssessment",
-          "Vorprüfung durchgeführt (ja/nein)",
-          {
-            required: false,
-          }
-        ),
+        this.addRadioboxes("prelimAssessment", "Vorprüfung durchgeführt", {
+          required: true,
+          options: [
+            {
+              value: "Ja",
+              id: true,
+            },
+            {
+              value: "Nein",
+              id: false,
+            },
+          ],
+        }),
         {
           key: "processingSteps",
           type: "uvpPhases",

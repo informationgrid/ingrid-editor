@@ -1,5 +1,3 @@
-import { FormGroup } from "@angular/forms";
-
 export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
     return {
@@ -189,6 +187,23 @@ export class FormFieldHelper {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
+        required: options?.required,
+      },
+    };
+  }
+
+  addRadioboxes(id, label, options?) {
+    return {
+      key: id,
+      type: "radio",
+      wrappers: ["panel", "form-field", "inline-help"],
+      className: "ige-radios",
+      templateOptions: {
+        label: options?.fieldLabel,
+        externalLabel: label,
+        labelProp: "value",
+        valueProp: "id",
+        options: options?.options,
         required: options?.required,
       },
     };

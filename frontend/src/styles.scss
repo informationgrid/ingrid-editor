@@ -870,6 +870,11 @@ mat-icon.wide-icon-26px {
 }
 
 /* RADIO */
+.mat-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
 .radio-vertical {
   display: flex;
   flex-direction: column;
