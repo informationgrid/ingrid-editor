@@ -61,7 +61,8 @@ export class DocumentPage extends BasePage {
     static searchAndSelect(searchString: string, addressType: string) {
       // TODO replace addressType with proper addressType class or enum
       this.search(searchString);
-      cy.wait(500);
+      // result can be detached form dom so we need to wait a bit, see: https://github.com/cypress-io/cypress/issues/7306
+      cy.wait(1000);
       cy.get('ige-document-list-item').contains(searchString).click();
     }
   };
@@ -398,7 +399,7 @@ export class DocumentPage extends BasePage {
   }
 
   static scrollToSection(section: string) {
-    cy.get('ige-header-navigation').contains('mCLOUD').click();
+    cy.get('ige-header-navigation').contains(section).click();
   }
 
   /**

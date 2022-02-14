@@ -284,7 +284,7 @@ describe('General create documents/folders', () => {
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 1);
     });
 
-    it('check for ordering and sorting mCloud address lists in the mCLOUD document', () => {
+    it('check for ordering and sorting address lists in the mCLOUD document', () => {
       let address1 = 'mclould_address';
       let address2 = 'Published Testorganization';
       let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
@@ -305,25 +305,41 @@ describe('General create documents/folders', () => {
       DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
     });
 
-    it('check for ordering and sorting mCloud address lists in the mCLOUD document', () => {
-      let address1 = 'mclould_address';
-      let address2 = 'Published Testorganization';
-      let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
+    it('check for ordering and sorting Zeitbezug der Ressource lists in the mCLOUD document', () => {
+      let date1 = new Date(2023, 2, 10);
+      let date2 = new Date(2022, 2, 12);
+      let date3 = new Date(2025, 2, 11);
+      let type1 = 'Letzte Änderung';
+      let type2 = 'Erstellung';
+
+      let resourceDateSelector = '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag-handle';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
-      enterMcloudDocTestData.CreateDialog.setAddress(address1);
-      enterMcloudDocTestData.CreateDialog.setAddress(address2);
 
-      DocumentPage.scrollToSection('Allgemeines');
+      DocumentPage.scrollToSection('Zeitbezüge');
 
-      DocumentPage.dragItem(addressSelector, '[data-cy="Adressen"] .address-cards .address-card-wrapper', 1, -200, 0);
-
+      enterMcloudDocTestData.CreateDialog.setTimeReference(date1, type1, 0);
+      enterMcloudDocTestData.CreateDialog.setTimeReference(date2, type2, 1);
+      enterMcloudDocTestData.CreateDialog.setTimeReference(date3, type1, 2);
       DocumentPage.saveDocument();
 
-      // reload and make sure of ordering
+      DocumentPage.scrollToSection('Zeitbezüge');
+      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
+      DocumentPage.saveDocument();
+
+      // // reload and make sure of ordering
       cy.reload();
-      DocumentPage.checkOfExistingItem(addressSelector, address2, 0);
-      DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
+      DocumentPage.scrollToSection('Zeitbezüge');
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
+        'Letzte Änderung',
+        1
+      );
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
+        'Erstellung',
+        2
+      );
     });
   });
 });
