@@ -15,8 +15,11 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+
+const val PAGE_SIZE: Int = 10
 
 @Service
 class IndexService @Autowired constructor(
@@ -68,13 +71,13 @@ class IndexService @Autowired constructor(
             auth,
             emptySet(),
             catalogId,
-            ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, 10))
+            ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )
         val docsToIndex = response.hits
             .map { docWrapperRepo.findById(it._id).get() }
             .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
 
-        val pagedDocs = PageImpl(docsToIndex)
+        val pagedDocs = PageImpl(docsToIndex, Pageable.ofSize(PAGE_SIZE), response.totalHits.toLong())
 
         return if (pagedDocs.isEmpty) {
             log.warn("No documents found for indexing")

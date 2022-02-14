@@ -8,45 +8,43 @@
     },
     "title": {
       "type": "text",
-      "analyzer": "german",
       "store": true,
       "fields": {
-        "phrase": {
+        "decomp_german": {
           "type": "text",
-          "analyzer": "ngram_phrase",
-          "search_analyzer": "phrase"
+          "analyzer": "decomp_german",
+          "search_analyzer": "german_simple"
         },
-        "ngram": {
+        "decomp_shingles": {
           "type": "text",
-          "analyzer": "ngram",
-          "search_analyzer": "german"
+          "analyzer": "decomp_shingles"
         },
-        "edge_ngram": {
+        "suggest_shingles": {
           "type": "text",
-          "analyzer": "edge_ngram",
-          "search_analyzer": "german"
+          "analyzer": "suggest_shingles"
+        },
+        "raw": {
+          "type": "keyword",
+          "store": true
         }
       }
     },
     "description": {
       "type": "text",
-      "analyzer": "german",
-      "store": true,
+      "analyzer": "decomp",
       "fields": {
-        "phrase": {
+        "decomp_german": {
           "type": "text",
-          "analyzer": "ngram_phrase",
-          "search_analyzer": "phrase"
+          "analyzer": "decomp_german",
+          "search_analyzer": "german_simple"
         },
-        "ngram": {
+        "decomp_shingles": {
           "type": "text",
-          "analyzer": "ngram",
-          "search_analyzer": "german"
+          "analyzer": "decomp_shingles"
         },
-        "edge_ngram": {
+        "suggest_shingles": {
           "type": "text",
-          "analyzer": "edge_ngram",
-          "search_analyzer": "german"
+          "analyzer": "suggest_shingles"
         }
       }
     },
@@ -154,10 +152,12 @@
           "type": "keyword"
         },
         "title": {
-          "type": "text"
+          "type": "text",
+          "analyzer": "decomp"
         },
         "description": {
-          "type": "text"
+          "type": "text",
+          "analyzer": "decomp"
         },
         "format": {
           "type": "keyword"
@@ -278,6 +278,7 @@
         },
         "mfund_project_title": {
           "type": "text",
+          "analyzer": "decomp",
           "fields": {
             "raw": {
               "type": "keyword"
@@ -287,15 +288,18 @@
         "subsection": {
           "properties": {
             "title": {
-              "type": "text"
+              "type": "text",
+              "analyzer": "decomp"
             },
             "description": {
-              "type": "text"
+              "type": "text",
+              "analyzer": "decomp"
             }
           }
         },
         "all": {
-          "type": "text"
+          "type": "text",
+          "analyzer": "decomp"
         }
       }
     }

@@ -39,7 +39,7 @@
                         [form]="form"
                         [model]="model"
                         [forAddress]="address"
-                        [sections]="sections"
+                        [sections]="(sections | async) ?? []"
                         [parentContainer]="scrollForm"
                         (showStickyHeader)="updateContentPadding($event)"
                     ></ige-form-info>
