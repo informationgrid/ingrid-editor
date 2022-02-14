@@ -4,6 +4,9 @@ import { BaseDoctype } from "../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
+import { FormGroup } from "@angular/forms";
+import { ConfigService } from "../../app/services/config/config.service";
+import { UploadService } from "../../app/shared/upload/upload.service";
 
 @Injectable({
   providedIn: "root",
@@ -65,11 +68,52 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
         },
       ]),
     ];
+  private columnsForDocumentTable = [
+    {
+      key: "title",
+      type: "input",
+      label: "Titel",
+      focus: true,
+      class: "flex-2",
+      templateOptions: {
+        label: "Titel",
+        appearance: "outline",
+      },
+    },
+    {
+      key: "link",
+      type: "upload",
+      label: "Link",
+      class: "flex-2",
+      templateOptions: {
+        label: "Link",
+        appearance: "outline",
+        required: true,
+
+        onClick: (docUuid, uri, $event) => {
+          this.uploadService.downloadFile(docUuid, uri, $event);
+        },
+        formatter: (link: any, form: FormGroup) => {
+          if (link.asLink) {
+            return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+          } else {
+            return `<a href="${
+              this.configService.getConfiguration().backendUrl
+            }upload/${form.get("_uuid").value}/${
+              link.uri
+            }" class="no-text-transform">${link.uri}</a>`;
+          }
+        },
+      },
+    },
+  ];
 
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
+    private configService: ConfigService,
+    private uploadService: UploadService
   ) {
     super(codelistService, codelistQuery);
   }
@@ -84,13 +128,30 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
       fieldGroup: [
         this.addSection("Öffentliche Auslegung", [
           { key: "type" },
-          {
-            key: "telephoneNumber",
-            type: "input",
-            templateOptions: {
-              label: "TelephoneNumber",
-            },
-          },
+          this.addDateRange("disclosureDate", "Zeitraum der Auslegung", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+          this.addTable("announcementDocs", "Auslegungsinformationen", {
+            required: true,
+            columns: this.columnsForDocumentTable,
+          }),
+          this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
+            required: true,
+            columns: this.columnsForDocumentTable,
+          }),
+          this.addTable(
+            "reportsRecommendationDocs",
+            "Berichte und Empfehlungen",
+            {
+              required: false,
+              columns: this.columnsForDocumentTable,
+            }
+          ),
+          this.addTable("furtherDocs", "Weitere Unterlagen", {
+            required: false,
+            columns: this.columnsForDocumentTable,
+          }),
         ]),
       ],
     };
@@ -106,13 +167,18 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
       fieldGroup: [
         this.addSection("Erörterungstermin", [
           { key: "type" },
-          {
-            key: "telephoneNumber",
-            type: "input",
-            templateOptions: {
-              label: "TelephoneNumber",
-            },
-          },
+          this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+          this.addTable(
+            "considerationDocs",
+            "Informationen zum Erörterungstermin",
+            {
+              required: true,
+              columns: this.columnsForDocumentTable,
+            }
+          ),
         ]),
       ],
     };
@@ -128,13 +194,17 @@ export class AdmissionProcedureDoctype extends BaseDoctype {
       fieldGroup: [
         this.addSection("Entscheidung über die Zulassung", [
           { key: "type" },
-          {
-            key: "url",
-            type: "input",
-            templateOptions: {
-              label: "URL",
-            },
-          },
+          this.addDatepicker("decisionDate", "Datum der Entscheidung", {
+            required: true,
+          }),
+          this.addTable("approvalDocs", "Auslegungsinformationen", {
+            required: false,
+            columns: this.columnsForDocumentTable,
+          }),
+          this.addTable("decisionDocs", "Entscheidung", {
+            required: false,
+            columns: this.columnsForDocumentTable,
+          }),
         ]),
       ],
     };
