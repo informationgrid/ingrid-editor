@@ -35,7 +35,6 @@ export class McloudAddressDoctype extends BaseDoctype {
                 this.addInput("organization", null, {
                   fieldLabel: "Organisation",
                   required: true,
-                  wrappers: null,
                   className: "width-100 organization",
                 }),
               ],
@@ -90,7 +89,6 @@ export class McloudAddressDoctype extends BaseDoctype {
               fieldGroup: [
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
-                  wrappers: null,
                   className: "width-100",
                 }),
               ],
@@ -100,11 +98,9 @@ export class McloudAddressDoctype extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
-                  wrappers: null,
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
-                  wrappers: null,
                   className: "flex-3",
                 }),
               ],
@@ -114,11 +110,9 @@ export class McloudAddressDoctype extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-po-box", null, {
                   fieldLabel: "PLZ (Postfach)",
-                  wrappers: null,
                 }),
                 this.addInput("po-box", null, {
                   fieldLabel: "Postfach",
-                  wrappers: null,
                   className: "flex-3",
                 }),
               ],

@@ -89,8 +89,7 @@ export class FormFieldHelper {
       key: id,
       type: "input",
       className: options?.className ?? "flex-1",
-      wrappers:
-        options?.wrappers === null ? undefined : ["form-field", "inline-help"],
+      wrappers: options?.wrappers,
       templateOptions: {
         label: options?.fieldLabel,
         required: options?.required,
