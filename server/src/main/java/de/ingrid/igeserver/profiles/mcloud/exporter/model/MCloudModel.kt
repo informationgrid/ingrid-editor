@@ -79,8 +79,9 @@ data class MCloudModel(
             val entryID = codeListService?.getCodeListEntryId("6500", data.license, "de")
             if(entryID != null) {
                 val codeListEntry = codeListService?.getCodeListEntry("6500", entryID)
-                if(codeListEntry?.data != null)
-                    jsonString = codeListService?.getCodeListEntry("6500", entryID)?.data.toString();
+                if(!codeListEntry?.data.isNullOrEmpty()) {
+                    jsonString = codeListEntry?.data.toString();
+                }
             }
             return if (jsonString.isNullOrEmpty()) null else JSONParser().parse(jsonString)
         }
