@@ -156,9 +156,11 @@ export function animationExtension(field: FormlyFieldConfig) {
         { name: "section", component: SectionWrapper },
         { name: "animation", component: AnimationWrapperComponent },
       ],
-      extensions: [
-        { name: "animation", extension: { onPopulate: animationExtension } },
-      ],
+      // TODO: this animation is too slow especially when there are a lot of tables in form
+      //       we need another approach instead of wrapping every field with an animation
+      // extensions: [
+      //   { name: "animation", extension: { onPopulate: animationExtension } },
+      // ],
       extras: {
         lazyRender: true,
       },
