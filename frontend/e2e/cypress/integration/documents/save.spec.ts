@@ -328,17 +328,20 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.reload({ timeout: 10000 });
       DocumentPage.scrollToSection('Zeitbezüge');
+
       DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
-        'Letzte Änderung',
-        1
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '12.02.2022',
+        2,
+        true
       );
       DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
-        'Erstellung',
-        2
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '11.02.2025',
+        1,
+        true
       );
     });
   });

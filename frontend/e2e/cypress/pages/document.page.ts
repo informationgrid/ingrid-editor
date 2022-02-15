@@ -428,11 +428,19 @@ export class DocumentPage extends BasePage {
     cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
   }
 
-  static checkOfExistingItem(node: string, itemName: string, index: number = -1) {
+  static checkOfExistingItem(node: string, itemName: string, index: number = -1, inputString: boolean = false) {
     if (index != -1) {
-      cy.get(node).eq(index).contains(itemName);
+      if (inputString) {
+        cy.get(node).eq(index).should('have.value', itemName);
+      } else {
+        cy.get(node).eq(index).contains(itemName);
+      }
     } else {
-      cy.get(node).contains(itemName);
+      if (inputString) {
+        cy.get(node).should('have.value', itemName);
+      } else {
+        cy.get(node).contains(itemName);
+      }
     }
   }
   static getSearchResult(number = 1) {
