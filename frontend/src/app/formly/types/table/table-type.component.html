@@ -143,12 +143,14 @@
                 <mat-header-cell
                     *matHeaderCellDef
                     [class]="to.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
                 >
                     {{ to.columns[batchMode ? i - 1 : i].label }}
                 </mat-header-cell>
                 <mat-cell
                     *matCellDef="let element; let rowIndex = index"
                     [class]="to.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
                 >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     <span

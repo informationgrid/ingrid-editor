@@ -2,7 +2,7 @@
 
 .mat-column-_actions_,
 .mat-column-_select_ {
-  width: 56px;
+  width: 24px;
   flex: unset;
 }
 
@@ -49,6 +49,10 @@ mat-header-row {
 
 .select-controls {
   padding-right: 4px;
+
+  .mat-checkbox {
+    height: 18px;
+  }
 
   mat-icon {
     color: $ige-placeholder-color;
