@@ -3,17 +3,17 @@ import { DocumentService } from "../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { UvpShared } from "./uvp-shared";
-import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
+import { UploadService } from "../../app/shared/upload/upload.service";
+import { UvpShared } from "./uvp-shared";
 
 @Injectable({
   providedIn: "root",
 })
-export class AdmissionProcedureDoctype extends UvpShared {
-  id = "UvpAdmissionProcedureDoc";
+export class ForeignProjectsDoctype extends UvpShared {
+  id = "UvpForeignProjectDoc";
 
-  label = "Zulassungsverfahren";
+  label = "Ausländisches Vorhaben";
 
   iconClass = "Projekt";
 
@@ -35,32 +35,12 @@ export class AdmissionProcedureDoctype extends UvpShared {
         this.addSpatial("spatial", null, {
           required: true,
         }),
-        this.addDatepicker("receiptDate", "Eingang des Antrags", {
-          required: true,
-        }),
-        this.addRepeatChip("eiaNumber", "UVP-Nummer", {
-          required: true,
-        }),
-        this.addRadioboxes("prelimAssessment", "Vorprüfung durchgeführt", {
-          required: true,
-          options: [
-            {
-              value: "Ja",
-              id: true,
-            },
-            {
-              value: "Nein",
-              id: false,
-            },
-          ],
-        }),
         {
           key: "processingSteps",
           type: "uvpPhases",
           fieldArray: {
             fieldGroup: [
               this.addPublicDisclosure(),
-              this.addPublicHearing(),
               this.addDecisionOfAdmission(),
             ],
           },
