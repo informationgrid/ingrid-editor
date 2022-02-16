@@ -323,6 +323,9 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.CreateDialog.setTimeReference(date3, type1, 2);
       DocumentPage.saveDocument();
 
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1200);
       DocumentPage.scrollToSection('Zeitbezüge');
       DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
       DocumentPage.saveDocument();
