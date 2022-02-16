@@ -328,6 +328,22 @@ describe('General create documents/folders', () => {
       cy.wait(1200);
       DocumentPage.scrollToSection('Zeitbezüge');
       DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
+
+      // check the new position of the items before saving to make sure the dragging was successful
+      cy.wait(2000);
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '12.02.2022',
+        2,
+        true
+      );
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '11.02.2025',
+        1,
+        true
+      );
+
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering

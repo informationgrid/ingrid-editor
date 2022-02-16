@@ -399,7 +399,7 @@ export class DocumentPage extends BasePage {
   }
 
   static scrollToSection(section: string) {
-    cy.get('ige-header-navigation').contains(section).click();
+    cy.contains('ige-header-navigation .link-button', section, { timeout: 10000 }).click();
   }
 
   /**
