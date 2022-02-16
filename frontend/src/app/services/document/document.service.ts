@@ -235,10 +235,8 @@ export class DocumentService {
     console.log("After validation:", data);
     const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
     if (formInvalid && formInvalid.invalid) {
-      this.modalService.showJavascriptError(
-        "Der Datensatz kann nicht veröffentlicht werden."
-      );
-      return;
+      this.documentOperationFinished$.next(true);
+      throw new IgeError("Der Datensatz kann nicht veröffentlicht werden.");
     }
 
     return this.dataService.publish(data).pipe(
