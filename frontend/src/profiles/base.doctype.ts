@@ -98,6 +98,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.codelistQuery.selectCatalogCodelist(codelistId + "")
     ).pipe(
       filter((codelist) => !!codelist),
+      // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
       map((codelist) => CodelistService.mapToSelectSorted(codelist))
     );
   }
@@ -109,7 +110,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     this.addCodelistDefaultValues(this.fields);
     this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
-    console.log("Profile initialized");
+    console.debug(`Document type ${this.id} initialized`);
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
