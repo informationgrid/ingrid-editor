@@ -33,13 +33,26 @@ export class CodelistPipe implements PipeTransform {
     return of(result[lang]);
   }
 
-  private getEntryFromCodelist(codelist: Codelist, value: string, id: any) {
-    const entries = codelist.entries.filter((item) => item.id === value);
+  private getEntryFromCodelist(
+    codelist: Codelist,
+    value: string | { key; value },
+    id: any
+  ) {
+    let codelistValue = value;
+    if (value instanceof Object) {
+      codelistValue = value.key;
+    }
+
+    const entries = codelist.entries.filter(
+      (item) => item.id === codelistValue
+    );
     if (entries.length === 1) {
       return entries[0].fields;
     } else {
-      console.log(`Codelist entry ${value} not found for codelist ${id}`);
-      return `${value} (Freier Eintrag)`;
+      console.log(
+        `Codelist entry ${codelistValue} not found for codelist ${id}`
+      );
+      return `${codelistValue} (Freier Eintrag)`;
     }
   }
 }

@@ -65,6 +65,8 @@ import {
   IpValidator,
   LowercaseValidator,
 } from "./input.validators";
+import { SelectTypeComponent } from "./types/select-type/select-type.component";
+import { FormlySelectModule } from "@ngx-formly/core/select";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -131,6 +133,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "upload",
           component: UploadTypeComponent,
         },
+        {
+          name: "select",
+          component: SelectTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
@@ -169,6 +175,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DialogTemplateModule,
     UploadModule,
     SharedPipesModule,
+    FormlySelectModule,
   ],
   providers: [
     {
@@ -212,6 +219,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UploadTypeComponent,
     LinkDialogComponent,
     UploadFilesDialogComponent,
+    SelectTypeComponent,
   ],
   exports: [
     ReactiveFormsModule,

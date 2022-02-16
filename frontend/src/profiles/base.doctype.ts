@@ -65,7 +65,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   constructor(
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery
+    protected codelistQuery: CodelistQuery
   ) {
     super();
   }

@@ -8,10 +8,25 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { MatInput } from "@angular/material/input";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { Observable } from "rxjs";
-import { filter, map, startWith, take, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of as observableOf,
+  of,
+  Subject,
+} from "rxjs";
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  take,
+  tap,
+} from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
+import { FormControl } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -30,33 +45,92 @@ export class AutocompleteTypeComponent
   @ViewChild("matSuffix") matSuffix: TemplateRef<any>;
 
   private parameterOptions: SelectOptionUi[] = [];
-  filteredOptions: Observable<SelectOptionUi[]>;
+  filteredOptions: SelectOptionUi[] = [];
+  private optionsLoaded$ = new BehaviorSubject<boolean>(false);
+
+  input = new FormControl();
 
   ngOnInit() {
     super.ngOnInit();
 
-    if (this.to.options instanceof Observable) {
-      this.to.options
-        .pipe(
-          untilDestroyed(this),
-          filter((data) => data !== undefined && data.length > 0),
-          take(1),
-          tap((data) => this.initInputListener(data))
-        )
-        .subscribe();
-    } else {
-      this.initInputListener(this.to.options);
+    combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
+      .pipe(
+        /*distinctUntilChanged(
+          ([a], [b]) => JSON.stringify(a) === JSON.stringify(b)
+        ),*/
+        filter(([value, ready]) => ready),
+        map(([value]) => this.mapOptionToValue(value))
+      )
+      .subscribe((label) => {
+        this.input.setValue(label, { emitEvent: false });
+        this.filteredOptions = this._filter(label);
+      });
+
+    let options = this.to.options as Observable<any[]>;
+    if (!(options instanceof Observable)) {
+      options = of(options);
     }
+    options
+      .pipe(
+        untilDestroyed(this),
+        filter((data) => data !== undefined && data.length > 0),
+        take(1),
+        tap((data) => this.initInputListener(data))
+      )
+      .subscribe();
   }
 
   private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options;
 
-    this.filteredOptions = this.formControl.valueChanges.pipe(
-      untilDestroyed(this),
-      startWith(""),
-      map((value) => this._filter(<string>value))
-    );
+    this.input.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(this.mapOptionToValue(this.formControl.value)),
+        tap((value) => this.updateFormControl(value))
+      )
+      .subscribe((value) => (this.filteredOptions = this._filter(value)));
+
+    this.optionsLoaded$.next(true);
+    const label = this.mapOptionToValue(this.formControl.value);
+    this.input.setValue(label, { emitEvent: false });
+  }
+
+  private mapOptionToValue(value: any): string {
+    if (value?.key) {
+      return (
+        this.parameterOptions.find((option) => option.value === value.key)
+          ?.label ?? ""
+      );
+    } else {
+      return value?.value ?? "";
+    }
+  }
+
+  private updateFormControl(value: string) {
+    const key =
+      this.parameterOptions.find((option) => option.label === value)?.value ??
+      null;
+
+    const hasSameKey = key !== null && key === this.formControl.value?.key;
+    const hasSameValue =
+      key === null && value === this.formControl.value?.value;
+    const hasSameNullValue =
+      this.formControl.value === null && key === null && !value;
+
+    if (hasSameKey || hasSameValue || hasSameNullValue) {
+      return;
+    }
+
+    if (key === null && !value) {
+      this.formControl.setValue(null);
+    } else if (key === null) {
+      this.formControl.setValue({ key: null, value: value });
+    } else {
+      this.formControl.setValue({ key: key });
+    }
+
+    setTimeout(() => this.formControl.markAsDirty());
   }
 
   _filter(value: string): SelectOptionUi[] {

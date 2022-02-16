@@ -1,30 +1,30 @@
 <input
     matInput
     [matAutocomplete]="auto"
-    [formControl]="formControl"
+    [formControl]="input"
     [formlyAttributes]="field"
     [placeholder]="to.placeholder"
-    (keyup)="_filter(formControl.value || '')"
+    (keyup)="_filter(input.value || '')"
     (click)="openAutocompletePanel()"
     [errorStateMatcher]="errorStateMatcher"
 />
 <ng-template #matSuffix>
     <button
-        *ngIf="formControl.value?.length > 0 && !this.to.hideDeleteButton"
+        *ngIf="input.value?.length > 0 && !this.to.hideDeleteButton"
         mat-icon-button
         type="button"
         class="field-close"
-        (click)="formControl.setValue('')"
+        (click)="input.setValue('')"
     >
         <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
     </button>
 </ng-template>
 <mat-autocomplete #auto="matAutocomplete">
     <mat-option
-        *ngFor="let option of filteredOptions | async"
+        *ngFor="let option of filteredOptions"
         [value]="option.label"
         [class.matching]="
-            this.to.highlightMatches && !option.disabled && formControl.value
+            this.to.highlightMatches && !option.disabled && input.value
         "
     >
         {{ option.label }}
