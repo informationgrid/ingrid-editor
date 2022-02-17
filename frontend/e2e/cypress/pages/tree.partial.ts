@@ -153,10 +153,6 @@ export class Tree {
     }
   }
 
-  static checkTitleOfSelectedNode(nodeTitle: string) {
-    cy.contains('ige-header-title-row', nodeTitle, { timeout: 8000 });
-  }
-
   static checkNodeHasChildren(nodeTitle: string) {
     const exactText = this.getRegExp(nodeTitle);
     cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').should('exist');

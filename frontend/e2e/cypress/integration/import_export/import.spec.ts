@@ -25,7 +25,7 @@ describe('Import Tests', () => {
     Tree.checkPath(['Daten', 'Testdokumente']);
 
     DocumentPage.jumpFromDocumentToAddress('Transsilvanien, Adresse');
-    Tree.checkTitleOfSelectedNode('Transsilvanien, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Transsilvanien, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen']);
   });
 
@@ -43,7 +43,7 @@ describe('Import Tests', () => {
     Tree.checkPath(['Daten', 'Testdokumente']);
 
     DocumentPage.jumpFromDocumentToAddress('Aquitanien, Adresse');
-    Tree.checkTitleOfSelectedNode('Aquitanien, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Aquitanien, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen', 'Ordner 2. Ebene']);
   });
 
@@ -61,7 +61,7 @@ describe('Import Tests', () => {
     ImportPage.jumpToDocument('document_import_43');
     Tree.checkPath(['Daten', 'Testdokumente']);
     DocumentPage.jumpFromDocumentToAddress('Sibirien, Adresse');
-    Tree.checkTitleOfSelectedNode('Sibirien, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Sibirien, Adresse');
     Tree.checkPath(['Adressen', 'Testadressen']);
   });
 
@@ -79,7 +79,7 @@ describe('Import Tests', () => {
     ImportPage.jumpToDocument('Datum_Ebene_4_4');
     Tree.checkPath(['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
     DocumentPage.jumpFromDocumentToAddress('Schlesien, Adresse');
-    Tree.checkTitleOfSelectedNode('Schlesien, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Schlesien, Adresse');
     Tree.checkPath(['Adressen', 'Testadressen']);
   });
 
@@ -103,8 +103,7 @@ describe('Import Tests', () => {
 
     ImportPage.jumpToDocument('Tiefes Dokument');
     DocumentPage.jumpFromDocumentToAddress('Franken, Adressetwo');
-
-    Tree.checkTitleOfSelectedNode('Franken, Adressetwo');
+    cy.get(DocumentPage.title).should('have.text', 'Franken, Adressetwo');
     Tree.checkPath(['Adressen', 'Neue Testadressen']);
   });
 
