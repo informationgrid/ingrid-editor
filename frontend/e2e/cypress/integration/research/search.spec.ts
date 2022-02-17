@@ -8,6 +8,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AddressPage } from '../../pages/address.page';
 import { Menu } from '../../pages/menu';
+import { Tree } from '../../pages/tree.partial';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -98,7 +99,7 @@ describe('Research Page', () => {
     ResearchPage.search('Test mCLOUD');
     ResearchPage.changeViewNumberDocuments();
     ResearchPage.openDocumentFromResultList('Test mCLOUD Dokument');
-    cy.get('.title').should('contain', 'Test mCLOUD Dokument');
+    Tree.checkTitleOfSelectedNode('Test mCLOUD Dokument');
   });
 
   it('should delete a document from search result list', () => {
@@ -169,7 +170,7 @@ describe('Research Page', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
     // make sure query field is not empty
-    cy.get('[data-cy="sql-query-field"]').should('not.have.value', '');
+    cy.get(ResearchPage.SQLField).should('not.have.value', '');
     // make sure a non-zero number of results is returned
     cy.wait('@sqlQuery');
     // because of changes in the database the search does not return anything at the moment
@@ -178,7 +179,7 @@ describe('Research Page', () => {
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
     // make sure query has been removed from query field and 0 results are returned
-    cy.get('[data-cy="sql-query-field"]').should('have.value', '');
+    cy.get(ResearchPage.SQLField).should('have.value', '');
     cy.contains('.result', '0 Ergebnisse gefunden');
   });
 
@@ -311,9 +312,9 @@ describe('Research Page', () => {
   // test for nasty strings
   it('should be able to deal with potentially problematic search terms (#3457)', () => {
     //check if document with problematic strings in title can be found
-    DocumentPage.visit();
+    Menu.switchTo('DOCUMENTS');
     DocumentPage.createDocument("What's{This");
-    ResearchPage.visit();
+    Menu.switchTo('RESEARCH');
     ResearchPage.search("What's{");
     cy.get('.error').should('not.exist');
     ResearchPage.changeViewNumberDocuments();
@@ -357,13 +358,12 @@ describe('Research Page', () => {
     ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
         // compare the content of the two arrays
-        //assert(arr2.length === arr1.length && arr2.every((value, index) => value === arr1[index]));
         expect(arr2).to.deep.eq(arr1);
       });
     });
   });
 
-  it('should do timerelated search with only start date given (#3040)', () => {
+  it('should do time-related search with only start date given (#3040)', () => {
     // choose start date and compare filtered results with number of all search results
     ResearchPage.setDate('startDate', '09.08.2021');
     ResearchPage.waitForSearch();
@@ -374,7 +374,7 @@ describe('Research Page', () => {
     });
   });
 
-  it('should do timerelated search with only end date given (#3040)', () => {
+  it('should do time-related search with only end date given (#3040)', () => {
     // choose end date and compare filtered results with number of all search results
     ResearchPage.setDate('endDate', '11.08.2021');
     ResearchPage.waitForSearch();
@@ -398,7 +398,7 @@ describe('Research Page', () => {
     });
   });
 
-  it('timerelated search with same start date and end date should return only documents belonging to this date (#3040)', () => {
+  it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
     ResearchPage.setDate('startDate', '22.07.2021');
     ResearchPage.setDate('endDate', '22.07.2021');
     ResearchPage.waitForSearch();
@@ -417,14 +417,14 @@ describe('Research Page', () => {
     });
   });
 
-  it('timerelated search with start date more recent than end date should return 0 results (#3040)', () => {
+  it('time-related search with start date more recent than end date should return 0 results (#3040)', () => {
     ResearchPage.setDate('startDate', '24.07.2021');
     ResearchPage.setDate('endDate', '22.07.2021');
     ResearchPage.waitForSearch();
     ResearchPage.checkNoSearchResults();
   });
 
-  it('timerelated search for specific document should only return it when respective date is covered by interval (#3040)', () => {
+  it('time-related search for specific document should only return it when respective date is covered by interval (#3040)', () => {
     // date interval too early for specific document
     ResearchPage.setDate('startDate', '20.06.2021');
     ResearchPage.setDate('endDate', '29.06.2021');
@@ -439,7 +439,7 @@ describe('Research Page', () => {
     cy.contains('tbody tr', 'Veröffentlichter Datensatz mit Bearbeitungsversion');
   });
 
-  it('should do timerelated search together with search for published documents (#3040)', () => {
+  it('should do time-related search together with search for published documents (#3040)', () => {
     ResearchPage.setDate('startDate', '20.06.2021');
     ResearchPage.setDate('endDate', '29.07.2021');
     ResearchPage.waitForSearch();
@@ -450,7 +450,7 @@ describe('Research Page', () => {
     });
   });
 
-  it('should do timerelated search together with document type search (#3040)', () => {
+  it('should do time-related search together with document type search (#3040)', () => {
     ResearchPage.setDate('startDate', '10.05.2021');
     ResearchPage.setDate('endDate', '30.08.2021');
     ResearchPage.waitForSearch();
@@ -461,7 +461,7 @@ describe('Research Page', () => {
     });
   });
 
-  it('should do timerelated search together with spatial reference search (#3040)', () => {
+  it('should do time-related search together with spatial reference search (#3040)', () => {
     ResearchPage.setDate('startDate', '20.01.2020');
     ResearchPage.setDate('endDate', '29.12.2021');
     ResearchPage.waitForSearch();
