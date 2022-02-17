@@ -121,11 +121,7 @@ export class McloudDoctype extends BaseDoctype {
                 options: this.getCodelistForSelect(20002, null),
                 codelistId: 20002,
                 formatter: (item: any) =>
-                  this.codelistQuery
-                    .getCatalogCodelist("20002")
-                    .entries.find((entry) => entry.id === item.key).fields[
-                    "de"
-                  ],
+                  this.codelistQuery.getCatalogEntryByKey("20002", item?.key),
               },
             },
             {
@@ -137,7 +133,7 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
-                formatter: (item: any) => item.key,
+                formatter: (item: any) => item?.key,
               },
             },
           ],
