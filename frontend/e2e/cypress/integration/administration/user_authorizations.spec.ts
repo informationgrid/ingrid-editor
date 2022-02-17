@@ -63,14 +63,14 @@ describe('Meta data administrator without groups', () => {
   it('metadata admin without groups should not be able to create documents', () => {
     // data documents
     DocumentPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
     DocumentPage.CreateDialog.cancel();
-    cy.get('[data-cy="toolbar_NEW_DOC"]').click();
+    cy.get(DocumentPage.Toolbar.NewDoc).click();
     cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
     // addresses
     AddressPage.visit();
-    cy.get('[data-cy="toolbar_CREATE_FOLDER"]').click();
+    cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
   });
 
@@ -223,7 +223,7 @@ describe('Meta data administrator with a group', () => {
     cy.get('mat-form-field.mat-form-field-disabled');
 
     // try to move the address, expect move button to be disabled
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_CUT"]').should('be.disabled');
 
     // try to delete
@@ -264,7 +264,7 @@ describe('Meta data administrator with a group', () => {
     // try to move a folder to the read-only folder
     AddressPage.visit();
     Tree.openNode([folderToMove]);
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_COPYTREE"]').click();
     cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
     cy.get('[data-cy="dlg-close"]').click();
@@ -278,7 +278,7 @@ describe('Meta data administrator with a group', () => {
 
     // try to move a document to the read-only folder
     Tree.openNode([documentToMove]);
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
     cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
     cy.get('[data-cy="dlg-close"]').click();
@@ -375,7 +375,7 @@ describe('Meta data administrator with a group', () => {
     DocumentPage.visit();
     // try to move
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_CUT"]').click();
     cy.contains('mat-dialog-content mat-tree-node', rootFolder_1).should('not.exist');
 
@@ -384,7 +384,7 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     // try to move
     Tree.openNode(['Ordner_2.Ebene_C', 'Ordner_3.Ebene_F']);
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_CUT"]').click();
     cy.contains('mat-dialog-content mat-tree-node', rootFolder_2).should('not.exist');
   });
@@ -413,10 +413,10 @@ describe('Meta data administrator with a group', () => {
     Tree.openNode([tempFolderToRelocate]);
     UserAuthorizationPage.verifyDocumentTitle(tempFolderToRelocate);
     // try to move via dialogue
-    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_CUT"]').should('be.disabled');
     // collapse the dialogue
-    cy.get('[data-cy=toolbar_COPY]').click({ force: true });
+    cy.get(DocumentPage.Toolbar.Copy).click({ force: true });
     // try to move via drag and drop
     CopyCutUtils.simpleDragdropWithoutAutoExpand(tempFolderToRelocate, 'Ordner_Ebene_2A');
     AdminUserPage.attemptIllegitimateMove();

@@ -20,6 +20,16 @@ export class ManageCatalogPage {
     cy.wait(1000);
   }
 
+  static getNumberOfDatasetsInCatalog(catalogTitle: string) {
+    return cy
+      .contains('.mat-card', catalogTitle)
+      .find('.content')
+      .then($node => {
+        // extract number from string like '12 Datensätze'
+        return parseInt($node.text().trim().split(' ')[0]);
+      });
+  }
+
   static addCatalog(catalogTitle: string) {
     cy.get('.main-header button').contains('Hinzufügen').click();
     cy.get('mat-dialog-container input').type(catalogTitle);
