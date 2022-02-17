@@ -99,7 +99,7 @@ describe('Research Page', () => {
     ResearchPage.search('Test mCLOUD');
     ResearchPage.changeViewNumberDocuments();
     ResearchPage.openDocumentFromResultList('Test mCLOUD Dokument');
-    Tree.checkTitleOfSelectedNode('Test mCLOUD Dokument');
+    cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
   });
 
   it('should delete a document from search result list', () => {
