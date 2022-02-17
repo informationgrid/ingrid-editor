@@ -91,7 +91,7 @@ export class ResearchPage {
   }
 
   //check first radio button, only if a list with suggestions is offered
-  static chooseFirstLocationSuggestionByRadioButton(location: string): void {
+  static chooseFirstLocationSuggestionByRadioButton(): void {
     cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
   }
 
@@ -110,7 +110,7 @@ export class ResearchPage {
       cy.intercept('/search/' + location + '*').as('waitForSuggestions');
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').clear().type(location); //search term
       cy.wait('@waitForSuggestions', { timeout: 10000 });
-      this.chooseFirstLocationSuggestionByRadioButton(location);
+      this.chooseFirstLocationSuggestionByRadioButton();
     }
     if (title !== undefined) {
       cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').clear().type(title); //title
@@ -126,7 +126,7 @@ export class ResearchPage {
     cy.intercept('/search/' + location + '*').as('waitForSuggestions');
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Suchen"]').type(location); //search term
     cy.wait('@waitForSuggestions', { timeout: 10000 });
-    this.chooseFirstLocationSuggestionByRadioButton(location);
+    this.chooseFirstLocationSuggestionByRadioButton();
     cy.get('ige-spatial-dialog').find('input[data-placeholder="Eingeben..."]').type(title); //enter title
     cy.get('button').contains('Abbrechen').click();
   }

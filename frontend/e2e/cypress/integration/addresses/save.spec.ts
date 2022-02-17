@@ -288,5 +288,38 @@ describe('General create addresses/folders', () => {
       Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
       cy.contains('mat-tree-node', folderName).should('not.exist');
     });
+
+    it('check for ordering and sorting "Kontakt" lists in the address document (organization)', () => {
+      let contact1 = 'user@test.com';
+      let contact2 = '1243543436';
+      let contact3 = 'F12321';
+      let type1 = 'E-Mail';
+      let type2 = 'Telefon';
+      let type3 = 'Fax';
+
+      AddressPage.visit();
+
+      let resourceDateSelector = '[data-cy="Kontakt"] ige-repeat .cdk-drag-handle';
+
+      Tree.openNode(['mclould_address']);
+
+      AddressPage.addContact(type1, contact1, 0);
+      AddressPage.addContact(type2, contact2, 1);
+      AddressPage.addContact(type3, contact3, 2);
+      DocumentPage.saveDocument();
+
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1500);
+
+      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Kontakt"] ige-repeat ', 1, 0, 70);
+      DocumentPage.saveDocument();
+
+      // // reload and make sure of ordering
+      cy.reload({ timeout: 10000 });
+
+      DocumentPage.checkOfExistingItem('[data-cy="Kontakt"] ige-repeat .mat-input-element', contact2, 2, true);
+      DocumentPage.checkOfExistingItem('[data-cy="Kontakt"] ige-repeat .mat-input-element', contact3, 1, true);
+    });
   });
 });

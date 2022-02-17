@@ -323,8 +323,27 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.CreateDialog.setTimeReference(date3, type1, 2);
       DocumentPage.saveDocument();
 
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1200);
       DocumentPage.scrollToSection('Zeitbezüge');
       DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
+
+      // check the new position of the items before saving to make sure the dragging was successful
+      cy.wait(2000);
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '12.02.2022',
+        2,
+        true
+      );
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '11.02.2025',
+        1,
+        true
+      );
+
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering

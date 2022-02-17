@@ -1,8 +1,9 @@
-import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
+import { DocumentPage, headerElements, ROOT, SEPARATOR } from '../../pages/document.page';
 import { beforeEach } from 'mocha';
 import { Tree } from '../../pages/tree.partial';
 import { AddressPage } from '../../pages/address.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { Utils } from '../../pages/utils';
 
 describe('Load documents', () => {
   beforeEach(() => {
@@ -81,5 +82,75 @@ describe('Load documents', () => {
       expect(list).to.contain('Organisation_30, Nachname30, Name30');
       expect(list).to.not.contain('Limousin, Adresse');
     });
+  });
+
+  it('should show creation date of documents (#3478 (1))', () => {
+    const docName = 'someNewDocument' + Utils.randomString();
+
+    // create document
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A']);
+    DocumentPage.createDocument(docName);
+    cy.get(DocumentPage.title).should('have.text', docName);
+
+    // check header
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.CreationDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+    );
+    // log in as different user
+    cy.kcLogout();
+    cy.kcLogin('meta2');
+
+    // check header
+    DocumentPage.visit();
+    Tree.openNode(['Ordner_Ebene_2A', docName]);
+    cy.get(DocumentPage.title).should('have.text', docName);
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.CreationDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+    );
+  });
+
+  it('should show edit date of documents (#3478 (2))', () => {
+    const docName = 'Datum_Ebene_3_3';
+
+    // change document
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', docName]);
+    DocumentPage.addDescription('description to alter document');
+    DocumentPage.saveDocument();
+
+    // check header
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.EditDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+    );
+
+    // log in as different user
+    cy.kcLogout();
+    cy.kcLogin('eins');
+
+    // check header
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', docName]);
+    cy.get(DocumentPage.title).should('have.text', docName);
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.EditDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+    );
+
+    // change document and check altered header
+    DocumentPage.addDescription('another description to alter document');
+    DocumentPage.saveDocument();
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.EditDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + 'eins'
+    );
   });
 });

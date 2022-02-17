@@ -44,12 +44,12 @@ export class AddressPage extends DocumentPage {
     cy.wait('@treeCallAddress', { timeout: 10000 });
   }
 
-  static addContact(chooseContact: string = 'Telefon', connection: string = '123456789') {
+  static addContact(chooseContact: string = 'Telefon', connection: string = '123456789', index: number = 0) {
     cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
-    cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').click();
+    cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').eq(index).click();
     cy.get('mat-option').contains(chooseContact).click();
-    cy.get('[data-cy=Kontakt] input').type(connection);
+    cy.get('[data-cy=Kontakt] ').find('input').eq(index).type(connection);
   }
 
   static addAddressToTestDocument(path: string[], addressType: string) {
