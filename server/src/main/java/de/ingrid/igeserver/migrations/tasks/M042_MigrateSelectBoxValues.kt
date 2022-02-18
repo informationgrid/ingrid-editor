@@ -49,7 +49,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
                         migrateNestedField(doc, "temporal", "rangeType")
                         migrateArray(doc, "events", "text")
                         migrateArray(doc, "distributions", "type")
-                        migrateArray(doc, "distributions", "format")
+                        migrateArray(doc, "distributions", "format", "20003")
                         migrateArray(doc, "addresses", "type")
                         log.info("Migrated mCloudDoc with dbID ${doc.id}")
                     } else if (doc.type == "McloudAddressDoc") {
@@ -68,29 +68,35 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         var value = doc.data.get(field)?.textValue() ?: return
 
         if (codelistId != null) {
-            var codelist = this.codelistHandler.getCodelists(listOf(codelistId))
-            if (codelist.isEmpty()) {
-                codelist = this.codelistHandler.getCatalogCodelists(doc.catalogIdentifier.toString())
-                    .filter { it.id == codelistId }
-            }
-
-            val entry = codelist[0].entries.find { it.getField("de") == value }
-            if (entry == null) {
-                val updatedValue = jacksonObjectMapper().createObjectNode().apply {
-                    put("key", null as String)
-                    put("value", value)
-                }
-                doc.data.put(field, updatedValue)
-                return
-            } else {
-                value = entry.id
-            }
+            val codelistValue = handleCodelistValue(codelistId, doc, field, value) ?: return
+            value = codelistValue
         }
 
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
             put("key", value)
         }
         doc.data.put(field, updatedValue)
+    }
+
+    private fun handleCodelistValue(codelistId: String, doc: Document, field: String, value: String): String? {
+        var codelist = this.codelistHandler.getCodelists(listOf(codelistId))
+        if (codelist.isEmpty()) {
+            codelist = this.codelistHandler.getCatalogCodelists(doc.catalogIdentifier.toString())
+                .filter { it.id == codelistId }
+        }
+
+        val entry = codelist[0].entries.find { it.getField("de") == value }
+        return if (entry == null) {
+            val updatedValue = jacksonObjectMapper().createObjectNode().apply {
+                put("key", null as String)
+                put("value", value)
+            }
+            doc.data.put(field, updatedValue)
+            null
+        } else {
+            entry.id
+        }
+
     }
 
     private fun migrateNestedField(doc: Document, field: String, nestedField: String) {
@@ -108,7 +114,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         temporal.put(nestedField, updatedValue)
     }
 
-    private fun migrateArray(doc: Document, arrayField: String, field: String) {
+    private fun migrateArray(doc: Document, arrayField: String, field: String, codelistId: String? = null) {
         val array = doc.data.get(arrayField) ?: return
         if (array.isNull) return
 
@@ -120,11 +126,17 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
             item as ObjectNode
 
-            val value = fieldElement.textValue()
+            var value = fieldElement.textValue()
 
             if (value != null) {
+                if (codelistId != null) {
+                    val codelistValue = handleCodelistValue(codelistId, doc, field, value) ?: return
+                    value = codelistValue
+                }
                 val updatedValue = jacksonObjectMapper().createObjectNode().apply {
                     put("key", value)
+//                    put("key", null as String)
+//                    put("value", value)
                 }
                 item.put(field, updatedValue)
             }
