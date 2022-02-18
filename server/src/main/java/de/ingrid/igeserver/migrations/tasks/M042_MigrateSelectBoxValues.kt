@@ -19,7 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M041_MigrateSelectBoxValues : MigrationBase("0.41") {
+class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
     val log = logger()
 
@@ -50,6 +50,7 @@ class M041_MigrateSelectBoxValues : MigrationBase("0.41") {
                         migrateArray(doc, "events", "text")
                         migrateArray(doc, "distributions", "type")
                         migrateArray(doc, "distributions", "format")
+                        migrateArray(doc, "addresses", "type")
                         log.info("Migrated mCloudDoc with dbID ${doc.id}")
                     } else if (doc.type == "McloudAddressDoc") {
                         migrateArray(doc, "contact", "type")
