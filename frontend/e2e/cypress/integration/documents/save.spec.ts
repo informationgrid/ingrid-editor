@@ -150,7 +150,7 @@ describe('General create documents/folders', () => {
       Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
-      Tree.checkTitleOfSelectedNode(docName);
+      cy.get(DocumentPage.title).should('have.text', docName);
 
       // accept dialog
       // check selected tree node === newly selected node
@@ -158,7 +158,7 @@ describe('General create documents/folders', () => {
       Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
-      Tree.checkTitleOfSelectedNode('Testdokumente');
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
     });
 
     it('should show a dialog when a document was modified and the page was changed', () => {
