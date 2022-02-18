@@ -41,13 +41,18 @@ class PostMigrationTask(
     }
 
     private fun getCatalogsForPostMigration(): List<String> {
-        return entityManager
-            .createQuery(
-                "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
-                VersionInfo::class.java
-            )
-            .resultList
-            .map { it.value!! }
+        return try {
+            entityManager
+                .createQuery(
+                    "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
+                    VersionInfo::class.java
+                )
+                .resultList
+                .map { it.value!! }
+        } catch (e: Exception) {
+            log.warn("Could not query version_info table")
+            emptyList()
+        }
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
