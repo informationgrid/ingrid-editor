@@ -363,5 +363,37 @@ describe('General create documents/folders', () => {
         true
       );
     });
+
+    it('check for ordering and sorting Download links in the mCLOUD document', () => {
+      let title1 = 'google';
+      let title2 = 'youtube';
+      let title3 = 'amazon';
+      let link1 = 'https://www.google.com';
+      let link2 = 'https://www.youtube.com/';
+      let link3 = 'https://www.amazon.de/';
+
+      let downloadSelector = '[data-cy="Downloads-table"] mat-row mat-cell';
+      Tree.openNode(['New Folder For New Users', 'New Document']);
+
+      DocumentPage.scrollToSection('mCLOUD');
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title1, link1);
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title2, link2);
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title3, link3);
+      DocumentPage.saveDocument();
+
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1200);
+
+      DocumentPage.scrollToSection('mCLOUD');
+      DocumentPage.dragItem(downloadSelector, '[data-cy="Downloads-table"] mat-row ', 0, 0, 100);
+
+      DocumentPage.saveDocument();
+      // // reload and make sure of ordering
+      cy.reload({ timeout: 10000 });
+      DocumentPage.scrollToSection('mCLOUD');
+
+      DocumentPage.checkOfExistingItem(downloadSelector, 'youtube', 0);
+    });
   });
 });
