@@ -108,6 +108,7 @@ export class SelectTypeComponent extends FieldType implements OnInit {
     }
 
     this.formControl.markAsTouched();
+    this.formControl.markAsDirty();
   }
 
   _getAriaLabelledby(): string {

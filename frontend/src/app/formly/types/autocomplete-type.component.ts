@@ -100,6 +100,8 @@ export class AutocompleteTypeComponent
     if (this.to.simple) {
       this.formControl.setValue(value);
       this.formControl.markAsTouched();
+      this.formControl.markAsDirty();
+
       return;
     }
 
@@ -126,6 +128,7 @@ export class AutocompleteTypeComponent
     }
 
     this.formControl.markAsTouched();
+    this.formControl.markAsDirty();
   }
 
   _filter(value: string): SelectOptionUi[] {

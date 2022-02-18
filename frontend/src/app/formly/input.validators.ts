@@ -13,7 +13,7 @@ export function EmailValidator(control: FormControl): ValidationErrors {
 export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
   const connectionType = control.parent.value.type;
   // if connection type is email
-  if (connectionType.key === "3") {
+  if (connectionType?.key === "3") {
     return EmailValidator(control);
   }
 }
