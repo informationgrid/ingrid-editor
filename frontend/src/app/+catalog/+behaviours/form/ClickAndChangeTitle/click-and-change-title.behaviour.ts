@@ -34,7 +34,7 @@ export class ClickAndChangeTitleBehaviour
     );
 
     this.addSubscriber(
-      this.docEvents.beforePublish(false).subscribe((message: any) => {
+      this.docEvents.beforePublish$(false).subscribe((message: any) => {
         message.errors.push({ id: "taskId", error: "I don't like this ID" });
         console.log("in observer");
       })

@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
+import { DocEventsService } from "../../services/event/doc-events.service";
 
 @Component({
   selector: "ige-list-form-wizards",
@@ -9,9 +10,9 @@ import { DocumentService } from "../../services/document/document.service";
 export class ListFormWizardsComponent implements OnInit {
   data = {};
 
-  constructor(private storageService: DocumentService) {}
+  constructor(private docEvents: DocEventsService) {}
 
   ngOnInit() {
-    this.storageService.afterLoadAndSet$.subscribe((data) => {});
+    this.docEvents.afterLoadAndSet$(false).subscribe((data) => {});
   }
 }

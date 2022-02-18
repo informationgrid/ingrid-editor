@@ -52,9 +52,6 @@ export interface ReloadData {
 })
 export class DocumentService {
   // TODO: check usefulness
-  beforeSave$ = new Subject<any>();
-  afterSave$ = new Subject<any>();
-  afterLoadAndSet$ = new Subject<any>();
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
@@ -181,7 +178,7 @@ export class DocumentService {
       data.title = this.createAddressTitle(data);
     }
 
-    this.beforeSave$.next();
+    this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
   }
 
@@ -193,7 +190,7 @@ export class DocumentService {
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    this.afterSave$.next(json);
+    this.docEvents.sendAfterSave(json);
 
     const parentId = json._parent;
     const info = this.mapToDocumentAbstracts([json], parentId)[0];

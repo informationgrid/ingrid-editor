@@ -214,16 +214,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): any {
     // show blocker div to prevent user from modifying data or calling functions
     // during save
-    this.documentService.beforeSave$
-      .pipe(untilDestroyed(this))
+    this.docEvents
+      .beforeSave$(this.address)
       .subscribe(() => (this.showBlocker = true));
 
     // reset dirty flag after save
-    this.documentService.afterSave$
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => {
-        this.updateFormWithData(data);
-      });
+    this.docEvents
+      .afterSave$(this.address)
+      .subscribe((data) => this.updateFormWithData(data));
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
