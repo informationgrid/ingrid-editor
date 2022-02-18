@@ -17,6 +17,7 @@ export const getNewUserFormFields = (
         appearance: "outline",
         required: true,
         options: logins,
+        simple: true,
       },
       // focus: true, // throws expression has changed error
       validators: {

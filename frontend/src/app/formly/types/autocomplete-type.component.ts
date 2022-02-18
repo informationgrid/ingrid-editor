@@ -8,25 +8,11 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { MatInput } from "@angular/material/input";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of as observableOf,
-  of,
-  Subject,
-} from "rxjs";
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  startWith,
-  take,
-  tap,
-} from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import { filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormControl } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -48,7 +34,7 @@ export class AutocompleteTypeComponent
   filteredOptions: SelectOptionUi[] = [];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
-  input = new FormControl();
+  input: AbstractControl = new FormControl();
 
   ngOnInit() {
     super.ngOnInit();
@@ -73,8 +59,8 @@ export class AutocompleteTypeComponent
     options
       .pipe(
         untilDestroyed(this),
-        filter((data) => data !== undefined && data.length > 0),
-        take(1),
+        filter((data) => data !== undefined),
+        // take(1),
         tap((data) => this.initInputListener(data))
       )
       .subscribe();
@@ -94,9 +80,12 @@ export class AutocompleteTypeComponent
     this.optionsLoaded$.next(true);
     const label = this.mapOptionToValue(this.formControl.value);
     this.input.setValue(label, { emitEvent: false });
+    this.formControl.markAsUntouched();
   }
 
   private mapOptionToValue(value: any): string {
+    if (this.to.simple) return value;
+
     if (value?.key) {
       return (
         this.parameterOptions.find((option) => option.value === value.key)
@@ -108,6 +97,12 @@ export class AutocompleteTypeComponent
   }
 
   private updateFormControl(value: string) {
+    if (this.to.simple) {
+      this.formControl.setValue(value, {});
+      this.formControl.markAsTouched();
+      return;
+    }
+
     const key =
       this.parameterOptions.find((option) => option.label === value)?.value ??
       null;
@@ -130,7 +125,7 @@ export class AutocompleteTypeComponent
       this.formControl.setValue({ key: key });
     }
 
-    setTimeout(() => this.formControl.markAsDirty());
+    this.formControl.markAsTouched();
   }
 
   _filter(value: string): SelectOptionUi[] {

@@ -19,7 +19,7 @@ export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
 }
 
 export function LowercaseValidator(control: FormControl): ValidationErrors {
-  return control.value === control.value.toLowerCase()
+  return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };
 }
