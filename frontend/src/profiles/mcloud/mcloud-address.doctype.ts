@@ -51,7 +51,6 @@ export class McloudAddressDoctype extends BaseDoctype {
           templateOptions: {
             externalLabel: "Kontakt",
             required: true,
-            minLength: 1,
           },
           fieldArray: {
             fieldGroupClassName: "display-flex",
