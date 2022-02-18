@@ -31,7 +31,6 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   }
 
   register() {
-    console.log("Register Delete empty folder behaviour");
     super.register();
 
     this.subscriptions.push(

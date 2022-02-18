@@ -54,7 +54,6 @@ export class HistoryPlugin extends Plugin {
   register() {
     this.setupFields();
 
-    console.log("Register history plugin for address:", this.forAddress);
     super.register();
 
     this.addToolbarButtons();

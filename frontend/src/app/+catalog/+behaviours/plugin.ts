@@ -27,6 +27,7 @@ export abstract class Plugin {
   data?: any;
 
   register(): void {
+    console.log("Register: ", this.name);
     this.isActive = true;
   }
 

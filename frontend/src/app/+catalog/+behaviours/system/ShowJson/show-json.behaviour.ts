@@ -21,7 +21,6 @@ export class ShowJsonBehaviour extends Plugin {
   }
 
   register() {
-    console.log("Register Show Json behaviour");
     super.register();
 
     this.formToolbarService.addButton({

@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { filter, map, switchMap, take, tap } from "rxjs/operators";
+import { ActivatedRouteSnapshot } from "@angular/router";
 
 export enum IgeEvent {
   DELETE = "DELETE",
