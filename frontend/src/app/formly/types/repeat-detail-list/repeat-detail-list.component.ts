@@ -30,6 +30,7 @@ export class RepeatDetailListComponent
       appearance: "outline",
       required: true,
       label: "Link-Typ",
+      simple: true,
       options: [
         { label: "Externer Link", value: "external" },
         { label: "Interner Link", value: "internal" },

@@ -34,6 +34,7 @@ export const getNewUserFormFields = (
         appearance: "outline",
         required: true,
         options: of(roles),
+        simple: true,
       },
     },
     {

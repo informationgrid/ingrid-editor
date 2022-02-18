@@ -98,7 +98,7 @@ export class AutocompleteTypeComponent
 
   private updateFormControl(value: string) {
     if (this.to.simple) {
-      this.formControl.setValue(value, {});
+      this.formControl.setValue(value);
       this.formControl.markAsTouched();
       return;
     }

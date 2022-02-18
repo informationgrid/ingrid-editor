@@ -9,8 +9,8 @@ import { MatSelect, MatSelectChange } from "@angular/material/select";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatPseudoCheckboxState } from "@angular/material/core";
-import { distinctUntilChanged, filter, map, take, tap } from "rxjs/operators";
-import { BehaviorSubject, combineLatest, Observable, of, Subject } from "rxjs";
+import { filter, take, tap } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -44,11 +44,9 @@ export class SelectTypeComponent extends FieldType implements OnInit {
       .pipe(
         untilDestroyed(this),
         filter(([value, ready]) => ready),
-        map(([value]) => value?.key ?? null)
+        tap(([value]) => this.updateSelectField(value))
       )
-      .subscribe((label) =>
-        this.selectControl.setValue(label, { emitEvent: false })
-      );
+      .subscribe();
 
     let options = this.to.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
@@ -61,13 +59,19 @@ export class SelectTypeComponent extends FieldType implements OnInit {
         take(1),
         tap((data) => (this.selectOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
-        tap(() =>
-          this.selectControl.setValue(this.formControl.value?.key, {
-            emitEvent: false,
-          })
-        )
+        tap(() => this.updateSelectField(this.formControl.value))
       )
       .subscribe();
+  }
+
+  private updateSelectField(value) {
+    if (this.to.simple) {
+      this.selectControl.setValue(value, { emitEvent: false });
+    } else {
+      this.selectControl.setValue(value?.key, {
+        emitEvent: false,
+      });
+    }
   }
 
   getSelectAllState(options: any[]): MatPseudoCheckboxState {
@@ -95,10 +99,15 @@ export class SelectTypeComponent extends FieldType implements OnInit {
     if (this.to.change) {
       this.to.change(this.field, $event);
     }
-    this.formControl.setValue(
-      $event.value === undefined ? null : { key: $event.value }
-    );
-    this.formControl.markAsDirty();
+    if (this.to.simple) {
+      this.formControl.setValue($event.value);
+    } else {
+      this.formControl.setValue(
+        $event.value === undefined ? null : { key: $event.value }
+      );
+    }
+
+    this.formControl.markAsTouched();
   }
 
   _getAriaLabelledby(): string {

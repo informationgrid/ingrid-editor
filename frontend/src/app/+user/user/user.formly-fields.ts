@@ -1,6 +1,5 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { of } from "rxjs";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
 
@@ -19,6 +18,7 @@ export const getUserFormFields = (
         appearance: "outline",
         required: true,
         disabled: true,
+        simple: true,
       },
     },
     {
@@ -31,6 +31,7 @@ export const getUserFormFields = (
         appearance: "outline",
         required: true,
         options: of(roles),
+        simple: true,
       },
     },
     {
