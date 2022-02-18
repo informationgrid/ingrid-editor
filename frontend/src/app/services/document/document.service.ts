@@ -38,6 +38,7 @@ import {
   ResearchResponse,
   ResearchService,
 } from "../../+research/research.service";
+import { DocEventsService } from "../event/doc-events.service";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -51,7 +52,6 @@ export interface ReloadData {
 })
 export class DocumentService {
   // TODO: check usefulness
-  beforePublish$ = new Subject<any>();
   beforeSave$ = new Subject<any>();
   afterSave$ = new Subject<any>();
   afterLoadAndSet$ = new Subject<any>();
@@ -73,7 +73,8 @@ export class DocumentService {
     private sessionQuery: SessionQuery,
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
-    private researchService: ResearchService
+    private researchService: ResearchService,
+    private docEvents: DocEventsService
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -227,17 +228,7 @@ export class DocumentService {
 
   // FIXME: this should be added with a plugin
   publish(data: IgeDocument, isAddress: boolean): Observable<void> {
-    const errors: any = { errors: [] };
-
     this.preSaveActions(data, isAddress);
-
-    this.beforePublish$.next(errors);
-    console.log("After validation:", data);
-    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
-    if (formInvalid && formInvalid.invalid) {
-      this.documentOperationFinished$.next(true);
-      throw new IgeError("Der Datensatz kann nicht veröffentlicht werden.");
-    }
 
     return this.dataService.publish(data).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),

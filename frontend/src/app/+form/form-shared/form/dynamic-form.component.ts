@@ -34,6 +34,7 @@ import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @UntilDestroy()
 @Component({
@@ -101,7 +102,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private docEvents: DocEventsService
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -210,13 +212,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
-    // add form errors check when saving/publishing
-    this.documentService.beforePublish$
-      .pipe(untilDestroyed(this))
-      .subscribe((message: any) => {
-        message.errors.push({ invalid: this.form.invalid });
-      });
-
     // show blocker div to prevent user from modifying data or calling functions
     // during save
     this.documentService.beforeSave$
