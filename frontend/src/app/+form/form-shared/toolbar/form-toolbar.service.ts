@@ -75,6 +75,8 @@ export class FormToolbarService {
   }
 
   sendEvent(eventId: string) {
+    // remove focus to prevent sending event by pressing space bar when focus didn't change
+    (<HTMLButtonElement>document.activeElement).blur();
     this.toolbarEvent$.next(eventId);
   }
 
