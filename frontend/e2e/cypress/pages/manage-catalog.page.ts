@@ -22,7 +22,9 @@ export class ManageCatalogPage {
 
   static getNumberOfDatasetsInCatalog(catalogTitle: string) {
     return cy
-      .contains('.mat-card', catalogTitle)
+      .get('.mat-card')
+      .contains('.mat-card-title', new RegExp('^' + catalogTitle + '$'))
+      .parent()
       .find('.content')
       .then($node => {
         // extract number from string like '12 Datensätze'
