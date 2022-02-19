@@ -125,6 +125,7 @@ export class PublishPlugin extends SaveBase {
       );
       return false;
     }
+    return true;
   }
 
   publish() {
