@@ -4,7 +4,7 @@ import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { merge, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -30,6 +30,7 @@ export class PublishPlugin extends SaveBase {
   eventRevertId = "REVERT";
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
+  private tree: TreeQuery | AddressTreeQuery;
 
   get name() {
     return this._name;
@@ -52,6 +53,8 @@ export class PublishPlugin extends SaveBase {
   register() {
     super.register();
 
+    this.setupTree();
+
     this.addToolbarButtons();
 
     // add event handler for revert
@@ -70,6 +73,14 @@ export class PublishPlugin extends SaveBase {
     const behaviourSubscription = this.addBehaviour();
 
     this.subscriptions.push(toolbarEventSubscription, behaviourSubscription);
+  }
+
+  private setupTree() {
+    if (this.forAddress) {
+      this.tree = this.addressTreeQuery;
+    } else {
+      this.tree = this.treeQuery;
+    }
   }
 
   private addToolbarButtons() {
@@ -244,10 +255,7 @@ export class PublishPlugin extends SaveBase {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour(): Subscription {
-    return merge(
-      this.treeQuery.openedDocument$,
-      this.addressTreeQuery.openedDocument$
-    ).subscribe((loadedDocument) => {
+    return this.tree.openedDocument$.subscribe((loadedDocument) => {
       this.formToolbarService.setButtonState(
         "toolBtnPublish",
         loadedDocument !== null &&
