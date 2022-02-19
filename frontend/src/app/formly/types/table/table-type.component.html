@@ -211,23 +211,30 @@
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div class="button-wrapper">
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showUploadFilesDialog()"
+    <div>
+        <ige-form-error
+            *ngIf="formControl.invalid && formControl.hasError('required')"
+            >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
-            Dateien hochladen
-        </button>
-        oder
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showAddLinkDialog()"
-        >
-            Link angeben
-        </button>
+
+        <div class="button-wrapper">
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="showUploadFilesDialog()"
+            >
+                Dateien hochladen
+            </button>
+            oder
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="showAddLinkDialog()"
+            >
+                Link angeben
+            </button>
+        </div>
     </div>
 </div>
