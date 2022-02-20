@@ -3,14 +3,16 @@ package de.ingrid.igeserver.index
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.services.ResearchService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -32,22 +34,6 @@ class IndexService @Autowired constructor(
 
     private val log = logger()
 
-    val INDEX_PUBLISHED_DOCUMENTS = { format: String ->
-        val onlyPublishedDocs = listOf(
-            QueryField(FIELD_PUBLISHED, null, true)
-        )
-
-        IndexOptions(onlyPublishedDocs, format)
-    }
-    val INDEX_SINGLE_PUBLISHED_DOCUMENT = { format: String, uuid: String ->
-        val singlePublishedDoc = listOf(
-            QueryField(FIELD_PUBLISHED, null, true),
-            QueryField("uuid", uuid)
-        )
-
-        IndexOptions(singlePublishedDoc, format)
-    }
-
     fun getSinglePublishedDocument(
         catalogId: String,
         category: DocumentCategory,
@@ -66,7 +52,8 @@ class IndexService @Autowired constructor(
         currentPage: Int = 0
     ): Page<Document> {
         val auth = SecurityContextHolder.getContext().authentication
-        val filter = BoolFilter("AND", listOf("category = 'data'", "published IS NOT NULL", "deleted = 0"), null, null, false)
+        val filter =
+            BoolFilter("AND", listOf("category = 'data'", "published IS NOT NULL", "deleted = 0"), null, null, false)
         val response = researchService.query(
             auth,
             emptySet(),
@@ -74,7 +61,7 @@ class IndexService @Autowired constructor(
             ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )
         val docsToIndex = response.hits
-            .map { docWrapperRepo.findById(it._id).get() }
+            .map { docWrapperRepo.findById(it._id.toInt()).get() }
             .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
 
         val pagedDocs = PageImpl(docsToIndex, Pageable.ofSize(PAGE_SIZE), response.totalHits.toLong())

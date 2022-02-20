@@ -18,7 +18,7 @@ import javax.persistence.EntityManager
 
 data class Result(
     val title: String?,
-    val _id: Int,
+    val _id: String,
     val _uuid: String?,
     val _type: String?,
     val _created: Date?,
@@ -252,7 +252,7 @@ class ResearchService {
                     principal,
                     item[9] as Int
                 ).canOnlyWriteSubtree,
-                _id = item[9] as Int
+                _id = (item[9] as Int).toString()
             )
         }
     }

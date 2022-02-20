@@ -44,13 +44,13 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   @Output() save = new EventEmitter<void>();
   @Output() open = new EventEmitter<ShortResultInfo>();
-  @Output() remove = new EventEmitter<any>();
+  @Output() remove = new EventEmitter<IgeDocument>();
   @Output() export = new EventEmitter<string>();
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<IgeDocument>([]);
   displayedColumns: string[] = [];
   columnsMap: SelectOptionUi[];
   showSaveButton: boolean;
