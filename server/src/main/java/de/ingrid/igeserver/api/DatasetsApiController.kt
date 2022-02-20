@@ -143,13 +143,13 @@ class DatasetsApiController @Autowired constructor(
         options: CopyOptions,
         isAddress: Boolean
     ): JsonNode {
-        val origParentId = doc[FIELD_ID].asText()
+        val origParentId = doc[FIELD_ID].asInt()
 
         val objectNode = doc as ObjectNode
 
         // remove fields that shouldn't be persisted
         // also copied docs need new ID
-        listOf(FIELD_ID, FIELD_UUID, FIELD_STATE, FIELD_HAS_CHILDREN).forEach { objectNode.remove(it) }
+        listOf(FIELD_ID, FIELD_UUID, FIELD_STATE, FIELD_HAS_CHILDREN, FIELD_VERSION, FIELD_CREATED).forEach { objectNode.remove(it) }
 
         val copiedParent =
             documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false) as ObjectNode
@@ -166,14 +166,14 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         catalogId: String,
         parent: JsonNode,
-        origParentId: String,
+        origParentId: Int,
         options: CopyOptions,
         isAddress: Boolean
     ): Long {
 
         // get all children of parent and save those recursively
         val parentId = parent.get(FIELD_ID)?.asInt()
-        val docs = documentService.findChildrenDocs(catalogId, origParentId.toInt(), isAddress)
+        val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
 
         docs.hits.forEach { child ->
 
@@ -382,6 +382,7 @@ class DatasetsApiController @Autowired constructor(
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            // TODO: catalogId is not necessary anymore
             val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
 
             val doc = documentService.getLatestDocument(wrapper, catalogId = catalogId)

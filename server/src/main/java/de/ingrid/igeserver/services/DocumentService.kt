@@ -43,6 +43,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
+import javax.persistence.EntityManager
 import javax.persistence.criteria.*
 
 @Service
@@ -102,6 +103,9 @@ class DocumentService @Autowired constructor(
 
     @Autowired(required = false)
     private var indexManager: IndexManager? = null
+    
+    @Autowired
+    private lateinit var entityManager: EntityManager
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -632,6 +636,11 @@ class DocumentService @Autowired constructor(
         if (objectNode == null) {
             throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)
         }
+        
+        // we need to detach entity, otherwise unwanted updated operations can happen when we change this
+        // this happened by modifying the data-field and doing a flush, which lead to an update of the document
+        // and increase of the version
+        entityManager.detach(objectNode)
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
