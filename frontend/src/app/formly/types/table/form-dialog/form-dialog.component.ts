@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy } from "@angular/core";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -7,7 +7,6 @@ export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
   newEntry?: boolean;
-  document?: any;
 }
 
 @Component({
@@ -15,9 +14,7 @@ export interface FormDialogData {
   templateUrl: "./form-dialog.component.html",
   styleUrls: ["./form-dialog.component.scss"],
 })
-export class FormDialogComponent implements OnInit, AfterViewInit {
-  model: any;
-  document?: any;
+export class FormDialogComponent implements OnDestroy {
   form = new FormGroup({});
   titleText: String;
   options: FormlyFormOptions = {};
@@ -28,9 +25,7 @@ export class FormDialogComponent implements OnInit, AfterViewInit {
       : "Eintrag bearbeiten";
   }
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {
+  ngOnDestroy(): void {
     this.options.resetModel();
   }
 }

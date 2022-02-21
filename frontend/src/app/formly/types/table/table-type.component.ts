@@ -99,13 +99,12 @@ export class TableTypeComponent
     this.dialog
       .open(FormDialogComponent, {
         hasBackdrop: true,
-        minWidth: 400,
+        minWidth: 550,
         data: {
           fields: this.to.columns,
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
-          document: this.model,
           newEntry: newEntry,
         } as FormDialogData,
       })
@@ -117,8 +116,7 @@ export class TableTypeComponent
           } else {
             this.dataSource.data.splice(index, 1, result);
           }
-          this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
-          this.updateFormControl(this.dataSource.data);
+          this.updateTableDataToForm();
         }
       });
   }
@@ -216,8 +214,7 @@ export class TableTypeComponent
       .filter((file) => this.isNotInTable(file))
       .forEach((file) => this.addToDatasource(file));
 
-    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
-    this.updateFormControl(this.dataSource.data);
+    this.updateTableDataToForm();
   }
 
   private addToDatasource(file: LinkInfo) {
@@ -245,9 +242,13 @@ export class TableTypeComponent
           title: result.title,
           link: { asLink: true, value: result.url, uri: result.url },
         });
-        this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
-        this.updateFormControl(this.dataSource.data);
+        this.updateTableDataToForm();
       });
+  }
+
+  private updateTableDataToForm() {
+    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+    this.updateFormControl(this.dataSource.data);
   }
 
   update() {
