@@ -33,7 +33,6 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
       (entry) => entry.id === entryKey
     )?.fields;
 
-    console.log(entryFields);
-    return entryFields ? entryFields["de"] : "???";
+    return entryFields ? entryFields["de"] : "";
   }
 }

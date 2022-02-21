@@ -37,7 +37,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
+            val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList
             setAuthentication()
 
             docs.forEach { doc ->
@@ -68,8 +68,8 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         var value = doc.data.get(field)?.textValue() ?: return
 
         if (codelistId != null) {
-            val codelistValue = handleCodelistValue(codelistId, doc, field, value) ?: return
-            value = codelistValue
+            value =
+                (handleCodelistValue(codelistId, doc.data, doc.catalog?.identifier.toString(), field, value) ?: return)
         }
 
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
@@ -78,20 +78,20 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         doc.data.put(field, updatedValue)
     }
 
-    private fun handleCodelistValue(codelistId: String, doc: Document, field: String, value: String): String? {
+    private fun handleCodelistValue(codelistId: String, item: ObjectNode, catalogIdentifier: String, field: String, value: String): String? {
         var codelist = this.codelistHandler.getCodelists(listOf(codelistId))
         if (codelist.isEmpty()) {
-            codelist = this.codelistHandler.getCatalogCodelists(doc.catalogIdentifier.toString())
+            codelist = this.codelistHandler.getCatalogCodelists(catalogIdentifier)
                 .filter { it.id == codelistId }
         }
 
         val entry = codelist[0].entries.find { it.getField("de") == value }
         return if (entry == null) {
             val updatedValue = jacksonObjectMapper().createObjectNode().apply {
-                put("key", null as String)
+                put("key", null as String?)
                 put("value", value)
             }
-            doc.data.put(field, updatedValue)
+            item.put(field, updatedValue)
             null
         } else {
             entry.id
@@ -130,7 +130,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
             if (value != null) {
                 if (codelistId != null) {
-                    val codelistValue = handleCodelistValue(codelistId, doc, field, value) ?: return
+                    val codelistValue = handleCodelistValue(codelistId, item, doc.catalog?.identifier.toString(), field, value) ?: return
                     value = codelistValue
                 }
                 val updatedValue = jacksonObjectMapper().createObjectNode().apply {

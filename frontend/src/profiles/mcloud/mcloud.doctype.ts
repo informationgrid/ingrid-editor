@@ -133,7 +133,10 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
-                formatter: (item: any) => item?.key,
+                formatter: (item: any) =>
+                  item?.key
+                    ? this.codelistQuery.getCatalogEntryByKey("20003", item.key)
+                    : item?.value,
               },
             },
           ],
