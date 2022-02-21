@@ -91,7 +91,10 @@ export class DocumentService {
 
   findRecent(): void {
     this.researchService
-      .search("", { type: "selectDocuments" }, null, "modified", "DESC")
+      .search("", { type: "selectDocuments" }, null, "modified", "DESC", {
+        page: 1,
+        pageSize: 10,
+      })
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))

@@ -35,6 +35,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
 
 @UntilDestroy()
 @Component({
@@ -99,6 +100,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
+    private codelistQuery: CodelistQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
     private route: ActivatedRoute,
@@ -134,6 +136,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     combineLatest([
       this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
+      this.codelistQuery
+        .selectLoading()
+        .pipe(filter((isLoading) => !isLoading)),
       merge(
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
@@ -143,7 +148,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ),
     ])
       .pipe(untilDestroyed(this))
-      .subscribe((params) => this.loadDocument(params[1]));
+      .subscribe((params) => this.loadDocument(params[2]));
 
     this.formularService.currentProfile = null;
 

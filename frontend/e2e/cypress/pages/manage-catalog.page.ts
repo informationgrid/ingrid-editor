@@ -17,7 +17,8 @@ export class ManageCatalogPage {
     ManageCatalogPage.openCatalogCardMenu(title);
     // use "Verwenden" button on catalog to switch to new catalog
     cy.get('button.mat-menu-item').contains('Verwenden').click();
-    cy.wait(1000);
+    // wait a bit longer since page will be reloaded
+    cy.wait(3000);
   }
 
   static getNumberOfDatasetsInCatalog(catalogTitle: string) {

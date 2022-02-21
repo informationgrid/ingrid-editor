@@ -13,13 +13,13 @@ export function EmailValidator(control: FormControl): ValidationErrors {
 export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
   const connectionType = control.parent.value.type;
   // if connection type is email
-  if (connectionType === "3") {
+  if (connectionType?.key === "3") {
     return EmailValidator(control);
   }
 }
 
 export function LowercaseValidator(control: FormControl): ValidationErrors {
-  return control.value === control.value.toLowerCase()
+  return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };
 }

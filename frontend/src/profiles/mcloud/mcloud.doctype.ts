@@ -25,7 +25,7 @@ export class McloudDoctype extends BaseDoctype {
     codelistStore: CodelistStore,
     private uploadService: UploadService,
     private configService: ConfigService,
-    codelistQuery?: CodelistQuery
+    codelistQuery: CodelistQuery
   ) {
     super(codelistService, codelistQuery);
   }
@@ -40,7 +40,7 @@ export class McloudDoctype extends BaseDoctype {
             needPublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.some((row) => row.type === "10")
+                  ? ctrl.value.some((row) => row.type.key === "10")
                   : false,
               message: "Es muss ein Herausgeber als Adresse angegeben sein",
             },
@@ -120,6 +120,8 @@ export class McloudDoctype extends BaseDoctype {
                 required: true,
                 options: this.getCodelistForSelect(20002, null),
                 codelistId: 20002,
+                formatter: (item: any) =>
+                  this.codelistQuery.getCatalogEntryByKey("20002", item?.key),
               },
             },
             {
@@ -131,6 +133,10 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
+                formatter: (item: any) =>
+                  item?.key
+                    ? this.codelistQuery.getCatalogEntryByKey("20003", item.key)
+                    : item?.value,
               },
             },
           ],
@@ -198,11 +204,11 @@ export class McloudDoctype extends BaseDoctype {
             placeholder: "TT.MM.JJJJ",
             wrappers: null,
             hideExpression: (model: any) =>
-              model && model.rangeType === "range",
+              model && model.rangeType?.key === "range",
           }),
           this.addDateRange("timeSpanRange", null, {
             hideExpression: (model: any) =>
-              model && model.rangeType !== "range",
+              model && model.rangeType?.key !== "range",
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
