@@ -188,4 +188,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
     });
   }
+
+  formatCodelistValue(codelist: string, item: { key; value }) {
+    return item?.key
+      ? this.codelistQuery.getCatalogEntryByKey(codelist, item.key, item.value)
+      : item?.value;
+  }
 }

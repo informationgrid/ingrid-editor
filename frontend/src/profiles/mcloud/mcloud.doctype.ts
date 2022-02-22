@@ -121,7 +121,7 @@ export class McloudDoctype extends BaseDoctype {
                 options: this.getCodelistForSelect(20002, null),
                 codelistId: 20002,
                 formatter: (item: any) =>
-                  this.codelistQuery.getCatalogEntryByKey("20002", item?.key),
+                  this.formatCodelistValue("20002", item),
               },
             },
             {
@@ -134,9 +134,7 @@ export class McloudDoctype extends BaseDoctype {
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
                 formatter: (item: any) =>
-                  item?.key
-                    ? this.codelistQuery.getCatalogEntryByKey("20003", item.key)
-                    : item?.value,
+                  this.formatCodelistValue("20003", item),
               },
             },
           ],

@@ -28,11 +28,15 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     return this.getValue().catalogCodelists.find((cl) => cl.id === id);
   }
 
-  getCatalogEntryByKey(codelistId: string, entryKey: string) {
-    const entryFields = this.getCatalogCodelist("20002").entries.find(
+  getCatalogEntryByKey(
+    codelistId: string,
+    entryKey: string,
+    defaultValue?: string
+  ) {
+    const entryFields = this.getCatalogCodelist(codelistId).entries.find(
       (entry) => entry.id === entryKey
     )?.fields;
 
-    return entryFields ? entryFields["de"] : "";
+    return entryFields ? entryFields["de"] : defaultValue ?? "";
   }
 }
