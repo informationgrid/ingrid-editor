@@ -31,8 +31,7 @@ class PostMigrationTask(
 
     @PostConstruct
     fun onStartup() {
-//        val catalogs = getCatalogsForPostMigration()
-        val catalogs = listOf("test")
+        val catalogs = getCatalogsForPostMigration()
         if (catalogs.isEmpty()) return
 
         setAuthentication()
@@ -63,9 +62,9 @@ class PostMigrationTask(
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
-//        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveAllGroupsOfCatalog(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
-//        initializeCatalogCodelistsAndQueries(catalogIdentifier)
+        initializeCatalogCodelistsAndQueries(catalogIdentifier)
     }
 
     private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
