@@ -14,6 +14,7 @@ import { FormStateService } from "../../form-state.service";
 import { AbstractControl } from "@angular/forms";
 import { catchError, filter } from "rxjs/operators";
 import { SaveBase } from "./save.base";
+import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
 import {
   BeforePublishData,
   DocEventsService,
@@ -66,6 +67,8 @@ export class PublishPlugin extends SaveBase {
           this.revert();
         } else if (eventId === this.eventPublishId) {
           if (this.validateBeforePublish()) this.publish();
+        } else if (eventId === this.eventPlanPublishId) {
+          if (this.validateBeforePublish()) this.showPlanPublishingDialog();
         } else if (eventId === this.eventUnpublishId) {
           this.showUnpublishDialog();
         }
@@ -105,7 +108,7 @@ export class PublishPlugin extends SaveBase {
         {
           eventId: this.eventPlanPublishId,
           label: "Planen",
-          active: false,
+          active: true,
         },
         {
           eventId: this.eventRevertId,
@@ -151,6 +154,7 @@ export class PublishPlugin extends SaveBase {
           message,
           buttons: [
             { text: "Abbrechen" },
+            { text: "Veröffentlichung Planen", id: "plan" },
             {
               text: "Veröffentlichen",
               id: "confirm",
@@ -162,9 +166,11 @@ export class PublishPlugin extends SaveBase {
         maxWidth: 700,
       })
       .afterClosed()
-      .subscribe((doPublish) => {
-        if (doPublish) {
+      .subscribe((decision) => {
+        if (decision === "confirm") {
           this.saveWithData(this.getForm().value);
+        } else if (decision === "plan") {
+          this.showPlanPublishingDialog();
         }
       });
   }
@@ -197,13 +203,23 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
+  private showPlanPublishingDialog() {
+    this.dialog
+      .open(DelayedPublishDialogComponent)
+      .afterClosed()
+      .pipe(filter((date) => date))
+      .subscribe((date) => {
+        this.saveWithData(this.getForm().value, date);
+      });
+  }
+
   private calculateErrors(controls: { [p: string]: AbstractControl }) {
     return Object.keys(controls).filter((key) => controls[key].invalid);
   }
 
-  saveWithData(data) {
+  saveWithData(data, delay: Date = null) {
     this.documentService
-      .publish(data, this.forAddress)
+      .publish(data, this.forAddress, delay)
       .pipe(
         catchError((error) => this.handleError(error, data, this.forAddress))
       )
