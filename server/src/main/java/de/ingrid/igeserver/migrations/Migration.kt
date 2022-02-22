@@ -52,7 +52,7 @@ class Migration : ApplicationRunner {
                 strategy.exec()
                 lastSuccessfulMigration = strategy.version
             }
-            
+
             // second execute all post migrations which need the latest database model
             strategies.forEach { strategy ->
                 log.info("Executing post strategy: ${strategy.version}")
@@ -92,16 +92,21 @@ class Migration : ApplicationRunner {
     }
 
     private fun setupVersioning() {
-        val sql = """
+        val createVersionTable = """
             CREATE TABLE IF NOT EXISTS version_info (
               id              serial PRIMARY KEY,
               key             varchar(255) NOT NULL,
               value           varchar(255)
             );
-            INSERT INTO version_info (id, key, value) VALUES (1, 'schema_version', '0') ON CONFLICT DO NOTHING; 
         """.trimIndent()
+        val insertSchemaVersion =
+            "INSERT INTO version_info (key, value) VALUES ('schema_version', '0') ON CONFLICT DO NOTHING"
         ClosableTransaction(transactionManager).use {
-            entityManager.createNativeQuery(sql).executeUpdate()
+            entityManager.createNativeQuery(createVersionTable).executeUpdate()
+            val items = entityManager.createQuery("SELECT items FROM VersionInfo items")
+            if (items.resultList.isEmpty()) {
+                entityManager.createNativeQuery(insertSchemaVersion).executeUpdate()
+            }
         }
     }
 }
