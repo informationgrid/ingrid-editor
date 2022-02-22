@@ -57,7 +57,7 @@ class ResearchService {
     fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
-        val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetUuidsFromGroups(groups)
+        val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
         // if a user has no groups then user is not allowed anything
         if (groupIds.isEmpty() && !isAdmin) {
@@ -69,7 +69,7 @@ class ResearchService {
 
         val result = sendQuery(sql, parameters, query.pagination)
         val map = filterAndMapResult(result, isAdmin, principal)
-        
+
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
             getTotalHits(sql, parameters)
         } else {

@@ -35,7 +35,7 @@ class IgeAclService @Autowired constructor(
 
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
-            val permissionLevelUuids = getAllDatasetUuidsFromGroups(listOf(group), permissionLevel)
+            val permissionLevelUuids = getAllDatasetIdsFromGroups(listOf(group), permissionLevel)
             permissionLevelUuids.forEach { uuid ->
                 val acl = this.aclService.readAclById(
                     ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
@@ -78,14 +78,14 @@ class IgeAclService @Autowired constructor(
         }
     }
 
-    fun getDatasetUuidsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
+    fun getDatasetIdsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
             .flatten().toSet().toList()
     }
 
-    fun getAllDatasetUuidsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
+    fun getAllDatasetIdsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
         return groups
             .map { group ->
                 mutableListOf<JsonNode>().apply {
