@@ -31,7 +31,7 @@ data class MCloudModel(
     override val publisher: AddressModel?
         get() {
             return data.addresses
-                ?.firstOrNull { it.type == "10" }
+                ?.firstOrNull { it.type?.key == "10" }
                 ?.ref
         }
 
@@ -75,8 +75,9 @@ data class MCloudModel(
     }
     fun getLicenseData(): Any? {
         if(data.license != null) {
-            var jsonString = "{\"id\":\""+data.license+"\",\"name\":\""+data.license+"\"}";
-            val entryID = codeListService?.getCodeListEntryId("6500", data.license, "de")
+            var jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+data.license.value+"\"}";
+            // either use key or if no key search for value
+            val entryID = data.license.key ?: codeListService?.getCodeListEntryId("6500", data.license.value, "de")
             if(entryID != null) {
                 val codeListEntry = codeListService?.getCodeListEntry("6500", entryID)
                 if(!codeListEntry?.data.isNullOrEmpty()) {

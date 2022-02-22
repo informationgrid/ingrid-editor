@@ -12,7 +12,7 @@ data class DataModel(
     val addresses: List<AddressRefModel>?,
     val accessRights: String?,
     val distributions: List<DownloadModel>?,
-    val license: String?,
+    val license: KeyValueModel?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
     val temporal: TimeSpanModel?,
     val periodicity: String?,

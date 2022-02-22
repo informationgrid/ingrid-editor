@@ -16,9 +16,9 @@ data class AddressModel(
     val homepage: String?
     get() {
         return contact
-                ?.firstOrNull { it.type == "4" }
+                ?.firstOrNull { it.type?.key == "4" }
                 ?.connection
     }
 }
 
-data class ContactModel(val type: String?, val connection: String?)
+data class ContactModel(val type: KeyValueModel?, val connection: String?)
