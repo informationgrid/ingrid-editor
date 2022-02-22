@@ -134,17 +134,17 @@ class MCloudProfile @Autowired constructor(
             name = "Download Typ"
             description = "Dies sind die Typen, die ein Download-Eintrag haben kann"
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(toCodelistEntry("API", "API"))
-                add(toCodelistEntry("AtomFeed", "AtomFeed"))
-                add(toCodelistEntry("Dateidownload", "Dateidownload"))
-                add(toCodelistEntry("FTP", "FTP"))
-                add(toCodelistEntry("Portal", "Portal"))
-                add(toCodelistEntry("Software", "Software"))
-                add(toCodelistEntry("SOS", "SOS"))
-                add(toCodelistEntry("WCS", "WCS"))
-                add(toCodelistEntry("WFS", "WFS"))
-                add(toCodelistEntry("WMS", "WMS"))
-                add(toCodelistEntry("WMTS", "WMTS"))
+                add(toCodelistEntry("api", "API"))
+                add(toCodelistEntry("atomFeed", "AtomFeed"))
+                add(toCodelistEntry("download", "Dateidownload"))
+                add(toCodelistEntry("ftp", "FTP"))
+                add(toCodelistEntry("portal", "Portal"))
+                add(toCodelistEntry("software", "Software"))
+                add(toCodelistEntry("sos", "SOS"))
+                add(toCodelistEntry("wcs", "WCS"))
+                add(toCodelistEntry("wfs", "WFS"))
+                add(toCodelistEntry("wms", "WMS"))
+                add(toCodelistEntry("wmts", "WMTS"))
             }
         }
         val codelist20003 = Codelist().apply {

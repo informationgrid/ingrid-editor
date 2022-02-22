@@ -123,7 +123,7 @@ export class DocumentPage extends BasePage {
       distributions: [
         {
           link: { value: 'link.link', asLink: true },
-          type: { key: 'AtomFeed' },
+          type: { key: 'atomFeed' },
           format: { key: 'EPUB' }
         }
       ],
