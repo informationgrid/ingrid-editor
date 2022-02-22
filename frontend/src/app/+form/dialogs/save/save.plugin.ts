@@ -9,6 +9,7 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { catchError, filter, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
+import { MessageService } from "../../../services/message.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -24,6 +25,7 @@ export class SavePlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
+    public messageService: MessageService,
     private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,

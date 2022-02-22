@@ -18,6 +18,7 @@ import {
   BeforePublishData,
   DocEventsService,
 } from "../../../services/event/doc-events.service";
+import { MessageService } from "../../../services/message.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -38,6 +39,7 @@ export class PublishPlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
+    public messageService: MessageService,
     private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
