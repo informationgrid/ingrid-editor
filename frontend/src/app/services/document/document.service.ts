@@ -227,10 +227,14 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument, isAddress: boolean): Observable<void> {
+  publish(
+    data: IgeDocument,
+    isAddress: boolean,
+    publishDate: Date = null
+  ): Observable<void> {
     this.preSaveActions(data, isAddress);
 
-    return this.dataService.publish(data).pipe(
+    return this.dataService.publish(data, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
       filter((response) => response),
       tap(() =>

@@ -50,18 +50,18 @@ export class DocumentDataService {
     }
   }
 
-  publish(data: IgeDocument): Observable<any> {
+  publish(data: IgeDocument, publishDate: Date = null): Observable<any> {
+    let parameters = "?publish=true";
+    if (publishDate != null)
+      parameters += "&publishDate=" + publishDate.toISOString();
     if (data._id === undefined) {
       return this.http.post(
-        this.configuration.backendUrl + "datasets?publish=true",
+        this.configuration.backendUrl + "datasets" + parameters,
         data
       );
     } else {
       return this.http.put(
-        this.configuration.backendUrl +
-          "datasets/" +
-          data._id +
-          "?publish=true",
+        this.configuration.backendUrl + "datasets/" + data._id + parameters,
         data
       );
     }

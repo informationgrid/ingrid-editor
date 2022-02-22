@@ -47,6 +47,8 @@ import { CreateNodeComponent } from "../dialogs/create/create-node.component";
 import { SharedPipesModule } from "../../directives/shared-pipes.module";
 import { DashboardDocsHeaderComponent } from "../form-dashboard/dashboard-docs-header/dashboard-docs-header.component";
 import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-address-header/dashboard-address-header.component";
+import { DelayedPublishDialogComponent } from "../dialogs/save/delayed-publish-dialog/delayed-publish-dialog.component";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
@@ -66,6 +68,7 @@ import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-add
     DashboardDocsHeaderComponent,
     DashboardAddressHeaderComponent,
     FolderDashboardComponent,
+    DelayedPublishDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -86,6 +89,7 @@ import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-add
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     SharedPipesModule,
+    MatDatepickerModule,
   ],
   providers: [
     FormToolbarService,

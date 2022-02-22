@@ -1,9 +1,15 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.vladmihalcea.hibernate.type.array.ListArrayType
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DocumentService
 import org.hibernate.annotations.*
+import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
 import javax.persistence.CascadeType
@@ -156,6 +162,24 @@ class DocumentWrapper {
 
     @Column(name = "deleted")
     var deleted = 0
+
+
+    /**
+     * Draft document relation (many-to-one)
+     * NOTE Since the JSON representation contains a document id ('draft') only, we need
+     * to map it manually to the document instance for persistence
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "pending", nullable = true)
+    @JsonAlias("pending") // hint for model registry
+    @JsonIgnore
+    var pending: Document? = null
+
+    @Column
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonProperty("pending_date")
+    var pending_date: OffsetDateTime? = null
 
     @Transient
     fun getState(): String {
