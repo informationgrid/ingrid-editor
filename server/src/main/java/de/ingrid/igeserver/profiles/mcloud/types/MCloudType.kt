@@ -24,7 +24,7 @@ class MCloudType : EntityType() {
     lateinit var docService: DocumentService
 
     override val jsonSchema = "/mcloud/schemes/mcloud.schema.json"
-    
+
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
     }
@@ -69,6 +69,13 @@ class MCloudType : EntityType() {
         }
         return addressDocs
     }
+
+    override fun getReferenceIds(doc: Document): List<String> {
+        return doc.data.path("addresses").map { address ->
+            address.path("ref").textValue()
+        }
+    }
+
 
     private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
         val addresses = doc.data.path("addresses")
