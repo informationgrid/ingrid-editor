@@ -358,6 +358,17 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(searchResult)
     }
 
+   override fun cancelPendingPublishing(
+        principal: Principal,
+        uuid: String
+    ): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+        //TODO
+        documentService.unpublishDocument(principal, catalogId, wrapper.id!!)
+        return ResponseEntity.ok(Unit)
+    }
+
     override fun getByUUID(
         principal: Principal,
         uuid: String,
