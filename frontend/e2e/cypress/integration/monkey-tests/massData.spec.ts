@@ -48,8 +48,10 @@ describe('performance tests for large amounts of data', () => {
   });
 
   it('search on document page', () => {
+    DocumentPage.visit();
     DocumentPage.search('freeDataset - yol');
     DocumentPage.getSearchResult().contains('freeDataset - yol').click();
-    cy.get(DocumentPage.title).should('have.text', 'freeDataset - yol');
+    // add timeout to 6s because it takes more than 4s to fetch the document in massData catalog
+    cy.get(DocumentPage.title, { timeout: 6000 }).should('have.text', 'freeDataset - yol');
   });
 });
