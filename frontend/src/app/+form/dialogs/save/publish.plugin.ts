@@ -3,9 +3,8 @@ import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.servi
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { MessageService } from "../../../services/message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { merge, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -15,6 +14,12 @@ import { FormStateService } from "../../form-state.service";
 import { AbstractControl } from "@angular/forms";
 import { catchError, filter } from "rxjs/operators";
 import { SaveBase } from "./save.base";
+import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
+import {
+  BeforePublishData,
+  DocEventsService,
+} from "../../../services/event/doc-events.service";
+import { MessageService } from "../../../services/message.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -27,6 +32,7 @@ export class PublishPlugin extends SaveBase {
   eventRevertId = "REVERT";
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
+  private tree: TreeQuery | AddressTreeQuery;
 
   get name() {
     return this._name;
@@ -34,13 +40,14 @@ export class PublishPlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
-    private modalService: ModalService,
     public messageService: MessageService,
+    private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public formStateService: FormStateService,
-    public documentService: DocumentService
+    public documentService: DocumentService,
+    private docEvents: DocEventsService
   ) {
     super();
     this.isActive = true;
@@ -49,7 +56,39 @@ export class PublishPlugin extends SaveBase {
   register() {
     super.register();
 
-    console.log("register publish plugin");
+    this.setupTree();
+
+    this.addToolbarButtons();
+
+    // add event handler for revert
+    const toolbarEventSubscription =
+      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
+        if (eventId === this.eventRevertId) {
+          this.revert();
+        } else if (eventId === this.eventPublishId) {
+          if (this.validateBeforePublish()) this.publish();
+        } else if (eventId === this.eventPlanPublishId) {
+          if (this.validateBeforePublish()) this.showPlanPublishingDialog();
+        } else if (eventId === this.eventUnpublishId) {
+          this.showUnpublishDialog();
+        }
+      });
+
+    // add behaviour to set active states for toolbar buttons
+    const behaviourSubscription = this.addBehaviour();
+
+    this.subscriptions.push(toolbarEventSubscription, behaviourSubscription);
+  }
+
+  private setupTree() {
+    if (this.forAddress) {
+      this.tree = this.addressTreeQuery;
+    } else {
+      this.tree = this.treeQuery;
+    }
+  }
+
+  private addToolbarButtons() {
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
       id: "toolBtnPublishSeparator",
@@ -69,7 +108,7 @@ export class PublishPlugin extends SaveBase {
         {
           eventId: this.eventPlanPublishId,
           label: "Planen",
-          active: false,
+          active: true,
         },
         {
           eventId: this.eventRevertId,
@@ -83,62 +122,57 @@ export class PublishPlugin extends SaveBase {
         },
       ],
     });
-
-    // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventRevertId) {
-          this.revert();
-        } else if (eventId === this.eventPublishId) {
-          this.publish();
-        } else if (eventId === this.eventUnpublishId) {
-          this.showUnpublishDialog();
-        }
-      });
-
-    // add behaviour to set active states for toolbar buttons
-    const behaviourSubscription = this.addBehaviour();
-
-    this.subscriptions.push(toolbarEventSubscription, behaviourSubscription);
   }
 
-  publish() {
+  private validateBeforePublish() {
     this.documentService.publishState$.next(true);
-    const formIsValid = this.formStateService.getForm().valid;
 
-    if (formIsValid) {
-      // show confirm dialog
-      const message = "Wollen Sie diesen Datensatz wirklich veröffentlichen?";
-      this.dialog
-        .open(ConfirmDialogComponent, {
-          data: <ConfirmDialogData>{
-            title: "Veröffentlichen",
-            message,
-            buttons: [
-              { text: "Abbrechen" },
-              {
-                text: "Veröffentlichen",
-                id: "confirm",
-                emphasize: true,
-                alignRight: true,
-              },
-            ],
-          },
-          maxWidth: 700,
-        })
-        .afterClosed()
-        .subscribe((doPublish) => {
-          if (doPublish) {
-            this.saveWithData(this.getForm().value);
-          }
-        });
-    } else {
+    const validation: BeforePublishData = { errors: [] };
+    this.docEvents.sendBeforePublish(validation);
+    const formIsInvalid = this.formStateService.getForm().invalid;
+
+    const hasOtherErrors = validation.errors.length > 0;
+    if (formIsInvalid || hasOtherErrors) {
       const errors = this.calculateErrors(this.getForm().controls).join(",");
       console.warn("Invalid fields:", errors);
+      if (hasOtherErrors) console.warn("Other errors:", validation.errors);
       this.modalService.showJavascriptError(
         "Es müssen alle Felder korrekt ausgefüllt werden."
       );
+      return false;
     }
+    return true;
+  }
+
+  publish() {
+    // show confirm dialog
+    const message = "Wollen Sie diesen Datensatz wirklich veröffentlichen?";
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Veröffentlichen",
+          message,
+          buttons: [
+            { text: "Abbrechen" },
+            { text: "Veröffentlichung Planen", id: "plan" },
+            {
+              text: "Veröffentlichen",
+              id: "confirm",
+              emphasize: true,
+              alignRight: true,
+            },
+          ],
+        },
+        maxWidth: 700,
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "confirm") {
+          this.saveWithData(this.getForm().value);
+        } else if (decision === "plan") {
+          this.showPlanPublishingDialog();
+        }
+      });
   }
 
   private showUnpublishDialog() {
@@ -169,13 +203,23 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
+  private showPlanPublishingDialog() {
+    this.dialog
+      .open(DelayedPublishDialogComponent)
+      .afterClosed()
+      .pipe(filter((date) => date))
+      .subscribe((date) => {
+        this.saveWithData(this.getForm().value, date);
+      });
+  }
+
   private calculateErrors(controls: { [p: string]: AbstractControl }) {
     return Object.keys(controls).filter((key) => controls[key].invalid);
   }
 
-  saveWithData(data) {
+  saveWithData(data, delay: Date = null) {
     this.documentService
-      .publish(data, this.forAddress)
+      .publish(data, this.forAddress, delay)
       .pipe(
         catchError((error) => this.handleError(error, data, this.forAddress))
       )
@@ -229,10 +273,7 @@ export class PublishPlugin extends SaveBase {
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
   private addBehaviour(): Subscription {
-    return merge(
-      this.treeQuery.openedDocument$,
-      this.addressTreeQuery.openedDocument$
-    ).subscribe((loadedDocument) => {
+    return this.tree.openedDocument$.subscribe((loadedDocument) => {
       this.formToolbarService.setButtonState(
         "toolBtnPublish",
         loadedDocument !== null &&

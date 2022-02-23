@@ -65,7 +65,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   constructor(
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery
+    protected codelistQuery: CodelistQuery
   ) {
     super();
   }
@@ -98,6 +98,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.codelistQuery.selectCatalogCodelist(codelistId + "")
     ).pipe(
       filter((codelist) => !!codelist),
+      // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
       map((codelist) => CodelistService.mapToSelectSorted(codelist))
     );
   }
@@ -109,7 +110,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     this.addCodelistDefaultValues(this.fields);
     this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
-    console.log("Profile initialized");
+    console.debug(`Document type ${this.id} initialized`);
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
@@ -186,5 +187,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
           .subscribe();
       }
     });
+  }
+
+  formatCodelistValue(codelist: string, item: { key; value }) {
+    return item?.key
+      ? this.codelistQuery.getCatalogEntryByKey(codelist, item.key, item.value)
+      : item?.value;
   }
 }

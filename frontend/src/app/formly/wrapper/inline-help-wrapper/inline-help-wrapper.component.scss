@@ -4,10 +4,14 @@
   display: flex;
   align-items: center;
 
+  formly-field-mat-input {
+    width: 100%;
+  }
+
   formly-field-mat-input + .mat-icon-button.menu-button {
     margin-top: -3px;
     margin-bottom: -3px;
-    margin-left: auto;
+    margin-left: 0.75em;
   }
 
   .mat-icon-button.menu-button {

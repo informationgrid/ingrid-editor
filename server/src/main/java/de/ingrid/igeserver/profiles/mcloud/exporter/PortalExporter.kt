@@ -2,11 +2,14 @@ package de.ingrid.igeserver.profiles.mcloud.exporter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
+import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -15,7 +18,7 @@ import java.io.Writer
 
 @Service
 @Profile("mcloud")
-class PortalExporter : IgeExporter {
+class PortalExporter @Autowired constructor(val codelistHandler: CodelistHandler) : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() {
@@ -30,7 +33,7 @@ class PortalExporter : IgeExporter {
             )
         }
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
             //.newLineTrimming(false)
@@ -41,7 +44,7 @@ class PortalExporter : IgeExporter {
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
 
         val writer: Writer = StringWriter()
-        val map = getMapFromObject(doc)
+        val map = getMapFromObject(doc, catalogId)
         compiledTemplate.evaluate(writer, map)
         return writer.toString()
     }
@@ -50,9 +53,16 @@ class PortalExporter : IgeExporter {
         return exportedObject.toString()
     }
 
-    private fun getMapFromObject(json: Document): Map<String, Any> {
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
 
-        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
+        return mapOf(
+            "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
+            "catalogId" to catalogId
+        )
 
+    }
+
+    private fun getCodelists(catalogId: String): List<CodeList> {
+        return codelistHandler.getCatalogCodelists(catalogId) + codelistHandler.allCodelists
     }
 }

@@ -28,6 +28,7 @@ import { logAction } from "@datorama/akita";
 import { SessionService } from "../services/session.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { combineLatest, of, Subject } from "rxjs";
+import { IgeDocument } from "../models/ige-document";
 
 @UntilDestroy()
 @Component({
@@ -240,7 +241,7 @@ export class ResearchComponent implements OnInit {
     });
   }
 
-  removeDataset(hit: any) {
+  removeDataset(hit: IgeDocument) {
     console.log(hit);
     this.dialog
       .open(ConfirmDialogComponent, {

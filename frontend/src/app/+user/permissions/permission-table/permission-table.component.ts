@@ -87,25 +87,19 @@ export class PermissionTableComponent implements ControlValueAccessor {
           .getPath(doc.id)
           .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
       }
-      // if not initialized
-      if (
-        doc.isFolder === undefined ||
-        doc.hasWritePermission === undefined ||
-        doc.hasOnlySubtreeWritePermission === undefined
-      ) {
-        this.getDocument(doc.id).then((igeDoc) => {
-          doc.hasWritePermission = igeDoc.hasWritePermission;
-          doc.hasOnlySubtreeWritePermission =
-            igeDoc.hasOnlySubtreeWritePermission;
-          doc.isFolder = igeDoc._type === "FOLDER";
 
-          // downgrade permission if rights are not sufficient
-          this.adjustPermission(doc);
-        });
-      }
+      this.getDocument(doc.id).then((igeDoc) => {
+        doc.hasWritePermission = igeDoc.hasWritePermission;
+        doc.hasOnlySubtreeWritePermission =
+          igeDoc.hasOnlySubtreeWritePermission;
+        doc.isFolder = igeDoc._type === "FOLDER";
+        doc.title = igeDoc.title;
 
-      console.log(doc);
+        // downgrade permission if rights are not sufficient
+        this.adjustPermission(doc);
+      });
     });
+
     if (this.onChange) {
       this.onChange(val);
     }
@@ -134,7 +128,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   private adjustPermission(doc: any) {
-    console.log("permissions", doc.permission);
     // all permissions are allowed
     if (doc.hasWritePermission) return;
 

@@ -1,0 +1,51 @@
+<ng-template #selectAll let-selectOptions="selectOptions">
+    <mat-option (click)="toggleSelectAll(selectOptions)">
+        <mat-pseudo-checkbox
+            class="mat-option-pseudo-checkbox"
+            [state]="getSelectAllState(selectOptions)"
+        >
+        </mat-pseudo-checkbox>
+        {{ to.selectAllOption }}
+    </mat-option>
+</ng-template>
+<mat-select
+    [id]="id"
+    [formControl]="selectControl"
+    [formlyAttributes]="field"
+    [placeholder]="to.placeholder"
+    [tabIndex]="to.tabindex"
+    [required]="to.required"
+    [compareWith]="to.compareWith"
+    [multiple]="to.multiple"
+    (selectionChange)="change($event)"
+    [errorStateMatcher]="errorStateMatcher"
+    [aria-label]="_getAriaLabel()"
+    [aria-labelledby]="_getAriaLabelledby()"
+    [disableOptionCentering]="to.disableOptionCentering"
+>
+    <ng-container *ngIf="selectOptions">
+        <ng-container
+            *ngIf="to.multiple && to.selectAllOption"
+            [ngTemplateOutlet]="selectAll"
+            [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
+        >
+        </ng-container>
+        <ng-container *ngFor="let item of selectOptions">
+            <mat-optgroup *ngIf="item.group" [label]="item.label">
+                <mat-option
+                    *ngFor="let child of item.group"
+                    [value]="child.value"
+                    [disabled]="child.disabled"
+                >
+                    {{ child.label }}
+                </mat-option>
+            </mat-optgroup>
+            <mat-option
+                *ngIf="!item.group"
+                [value]="item.value"
+                [disabled]="item.disabled"
+                >{{ item.label }}</mat-option
+            >
+        </ng-container>
+    </ng-container>
+</mat-select>

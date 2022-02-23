@@ -34,6 +34,8 @@ import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
+import { DocEventsService } from "../../../services/event/doc-events.service";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
 
 @UntilDestroy()
 @Component({
@@ -98,10 +100,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
+    private codelistQuery: CodelistQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private docEvents: DocEventsService
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -132,6 +136,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     combineLatest([
       this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
+      this.codelistQuery
+        .selectLoading()
+        .pipe(filter((isLoading) => !isLoading)),
       merge(
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
@@ -141,7 +148,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ),
     ])
       .pipe(untilDestroyed(this))
-      .subscribe((params) => this.loadDocument(params[1]));
+      .subscribe((params) => this.loadDocument(params[2]));
 
     this.formularService.currentProfile = null;
 
@@ -210,25 +217,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // noinspection JSUnusedGlobalSymbols
   ngAfterViewInit(): any {
-    // add form errors check when saving/publishing
-    this.documentService.beforePublish$
-      .pipe(untilDestroyed(this))
-      .subscribe((message: any) => {
-        message.errors.push({ invalid: this.form.invalid });
-      });
-
     // show blocker div to prevent user from modifying data or calling functions
     // during save
-    this.documentService.beforeSave$
-      .pipe(untilDestroyed(this))
+    this.docEvents
+      .beforeSave$(this.address)
       .subscribe(() => (this.showBlocker = true));
 
     // reset dirty flag after save
-    this.documentService.afterSave$
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => {
-        this.updateFormWithData(data);
-      });
+    this.docEvents
+      .afterSave$(this.address)
+      .subscribe((data) => this.updateFormWithData(data));
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))

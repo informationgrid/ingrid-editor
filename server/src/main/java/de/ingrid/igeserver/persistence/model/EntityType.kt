@@ -18,7 +18,7 @@ abstract class EntityType {
     companion object {
         private val CATEGORY = DocumentCategory.DATA
     }
-    
+
     @Autowired
     lateinit var documentService: DocumentService
 
@@ -45,7 +45,7 @@ abstract class EntityType {
      * Location of the json schema file to be used for validation
      */
     open val jsonSchema: String? = null
-    
+
     /**
      * Check if the entity type is used in the given profile
      */
@@ -81,6 +81,13 @@ abstract class EntityType {
     }
 
     /**
+     * Get all referenced document UUIDs
+     */
+    open fun getReferenceIds(doc: Document): List<String> {
+        return emptyList()
+    }
+
+    /**
      * Replace document/address references with their latest version
      */
     open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
@@ -92,7 +99,7 @@ abstract class EntityType {
     open fun getUploads(doc: Document): List<String> {
         return emptyList()
     }
-    
+
     fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         val latestDocument = documentService.getLatestDocument(wrapper, options.onlyPublished, catalogId = catalogId)

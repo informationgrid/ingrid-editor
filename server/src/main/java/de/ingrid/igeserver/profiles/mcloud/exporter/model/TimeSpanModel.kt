@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TimeSpanModel(
-    val rangeType: String?,
+    val rangeType: KeyValueModel?,
     val timeSpanDate: String?,
     val timeSpanRange: RangeModel?){
 
     val start: String?
         get(){
-            when(rangeType){
+            when(rangeType?.key){
                 "at" -> return timeSpanDate
                 "since" -> return timeSpanDate
                 "till" -> return null
@@ -20,7 +20,7 @@ data class TimeSpanModel(
         }
     val end: String?
         get(){
-            when(rangeType){
+            when(rangeType?.key){
                 "at" -> return timeSpanDate
                 "since" -> return null
                 "till" -> return timeSpanDate

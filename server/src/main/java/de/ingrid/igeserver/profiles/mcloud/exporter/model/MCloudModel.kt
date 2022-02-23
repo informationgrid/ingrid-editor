@@ -1,15 +1,13 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
-import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
-import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -31,7 +29,7 @@ data class MCloudModel(
     override val publisher: AddressModel?
         get() {
             return data.addresses
-                ?.firstOrNull { it.type == "10" }
+                ?.firstOrNull { it.type?.key == "10" }
                 ?.ref
         }
 
@@ -72,24 +70,31 @@ data class MCloudModel(
         val codeListService: CodeListService? by lazy {
             SpringContext.getBean(CodeListService::class.java)
         }
+        val codelistHandler: CodelistHandler? by lazy {
+            SpringContext.getBean(CodelistHandler::class.java)
+        }
     }
     fun getLicenseData(): Any? {
         if(data.license != null) {
-            var jsonString = "{\"id\":\""+data.license+"\",\"name\":\""+data.license+"\"}";
-            val entryID = codeListService?.getCodeListEntryId("6500", data.license, "de")
+            var jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+data.license.value+"\"}";
+            // either use key or if no key search for value
+            val entryID = data.license.key ?: codeListService?.getCodeListEntryId("6500", data.license.value, "de")
             if(entryID != null) {
-                jsonString = codeListService?.getCodeListEntry("6500", entryID)?.data.toString();
+                val codeListEntry = codeListService?.getCodeListEntry("6500", entryID)
+                if(!codeListEntry?.data.isNullOrEmpty()) {
+                    jsonString = codeListEntry?.data.toString();
+                }
             }
-            return if (jsonString.isNullOrEmpty()) null else JSONParser().parse(jsonString)
+            return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
         }
         return null
     }
 
     val periodicity: String?
     get(){
-        val time_period = codeListService?.getCodeListValue("518", data.periodicity, "en")
+        val timePeriod = codeListService?.getCodeListValue("518", data.periodicity?.key, "en")
 
-        when(time_period){
+        when(timePeriod){
             "continual" -> return "CONT"
             "daily" -> return "DAILY"
             "weekly" -> return "WEEKLY"
@@ -104,6 +109,18 @@ data class MCloudModel(
             "unknown" -> return "UNKNOWN"
         }
         return null
+    }
+    
+    fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
+        return if (key == null) value ?: "" 
+        else {
+            val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
+            if (codelistValue == null) {
+                // TODO: use logger
+                println("Codelist-Value not found for '${key}' in list '${codelistId}'")
+            }
+            codelistValue ?: ""
+        }
     }
 
     fun isValid(): Boolean {

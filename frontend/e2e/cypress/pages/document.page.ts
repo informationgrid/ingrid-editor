@@ -113,15 +113,21 @@ export class DocumentPage extends BasePage {
       description: 'Beschreibung',
       addresses: [
         {
-          type: '10',
+          type: { key: '10' },
           ref: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10'
         }
       ],
       accessRights: 'Nutzungshinweise',
       mCloudCategories: ['roads'],
       DCATThemes: ['TRAN'],
-      distributions: [{ link: { value: 'link.link', asLink: true }, type: 'linktyp' }],
-      license: 'Andere offene Lizenz',
+      distributions: [
+        {
+          link: { value: 'link.link', asLink: true },
+          type: { key: 'atomFeed' },
+          format: { key: 'EPUB' }
+        }
+      ],
+      license: { key: '10' },
       origin: 'Vermerk',
       mfundProject: 'Projekt',
       mfundFKZ: 'FKZ',
@@ -137,15 +143,15 @@ export class DocumentPage extends BasePage {
           type: 'free'
         }
       ],
-      events: [{ text: '1', date: '2020-10-25T23:00:00.000Z' }],
+      events: [{ text: { key: '1' }, date: '2020-10-25T23:00:00.000Z' }],
       temporal: {
-        rangeType: 'range',
+        rangeType: { key: 'range' },
         timeSpanRange: {
           start: '2020-04-30T22:00:00.000Z',
           end: '2020-10-30T23:00:00.000Z'
         }
       },
-      periodicity: '8'
+      periodicity: { key: '8' }
     };
 
     cy.get('@tokens').then((tokens: any) => {
@@ -174,7 +180,7 @@ export class DocumentPage extends BasePage {
       checkbox: true,
       addresses: [
         {
-          type: '7',
+          type: { key: '7' },
           ref: {
             title: 'Published Testorganization',
             _uuid: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
@@ -399,7 +405,7 @@ export class DocumentPage extends BasePage {
   }
 
   static scrollToSection(section: string) {
-    cy.get('ige-header-navigation').contains(section).click();
+    cy.contains('ige-header-navigation .link-button', section, { timeout: 10000 }).click();
   }
 
   /**
@@ -428,13 +434,22 @@ export class DocumentPage extends BasePage {
     cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
   }
 
-  static checkOfExistingItem(node: string, itemName: string, index: number = -1) {
+  static checkOfExistingItem(node: string, itemName: string, index: number = -1, inputString: boolean = false) {
     if (index != -1) {
-      cy.get(node).eq(index).contains(itemName);
+      if (inputString) {
+        cy.get(node).eq(index).should('have.value', itemName);
+      } else {
+        cy.get(node).eq(index).contains(itemName);
+      }
     } else {
-      cy.get(node).contains(itemName);
+      if (inputString) {
+        cy.get(node).should('have.value', itemName);
+      } else {
+        cy.get(node).contains(itemName);
+      }
     }
   }
+
   static getSearchResult(number = 1) {
     return this.getSearchResults()
       .should('have.length.gte', 1)
@@ -503,6 +518,7 @@ export class DocumentPage extends BasePage {
   static checkEmptyDocumentTree() {
     cy.get('ige-empty-navigation').contains('Leer');
   }
+
   static verifyInfoInDocumentHeader(key: headerElements, value: string) {
     cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
       cy.get('div')

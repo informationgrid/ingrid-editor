@@ -1,9 +1,9 @@
 import { BaseBehaviour } from "../../base.behaviour";
 import { Inject } from "@angular/core";
-import { DocumentService } from "../../../../services/document/document.service";
 import { FormGroup } from "@angular/forms";
 import { EventManager } from "@angular/platform-browser";
 import { Behaviour } from "../../../../services/behavior/behaviour";
+import { DocEventsService } from "../../../../services/event/doc-events.service";
 
 /**
  *
@@ -46,15 +46,13 @@ export class ShowDateInSectionBehaviour
     return parent;
   }
 
-  constructor(
-    @Inject(DocumentService) private storageService: DocumentService
-  ) {
+  constructor(@Inject(DocEventsService) private docEvents: DocEventsService) {
     super();
   }
 
   register(form: FormGroup, eventManager: EventManager) {
     this.addSubscriber(
-      this.storageService.afterLoadAndSet$.subscribe(() => {
+      this.docEvents.afterLoadAndSet$(false).subscribe(() => {
         setTimeout(() => {
           const taskEl = ShowDateInSectionBehaviour._getAllDateFields();
           for (let i = 0; i < taskEl.length; i++) {

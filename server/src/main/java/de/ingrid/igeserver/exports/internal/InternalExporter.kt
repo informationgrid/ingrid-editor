@@ -26,7 +26,7 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
             listOf()
         )
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         // TODO: profile must be added to the exported format!
         val json = documentService.convertToJsonNode(doc)
         documentService.removeInternalFieldsForImport(json as ObjectNode)

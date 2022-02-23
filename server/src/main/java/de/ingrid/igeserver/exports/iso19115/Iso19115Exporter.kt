@@ -18,7 +18,7 @@ class Iso19115Exporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = info
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         val engine = PebbleEngine.Builder()
             .newLineTrimming(false)
             .build()

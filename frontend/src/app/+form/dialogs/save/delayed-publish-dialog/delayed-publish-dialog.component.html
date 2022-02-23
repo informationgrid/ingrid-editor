@@ -1,0 +1,39 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text" style="padding-right: 20px"
+            >Veröffentlichen planen</span
+        >
+    </h2>
+</div>
+<mat-dialog-content [formGroup]="form">
+    <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Veröffentlichen am</mat-label>
+        <input
+            [min]="minDate"
+            formControlName="date"
+            igeFocus
+            matInput
+            (keyup.enter)="setDateAndPublish()"
+            [matDatepicker]="picker"
+            placeholder="Datum auswählen"
+        />
+        <!--            [value]="getCurrentDate()"-->
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close color="primary">Abbrechen</button>
+    <div fxFlex></div>
+    <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid"
+        (click)="setDateAndPublish()"
+    >
+        Ok
+    </button>
+</mat-dialog-actions>

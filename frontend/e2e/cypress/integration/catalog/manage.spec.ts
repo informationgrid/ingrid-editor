@@ -5,11 +5,12 @@ import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { ResearchPage } from '../../pages/research.page';
+import { AddressPage } from '../../pages/address.page';
 
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     ManageCatalogPage.visit();
   });
 
@@ -47,6 +48,17 @@ describe('Catalog management', () => {
     cy.get('button').contains('Aktualisieren').click();
 
     cy.get('[data-cy="' + catalogTitle + catalogTitleModified + '"]').should('contain', catalogTitle);
+  });
+
+  it('should change display of information after modifying catalog', () => {
+    ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
+      // add document
+      DocumentPage.CreateFullMcloudDocumentWithAPI('someNewDataset');
+      // refresh page
+      cy.reload();
+      // compare values
+      ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
+    });
   });
 
   it('should delete an existing catalog', () => {

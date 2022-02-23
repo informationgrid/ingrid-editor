@@ -4,9 +4,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
-import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
-import org.springframework.stereotype.Service
 
 /**
  * ATTENTION: Addresses are not exported. This class can be removed
@@ -28,7 +26,7 @@ class PortalExporterAddress : IgeExporter {
             )
         }
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         // do not export addresses
         return "{}"
     }

@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { DocumentService } from "../../../services/document/document.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormGroup } from "@angular/forms";
 import { FormularService } from "../../formular.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -29,7 +29,7 @@ export class UndoPlugin extends Plugin {
     private formToolbarService: FormToolbarService,
     private formService: FormularService,
     private modalService: ModalService,
-    private storageService: DocumentService
+    private docEvents: DocEventsService
   ) {
     super();
   }
@@ -73,27 +73,28 @@ export class UndoPlugin extends Plugin {
         }
       });
 
-    const afterLoadSubscription =
-      this.storageService.afterLoadAndSet$.subscribe((data) => {
-        if (data) {
-          this.history = [];
-          this.redoHistory = [];
-          // this.actionTriggered = true;
+    const afterLoadSubscription = this.docEvents
+      .afterLoadAndSet$(this.forAddress)
+      .subscribe((data) => {
+        // if (data) {
+        this.history = [];
+        this.redoHistory = [];
+        // this.actionTriggered = true;
 
-          this.formToolbarService.setButtonState("toolBtnUndo", false);
+        this.formToolbarService.setButtonState("toolBtnUndo", false);
 
-          // add behaviour to set active states for toolbar buttons
-          // need to add behaviour after each load since form-object changes!
+        // add behaviour to set active states for toolbar buttons
+        // need to add behaviour after each load since form-object changes!
 
-          // FIXME: form is not available when opening a document, going to dashboard and back to form again
-          //        seems to be, because when clicking on form, the last opened document is being reloaded!?
-          this.addBehaviour();
+        // FIXME: form is not available when opening a document, going to dashboard and back to form again
+        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
+        this.addBehaviour();
 
-          this.subscriptions.push(
-            toolbarEventSubscription,
-            afterLoadSubscription
-          );
-        }
+        this.subscriptions.push(
+          toolbarEventSubscription,
+          afterLoadSubscription
+        );
+        // }
       });
   }
 

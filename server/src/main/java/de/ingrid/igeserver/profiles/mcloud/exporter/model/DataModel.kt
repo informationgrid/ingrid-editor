@@ -12,10 +12,10 @@ data class DataModel(
     val addresses: List<AddressRefModel>?,
     val accessRights: String?,
     val distributions: List<DownloadModel>?,
-    val license: String?,
+    val license: KeyValueModel?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
     val temporal: TimeSpanModel?,
-    val periodicity: String?,
+    val periodicity: KeyValueModel?,
     val mfundFKZ: String?,
     val mfundProject: String?,
     val keywords: List<String>?

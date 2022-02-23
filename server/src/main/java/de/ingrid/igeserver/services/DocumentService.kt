@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
@@ -43,7 +44,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
+import javax.persistence.EntityManager
+import java.time.ZoneOffset
+import java.util.*
 import javax.persistence.criteria.*
+import kotlin.NoSuchElementException
 
 @Service
 class DocumentService @Autowired constructor(
@@ -53,6 +58,7 @@ class DocumentService @Autowired constructor(
     var catalogRepo: CatalogRepository,
     var aclService: IgeAclService,
     var groupService: GroupService,
+    var dateService: DateService,
     var generalProperties: GeneralProperties,
     var authUtils: AuthUtils,
 ) : MapperService() {
@@ -102,6 +108,9 @@ class DocumentService @Autowired constructor(
 
     @Autowired(required = false)
     private var indexManager: IndexManager? = null
+
+    @Autowired
+    private lateinit var entityManager: EntityManager
 
     @Value("\${elastic.alias}")
     private lateinit var elasticsearchAlias: String
@@ -167,6 +176,24 @@ class DocumentService @Autowired constructor(
             docs
         )
 
+    }
+
+    /**
+     *  Get a list of all IDs hierarchically below a given id
+     */
+    fun getAllDescendantIds(catalogId: String, id: Int): List<Int> {
+        val docs = this.findChildren(catalogId, id)
+        return if (docs.hits.isEmpty()) {
+            emptyList()
+        } else {
+            docs.hits
+                .flatMap { doc ->
+                    if (doc.countChildren > 0) getAllDescendantIds(
+                        catalogId,
+                        doc.id!!
+                    ) + doc.id!! else listOf(doc.id!!)
+                }
+        }
     }
 
     /**
@@ -334,7 +361,8 @@ class DocumentService @Autowired constructor(
         catalogId: String,
         id: Int,
         data: Document,
-        publish: Boolean = false
+        publish: Boolean = false,
+        publishDate: Date? = null,
     ): Document {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
@@ -359,7 +387,7 @@ class DocumentService @Autowired constructor(
         preUpdatePayload.document.created = createdDate
         preUpdatePayload.document.createdby = createdBy
 
-        if(principal != null) {
+        if (principal != null) {
             preUpdatePayload.document.modifiedby = authUtils.getUsernameFromPrincipal(principal)
         }
 
@@ -369,7 +397,7 @@ class DocumentService @Autowired constructor(
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             // update wrapper to document association
-            updateWrapper(preUpdatePayload, publish, updatedDoc)
+            updateWrapper(preUpdatePayload, publish, publishDate, updatedDoc)
 
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
@@ -387,10 +415,11 @@ class DocumentService @Autowired constructor(
     private fun updateWrapper(
         preUpdatePayload: PreUpdatePayload,
         publish: Boolean,
+        publishDate: Date? = null,
         updatedDoc: Document
     ) {
         with(preUpdatePayload.wrapper) {
-            if (publish) {
+            if (publish && publishDate == null) {
                 // move published version to archive
                 if (published != null) {
                     archive.add(published!!)
@@ -406,6 +435,10 @@ class DocumentService @Autowired constructor(
 
                 // remove draft version
                 draft = null
+            } else if (publish && publishDate != null) {
+                // add delayed publishing
+                pending = updatedDoc
+                pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
             } else {
                 // update draft version
                 if (draft == null) {
@@ -616,7 +649,11 @@ class DocumentService @Autowired constructor(
             .category
     }
 
-    private fun getLatestDocumentVersion(wrapper: DocumentWrapper, onlyPublished: Boolean, catalogId: String? = null): Document {
+    private fun getLatestDocumentVersion(
+        wrapper: DocumentWrapper,
+        onlyPublished: Boolean,
+        catalogId: String? = null
+    ): Document {
 
         if (onlyPublished && wrapper.published == null) {
             throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
@@ -632,6 +669,11 @@ class DocumentService @Autowired constructor(
         if (objectNode == null) {
             throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)
         }
+
+        // we need to detach entity, otherwise unwanted updated operations can happen when we change this
+        // this happened by modifying the data-field and doing a flush, which lead to an update of the document
+        // and increase of the version
+        entityManager.detach(objectNode)
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission

@@ -56,7 +56,12 @@ export class CatalogCodelistsComponent implements OnInit {
       .open(UpdateCodelistComponent, {
         minWidth: 400,
         disableClose: true,
-        data: editEntry,
+        data: {
+          ids: this.selectedCodelist.entries
+            .map((e) => e.id)
+            .filter((id) => id !== oldId),
+          entry: editEntry,
+        },
       })
       .afterClosed()
       .pipe(

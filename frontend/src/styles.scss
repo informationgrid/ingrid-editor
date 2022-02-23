@@ -497,12 +497,12 @@ ige-side-menu {
   }
 }
 
-#form {
-  ige-form-label + * {
-    flex: 1;
-    min-width: 0;
-  }
+ige-form-label + * {
+  flex: 1;
+  min-width: 0;
+}
 
+#form {
   ige-form-label + formly-wrapper-mat-form-field {
     display: block;
     margin-top: 11px;

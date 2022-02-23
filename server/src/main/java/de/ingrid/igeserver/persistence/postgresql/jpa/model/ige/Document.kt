@@ -46,7 +46,7 @@ class Document {
 
     @Column(nullable=false)
     @JsonProperty("_type")
-    var type: String? = null
+    lateinit var type: String
 
     @Column(nullable = false)
     var title: String? = null

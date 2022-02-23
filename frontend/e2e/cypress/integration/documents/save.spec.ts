@@ -150,7 +150,7 @@ describe('General create documents/folders', () => {
       Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-cancel]').click();
-      Tree.checkTitleOfSelectedNode(docName);
+      cy.get(DocumentPage.title).should('have.text', docName);
 
       // accept dialog
       // check selected tree node === newly selected node
@@ -158,7 +158,7 @@ describe('General create documents/folders', () => {
       Tree.clickOnNodeWithTitle('Testdokumente');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-save]').click();
-      Tree.checkTitleOfSelectedNode('Testdokumente');
+      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
     });
 
     it('should show a dialog when a document was modified and the page was changed', () => {
@@ -323,23 +323,77 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.CreateDialog.setTimeReference(date3, type1, 2);
       DocumentPage.saveDocument();
 
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1200);
       DocumentPage.scrollToSection('Zeitbezüge');
       DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
+
+      // check the new position of the items before saving to make sure the dragging was successful
+      cy.wait(2000);
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '12.02.2022',
+        2,
+        true
+      );
+      DocumentPage.checkOfExistingItem(
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '11.02.2025',
+        1,
+        true
+      );
+
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.reload({ timeout: 10000 });
       DocumentPage.scrollToSection('Zeitbezüge');
+
       DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
-        'Letzte Änderung',
-        1
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '12.02.2022',
+        2,
+        true
       );
       DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat mat-form-field mat-select',
-        'Erstellung',
-        2
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
+        '11.02.2025',
+        1,
+        true
       );
+    });
+
+    it('check for ordering and sorting Download links in the mCLOUD document', () => {
+      let title1 = 'google';
+      let title2 = 'youtube';
+      let title3 = 'amazon';
+      let link1 = 'https://www.google.com';
+      let link2 = 'https://www.youtube.com/';
+      let link3 = 'https://www.amazon.de/';
+
+      let downloadSelector = '[data-cy="Downloads-table"] mat-row mat-cell';
+      Tree.openNode(['New Folder For New Users', 'New Document']);
+
+      DocumentPage.scrollToSection('mCLOUD');
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title1, link1);
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title2, link2);
+      enterMcloudDocTestData.CreateDialog.setAddDownload(title3, link3);
+      DocumentPage.saveDocument();
+
+      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
+      // does not mix with the first one
+      cy.wait(1200);
+
+      DocumentPage.scrollToSection('mCLOUD');
+      DocumentPage.dragItem(downloadSelector, '[data-cy="Downloads-table"] mat-row ', 0, 0, 100);
+
+      DocumentPage.saveDocument();
+      // // reload and make sure of ordering
+      cy.reload({ timeout: 10000 });
+      DocumentPage.scrollToSection('mCLOUD');
+
+      DocumentPage.checkOfExistingItem(downloadSelector, 'youtube', 0);
     });
   });
 });

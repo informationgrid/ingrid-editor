@@ -146,11 +146,6 @@ describe('Spatial References', () => {
 
     // make sure that only the first one is visible
     cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');
-    // I checked for property d to contains the coordinates of focused location because the two objects are always visible
-    // could not check for not visible event with focus view
-    cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 })
-      .invoke('attr', 'd')
-      .should('eq', 'M393 295L393 91L657 91L657 295z');
     DocumentPage.clickLeafletMapResetBtn();
     //  make sure that all others are visible
     cy.get('path.leaflet-interactive:nth-of-type(2)', { timeout: 1000 }).should('be.visible');

@@ -143,12 +143,14 @@
                 <mat-header-cell
                     *matHeaderCellDef
                     [class]="to.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
                 >
                     {{ to.columns[batchMode ? i - 1 : i].label }}
                 </mat-header-cell>
                 <mat-cell
                     *matCellDef="let element; let rowIndex = index"
                     [class]="to.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
                 >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     <span
@@ -199,7 +201,6 @@
             cdkDrag
             [cdkDragData]="row"
             [cdkDragDisabled]="dragDisabled"
-            (cdkDragReleased)="dragDisabled = true"
         >
         </mat-row>
     </mat-table>
@@ -210,23 +211,30 @@
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div class="button-wrapper">
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showUploadFilesDialog()"
+    <div>
+        <ige-form-error
+            *ngIf="formControl.invalid && formControl.hasError('required')"
+            >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
-            Dateien hochladen
-        </button>
-        oder
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showAddLinkDialog()"
-        >
-            Link angeben
-        </button>
+
+        <div class="button-wrapper">
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="showUploadFilesDialog()"
+            >
+                Dateien hochladen
+            </button>
+            oder
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="showAddLinkDialog()"
+            >
+                Link angeben
+            </button>
+        </div>
     </div>
 </div>

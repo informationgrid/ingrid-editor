@@ -7,9 +7,9 @@ import {
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
 import { CodelistStore } from "../../store/codelist/codelist.store";
-import { Observable, ReplaySubject, Subject } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { buffer, distinct, filter, map, switchMap, tap } from "rxjs/operators";
+import { distinct, filter, map, switchMap, tap } from "rxjs/operators";
 import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
 
 export class SelectOption {
@@ -31,8 +31,7 @@ export interface SelectOptionUi extends SelectOption {
   providedIn: "root",
 })
 export class CodelistService {
-  private requestedCodelists = new ReplaySubject<string>(100);
-  private collector = new Subject();
+  private requestedCodelists = new ReplaySubject<string[]>(100);
 
   static mapToSelectSorted = (codelist: Codelist): SelectOptionUi[] => {
     if (!codelist) {
@@ -49,6 +48,8 @@ export class CodelistService {
       )
       .sort((a, b) => a.label?.localeCompare(b.label));
   };
+  private queue = [];
+  private batchProcessed = true;
 
   constructor(
     private store: CodelistStore,
@@ -59,22 +60,30 @@ export class CodelistService {
         untilDestroyed(this),
         // ignore multiple same ids
         distinct(),
-        // collect multiple ids for the request
-        buffer(this.collector),
         filter((ids) => ids.length > 0),
         switchMap((ids) => this.requestCodelists(ids)),
         map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.add(codelists))
+        tap((codelists) => this.store.add(codelists)),
+        tap(() => (this.batchProcessed = true))
       )
       .subscribe();
   }
 
   byId(id: string): void {
-    // add codelist id to the queue to be requested
-    this.requestedCodelists.next(id);
+    this.queue.push(id);
 
-    // give some time to collect multiple codelists before sending request
-    setTimeout(() => this.collector.next(), 100);
+    if (!this.batchProcessed) return;
+
+    const interval = setInterval(() => {
+      if (this.batchProcessed && this.queue.length > 0) {
+        this.batchProcessed = false;
+        this.requestedCodelists.next([...this.queue]);
+        this.queue = [];
+      }
+      if (this.queue.length === 0) {
+        clearInterval(interval);
+      }
+    }, 100);
   }
 
   update(): Observable<Codelist[]> {
@@ -86,7 +95,6 @@ export class CodelistService {
 
   private requestCodelists(ids: string[]): Observable<CodelistBackend[]> {
     return this.dataService.byIds(ids);
-    // .pipe(map(x => [x])); // TODO: implement correct values
   }
 
   private prepareCodelists(codelists: CodelistBackend[]): Codelist[] {

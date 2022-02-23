@@ -3,14 +3,13 @@ import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.servi
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { MessageService } from "../../../services/message.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
-import { merge } from "rxjs";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { catchError, filter, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
+import { MessageService } from "../../../services/message.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -18,6 +17,7 @@ export class SavePlugin extends SaveBase {
   _name = "Save Plugin";
   group = "Toolbar";
   defaultActive = true;
+  private tree: TreeQuery | AddressTreeQuery;
 
   get name() {
     return this._name;
@@ -25,8 +25,8 @@ export class SavePlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
-    private modalService: ModalService,
     public messageService: MessageService,
+    private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
@@ -38,6 +38,8 @@ export class SavePlugin extends SaveBase {
 
   register() {
     super.register();
+
+    this.setupTree();
 
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
@@ -62,20 +64,27 @@ export class SavePlugin extends SaveBase {
       });
 
     // react on document selection
-    const treeSubscription = merge(
-      this.treeQuery.openedDocument$,
-      this.addressTreeQuery.openedDocument$
-    ).subscribe((openedDoc) => {
-      this.formToolbarService.setButtonState(
-        "toolBtnSave",
-        openedDoc !== null && openedDoc.hasWritePermission
-      );
+    const treeSubscription = this.tree.openedDocument$.subscribe(
+      (openedDoc) => {
+        this.formToolbarService.setButtonState(
+          "toolBtnSave",
+          openedDoc !== null && openedDoc.hasWritePermission
+        );
 
-      // do not allow to modify form if multiple nodes have been selected in tree
-      // openedDoc !== null ? this.form.enable() : this.form.disable();
-    });
+        // do not allow to modify form if multiple nodes have been selected in tree
+        // openedDoc !== null ? this.form.enable() : this.form.disable();
+      }
+    );
 
     this.subscriptions.push(toolbarEventSubscription, treeSubscription);
+  }
+
+  private setupTree() {
+    if (this.forAddress) {
+      this.tree = this.addressTreeQuery;
+    } else {
+      this.tree = this.treeQuery;
+    }
   }
 
   saveWithData(formData: IgeDocument) {

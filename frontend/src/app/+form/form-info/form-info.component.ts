@@ -107,7 +107,8 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     this.query.breadcrumb$
       .pipe(
         untilDestroyed(this),
-        tap((path) => (this.path = path.slice(0, -1)))
+        tap((path) => (this.path = path.slice(0, -1))),
+        tap(() => this.cdr.markForCheck())
       )
       .subscribe();
   }

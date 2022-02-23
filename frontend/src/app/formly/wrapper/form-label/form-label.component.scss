@@ -1,13 +1,17 @@
 @import "src/variables";
 
+:host {
+  display: flex;
+}
+
 .label-wrapper {
-  width: 272px;
+  width: 90px;
   padding-right: 24px;
   padding-top: 0.95em;
 }
 
-:host {
-  display: flex;
+:host-context(ige-form-wrapper) .label-wrapper {
+  width: 272px;
 }
 
 :host-context(.required) .label-wrapper label {

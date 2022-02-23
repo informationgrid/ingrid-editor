@@ -1,9 +1,10 @@
 import { EventManager } from "@angular/platform-browser";
 import { FormGroup } from "@angular/forms";
 import { BaseBehaviour } from "../../base.behaviour";
-import { DocumentService } from "../../../../services/document/document.service";
 import { Inject } from "@angular/core";
 import { Behaviour } from "../../../../services/behavior/behaviour";
+import { DocEventsService } from "../../../../services/event/doc-events.service";
+
 /**
  * OpenDataBehaviour
  */
@@ -17,9 +18,7 @@ export class ClickAndChangeTitleBehaviour
   defaultActive = true;
   forProfile = "UVP";
 
-  constructor(
-    @Inject(DocumentService) private documentService: DocumentService
-  ) {
+  constructor(@Inject(DocEventsService) private docEvents: DocEventsService) {
     super();
   }
 
@@ -35,7 +34,7 @@ export class ClickAndChangeTitleBehaviour
     );
 
     this.addSubscriber(
-      this.documentService.beforePublish$.subscribe((message: any) => {
+      this.docEvents.beforePublish$(false).subscribe((message: any) => {
         message.errors.push({ id: "taskId", error: "I don't like this ID" });
         console.log("in observer");
       })

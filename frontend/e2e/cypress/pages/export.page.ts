@@ -12,7 +12,7 @@ export class ExportPage {
       cy.get('div .action-bar').contains('Weiter').click({ force: true });
       cy.wait('@previewJsonData');
     } else {
-      cy.get('button:visible').contains('Weiter').click();
+      cy.contains('button:visible', 'Weiter', { timeout: 8000 }).click();
       // wait for page animation
       cy.wait(300);
     }

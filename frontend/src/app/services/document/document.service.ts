@@ -38,6 +38,7 @@ import {
   ResearchResponse,
   ResearchService,
 } from "../../+research/research.service";
+import { DocEventsService } from "../event/doc-events.service";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -51,10 +52,6 @@ export interface ReloadData {
 })
 export class DocumentService {
   // TODO: check usefulness
-  beforePublish$ = new Subject<any>();
-  beforeSave$ = new Subject<any>();
-  afterSave$ = new Subject<any>();
-  afterLoadAndSet$ = new Subject<any>();
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
@@ -73,7 +70,8 @@ export class DocumentService {
     private sessionQuery: SessionQuery,
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
-    private researchService: ResearchService
+    private researchService: ResearchService,
+    private docEvents: DocEventsService
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -93,7 +91,10 @@ export class DocumentService {
 
   findRecent(): void {
     this.researchService
-      .search("", { type: "selectDocuments" }, null, "modified", "DESC")
+      .search("", { type: "selectDocuments" }, null, "modified", "DESC", {
+        page: 1,
+        pageSize: 10,
+      })
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
@@ -180,7 +181,7 @@ export class DocumentService {
       data.title = this.createAddressTitle(data);
     }
 
-    this.beforeSave$.next();
+    this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
   }
 
@@ -192,7 +193,7 @@ export class DocumentService {
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    this.afterSave$.next(json);
+    this.docEvents.sendAfterSave(json);
 
     const parentId = json._parent;
     const info = this.mapToDocumentAbstracts([json], parentId)[0];
@@ -226,22 +227,14 @@ export class DocumentService {
   }
 
   // FIXME: this should be added with a plugin
-  publish(data: IgeDocument, isAddress: boolean): Observable<void> {
-    const errors: any = { errors: [] };
-
+  publish(
+    data: IgeDocument,
+    isAddress: boolean,
+    publishDate: Date = null
+  ): Observable<void> {
     this.preSaveActions(data, isAddress);
 
-    this.beforePublish$.next(errors);
-    console.log("After validation:", data);
-    const formInvalid = errors.errors.filter((err: any) => err.invalid)[0];
-    if (formInvalid && formInvalid.invalid) {
-      this.modalService.showJavascriptError(
-        "Der Datensatz kann nicht veröffentlicht werden."
-      );
-      return;
-    }
-
-    return this.dataService.publish(data).pipe(
+    return this.dataService.publish(data, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
       filter((response) => response),
       tap(() =>

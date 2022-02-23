@@ -141,7 +141,9 @@ export class CatalogManagementComponent implements OnInit {
   private mapProfileTitleToCatalog(catalog: Catalog, profiles: Profile[]) {
     return {
       ...catalog,
-      type: profiles.find((profile) => profile.id === catalog.type).title,
+      type:
+        profiles.find((profile) => profile.id === catalog.type)?.title ??
+        `Unbekannt: ${catalog.type}`,
     };
   }
 }

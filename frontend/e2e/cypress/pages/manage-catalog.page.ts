@@ -17,7 +17,20 @@ export class ManageCatalogPage {
     ManageCatalogPage.openCatalogCardMenu(title);
     // use "Verwenden" button on catalog to switch to new catalog
     cy.get('button.mat-menu-item').contains('Verwenden').click();
-    cy.wait(1000);
+    // wait a bit longer since page will be reloaded
+    cy.wait(4000);
+  }
+
+  static getNumberOfDatasetsInCatalog(catalogTitle: string) {
+    return cy
+      .get('.mat-card')
+      .contains('.mat-card-title', new RegExp('^' + catalogTitle + '$'))
+      .parent()
+      .find('.content')
+      .then($node => {
+        // extract number from string like '12 Datensätze'
+        return parseInt($node.text().trim().split(' ')[0]);
+      });
   }
 
   static addCatalog(catalogTitle: string) {

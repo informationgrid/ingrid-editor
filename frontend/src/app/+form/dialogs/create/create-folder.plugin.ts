@@ -44,7 +44,6 @@ export class CreateFolderPlugin extends Plugin {
   register() {
     super.register();
 
-    console.log("register folder plugin");
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
       id: "toolBtnFolder",
