@@ -312,7 +312,7 @@ describe('General create addresses/folders', () => {
       // does not mix with the first one
       cy.wait(1500);
 
-      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Kontakt"] ige-repeat ', 1, 0, 70);
+      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Kontakt"] ige-repeat ', 1, 0, 100);
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
