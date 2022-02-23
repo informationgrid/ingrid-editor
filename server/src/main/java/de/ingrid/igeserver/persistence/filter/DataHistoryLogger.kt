@@ -6,6 +6,7 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component
 @Component
 class DataHistoryLogger @Autowired constructor(
     var auditLogger: AuditLogger,
-    var documentService: DocumentService
+    @Lazy var documentService: DocumentService
 ) : Filter<PostPersistencePayload> {
 
     companion object {

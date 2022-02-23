@@ -16,18 +16,30 @@
           "type": "integer"
         },
         "_created": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "_createdBy": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "_modified": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "_modifiedBy": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "_state": {
           "type": [
@@ -60,16 +72,12 @@
         },
         "origin": {
           "type": [
-            "array",
+            "string",
             "null"
           ]
         },
         "license": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
+          "$ref": "#/definitions/KeyValue"
         },
         "spatial": {
           "type": [
@@ -120,11 +128,7 @@
           "minLength": 1
         },
         "periodicity": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "integer"
+          "$ref": "#/definitions/KeyValue"
         },
         "accessRights": {
           "type": [
@@ -183,11 +187,7 @@
           ]
         },
         "type": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "integer"
+          "$ref": "#/definitions/KeyValue"
         }
       },
       "required": [
@@ -204,10 +204,7 @@
           "$ref": "#/definitions/Link"
         },
         "type": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/definitions/KeyValue"
         },
         "title": {
           "type": [
@@ -216,10 +213,7 @@
           ]
         },
         "format": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/definitions/KeyValue"
         }
       },
       "required": [
@@ -270,11 +264,7 @@
           "format": "date-time"
         },
         "text": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "integer"
+          "$ref": "#/definitions/KeyValue"
         }
       },
       "required": [
@@ -300,7 +290,20 @@
           ]
         },
         "value": {
-          "$ref": "#/definitions/Value"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/Value"
+            }
+          ]
+        },
+        "wkt": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -340,10 +343,7 @@
       "additionalProperties": false,
       "properties": {
         "rangeType": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/definitions/KeyValue"
         },
         "timeSpanDate": {
           "type": [
@@ -351,13 +351,55 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "timeSpanRange": {
+          "$ref": "#/definitions/Range"
         }
       },
       "required": [
-        "rangeType",
-        "timeSpanDate"
+        "rangeType"
       ],
       "title": "Temporal"
+    },
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "title": "KeyValue"
+    },
+    "Range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "end": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "title": "KeyValue"
     }
   }
 }

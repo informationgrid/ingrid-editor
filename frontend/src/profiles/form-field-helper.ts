@@ -167,10 +167,13 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "date-range",
-      className: "flex-1",
-      wrappers: ["form-field"],
+      className:
+        options?.className === undefined ? "flex-1" : options?.className,
+      wrappers:
+        options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
       templateOptions: {
         placeholder: "Zeitraum eingeben ...",
+        externalLabel: label,
         appearance: "outline",
       },
       hideExpression: options?.hideExpression,
@@ -186,6 +189,23 @@ export class FormFieldHelper {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
+        required: options?.required,
+      },
+    };
+  }
+
+  addRadioboxes(id, label, options?) {
+    return {
+      key: id,
+      type: "radio",
+      wrappers: ["panel", "form-field", "inline-help"],
+      className: "ige-radios",
+      templateOptions: {
+        label: options?.fieldLabel,
+        externalLabel: label,
+        labelProp: "value",
+        valueProp: "id",
+        options: options?.options,
         required: options?.required,
       },
     };

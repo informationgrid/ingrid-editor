@@ -1,0 +1,65 @@
+{
+  "analysis": {
+    "filter": {
+      "german_stop": {
+        "type": "stop",
+        "stopwords": "_german_"
+      },
+      "german_stemmer": {
+        "type": "stemmer",
+        "language": "light_german"
+      },
+      "ngram": {
+        "type": "ngram",
+        "min_gram": 3,
+        "max_gram": 50
+      },
+      "edge_ngram": {
+        "type": "edge_ngram",
+        "min_gram": 2,
+        "max_gram": 50
+      }
+    },
+    "analyzer": {
+      "ngram": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_stop",
+          "german_normalization",
+          "german_stemmer",
+          "ngram",
+          "unique"
+        ]
+      },
+      "edge_ngram": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_stop",
+          "german_normalization",
+          "german_stemmer",
+          "edge_ngram",
+          "unique"
+        ]
+      },
+      "ngram_phrase": {
+        "type": "custom",
+        "tokenizer": "keyword",
+        "filter": [
+          "lowercase",
+          "ngram"
+        ]
+      },
+      "phrase": {
+        "type": "custom",
+        "tokenizer": "keyword",
+        "filter": [
+          "lowercase"
+        ]
+      }
+    }
+  }
+}

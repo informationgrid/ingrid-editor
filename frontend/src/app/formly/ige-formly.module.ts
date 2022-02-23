@@ -67,6 +67,7 @@ import {
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
+import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -136,6 +137,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "select",
           component: SelectTypeComponent,
+        },
+        {
+          name: "uvpPhases",
+          component: UvpSectionsComponent,
         },
       ],
       validators: [
@@ -220,6 +225,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     LinkDialogComponent,
     UploadFilesDialogComponent,
     SelectTypeComponent,
+    UvpSectionsComponent,
   ],
   exports: [
     ReactiveFormsModule,

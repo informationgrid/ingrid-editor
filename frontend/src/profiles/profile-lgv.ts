@@ -1,4 +1,4 @@
-import { UvpDoctype } from "./uvp/uvp.doctype";
+import { AdmissionProcedureDoctype } from "./uvp/admission-procedure.doctype";
 import { AddressDoctype } from "./address/address.doctype";
 import { IsoDataPoolingDoctype } from "./iso/iso-data-pooling.doctype";
 import { IsoInformationSystemDoctype } from "./iso/iso-information-system.doctype";
@@ -19,5 +19,5 @@ export const profiles = [
   IsoProjectDoctype,
   IsoServiceDoctype,
   IsoTaskDoctype,
-  UvpDoctype,
+  AdmissionProcedureDoctype,
 ];

@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.context.annotation.Lazy
 
 const val PAGE_SIZE: Int = 10
 
@@ -28,7 +29,7 @@ class IndexService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
     private val docWrapperRepo: DocumentWrapperRepository,
     private val exportService: ExportService,
-    private val documentService: DocumentService,
+    @Lazy private val documentService: DocumentService,
     private val researchService: ResearchService
 ) {
 
