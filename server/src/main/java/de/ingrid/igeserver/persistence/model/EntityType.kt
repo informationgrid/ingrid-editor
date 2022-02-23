@@ -6,8 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
-
-
+import org.springframework.context.annotation.Lazy
 
 
 /**
@@ -20,7 +19,8 @@ abstract class EntityType {
     }
 
     @Autowired
-    lateinit var documentService: DocumentService
+    @Lazy
+    protected lateinit var documentService: DocumentService
 
 
     /**

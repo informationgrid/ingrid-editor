@@ -7,11 +7,12 @@ import de.ingrid.igeserver.services.DocumentService
 import net.pwall.json.schema.JSONSchema
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
 @Component
 class JsonSchemaValidator @Autowired constructor(
-    private val documentService: DocumentService
+    @Lazy private val documentService: DocumentService
 ) : Filter<PrePublishPayload> {
 
     val log = logger()
@@ -22,6 +23,7 @@ class JsonSchemaValidator @Autowired constructor(
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val schema = payload.type.jsonSchema
         if (schema != null) {
+            // TODO: move function to utilities to prevent cycle
             val json = documentService.convertToJsonNode(payload.document).toString()
             validate(schema, json)
         }

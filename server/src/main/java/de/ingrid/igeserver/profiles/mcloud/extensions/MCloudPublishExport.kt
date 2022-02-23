@@ -1,14 +1,12 @@
 package de.ingrid.igeserver.profiles.mcloud.extensions
 
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
@@ -20,27 +18,15 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("mcloud & elasticsearch")
-class MCloudPublishExport : Filter<PostPublishPayload> {
+class MCloudPublishExport @Autowired constructor(
+    val docWrapperRepo: DocumentWrapperRepository,
+    val jdbcTemplate: JdbcTemplate,
+    val indexingTask: IndexingTask
+) : Filter<PostPublishPayload> {
 
     val log = logger()
 
-    @Autowired
-    lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    @Autowired
-    lateinit var documentService: DocumentService
-
-    @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
-
-    @Autowired
-    lateinit var generalProperties: GeneralProperties
-
-    @Autowired
-    lateinit var indexingTask: IndexingTask
-
-    override val profiles: Array<String>?
-        get() = arrayOf("mcloud")
+    override val profiles = arrayOf("mcloud")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
@@ -83,7 +69,7 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
     private fun indexMCloudDoc(context: Context, docId: String) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA,"portal", docId)
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
 
     }
 }

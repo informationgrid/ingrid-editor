@@ -9,30 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class AddressType : EntityType() {
+class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
-    @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
+    override val category = DocumentCategory.ADDRESS.value
 
-    companion object {
-        @JvmStatic
-        protected val CATEGORY = DocumentCategory.ADDRESS
+    override val profiles = arrayOf<String>()
 
-        @JvmStatic
-        protected val TYPE = "AddressDoc"
-
-        @JvmStatic
-        protected val PROFILES = arrayOf<String>()
-    }
-
-    override val category: String
-        get() = CATEGORY.value
-
-    override val profiles: Array<String>
-        get() = PROFILES
-
-    override val className: String
-        get() = TYPE
+    override val className = "AddressDoc"
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)

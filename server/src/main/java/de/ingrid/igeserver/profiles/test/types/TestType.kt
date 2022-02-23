@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 
@@ -18,9 +16,6 @@ class TestType : EntityType() {
     override val profiles = listOf("mcloud", "test").toTypedArray()
 
     val log = logger()
-
-    @Autowired
-    lateinit var docService: DocumentService
 
     override fun usedInProfile(profileId: String): Boolean {
         return false
@@ -41,7 +36,7 @@ class TestType : EntityType() {
         for (address in addresses) {
             val addressJson = address.path("ref")
             val uuid = addressJson.path(FIELD_UUID).textValue()
-            val addressDoc = docService.convertToDocument(addressJson)
+            val addressDoc = documentService.convertToDocument(addressJson)
             addressDocs.add(addressDoc)
             (address as ObjectNode).put("ref", uuid)
         }

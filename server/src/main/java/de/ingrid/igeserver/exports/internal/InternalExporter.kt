@@ -8,12 +8,13 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
-class InternalExporter @Autowired constructor(val documentService: DocumentService) : IgeExporter {
+class InternalExporter @Autowired constructor(@Lazy val documentService: DocumentService) : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() = ExportTypeInfo(
@@ -28,6 +29,7 @@ class InternalExporter @Autowired constructor(val documentService: DocumentServi
 
     override fun run(doc: Document, catalogId: String): Any {
         // TODO: profile must be added to the exported format!
+        // TODO: move to utilities to prevent cycle
         val json = documentService.convertToJsonNode(doc)
         documentService.removeInternalFieldsForImport(json as ObjectNode)
         return addExportWrapper(json)

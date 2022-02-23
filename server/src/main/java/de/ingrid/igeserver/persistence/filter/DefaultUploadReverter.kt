@@ -2,7 +2,6 @@ package de.ingrid.igeserver.persistence.filter
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component
  */
 @Component
 class DefaultUploadReverter @Autowired constructor(
-    val documentService: DocumentService,
     val storage: Storage
 ) :
     Filter<PostRevertPayload> {

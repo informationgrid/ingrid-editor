@@ -1,16 +1,13 @@
 package de.ingrid.igeserver.profiles.uvp.types
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.net.URLDecoder
 
 @Component
-class UvpAdmissionProcedureType @Autowired constructor(val docService: DocumentService) : EntityType() {
+class UvpAdmissionProcedureType @Autowired constructor() : EntityType() {
     override val className = "UvpAdmissionProcedureDoc"
     override val profiles = arrayOf("uvp")
 

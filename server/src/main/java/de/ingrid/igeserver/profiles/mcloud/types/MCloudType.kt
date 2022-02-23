@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 import java.net.URLDecoder
@@ -19,9 +17,6 @@ class MCloudType : EntityType() {
     override val profiles = listOf("mcloud").toTypedArray()
 
     val log = logger()
-
-    @Autowired
-    lateinit var docService: DocumentService
 
     override val jsonSchema = "/mcloud/schemes/mcloud.schema.json"
 
@@ -34,20 +29,20 @@ class MCloudType : EntityType() {
     }
 
     override fun getUploads(doc: Document): List<String> {
-        if( doc.data.get("distributions") != null) {
+        if (doc.data.get("distributions") != null) {
             val files = doc.data.get("distributions")
                 .filter { download -> !download.get("link").get("asLink").booleanValue() }
-                .map { download -> getUploadFile(download)}
+                .map { download -> getUploadFile(download) }
 
             return files
         }
         return emptyList()
     }
 
-    private fun getUploadFile(download: JsonNode):String{
-        if(download.get("link").get("uri") !== null){
+    private fun getUploadFile(download: JsonNode): String {
+        if (download.get("link").get("uri") !== null) {
             return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8")
-        }else{
+        } else {
             return download.get("link").get("value").textValue()
         }
     }
@@ -62,7 +57,7 @@ class MCloudType : EntityType() {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = docService.convertToDocument(addressJson)
+                val addressDoc = documentService.convertToDocument(addressJson)
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }
