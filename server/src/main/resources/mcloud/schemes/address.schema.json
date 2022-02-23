@@ -106,8 +106,7 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "type": "string",
-          "format": "integer"
+          "$ref": "#/definitions/KeyValue"
         },
         "connection": {
           "type": "string"
@@ -118,6 +117,25 @@
         "type"
       ],
       "title": "Contact"
+    },
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "title": "KeyValue"
     }
   }
 }
