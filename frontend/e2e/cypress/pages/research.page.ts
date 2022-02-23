@@ -280,7 +280,7 @@ export class ResearchPage {
   }
 
   static waitForSearch() {
-    cy.get('.mat-spinner').should('exist');
+    cy.get('.mat-spinner', { timeout: 10000 }).should('exist');
     cy.get('.mat-spinner').should('not.exist');
   }
 }
