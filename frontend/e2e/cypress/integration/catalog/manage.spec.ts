@@ -51,13 +51,18 @@ describe('Catalog management', () => {
   });
 
   it('should change display of information after modifying catalog', () => {
+    const docName = 'someNewDataset' + Utils.randomString();
     ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
       // add document
-      DocumentPage.CreateFullMcloudDocumentWithAPI('someNewDataset');
+      DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
       // refresh page
       cy.reload();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
+      ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
+        'equal',
+        Utils.getFormattedDate(new Date()) + ' ' + Utils.getHourAndMinute(new Date())
+      );
     });
   });
 

@@ -33,6 +33,18 @@ export class ManageCatalogPage {
       });
   }
 
+  static getDateOfChangesInCatalog(catalogTitle: string) {
+    return cy
+      .get('.mat-card')
+      .contains('.mat-card-title', new RegExp('^' + catalogTitle + '$'))
+      .parent()
+      .find('.mat-card-subtitle')
+      .then($node => {
+        // extract part of the string that follows "Letzte Änderung am"
+        return /(?<=am\s).*$/.exec($node.text())[0].trim();
+      });
+  }
+
   static addCatalog(catalogTitle: string) {
     cy.get('.main-header button').contains('Hinzufügen').click();
     cy.get('mat-dialog-container input').type(catalogTitle);

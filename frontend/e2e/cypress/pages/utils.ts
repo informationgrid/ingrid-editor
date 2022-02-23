@@ -18,4 +18,16 @@ export class Utils {
     }
     return `${day}.${month}.${date.getFullYear()}`;
   }
+
+  static getHourAndMinute(date: Date): string {
+    let hours = date.getHours().toString();
+    let minutes = date.getMinutes().toString();
+    if (hours.length === 1) {
+      hours = '0' + hours;
+    }
+    if (minutes.length === 1) {
+      minutes = '0' + minutes;
+    }
+    return `${hours}:${minutes}`;
+  }
 }

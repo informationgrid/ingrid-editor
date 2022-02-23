@@ -435,7 +435,7 @@ describe('Research Page', () => {
     ResearchPage.setDate('endDate', '30.07.2021');
     ResearchPage.waitForSearch();
     // expect the document to be returned
-    ResearchPage.getSearchResultCount().should('equal', 2);
+    ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
   it('should do time-related search together with search for published documents (#3040)', () => {
