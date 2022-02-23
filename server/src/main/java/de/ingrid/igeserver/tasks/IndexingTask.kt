@@ -85,6 +85,7 @@ class IndexingTask @Autowired constructor(
             //   database/catalog
             //   indexingMethod: ibus or elasticsearch direct
             //   indexName
+            // TODO: get alias from profile
             val categoryAlias = "${elasticsearchAlias}_${category.value}"
 
             // TODO: support profile specific configuration which documents to be published
@@ -133,9 +134,11 @@ class IndexingTask @Autowired constructor(
                         sendNotification(category, message, index + (page * 10))
                         log.debug("export ${doc.uuid}")
                         try {
-                            exporter.run(doc)
+                            exporter.run(doc, catalogId)
                         } catch (ex: Exception) {
-                            message.errors.add("Error exporting document ${doc.uuid}: ${ex.message}")
+                            val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
+                            log.error(errorMessage, ex)
+                            message.errors.add(errorMessage)
                             sendNotification(category, message, index + (page * 10))
                             null
                         }
@@ -216,7 +219,7 @@ class IndexingTask @Autowired constructor(
         try {
             val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
 
-            val export = exporter.run(doc)
+            val export = exporter.run(doc, catalogId)
 
             log.debug("Exported document: $export")
             val indexInfo = getOrPrepareIndex(catalogId, category, format)

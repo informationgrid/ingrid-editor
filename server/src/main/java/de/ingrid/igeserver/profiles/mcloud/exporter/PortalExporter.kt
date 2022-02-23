@@ -33,7 +33,7 @@ class PortalExporter @Autowired constructor(val codelistHandler: CodelistHandler
             )
         }
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
             //.newLineTrimming(false)
@@ -44,7 +44,7 @@ class PortalExporter @Autowired constructor(val codelistHandler: CodelistHandler
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
 
         val writer: Writer = StringWriter()
-        val map = getMapFromObject(doc, doc.catalog?.identifier!!)
+        val map = getMapFromObject(doc, catalogId)
         compiledTemplate.evaluate(writer, map)
         return writer.toString()
     }

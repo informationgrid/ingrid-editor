@@ -85,7 +85,7 @@ data class MCloudModel(
                     jsonString = codeListEntry?.data.toString();
                 }
             }
-            return if (jsonString.isNullOrEmpty()) null else JSONParser().parse(jsonString)
+            return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
         }
         return null
     }
@@ -112,7 +112,15 @@ data class MCloudModel(
     }
     
     fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
-        return if (key == null) value!! else codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)!!
+        return if (key == null) value ?: "" 
+        else {
+            val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
+            if (codelistValue == null) {
+                // TODO: use logger
+                println("Codelist-Value not found for '${key}' in list '${codelistId}'")
+            }
+            codelistValue ?: ""
+        }
     }
 
     fun isValid(): Boolean {

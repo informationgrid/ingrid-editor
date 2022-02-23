@@ -37,7 +37,7 @@ class ExportApiController : ExportApi {
         val docVersion = documentService.getLatestDocument(doc, options, catalogId = catalogId)
 
         val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
-        val result = exporter.run(docVersion)
+        val result = exporter.run(docVersion, catalogId)
         val stringResult = if (result is ObjectNode) result.toPrettyString() else result as String
         return ResponseEntity.ok(stringResult)
     }

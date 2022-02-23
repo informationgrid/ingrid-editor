@@ -24,7 +24,7 @@ class IsoExport : AnnotationSpec() {
                 put("description", "This is the description of the exported document")
             }
         }
-        val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
+        val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
         assertThat(
             result, CoreMatchers.containsString(
                 "<gmd:title>" +
@@ -51,7 +51,7 @@ class IsoExport : AnnotationSpec() {
                 put("keywords", jsonNode)
             }
         }
-        val result = (exporter.run(doc) as String).replace("\n\\s+".toRegex(), "")
+        val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
         assertThat(
             result, CoreMatchers.containsString(
                 "<gmx:Anchor xlink:href=\"http://abc.de/xyz\">test-keyword 1</gmx:Anchor>"

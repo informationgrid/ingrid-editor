@@ -13,7 +13,7 @@ class IsoExporter : IgeExporter {
     override val typeInfo: ExportTypeInfo
         get() = ExportTypeInfo(DocumentCategory.DATA, "xxx", "IsoExporter", "", "text/xml", "xml", listOf())
 
-    override fun run(doc: Document): Any {
+    override fun run(doc: Document, catalogId: String): Any {
         return mapMetadata(doc)
     }
 
