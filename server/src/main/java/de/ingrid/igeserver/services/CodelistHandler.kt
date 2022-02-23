@@ -41,14 +41,32 @@ class CodelistHandler @Autowired constructor(
                     name = it.name
                     description = it.description
                     defaultEntry = it.defaultEntry
-                    entries = it.data?.map { entry -> CodeListEntry().apply {
-                        id = entry.get("id").asText()
-                        description = if (entry.get("description") == null || entry.get("description").isNull) null else entry.get("description").asText()
-                        data = if (entry.get("data") == null || entry.get("data").isNull) null else entry.get("data").asText()
-                        fields = ObjectMapper().convertValue(entry.get("localisations"), jacksonTypeRef<Map<String, String>>())
-                    } } ?: mutableListOf()
+                    entries = it.data?.map { entry ->
+                        CodeListEntry().apply {
+                            id = entry.get("id").asText()
+                            description =
+                                if (entry.get("description") == null || entry.get("description").isNull) null else entry.get(
+                                    "description"
+                                ).asText()
+                            data =
+                                if (entry.get("data") == null || entry.get("data").isNull) null else entry.get("data")
+                                    .asText()
+                            fields = ObjectMapper().convertValue(
+                                entry.get("localisations"),
+                                jacksonTypeRef<Map<String, String>>()
+                            )
+                        }
+                    } ?: mutableListOf()
                 }
             }
+    }
+
+    fun getCatalogCodelistValue(catalogId: String, codelistId: String, key: String): String? {
+        return getCatalogCodelists(catalogId)
+            .find { it.id == codelistId }
+            ?.entries
+            ?.find { it.id == key }
+            ?.fields?.get("de")
     }
 
     fun updateCodelist(catalogId: String, id: String, codelist: Codelist): Codelist? {

@@ -1,15 +1,13 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
-import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
-import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -72,6 +70,9 @@ data class MCloudModel(
         val codeListService: CodeListService? by lazy {
             SpringContext.getBean(CodeListService::class.java)
         }
+        val codelistHandler: CodelistHandler? by lazy {
+            SpringContext.getBean(CodelistHandler::class.java)
+        }
     }
     fun getLicenseData(): Any? {
         if(data.license != null) {
@@ -91,9 +92,9 @@ data class MCloudModel(
 
     val periodicity: String?
     get(){
-        val time_period = codeListService?.getCodeListValue("518", data.periodicity, "en")
+        val timePeriod = codeListService?.getCodeListValue("518", data.periodicity?.key, "en")
 
-        when(time_period){
+        when(timePeriod){
             "continual" -> return "CONT"
             "daily" -> return "DAILY"
             "weekly" -> return "WEEKLY"
@@ -108,6 +109,10 @@ data class MCloudModel(
             "unknown" -> return "UNKNOWN"
         }
         return null
+    }
+    
+    fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
+        return if (key == null) value!! else codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)!!
     }
 
     fun isValid(): Boolean {

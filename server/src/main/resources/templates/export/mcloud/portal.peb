@@ -36,10 +36,10 @@
     "distribution": [
     {% for download in model.data.distributions %}
         {
-            "format": ["{{ download.type }}"],
+            "format": ["{{ model.getCodelistValue(catalogId, "20002", download.type.key, download.type.value) }}"],
             "accessURL": "{{ download.link.value }}",
             "title": "{{ download.title }}",
-            "type": "{{ download.format }}"
+            "type": "{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"
         }{% if not loop.last %},{% endif %}
     {% endfor %}
     ],
