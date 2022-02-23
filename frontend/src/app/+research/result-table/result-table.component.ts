@@ -48,7 +48,12 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   @Output() export = new EventEmitter<string>();
 
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator, { static: false })
+  set paginator(value: MatPaginator) {
+    if (this.dataSource) {
+      this.dataSource.paginator = value;
+    }
+  }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
   displayedColumns: string[] = [];
