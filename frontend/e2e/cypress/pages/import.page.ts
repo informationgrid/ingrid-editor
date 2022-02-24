@@ -21,7 +21,9 @@ export class ImportPage {
   }
 
   static continue() {
-    cy.contains('button', 'Weiter').click({ force: true });
+    cy.contains('button:visible', 'Weiter', { timeout: 8000 }).click();
+    // wait for page animation
+    cy.wait(300);
   }
 
   static chooseImportOption(option: ImportOptions) {
