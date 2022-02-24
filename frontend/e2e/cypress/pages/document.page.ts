@@ -493,7 +493,7 @@ export class DocumentPage extends BasePage {
     cy.get('ige-address-card [svgicon="Mehr"]').click();
     cy.get('.mat-menu-content', { timeout: 10000 }).should('exist');
     cy.contains('button', 'Hinspringen', { timeout: 10000 }).click();
-    cy.get(DocumentPage.title).should('have.text', addressTitle);
+    cy.contains(DocumentPage.title, addressTitle, { timeout: 10000 });
   }
 
   static clickLeafletMapResetBtn() {
