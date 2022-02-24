@@ -756,6 +756,7 @@ describe("TreeComponent", () => {
           _state: options.state || "W",
           title: options.title || "Test Document 123",
           _hasChildren: false,
+          _pendingDate: null,
           _modified: false,
           icon: "",
         },
