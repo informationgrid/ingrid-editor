@@ -1,0 +1,10 @@
+{
+  "menu": {
+    "application": "UVP",
+    "logo": "assets/profiles/uvp/assets/icons/logo.svg"
+  },
+  "dashboard": {
+    "welcome": "Willkommen im UVP Editor",
+    "application": "UVP"
+  }
+}
