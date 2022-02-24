@@ -49,6 +49,7 @@ import { DashboardDocsHeaderComponent } from "../form-dashboard/dashboard-docs-h
 import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-address-header/dashboard-address-header.component";
 import { DelayedPublishDialogComponent } from "../dialogs/save/delayed-publish-dialog/delayed-publish-dialog.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { PublishPendingComponent } from "../form-info/publish-pending/publish-pending.component";
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     DashboardAddressHeaderComponent,
     FolderDashboardComponent,
     DelayedPublishDialogComponent,
+    PublishPendingComponent,
   ],
   imports: [
     CommonModule,
@@ -119,6 +121,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     DynamicFormComponent,
     HeaderTitleRowComponent,
     FormDashboardComponent,
+    PublishPendingComponent,
   ],
 })
 export class FormSharedModule {}

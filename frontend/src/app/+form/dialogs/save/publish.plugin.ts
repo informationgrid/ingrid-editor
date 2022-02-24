@@ -12,7 +12,7 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FormStateService } from "../../form-state.service";
 import { AbstractControl } from "@angular/forms";
-import { catchError, filter } from "rxjs/operators";
+import { catchError, filter, tap } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
 import {
@@ -221,7 +221,15 @@ export class PublishPlugin extends SaveBase {
     this.documentService
       .publish(data, this.forAddress, delay)
       .pipe(
-        catchError((error) => this.handleError(error, data, this.forAddress))
+        catchError((error) => this.handleError(error, data, this.forAddress)),
+        tap((response) => {
+          if (delay != null) {
+            this.documentService.reload$.next({
+              uuid: data._uuid,
+              forAddress: this.forAddress,
+            });
+          }
+        })
       )
       .subscribe();
   }
@@ -277,6 +285,7 @@ export class PublishPlugin extends SaveBase {
       this.formToolbarService.setButtonState(
         "toolBtnPublish",
         loadedDocument !== null &&
+          loadedDocument._pendingDate == null &&
           loadedDocument._type !== "FOLDER" &&
           loadedDocument.hasWritePermission
       );

@@ -1,0 +1,17 @@
+<div *ngIf="doc._pendingDate" class="publish-pending-info">
+    <div>
+        Dieser Datensatz wird am
+        {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
+    </div>
+    <div>
+        <button
+            *ngIf="doc.hasWritePermission"
+            mat-button
+            color="primary"
+            class="mat-stroked-button"
+            (click)="stopPublish()"
+        >
+            Veröffentlichung abbrechen und Datensatz bearbeiten
+        </button>
+    </div>
+</div>

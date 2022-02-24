@@ -49,6 +49,7 @@ interface DatasetsApi {
         @Parameter(description = "If we want to delay the publification set this date.") @RequestParam(value = "publishDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
         @Parameter(description = "If we want to unpublish a document then this parameter has to be set to true.") @RequestParam(value = "unpublish", required = false) unpublish: Boolean,
+        @Parameter(description = "If we want to cancel the delayed publishing of a document then this parameter has to be set to true.") @RequestParam(value = "cancelPendingPublishing", required = false) cancelPendingPublishing: Boolean,
         @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(value = "revert", required = false) revert: Boolean): ResponseEntity<JsonNode>
 
     @Operation(description = "Copy a dataset or tree under another dataset")
@@ -88,13 +89,7 @@ interface DatasetsApi {
     fun getByUUID(
             principal: Principal,
             @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
-            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>@Operation(description = "Retrieve a dataset by a given UUID.")
-
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @RequestMapping(value = ["/datasetsByUuid/{uuid}/cancelPendingPublishing"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
-    fun cancelPendingPublishing(
-            principal: Principal,
-            @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String): ResponseEntity<Unit>
+            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])

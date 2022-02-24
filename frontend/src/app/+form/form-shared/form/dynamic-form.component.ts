@@ -273,7 +273,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
-        tap((doc) => (this.readonly = !doc.hasWritePermission)),
+        tap(
+          (doc) =>
+            (this.readonly =
+              !doc.hasWritePermission || doc._pendingDate != null)
+        ),
         tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
       .subscribe(
@@ -355,7 +359,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.model = { ...data };
-      this.initializeForm(data.hasWritePermission);
+      this.initializeForm(data.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);

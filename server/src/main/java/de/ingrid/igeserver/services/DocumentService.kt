@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
@@ -585,6 +584,23 @@ class DocumentService @Autowired constructor(
         postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
 
         return postUnpublishPayload.document
+    }
+
+    fun cancelPendingPublishing(principal: Principal, catalogId: String, id: Int): Document {
+        // remove pending
+        val wrapper = getWrapperByDocumentId(id)
+        assert(wrapper.pending != null)
+
+        // if no draft version exists, move pending version to draft
+        if (wrapper.draft == null) {
+            wrapper.draft = wrapper.pending
+        }
+
+        wrapper.pending = null
+        wrapper.pending_date = null
+        docWrapperRepo.save(wrapper)
+
+        return getLatestDocument(wrapper, catalogId = catalogId)
     }
 
     private fun removeFromIndex(id: String) {

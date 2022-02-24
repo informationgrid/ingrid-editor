@@ -64,6 +64,7 @@ class DatasetsApiController @Autowired constructor(
         publishDate: Date?,
         publish: Boolean,
         unpublish: Boolean,
+        cancelPendingPublishing: Boolean,
         revert: Boolean
     ): ResponseEntity<JsonNode> {
 
@@ -72,6 +73,8 @@ class DatasetsApiController @Autowired constructor(
             documentService.revertDocument(principal, catalogId, id)
         } else if (unpublish) {
             documentService.unpublishDocument(principal, catalogId, id)
+        } else if (cancelPendingPublishing) {
+            documentService.cancelPendingPublishing(principal, catalogId, id)
         } else {
             val doc = documentService.convertToDocument(data)
             documentService.updateDocument(principal, catalogId, id, doc, publish, publishDate)
@@ -356,17 +359,6 @@ class DatasetsApiController @Autowired constructor(
             .map { doc -> documentService.getLatestDocument(doc, resolveLinks = false) }
             .map { doc -> documentService.convertToJsonNode(doc) }
         return ResponseEntity.ok(searchResult)
-    }
-
-   override fun cancelPendingPublishing(
-        principal: Principal,
-        uuid: String
-    ): ResponseEntity<Unit> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        //TODO
-        documentService.unpublishDocument(principal, catalogId, wrapper.id!!)
-        return ResponseEntity.ok(Unit)
     }
 
     override fun getByUUID(

@@ -68,7 +68,9 @@ export class SavePlugin extends SaveBase {
       (openedDoc) => {
         this.formToolbarService.setButtonState(
           "toolBtnSave",
-          openedDoc !== null && openedDoc.hasWritePermission
+          openedDoc !== null &&
+            openedDoc._pendingDate == null &&
+            openedDoc.hasWritePermission
         );
 
         // do not allow to modify form if multiple nodes have been selected in tree

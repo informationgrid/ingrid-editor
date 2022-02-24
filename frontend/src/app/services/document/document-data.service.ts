@@ -74,6 +74,16 @@ export class DocumentDataService {
     );
   }
 
+  cancelPendingPublishing(id: string): Observable<any> {
+    return this.http.put(
+      this.configuration.backendUrl +
+        "datasets/" +
+        id +
+        "?cancelPendingPublishing=true",
+      {}
+    );
+  }
+
   delete(ids: string[]): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }

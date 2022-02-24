@@ -231,15 +231,16 @@ export class DocumentService {
     data: IgeDocument,
     isAddress: boolean,
     publishDate: Date = null
-  ): Observable<void> {
+  ): Observable<any> {
     this.preSaveActions(data, isAddress);
 
     return this.dataService.publish(data, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
       filter((response) => response),
-      tap(() =>
-        this.messageService.sendInfo("Das Dokument wurde veröffentlicht.")
-      ),
+      tap(() => {
+        if (!publishDate)
+          this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
+      }),
       tap((json) => this.postSaveActions(json, false, null, isAddress)),
       finalize(() => this.documentOperationFinished$.next(true))
     );
@@ -270,6 +271,36 @@ export class DocumentService {
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
+        )
+      )
+    );
+  }
+
+  cancelPendingPublishing(id: string, forAddress: boolean): Observable<any> {
+    const store = forAddress ? this.addressTreeStore : this.treeStore;
+    return this.dataService.cancelPendingPublishing(id).pipe(
+      catchError((error) => {
+        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
+          console.error(error?.error?.errorText);
+          this.messageService.sendError(
+            "Problem beim Abbrechen der geplanten Veröffentlichung: " +
+              error?.error?.errorText
+          );
+          return this.load(id);
+        }
+      }),
+      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      tap((json) =>
+        store.update({
+          datasetsChanged: { type: UpdateType.Update, data: json },
+        })
+      ),
+      tap((doc) =>
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
+      ),
+      tap(() =>
+        this.messageService.sendInfo(
+          "Die geplante Veröffentlichung wurde abgebrochen."
         )
       )
     );
@@ -557,6 +588,7 @@ export class DocumentService {
         _parent: parentId ? parentId.toString() : null,
         _type: doc._type,
         _modified: doc._modified,
+        _pendingDate: doc._pendingDate,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
