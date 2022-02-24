@@ -9,7 +9,6 @@ import de.ingrid.igeserver.model.User
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.keycloak.KeycloakPrincipal
-import org.keycloak.OAuth2Constants
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
@@ -27,11 +26,12 @@ import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.io.Closeable
+import java.net.URL
 import java.security.Principal
 import java.util.*
+import javax.annotation.PostConstruct
 import javax.ws.rs.ClientErrorException
 import javax.ws.rs.core.Response
-import kotlin.NoSuchElementException
 
 
 @Service
@@ -65,6 +65,24 @@ class KeycloakService : UserManagementService {
 
     @Value("\${keycloak.resource}")
     private val keycloakClientId: String? = null
+
+    @Value("\${keycloak.proxy-url:#{null}}")
+    private val keycloakProxyUrl: String? = null
+
+    private var proxyHost = "localhost"
+
+    private var proxyPort = 80
+
+    @PostConstruct
+    fun init() {
+        if (keycloakProxyUrl != null) {
+            log.info("Keycloak proxy: $keycloakProxyUrl")
+            with(URL(keycloakProxyUrl)) {
+                proxyHost = host
+                proxyPort = port
+            }
+        }
+    }
 
     override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         try {
@@ -115,13 +133,10 @@ class KeycloakService : UserManagementService {
 
         client = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)
-                // secret not needed for bearer only
-            // .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            // .clientSecret(keycloakSecret)
             .realm(keycloakRealm)
             .clientId(keycloakClientId)
             .authorization(tokenString)
-            .resteasyClient(ResteasyClientBuilder().connectionPoolSize(10).build())
+            .resteasyClient(ResteasyClientBuilder().defaultProxy(proxyHost, proxyPort).connectionPoolSize(10).build())
             .build()
 
         return KeycloakCloseableClient(client, keycloakRealm)
