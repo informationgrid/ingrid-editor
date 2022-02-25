@@ -9,9 +9,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
-import java.io.BufferedInputStream
-import java.io.BufferedReader
-import java.util.stream.Collectors
 
 @Component
 class JsonSchemaValidator @Autowired constructor(
@@ -34,16 +31,14 @@ class JsonSchemaValidator @Autowired constructor(
     }
 
     fun validate(schemaFile: String, json: String) {
-        val resourceUri = JsonSchemaValidator::class.java.getResource(schemaFile)?.toURI()
+        val resource = JsonSchemaValidator::class.java.getResource(schemaFile)
 
-        if (resourceUri == null) {
+        if (resource == null) {
             log.error("JSON-Schema not found: $schemaFile")
             return
         }
 
-        val schemaInputStream: BufferedInputStream = JsonSchemaValidator::class.java.getResource(schemaFile)?.content as BufferedInputStream
-        val reader = schemaInputStream.reader()
-        val schemaContent = reader?.readLines().stream().collect(Collectors.joining("\n"))
+        val schemaContent = resource.readText()
 
         val schema = JSONSchema.parse(schemaContent)
         val output = schema.validateBasic(json)
