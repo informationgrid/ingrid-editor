@@ -23,10 +23,11 @@
     [aria-labelledby]="_getAriaLabelledby()"
     [disableOptionCentering]="to.disableOptionCentering"
 >
-    <ngx-mat-select-search
-        *ngIf="to.showSearch"
-        [formControl]="filterCtrl"
-    ></ngx-mat-select-search>
+    <mat-option *ngIf="to.showSearch">
+        <ngx-mat-select-search
+            [formControl]="filterCtrl"
+        ></ngx-mat-select-search>
+    </mat-option>
     <ng-container *ngIf="selectOptions">
         <ng-container
             *ngIf="to.multiple && to.selectAllOption"
