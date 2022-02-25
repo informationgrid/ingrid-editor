@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.migrations.tasks
 
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -37,7 +38,7 @@ class M038_UpdateMcloudCodelists : MigrationBase("0.38") {
                         log.info("Update Catalog: " + catalog.name)
                         catalogService.initializeCodelists(catalog.identifier, catalog.type)
                     }
-            } catch (e: NullPointerException) {
+            } catch (e: NotFoundException) {
                 log.debug("Cannot update mcloud codelists, since mcloud profile is not activated")
             }
         }
