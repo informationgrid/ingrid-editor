@@ -35,8 +35,11 @@ export class NegativePreliminaryExaminationDoctype extends UvpShared {
         this.addSpatial("spatial", null, {
           required: true,
         }),
-        this.addRepeatChip("eiaNumber", "UVP-Nummer", {
+        this.addSelect("eiaNumber", "UVP-Nummer", {
           required: true,
+          showSearch: true,
+          options: this.getCodelistForSelect(9000, "eiaNumber"),
+          codelistId: 9000,
         }),
         this.addDatepicker("decisionDate", "Datum der Entscheidung", {
           required: true,

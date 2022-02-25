@@ -68,6 +68,7 @@ import {
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
 import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.component";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -181,6 +182,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UploadModule,
     SharedPipesModule,
     FormlySelectModule,
+    NgxMatSelectSearchModule,
   ],
   providers: [
     {

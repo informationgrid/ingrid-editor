@@ -23,6 +23,10 @@
     [aria-labelledby]="_getAriaLabelledby()"
     [disableOptionCentering]="to.disableOptionCentering"
 >
+    <ngx-mat-select-search
+        *ngIf="to.showSearch"
+        [formControl]="filterCtrl"
+    ></ngx-mat-select-search>
     <ng-container *ngIf="selectOptions">
         <ng-container
             *ngIf="to.multiple && to.selectAllOption"
@@ -30,22 +34,11 @@
             [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
         >
         </ng-container>
-        <ng-container *ngFor="let item of selectOptions">
-            <mat-optgroup *ngIf="item.group" [label]="item.label">
-                <mat-option
-                    *ngFor="let child of item.group"
-                    [value]="child.value"
-                    [disabled]="child.disabled"
-                >
-                    {{ child.label }}
-                </mat-option>
-            </mat-optgroup>
-            <mat-option
-                *ngIf="!item.group"
-                [value]="item.value"
-                [disabled]="item.disabled"
-                >{{ item.label }}</mat-option
-            >
+        <mat-option *ngIf="to.allowNoValue">- Keine -</mat-option>
+        <ng-container *ngFor="let item of filteredOptions">
+            <mat-option [value]="item.value" [disabled]="item.disabled">{{
+                item.label
+            }}</mat-option>
         </ng-container>
     </ng-container>
 </mat-select>

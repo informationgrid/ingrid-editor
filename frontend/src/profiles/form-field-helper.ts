@@ -114,6 +114,8 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
         options: options?.options,
+        showSearch: options?.showSearch,
+        allowNoValue: options?.allowNoValue,
       },
     };
   }

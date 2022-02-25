@@ -53,6 +53,7 @@
     "mat-table-exporter": "^10.2.4",
     "material-components-web": "14.0.0-canary.7d8ea4624.0",
     "material-design-icons-iconfont": "^6.1.1",
+    "ngx-mat-select-search": "^4.0.2",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.5.4",
     "tslib": "^2.3.0",

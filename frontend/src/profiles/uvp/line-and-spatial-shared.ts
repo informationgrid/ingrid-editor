@@ -19,8 +19,11 @@ export class LineAndSpatialShared extends UvpShared {
         this.addDatepicker("receiptDate", "Eingang des Antrags", {
           required: true,
         }),
-        this.addRepeatChip("eiaNumber", "UVP-Nummer", {
+        this.addSelect("eiaNumber", "UVP-Nummer", {
           required: true,
+          showSearch: true,
+          options: this.getCodelistForSelect(9000, "eiaNumber"),
+          codelistId: 9000,
         }),
         {
           key: "processingSteps",

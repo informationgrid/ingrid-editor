@@ -11,6 +11,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatPseudoCheckboxState } from "@angular/material/core";
 import { filter, take, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 
 @UntilDestroy()
 @Component({
@@ -21,6 +22,8 @@ import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 })
 export class SelectTypeComponent extends FieldType implements OnInit {
   @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
+
+  public filterCtrl = new FormControl();
 
   defaultOptions = {
     templateOptions: {
@@ -34,16 +37,23 @@ export class SelectTypeComponent extends FieldType implements OnInit {
   selectControl = new FormControl();
 
   private selectAllValue!: { options: any; value: any[] };
-  selectOptions: any[];
+  selectOptions: SelectOptionUi[];
+  filteredOptions: SelectOptionUi[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
   ngOnInit() {
     super.ngOnInit();
 
+    this.filterCtrl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value) => {
+        this.filteredOptions = this.search(value);
+      });
+
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
         untilDestroyed(this),
-        filter(([value, ready]) => ready),
+        filter(([, ready]) => ready),
         tap(([value]) => this.updateSelectField(value))
       )
       .subscribe();
@@ -58,6 +68,7 @@ export class SelectTypeComponent extends FieldType implements OnInit {
         filter((data) => data !== undefined && data.length > 0),
         take(1),
         tap((data) => (this.selectOptions = data)),
+        tap((data) => (this.filteredOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
         tap(() => this.updateSelectField(this.formControl.value))
       )
@@ -141,5 +152,12 @@ export class SelectTypeComponent extends FieldType implements OnInit {
     }
 
     return this.selectAllValue.value;
+  }
+
+  search(value: string) {
+    let filter = value.toLowerCase();
+    return this.selectOptions.filter(
+      (option) => option.label.toLowerCase().indexOf(filter) !== -1
+    );
   }
 }
