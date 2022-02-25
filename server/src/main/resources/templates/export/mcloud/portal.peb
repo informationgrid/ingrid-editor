@@ -1,4 +1,5 @@
 {# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
+{# @pebvariable name="catalogId" type="String" #}
 
 {
     "uuid": "{{ model.uuid }}",
@@ -37,7 +38,11 @@
     {% for download in model.data.distributions %}
         {
             "format": ["{{ model.getCodelistValue(catalogId, "20002", download.type.key, download.type.value) }}"],
-            "accessURL": "{{ download.link.value }}",
+            {% if download.link.asLink %}
+                "accessURL": "{{ download.link.value }}",
+            {% else %}
+                "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.value }}",
+            {% endif %}
             "title": "{{ download.title }}",
             "type": "{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"
         }{% if not loop.last %},{% endif %}
