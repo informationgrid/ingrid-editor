@@ -88,8 +88,7 @@ class CatalogService @Autowired constructor(
     }
 
     fun getCatalogProfile(id: String): CatalogProfile {
-        return this.catalogProfiles
-            .find { it.identifier == id }!!
+        return catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
     }
 
     fun initializeCatalog(catalogId: String, type: String) {

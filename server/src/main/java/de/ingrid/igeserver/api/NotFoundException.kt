@@ -20,6 +20,9 @@ open class NotFoundException: ClientException {
         private const val ERROR_CODE_MISSING_PUBLISHED_VERSION = "PUBLISHED_VERSION_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_PUBLISHED_VERSION = "Published version of document '\${resourceId}' is missing."
 
+        private const val ERROR_CODE_MISSING_PROFILE = "PROFILE_NOT_FOUND"
+        private const val ERROR_TEXT_MISSING_PROFILE = "Profile with ID '\${id}' was not found. Has the profile been activated?"
+        
         /**
          * Factory method for missing resource
          */
@@ -42,6 +45,14 @@ open class NotFoundException: ClientException {
         fun withMissingPublishedVersion(resourceId: String, cause: Throwable? = null) : NotFoundException {
             return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_PUBLISHED_VERSION, ERROR_TEXT_MISSING_PUBLISHED_VERSION,
                     mapOf("resourceId" to resourceId), cause)
+        }
+
+        /**
+         * Factory method for missing published version of a document
+         */
+        fun withMissingProfile(profileId: String, cause: Throwable? = null) : NotFoundException {
+            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_PROFILE, ERROR_TEXT_MISSING_PROFILE,
+                    mapOf("id" to profileId), cause)
         }
     }
 }

@@ -1,7 +1,7 @@
 import { Configuration, UserInfo } from "./config.service";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 
@@ -54,7 +54,18 @@ export class ConfigDataService {
               "Sie sind kein IGE-Nutzer. Bitte wenden Sie sich an einen Administrator."
             );
           } else {
-            throw new Error((<IgeException>e).errorText);
+            if (e instanceof HttpErrorResponse) {
+              const error = <IgeException>e.error;
+              if (error.errorCode === "PROFILE_NOT_FOUND") {
+                throw new Error(
+                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`
+                );
+              } else {
+                throw new Error(error.errorText);
+              }
+            } else {
+              throw new Error((<IgeException>e).errorText);
+            }
           }
           return ConfigDataService.mapUserInformation({});
         })
