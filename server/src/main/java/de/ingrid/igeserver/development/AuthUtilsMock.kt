@@ -20,7 +20,7 @@ class AuthUtilsMock : AuthUtils {
     }
 
     override fun getFullNameFromPrincipal(principal: Principal): String {
-        return config.firstName?.get(config.currentUser) + config.lastName?.get(config.currentUser)
+        return "${config.firstName?.get(config.currentUser)} ${config.lastName?.get(config.currentUser)}"
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
