@@ -117,13 +117,20 @@ export class LeafletTypeComponent
       this.drawnSpatialRefs
     );
 
-    if (this.locations.length === 0) {
+    const hasCoordinates = this.locations.some(
+      (location) => location.type !== "geo-name"
+    );
+
+    if (this.locations.length === 0 || !hasCoordinates) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
-    } else {
-      const locationsWithColor = this.extendLocationsWithColor(this.locations);
-      this.updateLocations(locationsWithColor);
+    }
+
+    const locationsWithColor = this.extendLocationsWithColor(this.locations);
+    this.updateLocations(locationsWithColor);
+
+    if (hasCoordinates) {
       this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(
         this.leafletReference,
         locationsWithColor
