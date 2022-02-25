@@ -18,7 +18,7 @@ export class UvpShared extends BaseDoctype {
 
   protected columnsForDocumentTable = [
     {
-      key: "label",
+      key: "title",
       type: "input",
       label: "Titel",
       width: "300px",
@@ -28,7 +28,7 @@ export class UvpShared extends BaseDoctype {
       },
     },
     {
-      key: "link",
+      key: "downloadURL",
       type: "upload",
       label: "Link",
       templateOptions: {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FieldArrayType } from "@ngx-formly/core";
+import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -25,21 +25,19 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
-        tap((a) => console.log(a)),
-        map((values) =>
-          values
-            .map((value) =>
-              this.field.fieldArray.fieldGroup.find(
-                (item) => item.name === value.type
-              )
-            )
-            .map((value) => value?.templateOptions?.label)
+        map((values) => this.getLabelFromSections(values))
+      )
+      .subscribe((value) => this.formService.setAdditionalSections(value));
+  }
+
+  private getLabelFromSections(values: FormlyFieldConfig[]) {
+    return values
+      .map((value) =>
+        this.field.fieldArray.fieldGroup.find(
+          (item) => item.name === value.type
         )
       )
-      .subscribe((value) => {
-        console.log(value);
-        this.formService.setAdditionalSections(value);
-      });
+      .map((value) => value?.templateOptions?.label);
   }
 
   removeSection(index: number) {

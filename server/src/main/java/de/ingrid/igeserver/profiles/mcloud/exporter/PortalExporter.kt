@@ -2,14 +2,11 @@ package de.ingrid.igeserver.profiles.mcloud.exporter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
-import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
-import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -18,7 +15,7 @@ import java.io.Writer
 
 @Service
 @Profile("mcloud")
-class PortalExporter @Autowired constructor(val codelistHandler: CodelistHandler) : IgeExporter {
+class PortalExporter : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() {
@@ -60,9 +57,5 @@ class PortalExporter @Autowired constructor(val codelistHandler: CodelistHandler
             "catalogId" to catalogId
         )
 
-    }
-
-    private fun getCodelists(catalogId: String): List<CodeList> {
-        return codelistHandler.getCatalogCodelists(catalogId) + codelistHandler.allCodelists
     }
 }
