@@ -9,32 +9,15 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class McloudAddressType : EntityType() {
-
-    @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
+class McloudAddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override val jsonSchema = "/mcloud/schemes/address.schema.json"
 
-    companion object {
-        @JvmStatic
-        protected val CATEGORY = DocumentCategory.ADDRESS
+    override val category = DocumentCategory.ADDRESS.value
 
-        @JvmStatic
-        protected val TYPE = "McloudAddressDoc"
+    override val profiles = arrayOf("mcloud")
 
-        @JvmStatic
-        protected val PROFILES = arrayOf("mcloud")
-    }
-
-    override val category: String
-        get() = CATEGORY.value
-
-    override val profiles: Array<String>
-        get() = PROFILES
-
-    override val className: String
-        get() = TYPE
+    override val className = "McloudAddressDoc"
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)

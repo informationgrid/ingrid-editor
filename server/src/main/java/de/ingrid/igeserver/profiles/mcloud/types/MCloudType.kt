@@ -14,7 +14,7 @@ import java.net.URLDecoder
 @Component
 class MCloudType : EntityType() {
     override val className = "mCloudDoc"
-    override val profiles = listOf("mcloud").toTypedArray()
+    override val profiles = arrayOf("mcloud")
 
     val log = logger()
 
