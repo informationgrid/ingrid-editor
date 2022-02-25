@@ -6,6 +6,7 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -18,7 +19,8 @@ import org.springframework.stereotype.Component
 @Component
 class DefaultDocumentUpdater @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
-    val catalogRepo: CatalogRepository
+    val catalogRepo: CatalogRepository,
+    var authUtils: AuthUtils
 ) : Filter<PreUpdatePayload> {
 
     val log = logger()
@@ -43,21 +45,34 @@ class DefaultDocumentUpdater @Autowired constructor(
             }
         }
 
-        // remove parent from document (only store parent in wrapper)
-        payload.document.data.remove(FIELD_PARENT)
+        // save document with same ID or new one, if no draft version exists (because the last version is published)
+        // this can happen when moving a published document
+        val draftId = payload.wrapper.draft?.id
+        val createdDate = payload.wrapper.draft?.created ?: payload.wrapper.published?.created
+        val createdBy = payload.wrapper.draft?.createdby ?: payload.wrapper.published?.createdby
 
-        // set catalog information
-        // TODO: a document does not really need this information since the document wrapper takes care of it
-        payload.document.catalog = catalogRepo.findByIdentifier(context.catalogId)
-
-        // update modified date -> already done in entity!
-        // payload.document.modified = dateService.now()
-
-        // handle linked docs
-        payload.type.pullReferences(payload.document)
-
-        // call entity type specific hook
-        payload.type.onUpdate(payload.document)
+        with(payload.document) {
+            // remove parent from document (only store parent in wrapper)
+            data.remove(FIELD_PARENT)
+            
+            // set catalog information
+            // TODO: a document does not really need this information since the document wrapper takes care of it
+            catalog = catalogRepo.findByIdentifier(context.catalogId)
+    
+            // set name of user who modifies document
+            modifiedby = authUtils.getFullNameFromPrincipal(context.principal!!)
+        
+            // set server side fields from previous document version
+            id = id ?: draftId
+            created = createdDate
+            createdby = createdBy
+            
+            // handle linked docs
+            payload.type.pullReferences(this)
+    
+            // call entity type specific hook
+            payload.type.onUpdate(this)
+        }
 
         return payload
     }

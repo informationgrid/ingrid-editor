@@ -9,6 +9,7 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.FIELD_HAS_CHILDREN
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
@@ -21,7 +22,8 @@ import java.util.*
 class DefaultDocumentInitializer @Autowired constructor(
     val dateService: DateService,
     val docWrapperRepo: DocumentWrapperRepository,
-    val catalogRepo: CatalogRepository
+    val catalogRepo: CatalogRepository,
+    var authUtils: AuthUtils
 ) : Filter<PreCreatePayload> {
 
     override val profiles = arrayOf<String>()
@@ -47,12 +49,15 @@ class DefaultDocumentInitializer @Autowired constructor(
 
     protected fun initializeDocument(payload: PreCreatePayload, context: Context, catalogRef: Catalog) {
         val now = dateService.now()
+        val fullName = authUtils.getFullNameFromPrincipal(context.principal!!)
 
         with(payload.document) {
             catalog = catalogRef
             data.put(FIELD_HAS_CHILDREN, false)
             created = now
             modified = now
+            createdby= fullName
+            modifiedby = fullName
         }
     }
 

@@ -19,6 +19,10 @@ class AuthUtilsMock : AuthUtils {
         return config.logins?.get(config.currentUser) ?: "unknown"
     }
 
+    override fun getFullNameFromPrincipal(principal: Principal): String {
+        return config.firstName?.get(config.currentUser) + config.lastName?.get(config.currentUser)
+    }
+
     override fun containsRole(principal: Principal, role: String): Boolean {
         principal as Authentication
         return principal.authorities.any { it.authority == role }

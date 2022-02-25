@@ -1,7 +1,10 @@
 package de.ingrid.igeserver.utils
 
+import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.KeycloakPrincipal
+import org.keycloak.adapters.RefreshableKeycloakSecurityContext
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
+import org.keycloak.representations.AccessToken
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -12,13 +15,24 @@ import java.security.Principal
 @Profile("!dev")
 class KeycloakAuthUtils : AuthUtils {
 
+    val log = logger()
+
     override fun getUsernameFromPrincipal(principal: Principal): String {
 
         return if (principal is KeycloakAuthenticationToken) {
-//            principal.account.principal.name
             principal.account.keycloakSecurityContext.token.preferredUsername
         } else {
             (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
+        }
+    }
+
+    override fun getFullNameFromPrincipal(principal: Principal): String {
+        return try {
+            ((((principal as KeycloakAuthenticationToken).principal as KeycloakPrincipal<*>)
+                .keycloakSecurityContext as RefreshableKeycloakSecurityContext).token as AccessToken).name
+        } catch (ex: Exception) {
+            log.warn("Full name could not be extracted from principal")
+            return getUsernameFromPrincipal(principal)
         }
     }
 

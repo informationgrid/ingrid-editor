@@ -28,8 +28,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.repository.UserRepository
-import de.ingrid.igeserver.utils.AuthUtils
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -43,23 +41,20 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
-import javax.persistence.EntityManager
 import java.time.ZoneOffset
 import java.util.*
+import javax.persistence.EntityManager
 import javax.persistence.criteria.*
-import kotlin.NoSuchElementException
 
 @Service
 class DocumentService @Autowired constructor(
     var docRepo: DocumentRepository,
-    var userRepo: UserRepository,
     var docWrapperRepo: DocumentWrapperRepository,
     var catalogRepo: CatalogRepository,
     var aclService: IgeAclService,
     var groupService: GroupService,
     var dateService: DateService,
-    var generalProperties: GeneralProperties,
-    var authUtils: AuthUtils,
+    var generalProperties: GeneralProperties
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -238,13 +233,12 @@ class DocumentService @Autowired constructor(
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, null)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
 
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
-        document.createdby = authUtils.getUsernameFromPrincipal(principal)
 
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
@@ -375,22 +369,7 @@ class DocumentService @Autowired constructor(
             val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
-
-        // save document with same ID or new one, if no draft version exists (because the last version is published)
-        val draftId = preUpdatePayload.wrapper.draft?.id
-        val createdDate = preUpdatePayload.wrapper.draft?.created ?: preUpdatePayload.wrapper.published?.created
-        val createdBy = preUpdatePayload.wrapper.draft?.createdby ?: preUpdatePayload.wrapper.published?.createdby
-
-        // set server side fields from previous document version
-        preUpdatePayload.document.id = preUpdatePayload.document.id ?: draftId
-        preUpdatePayload.document.created = createdDate
-        preUpdatePayload.document.createdby = createdBy
-
-        if (principal != null) {
-            preUpdatePayload.document.modifiedby = authUtils.getUsernameFromPrincipal(principal)
-        }
-
-
+        
         try {
             preUpdatePayload.document.wrapperId = wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
@@ -482,7 +461,7 @@ class DocumentService @Autowired constructor(
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
         val data = getLatestDocumentVersion(wrapper, false)
-        val docTypeName = data.type!!
+        val docTypeName = data.type
         val docType = getDocumentType(docTypeName)
 
         val preDeletePayload = PreDeletePayload(docType, data, wrapper)
