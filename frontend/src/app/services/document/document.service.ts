@@ -104,7 +104,10 @@ export class DocumentService {
 
   findRecentAddresses(): void {
     this.researchService
-      .search("", { type: "selectAddresses" }, null, "modified", "DESC")
+      .search("", { type: "selectAddresses" }, null, "modified", "DESC", {
+        page: 1,
+        pageSize: 10,
+      })
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits }))
