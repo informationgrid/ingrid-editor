@@ -120,7 +120,6 @@ describe('Catalog management', () => {
     // check if search only gets documents from the correct catalog
     Menu.switchTo('RESEARCH');
     ResearchPage.search('a');
-    ResearchPage.waitForSearch();
     ResearchPage.checkNoSearchResults();
 
     cy.get('[data-cy=header-info-button]').click();
@@ -133,7 +132,6 @@ describe('Catalog management', () => {
 
     Menu.switchTo('RESEARCH');
     ResearchPage.search('a');
-    ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
   });
 
