@@ -9,6 +9,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
+import java.io.File
 
 @Component
 class JsonSchemaValidator @Autowired constructor(
@@ -38,7 +39,7 @@ class JsonSchemaValidator @Autowired constructor(
             return
         }
 
-        val schema = JSONSchema.parseFile(resourceUri.path)
+        val schema = JSONSchema.parse(File(resourceUri))
         val output = schema.validateBasic(json)
         log.debug("Document valid: ${output.valid}")
         output.errors?.forEach {
