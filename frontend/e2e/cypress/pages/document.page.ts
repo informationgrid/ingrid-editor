@@ -102,7 +102,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(title: string, published = false, parentNode = 1) {
+  static CreateFullMcloudDocumentWithAPI(title: string, published = false, parentNode: any = 1) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
@@ -152,6 +152,34 @@ export class DocumentPage extends BasePage {
         }
       },
       periodicity: { key: '8' }
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=${published}`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
+  static CreateSimpleMcloudDocumentWithAPI(title: string, published = false, parentNode: any = 1) {
+    const json = {
+      _hasChildren: false,
+      _parent: parentNode,
+      _type: 'mCloudDoc',
+      title: title,
+      _state: 'W',
+      _version: 1,
+      addresses: [],
+      mCloudCategories: [],
+      DCATThemes: [],
+      distributions: [],
+      spatial: [],
+      events: []
     };
 
     cy.get('@tokens').then((tokens: any) => {

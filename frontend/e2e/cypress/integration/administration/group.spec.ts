@@ -3,11 +3,13 @@ import { AdminGroupPage, headerKeys } from '../../pages/administration-group.pag
 import { AdminUserPage } from '../../pages/administration-user.page';
 import { ResearchPage } from '../../pages/research.page';
 import { Utils } from '../../pages/utils';
+import { DocumentPage } from '../../pages/document.page';
+import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 
 describe('Group', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('user').as('tokens');
     AdminUserPage.visit();
 
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
@@ -249,4 +251,68 @@ describe('Group', () => {
   });
 
   xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
+
+  it('if metadata admin gets full access to document, he can immediately grant the same level of access himself (#3460)', () => {
+    const documentName = 'exclusive_document';
+    const group1 = 'gruppe_mit_ortsrechten'; // assigned group
+    const group2 = 'gruppe_nur_Adressen'; // for admin visible group
+
+    DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
+    // add read access to document of an assigned group of meta data admin
+    AdminGroupPage.selectGroup(group1);
+    AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
+    AdminGroupPage.saveGroup();
+    // add read access for document to one of meta admin's groups (= those visible to him)
+    AdminGroupPage.selectGroup(group2);
+    AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
+    AdminGroupPage.saveGroup();
+    // make sure it's not possible for meta data admin to assign full access to document
+    cy.kcLogout();
+    cy.kcLogin('meta2');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(group2);
+    // check that access right cannot be changed
+    cy.get('[label="Berechtigungen Daten"]')
+      .contains(documentName)
+      .parent()
+      .parent()
+      .within(() => {
+        cy.get('[mattooltip="Schreibrecht"]').should('not.exist');
+      });
+    // change access right in meta data admin's assigned group
+    cy.kcLogout();
+    cy.kcLogin('user');
+    AdminUserPage.visit();
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(group1);
+    UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
+    AdminGroupPage.saveGroup();
+    // make sure access right can now be changed by meta data admin
+    cy.kcLogout();
+    cy.kcLogin('meta2');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(group2);
+    UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
+  });
+
+  it('when document is added to a meta data admins group without him having access to it, he can no longer see this group', () => {
+    const groupName = 'leere_Gruppe';
+    const documentName = 'inaccessible_document';
+
+    DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
+    // add document to empty group that belongs to metadata admin
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
+    AdminGroupPage.saveGroup();
+    // make sure meta data admin does not see group
+    cy.kcLogout();
+    cy.kcLogin('meta2');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    cy.contains('groups-table tr', groupName).should('not.exist');
+  });
 });
