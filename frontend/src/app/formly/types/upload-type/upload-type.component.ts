@@ -43,10 +43,7 @@ export class UploadTypeComponent extends FieldType implements OnInit {
     this.upload =
       this.mapStringValue(this.formControl.value) || this.defaultValue;
 
-    this.control = new FormControl(
-      { value: this.upload.value, disabled: !this.upload.asLink },
-      Validators.pattern(this.URL_REGEXP)
-    );
+    this.setControl();
 
     this.formControl.valueChanges
       .pipe(
@@ -55,6 +52,18 @@ export class UploadTypeComponent extends FieldType implements OnInit {
         map((value) => this.mapStringValue(value))
       )
       .subscribe((value) => (this.upload = value || this.defaultValue));
+  }
+
+  private setControl() {
+    const validators = [Validators.pattern(this.URL_REGEXP)];
+    if (this.to.required) {
+      validators.push(Validators.required);
+    }
+
+    this.control = new FormControl(
+      { value: this.upload.value, disabled: !this.upload.asLink },
+      validators
+    );
   }
 
   private mapStringValue(value: any): LinkType {

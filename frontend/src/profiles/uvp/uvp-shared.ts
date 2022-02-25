@@ -35,7 +35,6 @@ export class UvpShared extends BaseDoctype {
         label: "Link",
         appearance: "outline",
         required: true,
-
         onClick: (docUuid, uri, $event) => {
           this.uploadService.downloadFile(docUuid, uri, $event);
         },
@@ -45,7 +44,7 @@ export class UvpShared extends BaseDoctype {
           } else {
             return `<a href="${
               this.configService.getConfiguration().backendUrl
-            }upload/${form.get("_uuid").value}/${
+            }upload/${form.parent.parent.get("_uuid").value}/${
               link.uri
             }" class="no-text-transform">${link.uri}</a>`;
           }
@@ -58,10 +57,10 @@ export class UvpShared extends BaseDoctype {
       label: "Gültig bis",
       width: "100px",
       templateOptions: {
-        label: "Gültig bis!",
+        label: "Gültig bis",
         appearance: "outline",
         formatter: (item: any) => {
-          return new Date(item).toLocaleDateString();
+          return item ? new Date(item).toLocaleDateString() : "";
         },
       },
     },

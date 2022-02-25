@@ -42,7 +42,8 @@ export class UploadFilesDialogComponent implements OnInit {
     formStateService: FormStateService,
     private uploadService: UploadService,
     configService: ConfigService,
-    @Inject(MAT_DIALOG_DATA) public data: { currentItems: any[] }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { currentItems: any[]; uploadFieldKey: string }
   ) {
     this.docUuid = formStateService.getForm().get("_uuid").value;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
@@ -117,8 +118,9 @@ export class UploadFilesDialogComponent implements OnInit {
 
   private fileExistsInTable(fileId: string): boolean {
     return (
-      this.data.currentItems.find((item) => item.link.value === fileId) !==
-      undefined
+      this.data.currentItems.find(
+        (item) => item[this.data.uploadFieldKey].value === fileId
+      ) !== undefined
     );
   }
 

@@ -202,32 +202,58 @@ export class TableTypeComponent
         minWidth: 700,
         data: {
           currentItems: this.dataSource.data,
+          uploadFieldKey: this.getUploadFieldKey(),
         },
       })
       .afterClosed()
       .pipe(filter((result) => result))
-      .subscribe((files: LinkInfo[]) => this.updateTableInformation(files));
+      .subscribe((files: LinkInfo[]) =>
+        this.updateTableInformationWithUploadInfo(files)
+      );
   }
 
-  private updateTableInformation(files: LinkInfo[]) {
+  private updateTableInformationWithUploadInfo(files: LinkInfo[]) {
     files
       .filter((file) => this.isNotInTable(file))
-      .forEach((file) => this.addToDatasource(file));
+      .forEach((file) => this.addUploadInfoToDatasource(file));
 
     this.updateTableDataToForm();
   }
 
-  private addToDatasource(file: LinkInfo) {
-    this.dataSource.data.push({
+  private getUploadFieldKey(): string {
+    return this.to.columns.find((column) => column.type === "upload")?.key;
+  }
+
+  private addUploadInfoToDatasource(file: LinkInfo) {
+    const newRow = {
       title: file.file,
-      link: { asLink: false, value: file.file, uri: file.uri },
-    });
+    };
+    newRow[this.getUploadFieldKey()] = {
+      asLink: false,
+      value: file.file,
+      uri: file.uri,
+    };
+    this.dataSource.data.push(newRow);
+  }
+
+  private addLinkInfoToDatasource(link: any) {
+    const newRow = {
+      title: link.title,
+    };
+    newRow[this.getUploadFieldKey()] = {
+      asLink: true,
+      value: link.uri,
+      uri: link.uri,
+    };
+    this.dataSource.data.push(newRow);
   }
 
   private isNotInTable(file: LinkInfo) {
+    const uploadKey = this.getUploadFieldKey();
     return (
       this.dataSource.data.findIndex(
-        (tableItem) => !tableItem.link.asLink && tableItem.link.uri === file.uri
+        (tableItem) =>
+          !tableItem[uploadKey].asLink && tableItem[uploadKey].uri === file.uri
       ) === -1
     );
   }
@@ -238,10 +264,7 @@ export class TableTypeComponent
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((result) => {
-        this.dataSource.data.push({
-          title: result.title,
-          link: { asLink: true, value: result.url, uri: result.url },
-        });
+        this.addLinkInfoToDatasource(result);
         this.updateTableDataToForm();
       });
   }
@@ -260,11 +283,16 @@ export class TableTypeComponent
   }
 
   handleCellClick(index: number, element, $event: MouseEvent) {
-    if (!element.link.asLink) {
+    const uploadKey = this.getUploadFieldKey();
+    if (!element[uploadKey].asLink) {
       const options =
         this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
       if (options.onClick) {
-        options.onClick(this.form.get("_uuid").value, element.link.uri, $event);
+        options.onClick(
+          this.form.get("_uuid").value,
+          element[uploadKey].uri,
+          $event
+        );
       }
     }
   }
