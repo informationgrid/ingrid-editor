@@ -146,6 +146,13 @@
                     [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
                 >
                     {{ to.columns[batchMode ? i - 1 : i].label }}
+                    <span
+                        *ngIf="
+                            to.columns[batchMode ? i - 1 : i].templateOptions
+                                .required
+                        "
+                        >*</span
+                    >
                 </mat-header-cell>
                 <mat-cell
                     *matCellDef="let element; let rowIndex = index"
