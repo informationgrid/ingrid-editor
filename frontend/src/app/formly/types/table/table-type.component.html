@@ -64,8 +64,8 @@
 
     <ige-form-error
         *ngIf="formFieldControl.errorState && !formControl.errors?.required"
-        >{{ formControl.errors }}</ige-form-error
-    >
+        ><formly-validation-message [field]="field"></formly-validation-message
+    ></ige-form-error>
 
     <mat-table
         *ngIf="dataSource?.data?.length > 0"

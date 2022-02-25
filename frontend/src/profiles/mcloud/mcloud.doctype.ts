@@ -136,6 +136,13 @@ export class McloudDoctype extends BaseDoctype {
               },
             },
           ],
+          validators: {
+            requiredColumns: {
+              expression: (ctrl) =>
+                ctrl.value?.every((row) => row.link && row.type),
+              message: "Es müssen alle Pflichtspalten ausgefüllt sein",
+            },
+          },
         }),
         this.addAutocomplete("license", "Lizenz", {
           required: true,

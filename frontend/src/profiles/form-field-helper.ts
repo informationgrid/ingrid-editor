@@ -1,3 +1,5 @@
+import { FormlyFieldConfig } from "@ngx-formly/core";
+
 export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
     return {
@@ -120,7 +122,7 @@ export class FormFieldHelper {
     };
   }
 
-  addTable(id, label, options?) {
+  addTable(id, label, options?): FormlyFieldConfig {
     return {
       key: id,
       type: "table",
@@ -129,6 +131,7 @@ export class FormFieldHelper {
         required: options?.required,
         columns: options?.columns,
       },
+      validators: options?.validators,
     };
   }
 
