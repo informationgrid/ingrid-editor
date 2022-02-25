@@ -7,6 +7,7 @@ import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
 import org.apache.logging.log4j.LogManager
+import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.keycloak.KeycloakPrincipal
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
@@ -136,10 +137,18 @@ class KeycloakService : UserManagementService {
             .realm(keycloakRealm)
             .clientId(keycloakClientId)
             .authorization(tokenString)
-            .resteasyClient(ResteasyClientBuilder().defaultProxy(proxyHost, proxyPort).connectionPoolSize(10).build())
+            .resteasyClient(buildResteasyClient())
             .build()
 
         return KeycloakCloseableClient(client, keycloakRealm)
+    }
+
+    private fun buildResteasyClient(): ResteasyClient? {
+        val client = ResteasyClientBuilder()
+        if (this.keycloakProxyUrl != null) {
+            client.defaultProxy(proxyHost, proxyPort)
+        }
+        return client.connectionPoolSize(10).build()
     }
 
     override fun getClient(principal: Principal?): KeycloakCloseableClient {
