@@ -4,15 +4,9 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { IgeDocument } from "../../app/models/ige-document";
-import { Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 
-@Injectable({
-  providedIn: "root",
-})
 export class AddressDoctype extends BaseDoctype {
-  id = "AddressDoc";
-
   label = "Adresse";
 
   iconClass = "Freie-Adresse";

@@ -92,7 +92,6 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Link",
                 appearance: "outline",
                 required: true,
-
                 onClick: (docUuid, uri, $event) => {
                   this.uploadService.downloadFile(docUuid, uri, $event);
                 },
@@ -109,7 +108,6 @@ export class McloudDoctype extends BaseDoctype {
                 },
               },
             },
-            // this.addSelect("type", "Typ")
             {
               key: "type",
               type: "select",

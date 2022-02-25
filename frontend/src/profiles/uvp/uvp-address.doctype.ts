@@ -2,15 +2,13 @@ import { DocumentService } from "../../app/services/document/document.service";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
-import { OrganisationDoctype } from "../address/organisation.doctype";
+import { AddressDoctype } from "../address/address.doctype";
 
 @Injectable({
   providedIn: "root",
 })
-export class McloudAddressDoctype extends OrganisationDoctype {
-  id = "McloudAddressDoc";
-
-  label = "Adresse";
+export class UvpAddressDoctype extends AddressDoctype {
+  id = "UvpAddressDoc";
 
   constructor(
     storageService: DocumentService,

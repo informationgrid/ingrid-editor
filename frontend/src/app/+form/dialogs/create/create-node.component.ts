@@ -209,7 +209,10 @@ export class CreateNodeComponent implements OnInit {
 
     this.profileQuery.addressProfiles
       .pipe(filter((types) => types.length > 0))
-      .subscribe((result) => this.createDocTypes(result));
+      .subscribe((result) => {
+        const docTypes = this.createDocTypes(result);
+        this.initialActiveDocumentType.next(docTypes[0]);
+      });
   }
 
   private createDocTypes(result: ProfileAbstract[]) {

@@ -7,10 +7,8 @@ import { OrganisationDoctype } from "../address/organisation.doctype";
 @Injectable({
   providedIn: "root",
 })
-export class McloudAddressDoctype extends OrganisationDoctype {
-  id = "McloudAddressDoc";
-
-  label = "Adresse";
+export class UvpOrganisationDoctype extends OrganisationDoctype {
+  id = "UvpOrganisationDoc";
 
   constructor(
     storageService: DocumentService,

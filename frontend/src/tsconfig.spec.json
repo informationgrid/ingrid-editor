@@ -9,7 +9,6 @@
   "files": [
     "test.ts",
     "polyfills.ts",
-    "profiles/profile-lgv.ts",
     "profiles/profile-mcloud.ts",
     "profiles/profile-uvp.ts",
     "profiles/profile-test.ts"

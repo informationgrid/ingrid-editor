@@ -61,6 +61,21 @@
                             Organisationsbezeichnung ein.
                         </div>
                     </ng-template>
+
+                    <ng-container *ngIf="numDocumentTypes > 1">
+                        <div class="dlg-create-place" id="address-type">
+                            Adresstyp wählen:
+                        </div>
+                        <ige-document-list-item
+                            [docs]="documentTypes"
+                            showSelection="true"
+                            [denseMode]="true"
+                            [hideDivider]="true"
+                            [setActiveItem]="initialActiveDocumentType"
+                            (select)="setDocType($event)"
+                        ></ige-document-list-item>
+                    </ng-container>
+
                     <div
                         *ngIf="!addressOnlyOrganization"
                         fxFlex
