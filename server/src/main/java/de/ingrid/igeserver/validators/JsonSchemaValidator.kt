@@ -9,7 +9,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
-import java.io.File
+import java.io.BufferedInputStream
+import java.io.BufferedReader
+import java.util.stream.Collectors
 
 @Component
 class JsonSchemaValidator @Autowired constructor(
@@ -39,7 +41,11 @@ class JsonSchemaValidator @Autowired constructor(
             return
         }
 
-        val schema = JSONSchema.parse(File(resourceUri))
+        val schemaInputStream: BufferedInputStream = JsonSchemaValidator::class.java.getResource(schemaFile)?.content as BufferedInputStream
+        val reader = schemaInputStream.reader()
+        val schemaContent = reader?.readLines().stream().collect(Collectors.joining("\n"))
+
+        val schema = JSONSchema.parse(schemaContent)
         val output = schema.validateBasic(json)
         log.debug("Document valid: ${output.valid}")
         output.errors?.forEach {
