@@ -116,10 +116,7 @@
         "DCATThemes": {
           "type": "array",
           "items": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": "string"
           },
           "minItems": 1
         },
@@ -128,7 +125,14 @@
           "minLength": 1
         },
         "periodicity": {
-          "$ref": "#/definitions/KeyValue"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
         },
         "accessRights": {
           "type": [
@@ -143,20 +147,14 @@
           ]
         },
         "distributions": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "items": {
             "$ref": "#/definitions/Distribution"
           },
           "minItems": 1
         },
         "mCloudCategories": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "items": {
             "type": "string"
           },
@@ -181,10 +179,7 @@
       "additionalProperties": false,
       "properties": {
         "ref": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": "string"
         },
         "type": {
           "$ref": "#/definitions/KeyValue"
@@ -213,7 +208,14 @@
           ]
         },
         "format": {
-          "$ref": "#/definitions/KeyValue"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
         }
       },
       "required": [
@@ -278,10 +280,7 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": "string"
         },
         "title": {
           "type": [
@@ -343,7 +342,14 @@
       "additionalProperties": false,
       "properties": {
         "rangeType": {
-          "$ref": "#/definitions/KeyValue"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
         },
         "timeSpanDate": {
           "type": [
