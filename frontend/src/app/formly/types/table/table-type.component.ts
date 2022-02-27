@@ -242,8 +242,8 @@ export class TableTypeComponent
     };
     newRow[this.getUploadFieldKey()] = {
       asLink: true,
-      value: link.uri,
-      uri: link.uri,
+      value: link.url,
+      uri: link.url,
     };
     this.dataSource.data.push(newRow);
   }

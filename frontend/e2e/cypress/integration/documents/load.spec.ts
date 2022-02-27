@@ -97,7 +97,7 @@ describe('Load documents', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(
       headerElements.CreationDate,
-      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+      Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
     );
     // log in as different user
     cy.kcLogout();
@@ -110,7 +110,7 @@ describe('Load documents', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(
       headerElements.CreationDate,
-      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+      Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
     );
   });
 
@@ -127,7 +127,7 @@ describe('Load documents', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(
       headerElements.EditDate,
-      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+      Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
     );
 
     // log in as different user
@@ -141,7 +141,7 @@ describe('Load documents', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(
       headerElements.EditDate,
-      Utils.getFormattedDate(new Date()) + ' von ' + 'ige'
+      Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
     );
 
     // change document and check altered header
@@ -150,7 +150,7 @@ describe('Load documents', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(
       headerElements.EditDate,
-      Utils.getFormattedDate(new Date()) + ' von ' + 'eins'
+      Utils.getFormattedDate(new Date()) + ' von ' + 'Katalog Admin1'
     );
   });
 });
