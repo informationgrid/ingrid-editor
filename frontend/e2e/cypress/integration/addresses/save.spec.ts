@@ -170,7 +170,10 @@ describe('General create addresses/folders', () => {
       cy.get('.title mat-icon.working').should('exist');
       AddressPage.openUpDocumentHeader();
       AddressPage.verifyInfoInDocumentHeader(headerElements.Status, 'In Bearbeitung');
-      AddressPage.verifyInfoInDocumentHeader(headerElements.EditDate, Utils.getFormattedDate(new Date()));
+      AddressPage.verifyInfoInDocumentHeader(
+        headerElements.EditDate,
+        Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
+      );
     });
   });
 
