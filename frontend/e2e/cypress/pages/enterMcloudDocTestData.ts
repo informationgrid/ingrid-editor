@@ -1,4 +1,3 @@
-import { Utils } from './utils';
 import { DocumentPage } from './document.page';
 
 export class enterMcloudDocTestData {
@@ -39,6 +38,7 @@ export class enterMcloudDocTestData {
       cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
       cy.get('[data-cy="chip-dialog-confirm"]').click();
     }
+
     static setOpenDataCategory(optionText: string = 'Verkehr', isFirstCategory: boolean = true) {
       if (!isFirstCategory) {
         cy.get('[data-cy="OpenData Kategorie"] ige-add-button mat-icon').first().contains('add').click({ force: true });
@@ -49,17 +49,32 @@ export class enterMcloudDocTestData {
       cy.get('[data-cy="chip-dialog-confirm"]').click();
     }
 
-    static setAddDownload(
-      titleText: string = 'linkTitel',
-      linkText: string = 'https://docs.cypress.io/api/this',
-      typeText: string = 'linktyp',
-      formatText: string = '.py'
-    ) {
+    static setAddDownload(titleText: string = 'linkTitel', linkText: string = 'https://docs.cypress.io/api/this') {
       cy.contains('button span', 'Link angeben').click();
       cy.get('input[formcontrolname="title"]').type(titleText);
       cy.get('[formcontrolname="url"]').type(linkText);
       cy.get('input[formcontrolname="title"]').click();
       cy.contains('button', 'Übernehmen').click();
+    }
+
+    static editDownload(index: number, data: { type?: string; format?: string }) {
+      cy.get('[data-cy=Downloads-table] .mat-row [data-mat-icon-name=Mehr]')
+        .click()
+        .get('button[role=menuitem]')
+        .contains('Bearbeiten')
+        .click();
+
+      if (data?.type) {
+        cy.get('mat-dialog-container mat-select').click();
+        cy.get('mat-option').contains(data.type).click();
+        cy.wait(500);
+      }
+
+      if (data?.format) {
+        cy.get('mat-dialog-container input[role=combobox]').clear().type(data.format);
+      }
+
+      cy.get('[data-cy=form-dialog-confirm]').click();
     }
 
     static setLicense(license: string = 'Andere offene Lizenz') {
@@ -68,13 +83,8 @@ export class enterMcloudDocTestData {
       cy.get('mat-option').contains(license).click();
     }
 
-    static setSourceNote(text?: string) {
-      if (!text) {
-        text = Utils.randomString();
-        cy.get('[data-cy=Quellenvermerk]').find('mat-form-field').type(text);
-      } else {
-        cy.get('[data-cy=Quellenvermerk]').find('mat-form-field').type(text);
-      }
+    static setSourceNote(text: string) {
+      cy.get('[data-cy=Quellenvermerk]').find('mat-form-field').type(text);
     }
 
     static setMfund(projectText: string = 'Projekt', fkzText: string = 'Förderkennzeichen') {
@@ -159,6 +169,7 @@ export class enterMcloudDocTestData {
       cy.get('[data-cy=confirm-dialog-save]').click();
       DocumentPage.checkSpatialEntrytNotEmpty();
     }
+
     // *****************************************************
 
     static setTimeReference(date: Date = new Date(2020, 1, 11), choose: string = 'Erstellung', index: number = 0) {
@@ -221,6 +232,7 @@ export class enterMcloudDocTestData {
         cy.get('.mat-select-value').contains(option);
       }
     }
+
     static setPeriodicity(chooseOption: string = 'einmalig') {
       cy.get('[data-cy=Periodizität').find('mat-form-field').click();
       cy.get('mat-option').contains(chooseOption).click();
@@ -237,7 +249,7 @@ export class enterMcloudDocTestData {
       this.setOpenDataCategory();
       this.setAddDownload();
       this.setLicense();
-      this.setSourceNote();
+      this.setSourceNote('Meine Quelle');
       this.setMfund();
       this.setSpatialWKT();
       this.setTimeReference();
@@ -251,6 +263,7 @@ export class enterMcloudDocTestData {
       this.setCategory();
       this.setOpenDataCategory();
       this.setAddDownload();
+      this.editDownload(1, { type: 'AtomFeed' });
       this.setLicense();
     }
 

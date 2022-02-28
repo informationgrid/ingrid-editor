@@ -93,7 +93,7 @@ describe('mCLOUD documents', function () {
       enterMcloudDocTestData.CreateDialog.setOpenDataCategory();
       enterMcloudDocTestData.CreateDialog.setAddDownload();
       enterMcloudDocTestData.CreateDialog.setLicense();
-      enterMcloudDocTestData.CreateDialog.setSourceNote();
+      enterMcloudDocTestData.CreateDialog.setSourceNote("Meine Quelle");
       enterMcloudDocTestData.CreateDialog.setMfund();
       enterMcloudDocTestData.CreateDialog.setSpatialWKT();
       enterMcloudDocTestData.CreateDialog.setTimeReference();
