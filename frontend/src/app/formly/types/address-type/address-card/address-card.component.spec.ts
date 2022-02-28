@@ -5,12 +5,13 @@ import { CodelistPipe } from "../../../../directives/codelist.pipe";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ProfileService } from "../../../../services/profile.service";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("AddressCardComponent", () => {
   let spectator: Spectator<AddressCardComponent>;
   const createHost = createComponentFactory({
     component: AddressCardComponent,
-    imports: [MatCardModule, MatDialogModule],
+    imports: [MatCardModule, MatDialogModule, MatIconTestingModule],
     declarations: [CodelistPipe],
     componentMocks: [CodelistService, ProfileService],
     detectChanges: false,

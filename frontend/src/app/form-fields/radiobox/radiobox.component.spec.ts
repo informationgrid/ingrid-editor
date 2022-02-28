@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { RadioboxComponent } from "./radiobox.component";
+import { MatRadioModule } from "@angular/material/radio";
+import { FormsModule } from "@angular/forms";
 
 describe("RadioboxComponent", () => {
   let component: RadioboxComponent;
@@ -10,6 +12,7 @@ describe("RadioboxComponent", () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [RadioboxComponent],
+        imports: [MatRadioModule, FormsModule],
       }).compileComponents();
     })
   );

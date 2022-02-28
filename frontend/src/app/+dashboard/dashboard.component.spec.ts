@@ -19,6 +19,8 @@ import { MatListModule } from "@angular/material/list";
 import { SessionStore } from "../store/session.store";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
 import { TranslocoModule } from "@ngneat/transloco";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { DashboardModule } from "./dashboard.module";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -31,6 +33,8 @@ describe("DashboardComponent", () => {
       MatCardModule,
       MatListModule,
       TranslocoModule,
+      MatIconTestingModule,
+      DashboardModule,
     ],
     declarations: [
       ChartComponent,

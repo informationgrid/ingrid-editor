@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { CardBoxComponent } from "./card-box.component";
+import { MatCardModule } from "@angular/material/card";
 
 describe("CardBoxComponent", () => {
   let component: CardBoxComponent;
@@ -10,6 +11,7 @@ describe("CardBoxComponent", () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [CardBoxComponent],
+        imports: [MatCardModule],
       }).compileComponents();
     })
   );

@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { FormlyModule } from "@ngx-formly/core";
 
 describe("FormDialogComponent", () => {
   let spectator: Spectator<FormDialogComponent>;
@@ -15,6 +16,7 @@ describe("FormDialogComponent", () => {
       MatRadioModule,
       MatFormFieldModule,
       MatDialogModule,
+      FormlyModule,
     ],
     detectChanges: false,
   });

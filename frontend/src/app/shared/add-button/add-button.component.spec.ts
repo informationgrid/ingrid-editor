@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { AddButtonComponent } from "./add-button.component";
+import { MatRadioModule } from "@angular/material/radio";
 
 describe("AddButtonComponent", () => {
   let component: AddButtonComponent;
@@ -10,6 +11,7 @@ describe("AddButtonComponent", () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [AddButtonComponent],
+        imports: [MatRadioModule],
       }).compileComponents();
     })
   );

@@ -41,6 +41,8 @@ import { TreeStore } from "../../../store/tree/tree.store";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfigService } from "../../../services/config/config.service";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSelectModule } from "@angular/material/select";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -76,6 +78,8 @@ describe("TreeComponent", () => {
       MatFormFieldModule,
       MatAutocompleteModule,
       FormFieldsModule,
+      MatProgressSpinnerModule,
+      MatSelectModule,
     ],
     declarations: [TreeHeaderComponent, EmptyNavigationComponent],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],

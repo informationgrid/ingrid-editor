@@ -5,12 +5,14 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { NominatimService } from "../../nominatim.service";
+import { MatListModule } from "@angular/material/list";
 
 describe("FreeSpatialComponent", () => {
   let spectator: Spectator<FreeSpatialComponent>;
   const createHost = createComponentFactory({
     component: FreeSpatialComponent,
     providers: [mockProvider(NominatimService)],
+    imports: [MatListModule],
     detectChanges: false,
   });
 

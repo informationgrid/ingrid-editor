@@ -35,7 +35,6 @@ describe("Document Type", () => {
   });
 
   it("should add context help info to fields correctly", () => {
-    console.log("context help");
     expect(
       doctype.fields[initialFieldLength].templateOptions.hasContextHelp
     ).toBeTruthy();

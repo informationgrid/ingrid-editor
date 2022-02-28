@@ -19,6 +19,7 @@ import { FormToolbarComponent } from "./form-toolbar.component";
 import { Subject } from "rxjs";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 let spectator: Spectator<FormToolbarComponent>;
 const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
@@ -35,6 +36,7 @@ const createHost = createComponentFactory({
     BrowserAnimationsModule,
     MatTabsModule,
     MatFormFieldModule,
+    MatTooltipModule,
   ],
   providers: [
     mockProvider(FormToolbarService, {

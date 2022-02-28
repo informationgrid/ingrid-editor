@@ -5,6 +5,7 @@ import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 import { fakeAsync, tick } from "@angular/core/testing";
 import { RepeatDetailListComponent } from "../repeat-detail-list/repeat-detail-list.component";
 import { IgeFormlyModule } from "../../ige-formly.module";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -13,6 +14,7 @@ describe("RepeatListComponent", () => {
     declarations: [RepeatDetailListComponent, AddButtonComponent],
     imports: [
       IgeFormlyModule,
+      MatIconTestingModule,
       FormlyModule.forRoot({
         types: [
           {

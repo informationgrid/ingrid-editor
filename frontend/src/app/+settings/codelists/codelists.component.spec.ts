@@ -9,6 +9,9 @@ import {
 import { RepeatListComponent } from "../../formly/types/repeat-list/repeat-list.component";
 import { MatDialogModule } from "@angular/material/dialog";
 import { CodelistService } from "../../services/codelist/codelist.service";
+import { CodelistPresenterModule } from "../../shared/codelist-presenter/codelist-presenter.module";
+import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
+import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 
 describe("CodelistsComponent", () => {
   let spectator: Spectator<CodelistsComponent>;
@@ -16,6 +19,7 @@ describe("CodelistsComponent", () => {
     component: CodelistsComponent,
     // imports: [MatDialogModule],
     providers: [mockProvider(CodelistService)],
+    imports: [CodelistPresenterModule, FilterSelectModule, PageTemplateModule],
     detectChanges: false,
   });
 

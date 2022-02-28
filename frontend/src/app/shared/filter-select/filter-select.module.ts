@@ -18,7 +18,7 @@ import { MatButtonModule } from "@angular/material/button";
     MatIconModule,
     MatButtonModule,
   ],
-  declarations: [FilterSelectComponent, FilterSelectComponent],
-  exports: [FilterSelectComponent, FilterSelectComponent],
+  declarations: [FilterSelectComponent],
+  exports: [FilterSelectComponent],
 })
 export class FilterSelectModule {}

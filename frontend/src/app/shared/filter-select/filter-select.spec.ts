@@ -8,6 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("FilterSelectComponent", () => {
   let spectator: Spectator<FilterSelectComponent>;
@@ -20,7 +21,9 @@ describe("FilterSelectComponent", () => {
       MatInputModule,
       MatIconModule,
       MatButtonModule,
+      MatIconTestingModule,
     ],
+    detectChanges: false,
   });
 
   it("should create", () => {

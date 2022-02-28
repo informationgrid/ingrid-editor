@@ -58,8 +58,10 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.areaSelect.clearAllEventListeners();
-    this.areaSelect.remove();
+    if (this.areaSelect) {
+      this.areaSelect.clearAllEventListeners();
+      this.areaSelect.remove();
+    }
   }
 
   searchLocation(query: string) {

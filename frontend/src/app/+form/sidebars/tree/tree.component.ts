@@ -341,7 +341,6 @@ export class TreeComponent implements OnInit {
     this.database
       .getChildren(parentNodeId, true, this.forAddresses)
       .subscribe((children) => {
-        console.log("updated children", children);
         if (isExpanded) {
           this.treeControl.collapse(parentNode);
         }
