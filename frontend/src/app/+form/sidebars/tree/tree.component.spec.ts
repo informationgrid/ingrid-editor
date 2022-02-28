@@ -204,6 +204,8 @@ describe("TreeComponent", () => {
     selectNode(2);
 
     hasNumberOfTreeNodes(3);
+
+    tick(1000);
   }));
 
   it("should modify a child node", fakeAsync(() => {

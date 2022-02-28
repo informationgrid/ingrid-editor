@@ -26,6 +26,6 @@ export class FormDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.options.resetModel();
+    this.options.resetModel && this.options.resetModel();
   }
 }
