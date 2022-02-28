@@ -28,6 +28,24 @@ export class AdmissionProcedureDoctype extends UvpShared {
           "Kontaktdaten der verfahrensführenden Behörde",
           {
             required: true,
+            allowedTypes: ["7"],
+            validators: {
+              needPublisher: {
+                expression: (ctrl) =>
+                  ctrl.value
+                    ? ctrl.value.some((row) => row.type.key === "10")
+                    : false,
+                message:
+                  "Es muss ein Ansprechpartner als Adresse angegeben sein",
+              },
+              publisherPublished: {
+                expression: (ctrl) =>
+                  ctrl.value
+                    ? ctrl.value.every((row) => row.ref._state === "P")
+                    : false,
+                message: "Alle Adressen müssen veröffentlicht sein",
+              },
+            },
           }
         ),
       ]),

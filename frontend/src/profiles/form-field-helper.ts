@@ -49,6 +49,7 @@ export class FormFieldHelper {
       templateOptions: {
         externalLabel: label,
         required: options?.required,
+        allowedTypes: options?.allowedTypes,
       },
       validators: options?.validators,
     };

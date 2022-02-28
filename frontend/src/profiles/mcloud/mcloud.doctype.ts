@@ -36,6 +36,7 @@ export class McloudDoctype extends BaseDoctype {
         this.addTextArea("description", "Beschreibung", { required: true }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
+          allowedTypes: ["10"],
           validators: {
             needPublisher: {
               expression: (ctrl) =>

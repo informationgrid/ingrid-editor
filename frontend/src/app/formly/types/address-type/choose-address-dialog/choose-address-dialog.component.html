@@ -36,7 +36,7 @@
     ></ige-tree>
 
     <div class="selection-divider"></div>
-    <ng-container *ngIf="showTypeSelector">
+    <ng-container *ngIf="(types | async).length > 1">
         <div class="side-padding top-padding place-title">
             2. Schritt: Adresstyp zuordnen
         </div>

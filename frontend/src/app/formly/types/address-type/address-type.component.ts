@@ -4,6 +4,7 @@ import { AddressRef } from "./address-card/address-card.component";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ChooseAddressDialogComponent,
+  ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
 import { distinctUntilChanged, filter } from "rxjs/operators";
@@ -70,21 +71,14 @@ export class AddressTypeComponent extends FieldType implements OnInit {
     return this.dialog
       .open(ChooseAddressDialogComponent, {
         minWidth: 500,
-        data: address,
+        data: <ChooseAddressDialogData>{
+          address: address,
+          allowedTypes: this.to.allowedTypes,
+        },
         hasBackdrop: true,
       })
       .afterClosed()
       .pipe(filter((data) => data));
-  }
-
-  convertDataForBackend(response: ChooseAddressResponse): AddressRef {
-    return {
-      type: response.type,
-      ref: {
-        _id: response.address.id + "",
-        title: response.address.title,
-      },
-    };
   }
 
   removeAddress(address: AddressRef) {
