@@ -157,23 +157,16 @@ export class TreeComponent implements OnInit {
       if (this.activeNodeId === id) {
         return;
       }
-      this.jumpToNode(id).catch((e) => this.error.next(e));
+      // when setting a node from the outside, then do not emit activate event again
+      this.jumpToNode(id, true, false).catch((e) => this.error.next(e));
     });
   }
 
   private expandOnDataChange(ids: string[]): Promise<void> {
-    let resolveNextTime = false;
-    let nextId = null;
-
-    // FIXME: if a root node is opened and we want to create a folder and in the dialog we
-    //        search for a sub folder of the opened folder, then root nodes will always be
-    //        triggered by dataChange, which mixes up resolveNextTime timing
-
     return new Promise((resolve) => {
       const initialId = ids.shift();
       const expanderSubscription = this.dataSource.nodeExpanded$.subscribe(
-        (nodeId) => {
-          console.log("Expanded: " + nodeId);
+        () => {
           const nextId = ids.shift();
           if (!nextId) {
             expanderSubscription.unsubscribe();
@@ -394,7 +387,11 @@ export class TreeComponent implements OnInit {
     return DocumentUtils.getStateClass(node.state, node.type);
   }
 
-  async jumpToNode(id: string, resetSelection = true): Promise<void> {
+  async jumpToNode(
+    id: string,
+    resetSelection = true,
+    emitActive = true
+  ): Promise<void> {
     if (resetSelection) {
       this.selection.model.clear();
     }
@@ -412,14 +409,18 @@ export class TreeComponent implements OnInit {
     if (path.length > 0) {
       await this.handleExpandNodes(path);
     }
-    this.selectAndScrollToNode(id, resetSelection);
+    this.selectAndScrollToNode(id, resetSelection, emitActive);
   }
 
-  private selectAndScrollToNode(id: string, resetSelection: boolean) {
+  private selectAndScrollToNode(
+    id: string,
+    resetSelection: boolean,
+    emitActive: boolean
+  ) {
     const node = this.dataSource.getNode(id);
     if (node) {
       if (resetSelection) {
-        this.selectNode(node);
+        this.selectNode(node, null, emitActive);
       }
       // we need to scroll after the selection is done in DOM
       setTimeout(() => this.scrollToActiveElement());
@@ -604,12 +605,14 @@ export class TreeComponent implements OnInit {
     this.multiEditMode.next(this.selection.multiSelectionModeEnabled);
   }
 
-  selectNode(node: TreeNode, $event?: MouseEvent) {
+  selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {
     const id = this.selection.selectNode(node, $event);
 
-    if (id) {
-      this.activeNodeId = id;
-      this.activate.next([node._uuid]);
+    if (!id) return;
+
+    this.activeNodeId = id;
+    if (emitActive) {
+      setTimeout(() => this.activate.next([node._uuid]), 500);
     }
   }
 }

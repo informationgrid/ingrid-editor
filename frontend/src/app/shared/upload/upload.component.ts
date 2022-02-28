@@ -104,7 +104,6 @@ export class UploadComponent implements OnInit {
 
     this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
-        console.log("event:", event);
         if (this.autoupload && event.type === "filesSubmitted") {
           await this.uploadService.updateAuthenticationToken(
             <flowjs.FlowFile[]>event.event[0]

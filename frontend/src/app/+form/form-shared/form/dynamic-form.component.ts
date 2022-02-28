@@ -134,6 +134,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((state) => (this.isLoading = state));
 
+    // wait for profile and codelists to be loaded before opening first dataset
     combineLatest([
       this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
       this.codelistQuery
