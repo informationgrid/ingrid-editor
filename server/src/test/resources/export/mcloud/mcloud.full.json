@@ -1,0 +1,92 @@
+{
+  "title": "mCloudDoc1",
+  "hasWritePermission": true,
+  "hasOnlySubtreeWritePermission": false,
+  "_uuid": "96b192b6-987e-4f64-8a37-c752f33a4536",
+  "_type": "mCloudDoc",
+  "_version": 2,
+  "_created": "2022-02-28T13:53:25.342346+01:00",
+  "_modified": "2022-03-01T14:42:28.6357336+01:00",
+  "_createdBy": "Mike Cat-Miller",
+  "_modifiedBy": "Mike Cat-Miller",
+  "_state": "PW",
+  "_id": "12157",
+  "description": "Testbeschreibung",
+  "addresses": [
+    {
+      "ref": "214ca5bf-da1b-4003-b7b6-e73a2ef0ec10",
+      "type": {
+        "key": "10"
+      }
+    }
+  ],
+  "keywords": [
+    "eins",
+    "zwei",
+    "drei"
+  ],
+  "accessRights": "Nutzung",
+  "mCloudCategories": [
+    "railway"
+  ],
+  "DCATThemes": [
+    "TRAN"
+  ],
+  "distributions": [
+    {
+      "title": "linkTitel",
+      "link": {
+        "uri": "https://docs.cypress.io/api/this",
+        "value": "https://docs.cypress.io/api/this",
+        "asLink": true
+      },
+      "type": {
+        "key": "AtomFeed"
+      },
+      "format": {
+        "key": "CSV"
+      }
+    }
+  ],
+  "license": {
+    "key": "10"
+  },
+  "origin": "Meine Quelle",
+  "mfundProject": "12345",
+  "mfundFKZ": "98765",
+  "spatial": [
+    {
+      "value": {
+        "lat1": 50.51342652633956,
+        "lon1": 8.613281250000002,
+        "lat2": 53.22576843579022,
+        "lon2": 13.0078125
+      },
+      "title": "Neuer Raumbezug",
+      "type": "free"
+    }
+  ],
+  "events": [
+    {
+      "date": "2022-01-31T23:00:00.000Z",
+      "text": {
+        "key": "1"
+      }
+    },
+    {
+      "date": "2022-03-15T23:00:00.000Z",
+      "text": {
+        "key": "3"
+      }
+    }
+  ],
+  "temporal": {
+    "rangeType": {
+      "key": "at"
+    },
+    "timeSpanDate": "2022-02-07T23:00:00.000Z"
+  },
+  "periodicity": {
+    "key": "10"
+  }
+}

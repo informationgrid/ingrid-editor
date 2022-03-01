@@ -142,6 +142,7 @@ export class FormFieldHelper {
       type: "leaflet",
       wrappers: [],
       templateOptions: {
+        required: options?.required,
         mapOptions: {},
         externalLabel: label,
         height: 386,
@@ -181,6 +182,7 @@ export class FormFieldHelper {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,
         appearance: "outline",
+        required: options?.required,
       },
       hideExpression: options?.hideExpression,
     };

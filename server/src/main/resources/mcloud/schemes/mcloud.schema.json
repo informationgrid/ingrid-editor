@@ -65,7 +65,10 @@
           "type": "string"
         },
         "events": {
-          "type": "array",
+          "type": [
+            "null",
+            "array"
+          ],
           "items": {
             "$ref": "#/definitions/Event"
           }
@@ -339,29 +342,55 @@
     },
     "Temporal": {
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rangeType": {
-          "oneOf": [
-            {
-              "type": "null"
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "rangeType": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              ]
             },
-            {
-              "$ref": "#/definitions/KeyValue"
+            "timeSpanDate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
             }
-          ]
+          }
         },
-        "timeSpanDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "timeSpanRange": {
-          "$ref": "#/definitions/Range"
+        {
+          "additionalProperties": false,
+          "properties": {
+            "rangeType": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              ]
+            },
+            "timeSpanRange": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Range"
+                }
+              ]
+            }
+          }
         }
-      },
+      ],
       "required": [
         "rangeType"
       ],

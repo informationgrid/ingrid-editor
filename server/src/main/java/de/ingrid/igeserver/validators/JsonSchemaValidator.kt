@@ -5,6 +5,7 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import de.ingrid.igeserver.services.DocumentService
 import net.pwall.json.schema.JSONSchema
+import net.pwall.json.schema.output.BasicOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -30,12 +31,12 @@ class JsonSchemaValidator @Autowired constructor(
         return payload
     }
 
-    fun validate(schemaFile: String, json: String) {
+    fun validate(schemaFile: String, json: String): BasicOutput? {
         val resource = JsonSchemaValidator::class.java.getResource(schemaFile)
 
         if (resource == null) {
             log.error("JSON-Schema not found: $schemaFile")
-            return
+            return null
         }
 
         val schemaContent = resource.readText()
@@ -46,5 +47,6 @@ class JsonSchemaValidator @Autowired constructor(
         output.errors?.forEach {
             log.error("${it.error} - ${it.instanceLocation}")
         }
+        return output
     }
 }

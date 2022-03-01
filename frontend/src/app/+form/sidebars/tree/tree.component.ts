@@ -294,7 +294,6 @@ export class TreeComponent implements OnInit {
         }
         return;
       }
-
       // TODO: use function jumpToNode
       this.updateChildrenFromServer(
         updateInfo.parent,
@@ -337,7 +336,6 @@ export class TreeComponent implements OnInit {
 
     // node will be added automatically when expanded
     const isExpanded = this.treeControl.isExpanded(parentNode);
-
     this.database
       .getChildren(parentNodeId, true, this.forAddresses)
       .subscribe((children) => {

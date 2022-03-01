@@ -1,0 +1,110 @@
+{
+  "DCATThemes": [
+    "TRAN",
+    "REGI"
+  ],
+  "_type": "mCloudDoc",
+  "_uuid": "1583881f-45c3-4105-b081-e33f19ce0b1e",
+  "accessRights": null,
+  "addresses": [
+    {
+      "ref": "0B2B815A-4E9D-4F47-8286-B2DE17CB874F",
+      "type": {
+        "key": "10"
+      }
+    }
+  ],
+  "description": "Sensordaten (ohne GPS-Signal) des ECOSense-Projekts. Der Datensatz setzt sich zusammen aus Sensordaten, die im 1 Hz-Bereich und 24 Hz-Bereich gemessen wurden. \n\nGesamtvolumen: 14859 Fahrten / 3,74 GB (komprimiert) / 36,2 GB (entpackt)\n\n\nFolgende Daten sind enthalten: \n- internal_index \n- 1Hz-Bereich: measured_date, estimated_date, longitude, latitude, speed, heading, certainty, temperature1, temperature2, humidity, pressure, altitude2\n- 24Hz-Bereich: Beschleunigung in drei Achsen (accel_x_01-24, accel_y_01-24, accel_z_01-24), Gyroskop in drei Achsen (gyro_x_01-24, gyro_y_01-24, gyro_z_01-24), Magnetometer in drei Achsen (mag_x_01-24, mag_y_01-24, mag_z_01-24). \n",
+  "distributions": [
+    {
+      "link": {
+        "uri": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-1.7z",
+        "value": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-1.7z",
+        "asLink": true
+      },
+      "type": {
+        "key": "download"
+      },
+      "title": "Sensordaten (ohne GPS) - 1",
+      "format": {
+        "key": "CSV"
+      }
+    },
+    {
+      "link": {
+        "uri": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-2.7z",
+        "value": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-2.7z",
+        "asLink": true
+      },
+      "type": {
+        "key": "atomFeed"
+      },
+      "title": "Sensordaten (ohne GPS) - 2",
+      "format": {
+        "key": "SVG"
+      }
+    },
+    {
+      "link": {
+        "uri": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-3.7z",
+        "value": "https://ecosense01.vlba.uni-oldenburg.de/data/2020-mcloud-ecosense-data-export-nogps-3.7z",
+        "asLink": true
+      },
+      "type": {
+        "key": "wms"
+      },
+      "title": "Sensordaten (ohne GPS) - 3",
+      "format": {
+        "key": "MAP_SRVC"
+      }
+    }
+  ],
+  "events": [
+    {
+      "date": "2020-11-22T23:00:00.000Z",
+      "text": {
+        "key": "1"
+      }
+    }
+  ],
+  "keywords": [],
+  "license": {
+    "key": "28"
+  },
+  "mCloudCategories": [
+    "infrastructure",
+    "roads"
+  ],
+  "mfundFKZ": "VB18F1030A",
+  "mfundProject": "ECOSense",
+  "origin": "Quelle: Projekt ECOSense (mein-dienstrad.de, Universität Oldenburg/Abteilung Wirtschaftsinformatik (VLBA), CoSynth)",
+  "periodicity": {},
+  "spatial": [
+    {
+      "type": "free",
+      "title": "Bundesrepublik Deutschland",
+      "value": {
+        "lat1": 47.23942,
+        "lat2": 55.054344,
+        "lon1": 6.098034,
+        "lon2": 15.578555
+      }
+    },
+    {
+      "wkt": "POLYGON((7.9891204833984375 53.22247975316637,7.989807128906249 53.06556366279212,8.368148803710938 53.066801462406524,8.368148803710938 53.22330194749886,7.9891204833984375 53.22247975316637))",
+      "type": "wkt",
+      "title": "WKT Raumbezug",
+      "value": null
+    }
+  ],
+  "temporal": {
+    "rangeType": {
+      "key": "range"
+    },
+    "timeSpanRange": {
+      "end": "2020-04-29T22:00:00.000Z",
+      "start": "2019-10-31T23:00:00.000Z"
+    }
+  },
+  "title": "Test Doc"
+}
