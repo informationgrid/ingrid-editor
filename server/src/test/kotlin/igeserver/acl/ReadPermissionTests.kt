@@ -4,9 +4,9 @@ import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.apache.http.auth.BasicUserPrincipal
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
@@ -47,9 +47,9 @@ class ReadPermissionTests : AnnotationSpec() {
     @Test
     fun readAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
-        assertNotNull(doc)
-        Assertions.assertFalse(doc.hasWritePermission)
-        Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe false
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     /**
@@ -58,25 +58,25 @@ class ReadPermissionTests : AnnotationSpec() {
     @Test
     fun readAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
-        assertNotNull(doc)
-        Assertions.assertFalse(doc.hasWritePermission)
-        Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe false
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     @Test
     fun readAllowedToDocumentInGroupButNoReadToParent() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuidNoParentRead)
-        assertNotNull(doc)
-        Assertions.assertFalse(doc.hasWritePermission)
-        Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe false
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     @Test
     fun readAllowedToSubDocumentInGroupButNoReadToParent() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuidNoParentRead)
-        assertNotNull(doc)
-        Assertions.assertFalse(doc.hasWritePermission)
-        Assertions.assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe false
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     @Test(expected = AccessDeniedException::class)

@@ -1,10 +1,11 @@
 package igeserver.schema
 
 import io.kotest.core.spec.style.AnnotationSpec
-import org.assertj.core.api.Assertions.assertThat
 import igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
 import igeserver.schema.SchemaUtils.Companion.getJsonFileContent
 import igeserver.schema.SchemaUtils.Companion.validate
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
 
 class McloudSchema : AnnotationSpec() {
 
@@ -14,44 +15,43 @@ class McloudSchema : AnnotationSpec() {
     fun minimal() {
         val json = getJsonFileContent("/export/mcloud/mcloud.minimal.json")
         val result = validate(json, schema)
-        assertThat(result.valid).isTrue
+        result.valid shouldBe true
     }
 
     @Test
     fun more() {
         val json = getJsonFileContent("/export/mcloud/mcloud.json")
         val result = validate(json, schema)
-        assertThat(result.valid).isTrue
+        result.valid shouldBe true
     }
 
     @Test
     fun full() {
         val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
         val result = validate(json, schema)
-        assertThat(result.valid).isTrue
+        result.valid shouldBe true
     }
 
     @Test
     fun fail() {
         val json = "{}"
         val result = validate(json, schema)
-        assertThat(result.valid).isFalse
+        result.valid shouldBe false
         val requiredErrors = extractMissingRequiredFields(result)
 
-        assertThat(requiredErrors.size).isEqualTo(9)
-        assertThat(requiredErrors).isEqualTo(
-            listOf(
-                "_uuid",
-                "_type",
-                "title",
-                "description",
-                "addresses",
-                "mCloudCategories",
-                "DCATThemes",
-                "distributions",
-                "license"
-            )
+        requiredErrors.size shouldBeExactly 9
+        requiredErrors shouldBe listOf(
+            "_uuid",
+            "_type",
+            "title",
+            "description",
+            "addresses",
+            "mCloudCategories",
+            "DCATThemes",
+            "distributions",
+            "license"
         )
+
     }
 
 }

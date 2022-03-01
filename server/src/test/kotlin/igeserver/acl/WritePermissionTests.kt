@@ -5,8 +5,9 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.GroupService
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.apache.http.auth.BasicUserPrincipal
-import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
@@ -51,9 +52,9 @@ class WritePermissionTests : AnnotationSpec() {
     @Test
     fun readAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
-        assertNotNull(doc)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     /**
@@ -62,9 +63,9 @@ class WritePermissionTests : AnnotationSpec() {
     @Test
     fun readAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
-        assertNotNull(doc)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc shouldNotBe null
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
     @Test(expected = AccessDeniedException::class)
@@ -75,40 +76,40 @@ class WritePermissionTests : AnnotationSpec() {
     @Test
     fun writeAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
         docWrapperRepo.save(doc)
     }
 
     @Test
     fun writeAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
         docWrapperRepo.save(doc)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun writeNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
-        assertFalse(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc.hasWritePermission shouldBe false
+        doc.hasOnlySubtreeWritePermission shouldBe false
         docWrapperRepo.save(doc)
     }
 
     @Test
     fun writeAllowedToDocumentInGroupButNoReadToParent() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuidNoParentRead)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
         docWrapperRepo.save(doc)
     }
 
     @Test
     fun writeAllowedToSubDocumentInGroupButNoReadToParent() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", subChildUuidNoParentRead)
-        assertTrue(doc.hasWritePermission)
-        assertFalse(doc.hasOnlySubtreeWritePermission)
+        doc.hasWritePermission shouldBe true
+        doc.hasOnlySubtreeWritePermission shouldBe false
         docWrapperRepo.save(doc)
     }
 

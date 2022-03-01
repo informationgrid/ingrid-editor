@@ -5,7 +5,9 @@ import de.ingrid.igeserver.repository.AuditLogRepository
 import de.ingrid.igeserver.services.AuditLogger
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
-import org.assertj.core.api.Assertions
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.longs.shouldBeExactly
+import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
@@ -34,11 +36,11 @@ class AuditLogTest : AnnotationSpec() {
 
         auditLog.log("category", "action", "target", null, "audit.data-history")
 
-        Assertions.assertThat(auditRepo.count()).isEqualTo(oldCount + 1)
+        auditRepo.count() shouldBeExactly oldCount + 1
 
         val result = auditRepo.findAllByLogger("audit.data-history").filter { it.message?.target == "target" }
 
-        Assertions.assertThat(result.size).isEqualTo(1)
-        Assertions.assertThat(result[0].message?.target).isEqualTo("target")
+        result.size shouldBeExactly 1
+        result[0].message?.target shouldBe "target"
     }
 }

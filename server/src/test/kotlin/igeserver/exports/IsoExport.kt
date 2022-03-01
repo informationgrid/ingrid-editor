@@ -5,12 +5,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.iso19115.Iso19115Exporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert.assertThat
+import io.kotest.matchers.string.shouldContain
 
 class IsoExport : AnnotationSpec() {
     private lateinit var exporter: Iso19115Exporter
-    
+
     @Before
     fun init() {
         exporter = Iso19115Exporter()
@@ -18,27 +17,20 @@ class IsoExport : AnnotationSpec() {
 
     @Test
     fun normalExport() {
-        val doc = Document().apply { 
+        val doc = Document().apply {
             title = "Test Export 1"
             data = jacksonObjectMapper().createObjectNode().apply {
                 put("description", "This is the description of the exported document")
             }
         }
         val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
-        assertThat(
-            result, CoreMatchers.containsString(
-                "<gmd:title>" +
-                        "<gco:CharacterString>Test Export 1</gco:CharacterString>" +
-                        "</gmd:title>"
-            )
-        )
-        assertThat(
-            result, CoreMatchers.containsString(
-                "<gmd:abstract>" +
-                        "<gco:CharacterString>This is the description of the exported document</gco:CharacterString>" +
-                        "</gmd:abstract>"
-            )
-        )
+        result shouldContain "<gmd:title>" +
+                "<gco:CharacterString>Test Export 1</gco:CharacterString>" +
+                "</gmd:title>"
+
+        result shouldContain "<gmd:abstract>" +
+                "<gco:CharacterString>This is the description of the exported document</gco:CharacterString>" +
+                "</gmd:abstract>"
     }
 
     @Test
@@ -52,20 +44,9 @@ class IsoExport : AnnotationSpec() {
             }
         }
         val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
-        assertThat(
-            result, CoreMatchers.containsString(
-                "<gmx:Anchor xlink:href=\"http://abc.de/xyz\">test-keyword 1</gmx:Anchor>"
-            )
-        )
-        assertThat(
-            result, CoreMatchers.containsString(
-                "<gmd:title><gco:CharacterString>Mein Thesaurus</gco:CharacterString></gmd:title>"
-            )
-        )
-        assertThat(
-            result, CoreMatchers.containsString(
-                "<gco:Date>10.10.1978</gco:Date>"
-            )
-        )
+        
+        result shouldContain "<gmx:Anchor xlink:href=\"http://abc.de/xyz\">test-keyword 1</gmx:Anchor>"
+        result shouldContain "<gmd:title><gco:CharacterString>Mein Thesaurus</gco:CharacterString></gmd:title>"
+        result shouldContain "<gco:Date>10.10.1978</gco:Date>"
     }
 }

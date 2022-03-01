@@ -8,7 +8,9 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -64,25 +66,25 @@ class JpaTest : AnnotationSpec() {
 
         // test read
         val loadedCat = em.find(Catalog::class.java, cat.id)
-        assertThat(loadedCat?.id).isEqualTo(cat.id)
-        assertThat(loadedCat?.name).isEqualTo("Test Catalog")
-        assertThat(loadedCat?.type).isEqualTo("uvp")
+        loadedCat?.id shouldBe cat.id
+        loadedCat?.name shouldBe "Test Catalog"
+        loadedCat?.type shouldBe "uvp"
 
         val loadedDoc = em.find(Document::class.java, doc.id)
-        assertThat(loadedDoc?.id).isEqualTo(doc.id)
-        assertThat(loadedDoc?.title).isEqualTo("Test Document")
-        assertThat(loadedDoc?.type).isEqualTo("AddressDoc")
-        assertThat(loadedDoc?.catalog).isEqualTo(loadedCat)
-        assertThat(loadedDoc?.created).isNotNull
+        loadedDoc?.id shouldBe doc.id
+        loadedDoc?.title shouldBe "Test Document"
+        loadedDoc?.type shouldBe "AddressDoc"
+        loadedDoc?.catalog shouldBe loadedCat
+        loadedDoc?.created shouldNotBe null
         // since created and modified are slightly different (one is created in app the other in entity)
         // we convert the date to ignore milliseconds
-        assertThat(convertDate(loadedDoc.modified)).isEqualTo(convertDate(loadedDoc.created))
+        convertDate(loadedDoc.modified) shouldBe convertDate(loadedDoc.created)
 
         val addressData = loadedDoc.data
-        assertThat(addressData).isNotNull
-        assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
-        assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
-        assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
+        addressData shouldNotBe null
+        addressData.get("firstName").asText() shouldBe "Petra"
+        addressData.get("lastName").asText() shouldBe "Mustermann"
+        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
     }
 
     @Test
@@ -116,25 +118,25 @@ class JpaTest : AnnotationSpec() {
 
         // test read
         val loadedCat = em.find(Catalog::class.java, cat.id)
-        assertThat(loadedCat?.id).isEqualTo(cat.id)
-        assertThat(loadedCat?.name).isEqualTo("Test Catalog")
-        assertThat(loadedCat?.type).isEqualTo("uvp")
+        loadedCat?.id shouldBe cat.id
+        loadedCat?.name shouldBe "Test Catalog"
+        loadedCat?.type shouldBe "uvp"
 
         val loadedDoc = em.find(Document::class.java, doc.id)
-        assertThat(loadedDoc?.id).isEqualTo(doc.id)
-        assertThat(loadedDoc?.title).isEqualTo("Test Document")
-        assertThat(loadedDoc?.type).isEqualTo("AddressDoc")
-        assertThat(loadedDoc?.catalog).isEqualTo(loadedCat)
-        assertThat(loadedDoc?.created).isNotNull
+        loadedDoc?.id shouldBe doc.id
+        loadedDoc?.title shouldBe "Test Document"
+        loadedDoc?.type shouldBe "AddressDoc"
+        loadedDoc?.catalog shouldBe loadedCat
+        loadedDoc?.created shouldNotBe null
         // since created and modified are slightly different (one is created in app the other in entity)
         // we convert the date to ignore milliseconds
-        assertThat(convertDate(loadedDoc.modified)).isEqualTo(convertDate(loadedDoc.created))
+        convertDate(loadedDoc.modified) shouldBe convertDate(loadedDoc.created)
 
         val addressData = loadedDoc.data
-        assertThat(addressData).isNotNull
-        assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
-        assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
-        assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
+        addressData shouldNotBe null
+        addressData.get("firstName").asText() shouldBe "Petra"
+        addressData.get("lastName").asText() shouldBe "Mustermann"
+        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
     }
 
     @Test
@@ -171,23 +173,23 @@ class JpaTest : AnnotationSpec() {
             .setParameter("id", doc.id)
             .setParameter("lastName", "Mustermann")
         val result = q.resultList
-        assertThat(result.size).isEqualTo(1)
+        result.size shouldBe 1
 
         val loadedDoc = result[0] as Document
-        assertThat(loadedDoc.id).isEqualTo(doc.id)
-        assertThat(loadedDoc.title).isEqualTo("Test Document")
-        assertThat(loadedDoc.type).isEqualTo("AddressDoc")
-        assertThat(loadedDoc.catalog).isNotNull
-        assertThat(loadedDoc.created).isNotNull
+        loadedDoc.id shouldBe doc.id
+        loadedDoc.title shouldBe "Test Document"
+        loadedDoc.type shouldBe "AddressDoc"
+        loadedDoc.catalog shouldNotBe null
+        loadedDoc.created shouldNotBe null
         // since created and modified are slightly different (one is created in app the other in entity)
         // we convert the date to ignore milliseconds
-        assertThat(convertDate(loadedDoc.modified)).isEqualTo(convertDate(loadedDoc.created))
+        convertDate(loadedDoc.modified) shouldBe convertDate(loadedDoc.created)
 
         val addressData = loadedDoc.data
-        assertThat(addressData).isNotNull
-        assertThat(addressData.get("firstName").asText()).isEqualTo("Petra")
-        assertThat(addressData.get("lastName").asText()).isEqualTo("Mustermann")
-        assertThat(addressData.get("company").asText()).isEqualTo("LWL-Schulverwaltung Münster")
+        addressData shouldNotBe null
+        addressData.get("firstName").asText() shouldBe "Petra"
+        addressData.get("lastName").asText() shouldBe "Mustermann"
+        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
 
         val q2 =
             em.createNativeQuery("SELECT * FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
@@ -196,7 +198,7 @@ class JpaTest : AnnotationSpec() {
                 //.addJoin("c", "doc.catalog")
                 .setParameter("type", "uvp")
         val result2 = q2.resultList
-        assertThat(result2.size).isEqualTo(7)
+        result2.size shouldBeExactly 7
     }
 
     private fun convertDate(date: OffsetDateTime?): String? {

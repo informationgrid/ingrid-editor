@@ -1,10 +1,11 @@
 package igeserver.schema
 
 import io.kotest.core.spec.style.AnnotationSpec
-import org.assertj.core.api.Assertions.assertThat
 import igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
 import igeserver.schema.SchemaUtils.Companion.getJsonFileContent
 import igeserver.schema.SchemaUtils.Companion.validate
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
 
 class UvpSchema : AnnotationSpec() {
 
@@ -14,7 +15,7 @@ class UvpSchema : AnnotationSpec() {
     fun minimal() {
         val json = getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
         val result = validate(json, schema)
-        assertThat(result.valid).isTrue
+        result.valid shouldBe true
     }
 
     /*@Test
@@ -35,22 +36,20 @@ class UvpSchema : AnnotationSpec() {
     fun fail() {
         val json = "{}"
         val result = validate(json, schema)
-        assertThat(result.valid).isFalse
+        result.valid shouldBe false
         val requiredErrors = extractMissingRequiredFields(result)
 
-        assertThat(requiredErrors.size).isEqualTo(9)
-        assertThat(requiredErrors).isEqualTo(
-            listOf(
-                "_uuid",
-                "_type",
-                "title",
-                "description",
-                "publisher",
-                "spatial",
-                "receiptDate",
-                "eiaNumber",
-                "prelimAssessment"
-            )
+        requiredErrors.size shouldBeExactly 9
+        requiredErrors shouldBe listOf(
+            "_uuid",
+            "_type",
+            "title",
+            "description",
+            "publisher",
+            "spatial",
+            "receiptDate",
+            "eiaNumber",
+            "prelimAssessment"
         )
     }
 
