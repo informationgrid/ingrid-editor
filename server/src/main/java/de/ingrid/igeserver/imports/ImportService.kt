@@ -20,7 +20,7 @@ import java.security.Principal
 import java.util.*
 
 @Service
-open class ImportService {
+class ImportService {
     private val log = logger()
 
     @Autowired
@@ -114,7 +114,7 @@ open class ImportService {
         options: ImportOptions
     ) {
 
-        val refType = documentService.getDocumentType(doc.type!!)
+        val refType = documentService.getDocumentType(doc.type)
 
         val references = refType.pullReferences(doc)
 

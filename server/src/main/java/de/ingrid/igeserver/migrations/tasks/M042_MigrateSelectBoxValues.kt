@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.migrations.tasks
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -75,7 +76,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
             put("key", value)
         }
-        doc.data.put(field, updatedValue)
+        doc.data.set<JsonNode>(field, updatedValue)
     }
 
     private fun handleCodelistValue(codelistId: String, item: ObjectNode, catalogIdentifier: String, field: String, value: String): String? {
@@ -91,7 +92,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
                 put("key", null as String?)
                 put("value", value)
             }
-            item.put(field, updatedValue)
+            item.set<JsonNode>(field, updatedValue)
             null
         } else {
             entry.id
@@ -111,7 +112,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
             put("key", value.textValue())
         }
-        temporal.put(nestedField, updatedValue)
+        temporal.set<JsonNode>(nestedField, updatedValue)
     }
 
     private fun migrateArray(doc: Document, arrayField: String, field: String, codelistId: String? = null) {
@@ -138,7 +139,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 //                    put("key", null as String)
 //                    put("value", value)
                 }
-                item.put(field, updatedValue)
+                item.set<JsonNode>(field, updatedValue)
             }
         }
     }

@@ -1,12 +1,14 @@
 package de.ingrid.igeserver.exports.internal
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
@@ -40,7 +42,7 @@ class InternalExporter @Autowired constructor(@Lazy val documentService: Documen
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
             put("_version", "0.0.2")
-            put("resources", jacksonObjectMapper().createArrayNode().add(json))
+            set<ArrayNode>("resources", jacksonObjectMapper().createArrayNode().add(json))
         }
 
     }

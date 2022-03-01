@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.exports
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.iso19115.Iso19115Exporter
@@ -40,7 +41,7 @@ class IsoExport : AnnotationSpec() {
         val doc = Document().apply {
             title = "Test Export 1"
             data = jacksonObjectMapper().createObjectNode().apply {
-                put("keywords", jsonNode)
+                set<JsonNode>("keywords", jsonNode)
             }
         }
         val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
