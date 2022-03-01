@@ -1,37 +1,37 @@
-package igeserver.schema
+package de.ingrid.igeserver.schema
 
 import io.kotest.core.spec.style.AnnotationSpec
-import igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
-import igeserver.schema.SchemaUtils.Companion.getJsonFileContent
-import igeserver.schema.SchemaUtils.Companion.validate
+import de.ingrid.igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
+import de.ingrid.igeserver.schema.SchemaUtils.Companion.getJsonFileContent
+import de.ingrid.igeserver.schema.SchemaUtils.Companion.validate
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
-class UvpSchema : AnnotationSpec() {
+class McloudSchema : AnnotationSpec() {
 
-    val schema = "/uvp/schemes/admission-procedure.schema.json"
+    val schema = "/mcloud/schemes/mcloud.schema.json"
 
     @Test
     fun minimal() {
-        val json = getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
+        val json = getJsonFileContent("/export/mcloud/mcloud.minimal.json")
         val result = validate(json, schema)
         result.valid shouldBe true
     }
 
-    /*@Test
+    @Test
     fun more() {
         val json = getJsonFileContent("/export/mcloud/mcloud.json")
-        val result = validate(json)
-        assertThat(result.valid).isTrue
+        val result = validate(json, schema)
+        result.valid shouldBe true
     }
 
     @Test
     fun full() {
         val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
-        val result = validate(json)
-        assertThat(result.valid).isTrue
+        val result = validate(json, schema)
+        result.valid shouldBe true
     }
-*/
+
     @Test
     fun fail() {
         val json = "{}"
@@ -45,12 +45,13 @@ class UvpSchema : AnnotationSpec() {
             "_type",
             "title",
             "description",
-            "publisher",
-            "spatial",
-            "receiptDate",
-            "eiaNumber",
-            "prelimAssessment"
+            "addresses",
+            "mCloudCategories",
+            "DCATThemes",
+            "distributions",
+            "license"
         )
+
     }
 
 }

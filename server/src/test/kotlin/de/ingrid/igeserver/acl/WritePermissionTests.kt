@@ -1,4 +1,4 @@
-package igeserver.acl
+package de.ingrid.igeserver.acl
 
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.DocumentWrapperRepository

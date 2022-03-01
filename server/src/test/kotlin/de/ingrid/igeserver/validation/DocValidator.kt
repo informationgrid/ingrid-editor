@@ -1,4 +1,4 @@
-package igeserver.validation
+package de.ingrid.igeserver.validation
 
 import de.ingrid.igeserver.services.DocValidator
 import io.kotest.assertions.throwables.shouldThrow

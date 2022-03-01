@@ -1,4 +1,4 @@
-package igeserver.migrations
+package de.ingrid.igeserver.migrations
 
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.migrations.MigrationStrategy

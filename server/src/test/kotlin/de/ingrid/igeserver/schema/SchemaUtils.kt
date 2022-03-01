@@ -1,4 +1,4 @@
-package igeserver.schema
+package de.ingrid.igeserver.schema
 
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.validators.JsonSchemaValidator
