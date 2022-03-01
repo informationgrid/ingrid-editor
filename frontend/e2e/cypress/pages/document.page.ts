@@ -81,6 +81,9 @@ export class DocumentPage extends BasePage {
     cy.log('Create Document: ' + docName);
     cy.get(DocumentPage.Toolbar.NewDoc, { timeout: 18000 }).click();
     this.fillDialog(docName);
+    // wait, since creation of node leads to activation and navigation, which will result
+    // in jumping back to form (in case we jump to another page after creation)
+    cy.wait(500);
   }
 
   static createFolder(folderName: string, location?: string[]) {
