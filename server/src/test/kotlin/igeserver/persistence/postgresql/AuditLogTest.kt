@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.persistence.postgresql
+package igeserver.persistence.postgresql
 
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.repository.AuditLogRepository

@@ -1,5 +1,6 @@
-package de.ingrid.igeserver.imports.iso
+package igeserver.imports.iso
 
+import de.ingrid.igeserver.imports.iso.IsoImporter
 import io.kotest.core.spec.style.AnnotationSpec
 import java.io.IOException
 import java.net.URISyntaxException

@@ -1,36 +1,36 @@
-package schema
+package igeserver.schema
 
 import io.kotest.core.spec.style.AnnotationSpec
 import org.assertj.core.api.Assertions.assertThat
-import schema.SchemaUtils.Companion.extractMissingRequiredFields
-import schema.SchemaUtils.Companion.getJsonFileContent
-import schema.SchemaUtils.Companion.validate
+import igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
+import igeserver.schema.SchemaUtils.Companion.getJsonFileContent
+import igeserver.schema.SchemaUtils.Companion.validate
 
-class UvpSchema : AnnotationSpec() {
+class McloudSchema : AnnotationSpec() {
 
-    val schema = "/uvp/schemes/admission-procedure.schema.json"
+    val schema = "/mcloud/schemes/mcloud.schema.json"
 
     @Test
     fun minimal() {
-        val json = getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
+        val json = getJsonFileContent("/export/mcloud/mcloud.minimal.json")
         val result = validate(json, schema)
         assertThat(result.valid).isTrue
     }
 
-    /*@Test
+    @Test
     fun more() {
         val json = getJsonFileContent("/export/mcloud/mcloud.json")
-        val result = validate(json)
+        val result = validate(json, schema)
         assertThat(result.valid).isTrue
     }
 
     @Test
     fun full() {
         val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
-        val result = validate(json)
+        val result = validate(json, schema)
         assertThat(result.valid).isTrue
     }
-*/
+
     @Test
     fun fail() {
         val json = "{}"
@@ -45,11 +45,11 @@ class UvpSchema : AnnotationSpec() {
                 "_type",
                 "title",
                 "description",
-                "publisher",
-                "spatial",
-                "receiptDate",
-                "eiaNumber",
-                "prelimAssessment"
+                "addresses",
+                "mCloudCategories",
+                "DCATThemes",
+                "distributions",
+                "license"
             )
         )
     }

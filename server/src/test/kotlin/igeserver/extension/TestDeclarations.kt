@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.extension
+package igeserver.extension
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.*

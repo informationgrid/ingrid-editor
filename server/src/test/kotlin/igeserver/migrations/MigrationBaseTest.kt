@@ -1,5 +1,9 @@
-package de.ingrid.igeserver.migrations
+package igeserver.migrations
 
+import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.MigrationStrategy
+import de.ingrid.igeserver.migrations.Version
+import de.ingrid.igeserver.migrations.VersionCompare
 import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe

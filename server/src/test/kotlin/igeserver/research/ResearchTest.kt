@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.research
+package igeserver.research
 
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.IgeServer

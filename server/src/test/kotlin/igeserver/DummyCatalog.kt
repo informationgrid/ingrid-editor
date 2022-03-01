@@ -1,4 +1,4 @@
-package de.ingrid.igeserver
+package igeserver
 
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.profiles.CatalogProfile
