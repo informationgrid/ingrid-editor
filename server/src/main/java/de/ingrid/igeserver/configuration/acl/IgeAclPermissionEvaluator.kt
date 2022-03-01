@@ -1,12 +1,14 @@
 package de.ingrid.igeserver.configuration.acl
 
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
-import org.springframework.security.acls.domain.*
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl
+import org.springframework.security.acls.domain.PermissionFactory
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import java.io.Serializable
@@ -65,8 +67,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         }
 
 //        try {
-            val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
-            return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
+        return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
         /*} catch (ex: IdentityUnavailableException) {
             // in this case we probably want to create document where the DB-ID is not known yet
             // check for permission for parent
@@ -196,7 +198,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         return try {
             this.permissionFactory.buildFromName(permString)
         } catch (notfound: IllegalArgumentException) {
-            this.permissionFactory.buildFromName(permString.toUpperCase(Locale.ENGLISH))
+            this.permissionFactory.buildFromName(permString.uppercase(Locale.ENGLISH))
         }
     }
 }

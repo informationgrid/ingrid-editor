@@ -303,22 +303,14 @@ open class UsersApiController : UsersApi {
             user?.catalogs?.add(catalog)
         }
 
-        userRepo.save(user)
+        userRepo.save(user!!)
     }
 
     override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
 
-        val result: MutableList<String> = ArrayList()
-        val query = listOf(QueryField("catalogIds", id))
-        val findOptions = FindOptions(
-            queryType = QueryType.CONTAINS,
-            resolveReferences = false
-        )
-//            val info = dbService.findAll(UserInfoType::class, query, findOptions)
-        // TODO: migrate
-        val info = catalogService.getUserOfCatalog(id)
-
-        info.forEach { result.add(it.userId) }
+        val result = catalogService.getUserOfCatalog(id)
+            .map { it.userId }
+        
         return ResponseEntity.ok(result)
     }
 

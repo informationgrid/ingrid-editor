@@ -1,19 +1,17 @@
 package de.ingrid.igeserver.exports
 
-import de.ingrid.igeserver.services.ExportPostProcessors
-import javax.script.ScriptEngineManager
-import javax.script.SimpleScriptContext
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import de.ingrid.igeserver.exports.IsoXmlPostProcessor
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.services.ExportPostProcessors
 import org.apache.logging.log4j.LogManager
 import java.io.StringWriter
-import java.lang.Boolean
 import javax.script.ScriptContext
+import javax.script.ScriptEngineManager
 import javax.script.ScriptException
+import javax.script.SimpleScriptContext
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
@@ -35,7 +33,7 @@ class IsoXmlPostProcessor : ExportPostProcessors {
         try {
             context = JAXBContext.newInstance(Metadata::class.java)
             val marshaller = context.createMarshaller()
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE)
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
             marshaller.marshal(exportedDoc, stringWriter)
             xmlTree = xmlMapper.readTree(stringWriter.toString()) as ObjectNode
         } catch (e: JAXBException) {

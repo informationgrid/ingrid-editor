@@ -34,7 +34,7 @@ class KeycloakMockService : UserManagementService {
         return getUsersWithIgeRoles(principal)
     }
 
-    override fun getLatestLoginDate(principal: Closeable, login: String): Date? {
+    override fun getLatestLoginDate(client: Closeable, login: String): Date? {
         return Date()
     }
 
@@ -50,7 +50,7 @@ class KeycloakMockService : UserManagementService {
         return DummyClient()
     }
 
-    override fun getUser(principal: Closeable, login: String): User {
+    override fun getUser(client: Closeable, login: String): User {
         val index = config.logins?.indexOf(login) ?: throw NotFoundException("Login not found $login")
         return mapUser(index)
     }
