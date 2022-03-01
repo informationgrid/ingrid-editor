@@ -1,13 +1,10 @@
 package de.ingrid.igeserver.profiles.uvp.types
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 
 @Component
@@ -17,7 +14,7 @@ class UvpAdmissionProcedureType @Autowired constructor() : EntityType() {
 
     val log = logger()
 
-    override val jsonSchema = "/uvp/schemes/admission-procedure.json"
+    override val jsonSchema = "/uvp/schemes/admission-procedure.schema.json"
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)

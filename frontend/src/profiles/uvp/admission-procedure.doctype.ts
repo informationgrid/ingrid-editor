@@ -33,7 +33,7 @@ export class AdmissionProcedureDoctype extends UvpShared {
               needPublisher: {
                 expression: (ctrl) =>
                   ctrl.value
-                    ? ctrl.value.some((row) => row.type.key === "10")
+                    ? ctrl.value.some((row) => row.type.key === "7")
                     : false,
                 message:
                   "Es muss ein Ansprechpartner als Adresse angegeben sein",
