@@ -39,7 +39,7 @@ pipeline {
                         docker.image('ubuntu:16.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
                             withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache", "JAVA_HOME=${ tool 'jdk11' }/jdk-11"]) {
                                 nodejs(nodeJSInstallationName: 'nodejs14') {
-                                    sh './gradlew --no-daemon --info -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build'
+                                    sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build'
                                 }
                             }
                         }
