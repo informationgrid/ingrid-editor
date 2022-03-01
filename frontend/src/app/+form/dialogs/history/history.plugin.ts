@@ -12,6 +12,7 @@ import { TreeStore } from "../../../store/tree/tree.store";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { Router } from "@angular/router";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -31,13 +32,12 @@ export class HistoryPlugin extends Plugin {
   // when loading a node by back-Button, we don't want to add it to the stack!
   ignoreNextPush = false;
 
-  // the popup showing the last/next nodes
-  popupMenu = null;
-
   private tree: TreeQuery | AddressTreeQuery;
   private treeStore: TreeStore | AddressTreeStore;
+  private navigatePath: string;
 
   constructor(
+    private router: Router,
     private formToolbarService: FormToolbarService,
     private docTreeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
@@ -71,9 +71,11 @@ export class HistoryPlugin extends Plugin {
     if (this.forAddress) {
       this.tree = this.addressTreeQuery;
       this.treeStore = this.addressTreeStore;
+      this.navigatePath = "/address";
     } else {
       this.tree = this.docTreeQuery;
       this.treeStore = this.docTreeStore;
+      this.navigatePath = "/form";
     }
   }
 
@@ -212,6 +214,7 @@ export class HistoryPlugin extends Plugin {
     this.treeStore.update({
       explicitActiveNode: new ShortTreeNode(<string>item.id, item.title),
     });
+    this.router.navigate([this.navigatePath, { id: item._uuid }]);
   }
 
   private handleButtonState() {
