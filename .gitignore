@@ -65,3 +65,4 @@ server/server/build/tmp/
 /server/codelists
 /wrapper
 /frontend/.angular/
+/build-cache/
