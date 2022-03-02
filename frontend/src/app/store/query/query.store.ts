@@ -13,6 +13,7 @@ export interface QueryState extends EntityState<Query> {
     sql: {
       query: string;
     };
+    resultPage: number;
   };
 }
 
@@ -30,6 +31,7 @@ export function createInitialState(): QueryState {
       sql: {
         query: "",
       },
+      resultPage: 0,
     },
   };
 }

@@ -104,6 +104,8 @@
     </table>
     <mat-paginator
         [pageSizeOptions]="[10, 20, 50]"
+        (page)="updatePageInStore($event)"
+        [pageIndex]="pageIndex"
         showFirstLastButtons
     ></mat-paginator>
 </ng-container>

@@ -74,6 +74,7 @@
                 <ige-result-table
                     [result]="result"
                     [isLoading]="isSearching"
+                    [pageIndex]="pageIndex"
                     (open)="loadDataset($event)"
                     (remove)="removeDataset($event)"
                 ></ige-result-table>
@@ -91,6 +92,7 @@
                 *ngIf="!error"
                 [result]="result"
                 [isLoading]="isSearching"
+                [pageIndex]="pageIndex"
                 (open)="loadDataset($event)"
             ></ige-result-table>
 

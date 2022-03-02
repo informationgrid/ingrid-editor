@@ -185,11 +185,16 @@ export class ResearchService {
       .pipe(tap(() => this.queryStore.remove(id)));
   }
 
-  updateUIState(partialState: { search?: any; sqlSearch?: any }) {
+  updateUIState(partialState: {
+    search?: any;
+    sqlSearch?: any;
+    page?: number;
+  }) {
     this.queryStore.update((state) => {
       const newState: QueryState = {
         ui: {
           ...state.ui,
+          resultPage: partialState.page ?? 0,
         },
       };
       if (partialState.search) {

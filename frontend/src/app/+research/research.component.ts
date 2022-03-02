@@ -53,6 +53,10 @@ export class ResearchComponent implements OnInit {
 
   facetViewRefresher = new EventEmitter<void>();
 
+  // fields needed for recovering pagination when revisiting research page
+  pageIndex = 0;
+  private initialPage: number;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -68,6 +72,8 @@ export class ResearchComponent implements OnInit {
     let state = this.queryQuery.getValue();
     const query = this.route.snapshot.params.q ?? state.ui.search.query;
     const type = this.route.snapshot.params.type ?? state.ui.search.category;
+    this.initialPage = state.ui.resultPage;
+
     this.researchService.updateUIState({
       search: { query: query, category: type },
     });
@@ -94,6 +100,7 @@ export class ResearchComponent implements OnInit {
     combineLatest([this.facetInitialized, this.queryQuery.searchSelect$])
       .pipe(
         untilDestroyed(this),
+        filter(() => this.sessionService.getCurrentTab("research") === 0),
         filter((a) => a[0]),
         debounceTime(500),
         distinct()
@@ -101,7 +108,10 @@ export class ResearchComponent implements OnInit {
       .subscribe(() => this.startSearch());
 
     this.queryQuery.sqlSelect$
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter(() => this.sessionService.getCurrentTab("research") === 1)
+      )
       .subscribe(() => this.queryBySQL());
   }
 
@@ -280,6 +290,7 @@ export class ResearchComponent implements OnInit {
   handleTabChange(index: number) {
     logAction("Tab change");
     this.sessionService.updateCurrentTab("research", index);
+    this.pageIndex = 0;
     if (index === 0) {
       this.facetViewRefresher.emit();
     }
@@ -295,6 +306,12 @@ export class ResearchComponent implements OnInit {
 
   private updateHits(result: ResearchResponse) {
     this.result = result;
+
+    // update page if we come back to research page
+    if (this.initialPage !== null) {
+      this.pageIndex = this.initialPage;
+      this.initialPage = null;
+    }
   }
 
   private getFacetModel(): any {

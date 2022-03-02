@@ -34,4 +34,8 @@ export class SessionService {
   observeTabChange(page: TabPage): Observable<number> {
     return this.sessionQuery.select((state) => state.ui.currentTab[page]);
   }
+
+  getCurrentTab(page: TabPage): number {
+    return this.sessionQuery.getValue().ui.currentTab[page];
+  }
 }
