@@ -173,6 +173,7 @@ class KeycloakService : UserManagementService {
     }
 
     override fun getLatestLoginDate(client: Closeable, login: String): Date? {
+        // This only works for Users with an active Session
         try {
             val userId = getKeycloakUser(client, login).id
             val userSessions = (client as KeycloakCloseableClient).realm().users()[userId].userSessions

@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
-import kotlin.time.measureTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -128,7 +127,7 @@ open class UsersApiController : UsersApi {
             val frontendUser =
                 userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 
-            user.latestLogin = keycloakService.getLatestLoginDate(client, userId)
+            user.latestLogin = this.getMostRecentLoginForUser(userId)
 
             catalogService.applyIgeUserInfo(user, frontendUser)
             return ResponseEntity.ok(user)
@@ -138,10 +137,10 @@ open class UsersApiController : UsersApi {
 
     override fun list(principal: Principal): ResponseEntity<List<User>> {
 
-        // return all users for superadmins and katadmins
+        // return all users except superadmin for superadmins and katadmins
         if (authUtils.isAdmin(principal)) {
             val allUsers = catalogService.getAllCatalogUsers(principal)
-            return ResponseEntity.ok(allUsers)
+            return ResponseEntity.ok(allUsers.filter { it.role != "ige-super-admin" })
         }
 
         // return all users of assigned groups and subgroups for non-katadmins
@@ -208,7 +207,7 @@ open class UsersApiController : UsersApi {
             val user = keycloakService.getUser(client, userId)
 
 
-            val lastLogin = this.getLastLogin(principal, user.login)
+            val lastLogin = this.updateAndGetLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
 
             val userInfo = UserInfo(
@@ -231,11 +230,16 @@ open class UsersApiController : UsersApi {
         }
     }
 
-    private fun getLastLogin(principal: Principal, userIdent: String): Date? {
+    private fun getMostRecentLoginForUser(userIdent: String): Date? {
+        val recentLogins = catalogService.getRecentLoginsForUser(userIdent)
+        return if (recentLogins.isEmpty()) null else recentLogins[recentLogins.size - 1]
+    }
+
+    private fun updateAndGetLastLogin(principal: Principal, userIdent: String): Date? {
         keycloakService.getClient(principal).use { client ->
             val lastLoginKeyCloak = keycloakService.getLatestLoginDate(client, userIdent)
+            var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
             if (lastLoginKeyCloak != null) {
-                var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
                 when (recentLogins.size) {
                     0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
                     1 -> recentLogins.add(lastLoginKeyCloak)
@@ -255,9 +259,8 @@ open class UsersApiController : UsersApi {
                 if (user != null) {
                     catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
                 }
-                return recentLogins[0]
             }
-            return null
+            return if (recentLogins.isEmpty()) null else recentLogins[0]
         }
     }
 
