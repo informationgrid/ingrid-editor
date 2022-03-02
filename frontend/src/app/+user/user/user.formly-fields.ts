@@ -2,11 +2,13 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { of } from "rxjs";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 
 export const getUserFormFields = (
   roles: SelectOptionUi[],
   groups: Group[],
-  groupClickCallback: (id: string) => void = undefined
+  groupClickCallback: (id: string) => void = undefined,
+  roleChangeCallback: FormlyAttributeEvent = undefined
 ): FormlyFieldConfig[] => {
   return [
     {
@@ -32,6 +34,7 @@ export const getUserFormFields = (
         required: true,
         options: of(roles),
         simple: true,
+        change: roleChangeCallback,
       },
     },
     {

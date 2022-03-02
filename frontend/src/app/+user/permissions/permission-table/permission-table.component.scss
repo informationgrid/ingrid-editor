@@ -57,10 +57,12 @@ mat-button {
 }
 
 td mat-button:last-of-type {
-  border-radius: 0 5px 5px 0;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 td mat-button:first-of-type {
-  border-radius: 5px 0 0 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 
 .permission-table-footer {

@@ -64,7 +64,8 @@ export class UserComponent
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,
-        this.groupSelectCallback
+        this.groupSelectCallback,
+        this.roleChangeCallback
       );
     });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
@@ -77,6 +78,22 @@ export class UserComponent
       this.router.navigate(["/manage/group"]);
 
       if (doReload) this.groupService.forceReload$.next();
+    });
+  };
+
+  roleChangeCallback = (field, $event) => {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Rolle ändern",
+        message: "Hinweis: Die Änderung der Rolle ist katalogübergreifend",
+        buttons: [
+          {
+            text: "Ok",
+            alignRight: true,
+            emphasize: true,
+          },
+        ],
+      } as ConfirmDialogData,
     });
   };
 

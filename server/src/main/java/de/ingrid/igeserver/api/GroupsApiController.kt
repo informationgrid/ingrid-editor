@@ -66,6 +66,8 @@ class GroupsApiController @Autowired constructor(
 
         val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
 
+        // user is not allowed to edit groups he is a member of
+        // user is only allowed to edit groups he has rights for
         groups = groups
             .filter { userDoesNotBelongToGroup(userGroupIds, it) }
             .filter { userHasRightsForGroupsPermissions(userId, principal, it) }

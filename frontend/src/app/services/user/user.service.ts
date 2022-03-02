@@ -12,6 +12,7 @@ import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 
 @Injectable({
   providedIn: "root",
@@ -137,10 +138,16 @@ export class UserService {
 
   getUserFormFields(
     groups,
-    groupClickCallback: (id: string) => void = undefined
+    groupClickCallback: (id: string) => void = undefined,
+    roleChangeCallback: FormlyAttributeEvent = undefined
   ): FormlyFieldConfig[] {
     console.log("get user form fields");
-    return getUserFormFields(this.availableRoles, groups, groupClickCallback);
+    return getUserFormFields(
+      this.availableRoles,
+      groups,
+      groupClickCallback,
+      roleChangeCallback
+    );
   }
 
   getNewUserFormFields(): FormlyFieldConfig[] {
