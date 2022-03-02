@@ -14,6 +14,7 @@ import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { UserService } from "../../../services/user/user.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocumentAbstract } from "../../../store/document/document.model";
 
 export interface DocType {
   id: string;
@@ -105,16 +106,28 @@ export class CreateDocumentPlugin extends Plugin {
           take(1)
         )
         .subscribe((entity) => {
-          let selectedDocId = null;
-          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-          if (folder !== null) {
-            selectedDocId = folder.id;
-          }
+          let selectedDocId = this.determineValidParent(selectedDoc, query);
           this.showDialog(selectedDocId);
         });
     } else {
       this.showDialog(null);
     }
+  }
+
+  private determineValidParent(
+    selectedDoc: DocumentAbstract,
+    query: TreeQuery | AddressTreeQuery
+  ) {
+    let selectedDocId = null;
+    if (this.forAddress) {
+      selectedDocId = selectedDoc.id;
+    } else {
+      const folder = query.getFirstParentFolder(selectedDoc.id.toString());
+      if (folder !== null) {
+        selectedDocId = folder.id;
+      }
+    }
+    return selectedDocId;
   }
 
   showDialog(parentDocId: string) {

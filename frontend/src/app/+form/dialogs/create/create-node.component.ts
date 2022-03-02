@@ -168,10 +168,14 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private mapPath(path: ShortTreeNode[]) {
-    this.path =
-      this.query.getOpenedDocument()?._type !== "FOLDER"
-        ? path.slice(0, -1)
-        : [...path];
+    if (this.forAddress) {
+      this.path = [...path];
+    } else {
+      this.path =
+        this.query.getOpenedDocument()?._type !== "FOLDER"
+          ? path.slice(0, -1)
+          : [...path];
+    }
   }
 
   private initializeForDocumentsAndFolders() {

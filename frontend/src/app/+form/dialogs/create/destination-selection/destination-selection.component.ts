@@ -36,6 +36,7 @@ export class DestinationSelectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("for address", this.forAddress);
     if (this.forAddress) {
       this.rootNode = ADDRESS_ROOT_NODE;
     } else {
@@ -45,8 +46,10 @@ export class DestinationSelectionComponent implements OnInit {
     this.activeListItem.next(this.rootNode);
   }
 
-  disabledCondition(node: TreeNode) {
-    return node.type !== "FOLDER";
+  disabledCondition() {
+    return (node: TreeNode) => {
+      return !this.forAddress && node.type !== "FOLDER";
+    };
   }
 
   updateParent(node: string[], source: "Tree" | "List") {

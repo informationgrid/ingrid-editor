@@ -48,24 +48,44 @@
         matTreeNodePaddingIndent="24"
         (click)="!disabledCondition(node) && selectNode(node, $event)"
         [class.active]="node._id === activeNodeId"
+        [class.expanded]="node.isExpanded"
         [class.hide]="showOnlyFolders"
         [class.readonly]="!node.hasWritePermission"
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
     >
-        <div class="label">
-            <mat-checkbox
-                *ngIf="selection.multiSelectionModeEnabled"
-                [checked]="selection.isSelected(node)"
-                (click)="$event.stopImmediatePropagation()"
-                (change)="selection.nodeSelectionToggle(node, $event)"
-            ></mat-checkbox>
-            <mat-icon
-                [svgIcon]="node.iconClass"
-                [ngClass]="['document-icon', getStateClass(node)]"
-            ></mat-icon>
-            <span>{{ node.title }}</span>
+        <div style="width: 100%">
+            <div fxLayout="row">
+                <button
+                    mat-icon-button
+                    class="toggle"
+                    matTreeNodeToggle
+                    [disabled]="!isExpandable(node)"
+                    [attr.aria-label]="'toggle ' + node.title"
+                >
+                    <mat-icon
+                        *ngIf="isExpandable(node)"
+                        class="mat-icon-rtl-mirror expander animated"
+                    >
+                        {{ isLoading === node ? "autorenew" : "chevron_right" }}
+                    </mat-icon>
+                </button>
+            </div>
+
+            <div class="label">
+                <mat-checkbox
+                    *ngIf="selection.multiSelectionModeEnabled"
+                    [checked]="selection.isSelected(node)"
+                    (click)="$event.stopImmediatePropagation()"
+                    (change)="selection.nodeSelectionToggle(node, $event)"
+                ></mat-checkbox>
+                <mat-icon
+                    [svgIcon]="node.iconClass"
+                    [ngClass]="['document-icon', getStateClass(node)]"
+                ></mat-icon>
+                <span>{{ node.title }}</span>
+            </div>
         </div>
     </mat-tree-node>
 
@@ -93,8 +113,8 @@
             <div fxLayout="row">
                 <button
                     mat-icon-button
-                    matTreeNodeToggle
                     class="toggle"
+                    matTreeNodeToggle
                     [disabled]="!isExpandable(node)"
                     [attr.aria-label]="'toggle ' + node.title"
                 >
