@@ -24,11 +24,28 @@ class JsonSchemaValidator @Autowired constructor(
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val schema = payload.type.jsonSchema
         if (schema != null) {
-            // TODO: move function to utilities to prevent cycle
-            val json = documentService.convertToJsonNode(payload.document).toString()
-            validate(schema, json)
+            val json = payload.document.data.toString()
+
+            // add title to json, which isn't part of the data field
+            val jsonWithTitle = addGenericFields(json, payload)
+
+            validate(
+                schema,
+                jsonWithTitle
+            )
         }
         return payload
+    }
+
+    private fun addGenericFields(
+        json: String,
+        payload: PrePublishPayload
+    ): String {
+        val extraFields = """
+            "title": "${payload.document.title}",
+            "_type": "${payload.document.type}"
+        """.trimIndent()
+        return json.substringBeforeLast("}") + extraFields + "}"
     }
 
     fun validate(schemaFile: String, json: String): BasicOutput? {

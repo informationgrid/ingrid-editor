@@ -6,15 +6,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "title": {
-          "type": "string"
-        },
-        "hasWritePermission": {
-          "type": "boolean"
-        },
-        "hasOnlySubtreeWritePermission": {
-          "type": "boolean"
-        },
         "_uuid": {
           "type": "string",
           "format": "uuid"
@@ -22,35 +13,8 @@
         "_type": {
           "type": "string"
         },
-        "_version": {
-          "type": "integer"
-        },
-        "_created": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "_modified": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "_createdBy": {
+        "title": {
           "type": "string"
-        },
-        "_modifiedBy": {
-          "type": "string"
-        },
-        "_state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "_id": {
-          "type": "string",
-          "format": "integer"
         },
         "description": {
           "type": "string"

@@ -6,48 +6,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "hasWritePermission": {
-          "type": "boolean"
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
         },
-        "hasOnlySubtreeWritePermission": {
-          "type": "boolean"
-        },
-        "_version": {
-          "type": "integer"
-        },
-        "_created": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "_createdBy": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "_modified": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "_modifiedBy": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "_state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "_id": {
+        "_type": {
           "type": "string"
         },
         "title": {
@@ -56,13 +19,6 @@
             "null"
           ],
           "minLength": 1
-        },
-        "_uuid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "_type": {
-          "type": "string"
         },
         "events": {
           "type": [

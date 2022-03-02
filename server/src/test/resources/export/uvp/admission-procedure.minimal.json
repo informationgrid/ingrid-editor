@@ -1,16 +1,7 @@
 {
   "title": "Minimal",
-  "hasWritePermission": true,
-  "hasOnlySubtreeWritePermission": false,
   "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
   "_type": "UvpAdmissionProcedureDoc",
-  "_version": 4,
-  "_created": "2022-02-28T15:46:10.0596+01:00",
-  "_modified": "2022-03-01T15:36:32.0174351+01:00",
-  "_createdBy": "Mike Cat-Miller",
-  "_modifiedBy": "Mike Cat-Miller",
-  "_state": "PW",
-  "_id": "12158",
   "description": "Minimales Zulassungsverfahren",
   "publisher": [
     {

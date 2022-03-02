@@ -1,16 +1,7 @@
 {
   "title": "mCloudDoc1",
-  "hasWritePermission": true,
-  "hasOnlySubtreeWritePermission": false,
   "_uuid": "96b192b6-987e-4f64-8a37-c752f33a4536",
   "_type": "mCloudDoc",
-  "_version": 2,
-  "_created": "2022-02-28T13:53:25.342346+01:00",
-  "_modified": "2022-03-01T14:42:28.6357336+01:00",
-  "_createdBy": "Mike Cat-Miller",
-  "_modifiedBy": "Mike Cat-Miller",
-  "_state": "PW",
-  "_id": "12157",
   "description": "Testbeschreibung",
   "addresses": [
     {
