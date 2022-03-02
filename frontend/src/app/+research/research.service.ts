@@ -189,6 +189,7 @@ export class ResearchService {
     search?: any;
     sqlSearch?: any;
     page?: number;
+    sort?: any;
   }) {
     this.queryStore.update((state) => {
       const newState: QueryState = {
@@ -202,6 +203,9 @@ export class ResearchService {
       }
       if (partialState.sqlSearch) {
         newState.ui.sql = { ...state.ui.sql, ...partialState.sqlSearch };
+      }
+      if (partialState.sort) {
+        newState.ui.sort = partialState.sort;
       }
       return newState;
     });

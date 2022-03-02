@@ -10,12 +10,13 @@ import {
 } from "@angular/core";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
+import { MatSort, Sort } from "@angular/material/sort";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
 import { IgeDocument } from "../../models/ige-document";
+import { QueryQuery } from "../../store/query/query.query";
 
 export interface ShortResultInfo {
   uuid: string;
@@ -57,14 +58,17 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   totalHits = 0;
   profileIconsMap: {};
+  sortInfo: { column: string; direction: "asc" | "desc" | "" } = null;
 
   constructor(
     private profileService: ProfileService,
     private profileQuery: ProfileQuery,
-    private researchService: ResearchService
+    private researchService: ResearchService,
+    private queryQuery: QueryQuery
   ) {}
 
   ngOnInit(): void {
+    this.sortInfo = this.queryQuery.getValue().ui.sort;
     this.profileQuery.selectLoading().subscribe((isLoading) => {
       if (isLoading) return;
 
@@ -105,5 +109,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
         300
       );
     }
+  }
+
+  updateSortInStore($event: Sort) {
+    this.researchService.updateUIState({
+      sort: { column: $event.active, direction: $event.direction },
+    });
   }
 }
