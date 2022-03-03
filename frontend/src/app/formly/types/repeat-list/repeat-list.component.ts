@@ -10,6 +10,7 @@ import {
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { MatSelect } from "@angular/material/select";
 
 @UntilDestroy()
 @Component({
@@ -21,6 +22,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   @ViewChild("repeatListInput", { read: ElementRef })
   autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
+  @ViewChild(MatSelect) selector: MatSelect;
 
   onItemClick: (id: number) => void = () => {};
 
@@ -136,5 +138,19 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       this.parameterOptions?.find((param) => param.value + "" === option.value)
         ?.label ?? option.label
     );
+  }
+
+  onOptionClick($event: MouseEvent, option: SelectOptionUi) {
+    if (option.disabled) {
+      // do nothing
+      return;
+    }
+
+    this.addToList(option);
+    if (this.to.multiSelect || $event.ctrlKey) {
+      // don't close the selection panel for multi select or ctrl key selection
+    } else {
+      this.selector.close();
+    }
   }
 }
