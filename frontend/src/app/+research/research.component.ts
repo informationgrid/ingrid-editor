@@ -172,6 +172,7 @@ export class ResearchComponent implements OnInit {
 
     logAction("Load query");
     if (entity.type === "facet") {
+      this.sessionService.updateCurrentTab("research", 0);
       this.researchService.updateUIState({
         search: {
           category: (<FacetQuery>entity).model.type,
@@ -182,12 +183,11 @@ export class ResearchComponent implements OnInit {
           },
         },
       });
-      this.sessionService.updateCurrentTab("research", 0);
     } else {
+      this.sessionService.updateCurrentTab("research", 1);
       this.researchService.updateUIState({
         sqlSearch: { query: (<SqlQuery>entity).sql },
       });
-      this.sessionService.updateCurrentTab("research", 1);
     }
 
     this.updateControlsFromState();
