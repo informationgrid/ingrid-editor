@@ -250,25 +250,20 @@ describe('User', () => {
     cy.get('user-table').should('contain', 'Katalog');
     cy.get('user-table').should('contain', 'Majid');
 
-    cy.get('ige-search-field').type('Katalog');
-    cy.get('user-table').should('not.contain', 'Majid');
-    cy.get('user-table').should('contain', 'Katalog');
+    AdminUserPage.searchForUser('Katalog');
+    AdminUserPage.searchForUser('Katalog', 'Majid', false);
 
-    cy.get('ige-search-field').clear().type('Admin1');
-    cy.get('user-table').should('not.contain', 'Ercan');
-    cy.get('user-table').should('contain', 'Admin1');
+    AdminUserPage.searchForUser('Admin1');
+    AdminUserPage.searchForUser('Admin1', 'Ercan', false);
 
-    cy.get('ige-search-field').clear().type('me@wemove.com');
-    cy.get('user-table').should('not.contain', 'majid.ercan@wemove.com');
-    cy.get('user-table').should('contain', 'me@wemove.com');
+    AdminUserPage.searchForUser('me@wemove.com');
+    AdminUserPage.searchForUser('me@wemove.com', 'majid.ercan@wemove.com', false);
 
-    cy.get('ige-search-field').clear().type('wemove digital solutions');
-    cy.get('user-table').should('not.contain', 'Katalog Admin1');
-    cy.get('user-table').should('contain', 'wemove digital solutions');
+    AdminUserPage.searchForUser('wemove digital solutions');
+    AdminUserPage.searchForUser('wemove digital solutions', 'Katalog Admin1', false);
 
-    cy.get('ige-search-field').clear().type('ige2');
-    cy.get('user-table').should('not.contain', 'eins');
-    cy.get('user-table').should('contain', 'ige2');
+    AdminUserPage.searchForUser('ige2');
+    AdminUserPage.searchForUser('ige2', 'eins', false);
   });
 
   it('should find a user using her first- and lastname as search terms (#2596)', () => {

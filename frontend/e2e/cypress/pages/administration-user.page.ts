@@ -81,6 +81,18 @@ export class AdminUserPage extends BasePage {
     cy.wait('@correctAttempt').its('response.statusCode').should('eq', 200);
   }
 
+  static searchForUser(searchValue: string, result: string = '', shouldBeExist: boolean = true) {
+    cy.get('ige-search-field').type('t').clear().type(searchValue);
+    if (result == '') {
+      result = searchValue;
+    }
+    if (shouldBeExist) {
+      cy.get('user-table').should('contain', result);
+    } else {
+      cy.get('user-table').should('not.contain', result);
+    }
+  }
+
   static attemptIllegitimateApplyDialog() {
     cy.intercept('POST', '/api/users?newExternalUser=*').as('failingAttempt');
     cy.get('button').contains('Anlegen').click();
