@@ -104,18 +104,22 @@ export class FacetsComponent implements AfterViewInit {
 
     if (this.refreshView) {
       this.refreshView.pipe(untilDestroyed(this)).subscribe(() => {
-        // @ts-ignore
-        (<Map>this.leafletReference)._onResize();
-        if (Object.keys(this._parameter).length > 0) {
-          setTimeout(() =>
-            this.updateMap(this.convertParameterToLocation(this._parameter))
-          );
-        } else {
-          setTimeout(() =>
-            this.leafletService.zoomToInitialBox(this.leafletReference)
-          );
-        }
+        if (this.leaflet) this.refreshLeafletView();
       });
+    }
+  }
+
+  private refreshLeafletView(): void {
+    // @ts-ignore
+    (<Map>this.leafletReference)._onResize();
+    if (Object.keys(this._parameter).length > 0) {
+      setTimeout(() =>
+        this.updateMap(this.convertParameterToLocation(this._parameter))
+      );
+    } else {
+      setTimeout(() =>
+        this.leafletService.zoomToInitialBox(this.leafletReference)
+      );
     }
   }
 
