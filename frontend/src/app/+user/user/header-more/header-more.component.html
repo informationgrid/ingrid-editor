@@ -1,4 +1,10 @@
-<div *ngIf="showMore" [@slideDown] class="more-info" [formGroup]="form">
+<div
+    *ngIf="showMore"
+    [@slideDown]
+    data-cy="headerMoreData"
+    class="more-info"
+    [formGroup]="form"
+>
     <div fxLayout="row">
         <div>Zuletzt eingeloggt am</div>
         <div *ngIf="user.latestLogin">
