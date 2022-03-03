@@ -1,53 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "#/definitions/Address",
+  "$ref": "#/definitions/McloudAddress",
   "definitions": {
-    "Address": {
+    "McloudAddress": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "hasWritePermission": {
-          "type": "boolean"
-        },
-        "hasOnlySubtreeWritePermission": {
-          "type": "boolean"
-        },
-        "_version": {
-          "type": "integer"
-        },
-        "_created": {
-          "type": ["string", "null"],
-          "format": "date-time"
-        },
-        "_createdBy": {
-          "type": ["string", "null"]
-        },
-        "_modified": {
-          "type": ["string", "null"],
-          "format": "date-time"
-        },
-        "_modifiedBy": {
-          "type": ["string", "null"]
-        },
-        "_state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "_id": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string",
-          "minLength": 1
-        },
         "_uuid": {
           "type": "string",
           "format": "uuid"
         },
         "_type": {
           "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
         },
         "address": {
           "$ref": "#/definitions/AddressClass"
@@ -60,9 +28,6 @@
           "minItems": 1
         },
         "organization": {
-          "type": "string"
-        },
-        "_parent": {
           "type": "string"
         }
       },
