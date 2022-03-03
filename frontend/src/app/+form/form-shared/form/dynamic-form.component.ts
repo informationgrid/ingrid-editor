@@ -185,7 +185,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // only activate tree node (when rejecting unsaved changes dialog)
     // -> this is handled in sidebar-component now
-    // TODO: is this still used?
+    // this is used by the history plugin
+    // TODO: move functionality to sidebar component
     externalTreeNodeChange$.subscribe((node) => {
       this.activeId = node.id;
     });
@@ -335,9 +336,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (data === null) {
       return;
     }
-
-    // update tree state
-    this.activeId = data._id;
 
     const profile = data._type;
 
