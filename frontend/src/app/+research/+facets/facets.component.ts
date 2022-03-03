@@ -102,7 +102,7 @@ export class FacetsComponent implements AfterViewInit {
       )
       .subscribe();
 
-    if (this.refreshView) {
+    if (this.refreshView && this.leafletReference) {
       this.refreshView.pipe(untilDestroyed(this)).subscribe(() => {
         if (this.leaflet) this.refreshLeafletView();
       });
