@@ -1,7 +1,7 @@
 @import "src/variables";
 
 :host {
-  flex: 1;
+  overflow: hidden;
 }
 
 .upload {
