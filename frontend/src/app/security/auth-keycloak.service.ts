@@ -9,7 +9,7 @@ export class AuthKeycloakService extends AuthenticationService {
 
   refreshToken() {
     this.keycloak.updateToken(60).catch((error) => {
-      throw new IgeError(error);
+      console.error("Token could not be updated");
     });
   }
 

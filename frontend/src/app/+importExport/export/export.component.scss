@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  overflow: hidden;
+}
+
 mat-horizontal-stepper {
   border-radius: 9px;
 }

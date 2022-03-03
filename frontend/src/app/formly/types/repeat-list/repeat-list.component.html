@@ -36,6 +36,7 @@
     class="width-100"
 >
     <mat-select
+        #selector
         [placeholder]="to.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
@@ -45,7 +46,9 @@
             [value]="option"
             [disabled]="option.disabled"
         >
-            {{ option.label }}
+            <div (click)="onOptionClick($event, option)">
+                {{ option.label }}
+            </div>
         </mat-option>
     </mat-select>
 </mat-form-field>

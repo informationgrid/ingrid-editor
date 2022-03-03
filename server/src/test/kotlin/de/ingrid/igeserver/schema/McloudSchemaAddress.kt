@@ -7,45 +7,28 @@ import de.ingrid.igeserver.schema.SchemaUtils.Companion.validate
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
-class McloudSchema : AnnotationSpec() {
+class McloudSchemaAddress : AnnotationSpec() {
 
-    private val schema = "/mcloud/schemes/mcloud.schema.json"
-    private val requiredFields = listOf(
-        "_uuid",
-        "_type",
-        "title",
-        "description",
-        "addresses",
-        "mCloudCategories",
-        "DCATThemes",
-        "distributions",
-        "license"
-    )
+    private val schema = "/mcloud/schemes/address.schema.json"
+    private val requiredFields = listOf("_uuid", "_type", "organization", "contact")
 
 
     @Test
-    fun minimal() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.minimal.json")
+    fun minAddress() {
+        val json = getJsonFileContent("/export/mcloud/mcloud-address.minimal.json")
         val result = validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
-    fun more() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.json")
+    fun fullAddress() {
+        val json = getJsonFileContent("/export/mcloud/mcloud-address.full.json")
         val result = validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
-    fun full() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
-        val result = validate(json, schema)
-        result.valid shouldBe true
-    }
-
-    @Test
-    fun fail() {
+    fun failAddress() {
         val json = "{}"
         val result = validate(json, schema)
         result.valid shouldBe false
@@ -54,5 +37,4 @@ class McloudSchema : AnnotationSpec() {
         requiredErrors.size shouldBeExactly requiredFields.size
         requiredErrors shouldBe requiredFields
     }
-
 }

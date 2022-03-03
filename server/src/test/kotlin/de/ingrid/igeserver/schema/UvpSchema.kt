@@ -9,7 +9,18 @@ import io.kotest.matchers.shouldBe
 
 class UvpSchema : AnnotationSpec() {
 
-    val schema = "/uvp/schemes/admission-procedure.schema.json"
+    private val schema = "/uvp/schemes/admission-procedure.schema.json"
+    private val requiredFields = listOf(
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "publisher",
+        "spatial",
+        "receiptDate",
+        "eiaNumber",
+        "prelimAssessment"
+    )
 
     @Test
     fun minimal() {
@@ -39,18 +50,8 @@ class UvpSchema : AnnotationSpec() {
         result.valid shouldBe false
         val requiredErrors = extractMissingRequiredFields(result)
 
-        requiredErrors.size shouldBeExactly 9
-        requiredErrors shouldBe listOf(
-            "_uuid",
-            "_type",
-            "title",
-            "description",
-            "publisher",
-            "spatial",
-            "receiptDate",
-            "eiaNumber",
-            "prelimAssessment"
-        )
+        requiredErrors.size shouldBeExactly requiredFields.size
+        requiredErrors shouldBe requiredFields
     }
 
 }
