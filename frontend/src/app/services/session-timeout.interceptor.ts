@@ -87,8 +87,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     });
 
     if (time <= 0) {
-      const error = new IgeError();
-      error.setMessage(
+      const error = new IgeError(
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
       );
       this.modalService.showIgeError(error);
