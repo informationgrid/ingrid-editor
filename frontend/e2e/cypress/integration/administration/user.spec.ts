@@ -227,12 +227,12 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
 
     // check fields "Zuletzt eingeloggt", "Erstellt am", "Geändert am" and ID/login
-    cy.get('.user-title [data-mat-icon-type=font]').click();
-    cy.get('.more-info').should('be.visible');
-    cy.get('.more-info').contains('Zuletzt eingeloggt');
-    cy.get('.more-info').contains('Erstellt am');
-    cy.get('.more-info').contains('Geändert am');
-    cy.get('.more-info').contains(loginEntry);
+    cy.get('[data-cy=showMoreData]').click();
+    cy.get('[data-cy=headerMoreData]').should('be.visible');
+    cy.get('[data-cy=headerMoreData]').contains('Zuletzt eingeloggt');
+    cy.get('[data-cy=headerMoreData]').contains('Erstellt am');
+    cy.get('[data-cy=headerMoreData]').contains('Geändert am');
+    cy.get('[data-cy=headerMoreData]').contains(loginEntry);
 
     // compare the entry in ID/login with the Login- field
     cy.get('.user-title').contains(username);
