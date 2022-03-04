@@ -28,7 +28,7 @@ describe('Read Only Documents', () => {
     DocumentPage.createDocument(tempLocalFile);
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addDocumentToGroup(tempLocalFile, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
     AdminGroupPage.saveGroup();
@@ -100,33 +100,35 @@ describe('Read Only Documents', () => {
   });
 
   it('should be able to copy a read only document #3512', function () {
-    const readOnlyFolder = 'Ordner_Ebene_2A';
-    const documentToCopy = 'Datum_Ebene_3_3';
+    const readOnlyFolder = 'Folder1 For Meta2 ';
+    const documentToCopy = 'document1_meta2';
+
+    // logout
+    cy.kcLogout();
+
+    // login as super admin
+    cy.kcLogin('user');
+
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_nur_daten');
-    cy.get('.user-title').contains('gruppe_nur_daten');
+    AdminGroupPage.selectGroup('group1_meta2');
+    cy.get('.user-title').contains('group1_meta2');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
     AdminGroupPage.saveGroup();
-
+    // logout from super user and login as meta2
+    cy.kcLogout();
+    cy.kcLogin('meta2');
     DocumentPage.visit();
+
     // try to copy a document from the read-only folder to another folder
-    Tree.openNode(['Ordner_Ebene_2A', documentToCopy]);
+    Tree.openNode([readOnlyFolder, 'Sub Folder', documentToCopy]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
-    Tree.openNodeInsideDialog(['Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    Tree.openNodeInsideDialog(['Folder2 For Meta2']);
     Tree.confirmCopy();
 
-    Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', documentToCopy]);
-    // set access right back to 'write'
-    // TODO: use new group to prevent reset action
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_nur_daten');
-    cy.get('.user-title').contains('gruppe_nur_daten');
-    UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Daten');
-    AdminGroupPage.saveGroup();
+    Tree.openNode(['Folder2 For Meta2', documentToCopy]);
   });
 
   it('should not be able to edit fields in read only document #3512', function () {
