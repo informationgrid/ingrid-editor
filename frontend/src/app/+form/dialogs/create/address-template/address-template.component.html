@@ -14,6 +14,7 @@
                     data-cy="create-address-firstName"
                     formControlName="firstName"
                     autocomplete="off"
+                    (keyup.enter)="create.next()"
                 />
             </mat-form-field>
         </div>
@@ -25,6 +26,7 @@
                     data-cy="create-address-lastName"
                     autocomplete="off"
                     formControlName="lastName"
+                    (keyup.enter)="create.next()"
                 />
             </mat-form-field>
         </div>
@@ -39,6 +41,7 @@
                 data-cy="create-address-organization"
                 name="organization"
                 formControlName="organization"
+                (keyup.enter)="create.next()"
             />
         </mat-form-field>
     </ng-template>

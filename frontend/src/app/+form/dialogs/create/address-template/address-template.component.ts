@@ -16,7 +16,6 @@ export class AddressTemplateComponent implements OnInit {
   @Input() isPerson: boolean;
 
   @Output() create = new EventEmitter();
-  @Output() docType = new EventEmitter();
 
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null

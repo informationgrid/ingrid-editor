@@ -98,6 +98,8 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
+    if (this.formGroup.invalid) return;
+
     if (this.isFolder || !this.forAddress) {
       await this.handleDocumentCreate();
     } else {

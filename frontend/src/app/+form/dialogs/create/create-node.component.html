@@ -19,12 +19,14 @@
                     *ngIf="isFolder || !forAddress; else addressForm"
                     [isFolder]="isFolder"
                     [form]="formGroup"
+                    (create)="handleCreate()"
                 ></ige-document-template>
 
                 <ng-template #addressForm>
                     <ige-address-template
                         [form]="formGroup"
                         [isPerson]="isPerson"
+                        (create)="handleCreate()"
                     ></ige-address-template>
                 </ng-template>
 
