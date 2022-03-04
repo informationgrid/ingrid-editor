@@ -70,6 +70,7 @@ export class ProfileService {
         label: doctype.label,
         iconClass: doctype.iconClass,
         isAddressProfile: doctype.isAddressType,
+        addressType: doctype.addressType,
         hasOptionalFields: doctype.hasOptionalFields,
       };
     });

@@ -1,5 +1,5 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Doctype } from "../app/services/formular/doctype";
+import { AddressType, Doctype } from "../app/services/formular/doctype";
 import { merge, Observable } from "rxjs";
 import {
   CodelistService,
@@ -59,6 +59,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   helpIds: string[];
 
   hasOptionalFields: boolean;
+
+  addressType: AddressType;
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();

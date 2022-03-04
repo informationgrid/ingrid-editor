@@ -16,5 +16,6 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
     codelistQuery: CodelistQuery
   ) {
     super(storageService, codelistService, codelistQuery);
+    this.addressType = "organization";
   }
 }

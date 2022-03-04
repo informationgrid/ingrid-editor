@@ -15,103 +15,31 @@
                 fxLayout="column"
                 [formGroup]="formGroup"
             >
-                <ng-container *ngIf="isFolder || !forAddress; else addressForm">
-                    <div class="dlg-field-label required">Titel*</div>
-                    <mat-form-field appearance="outline">
-                        <input
-                            igeFocus
-                            matInput
-                            formControlName="title"
-                            data-cy="create-title"
-                            placeholder="Eingeben..."
-                            autocomplete="off"
-                            (keyup.enter)="handleCreate()"
-                            required
-                        />
-                        <mat-error>Bitte geben Sie einen Titel ein</mat-error>
-                    </mat-form-field>
-
-                    <ng-container *ngIf="numDocumentTypes > 1">
-                        <div class="dlg-create-place" id="doc-type">
-                            Datensatztyp wählen:
-                        </div>
-                        <ige-document-list-item
-                            [docs]="documentTypes"
-                            showSelection="true"
-                            [denseMode]="true"
-                            [hideDivider]="true"
-                            [setActiveItem]="initialActiveDocumentType"
-                            (select)="setDocType($event)"
-                        ></ige-document-list-item>
-                    </ng-container>
-                </ng-container>
+                <ige-document-template
+                    *ngIf="isFolder || !forAddress; else addressForm"
+                    [form]="formGroup"
+                ></ige-document-template>
 
                 <ng-template #addressForm>
-                    <div
-                        *ngIf="addressOnlyOrganization; else defaultText"
-                        class="dlg-field-label"
-                    >
-                        Legen Sie eine Organisation an.<br />Tragen Sie dafür
-                        die Organisationsbezeichnung ein.
-                    </div>
-                    <ng-template #defaultText>
-                        <div class="dlg-field-label">
-                            Legen Sie eine Person oder Organisation an.<br />Tragen
-                            Sie dafür den Namen oder die
-                            Organisationsbezeichnung ein.
-                        </div>
-                    </ng-template>
-
-                    <ng-container *ngIf="numDocumentTypes > 1">
-                        <div class="dlg-create-place" id="address-type">
-                            Adresstyp wählen:
-                        </div>
-                        <ige-document-list-item
-                            [docs]="documentTypes"
-                            showSelection="true"
-                            [denseMode]="true"
-                            [hideDivider]="true"
-                            [setActiveItem]="initialActiveDocumentType"
-                            (select)="setDocType($event)"
-                        ></ige-document-list-item>
-                    </ng-container>
-
-                    <div
-                        *ngIf="!addressOnlyOrganization"
-                        fxFlex
-                        fxLayout="row"
-                        fxLayoutGap="24px"
-                    >
-                        <mat-form-field appearance="outline" class="width-100">
-                            <mat-label>Vorname</mat-label>
-                            <input
-                                matInput
-                                data-cy="create-address-firstName"
-                                formControlName="firstName"
-                                cdkFocusInitial
-                                autocomplete="off"
-                            />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" class="width-100">
-                            <mat-label>Nachname</mat-label>
-                            <input
-                                matInput
-                                data-cy="create-address-lastName"
-                                autocomplete="off"
-                                formControlName="lastName"
-                            />
-                        </mat-form-field>
-                    </div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Organisation</mat-label>
-                        <input
-                            matInput
-                            data-cy="create-address-organization"
-                            name="organization"
-                            formControlName="organization"
-                        />
-                    </mat-form-field>
+                    <ige-address-template
+                        [form]="formGroup"
+                        [isPerson]="isPerson"
+                    ></ige-address-template>
                 </ng-template>
+
+                <ng-container *ngIf="documentTypes?.length > 1">
+                    <div class="dlg-create-place" id="doc-type">
+                        Datensatz/Adresstyp wählen:
+                    </div>
+                    <ige-document-list-item
+                        [docs]="documentTypes"
+                        showSelection="true"
+                        [denseMode]="true"
+                        [hideDivider]="true"
+                        [setActiveItem]="initialActiveDocumentType"
+                        (select)="setDocType($event)"
+                    ></ige-document-list-item>
+                </ng-container>
 
                 <div class="dlg-field-label dlg-create-place">Ordner</div>
                 <ige-breadcrumb

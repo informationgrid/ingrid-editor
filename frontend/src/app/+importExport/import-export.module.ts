@@ -21,6 +21,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { UploadModule } from "../shared/upload/upload.module";
+import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { UploadModule } from "../shared/upload/upload.module";
     PageTemplateModule,
     FormSharedModule,
     UploadModule,
+    BreadcrumbModule,
   ],
   declarations: [OverviewComponent, ImportComponent, ExportComponent],
   providers: [ImportExportService],

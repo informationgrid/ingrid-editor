@@ -1,0 +1,16 @@
+<div [formGroup]="form" fxLayout="column">
+    <div class="dlg-field-label required">Titel*</div>
+    <mat-form-field appearance="outline">
+        <input
+            igeFocus
+            matInput
+            formControlName="title"
+            data-cy="create-title"
+            placeholder="Eingeben..."
+            autocomplete="off"
+            (keyup.enter)="create.next()"
+            required
+        />
+        <mat-error>Bitte geben Sie einen Titel ein</mat-error>
+    </mat-form-field>
+</div>

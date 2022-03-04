@@ -7,7 +7,7 @@ import { IgeDocument } from "../../app/models/ige-document";
 import { map } from "rxjs/operators";
 
 export class AddressDoctype extends BaseDoctype {
-  label = "Adresse";
+  label = "Person";
 
   iconClass = "Freie-Adresse";
 
