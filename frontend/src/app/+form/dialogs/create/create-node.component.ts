@@ -1,21 +1,17 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { filter, map, take, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
   ADDRESS_ROOT_NODE,
   DOCUMENT_ROOT_NODE,
-  DocumentAbstract,
 } from "../../../store/document/document.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { BehaviorSubject, Observable } from "rxjs";
-import { ProfileQuery } from "../../../store/profile/profile.query";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import { ProfileAbstract } from "../../../store/profile/profile.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 
@@ -34,15 +30,10 @@ export class CreateNodeComponent implements OnInit {
   title = "Neuen Ordner anlegen";
   parent: string = null;
   forAddress: boolean;
-  addressOnlyOrganization = false;
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
   formGroup: FormGroup;
-  documentTypes: DocumentAbstract[];
-  initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
-  );
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.isAdmin();
   selectedLocation: string = null;
@@ -55,7 +46,6 @@ export class CreateNodeComponent implements OnInit {
     private addressTreeQuery: AddressTreeQuery,
     private router: Router,
     private fb: FormBuilder,
-    private profileQuery: ProfileQuery,
     private documentService: DocumentService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions
@@ -141,22 +131,6 @@ export class CreateNodeComponent implements OnInit {
     }
   }
 
-  setDocType(docType: DocumentAbstract) {
-    this.formGroup.get("choice").setValue(docType.id);
-    this.isPerson = docType._type !== "organization";
-    if (this.forAddress) {
-      if (this.isPerson) {
-        this.formGroup.get("organization").clearValidators();
-        this.formGroup.get("organization").updateValueAndValidity();
-        this.formGroup.get("lastName").setValidators(Validators.required);
-      } else {
-        this.formGroup.get("lastName").clearValidators();
-        this.formGroup.get("lastName").updateValueAndValidity();
-        this.formGroup.get("organization").setValidators(Validators.required);
-      }
-    }
-  }
-
   quickBreadcrumbChange(id: string) {
     this.parent = id;
     const index = this.path.findIndex((item) => item.id === id);
@@ -173,22 +147,9 @@ export class CreateNodeComponent implements OnInit {
       title: ["", Validators.required],
       choice: ["", Validators.required],
     });
-    if (this.isFolder) {
-      this.setDocType({ id: "FOLDER" } as DocumentAbstract);
-    } else {
-      this.initializeDocumentTypes(this.profileQuery.documentProfiles);
-    }
   }
 
   private initializeForAddresses() {
-    if (this.config.$userInfo.getValue().currentCatalog.type === "mcloud") {
-      this.addressOnlyOrganization = true;
-    }
-    this.initializeFormGroupForAddress();
-    this.initializeDocumentTypes(this.profileQuery.addressProfiles);
-  }
-
-  private initializeFormGroupForAddress() {
     this.formGroup = this.fb.group({
       firstName: [""],
       lastName: [""],
@@ -197,42 +158,18 @@ export class CreateNodeComponent implements OnInit {
     });
   }
 
-  private initializeDocumentTypes(profiles: Observable<ProfileAbstract[]>) {
-    profiles
-      .pipe(
-        filter((types) => types.length > 0),
-        map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => this.setDocType(types[0])),
-        tap((types) => this.initialActiveDocumentType.next(types[0])),
-        take(1)
-      )
-      .subscribe((result) => (this.documentTypes = result));
-  }
-
-  private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {
-    return result
-      .map((profile) => {
-        return {
-          id: profile.id,
-          title: profile.label,
-          icon: profile.iconClass,
-          _type: profile.addressType,
-          _state: "P",
-        } as DocumentAbstract;
-      })
-      .sort((a, b) => a.title.localeCompare(b.title));
-  }
-
   private async handleAddressCreate() {
     const newAddress = new IgeDocument(
       this.formGroup.get("choice").value,
       this.parent
     );
-    if (this.isPerson) {
+
+    const organization = this.formGroup.get("organization").value;
+    if (organization) {
+      newAddress.organization = organization;
+    } else {
       newAddress.firstName = this.formGroup.get("firstName").value;
       newAddress.lastName = this.formGroup.get("lastName").value;
-    } else {
-      newAddress.organization = this.formGroup.get("organization").value;
     }
     newAddress.title = this.documentService.createAddressTitle(newAddress);
     const savedDoc = await this.saveForm(newAddress);

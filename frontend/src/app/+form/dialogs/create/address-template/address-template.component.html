@@ -42,4 +42,16 @@
             />
         </mat-form-field>
     </ng-template>
+
+    <ng-container *ngIf="documentTypes?.length > 1">
+        <div class="dlg-create-place" id="doc-type">Adresstyp wählen:</div>
+        <ige-document-list-item
+            [docs]="documentTypes"
+            showSelection="true"
+            [denseMode]="true"
+            [hideDivider]="true"
+            [setActiveItem]="initialActiveDocumentType"
+            (select)="setDocType($event)"
+        ></ige-document-list-item>
+    </ng-container>
 </div>
