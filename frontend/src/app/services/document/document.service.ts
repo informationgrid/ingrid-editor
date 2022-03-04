@@ -584,7 +584,7 @@ export class DocumentService {
       return {
         id: doc._id ? doc._id.toString() : null,
         icon: this.profileService.getDocumentIcon(doc),
-        title: doc.title || "-Ohne Titel-",
+        title: doc.title || "-Kein Titel-",
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
