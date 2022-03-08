@@ -3,9 +3,12 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { FormGroup, Validators } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
-import { filter, map, take, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 
+@UntilDestroy()
 @Component({
   selector: "ige-address-template",
   templateUrl: "./address-template.component.html",
@@ -15,6 +18,10 @@ export class AddressTemplateComponent implements OnInit {
   @Input() form: FormGroup;
   @Input() isPerson: boolean;
 
+  @Input() set parent(value: string) {
+    this.initializeDocumentTypes(this.profileQuery.addressProfiles, value);
+  }
+
   @Output() create = new EventEmitter();
 
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
@@ -23,20 +30,25 @@ export class AddressTemplateComponent implements OnInit {
 
   documentTypes: DocumentAbstract[];
 
-  constructor(private profileQuery: ProfileQuery) {}
+  constructor(
+    private profileQuery: ProfileQuery,
+    private docBehaviours: DocBehavioursService
+  ) {}
 
-  ngOnInit(): void {
-    this.initializeDocumentTypes(this.profileQuery.addressProfiles);
-  }
+  ngOnInit(): void {}
 
-  private initializeDocumentTypes(profiles: Observable<ProfileAbstract[]>) {
+  private initializeDocumentTypes(
+    profiles: Observable<ProfileAbstract[]>,
+    parent: string
+  ) {
     profiles
       .pipe(
+        untilDestroyed(this),
         filter((types) => types.length > 0),
+        map((types) => this.filterDocTypesByParent(types, parent)),
         map((types) => this.prepareDocumentTypes(types)),
         tap((types) => this.setDocType(types[0])),
-        tap((types) => this.initialActiveDocumentType.next(types[0])),
-        take(1)
+        tap((types) => this.initialActiveDocumentType.next(types[0]))
       )
       .subscribe((result) => (this.documentTypes = result));
   }
@@ -74,5 +86,12 @@ export class AddressTemplateComponent implements OnInit {
       firstName.reset();
       organization.setValidators(Validators.required);
     }
+  }
+
+  private filterDocTypesByParent(
+    types: ProfileAbstract[],
+    parent: string
+  ): ProfileAbstract[] {
+    return this.docBehaviours.filterDocTypesByParent(types, parent);
   }
 }

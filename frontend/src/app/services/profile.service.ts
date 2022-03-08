@@ -46,6 +46,10 @@ export class ProfileService {
     return this.doctypes;
   }
 
+  getProfile(id: string): Doctype {
+    return this.getProfiles().find((profile) => profile.id === id);
+  }
+
   getDocumentIcon(doc: IgeDocument): string {
     const iconClass = this.doctypes
       .filter((doctype) => doctype.id === doc._type)

@@ -14,6 +14,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 
 export interface CreateOptions {
   parent: string;
@@ -47,10 +48,10 @@ export class CreateNodeComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private documentService: DocumentService,
+    private docBehaviours: DocBehavioursService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions
   ) {
-    this.parent = data.parent;
     this.isFolder = data.isFolder;
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.forAddress
@@ -140,8 +141,14 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private mapPath(path: ShortTreeNode[]) {
-    const isFolder = this.query.getOpenedDocument()?._type === "FOLDER";
-    this.path = this.forAddress || isFolder ? [...path] : path.slice(0, -1);
+    const type = this.query.getOpenedDocument()?._type;
+    const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
+      this.forAddress,
+      { type: type }
+    );
+
+    this.path = cannotAddBelow ? path.slice(0, -1) : [...path];
+    this.parent = this.path[this.path.length - 1]?.id ?? null;
   }
 
   private initializeForDocumentsAndFolders() {
