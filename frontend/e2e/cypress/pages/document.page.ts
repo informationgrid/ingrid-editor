@@ -215,7 +215,7 @@ export class DocumentPage extends BasePage {
           ref: {
             title: 'Published Testorganization',
             _uuid: '214ca5bf-da1b-4003-b7b6-e73a2ef0ec10',
-            _type: 'AddressDoc',
+            _type: 'McloudAddressDoc',
             _version: 2,
             _created: '2020-11-05T11:12:57.000248Z',
             _modified: '2020-11-05T11:13:19.075264Z',

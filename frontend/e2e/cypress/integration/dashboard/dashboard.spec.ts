@@ -58,7 +58,7 @@ describe('Dashboard', () => {
       lastName: addressLastName,
       organization: 'org',
       title: 'APICreatedAddress' + Utils.randomString(),
-      _type: 'AddressDoc',
+      _type: 'McloudAddressDoc',
       contact: [{ type: 1, connection: '0123456789' }]
     };
     // check state of display before creation of new documents
