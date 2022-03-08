@@ -9,7 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M041_AddPendingColumn : MigrationBase("0.44") {
+class M044_AddPendingColumn : MigrationBase("0.44") {
 
     private var log = logger()
 

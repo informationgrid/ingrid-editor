@@ -14,13 +14,13 @@ open class ConcurrentModificationException: ConflictException {
 
     companion object {
         private const val ERROR_CODE = "VERSION_CONFLICT"
-        private const val ERROR_TEXT = "Could not update object with id '\$id'. The database version is newer than the record version."
+        private const val ERROR_TEXT = "Could not update object with id '%s'. The database version is newer than the record version."
 
         /**
          * Factory method for a conflicting resource
          */
         fun withConflictingResource(id: String, databaseVersion: Int, recordVersion: Int, cause: Throwable? = null) : ConcurrentModificationException {
-            return ConcurrentModificationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT,
+            return ConcurrentModificationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT.format(id),
                     mapOf("id" to id, "databaseVersion" to databaseVersion, "recordVersion" to recordVersion), cause)
         }
     }

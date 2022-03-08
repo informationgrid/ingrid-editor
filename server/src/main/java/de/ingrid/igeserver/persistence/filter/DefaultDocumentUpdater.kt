@@ -34,7 +34,7 @@ class DefaultDocumentUpdater @Autowired constructor(
 
         // update parent in case of moving a document
         val parent = payload.document.data.get(FIELD_PARENT)
-        if (!parent.isNull) {
+        if (parent != null) {
             try {
                 payload.wrapper.parent = docWrapperRepo.findById(parent.asInt()).get()
             } catch (ex: EmptyResultDataAccessException) {
@@ -54,22 +54,22 @@ class DefaultDocumentUpdater @Autowired constructor(
         with(payload.document) {
             // remove parent from document (only store parent in wrapper)
             data.remove(FIELD_PARENT)
-            
+
             // set catalog information
             // TODO: a document does not really need this information since the document wrapper takes care of it
             catalog = catalogRepo.findByIdentifier(context.catalogId)
-    
+
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(context.principal!!)
-        
+
             // set server side fields from previous document version
             id = id ?: draftId
             created = createdDate
             createdby = createdBy
-            
+
             // handle linked docs
             payload.type.pullReferences(this)
-    
+
             // call entity type specific hook
             payload.type.onUpdate(this)
         }
