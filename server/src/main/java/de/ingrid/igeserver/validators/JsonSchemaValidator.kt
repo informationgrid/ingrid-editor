@@ -42,6 +42,7 @@ class JsonSchemaValidator @Autowired constructor(
         payload: PrePublishPayload
     ): String {
         val extraFields = """
+            ,
             "title": "${payload.document.title}",
             "_type": "${payload.document.type}"
         """.trimIndent()
