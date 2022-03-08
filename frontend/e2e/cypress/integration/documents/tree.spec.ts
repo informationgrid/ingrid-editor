@@ -58,7 +58,10 @@ describe('Tree', () => {
     });
 
     it('should move a published document from root path into an opened folder', () => {
-      const docName = 'TestDocResearch4';
+      const docName = 'Published can be Moved' + Utils.randomString();
+
+      DocumentPage.CreateFullMcloudDocumentWithAPI(docName, true, null);
+      cy.reload();
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 

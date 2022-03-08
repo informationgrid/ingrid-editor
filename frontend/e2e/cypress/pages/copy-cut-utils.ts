@@ -57,16 +57,18 @@ export class CopyCutUtils {
       // if multiple nodes are selected we only need drag one of the nodes without click on it
       // otherwise we need to click on the node before drag action
       if (moveMultipleNodes) {
-        cy.get('#sidebar div:contains(' + dragnode + ')').drag('#sidebar div:contains(' + node + ')', { force: true });
+        cy.get('#sidebar div.label:contains(' + dragnode + ')').drag('#sidebar div.label:contains(' + node + ')', {
+          force: true
+        });
       } else {
-        cy.get('#sidebar div:contains(' + dragnode + ')')
+        cy.get('#sidebar div.label:contains(' + dragnode + ')')
           .click({ force: true })
-          .drag('#sidebar div:contains(' + node + ')', { force: true });
+          .drag('#sidebar div.label:contains(' + node + ')', { force: true });
       }
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
-        cy.get('#sidebar div:contains(' + targetNodePath[i + 1] + ')', { timeout: 500 });
+        cy.get('#sidebar div.label:contains(' + targetNodePath[i + 1] + ')', { timeout: 500 });
       }
     });
 
