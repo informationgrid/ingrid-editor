@@ -4,6 +4,7 @@ export interface ProfileAbstract {
   isInitialized?: boolean;
   iconClass: string;
   isAddressProfile?: boolean;
+  addressType?: "person" | "organization";
   hasOptionalFields?: boolean;
 }
 

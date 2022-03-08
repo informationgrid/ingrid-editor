@@ -62,37 +62,37 @@ mat-tree-node {
   cursor: pointer;
   min-height: 20px;
 
-  &.folder {
-    border-color: transparent;
+  //&.folder {
+  border-color: transparent;
 
-    &.expanded {
-      .toggle {
-        color: $ige-text-color;
-      }
-
-      .expander {
-        transform: rotate(90deg);
-      }
+  &.expanded {
+    .toggle {
+      color: $ige-text-color;
     }
 
-    &.expanded.rootNode {
-      border-bottom: 1px solid $ige-background-bar;
-    }
-
-    > div {
-      display: flex;
-      flex-direction: row-reverse;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .quick-child-selection button {
-      height: 18px;
-      width: 18px;
-      line-height: 0;
-      vertical-align: middle;
+    .expander {
+      transform: rotate(90deg);
     }
   }
+
+  &.expanded.rootNode {
+    border-bottom: 1px solid $ige-background-bar;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .quick-child-selection button {
+    height: 18px;
+    width: 18px;
+    line-height: 0;
+    vertical-align: middle;
+  }
+  //}
 
   &.rootNode {
     padding: 9px 0;

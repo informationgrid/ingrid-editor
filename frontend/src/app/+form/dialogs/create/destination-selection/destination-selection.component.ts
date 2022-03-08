@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import {
@@ -14,6 +6,7 @@ import {
   DOCUMENT_ROOT_NODE,
   DocumentAbstract,
 } from "../../../../store/document/document.model";
+import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 
 @Component({
   selector: "ige-destination-selection",
@@ -28,8 +21,9 @@ export class DestinationSelectionComponent implements OnInit {
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new BehaviorSubject<string>(null);
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
+  showOnlyFolders: boolean;
 
-  constructor() {}
+  constructor(private docBehaviours: DocBehavioursService) {}
 
   @Input() set initialSelectedId(value: string) {
     if (value !== null) this.activeTreeNode.next(value);
@@ -42,11 +36,18 @@ export class DestinationSelectionComponent implements OnInit {
       this.rootNode = DOCUMENT_ROOT_NODE;
     }
 
+    this.showOnlyFolders =
+      this.docBehaviours.showOnlyFoldersInTreeForDestinationSelection(
+        this.forAddress
+      );
+
     this.activeListItem.next(this.rootNode);
   }
 
-  disabledCondition(node: TreeNode) {
-    return node.type !== "FOLDER";
+  disabledCondition() {
+    return (node: TreeNode) => {
+      return this.docBehaviours.cannotAddDocumentBelow()(this.forAddress, node);
+    };
   }
 
   updateParent(node: string[], source: "Tree" | "List") {

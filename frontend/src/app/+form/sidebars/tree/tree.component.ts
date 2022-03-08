@@ -193,7 +193,6 @@ export class TreeComponent implements OnInit {
    * @param node is the current tree node
    */
   isFolder = (_: number, node: TreeNode) => {
-    // return node.hasChildren;
     return node.type === "FOLDER";
   };
 

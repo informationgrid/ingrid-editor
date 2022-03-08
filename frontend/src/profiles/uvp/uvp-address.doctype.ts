@@ -16,5 +16,6 @@ export class UvpAddressDoctype extends AddressDoctype {
     codelistQuery: CodelistQuery
   ) {
     super(storageService, codelistService, codelistQuery);
+    this.addressType = "person";
   }
 }

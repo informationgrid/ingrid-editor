@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
-import { Observable, Subject } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocumentUtils } from "../../services/document.utils";
@@ -20,7 +20,15 @@ import { MatSelectionList } from "@angular/material/list";
   styleUrls: ["./document-list-item.component.scss"],
 })
 export class DocumentListItemComponent implements OnInit {
-  @Input() docs: Observable<DocumentAbstract[] | TreeNode[]>;
+  _docs: Observable<DocumentAbstract[] | TreeNode[]>;
+  @Input() set docs(
+    value: Observable<DocumentAbstract[] | TreeNode[]> | DocumentAbstract[]
+  ) {
+    this._docs = value instanceof Observable ? value : of(value);
+  }
+  get docs(): Observable<DocumentAbstract[] | TreeNode[]> {
+    return this._docs;
+  }
   @Input() doc: DocumentAbstract | TreeNode;
   @Input() denseMode = false;
   @Input() hideDate = true;

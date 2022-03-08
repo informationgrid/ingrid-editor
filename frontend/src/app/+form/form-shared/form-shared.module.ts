@@ -41,28 +41,24 @@ import { FormToolbarService } from "./toolbar/form-toolbar.service";
 import { formPluginProvider } from "../../form-plugin.provider";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
-import { BreadcrumbComponent } from "../form-info/breadcrumb/breadcrumb.component";
-import { DestinationSelectionComponent } from "../dialogs/create/destination-selection/destination-selection.component";
-import { CreateNodeComponent } from "../dialogs/create/create-node.component";
 import { SharedPipesModule } from "../../directives/shared-pipes.module";
 import { DashboardDocsHeaderComponent } from "../form-dashboard/dashboard-docs-header/dashboard-docs-header.component";
 import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-address-header/dashboard-address-header.component";
 import { DelayedPublishDialogComponent } from "../dialogs/save/delayed-publish-dialog/delayed-publish-dialog.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { PublishPendingComponent } from "../form-info/publish-pending/publish-pending.component";
+import { CreateNodeModule } from "../dialogs/create/create-node.module";
+import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
 
 @NgModule({
   declarations: [
     FormToolbarComponent,
-    BreadcrumbComponent,
     FormComponent,
-    CreateNodeComponent,
     FormInfoComponent,
     HeaderNavigationComponent,
     HeaderTitleRowComponent,
     HeaderMoreComponent,
     FormMessageComponent,
-    DestinationSelectionComponent,
     DynamicFormComponent,
     SidebarComponent,
     FormDashboardComponent,
@@ -92,6 +88,8 @@ import { PublishPendingComponent } from "../form-info/publish-pending/publish-pe
     MatSlideToggleModule,
     SharedPipesModule,
     MatDatepickerModule,
+    CreateNodeModule,
+    BreadcrumbModule,
   ],
   providers: [
     FormToolbarService,
@@ -114,10 +112,8 @@ import { PublishPendingComponent } from "../form-info/publish-pending/publish-pe
   exports: [
     FormToolbarComponent,
     FlexLayoutModule,
-    BreadcrumbComponent,
     IgeFormlyModule,
     FormInfoComponent,
-    DestinationSelectionComponent,
     DynamicFormComponent,
     HeaderTitleRowComponent,
     FormDashboardComponent,

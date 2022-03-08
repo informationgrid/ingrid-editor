@@ -2,6 +2,8 @@ import { IgeDocument } from "../../models/ige-document";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { SelectOptionUi } from "../codelist/codelist.service";
 
+export type AddressType = "person" | "organization";
+
 /**
  * A profile defines the formular fields for a document and its' validation rules, as well as the behaviours on user
  * actions.
@@ -26,6 +28,11 @@ export interface Doctype {
    * Set this field to make this document type for addresses
    */
   isAddressType?: boolean;
+
+  /**
+   * Set this field to make this document type for addresses
+   */
+  addressType: AddressType;
 
   /**
    *

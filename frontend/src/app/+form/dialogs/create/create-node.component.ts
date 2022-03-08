@@ -1,29 +1,20 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { filter, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
   ADDRESS_ROOT_NODE,
   DOCUMENT_ROOT_NODE,
-  DocumentAbstract,
 } from "../../../store/document/document.model";
-import {
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  Validators,
-} from "@angular/forms";
-import { BehaviorSubject, Observable, of } from "rxjs";
-import { ProfileQuery } from "../../../store/profile/profile.query";
-import { DocType } from "./create-doc.plugin";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import { ProfileAbstract } from "../../../store/profile/profile.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 
 export interface CreateOptions {
   parent: string;
@@ -40,16 +31,10 @@ export class CreateNodeComponent implements OnInit {
   title = "Neuen Ordner anlegen";
   parent: string = null;
   forAddress: boolean;
-  addressOnlyOrganization = false;
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
   formGroup: FormGroup;
-  documentTypes: Observable<DocumentAbstract[]>;
-  numDocumentTypes: number;
-  initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
-  );
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.isAdmin();
   selectedLocation: string = null;
@@ -62,12 +47,11 @@ export class CreateNodeComponent implements OnInit {
     private addressTreeQuery: AddressTreeQuery,
     private router: Router,
     private fb: FormBuilder,
-    private profileQuery: ProfileQuery,
     private documentService: DocumentService,
+    private docBehaviours: DocBehavioursService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions
   ) {
-    this.parent = data.parent;
     this.isFolder = data.isFolder;
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.forAddress
@@ -82,6 +66,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private _path: ShortTreeNode[] = [];
+  isPerson: boolean;
 
   get path() {
     return this._path;
@@ -113,17 +98,9 @@ export class CreateNodeComponent implements OnInit {
       .subscribe();
   }
 
-  nameOrOganizationValidator(control: FormGroup): ValidationErrors | null {
-    const firstName = control.get("firstName");
-    const lastName = control.get("lastName");
-    const organization = control.get("organization");
-
-    return !firstName.value && !lastName.value && !organization.value
-      ? { nameOrOrganization: true }
-      : null;
-  }
-
   async handleCreate() {
+    if (this.formGroup.invalid) return;
+
     if (this.isFolder || !this.forAddress) {
       await this.handleDocumentCreate();
     } else {
@@ -157,10 +134,6 @@ export class CreateNodeComponent implements OnInit {
     }
   }
 
-  setDocType(docType: DocumentAbstract) {
-    this.formGroup.get("choice").setValue(docType.id);
-  }
-
   quickBreadcrumbChange(id: string) {
     this.parent = id;
     const index = this.path.findIndex((item) => item.id === id);
@@ -168,10 +141,14 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private mapPath(path: ShortTreeNode[]) {
-    this.path =
-      this.query.getOpenedDocument()?._type !== "FOLDER"
-        ? path.slice(0, -1)
-        : [...path];
+    const type = this.query.getOpenedDocument()?._type;
+    const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
+      this.forAddress,
+      { type: type }
+    );
+
+    this.path = cannotAddBelow ? path.slice(0, -1) : [...path];
+    this.parent = this.path[this.path.length - 1]?.id ?? null;
   }
 
   private initializeForDocumentsAndFolders() {
@@ -179,70 +156,15 @@ export class CreateNodeComponent implements OnInit {
       title: ["", Validators.required],
       choice: ["", Validators.required],
     });
-    if (this.isFolder) {
-      this.formGroup.get("choice").setValue("FOLDER");
-    } else {
-      this.profileQuery.documentProfiles
-        .pipe(filter((types) => types.length > 0))
-        .subscribe((result) => {
-          const docTypes = this.createDocTypes(result);
-          this.initialActiveDocumentType.next(docTypes[0]);
-        });
-    }
   }
 
   private initializeForAddresses() {
-    if (this.config.$userInfo.getValue().currentCatalog.type === "mcloud") {
-      this.addressOnlyOrganization = true;
-    }
-    this.formGroup = this.fb.group(
-      {
-        firstName: [""],
-        lastName: [""],
-        organization: [""],
-        choice: ["", Validators.required],
-      },
-      {
-        validators: this.nameOrOganizationValidator,
-      }
-    );
-
-    this.profileQuery.addressProfiles
-      .pipe(filter((types) => types.length > 0))
-      .subscribe((result) => {
-        const docTypes = this.createDocTypes(result);
-        this.initialActiveDocumentType.next(docTypes[0]);
-      });
-  }
-
-  private createDocTypes(result: ProfileAbstract[]) {
-    const docTypes = result
-      .map((profile) => ({
-        id: profile.id,
-        label: profile.label,
-        icon: profile.iconClass,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-    this.documentTypes = this.prepareDocumentTypes(docTypes);
-    this.formGroup.get("choice").setValue(docTypes[0].id);
-    return docTypes;
-  }
-
-  private prepareDocumentTypes(
-    docTypes: DocType[]
-  ): Observable<DocumentAbstract[]> {
-    this.numDocumentTypes = docTypes.length;
-
-    return of(
-      docTypes.map((dt) => {
-        return {
-          id: dt.id,
-          title: dt.label,
-          icon: dt.icon,
-          _state: "P",
-        } as DocumentAbstract;
-      })
-    );
+    this.formGroup = this.fb.group({
+      firstName: [""],
+      lastName: [""],
+      organization: [""],
+      choice: ["", Validators.required],
+    });
   }
 
   private async handleAddressCreate() {
@@ -250,9 +172,14 @@ export class CreateNodeComponent implements OnInit {
       this.formGroup.get("choice").value,
       this.parent
     );
-    newAddress.firstName = this.formGroup.get("firstName").value;
-    newAddress.lastName = this.formGroup.get("lastName").value;
-    newAddress.organization = this.formGroup.get("organization").value;
+
+    const organization = this.formGroup.get("organization").value;
+    if (organization) {
+      newAddress.organization = organization;
+    } else {
+      newAddress.firstName = this.formGroup.get("firstName").value;
+      newAddress.lastName = this.formGroup.get("lastName").value;
+    }
     newAddress.title = this.documentService.createAddressTitle(newAddress);
     const savedDoc = await this.saveForm(newAddress);
 

@@ -3,23 +3,14 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { MessageService } from "../../../services/message.service";
-import { FormularService } from "../../formular.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
-import { filter, take } from "rxjs/operators";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
-import { UserService } from "../../../services/user/user.service";
 import { ConfigService } from "../../../services/config/config.service";
-
-export interface DocType {
-  id: string;
-  label: string;
-  icon: string;
-}
+import { filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable()
@@ -36,10 +27,7 @@ export class CreateDocumentPlugin extends Plugin {
     private toolbarService: FormToolbarService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private formularService: FormularService,
     private documentService: DocumentService,
-    private messageService: MessageService,
-    private userService: UserService,
     private formStateService: FormStateService,
     private dialog: MatDialog
   ) {
@@ -51,6 +39,17 @@ export class CreateDocumentPlugin extends Plugin {
   }
 
   register() {
+    this.initializeButton();
+
+    // add event handler for revert
+    const toolbarEventSubscription = this.toolbarService.toolbarEvent$
+      .pipe(filter((eventId) => eventId === "NEW_DOC"))
+      .subscribe(() => this.newDoc());
+
+    this.subscriptions.push(toolbarEventSubscription);
+  }
+
+  private initializeButton() {
     const buttons = [
       {
         id: "toolBtnNew",
@@ -60,17 +59,8 @@ export class CreateDocumentPlugin extends Plugin {
         pos: 10,
         active: true,
       },
-      // {id: 'toolBtnNewSeparator', pos: 15, isSeparator: true}
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
-
-    // add event handler for revert
-    const toolbarEventSubscription =
-      this.toolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === "NEW_DOC") {
-          this.newDoc();
-        }
-      });
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(
@@ -78,8 +68,6 @@ export class CreateDocumentPlugin extends Plugin {
       );
       this.toolbarService.setButtonState("toolBtnNew", buttonEnabled);
     }
-
-    this.subscriptions.push(toolbarEventSubscription);
   }
 
   async newDoc() {
@@ -98,26 +86,11 @@ export class CreateDocumentPlugin extends Plugin {
         return;
       }
 
-      query
-        .selectEntity(selectedDoc.id)
-        .pipe(
-          filter((entity) => entity !== undefined),
-          take(1)
-        )
-        .subscribe((entity) => {
-          let selectedDocId = null;
-          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-          if (folder !== null) {
-            selectedDocId = folder.id;
-          }
-          this.showDialog(selectedDocId);
-        });
-    } else {
-      this.showDialog(null);
+      this.showDialog();
     }
   }
 
-  showDialog(parentDocId: string) {
+  showDialog() {
     this.dialog.open(CreateNodeComponent, {
       minWidth: 500,
       maxWidth: 600,
@@ -125,7 +98,6 @@ export class CreateDocumentPlugin extends Plugin {
       disableClose: false,
       hasBackdrop: true,
       data: {
-        parent: parentDocId,
         forAddress: this.forAddress,
         isFolder: false,
       } as CreateOptions,
