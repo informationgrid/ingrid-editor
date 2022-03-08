@@ -28,6 +28,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -114,6 +115,8 @@ class DocumentService @Autowired constructor(
         DRAFT("W"),
         DRAFT_AND_PUBLISHED("PW")
     }
+
+    private var log = logger()
 
     /**
      * Get the DocumentWrapper with the given document uuid
@@ -349,6 +352,21 @@ class DocumentService @Autowired constructor(
         ).forEach { json.remove(it) }
     }
 
+    fun publishPendingDocuments(principal: Principal, catalogId: String) {
+        docWrapperRepo.findAllPending(catalogId)
+            .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
+            .forEach {
+                try {
+                    updateDocument(principal, catalogId, it.id!!, it.pending!!, true)
+                    removePendingVersion(it.id!!)
+                } catch (ex: PostSaveException) {
+                    log.error("Error during post publishing document: ${it.id}", ex)
+                    removePendingVersion(it.id!!)
+                }
+            }
+
+    }
+
     fun updateDocument(
         principal: Principal?,
         catalogId: String,
@@ -369,7 +387,7 @@ class DocumentService @Autowired constructor(
             val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
-        
+
         try {
             preUpdatePayload.document.wrapperId = wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
@@ -379,7 +397,7 @@ class DocumentService @Autowired constructor(
 
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
-            val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish)
+            val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
             return getLatestDocument(postWrapper, catalogId = catalogId)
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -433,12 +451,13 @@ class DocumentService @Autowired constructor(
         updatedDocument: Document,
         updatedWrapper: DocumentWrapper,
         filterContext: Context,
-        publish: Boolean
+        publish: Boolean,
+        publishDate: Date? = null,
     ): DocumentWrapper {
         try {
             val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
             postUpdatePipe.runFilters(postUpdatePayload, filterContext)
-            return if (publish) {
+            return if (publish && publishDate == null) {
                 // run post-publish pipe(s)
                 val postPublishPayload =
                     PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
@@ -580,6 +599,14 @@ class DocumentService @Autowired constructor(
         docWrapperRepo.save(wrapper)
 
         return getLatestDocument(wrapper, catalogId = catalogId)
+    }
+
+    fun removePendingVersion(id: Int): DocumentWrapper {
+        val wrapper = getWrapperByDocumentId(id)
+        wrapper.pending = null
+        wrapper.pending_date = null
+        docWrapperRepo.save(wrapper)
+        return wrapper
     }
 
     private fun removeFromIndex(id: String) {

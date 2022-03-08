@@ -54,6 +54,10 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.published IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1" )
     fun findAllPublished(catalogId: String): List<DocumentWrapper>
 
+    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.pending IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1" )
+    fun findAllPending(catalogId: String): List<DocumentWrapper>
+
     fun countByParent_Id(parent_uuid: String): Long
 
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")

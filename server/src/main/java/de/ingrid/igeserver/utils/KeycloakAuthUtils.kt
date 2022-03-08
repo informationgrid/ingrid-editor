@@ -21,7 +21,9 @@ class KeycloakAuthUtils : AuthUtils {
 
         return if (principal is KeycloakAuthenticationToken) {
             principal.account.keycloakSecurityContext.token.preferredUsername
-        } else {
+        }  else if (principal is UsernamePasswordAuthenticationToken) {
+            principal.principal as String
+        } else{
             (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
         }
     }

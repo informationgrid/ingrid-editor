@@ -1,0 +1,46 @@
+package de.ingrid.igeserver.tasks
+
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import org.apache.logging.log4j.kotlin.logger
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
+
+@Component
+class PlannedPublishTask(val documentService: DocumentService, val catalogService: CatalogService) {
+    val log = logger()
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun onReady() {
+        plannedPublishTask()
+    }
+
+    @Scheduled(cron = "\${cron.publish.expression}")
+    fun plannedPublishTask() {
+        log.debug("Starting planned publishing task")
+        val principal = getAuthentication()
+
+        catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
+    }
+
+
+    private fun getAuthentication(): Authentication {
+        val auth: Authentication =
+            UsernamePasswordAuthenticationToken(
+                "Scheduler",
+                "Task",
+                listOf(
+                    SimpleGrantedAuthority("cat-admin"),
+                    SimpleGrantedAuthority("ROLE_GROUP_MANAGER"), // needed for ACL changes
+                )
+            )
+        SecurityContextHolder.getContext().authentication = auth
+        return auth
+    }
+}
