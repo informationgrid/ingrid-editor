@@ -85,9 +85,8 @@ export class CreateDocumentPlugin extends Plugin {
       if (!handled) {
         return;
       }
-
-      this.showDialog();
     }
+    this.showDialog();
   }
 
   showDialog() {

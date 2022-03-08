@@ -141,6 +141,11 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private mapPath(path: ShortTreeNode[]) {
+    if (path.length === 0) {
+      this.path = [];
+      return;
+    }
+
     const type = this.query.getOpenedDocument()?._type;
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
       this.forAddress,

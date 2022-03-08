@@ -153,7 +153,7 @@ describe('Research Page', () => {
         '                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id\n' +
         '                ELSE document_wrapper.draft = document1.id\n' +
         '                END\n' +
-        "            WHERE document1.type = 'AddressDoc'\n" +
+        "            WHERE document1.type = 'McloudAddressDoc'\n" +
         "              AND LOWER(title) LIKE '%test%'"
     );
     cy.get('button').contains('Suchen').click();
