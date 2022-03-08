@@ -23,7 +23,7 @@ export class Tree {
     const label = cy.contains('mat-tree mat-tree-node .label', text);
 
     if (level !== undefined) {
-      return label.parent().should('have.attr', 'aria-level', level.toString());
+      return label.parent().parent().should('have.attr', 'aria-level', level.toString());
     } else {
       return label;
     }

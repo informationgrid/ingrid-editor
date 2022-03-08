@@ -4,6 +4,7 @@ import { Address, AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';
+import { Menu } from '../../../pages/menu';
 
 describe('addresses inside test catalogue', () => {
   beforeEach(() => {
@@ -14,30 +15,30 @@ describe('addresses inside test catalogue', () => {
   });
 
   it('should create a new address inside catalogue of type test', () => {
-    const organizationName = 'Organization' + Utils.randomString();
-    AddressPage.visit();
+    const firstName = 'Michael' + Utils.randomString();
+    const lastName = 'Meier';
+    const title = `${lastName}, ${firstName}`;
+
+    Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
-    AddressPage.CreateDialog.fill(new Address(organizationName), ['Adressen'], true);
+    AddressPage.CreateDialog.fill(new Address('', firstName, lastName), ['Adressen'], true);
     cy.contains('button', 'Anlegen').click();
-    cy.contains('ige-tree', organizationName);
-    cy.contains('.title', organizationName);
+    cy.contains('ige-tree', title);
+    cy.contains('.title', title);
   });
 
   it('should allow creation of address inside test catalogue when various parameters provided', () => {
-    AddressPage.visit();
+    Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
     cy.get('[data-cy=create-action]').should('be.disabled');
 
-    AddressPage.CreateDialog.fill(new Address('testOrganization' + Utils.randomString()), ['Adressen'], true);
+    AddressPage.CreateDialog.fill(new Address('', 'firstName' + Utils.randomString()), [], true);
+    cy.get('[data-cy=create-action]').should('be.disabled');
+
+    AddressPage.CreateDialog.fill(new Address('', '', 'lastName' + Utils.randomString()), [], true);
     cy.get('[data-cy=create-action]').should('be.enabled');
 
-    AddressPage.CreateDialog.fill(new Address('', 'firstName' + Utils.randomString()), ['Adressen'], true);
-    cy.get('[data-cy=create-action]').should('be.enabled');
-
-    AddressPage.CreateDialog.fill(new Address('', '', 'lastName' + Utils.randomString()), ['Adressen'], true);
-    cy.get('[data-cy=create-action]').should('be.enabled');
-
-    AddressPage.CreateDialog.fill(new Address('', '', ''), ['Adressen'], true);
+    AddressPage.CreateDialog.fill(new Address('', '', ''), [], true);
     cy.get('[data-cy=create-action]').should('be.disabled');
   });
 
@@ -65,16 +66,16 @@ describe('addresses inside test catalogue', () => {
     Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
     cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
     // check order of documents
-    cy.get('mat-tree-node> div > span:nth-child(2)').eq(0).contains(firstDoc);
-    cy.get('mat-tree-node> div > span:nth-child(2)').eq(1).contains(lastDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(firstDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(lastDoc);
     // change sorting of the tree
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
     // check new order of the tree
     DocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
-    cy.get('mat-tree-node> div > span:nth-child(2)').eq(1).contains(firstDoc);
-    cy.get('mat-tree-node> div > span:nth-child(2)').eq(0).contains(lastDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
     // toggle button to original state
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);

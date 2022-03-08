@@ -23,7 +23,7 @@ export class AddressTitleBehaviour extends Plugin {
   ) => {
     const value = this.replaceVariables(this.data.template);
     // tslint:disable-next-line:no-eval
-    return eval(value);
+    return eval(value) ?? "";
   };
 
   constructor(private documentService: DocumentService) {

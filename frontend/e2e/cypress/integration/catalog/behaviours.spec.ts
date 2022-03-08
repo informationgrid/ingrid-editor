@@ -25,26 +25,22 @@ describe('Behaviours', () => {
     it('should change the template for the address generation', () => {
       /*Hinweis: right now first name and last name are not even part of address creation for mcloud documents so
        * the template can't make first name appear in title: "Kein Titel" is shown instead */
-      const firstName = 'Thomason';
-      const firstName2 = 'Nosamoht';
-      const lastName = 'Schoofin';
-      const lastName2 = 'Nifoohcs';
       const organizationName = 'Sportclub';
-      const organizationName2 = 'Bulctrops';
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
-      AddressPage.createAddress(new Address(organizationName, firstName, lastName));
+      AddressPage.createAddress(new Address(organizationName));
       cy.get(DocumentPage.title).should('have.text', organizationName);
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-      BehavioursPage.setCatalogSettingInput('Template für die Generierung des Adressen-Titels', 'firstName');
+      BehavioursPage.setCatalogSettingInput(
+        'Template für die Generierung des Adressen-Titels',
+        'organization + " (Template)"'
+      );
 
       cy.get(DocumentPage.Sidemenu.Adressen).click();
 
-      AddressPage.createAddress(new Address(organizationName2, firstName2, lastName2));
-      cy.get(DocumentPage.title)
-        .should('have.text', 'Kein Titel')
-        .should('not.contain', organizationName2 + ', ' + lastName2);
+      AddressPage.createAddress(new Address(organizationName));
+      cy.get(DocumentPage.title).should('have.text', organizationName + ' (Template)');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
       BehavioursPage.setCatalogSetting('Template für die Generierung des Adressen-Titels', false);

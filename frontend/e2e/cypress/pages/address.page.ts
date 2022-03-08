@@ -9,24 +9,30 @@ export class Address {
     public lastName?: string
   ) {}
 }
+
 export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
   static CreateDialog = class extends DocumentPage.CreateDialog {
+    // TODO: should be separat functions to fill out person or organization and so avoid testType parameter
     static fill(address: Address, targetTreePath: string[] = ['Adressen'], testType: boolean = false) {
       if (testType) {
         AddressPage.type('create-address-firstName', address.firstName);
         AddressPage.type('create-address-lastName', address.lastName);
-      }
-      AddressPage.type('create-address-organization', address.organization);
-      if (targetTreePath[0] == 'Adressen') {
-        cy.get('[data-cy=create-changeLocation]').click();
-        cy.get('ige-destination-selection mat-list-option').click();
-        //check if 'Adressen' is chosen
-        cy.get('[aria-selected=true]').contains('Adressen');
-        cy.get('[data-cy=create-applyLocation]').click();
       } else {
-        DocumentPage.changeLocation(targetTreePath);
+        AddressPage.type('create-address-organization', address.organization);
+      }
+
+      if (targetTreePath.length > 0) {
+        if (targetTreePath[0] == 'Adressen') {
+          cy.get('[data-cy=create-changeLocation]').click();
+          cy.get('ige-destination-selection mat-list-option').click();
+          //check if 'Adressen' is chosen
+          cy.get('[aria-selected=true]').contains('Adressen');
+          cy.get('[data-cy=create-applyLocation]').click();
+        } else {
+          DocumentPage.changeLocation(targetTreePath);
+        }
       }
     }
   };
