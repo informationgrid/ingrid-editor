@@ -13,6 +13,7 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
+import { AuthenticationFactory } from "../../security/auth.factory";
 
 @Injectable({
   providedIn: "root",
@@ -37,7 +38,8 @@ export class UserService {
     private dataService: UserDataService,
     private groupService: GroupService,
     private configService: ConfigService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private keycloakService: AuthenticationFactory
   ) {
     if (!this.configService.isAdmin()) {
       this.availableRoles = this.availableRoles.filter(
@@ -84,11 +86,8 @@ export class UserService {
     );
   }
 
-  updateCurrentUser(user: User): Observable<FrontendUser> {
-    return this.dataService.saveCurrentUser(user).pipe(
-      catchError((error) => UserService.handleChangeEmailError(error)),
-      map((u) => new FrontendUser(u))
-    );
+  updateCurrentUser(user: Partial<User>): Observable<boolean> {
+    return this.keycloakService.updateUserProfile(user);
   }
 
   private static handleChangeEmailError(

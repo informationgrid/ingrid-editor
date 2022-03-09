@@ -1,6 +1,5 @@
 import { KeycloakOptions, KeycloakService } from "keycloak-angular";
 import { AuthenticationService } from "./authentication.service";
-import { IgeError } from "../models/ige-error";
 
 export class AuthKeycloakService extends AuthenticationService {
   constructor(private keycloak: KeycloakService) {

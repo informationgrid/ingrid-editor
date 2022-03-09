@@ -8,11 +8,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ChangeNameDialogComponent } from "../change-name-dialog/change-name-dialog.component";
-import { FrontendUser } from "../../+user/user";
-import { catchError } from "rxjs/operators";
-import { HttpErrorResponse } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { IgeError } from "../../models/ige-error";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "ige-profile",
@@ -47,28 +43,16 @@ export class ProfileComponent implements OnInit {
 
     newMail = newMail.trim();
 
-    // TODO: remove default properties
     this.userService
-      .updateCurrentUser(
-        new FrontendUser({
-          attributes: [],
-          creationDate: undefined,
-          firstName: "",
-          lastName: "",
-          login: "",
-          modificationDate: undefined,
-          organisation: "",
-          role: "",
-          email: newMail,
-        })
-      )
-      .subscribe((user) => {
-        if (user)
-          this.configService.getCurrentUserInfo().then(() =>
-            this.snackBar.open("E-Mail Adresse wurde geändert.", "", {
-              panelClass: "green",
-            })
-          );
+      .updateCurrentUser({
+        email: newMail,
+      })
+      .subscribe(() => {
+        this.configService.getCurrentUserInfo().then(() =>
+          this.snackBar.open("E-Mail Adresse wurde geändert.", "", {
+            panelClass: "green",
+          })
+        );
       });
   }
 
@@ -121,13 +105,13 @@ export class ProfileComponent implements OnInit {
         hasBackdrop: true,
       })
       .afterClosed()
-      .subscribe((user) => {
-        if (user)
-          this.configService.getCurrentUserInfo().then(() =>
-            this.snackBar.open("Name wurde geändert.", "", {
-              panelClass: "green",
-            })
-          );
+      .pipe(filter((modified) => modified))
+      .subscribe(() => {
+        this.configService.getCurrentUserInfo().then(() =>
+          this.snackBar.open("Name wurde geändert.", "", {
+            panelClass: "green",
+          })
+        );
       });
   }
 }

@@ -4,6 +4,8 @@ import { AuthMockService } from "./auth-mock.service";
 import { HttpClient } from "@angular/common/http";
 import { AuthenticationService } from "./authentication.service";
 import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { User } from "../+user/user";
 
 @Injectable({
   providedIn: "root",
@@ -23,5 +25,14 @@ export class AuthenticationFactory {
 
   get(): AuthenticationService {
     return this.auth;
+  }
+
+  updateUserProfile(profile: Partial<User>): Observable<any> {
+    const url = this.keycloak
+      .getKeycloakInstance()
+      .createAccountUrl()
+      .split("?")[0];
+
+    return this.http.post(url, profile);
   }
 }

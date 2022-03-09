@@ -32,6 +32,7 @@ import java.security.Principal
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.ws.rs.ClientErrorException
+import javax.ws.rs.ForbiddenException
 import javax.ws.rs.core.Response
 
 
@@ -309,6 +310,8 @@ class KeycloakService : UserManagementService {
             if (user != null) {
                 try {
                     users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
+                } catch (ex: ForbiddenException) {
+                    throw de.ingrid.igeserver.api.ForbiddenException.withUser("<current>")
                 } catch (ex: Exception) {
                     throw InvalidParameterException.withInvalidParameters(user.email)
                 }
