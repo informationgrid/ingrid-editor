@@ -63,17 +63,14 @@ export class ProfileComponent implements OnInit {
         data: (<ConfirmDialogData>{
           title: "Passwort ändern",
           message:
-            "Um Ihr Passwort zu ändern, führen Sie bitte folgende Schritte durch:",
-          list: [
-            `Fordern Sie die E-Mail an, die Ihnen die Änderung Ihres Passworts ermöglicht (die E-Mail wird an ${this.userInfo$.value.email} gesendet)`,
-            "Öffnen Sie über den darin enthaltenen Link die Formularseite, auf der Sie Ihr Passwort ändern können.",
-            "Bitte beachten Sie, dass der Link nur 24 Std. gültig ist.",
-          ],
+            "Sie werden zur Login-Seite umgeleitet, wo Sie aufgefordert werden, sich mit ihrem alten Passwort " +
+            "anzumelden. Danach werden Sie dazu aufgefordert, ein neues Passwort zu vergeben. " +
+            "Möchten Sie das Passwort jetzt ändern?",
           buttons: [
             { text: "Abbrechen" },
             {
-              text: "E-Mail anfordern",
-              id: "sendResetMail",
+              text: "Passwort ändern",
+              id: "resetPassword",
               alignRight: true,
               emphasize: true,
             },
@@ -82,17 +79,7 @@ export class ProfileComponent implements OnInit {
         hasBackdrop: true,
       })
       .afterClosed()
-      .subscribe((response) => {
-        if (response === "sendResetMail") {
-          this.userService
-            .sendPasswordChangeRequest(this.userInfo$.value.userId)
-            .subscribe(() =>
-              this.snackBar.open("E-Mail wurde versandt", "", {
-                panelClass: "green",
-              })
-            );
-        }
-      });
+      .subscribe();
   }
 
   openChangeNameDialog() {

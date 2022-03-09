@@ -35,4 +35,8 @@ export class AuthenticationFactory {
 
     return this.http.post(url, profile);
   }
+
+  updatePassword() {
+    return this.keycloak.login({ action: "UPDATE_PASSWORD" });
+  }
 }

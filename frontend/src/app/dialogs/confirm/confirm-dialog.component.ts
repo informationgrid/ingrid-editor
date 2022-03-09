@@ -19,6 +19,13 @@ export interface ConfirmDialogButton {
 
 @Component({
   templateUrl: "confirm-dialog.component.html",
+  styles: [
+    `
+      .mat-dialog-content p {
+        white-space: normal;
+      }
+    `,
+  ],
 })
 export class ConfirmDialogComponent {
   textConfirmed: string;

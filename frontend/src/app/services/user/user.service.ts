@@ -156,7 +156,7 @@ export class UserService {
     );
   }
 
-  sendPasswordChangeRequest(login: string) {
-    return this.dataService.sendPasswordChangeRequest(login);
+  updatePassword(): Promise<void> {
+    return this.keycloakService.updatePassword();
   }
 }
