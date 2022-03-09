@@ -282,6 +282,8 @@ class KeycloakService : UserManagementService {
         } catch (e: ClientErrorException) {
             if (e.response.status == 409) {
                 throw ConflictException.withReason("Conflicting email address")
+            } else {
+                throw e
             }
         }
     }
