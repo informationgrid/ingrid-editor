@@ -34,7 +34,7 @@ class DefaultDocumentUpdater @Autowired constructor(
 
         // update parent in case of moving a document
         val parent = payload.document.data.get(FIELD_PARENT)
-        if (parent != null) {
+        if (parent != null && !parent.isNull) {
             try {
                 payload.wrapper.parent = docWrapperRepo.findById(parent.asInt()).get()
             } catch (ex: EmptyResultDataAccessException) {
