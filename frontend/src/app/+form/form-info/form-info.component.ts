@@ -21,7 +21,6 @@ import {
   map,
   startWith,
   tap,
-  throttleTime,
 } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
@@ -38,6 +37,7 @@ import { FormUtils } from "../form.utils";
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
+import { Router } from "@angular/router";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -81,6 +81,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   private query: AddressTreeQuery | TreeQuery;
 
   constructor(
+    private router: Router,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private treeService: TreeService,
@@ -185,6 +186,11 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     );
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);
+      const uuid = this.query.getEntity(nodeId)._uuid;
+      this.router.navigate([
+        this.forAddress ? "/address" : "/form",
+        { id: uuid },
+      ]);
     }
   }
 }
