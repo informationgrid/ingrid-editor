@@ -152,10 +152,7 @@ describe('mCLOUD documents', function () {
       Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_B', 'Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
       AddressPage.tryIllegitimatDelete();
       // expect warning -> not working right now; there is no such warning popping up
-      /*cy.contains(
-        '[data-cy="error-dialog-content"]',
-        'Die Adresse kann nicht gelöscht werden, sie wird von anderen Datensätzen referenziert'
-      );*/
+      cy.contains('[data-cy="error-dialog-content"]', 'von anderen Datensätzen referenziert');
     });
   });
 });

@@ -175,6 +175,8 @@ describe('General create addresses/folders', () => {
         Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
       );
     });
+
+    xit('should not be able to withdraw publication of published address which is referenced in published or pending documents', () => {});
   });
 
   describe('Dirty checks', () => {
