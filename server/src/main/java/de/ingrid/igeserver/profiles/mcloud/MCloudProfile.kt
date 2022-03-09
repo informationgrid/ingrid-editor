@@ -79,13 +79,6 @@ class MCloudProfile @Autowired constructor(
                     ExceptFolders()
                 ),
                 viewComponent = ViewComponent.CHECKBOX
-            ),
-            FacetGroup(
-                "addrType", "Typ", arrayOf(
-                    Organisations(),
-                    Persons()
-                ),
-                viewComponent = ViewComponent.CHECKBOX
             )
         )
     }
