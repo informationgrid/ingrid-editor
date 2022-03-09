@@ -182,9 +182,7 @@ describe('General create addresses/folders', () => {
       const adr1Name = 'Neue Testadressen';
       const adr2Name = 'Orga-Test';
 
-      cy.get(DocumentPage.Toolbar.NewDoc).click();
-      cy.get('[data-cy=create-address-organization]').type(adr2Name);
-      cy.get('[data-cy=create-action]').click();
+      AddressPage.createAddress(new Address(adr2Name));
       AddressPage.addStreetName();
 
       // reject dialog

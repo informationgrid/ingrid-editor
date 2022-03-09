@@ -6,6 +6,8 @@ export class Tree {
     const parentContainer = isInsideDialog ? 'mat-dialog-container' : '';
     const query = exact ? new RegExp('^' + nodeTitle + '$') : nodeTitle;
     cy.contains(`${parentContainer} mat-tree mat-tree-node .label span`, query).click();
+    // give some time for events to be handled by history plugin for example
+    cy.wait(100);
   }
 
   static containsNodeWithFolderTitle(text: string, level?: number) {

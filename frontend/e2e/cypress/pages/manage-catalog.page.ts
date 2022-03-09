@@ -23,8 +23,7 @@ export class ManageCatalogPage {
 
   static getNumberOfDatasetsInCatalog(catalogTitle: string) {
     return cy
-      .get('.mat-card')
-      .contains('.mat-card-title', new RegExp('^' + catalogTitle + '$'))
+      .contains('.mat-card .mat-card-title', new RegExp('^' + catalogTitle + '$'))
       .parent()
       .find('.content')
       .then($node => {
@@ -35,8 +34,7 @@ export class ManageCatalogPage {
 
   static getDateOfChangesInCatalog(catalogTitle: string) {
     return cy
-      .get('.mat-card')
-      .contains('.mat-card-title', new RegExp('^' + catalogTitle + '$'))
+      .contains('.mat-card .mat-card-title', new RegExp('^' + catalogTitle + '$'))
       .parent()
       .find('.mat-card-subtitle')
       .then($node => {
