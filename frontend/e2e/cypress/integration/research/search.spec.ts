@@ -139,8 +139,7 @@ describe('Research Page', () => {
   it('should do search with example SQL-query executed by button', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
-    // because of changes in the database the search does not return anything at the moment
-    ResearchPage.checkNoSearchResults();
+    cy.contains('.result', /[1-9][0-9]* Ergebnisse gefunden/);
   });
 
   it('should do search with example SQL-query typed in manually', () => {
@@ -173,9 +172,7 @@ describe('Research Page', () => {
     cy.get(ResearchPage.SQLField).should('not.have.value', '');
     // make sure a non-zero number of results is returned
     cy.wait('@sqlQuery');
-    // because of changes in the database the search does not return anything at the moment
-    //cy.contains(/[1-9][0-9]* Ergebnisse gefunden/);
-    ResearchPage.checkNoSearchResults();
+    cy.contains('.result', /[1-9][0-9]* Ergebnisse gefunden/);
     // click the button to remove query
     cy.get('button').contains('Entfernen').click();
     // make sure query has been removed from query field and 0 results are returned
