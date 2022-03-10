@@ -18,6 +18,7 @@ export interface QuickFilter {
   id: string;
   label: string;
   implicitFilter: string[];
+  parameters: any[];
 }
 
 export interface Facets {
@@ -67,7 +68,6 @@ export class ResearchService {
   search(
     term: string,
     model: any,
-    fieldsWithParameters: { [x: string]: any[] },
     orderByField = "title",
     orderByDirection = "ASC",
     pagination?: {
@@ -78,7 +78,6 @@ export class ResearchService {
     const backendQuery = new BackendQuery(
       term,
       model,
-      fieldsWithParameters,
       this.filters,
       orderByField,
       orderByDirection,
@@ -101,16 +100,8 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
-  searchStatistic(
-    model: any,
-    fieldsWithParameters: { [x: string]: any[] }
-  ): Observable<any> {
-    const backendQuery = new BackendQuery(
-      "",
-      model,
-      fieldsWithParameters,
-      this.filters
-    );
+  searchStatistic(model: any): Observable<any> {
+    const backendQuery = new BackendQuery("", model, this.filters);
     return this.http.post<any>(
       `${this.configuration.backendUrl}statistic/query`,
       backendQuery.get()
@@ -195,7 +186,6 @@ export class ResearchService {
       const newState: QueryState = {
         ui: {
           ...state.ui,
-          resultPage: partialState.page ?? 0,
         },
       };
       if (partialState.search) {
@@ -203,9 +193,6 @@ export class ResearchService {
       }
       if (partialState.sqlSearch) {
         newState.ui.sql = { ...state.ui.sql, ...partialState.sqlSearch };
-      }
-      if (partialState.sort) {
-        newState.ui.sort = partialState.sort;
       }
       return newState;
     });
@@ -277,5 +264,33 @@ export class ResearchService {
       ...state.ui.search.facets.model,
       type: state.ui.search.category,
     };
+  }
+
+  removeDataset(hit: IgeDocument) {
+    /*console.log(hit);
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Löschen",
+          message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
+          buttons: [
+            { text: "Abbruch" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.documentService
+            .delete([hit._id], this.isAddress(hit))
+            .subscribe(() => this.startSearch());
+        }
+      });*/
   }
 }

@@ -13,8 +13,6 @@ export interface QueryState extends EntityState<Query> {
     sql: {
       query: string;
     };
-    resultPage: number;
-    sort: { column: string; direction: "asc" | "desc" | "" };
   };
 }
 
@@ -32,8 +30,6 @@ export function createInitialState(): QueryState {
       sql: {
         query: "",
       },
-      resultPage: 0,
-      sort: null,
     },
   };
 }

@@ -8,7 +8,7 @@
         <mat-chip-list>
             <mat-chip
                 *ngFor="let example of sqlExamples"
-                (click)="query.emit(example.value)"
+                (click)="updateSqlQueryState(example.value)"
                 >{{ example.label }}</mat-chip
             >
         </mat-chip-list>
@@ -31,7 +31,7 @@
                 mat-stroked-button
                 color="primary"
                 [disabled]="sql.length === 0"
-                (click)="query.emit('')"
+                (click)="updateSqlQueryState('')"
             >
                 Entfernen
             </button>
@@ -39,14 +39,14 @@
                 mat-flat-button
                 color="primary"
                 [disabled]="!sql"
-                (click)="query.emit(sql)"
+                (click)="updateSqlQueryState(sql)"
             >
                 Suchen
             </button>
         </div>
 
         <div class="save-search-button">
-            <button mat-button color="primary" (click)="save.emit()">
+            <button mat-button color="primary" (click)="saveQuery()">
                 Suche Speichern
             </button>
         </div>
@@ -57,6 +57,11 @@
     </div>
 
     <div main-content fxFlex>
-        <ng-content></ng-content>
+        <ige-result-table
+            [result]="result"
+            [isLoading]="isSearching"
+        ></ige-result-table>
+        <!--(open)="loadDataset($event)"
+            (remove)="removeDataset($event)"-->
     </div>
 </page-template>

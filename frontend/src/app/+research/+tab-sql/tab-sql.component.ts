@@ -1,6 +1,13 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { QueryQuery } from "../../store/query/query.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter, tap } from "rxjs/operators";
+import { HttpErrorResponse } from "@angular/common/http";
+import { logAction } from "@datorama/akita";
+import { ResearchResponse, ResearchService } from "../research.service";
+import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -10,9 +17,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 })
 export class TabSqlComponent implements OnInit {
   sql: string;
-
-  @Output() query = new EventEmitter();
-  @Output() save = new EventEmitter();
 
   sqlExamples = [
     {
@@ -41,7 +45,15 @@ export class TabSqlComponent implements OnInit {
     },
   ];
 
-  constructor(private queryQuery: QueryQuery) {}
+  isSearching = false;
+  result: any;
+
+  constructor(
+    private queryQuery: QueryQuery,
+    private researchService: ResearchService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     // init to last session state
@@ -50,6 +62,74 @@ export class TabSqlComponent implements OnInit {
 
     this.queryQuery.sqlSelect$.pipe(untilDestroyed(this)).subscribe((state) => {
       this.sql = state.query;
+      this.queryBySQL();
     });
+
+    // has been integrated in above subscription
+    /*this.queryQuery.sqlSelect$
+      .pipe(
+        untilDestroyed(this),
+        filter(() => this.sessionService.getCurrentTab("research") === 1)
+      )
+      .subscribe(() => this.queryBySQL());*/
+  }
+
+  queryBySQL() {
+    // this.error = null;
+    const sql = this.queryQuery.getValue().ui.sql.query;
+    if (sql.trim() === "") {
+      this.updateHits({ hits: [], totalHits: 0 });
+      return;
+    }
+    this.isSearching = true;
+    this.researchService
+      .searchBySQL(sql)
+      .pipe(tap(() => (this.isSearching = false)))
+      .subscribe(
+        (result) => this.updateHits(result)
+        // (error: HttpErrorResponse) => (this.error = error.error.errorText)
+      );
+  }
+
+  saveQuery() {
+    this.dialog
+      .open(SaveQueryDialogComponent, {
+        hasBackdrop: true,
+        maxWidth: 600,
+      })
+      .afterClosed()
+      .subscribe((dialogOptions) => {
+        if (dialogOptions) {
+          this.researchService
+            .saveQuery(this.queryQuery.getValue(), dialogOptions, true)
+            .subscribe(() =>
+              this.snackBar.open(
+                `Suche '${dialogOptions.name}' gespeichert`,
+                "",
+                {
+                  panelClass: "green",
+                }
+              )
+            );
+        }
+      });
+  }
+
+  updateSqlQueryState(value: string) {
+    logAction("SQL Query");
+
+    this.researchService.updateUIState({
+      sqlSearch: { query: value },
+    });
+  }
+
+  private updateHits(result: ResearchResponse) {
+    this.result = result;
+
+    /*    // update page if we come back to research page
+    if (this.initialPage !== null) {
+      this.pageIndex = this.initialPage;
+      this.initialPage = null;
+    }*/
   }
 }

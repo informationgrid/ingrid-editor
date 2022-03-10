@@ -4,19 +4,22 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  Output,
+  OnInit,
   ViewChild,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
 import { Map, Rectangle } from "leaflet";
-import { tap } from "rxjs/operators";
 import { LeafletService } from "../../formly/types/map/leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FormControl, FormGroup } from "@angular/forms";
-import { BehaviorSubject } from "rxjs";
+import {
+  ControlValueAccessor,
+  FormBuilder,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+} from "@angular/forms";
 
 export interface FacetUpdate {
   model: any;
@@ -28,19 +31,31 @@ export interface FacetUpdate {
   selector: "ige-facets",
   templateUrl: "./facets.component.html",
   styleUrls: ["./facets.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: FacetsComponent,
+    },
+  ],
 })
-export class FacetsComponent implements AfterViewInit {
-  @Input() model: any;
+export class FacetsComponent
+  implements OnInit, AfterViewInit, ControlValueAccessor
+{
   @Input() forReports: boolean;
 
-  _parameter: any = {};
+  @Input() set facets(value: Facets) {
+    if (value) {
+      this.allFacets = value;
+      this.updateFilterGroup();
+    }
+  }
+
   @Input() set parameter(value: any) {
     this._parameter = value;
-    if (this.isInitialized.value) {
-      // delay update for other inputs to be present
-      setTimeout(() => this.updateSpatialFromModel(value));
-      setTimeout(() => this.updateTimeSpanFromModel(value));
-    }
+    // delay update for other inputs to be present
+    setTimeout(() => this.updateSpatialFromModel(value));
+    // setTimeout(() => this.updateTimeSpanFromModel(value));
   }
 
   @Input() refreshView: EventEmitter<void>;
@@ -50,7 +65,6 @@ export class FacetsComponent implements AfterViewInit {
     this._forAddresses = addresses;
     if (this.allFacets) {
       this.updateFilterGroup();
-      this.sendUpdate();
     }
   }
 
@@ -58,11 +72,9 @@ export class FacetsComponent implements AfterViewInit {
     return this._forAddresses;
   }
 
-  @Output() update = new EventEmitter<FacetUpdate>();
-  @Output() isInitialized = new BehaviorSubject<boolean>(false);
-
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
+  _parameter: any = {};
   filterGroup: FacetGroup[];
   researchOnlyFilterIds = ["state"];
 
@@ -70,38 +82,72 @@ export class FacetsComponent implements AfterViewInit {
   private allFacets: Facets;
   private spatialFilterId = "";
   private timespanFilterId = "";
-  private fieldsWithParameters: { [x: string]: any[] } = {};
   leafletReference: L.Map;
   notExpanded: any = {};
   location: SpatialLocation;
   private boxes: Rectangle[];
 
-  timeSpanForm = new FormGroup({
-    startDate: new FormControl(),
-    endDate: new FormControl(),
-  });
+  form: FormGroup = this.fb.group({});
+
+  private onChange: (x: any) => {};
+  onTouched = () => {};
+
+  touched = false;
+
+  disabled = false;
+
+  private defaultValue = {
+    timespan: { start: "", end: "" },
+  };
 
   constructor(
     private dialog: MatDialog,
     private researchService: ResearchService,
-    private leafletService: LeafletService
+    private leafletService: LeafletService,
+    private fb: FormBuilder
   ) {}
 
-  ngAfterViewInit(): void {
-    this.researchService
-      .getQuickFilter()
-      .pipe(
-        tap((filters) => (this.allFacets = filters)),
-        tap(() => this.updateFilterGroup()),
-        tap(() => this.sendUpdate()),
-        tap(() => {
-          this.isInitialized.next(true);
-          this.updateSpatialFromModel(this._parameter);
-          this.updateTimeSpanFromModel(this._parameter);
-        })
-      )
-      .subscribe();
+  ngOnInit(): void {
+    this.form.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value) => this.onChange && this.onChange(value));
+  }
 
+  writeValue(value: any): void {
+    if (value) {
+      this.form.setValue(
+        { ...this.defaultValue, ...value },
+        { emitEvent: false }
+      );
+      if (value.spatial) {
+        console.log(
+          "This facet value contains spatial information: ",
+          value.spatial
+        );
+      }
+    }
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(onTouched: any) {
+    this.onTouched = onTouched;
+  }
+
+  markAsTouched() {
+    if (!this.touched) {
+      this.onTouched();
+      this.touched = true;
+    }
+  }
+
+  setDisabledState(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
+  ngAfterViewInit(): void {
     if (this.refreshView && this.leafletReference) {
       this.refreshView.pipe(untilDestroyed(this)).subscribe(() => {
         if (this.leaflet) this.refreshLeafletView();
@@ -139,22 +185,22 @@ export class FacetsComponent implements AfterViewInit {
 
   private setDefaultModel(filters: FacetGroup[]) {
     filters.forEach((group) => {
-      if (!this.model) {
-        this.model = {};
-      }
-      if (this.model[group.id]) {
-        // skip initialization, since it's already done for this field
-        return;
-      }
-
-      this.model[group.id] = {};
       if (group.viewComponent === "RADIO") {
-        this.model[group.id] = group.filter[0].id;
+        // this.model[group.id] = group.filter[0].id;
       } else if (group.viewComponent === "TIMESPAN") {
-        this.model[group.id][this.timespanFilterId] = {
-          start: null,
-          end: null,
-        };
+        this.form.addControl(
+          group.id,
+          this.fb.group({
+            start: [],
+            end: [],
+          })
+        );
+      } else {
+        const groupControls = group.filter.reduce((prev, current) => {
+          prev[current.id] = this.fb.control("");
+          return prev;
+        }, {});
+        this.form.addControl(group.id, this.fb.group(groupControls));
       }
     });
   }
@@ -169,17 +215,6 @@ export class FacetsComponent implements AfterViewInit {
       ?.filter[0]?.id;
   }
 
-  sendUpdate() {
-    // important: delay update until model is updated
-    setTimeout(() => {
-      this.update.emit({
-        // send copy since this will be send to store and made immutable
-        model: JSON.parse(JSON.stringify(this.model)),
-        fieldsWithParameters: { ...this.fieldsWithParameters },
-      });
-    });
-  }
-
   showSpatialDialog(location: SpatialLocation = null) {
     const data: Partial<SpatialLocation> = location ?? {
       type: "free",
@@ -192,7 +227,7 @@ export class FacetsComponent implements AfterViewInit {
       })
       .afterClosed()
       .subscribe((result) => {
-        if (result) this.updateSpatial(result);
+        if (result) this.updateLocation(result);
       });
   }
 
@@ -203,7 +238,7 @@ export class FacetsComponent implements AfterViewInit {
     }
   }
 
-  private updateSpatial(location: SpatialLocation) {
+  private updateLocation(location: SpatialLocation) {
     this.location = location;
 
     if (!location) {
@@ -211,37 +246,8 @@ export class FacetsComponent implements AfterViewInit {
       return;
     }
 
-    this.model.spatial = {};
-    this.model.spatial[this.spatialFilterId] = [];
-    this.fieldsWithParameters[this.spatialFilterId] = [
-      location.value.lat1,
-      location.value.lon1,
-      location.value.lat2,
-      location.value.lon2,
-    ];
-
     this.updateMap(location);
-
-    this.sendUpdate();
-  }
-
-  updateStartTimeSpan(start: Date) {
-    const startDate = start ? new Date(start) : null;
-    this.updateTime(startDate, 0);
-  }
-
-  updateEndTimeSpan(end: Date) {
-    const endDate = end ? new Date(end) : null;
-    if (endDate) endDate.setDate(endDate.getDate() + 1);
-    this.updateTime(endDate, 1);
-  }
-
-  private updateTime(date: Date, position: number) {
-    if (!(this.fieldsWithParameters[this.timespanFilterId]?.length > 1)) {
-      this.fieldsWithParameters[this.timespanFilterId] = [null, null];
-    }
-    this.fieldsWithParameters[this.timespanFilterId][position] = date;
-    this.sendUpdate();
+    this.updateFormWithLocation(location);
   }
 
   private updateMap(location: SpatialLocation) {
@@ -276,15 +282,10 @@ export class FacetsComponent implements AfterViewInit {
 
   removeLocation() {
     this.location = null;
-    delete this.fieldsWithParameters.spatial;
-    delete this.model.spatial[this.spatialFilterId];
-    this.leafletService.removeDrawnBoundingBoxes(
-      this.leafletReference,
-      this.boxes
-    );
-    this.boxes = null;
+    this.updateFormWithLocation(null);
 
-    this.sendUpdate();
+    this.removeSpatialFromMap();
+    this.boxes = null;
   }
 
   private updateFilterGroup() {
@@ -301,29 +302,14 @@ export class FacetsComponent implements AfterViewInit {
     if (filter.some((f) => f.viewComponent === "SPATIAL")) {
       setTimeout(() => {
         this.initLeaflet();
-        this.updateSpatialFromModel(this._parameter);
+        // this.updateSpatialFromModel(this._parameter);
       }, 200);
-    }
-    if (filter.some((f) => f.viewComponent === "TIMESPAN")) {
-      this.updateTimeSpanFromModel(this._parameter);
     }
   }
 
   private updateSpatialFromModel(parameter: any) {
     const location = this.convertParameterToLocation(parameter);
-    this.updateSpatial(location);
-  }
-
-  private updateTimeSpanFromModel(parameter: any) {
-    if (!parameter || !parameter[this.timespanFilterId]) {
-      this.timeSpanForm.reset();
-      return;
-    }
-    const timespan = parameter[this.timespanFilterId];
-    this.timeSpanForm.setValue({
-      startDate: timespan[0],
-      endDate: timespan[1],
-    });
+    this.updateLocation(location);
   }
 
   private convertParameterToLocation(parameter: any): SpatialLocation {
@@ -341,5 +327,27 @@ export class FacetsComponent implements AfterViewInit {
         lon2: coords[3],
       },
     };
+  }
+
+  private updateFormWithLocation(location: SpatialLocation) {
+    const spatialKey = Object.keys(
+      (<FormGroup>this.form.get("spatial")).controls
+    )[0];
+
+    /*    let value;
+    if (location) {
+      value = {
+        ...location,
+        value: [
+          location.value.lat1,
+          location.value.lon1,
+          location.value.lat2,
+          location.value.lon2,
+        ],
+      };
+    } else {
+      value = null;
+    }*/
+    this.form.get(["spatial", spatialKey]).setValue(location);
   }
 }

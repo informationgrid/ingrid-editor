@@ -28,8 +28,6 @@
         #exporter="matTableExporter"
         [dataSource]="dataSource"
         matSort
-        [matSortActive]="sortInfo?.column"
-        [matSortDirection]="sortInfo?.direction"
         (matSortChange)="updateSortInStore($event)"
         class="width-100"
     >

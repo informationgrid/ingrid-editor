@@ -11,6 +11,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../services/german-date.adapter";
+import { ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [ReportsComponent],
@@ -24,6 +25,7 @@ import { GermanDateAdapter } from "../services/german-date.adapter";
     MatTableModule,
     MatSortModule,
     MatButtonToggleModule,
+    ReactiveFormsModule,
   ],
   providers: [
     {

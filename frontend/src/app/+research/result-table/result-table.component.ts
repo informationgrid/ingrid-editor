@@ -58,17 +58,14 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   totalHits = 0;
   profileIconsMap: {};
-  sortInfo: { column: string; direction: "asc" | "desc" | "" } = null;
 
   constructor(
     private profileService: ProfileService,
     private profileQuery: ProfileQuery,
-    private researchService: ResearchService,
-    private queryQuery: QueryQuery
+    private researchService: ResearchService
   ) {}
 
   ngOnInit(): void {
-    this.sortInfo = this.queryQuery.getValue().ui.sort;
     this.profileQuery.selectLoading().subscribe((isLoading) => {
       if (isLoading) return;
 

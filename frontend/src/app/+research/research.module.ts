@@ -41,6 +41,7 @@ import { GermanDateAdapter } from "../services/german-date.adapter";
 import { SharedModule } from "../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { TabSearchComponent } from "./+tab-search/tab-search.component";
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
     SaveQueryDialogComponent,
     TabSqlComponent,
     ResultTableComponent,
+    TabSearchComponent,
   ],
   imports: [
     CommonModule,
