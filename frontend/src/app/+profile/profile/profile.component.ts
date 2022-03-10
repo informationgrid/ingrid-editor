@@ -81,7 +81,11 @@ export class ProfileComponent implements OnInit {
         hasBackdrop: true,
       })
       .afterClosed()
-      .subscribe();
+      .subscribe((response) => {
+        if (response === "resetPassword") {
+          this.userService.updatePassword();
+        }
+      });
   }
 
   openChangeNameDialog() {
