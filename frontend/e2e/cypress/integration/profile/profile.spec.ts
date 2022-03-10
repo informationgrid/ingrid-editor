@@ -20,8 +20,16 @@ describe('Profile', () => {
     ProfilePage.changeUserFirstLastName(firstName, lastName, true);
   });
 
-  xit('should update user password', () => {
-    // ToDo request a change password
+  it('should update catalog admin password', () => {
+    cy.kcLogin('ige2').as('tokens');
+    ProfilePage.visit();
+    // change user password with new password
+    ProfilePage.changePassword('ige2', 'mdek', 'ige2');
+
+    // login again with new password using new fixture file
+    cy.kcLogout();
+    cy.kcLogin('ige2_with_new_pass');
+    ProfilePage.visit();
   });
 
   it('should update user email', () => {

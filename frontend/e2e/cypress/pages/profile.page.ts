@@ -5,6 +5,14 @@ export class ProfilePage {
     cy.wait('@getUser');
   }
 
+  static loginWithLoginPage(username: string, password: string) {
+    cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
+    cy.get('#username').type(username);
+    cy.get('#password').type(password);
+    cy.get('#kc-login').click();
+    cy.wait(1000);
+  }
+
   static changeUserFirstLastName(firstName: string, lastName: string, submit: boolean = false) {
     cy.get('[data-cy="change-full-name-id"]').click();
     cy.get('ige-change-name-dialog').find('input').first().clear().type(firstName);
@@ -27,6 +35,16 @@ export class ProfilePage {
       cy.wait('@getUser');
       cy.get('div .main-content').contains(email);
     }
+  }
+
+  static changePassword(username: string, oldPassword: string, newPassword: string) {
+    cy.get('[data-cy="change-password-id"]').click();
+    cy.get('[data-cy="confirm-dialog-resetPassword"]').click();
+    // if the user has just logged in then no need to enter credentials
+    // this.loginWithLoginPage(username, oldPassword);
+    cy.get('#password-new').type(newPassword);
+    cy.get('#password-confirm').type(newPassword);
+    cy.get('#kc-login').click();
   }
 
   static checkUserInformation(
