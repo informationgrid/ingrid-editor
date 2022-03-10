@@ -37,9 +37,10 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {}
 
   changeEmail(newMail: string): void {
-    this.editingEmail = false;
-
-    if (!newMail) return;
+    if (!newMail) {
+      this.editingEmail = false;
+      return;
+    }
 
     newMail = newMail.trim();
 
@@ -48,11 +49,12 @@ export class ProfileComponent implements OnInit {
         email: newMail,
       })
       .subscribe(() => {
-        this.configService.getCurrentUserInfo().then(() =>
+        this.configService.getCurrentUserInfo().then(() => {
+          this.editingEmail = false;
           this.snackBar.open("E-Mail Adresse wurde geändert.", "", {
             panelClass: "green",
-          })
-        );
+          });
+        });
       });
   }
 

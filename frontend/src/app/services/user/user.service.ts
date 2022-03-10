@@ -87,13 +87,18 @@ export class UserService {
   }
 
   updateCurrentUser(user: Partial<User>): Observable<boolean> {
-    return this.keycloakService.updateUserProfile(user);
+    return this.keycloakService
+      .updateUserProfile(user)
+      .pipe(catchError((error) => UserService.handleChangeEmailError(error)));
   }
 
   private static handleChangeEmailError(
     response: HttpErrorResponse
   ): Observable<any> {
-    if (response.error.errorText === "Conflicting email address") {
+    if (
+      response.status === 409 &&
+      response.error.errorMessage === "emailExistsMessage"
+    ) {
       throw new IgeError(
         "Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus."
       );
