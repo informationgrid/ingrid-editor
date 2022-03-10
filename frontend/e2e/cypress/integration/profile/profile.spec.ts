@@ -44,4 +44,14 @@ describe('Profile', () => {
     cy.get('button[type="submit"]').click();
     cy.get('mat-dialog-container').contains('Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus.');
   });
+
+  it('author should be able to update name and email (#3576)', () => {
+    cy.kcLogin('autor').as('tokens');
+    let newEmail = 'autortest@123omething.com';
+    let newFirstName = 'testAutor';
+    let newLastName = 'Autor2';
+    ProfilePage.visit();
+    ProfilePage.changeUserFirstLastName(newFirstName, newLastName, true);
+    ProfilePage.changeUserEmail(newEmail, true);
+  });
 });
