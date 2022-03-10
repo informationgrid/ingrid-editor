@@ -118,6 +118,9 @@ export class AdminUserPage extends BasePage {
     if (data.email) {
       cy.get('[data-cy=E-Mail]  formly-field-mat-input input').clear().type(data.email);
     }
+    if (data.organisation) {
+      cy.get('[data-cy=Organisation] input').clear().type(data.organisation);
+    }
 
     if (save) {
       AdminUserPage.saveUser();

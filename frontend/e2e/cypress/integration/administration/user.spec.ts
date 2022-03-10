@@ -1,8 +1,7 @@
-import { AdminUserPage, UserFormData } from '../../pages/administration-user.page';
+import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
-import { AdminGroupPage } from '../../pages/administration-group.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -490,4 +489,32 @@ describe('User', () => {
   });
 
   //TODO: Verification emails for user!
+
+  it('should show limited range of users to catalog admin (#3538)', () => {
+    // log in as cat admin
+    cy.kcLogout();
+    cy.kcLogin('ige4');
+    // super admin should not be visible
+    AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
+    // a catadmin assigned to the same catalog should be visible
+    AdminUserPage.userShouldExist('katalogadmin@random.com');
+    // catadmins not belonging to catalog should not be visible
+    AdminUserPage.userShouldNotExist('katalogadmintest@something.com');
+  });
+
+  it('should update user information (#2972)', () => {
+    const dateOfToday = Utils.getFormattedDate(new Date());
+    // log in as some user
+    cy.kcLogout();
+    cy.kcLogin('autor');
+    // log in as admin and make sure "last logged in" contains right information
+    cy.kcLogout();
+    cy.kcLogin('user');
+    AdminUserPage.visit();
+    AdminUserPage.selectUser('autor');
+    AdminUserPage.verifyInfoInHeader(keysInHeader.LastLogin, dateOfToday);
+    // change user profile and make sure information is updated accordingly
+    AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
+    AdminUserPage.verifyInfoInHeader(keysInHeader.EditDate, dateOfToday);
+  });
 });
