@@ -26,7 +26,24 @@ class McloudAddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) :
             FROM document d, document_wrapper dw 
             WHERE (
                 dw.deleted = 0 AND
-                (dw.draft = d.id OR dw.published = d.id) 
+                (dw.draft = d.id OR dw.published = d.id OR dw.pending = d.id) 
+                AND data->'addresses' @> '[{"ref": "${doc.uuid}"}]');
+            """.trimIndent()
+        val result = jdbcTemplate.queryForList(sqlQuery)
+
+        if (result.size > 0) {
+            throw IsReferencedException.byUuids(result.map { it["uuid"] as String })
+        }
+    }
+
+    override fun onUnpublish(doc: Document) {
+        super.onDelete(doc)
+        val sqlQuery = """
+            SELECT DISTINCT d.uuid, title 
+            FROM document d, document_wrapper dw 
+            WHERE (
+                dw.deleted = 0 AND
+                (dw.pending = d.id OR dw.published = d.id) 
                 AND data->'addresses' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)

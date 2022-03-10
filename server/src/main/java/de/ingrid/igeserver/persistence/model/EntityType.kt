@@ -16,7 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException
  * Base interface for all entity types
  */
 abstract class EntityType {
-    
+
     private val logger = logger()
 
     companion object {
@@ -79,6 +79,11 @@ abstract class EntityType {
     open fun onDelete(doc: Document) {}
 
     /**
+     * Persistence hook called when an instance of this type is deleted
+     */
+    open fun onUnpublish(doc: Document) {}
+
+    /**
      * Extract referenced documents/addresses and replace them with their ID
      */
     open fun pullReferences(doc: Document): List<Document> {
@@ -115,7 +120,7 @@ abstract class EntityType {
         }
         return latestDocumentJson
     }
-    
+
     fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {
         val addressDocs = mutableListOf<Document>()
 
@@ -133,7 +138,7 @@ abstract class EntityType {
         }
         return addressDocs
     }
-    
+
     fun replaceUuidWithReferenceData(doc: Document, fieldId: String, options: UpdateReferenceOptions) {
         val addresses = doc.data.path(fieldId)
         for (address in addresses) {

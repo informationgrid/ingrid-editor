@@ -253,14 +253,7 @@ export class DocumentService {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
-        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-          console.error(error?.error?.errorText);
-          this.messageService.sendError(
-            "Problem beim Entziehen der Veröffentlichung: " +
-              error?.error?.errorText
-          );
-          return this.load(id);
-        }
+        return this.handleUnpublishError(error, id);
       }),
       map((json) => this.mapToDocumentAbstracts([json], json._parent)),
       tap((json) =>
@@ -327,17 +320,40 @@ export class DocumentService {
   }
 
   private handleDeleteError(error): Observable<any> {
-    if (error?.error?.errorCode === "IS_REFERENCED_ERROR") {
-      console.error(error?.error?.errorText);
-      let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
-
-      this.messageService.sendError(
-        "Das Dokument wird von den folgenden Dokumenten referenziert: " +
-          uniqueUuids.join(", ")
-      );
+    const errorCode = error?.error?.errorCode;
+    switch (errorCode) {
+      case "IS_REFERENCED_ERROR":
+        this.handleIsReferencedError(error);
+        break;
     }
-    // unknown error
     throw error;
+  }
+
+  private handleUnpublishError(error, id): Observable<any> {
+    const errorCode = error?.error?.errorCode;
+    switch (errorCode) {
+      case "IS_REFERENCED_ERROR":
+        this.handleIsReferencedError(error);
+        break;
+      case "POST_SAVE_ERROR":
+        console.error(error?.error?.errorText);
+        this.messageService.sendError(
+          "Problem beim Entziehen der Veröffentlichung: " +
+            error?.error?.errorText
+        );
+        return this.load(id);
+    }
+    throw error;
+  }
+
+  private handleIsReferencedError(error) {
+    console.error(error?.error?.errorText);
+    let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
+
+    this.messageService.sendError(
+      "Das Dokument wird von den folgenden Dokumenten referenziert: " +
+        uniqueUuids.join(", ")
+    );
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {
