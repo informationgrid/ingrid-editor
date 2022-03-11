@@ -362,10 +362,10 @@ describe('Research Page', () => {
 
   it('should do time-related search with only start date given (#3040)', () => {
     // choose start date and compare filtered results with number of all search results
-    ResearchPage.setDate('startDate', '09.08.2021');
+    ResearchPage.setDate('start', '09.08.2021');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.clearDateField('startDate');
+      ResearchPage.clearDateField('start');
       ResearchPage.waitForSearch();
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
@@ -373,10 +373,10 @@ describe('Research Page', () => {
 
   it('should do time-related search with only end date given (#3040)', () => {
     // choose end date and compare filtered results with number of all search results
-    ResearchPage.setDate('endDate', '11.08.2021');
+    ResearchPage.setDate('end', '11.08.2021');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.clearDateField('endDate');
+      ResearchPage.clearDateField('end');
       ResearchPage.waitForSearch();
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
@@ -384,20 +384,20 @@ describe('Research Page', () => {
 
   it('should do timerelated search with both start date and end date given (#3040)', () => {
     // choose start date and compare filtered results with number of all search results
-    ResearchPage.setDate('startDate', '07.08.2021');
-    ResearchPage.setDate('endDate', '29.08.2021');
+    ResearchPage.setDate('start', '07.08.2021');
+    ResearchPage.setDate('end', '29.08.2021');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.clearDateField('endDate');
-      ResearchPage.clearDateField('startDate');
+      ResearchPage.clearDateField('end');
+      ResearchPage.clearDateField('start');
       ResearchPage.waitForSearch();
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
-    ResearchPage.setDate('startDate', '22.07.2021');
-    ResearchPage.setDate('endDate', '22.07.2021');
+    ResearchPage.setDate('start', '22.07.2021');
+    ResearchPage.setDate('end', '22.07.2021');
     ResearchPage.waitForSearch();
 
     // iterate through every result to check date
@@ -407,37 +407,37 @@ describe('Research Page', () => {
 
     // compare filtered results with number of all search results
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.clearDateField('endDate');
-      ResearchPage.clearDateField('startDate');
+      ResearchPage.clearDateField('end');
+      ResearchPage.clearDateField('start');
       ResearchPage.waitForSearch();
       ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
     });
   });
 
   it('time-related search with start date more recent than end date should return 0 results (#3040)', () => {
-    ResearchPage.setDate('startDate', '24.07.2021');
-    ResearchPage.setDate('endDate', '22.07.2021');
+    ResearchPage.setDate('start', '24.07.2021');
+    ResearchPage.setDate('end', '22.07.2021');
     ResearchPage.waitForSearch();
     ResearchPage.checkNoSearchResults();
   });
 
   it('time-related search for specific document should only return it when respective date is covered by interval (#3040)', () => {
     // date interval too early for specific document
-    ResearchPage.setDate('startDate', '20.06.2021');
-    ResearchPage.setDate('endDate', '29.06.2021');
+    ResearchPage.setDate('start', '20.06.2021');
+    ResearchPage.setDate('end', '29.06.2021');
     ResearchPage.waitForSearch();
     // expect to get 0 results
     ResearchPage.checkNoSearchResults();
     // stretch the interval to cover the date in question
-    ResearchPage.setDate('endDate', '30.07.2021');
+    ResearchPage.setDate('end', '30.07.2021');
     ResearchPage.waitForSearch();
     // expect the document to be returned
     ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
   it('should do time-related search together with search for published documents (#3040)', () => {
-    ResearchPage.setDate('startDate', '20.06.2021');
-    ResearchPage.setDate('endDate', '29.07.2022');
+    ResearchPage.setDate('start', '20.06.2021');
+    ResearchPage.setDate('end', '29.07.2022');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
@@ -447,8 +447,8 @@ describe('Research Page', () => {
   });
 
   it('should do time-related search together with document type search (#3040)', () => {
-    ResearchPage.setDate('startDate', '10.05.2021');
-    ResearchPage.setDate('endDate', '30.08.2021');
+    ResearchPage.setDate('start', '10.05.2021');
+    ResearchPage.setDate('end', '30.08.2021');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.mCloud);
@@ -458,8 +458,8 @@ describe('Research Page', () => {
   });
 
   it('should do time-related search together with spatial reference search (#3040)', () => {
-    ResearchPage.setDate('startDate', '20.01.2020');
-    ResearchPage.setDate('endDate', '29.12.2021');
+    ResearchPage.setDate('start', '20.01.2020');
+    ResearchPage.setDate('end', '29.12.2021');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial10');
@@ -470,8 +470,8 @@ describe('Research Page', () => {
 
   it('should be possible to delete date from input fields (#3040)', () => {
     // type in dates
-    ResearchPage.setDate('startDate', '20.06.2021');
-    ResearchPage.setDate('endDate', '29.07.2021');
+    ResearchPage.setDate('start', '20.06.2021');
+    ResearchPage.setDate('end', '29.07.2021');
     // delete dates
     cy.get(ResearchPage.StartDateField).clear();
     cy.get(ResearchPage.EndDateField).clear();

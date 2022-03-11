@@ -47,6 +47,7 @@
             <mat-checkbox
                 *ngFor="let filter of group.filter"
                 [formControlName]="filter.id"
+                [name]="filter.id"
                 >{{ filter.label }}</mat-checkbox
             >
         </div>
