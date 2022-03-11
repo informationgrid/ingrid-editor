@@ -2,6 +2,9 @@ import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administr
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
+import { DashboardPage } from '../../pages/dashboard.page';
+import { ManageCatalogPage } from '../../pages/manage-catalog.page';
+import { Menu } from '../../pages/menu';
 
 describe('User', () => {
   beforeEach(() => {
@@ -493,13 +496,18 @@ describe('User', () => {
   it('should show limited range of users to catalog admin (#3538)', () => {
     // log in as cat admin
     cy.kcLogout();
-    cy.kcLogin('ige4');
+    cy.kcLogin('zwei');
     // super admin should not be visible
+    AdminUserPage.visit();
     AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
-    // a catadmin assigned to the same catalog should be visible
-    AdminUserPage.userShouldExist('katalogadmin@random.com');
-    // catadmins not belonging to catalog should not be visible
-    AdminUserPage.userShouldNotExist('katalogadmintest@something.com');
+    // switch catalog
+    ManageCatalogPage.visit();
+    ManageCatalogPage.switchToCatalog('Test_Mass_Data');
+    // a cat admin assigned to the same catalog should be visible
+    Menu.switchTo('USERS');
+    AdminUserPage.userShouldExist('masstest@something.com');
+    // cat admins not belonging to catalog should not be visible
+    AdminUserPage.userShouldNotExist('me@wemove.com');
   });
 
   it('should update user information (#2972)', () => {
