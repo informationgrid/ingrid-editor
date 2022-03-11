@@ -19,6 +19,19 @@ export class Utils {
     return `${day}.${month}.${date.getFullYear()}`;
   }
 
+  static getFormattedDateInTheFuture(date: Date): string {
+    let day = date.getDate().toString();
+    if (day.length === 1) {
+      day = '0' + day;
+    }
+    let month = (date.getMonth() + 1).toString();
+    if (month.length === 1) {
+      month = '0' + month;
+    }
+    let year = date.getFullYear() + 1;
+    return `${day}.${month}.${year}`;
+  }
+
   static getHourAndMinute(date: Date): string {
     let hours = date.getHours().toString();
     let minutes = date.getMinutes().toString();
