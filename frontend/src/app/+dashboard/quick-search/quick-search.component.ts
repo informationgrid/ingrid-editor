@@ -56,7 +56,7 @@ export class QuickSearchComponent implements OnInit {
     event.preventDefault();
 
     this.router.navigate([
-      "/research",
+      "/research/search",
       {
         q: this.query.value,
         type: inAddresses ? "selectAddresses" : "selectDocuments",

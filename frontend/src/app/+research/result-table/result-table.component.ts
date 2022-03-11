@@ -8,20 +8,21 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { ResearchResponse, ResearchService } from "../research.service";
+import { ResearchResponse } from "../research.service";
 import { MatTableDataSource } from "@angular/material/table";
-import { MatSort, Sort } from "@angular/material/sort";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { MatPaginator } from "@angular/material/paginator";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
 import { IgeDocument } from "../../models/ige-document";
-import { QueryQuery } from "../../store/query/query.query";
-
-export interface ShortResultInfo {
-  uuid: string;
-  isAddress: boolean;
-}
+import { Router } from "@angular/router";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../dialogs/confirm/confirm-dialog.component";
+import { DocumentService } from "../../services/document/document.service";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "ige-result-table",
@@ -35,12 +36,10 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   @Input() isLoading = false;
-  @Input() pageIndex = 0;
 
   @Output() save = new EventEmitter<void>();
-  @Output() open = new EventEmitter<ShortResultInfo>();
-  @Output() remove = new EventEmitter<IgeDocument>();
   @Output() export = new EventEmitter<string>();
+  @Output() updated = new EventEmitter<void>();
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -52,7 +51,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = [];
+  displayedColumns: string[] = ["_type", "title", "_modified", "settings"];
   columnsMap: SelectOptionUi[];
   showSaveButton: boolean;
 
@@ -60,9 +59,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   profileIconsMap: {};
 
   constructor(
+    private router: Router,
     private profileService: ProfileService,
     private profileQuery: ProfileQuery,
-    private researchService: ResearchService
+    private documentService: DocumentService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -85,32 +86,44 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  openDataset(element: IgeDocument) {
-    this.open.emit({
-      uuid: element._uuid,
-      isAddress: element._category === "address",
-    });
-  }
-
-  updatePageInStore($event: PageEvent) {
-    this.researchService.updateUIState({ page: $event.pageIndex });
-  }
-
   private updateTableFromResponse(val: ResearchResponse) {
     this.dataSource.data = val?.hits || [];
     this.totalHits = val?.totalHits || 0;
-    if (this.displayedColumns.length === 0) {
-      setTimeout(
-        () =>
-          (this.displayedColumns = ["_type", "title", "_modified", "settings"]),
-        300
-      );
-    }
   }
 
-  updateSortInStore($event: Sort) {
-    this.researchService.updateUIState({
-      sort: { column: $event.active, direction: $event.direction },
-    });
+  openDataset(element: IgeDocument) {
+    const target = this.isAddress(element) ? "/address" : "/form";
+    this.router.navigate([target, { id: element._uuid }]);
+  }
+
+  private isAddress(element: IgeDocument): boolean {
+    return element._category === "address";
+  }
+
+  removeDataset(hit: IgeDocument) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Löschen",
+          message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
+          buttons: [
+            { text: "Abbruch" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.documentService
+            .delete([hit._id], this.isAddress(hit))
+            .subscribe(() => this.updated.next());
+        }
+      });
   }
 }

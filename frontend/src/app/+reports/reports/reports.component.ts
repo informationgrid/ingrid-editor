@@ -30,7 +30,6 @@ export class ReportsComponent implements OnInit {
   ];
 
   facetModel: any;
-  facetParameters: any;
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
 

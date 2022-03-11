@@ -88,7 +88,7 @@
                         Öffnen
                     </button>
                     <button mat-menu-item disabled>Exportieren</button>
-                    <button mat-menu-item (click)="remove.emit(element)">
+                    <button mat-menu-item (click)="removeDataset(element)">
                         Löschen
                     </button>
                 </mat-menu>
@@ -105,8 +105,6 @@
     </table>
     <mat-paginator
         [pageSizeOptions]="[10, 20, 50]"
-        (page)="updatePageInStore($event)"
-        [pageIndex]="pageIndex"
         showFirstLastButtons
     ></mat-paginator>
 </ng-container>

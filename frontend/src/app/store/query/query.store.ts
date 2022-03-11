@@ -1,9 +1,14 @@
 import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
+import {
+  ActiveState,
+  EntityState,
+  EntityStore,
+  StoreConfig,
+} from "@datorama/akita";
 import { Query } from "./query.model";
 import { FacetUpdate } from "../../+research/+facets/facets.component";
 
-export interface QueryState extends EntityState<Query> {
+export interface QueryState extends EntityState<Query>, ActiveState {
   ui: {
     search: {
       category: "selectDocuments" | "selectAddresses";
@@ -18,6 +23,7 @@ export interface QueryState extends EntityState<Query> {
 
 export function createInitialState(): QueryState {
   return {
+    active: null,
     ui: {
       search: {
         category: "selectDocuments",

@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -20,6 +19,8 @@ import {
   FormGroup,
   NG_VALUE_ACCESSOR,
 } from "@angular/forms";
+import { BehaviorSubject } from "rxjs";
+import { filter, take } from "rxjs/operators";
 
 export interface FacetUpdate {
   model: any;
@@ -39,23 +40,16 @@ export interface FacetUpdate {
     },
   ],
 })
-export class FacetsComponent
-  implements OnInit, AfterViewInit, ControlValueAccessor
-{
+export class FacetsComponent implements OnInit, ControlValueAccessor {
+  // TODO: remove input and filter facets from report component
   @Input() forReports: boolean;
 
   @Input() set facets(value: Facets) {
     if (value) {
       this.allFacets = value;
       this.updateFilterGroup();
+      this.facetsInitialized.next(true);
     }
-  }
-
-  @Input() set parameter(value: any) {
-    this._parameter = value;
-    // delay update for other inputs to be present
-    setTimeout(() => this.updateSpatialFromModel(value));
-    // setTimeout(() => this.updateTimeSpanFromModel(value));
   }
 
   @Input() refreshView: EventEmitter<void>;
@@ -74,18 +68,16 @@ export class FacetsComponent
 
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
-  _parameter: any = {};
   filterGroup: FacetGroup[];
   researchOnlyFilterIds = ["state"];
 
-  private _forAddresses = false;
-  private allFacets: Facets;
-  private spatialFilterId = "";
-  private timespanFilterId = "";
   leafletReference: L.Map;
   notExpanded: any = {};
   location: SpatialLocation;
+  private _forAddresses = false;
+  private allFacets: Facets;
   private boxes: Rectangle[];
+  private facetsInitialized = new BehaviorSubject<boolean>(false);
 
   form: FormGroup = this.fb.group({});
 
@@ -95,10 +87,6 @@ export class FacetsComponent
   touched = false;
 
   disabled = false;
-
-  private defaultValue = {
-    timespan: { start: "", end: "" },
-  };
 
   constructor(
     private dialog: MatDialog,
@@ -115,16 +103,17 @@ export class FacetsComponent
 
   writeValue(value: any): void {
     if (value) {
-      this.form.setValue(
-        { ...this.defaultValue, ...value },
-        { emitEvent: false }
-      );
-      if (value.spatial) {
-        console.log(
-          "This facet value contains spatial information: ",
-          value.spatial
-        );
-      }
+      this.facetsInitialized
+        .pipe(
+          filter((isReady) => isReady),
+          take(1)
+        )
+        .subscribe(() => {
+          this.form.setValue(value, { emitEvent: false });
+          if (value.spatial) {
+            this.updateSpatialFromModel(value.spatial[this.getSpatialKey()]);
+          }
+        });
     }
   }
 
@@ -136,37 +125,8 @@ export class FacetsComponent
     this.onTouched = onTouched;
   }
 
-  markAsTouched() {
-    if (!this.touched) {
-      this.onTouched();
-      this.touched = true;
-    }
-  }
-
   setDisabledState(disabled: boolean) {
     this.disabled = disabled;
-  }
-
-  ngAfterViewInit(): void {
-    if (this.refreshView && this.leafletReference) {
-      this.refreshView.pipe(untilDestroyed(this)).subscribe(() => {
-        if (this.leaflet) this.refreshLeafletView();
-      });
-    }
-  }
-
-  private refreshLeafletView(): void {
-    // @ts-ignore
-    (<Map>this.leafletReference)._onResize();
-    if (Object.keys(this._parameter).length > 0) {
-      setTimeout(() =>
-        this.updateMap(this.convertParameterToLocation(this._parameter))
-      );
-    } else {
-      setTimeout(() =>
-        this.leafletService.zoomToInitialBox(this.leafletReference)
-      );
-    }
   }
 
   initLeaflet() {
@@ -186,7 +146,7 @@ export class FacetsComponent
   private setDefaultModel(filters: FacetGroup[]) {
     filters.forEach((group) => {
       if (group.viewComponent === "RADIO") {
-        // this.model[group.id] = group.filter[0].id;
+        // TODO: implement
       } else if (group.viewComponent === "TIMESPAN") {
         this.form.addControl(
           group.id,
@@ -203,16 +163,6 @@ export class FacetsComponent
         this.form.addControl(group.id, this.fb.group(groupControls));
       }
     });
-  }
-
-  private determineSpatialFilterId(filters: FacetGroup[]) {
-    return filters.find((group) => group.viewComponent === "SPATIAL")?.filter[0]
-      ?.id;
-  }
-
-  private determineTimeSpanFilterId(filters: FacetGroup[]) {
-    return filters.find((group) => group.viewComponent === "TIMESPAN")
-      ?.filter[0]?.id;
   }
 
   showSpatialDialog(location: SpatialLocation = null) {
@@ -250,6 +200,7 @@ export class FacetsComponent
     this.updateFormWithLocation(location);
   }
 
+  // TODO: refactor map to separate component
   private updateMap(location: SpatialLocation) {
     if (!this.leafletReference) {
       console.log("Map not initialized yet ... try again updating spatial");
@@ -294,8 +245,6 @@ export class FacetsComponent
       filter = filter.filter(
         (fg) => !this.researchOnlyFilterIds.includes(fg.id)
       );
-    this.spatialFilterId = this.determineSpatialFilterId(filter);
-    this.timespanFilterId = this.determineTimeSpanFilterId(filter);
     this.setDefaultModel(filter);
     this.filterGroup = filter;
 
@@ -307,47 +256,17 @@ export class FacetsComponent
     }
   }
 
-  private updateSpatialFromModel(parameter: any) {
-    const location = this.convertParameterToLocation(parameter);
+  private updateSpatialFromModel(location: any) {
     this.updateLocation(location);
   }
 
-  private convertParameterToLocation(parameter: any): SpatialLocation {
-    if (!parameter || !parameter[this.spatialFilterId]) {
-      return null;
-    }
-    const coords = parameter[this.spatialFilterId];
-    return <SpatialLocation>{
-      title: null,
-      type: "free",
-      value: {
-        lat1: coords[0],
-        lon1: coords[1],
-        lat2: coords[2],
-        lon2: coords[3],
-      },
-    };
+  private updateFormWithLocation(location: SpatialLocation) {
+    const spatialKey = this.getSpatialKey();
+
+    this.form.get(["spatial", spatialKey]).setValue(location);
   }
 
-  private updateFormWithLocation(location: SpatialLocation) {
-    const spatialKey = Object.keys(
-      (<FormGroup>this.form.get("spatial")).controls
-    )[0];
-
-    /*    let value;
-    if (location) {
-      value = {
-        ...location,
-        value: [
-          location.value.lat1,
-          location.value.lon1,
-          location.value.lat2,
-          location.value.lon2,
-        ],
-      };
-    } else {
-      value = null;
-    }*/
-    this.form.get(["spatial", spatialKey]).setValue(location);
+  private getSpatialKey() {
+    return Object.keys((<FormGroup>this.form.get("spatial")).controls)[0];
   }
 }

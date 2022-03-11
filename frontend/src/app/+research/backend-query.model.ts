@@ -42,7 +42,9 @@ export class BackendQuery {
           if (facetGroup.filter[0].parameters) {
             activeFilterIds.clauses.push({
               op: groupOperator,
-              value: [facetGroup.filter[0].id],
+              value: [
+                ...BackendQuery.prepareValues(facetGroup, activeItemsFromGroup),
+              ],
               parameter: BackendQuery.prepareParameters(
                 facetGroup,
                 groupValue,
@@ -91,5 +93,16 @@ export class BackendQuery {
       orderByDirection: this.orderByDirection,
       pagination: this.pagination,
     };
+  }
+
+  private static prepareValues(
+    facetGroup: FacetGroup,
+    activeItemsFromGroup: string[]
+  ): string[] {
+    if (facetGroup.viewComponent === "TIMESPAN") {
+      return [facetGroup.filter[0].id];
+    } else {
+      return activeItemsFromGroup;
+    }
   }
 }

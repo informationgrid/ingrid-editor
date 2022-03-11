@@ -86,38 +86,16 @@ export class QueryManagerComponent implements OnInit {
   }
 
   loadQuery(id: string) {
-    let entity: SqlQuery | FacetQuery = JSON.parse(
-      JSON.stringify(this.queryQuery.getEntity(id))
-    );
+    let entity: Query = this.queryQuery.getEntity(id);
+
+    this.researchService.setActiveQuery(id);
 
     logAction("Load query");
     if (entity.type === "facet") {
-      this.researchService.updateUIState({
-        search: {
-          category: (<FacetQuery>entity).model.type,
-          query: (<FacetQuery>entity).term,
-          facets: {
-            model: {
-              // ...this.getFacetModel(entity.model.type),
-              ...(<FacetQuery>entity).model,
-            },
-            fieldsWithParameters: (<FacetQuery>entity).parameter ?? {},
-          },
-        },
-      });
       this.router.navigate(["research/search"]);
     } else {
-      this.researchService.updateUIState({
-        sqlSearch: { query: (<SqlQuery>entity).sql },
-      });
       this.router.navigate(["research/sql"]);
     }
-  }
-
-  private getFacetModel(type: string): any {
-    return type === "selectDocuments"
-      ? this.researchService.facetModel.documents
-      : this.researchService.facetModel.addresses;
   }
 
   getIdentifier(index, item: Query) {

@@ -1,4 +1,5 @@
 export interface Query {
+  type: string;
   id?: string;
   name: string;
   description: string;
@@ -13,7 +14,5 @@ export interface SqlQuery extends Query {
 
 export interface FacetQuery extends Query {
   type: "facet";
-  term: string;
   model: any;
-  parameter: any;
 }

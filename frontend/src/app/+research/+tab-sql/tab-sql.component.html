@@ -8,7 +8,7 @@
         <mat-chip-list>
             <mat-chip
                 *ngFor="let example of sqlExamples"
-                (click)="updateSqlQueryState(example.value)"
+                (click)="updateSqlControl(example.value)"
                 >{{ example.label }}</mat-chip
             >
         </mat-chip-list>
@@ -21,7 +21,7 @@
                 rows="4"
                 placeholder="SELECT * FROM ..."
                 data-cy="sql-query-field"
-                [(ngModel)]="sql"
+                [formControl]="sql"
             ></textarea>
         </mat-form-field>
 
@@ -30,16 +30,16 @@
             <button
                 mat-stroked-button
                 color="primary"
-                [disabled]="sql.length === 0"
-                (click)="updateSqlQueryState('')"
+                [disabled]="sql.value === ''"
+                (click)="updateSqlControl('')"
             >
                 Entfernen
             </button>
             <button
                 mat-flat-button
                 color="primary"
-                [disabled]="!sql"
-                (click)="updateSqlQueryState(sql)"
+                [disabled]="sql.value === ''"
+                (click)="updateSqlControl(sql.value)"
             >
                 Suchen
             </button>
@@ -60,8 +60,7 @@
         <ige-result-table
             [result]="result"
             [isLoading]="isSearching"
+            (updated)="search(sql.value)"
         ></ige-result-table>
-        <!--(open)="loadDataset($event)"
-            (remove)="removeDataset($event)"-->
     </div>
 </page-template>
