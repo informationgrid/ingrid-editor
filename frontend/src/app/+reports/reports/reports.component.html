@@ -1,12 +1,12 @@
 <mat-tab-group animationDuration="0" [dynamicHeight]="true" class="page-tabs">
     <mat-tab label="Statistik">
         <page-template-no-header label="Statistik">
-            <div left-side>
+            <div left-side [formGroup]="form">
                 <mat-button-toggle-group
                     value="selectDocuments"
                     name="searchClass"
                     aria-label="Typ"
-                    (valueChange)="updateSearchClass($event)"
+                    formControlName="type"
                 >
                     <mat-button-toggle value="selectDocuments"
                         >Daten
@@ -16,12 +16,13 @@
                     </mat-button-toggle>
                 </mat-button-toggle-group>
                 <ige-facets
-                    [model]="facetModel"
-                    [parameter]="facetParameters"
-                    [forAddresses]="searchClass === 'selectAddresses'"
+                    formControlName="facets"
+                    [facets]="facets"
+                    [forAddresses]="
+                        form.get('type').value === 'selectAddresses'
+                    "
                     [forReports]="true"
                     [refreshView]="facetViewRefresher"
-                    (update)="updateFilter($event)"
                 ></ige-facets>
             </div>
             <div main-content fxLayout="column" fxLayoutGap="36px">

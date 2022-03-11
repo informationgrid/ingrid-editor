@@ -18,6 +18,7 @@ export interface QuickFilter {
   id: string;
   label: string;
   implicitFilter: string[];
+  parameters: any[];
 }
 
 export interface Facets {
@@ -45,6 +46,32 @@ export class ResearchService {
   facetModel: any;
   private configuration: Configuration;
   private filters: Facets;
+  sqlExamples = [
+    {
+      label: 'Adressen, mit Titel "test"',
+      value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document_wrapper.category = 'address'
+              AND LOWER(title) LIKE '%test%'`,
+    },
+    {
+      label: 'Dokumente "Luft- und Raumfahrt"',
+      value: `SELECT document1.*, document_wrapper.*
+            FROM document_wrapper
+                   JOIN document document1 ON
+              CASE
+                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
+                ELSE document_wrapper.draft = document1.id
+                END
+            WHERE document1.type = 'mCloudDoc'
+              AND data -> 'mCloudCategories' @> '"aviation"'`,
+    },
+  ];
 
   constructor(
     private http: HttpClient,
@@ -67,7 +94,6 @@ export class ResearchService {
   search(
     term: string,
     model: any,
-    fieldsWithParameters: { [x: string]: any[] },
     orderByField = "title",
     orderByDirection = "ASC",
     pagination?: {
@@ -78,7 +104,6 @@ export class ResearchService {
     const backendQuery = new BackendQuery(
       term,
       model,
-      fieldsWithParameters,
       this.filters,
       orderByField,
       orderByDirection,
@@ -101,16 +126,8 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
-  searchStatistic(
-    model: any,
-    fieldsWithParameters: { [x: string]: any[] }
-  ): Observable<any> {
-    const backendQuery = new BackendQuery(
-      "",
-      model,
-      fieldsWithParameters,
-      this.filters
-    );
+  searchStatistic(model: any): Observable<any> {
+    const backendQuery = new BackendQuery("", model, this.filters);
     return this.http.post<any>(
       `${this.configuration.backendUrl}statistic/query`,
       backendQuery.get()
@@ -127,12 +144,16 @@ export class ResearchService {
       .subscribe();
   }
 
+  setActiveQuery(id: string) {
+    this.queryStore.setActive(id);
+  }
+
   saveQuery(
-    state: QueryState,
+    model: any,
     dialogOptions: SaveQueryDialogResponse,
     asSql: boolean
   ): Observable<SqlQuery | FacetQuery> {
-    const preparedQuery = this.prepareQuery(state, dialogOptions, asSql);
+    const preparedQuery = this.prepareQuery(model, dialogOptions, asSql);
     return this.http
       .post<BackendStoreQuery>(
         `${this.configuration.backendUrl}search?forCatalog=${dialogOptions.forCatalog}`,
@@ -193,9 +214,9 @@ export class ResearchService {
   }) {
     this.queryStore.update((state) => {
       const newState: QueryState = {
+        active: null,
         ui: {
           ...state.ui,
-          resultPage: partialState.page ?? 0,
         },
       };
       if (partialState.search) {
@@ -203,9 +224,6 @@ export class ResearchService {
       }
       if (partialState.sqlSearch) {
         newState.ui.sql = { ...state.ui.sql, ...partialState.sqlSearch };
-      }
-      if (partialState.sort) {
-        newState.ui.sort = partialState.sort;
       }
       return newState;
     });
@@ -227,9 +245,8 @@ export class ResearchService {
   private createSettings(query: SqlQuery | FacetQuery) {
     return query.type === "facet"
       ? {
-          term: query.term,
+          term: query.model.term,
           model: query.model,
-          parameters: query.parameter,
         }
       : {
           sql: query.sql,
@@ -244,7 +261,7 @@ export class ResearchService {
   }
 
   private prepareQuery(
-    state: QueryState,
+    model: any,
     response: SaveQueryDialogResponse,
     asSql: boolean
   ): SqlQuery | FacetQuery {
@@ -257,17 +274,14 @@ export class ResearchService {
     if (asSql) {
       return {
         ...base,
-        sql: state.ui.sql.query,
+        sql: model.ui.sql.query,
         type: "sql",
       };
     } else {
-      const model = this.prepareFacetModel(state);
       return {
         ...base,
         type: "facet",
-        term: state.ui.search.query,
         model: model,
-        parameter: state.ui.search.facets.fieldsWithParameters,
       };
     }
   }
@@ -277,5 +291,33 @@ export class ResearchService {
       ...state.ui.search.facets.model,
       type: state.ui.search.category,
     };
+  }
+
+  removeDataset(hit: IgeDocument) {
+    /*console.log(hit);
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Löschen",
+          message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
+          buttons: [
+            { text: "Abbruch" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.documentService
+            .delete([hit._id], this.isAddress(hit))
+            .subscribe(() => this.startSearch());
+        }
+      });*/
   }
 }

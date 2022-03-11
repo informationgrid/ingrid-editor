@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { QueryQuery } from "../../store/query/query.query";
 import { ResearchService } from "../research.service";
 import {
@@ -6,11 +6,13 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { Query } from "../../store/query/query.model";
+import { FacetQuery, Query, SqlQuery } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
 import { MatSelectionList } from "@angular/material/list";
 import { filter } from "rxjs/operators";
+import { logAction } from "@datorama/akita";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "ige-query-manager",
@@ -18,7 +20,7 @@ import { filter } from "rxjs/operators";
   styleUrls: ["./query-manager.component.scss"],
 })
 export class QueryManagerComponent implements OnInit {
-  @Output() selection = new EventEmitter<string>();
+  // @Output() selection = new EventEmitter<string>();
 
   userQueries = this.queryQuery.userQueries$;
   catalogQueries = this.queryQuery.catalogQueries$;
@@ -30,6 +32,7 @@ export class QueryManagerComponent implements OnInit {
   }[];
 
   constructor(
+    private router: Router,
     private queryQuery: QueryQuery,
     private dialog: MatDialog,
     private researchService: ResearchService,
@@ -49,7 +52,9 @@ export class QueryManagerComponent implements OnInit {
     ];
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.researchService.fetchQueries();
+  }
 
   removeQuery(id: string) {
     this.dialog
@@ -74,10 +79,23 @@ export class QueryManagerComponent implements OnInit {
   }
 
   load(id: string, list: MatSelectionList) {
-    this.selection.emit(id);
+    this.loadQuery(id);
 
     // remove selection immediately
     list.deselectAll();
+  }
+
+  loadQuery(id: string) {
+    let entity: Query = this.queryQuery.getEntity(id);
+
+    this.researchService.setActiveQuery(id);
+
+    logAction("Load query");
+    if (entity.type === "facet") {
+      this.router.navigate(["research/search"]);
+    } else {
+      this.router.navigate(["research/sql"]);
+    }
   }
 
   getIdentifier(index, item: Query) {

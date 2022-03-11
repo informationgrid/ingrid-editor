@@ -8,7 +8,7 @@
         <mat-chip-list>
             <mat-chip
                 *ngFor="let example of sqlExamples"
-                (click)="query.emit(example.value)"
+                (click)="updateSqlControl(example.value)"
                 >{{ example.label }}</mat-chip
             >
         </mat-chip-list>
@@ -21,7 +21,7 @@
                 rows="4"
                 placeholder="SELECT * FROM ..."
                 data-cy="sql-query-field"
-                [(ngModel)]="sql"
+                [formControl]="sql"
             ></textarea>
         </mat-form-field>
 
@@ -30,23 +30,23 @@
             <button
                 mat-stroked-button
                 color="primary"
-                [disabled]="sql.length === 0"
-                (click)="query.emit('')"
+                [disabled]="sql.value === ''"
+                (click)="updateSqlControl('')"
             >
                 Entfernen
             </button>
             <button
                 mat-flat-button
                 color="primary"
-                [disabled]="!sql"
-                (click)="query.emit(sql)"
+                [disabled]="sql.value === ''"
+                (click)="updateSqlControl(sql.value)"
             >
                 Suchen
             </button>
         </div>
 
         <div class="save-search-button">
-            <button mat-button color="primary" (click)="save.emit()">
+            <button mat-button color="primary" (click)="saveQuery()">
                 Suche Speichern
             </button>
         </div>
@@ -57,6 +57,10 @@
     </div>
 
     <div main-content fxFlex>
-        <ng-content></ng-content>
+        <ige-result-table
+            [result]="result"
+            [isLoading]="isSearching"
+            (updated)="search(sql.value)"
+        ></ige-result-table>
     </div>
 </page-template>

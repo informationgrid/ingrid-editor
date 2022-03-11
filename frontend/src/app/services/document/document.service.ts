@@ -82,7 +82,6 @@ export class DocumentService {
         query,
         { type: address ? "selectAddresses" : "selectDocuments" },
         null,
-        null,
         "DESC",
         { page: 1, pageSize: size }
       )
@@ -91,7 +90,7 @@ export class DocumentService {
 
   findRecent(): void {
     this.researchService
-      .search("", { type: "selectDocuments" }, null, "modified", "DESC", {
+      .search("", { type: "selectDocuments" }, "modified", "DESC", {
         page: 1,
         pageSize: 10,
       })
@@ -104,7 +103,7 @@ export class DocumentService {
 
   findRecentAddresses(): void {
     this.researchService
-      .search("", { type: "selectAddresses" }, null, "modified", "DESC", {
+      .search("", { type: "selectAddresses" }, "modified", "DESC", {
         page: 1,
         pageSize: 10,
       })

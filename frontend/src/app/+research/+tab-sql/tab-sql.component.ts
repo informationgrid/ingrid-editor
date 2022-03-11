@@ -1,6 +1,13 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { QueryQuery } from "../../store/query/query.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter, tap } from "rxjs/operators";
+import { ResearchResponse, ResearchService } from "../research.service";
+import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { SqlQuery } from "../../store/query/query.model";
+import { FormControl } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -9,47 +16,81 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
   styleUrls: ["./tab-sql.component.scss"],
 })
 export class TabSqlComponent implements OnInit {
-  sql: string;
+  sql = new FormControl("");
 
-  @Output() query = new EventEmitter();
-  @Output() save = new EventEmitter();
+  sqlExamples = this.researchService.sqlExamples;
 
-  sqlExamples = [
-    {
-      label: 'Adressen, mit Titel "test"',
-      value: `SELECT document1.*, document_wrapper.*
-            FROM document_wrapper
-                   JOIN document document1 ON
-              CASE
-                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                ELSE document_wrapper.draft = document1.id
-                END
-            WHERE document_wrapper.category = 'address'
-              AND LOWER(title) LIKE '%test%'`,
-    },
-    {
-      label: 'Dokumente "Luft- und Raumfahrt"',
-      value: `SELECT document1.*, document_wrapper.*
-            FROM document_wrapper
-                   JOIN document document1 ON
-              CASE
-                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                ELSE document_wrapper.draft = document1.id
-                END
-            WHERE document1.type = 'mCloudDoc'
-              AND data -> 'mCloudCategories' @> '"aviation"'`,
-    },
-  ];
+  isSearching = false;
 
-  constructor(private queryQuery: QueryQuery) {}
+  result: any;
+
+  constructor(
+    private queryQuery: QueryQuery,
+    private researchService: ResearchService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
-    // init to last session state
-    const state = this.queryQuery.getValue().ui.sql;
-    this.sql = state.query;
+    this.queryQuery
+      .selectActive()
+      .pipe(
+        untilDestroyed(this),
+        filter((a) => a && a.type === "sql")
+      )
+      .subscribe((entity: SqlQuery) => {
+        this.researchService.setActiveQuery(null);
+        this.sql.setValue(entity.sql);
+        this.search(entity.sql);
+      });
+  }
 
-    this.queryQuery.sqlSelect$.pipe(untilDestroyed(this)).subscribe((state) => {
-      this.sql = state.query;
-    });
+  search(sql: string) {
+    // this.error = null;
+    if (sql.trim() === "") {
+      this.updateHits({ hits: [], totalHits: 0 });
+      return;
+    }
+    this.isSearching = true;
+    this.researchService
+      .searchBySQL(sql)
+      .pipe(tap(() => (this.isSearching = false)))
+      .subscribe(
+        (result) => this.updateHits(result)
+        // (error: HttpErrorResponse) => (this.error = error.error.errorText)
+      );
+  }
+
+  saveQuery() {
+    this.dialog
+      .open(SaveQueryDialogComponent, {
+        hasBackdrop: true,
+        maxWidth: 600,
+      })
+      .afterClosed()
+      .subscribe((dialogOptions) => {
+        if (dialogOptions) {
+          this.researchService
+            .saveQuery(this.sql.value, dialogOptions, true)
+            .subscribe(() =>
+              this.snackBar.open(
+                `Suche '${dialogOptions.name}' gespeichert`,
+                "",
+                {
+                  panelClass: "green",
+                }
+              )
+            );
+        }
+      });
+  }
+
+  updateSqlControl(value: string) {
+    this.sql.setValue(value);
+    this.search(value);
+  }
+
+  private updateHits(result: ResearchResponse) {
+    this.result = result;
   }
 }

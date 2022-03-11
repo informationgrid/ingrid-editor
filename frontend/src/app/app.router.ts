@@ -133,6 +133,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
     "/address",
     "/manage/user",
     "/manage/group",
+    "/research",
   ];
   private handlers: Map<Route, DetachedRouteHandle> = new Map();
 

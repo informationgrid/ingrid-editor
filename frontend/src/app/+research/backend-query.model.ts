@@ -10,7 +10,6 @@ export class BackendQuery {
   constructor(
     term: string,
     model: any,
-    fieldsWithParameters: { [p: string]: any[] },
     filters: Facets,
     orderByField = "title",
     orderByDirection = "ASC",
@@ -25,30 +24,32 @@ export class BackendQuery {
     this.pagination = pagination;
 
     const allFacetGroups = filters?.documents?.concat(filters?.addresses);
-    this.convert(model, fieldsWithParameters, allFacetGroups);
+    this.convert(model, allFacetGroups);
   }
 
-  private convert(
-    model: any,
-    fieldsWithParameters: { [p: string]: any[] },
-    allFacetGroups: FacetGroup[]
-  ) {
+  private convert(model: any, allFacetGroups: FacetGroup[]) {
     let activeFilterIds = { op: "AND", clauses: [] };
 
     Object.keys(model).map((groupKey) => {
       let groupValue = model[groupKey];
-      let groupOperator =
-        allFacetGroups?.find((fg) => fg.id === groupKey)?.combine ?? "OR";
+      const facetGroup = allFacetGroups?.find((fg) => fg.id === groupKey);
+      let groupOperator = facetGroup?.combine ?? "OR";
       if (groupValue instanceof Object) {
         let activeItemsFromGroup = Object.keys(groupValue).filter(
           (groupId) => groupValue[groupId]
         );
         if (activeItemsFromGroup.length > 0) {
-          if (fieldsWithParameters.hasOwnProperty(activeItemsFromGroup[0])) {
+          if (facetGroup.filter[0].parameters) {
             activeFilterIds.clauses.push({
               op: groupOperator,
-              value: [...activeItemsFromGroup],
-              parameter: fieldsWithParameters[activeItemsFromGroup[0]],
+              value: [
+                ...BackendQuery.prepareValues(facetGroup, activeItemsFromGroup),
+              ],
+              parameter: BackendQuery.prepareParameters(
+                facetGroup,
+                groupValue,
+                activeItemsFromGroup
+              ),
             });
           } else {
             activeFilterIds.clauses.push({
@@ -68,6 +69,22 @@ export class BackendQuery {
     this.clauses = activeFilterIds;
   }
 
+  private static prepareParameters(
+    facetGroup: FacetGroup,
+    groupValue,
+    activeItemsFromGroup: string[]
+  ) {
+    switch (facetGroup.viewComponent) {
+      case "TIMESPAN":
+        return [groupValue.start, groupValue.end];
+      case "SPATIAL":
+        const spatial = groupValue[facetGroup.filter[0].id].value;
+        return [spatial.lat1, spatial.lon1, spatial.lat2, spatial.lon2];
+      default:
+        return groupValue[activeItemsFromGroup[0]].value;
+    }
+  }
+
   get() {
     return {
       term: this.term,
@@ -76,5 +93,16 @@ export class BackendQuery {
       orderByDirection: this.orderByDirection,
       pagination: this.pagination,
     };
+  }
+
+  private static prepareValues(
+    facetGroup: FacetGroup,
+    activeItemsFromGroup: string[]
+  ): string[] {
+    if (facetGroup.viewComponent === "TIMESPAN") {
+      return [facetGroup.filter[0].id];
+    } else {
+      return activeItemsFromGroup;
+    }
   }
 }

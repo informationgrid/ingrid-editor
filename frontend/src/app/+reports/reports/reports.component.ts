@@ -4,10 +4,12 @@ import { Subject } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
-import { FacetUpdate } from "../../+research/+facets/facets.component";
-import { state } from "@angular/animations";
-import { ResearchService } from "../../+research/research.service";
+import { Facets, ResearchService } from "../../+research/research.service";
+import { FormControl, FormGroup } from "@angular/forms";
+import { debounceTime, tap } from "rxjs/operators";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-reports",
   templateUrl: "./reports.component.html",
@@ -28,21 +30,14 @@ export class ReportsComponent implements OnInit {
   ];
 
   facetModel: any;
-  facetParameters: any;
-  searchClass: "selectDocuments" | "selectAddresses" = "selectDocuments";
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
 
-  updateFilter(info: FacetUpdate) {
-    setTimeout(() => {
-      return this.researchService
-        .searchStatistic(
-          { ...info.model, type: this.searchClass },
-          info.fieldsWithParameters ?? {}
-        )
-        .subscribe((result) => this.prepareTableData(result));
-    });
-  }
+  form = new FormGroup({
+    type: new FormControl("selectDocuments"),
+    facets: new FormControl(),
+  });
+  facets: Facets;
 
   constructor(
     private docService: DocumentService,
@@ -53,8 +48,11 @@ export class ReportsComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  ngOnInit() {
-    // this.allDocuments$ = this.docQuery.selectAll();
+  async ngOnInit() {
+    await this.initFacets();
+    this.form.valueChanges
+      .pipe(untilDestroyed(this), debounceTime(300))
+      .subscribe(() => this.updateFilter());
   }
 
   fetchStatistic() {
@@ -62,6 +60,15 @@ export class ReportsComponent implements OnInit {
       // this.chartDataPublished.next([response.numDrafts, response.numPublished]);
       this.prepareTableData(response);
     });
+  }
+
+  updateFilter() {
+    return this.researchService
+      .searchStatistic({
+        type: this.form.value.type,
+        ...this.form.value.facets,
+      })
+      .subscribe((result) => this.prepareTableData(result));
   }
 
   prepareTableData(response: StatisticResponse) {
@@ -139,8 +146,10 @@ export class ReportsComponent implements OnInit {
     }
   }
 
-  updateSearchClass($event) {
-    this.facetModel = {};
-    this.searchClass = $event;
+  private async initFacets() {
+    return this.researchService
+      .getQuickFilter()
+      .pipe(tap((filters) => (this.facets = filters)))
+      .toPromise();
   }
 }
