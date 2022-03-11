@@ -1,5 +1,6 @@
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeControl } from "@angular/cdk/tree";
+import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 
 export interface DropInfo {
   allow: boolean;
@@ -12,15 +13,22 @@ export class DragNDropUtils {
   private dragNodeExpandOverWaitTimeMs = 1000;
   dragNode: TreeNode;
 
-  constructor(private treeControl: TreeControl<any>) {}
+  constructor(
+    private treeControl: TreeControl<any>,
+    private docBehaviour: DocBehavioursService
+  ) {}
 
   /**
    * See here for example: https://stackblitz.com/edit/angular-draggable-mat-tree
-   * @param event
    * @param droppedNode
    */
   getDropInfo(droppedNode: TreeNode): DropInfo {
-    if (droppedNode !== this.dragNode) {
+    const isAllowed =
+      droppedNode === null
+        ? true
+        : !this.docBehaviour.cannotAddDocumentBelow()(true, droppedNode);
+
+    if (isAllowed && droppedNode !== this.dragNode) {
       return {
         allow: true,
         srcNode: this.dragNode,
@@ -40,7 +48,7 @@ export class DragNDropUtils {
     this.treeControl.collapse(node);
   }
 
-  handleDragOver(event, node) {
+  handleDragOver(event, node: TreeNode) {
     // for now only moving objects is allowed
     event.dataTransfer.effectAllowed = "move";
     event.preventDefault();
@@ -48,16 +56,26 @@ export class DragNDropUtils {
     // Handle node expand
     if (node === this.dragNodeExpandOverNode) {
       if (this.dragNode !== node && !this.treeControl.isExpanded(node)) {
-        if (
+        const waitForExpandIsOver =
           new Date().getTime() - this.dragNodeExpandOverTime >
-          this.dragNodeExpandOverWaitTimeMs
-        ) {
+          this.dragNodeExpandOverWaitTimeMs;
+        if (waitForExpandIsOver) {
           this.treeControl.expand(node);
         }
       }
     } else {
-      this.dragNodeExpandOverNode = node;
-      this.dragNodeExpandOverTime = new Date().getTime();
+      if (node === null) {
+        this.dragNodeExpandOverNode = null;
+        return;
+      }
+
+      const isAllowed = !this.docBehaviour.cannotAddDocumentBelow()(true, node);
+      if (isAllowed) {
+        this.dragNodeExpandOverNode = node;
+        this.dragNodeExpandOverTime = new Date().getTime();
+      } else {
+        this.dragNodeExpandOverNode = undefined;
+      }
     }
     /*
         // Handle drag area

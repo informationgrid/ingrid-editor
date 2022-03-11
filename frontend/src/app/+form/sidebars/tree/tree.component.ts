@@ -24,6 +24,7 @@ import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 
 export enum TreeActionType {
   ADD,
@@ -100,7 +101,8 @@ export class TreeComponent implements OnInit {
     private database: DynamicDatabase,
     public treeService: TreeService,
     public configService: ConfigService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private docBehaviour: DocBehavioursService
   ) {
     this.treeControl.dataNodes = [];
   }
@@ -133,7 +135,7 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
-    this.dragManager = new DragNDropUtils(this.treeControl);
+    this.dragManager = new DragNDropUtils(this.treeControl, this.docBehaviour);
     //previous code used to be in constructor
 
     this.database.hideReadOnly = this.hideReadOnly;
