@@ -32,6 +32,32 @@ describe('Profile', () => {
     ProfilePage.visit();
   });
 
+  it('should update autor password', () => {
+    cy.kcLogin('autornew').as('tokens');
+    ProfilePage.visit();
+    // change user password with new password
+    ProfilePage.changePassword('autornew', 'autornew', 'autornewpass');
+
+    // login again with new password using new fixture file
+    cy.kcLogout();
+    cy.kcLogin('autornew_with_new_pass');
+    ProfilePage.visit();
+    // reset the password
+    ProfilePage.changePassword('autornew', 'autornew', 'autornew');
+  });
+
+  it('should update meta admin password', () => {
+    cy.kcLogin('meta3').as('tokens');
+    ProfilePage.visit();
+    // change user password with new password
+    ProfilePage.changePassword('meta3', 'meta3', 'meta3new');
+
+    // login again with new password using new fixture file
+    cy.kcLogout();
+    cy.kcLogin('meta3_with_new_pass');
+    ProfilePage.visit();
+  });
+
   it('should update user email', () => {
     cy.kcLogin('drei').as('tokens');
     ProfilePage.visit();
