@@ -1,5 +1,6 @@
 import { BasePage } from './base.page';
 import { Tree } from './tree.partial';
+import Doc = Mocha.reporters.Doc;
 
 export const SEPARATOR = 'chevron_right';
 export const ROOT = `Daten`;
@@ -48,7 +49,8 @@ export class DocumentPage extends BasePage {
     Previous: '[data-cy=toolbar_HISTORY_PREVIOUS]',
     Next: '[data-cy=toolbar_HISTORY_NEXT]',
     Save: '[data-cy=toolbar_SAVE]',
-    Publish: '[data-cy=toolbar_PUBLISH]'
+    Publish: '[data-cy=toolbar_PUBLISH]',
+    PublishNow: '[data-cy=toolbar_publish_now]'
     // JSON: '[data-cy=toolbar_SHOW_JSON]'
   };
 
@@ -397,14 +399,25 @@ export class DocumentPage extends BasePage {
   static publishNow() {
     // sometimes we're too fast, so that the form is not synched with the store
     cy.wait(300);
-    cy.get('[data-cy=toolbar_publish_now]').click();
-    cy.get('[data-cy=confirm-dialog-confirm]').click();
+    cy.get(DocumentPage.Toolbar.PublishNow).click();
+    cy.get(PublishOptions.ConfirmPublish).click();
     cy.get('[data-cy="form-message"]').contains('veröffentlicht');
   }
 
-  static choosePublishOption(option: PublishOptions) {
-    cy.get(DocumentPage.Toolbar.Publish).click();
+  static planPublishing(date: string, inDialog: boolean = false) {
+    this.choosePublishOption(inDialog ? PublishOptions.PlanPublishInDialog : PublishOptions.PlanPublish, inDialog);
+    this.fillInPublishingDate(date);
+    cy.contains('button', 'Ok').click();
+    cy.contains('ige-publish-pending', 'Datensatz wird am ' + date.toString() + ' veröffentlicht');
+  }
+
+  static choosePublishOption(option: PublishOptions, inDialog: boolean = false) {
+    cy.get(inDialog ? DocumentPage.Toolbar.PublishNow : DocumentPage.Toolbar.Publish).click();
     cy.get(option).click();
+  }
+
+  static fillInPublishingDate(date: string) {
+    cy.get('delayed-publish-dialog [formcontrolname="date"]').clear().type(date);
   }
 
   static saveDocument() {
@@ -561,8 +574,10 @@ export class DocumentPage extends BasePage {
 
 export enum PublishOptions {
   PlanPublish = '[data-cy="toolbar_PLAN"]',
+  PlanPublishInDialog = '[data-cy="confirm-dialog-plan"]',
   RevertPublish = '[data-cy="toolbar_REVERT"]',
-  Unpublish = '[data-cy="toolbar_UNPUBLISH"]'
+  Unpublish = '[data-cy="toolbar_UNPUBLISH"]',
+  ConfirmPublish = '[data-cy=confirm-dialog-confirm]'
 }
 
 export enum headerElements {

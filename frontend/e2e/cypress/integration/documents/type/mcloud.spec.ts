@@ -1,8 +1,10 @@
-import { DocumentPage } from '../../../pages/document.page';
+import { DocumentPage, PublishOptions } from '../../../pages/document.page';
 import { AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { Menu } from '../../../pages/menu';
+import { Utils } from '../../../pages/utils';
+import { AdminUserPage } from '../../../pages/administration-user.page';
 
 describe('mCLOUD documents', function () {
   beforeEach(() => {
@@ -151,8 +153,78 @@ describe('mCLOUD documents', function () {
       Menu.switchTo('ADDRESSES');
       Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_B', 'Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
       AddressPage.tryIllegitimatDelete();
-      // expect warning -> not working right now; there is no such warning popping up
+      // expect warning
       cy.contains('[data-cy="error-dialog-content"]', 'von anderen Datensätzen referenziert');
+    });
+
+    it('should plan publishing of document and reverse it (#3562)', () => {
+      const publishDate = Utils.getFormattedDateInTheFuture(new Date());
+      Tree.openNode(['TestDocResearch3']);
+      DocumentPage.planPublishing(publishDate);
+      // stop planned publishing
+      cy.get('.publish-pending-info button').click();
+      cy.contains('ige-form-message', 'geplante Veröffentlichung wurde abgebrochen');
+    });
+
+    it('should plan publishing of document via dialog and reverse it (#3562)', () => {
+      const publishDate = Utils.getFormattedDateInTheFuture(new Date());
+      Tree.openNode(['TestDocResearch3']);
+      DocumentPage.planPublishing(publishDate, true);
+      // stop planned publishing
+      cy.get('.publish-pending-info button').click();
+      cy.contains('ige-form-message', 'geplante Veröffentlichung wurde abgebrochen');
+    });
+
+    it('should plan publishing of document only for valid dates in the future (#3562)', () => {
+      const wrongDate_1 = '03.03.2021';
+      const wrongDate_2 = 'abc';
+      const wrongDate_3 = '02.03.2';
+      Tree.openNode(['TestDocResearch3']);
+      DocumentPage.choosePublishOption(PublishOptions.PlanPublish);
+      cy.contains('button', 'Ok').should('be.disabled');
+      DocumentPage.fillInPublishingDate(wrongDate_1);
+      cy.contains('button', 'Ok').should('be.disabled');
+      DocumentPage.fillInPublishingDate(wrongDate_2);
+      cy.contains('button', 'Ok').should('be.disabled');
+      DocumentPage.fillInPublishingDate(wrongDate_3);
+      cy.contains('button', 'Ok').should('be.disabled');
+    });
+
+    it('document that is planned to be published should not be able to be edited, saved or published (#3562)', () => {
+      Tree.openNode(['Neue Testdokumente', 'Datum_Ebene_2_4']);
+      // text fields are disabled
+      cy.get('textarea').each(el => {
+        cy.wrap(el).should('be.disabled');
+      });
+      // spatial reference cannot be added
+      cy.get('[data-cy="spatialButton"]').should('not.exist');
+      // downloads table cannot be changed
+      cy.get('[data-cy="Downloads-table"] button').should('not.exist');
+      // connected address cannot be edited
+      cy.get('ige-address-card button').click();
+      cy.get('.mat-menu-content button').eq(0).should('be.disabled');
+      // document cannot be saved
+      cy.get('[data-cy="toolbar_SAVE"]').should('be.disabled');
+      // document cannot be published
+      cy.get('[data-cy="toolbar_PUBLISH"]').should('be.disabled');
+    });
+
+    it('should not be possible to stop planned publishing if user has read-only access (#3562)', () => {
+      // assign groups with read-only access to document
+      Menu.switchTo('USERS');
+      AdminUserPage.selectUser('autor');
+      AdminUserPage.addGroupToUser('group_10');
+      AdminUserPage.addGroupToUser('test_gruppe_5');
+      AdminUserPage.saveUser();
+      // log in as user that is assigned read-only access
+      cy.kcLogout();
+      cy.kcLogin('autor');
+      // open document
+      DocumentPage.visit();
+      Tree.openNode(['Datum_Ebene_2_3']);
+      // information banner about planned publishing should be there, but no button to stop it
+      cy.get('ige-publish-pending').should('exist');
+      cy.get('.publish-pending-info button').should('not.exist');
     });
   });
 });

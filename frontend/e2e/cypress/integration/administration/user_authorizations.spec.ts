@@ -821,7 +821,7 @@ describe('Catalogue admin', () => {
     AdminGroupPage.openAddDocumentsDialog('Daten');
     Tree.openNodeInsideDialog(['Neue Testdokumente', 'Ordner_Ebene_2A']);
     cy.get('[data-cy=permission-dialog-add]').click();
-    cy.contains('mat-dialog-container', 'Achtung! Überschreibt folgende Unterrechte:');
+    cy.contains('mat-dialog-container', 'Achtung! Überschreibt folgende Unterrechte:', { timeout: 8000 });
   });
 
   it('should show all the groups to a catalogue admin (#2670)', () => {
