@@ -22,7 +22,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.createDocument('New mCLOUD Document');
 
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-      cy.get('[data-cy=toolbar_publish_now]').click();
+      cy.get(DocumentPage.Toolbar.PublishNow).click();
 
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
@@ -38,7 +38,7 @@ describe('mCLOUD documents', function () {
 
       DocumentPage.createDocument(docName);
 
-      enterMcloudDocTestData.CreateDialog.enterNecessaryData();
+      enterMcloudDocTestData.enterNecessaryData();
 
       DocumentPage.publishNow();
     });
@@ -47,7 +47,7 @@ describe('mCLOUD documents', function () {
       // add address to document
       DocumentPage.visit();
       Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
-      enterMcloudDocTestData.CreateDialog.setAddress('Normandie, Adresse');
+      enterMcloudDocTestData.setAddress('Normandie, Adresse');
       DocumentPage.saveDocument();
       // log in as user with limited access rights and check access
       cy.kcLogout();
@@ -73,11 +73,11 @@ describe('mCLOUD documents', function () {
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.CreateDialog.checkAddressSelectable(addressName, false);
+      enterMcloudDocTestData.checkAddressSelectable(addressName, false);
     });
 
     it('should create a complete mcloud document', () => {
-      const docName = 'mCloudfullDoc1';
+      const docName = 'mCloudfullDoc' + Utils.randomString();
       const dateNow = new Date();
       const previousDate = new Date(2020, 1, 11);
 
@@ -88,19 +88,19 @@ describe('mCLOUD documents', function () {
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.CreateDialog.setDescription();
-      enterMcloudDocTestData.CreateDialog.setAddress(PUBLISHED_ADDRESS);
-      enterMcloudDocTestData.CreateDialog.setUsageInstructions();
-      enterMcloudDocTestData.CreateDialog.setCategory();
-      enterMcloudDocTestData.CreateDialog.setOpenDataCategory();
-      enterMcloudDocTestData.CreateDialog.setAddDownload();
-      enterMcloudDocTestData.CreateDialog.setLicense();
-      enterMcloudDocTestData.CreateDialog.setSourceNote('Meine Quelle');
-      enterMcloudDocTestData.CreateDialog.setMfund();
-      enterMcloudDocTestData.CreateDialog.setSpatialWKT();
-      enterMcloudDocTestData.CreateDialog.setTimeReference();
-      enterMcloudDocTestData.CreateDialog.setPeriodOfTime('von - bis', previousDate, dateNow);
-      enterMcloudDocTestData.CreateDialog.setPeriodicity();
+      enterMcloudDocTestData.setDescription('some meaningful description');
+      enterMcloudDocTestData.setAddress(PUBLISHED_ADDRESS);
+      enterMcloudDocTestData.setUsageInstructions('Nutzerhinweise');
+      enterMcloudDocTestData.setCategory('Bahn');
+      enterMcloudDocTestData.setOpenDataCategory('Verkehr');
+      enterMcloudDocTestData.setAddDownload();
+      enterMcloudDocTestData.setLicense('Andere offene Lizenz');
+      enterMcloudDocTestData.setSourceNote('Meine Quelle');
+      enterMcloudDocTestData.setMfund('text1', 'text2');
+      enterMcloudDocTestData.setSpatialWKT();
+      enterMcloudDocTestData.setTimeReference(new Date(2020, 1, 11), 'Erstellung');
+      enterMcloudDocTestData.setPeriodOfTime('von - bis', previousDate, dateNow);
+      enterMcloudDocTestData.setPeriodicity('einmalig');
 
       // needed to slow it down
       cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
@@ -109,7 +109,7 @@ describe('mCLOUD documents', function () {
     });
 
     it('should check if "Zeitspanne" dropdown contains an option ', () => {
-      const docName = 'mCloudfullDoc1';
+      const docName = 'mCloudfullDoc1' + Utils.randomString();
       const dateNow = new Date();
       const previousDate = new Date(2020, 1, 11);
       const option = '';
@@ -120,11 +120,11 @@ describe('mCLOUD documents', function () {
 
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
-      enterMcloudDocTestData.CreateDialog.setPeriodOfTime(option, previousDate, dateNow);
+      enterMcloudDocTestData.setPeriodOfTime(option, previousDate, dateNow);
       DocumentPage.saveDocument();
       cy.reload();
 
-      enterMcloudDocTestData.CreateDialog.checkPeriodOfTimeSelectedValue(option);
+      enterMcloudDocTestData.checkPeriodOfTimeSelectedValue(option);
     });
 
     it('should create a published address with an API-Call', () => {
@@ -147,7 +147,7 @@ describe('mCLOUD documents', function () {
     it('should not be able to delete address associated with a document', () => {
       // add address to document
       Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
-      enterMcloudDocTestData.CreateDialog.setAddress('Pays-Basque, Adresse');
+      enterMcloudDocTestData.setAddress('Pays-Basque, Adresse');
       DocumentPage.saveDocument();
       // try to delete address
       Menu.switchTo('ADDRESSES');

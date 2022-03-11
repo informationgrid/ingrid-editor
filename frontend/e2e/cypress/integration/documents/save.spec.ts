@@ -142,7 +142,7 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createDocument(docName);
 
-      enterMcloudDocTestData.CreateDialog.setDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       // reject dialog
       // check selected tree node === previous selected node
@@ -166,7 +166,7 @@ describe('General create documents/folders', () => {
 
       Tree.openNode(['Testdokumente', docname]);
 
-      enterMcloudDocTestData.CreateDialog.setDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
@@ -188,7 +188,7 @@ describe('General create documents/folders', () => {
 
     it('should not remember last dirty state when page has been left (#2121)', () => {
       Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument']);
-      enterMcloudDocTestData.CreateDialog.setDescription('modified test description');
+      enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
       cy.get(DocumentPage.Sidemenu.Uebersicht).click();
@@ -225,13 +225,13 @@ describe('General create documents/folders', () => {
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
       DocumentPage.scrollToSection('mCLOUD');
-      enterMcloudDocTestData.CreateDialog.setCategory(category1);
+      enterMcloudDocTestData.setCategory(category1);
       cy.get(mCLOUDSelector).contains(category1);
 
-      enterMcloudDocTestData.CreateDialog.setCategory(category2, false);
+      enterMcloudDocTestData.setCategory(category2, false);
       cy.get(mCLOUDSelector).contains(category2);
 
-      enterMcloudDocTestData.CreateDialog.setCategory(category3, false);
+      enterMcloudDocTestData.setCategory(category3, false);
       cy.get(mCLOUDSelector).contains(category3);
 
       // change the order of mCloud categories by dragging then save
@@ -258,13 +258,13 @@ describe('General create documents/folders', () => {
       let openDataCategory3 = 'Internationale Themen';
 
       let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
-      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory1);
+      enterMcloudDocTestData.setOpenDataCategory(openDataCategory1);
       cy.get(openDataSelector).contains(openDataCategory1);
 
-      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory2, false);
+      enterMcloudDocTestData.setOpenDataCategory(openDataCategory2, false);
       cy.get(openDataSelector).contains(openDataCategory2);
 
-      enterMcloudDocTestData.CreateDialog.setOpenDataCategory(openDataCategory3, false);
+      enterMcloudDocTestData.setOpenDataCategory(openDataCategory3, false);
       cy.get(openDataSelector).contains(openDataCategory3);
 
       // change the order of mCloud categories by dragging then save
@@ -290,8 +290,8 @@ describe('General create documents/folders', () => {
       let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
-      enterMcloudDocTestData.CreateDialog.setAddress(address1);
-      enterMcloudDocTestData.CreateDialog.setAddress(address2);
+      enterMcloudDocTestData.setAddress(address1);
+      enterMcloudDocTestData.setAddress(address2);
 
       DocumentPage.scrollToSection('Allgemeines');
 
@@ -318,9 +318,9 @@ describe('General create documents/folders', () => {
 
       DocumentPage.scrollToSection('Zeitbezüge');
 
-      enterMcloudDocTestData.CreateDialog.setTimeReference(date1, type1, 0);
-      enterMcloudDocTestData.CreateDialog.setTimeReference(date2, type2, 1);
-      enterMcloudDocTestData.CreateDialog.setTimeReference(date3, type1, 2);
+      enterMcloudDocTestData.setTimeReference(date1, type1, 0);
+      enterMcloudDocTestData.setTimeReference(date2, type2, 1);
+      enterMcloudDocTestData.setTimeReference(date3, type1, 2);
       DocumentPage.saveDocument();
 
       // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
@@ -376,9 +376,9 @@ describe('General create documents/folders', () => {
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       DocumentPage.scrollToSection('mCLOUD');
-      enterMcloudDocTestData.CreateDialog.setAddDownload(title1, link1);
-      enterMcloudDocTestData.CreateDialog.setAddDownload(title2, link2);
-      enterMcloudDocTestData.CreateDialog.setAddDownload(title3, link3);
+      enterMcloudDocTestData.setAddDownload(title1, link1);
+      enterMcloudDocTestData.setAddDownload(title2, link2);
+      enterMcloudDocTestData.setAddDownload(title3, link3);
       DocumentPage.saveDocument();
 
       // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
