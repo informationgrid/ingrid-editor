@@ -139,6 +139,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
       if (this.selectedGroup) this.selectedGroup.manager = manager.login;
     });
     this.loadGroupUsers(group.id);
+    this.groupService.setActive(group.id);
   }
 
   saveGroup(): void {
