@@ -42,7 +42,7 @@ export class Menu {
         cy.get('.main-page-title').should('contain', 'Adressen');
         return;
       case 'RESEARCH':
-        ResearchPage.waitForSearch();
+        cy.url().should('contain', '/research/');
         return;
       case 'REPORTS':
         return;

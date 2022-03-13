@@ -74,8 +74,7 @@ export class ResearchPage {
   }
 
   static openSearchOptionTab(option: SearchOptionTabs): void {
-    cy.get('.mat-ripple.mat-tab-label', { timeout: 10000 }).should('have.length', 3);
-    cy.get('.mat-ripple.mat-tab-label:nth-child(' + option + ')').click();
+    cy.get(`#mat-tab-link-${option}`).click();
   }
 
   static openContextMenuSpatialReference(action: contextActionSpatial): void {
@@ -291,7 +290,7 @@ export enum FilterExtendedSearch {
 }
 
 export enum SearchOptionTabs {
-  ExtendedSearch = 1,
+  ExtendedSearch = 0,
   SQLSearch,
   SavedSearches
 }
