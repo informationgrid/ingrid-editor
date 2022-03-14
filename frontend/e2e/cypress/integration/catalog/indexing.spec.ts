@@ -2,12 +2,13 @@ import { BehavioursPage } from '../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../pages/base.page';
 import { DocumentPage } from '../../pages/document.page';
 import { IndexingPage } from '../../pages/indexing.page';
+import { CodelistPage } from '../../pages/codelist.page';
 
 describe('Indexing', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('user').as('tokens');
-    cy.visit('catalogs');
+    CodelistPage.visit();
   });
 
   it('Index and check indexed object counter has increased', () => {

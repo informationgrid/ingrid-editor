@@ -3,12 +3,13 @@ import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { Address, AddressPage } from '../../pages/address.page';
 import { CatalogsTabmenu } from '../../pages/base.page';
+import { CodelistPage } from '../../pages/codelist.page';
 
 describe('Behaviours', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('user').as('tokens');
-    cy.visit('catalogs');
+    CodelistPage.visit();
   });
 
   it('should show multiple system and form behaviours', () => {

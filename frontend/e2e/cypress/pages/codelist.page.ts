@@ -1,6 +1,12 @@
 import { CodelistSubMenu } from './base.page';
 
 export class CodelistPage {
+  static visit() {
+    cy.intercept('GET', 'api/codelist/manage').as('GetCodeList');
+    cy.visit('catalogs');
+    cy.wait('@GetCodeList');
+  }
+
   static resetCodelistEntries() {
     cy.get('button .mat-button-wrapper').contains('Zurücksetzen').click();
     cy.get('mat-dialog-actions button').contains('Zurücksetzen').click();
