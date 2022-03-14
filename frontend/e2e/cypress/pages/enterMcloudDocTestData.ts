@@ -212,7 +212,6 @@ export class enterMcloudDocTestData {
       cy.get(area).find('mat-form-field mat-datepicker-toggle button').eq(index).click();
       this.selectDateInCalendar(year, month, day);
     }
-    cy.get('[data-cy="Zeitbezug der Ressource"] input').should('not.have.value', '');
   }
 
   private static selectDateInCalendar(setYear: number, setMonth: string, setDay: number) {

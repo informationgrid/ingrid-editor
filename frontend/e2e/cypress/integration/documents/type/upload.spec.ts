@@ -234,7 +234,7 @@ describe('Upload Tests', () => {
     const url = 'https://docs.cypress.io/guides/overview/why-cypress#In-a-nutshell';
 
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
-    enterMcloudDocTestData.CreateDialog.setAddDownload('open in new tab', url);
+    enterMcloudDocTestData.setAddDownload('open in new tab', url);
     cy.contains('[data-cy="Downloads-table"] mat-row', url);
     cy.get('mat-cell a')
       .should('have.attr', 'target', '_blank')

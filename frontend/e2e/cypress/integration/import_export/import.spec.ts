@@ -89,7 +89,7 @@ describe('Import Tests', () => {
     // add address to document
     DocumentPage.visit();
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
-    enterMcloudDocTestData.CreateDialog.setAddress('Franken, Adressetwo');
+    enterMcloudDocTestData.setAddress('Franken, Adressetwo');
     AddressPage.saveDocument();
     // import file
     ImportPage.visit();

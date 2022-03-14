@@ -39,15 +39,10 @@ describe('Toolbar behavior', () => {
   it('should activate specific buttons when a document is loaded', () => {
     Tree.openNode(['Testdokumente']);
     cy.get('#sidebar').findByText('Test mCLOUD Dokument').click();
-    DocumentPage.checkOnlyActiveToolbarButtons([
-      'NewDoc',
-      'NewFolder',
-      'Copy',
-      'Delete',
-      'Save',
-      'Publish',
-      'Previous'
-    ]);
+    DocumentPage.checkOnlyActiveToolbarButtons(
+      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous'],
+      ['PublishNow']
+    );
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders
@@ -62,7 +57,7 @@ describe('Toolbar behavior', () => {
     Tree.openNode(['Neue Testdokumente', docTitle]);
     DocumentPage.checkOnlyActiveToolbarButtons(
       ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish'],
-      ['Previous']
+      ['Previous', 'PublishNow']
     );
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
@@ -73,7 +68,10 @@ describe('Toolbar behavior', () => {
   it('should activate specific buttons when a published document with draft is loaded', () => {
     const docTitle = 'Veröffentlichter Datensatz mit Bearbeitungsversion';
     Tree.openNode([docTitle]);
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish']);
+    DocumentPage.checkOnlyActiveToolbarButtons(
+      ['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish'],
+      ['PublishNow']
+    );
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders
