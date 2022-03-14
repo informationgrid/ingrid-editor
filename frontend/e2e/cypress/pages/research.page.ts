@@ -225,9 +225,9 @@ export class ResearchPage {
 
   static SQLField = '[data-cy="sql-query-field"]';
 
-  static StartDateField = 'input[formcontrolname="startDate"]';
+  static StartDateField = 'input[formcontrolname="start"]';
 
-  static EndDateField = 'input[formcontrolname="endDate"]';
+  static EndDateField = 'input[formcontrolname="end"]';
 
   static openCalendar(point: string): void {
     point === 'von'

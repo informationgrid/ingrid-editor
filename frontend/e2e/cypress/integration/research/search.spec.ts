@@ -193,10 +193,7 @@ describe('Research Page', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
     ResearchPage.chooseListItemFromSavedSearches('testProfileBackToSearch');
     //make sure you're in the 'Erweiterte Suche'-tab: this tab should be selected
-    cy.contains('.mat-tab-label-content', 'Erweiterte Suche')
-      .parent()
-      .invoke('attr', 'aria-selected')
-      .should('eq', 'true');
+    cy.contains('.mat-tab-link  ', 'Erweiterte Suche').should('have.class', 'active-link');
   });
 
   it('should verify that clicking on saved search executes search according to search profile', () => {
