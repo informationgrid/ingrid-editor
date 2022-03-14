@@ -25,6 +25,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSelect } from "@angular/material/select";
+import { ProfileAbstract } from "../../../../store/profile/profile.model";
 
 export interface ChooseAddressDialogData {
   address: AddressRef;
@@ -52,12 +53,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   recentAddresses$: Observable<DocumentAbstract[]>;
   placeholder: string;
 
-  types = this.codelistQuery.selectEntity("505").pipe(
-    map(CodelistService.mapToSelectSorted),
-    map((items) => this.filterByAllowedTypes(items)),
-    tap((items) => this.preselectIfOnlyOneType(items)),
-    tap(() => (this.placeholder = "Bitte wählen ..."))
-  );
+  typeSelectionEnabled = false;
+  activeStep = 1;
+  referenceTypes: DocumentAbstract[];
 
   disabledCondition: (TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
@@ -76,6 +74,20 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.codelistService.byId("505");
+    this.codelistQuery
+      .selectEntity("505")
+      .pipe(
+        untilDestroyed(this),
+        map(CodelistService.mapToSelectSorted),
+        map((items) => this.filterByAllowedTypes(items)),
+        tap((items) => this.preselectIfOnlyOneType(items)),
+        tap(
+          (items) => (this.referenceTypes = this.prepareReferenceTypes(items))
+        ),
+        tap((items) => (this.typeSelectionEnabled = items.length > 1)),
+        tap(() => (this.placeholder = "Bitte wählen ..."))
+      )
+      .subscribe();
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
       map((allRecent) => {
@@ -86,6 +98,18 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
 
     this.updateModel(this.data.address);
+  }
+
+  private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {
+    return result
+      .map((type) => {
+        return {
+          id: type.value,
+          title: type.label,
+          _state: "P",
+        } as DocumentAbstract;
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
   }
 
   updateAddressTree(addressId: string) {
@@ -142,5 +166,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     return items.filter(
       (item) => this.data.allowedTypes.indexOf(item.value) !== -1
     );
+  }
+
+  setRefType($event: DocumentAbstract) {
+    this.selectedType = $event.id.toString();
   }
 }

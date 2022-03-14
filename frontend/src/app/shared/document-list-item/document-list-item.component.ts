@@ -34,6 +34,7 @@ export class DocumentListItemComponent implements OnInit {
   @Input() hideDate = true;
   @Input() hideDivider = false;
   @Input() showSelection = false;
+  @Input() showIcons = true;
   // this is only needed to prevent expression has changed exception and might be removed later
   @Input() removeSelectionAfter = false;
   @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;

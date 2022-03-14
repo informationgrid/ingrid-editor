@@ -75,16 +75,6 @@ mat-radio-button {
   }
 }
 
-.create-dlg-content {
-  ::ng-deep .mat-list-option.selected {
-    background-color: $ige-mark-color !important;
-
-    [svgicon="baseline-check-24px"] path {
-      fill: #398c32;
-    }
-  }
-}
-
 .error-box {
   padding: 0 24px;
 }

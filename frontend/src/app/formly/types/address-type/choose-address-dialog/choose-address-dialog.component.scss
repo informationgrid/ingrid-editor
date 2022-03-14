@@ -24,6 +24,7 @@
 ige-tree {
   overflow: auto;
   max-height: 550px;
+  background: white;
 }
 
 .selection-divider {
@@ -33,4 +34,12 @@ ige-tree {
 
 .place-title {
   padding-bottom: 12px !important;
+}
+
+.chosen-address {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 500;
+  padding: 12px 0;
 }

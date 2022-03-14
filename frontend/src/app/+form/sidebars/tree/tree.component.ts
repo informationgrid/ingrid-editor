@@ -24,6 +24,7 @@ import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 
 export enum TreeActionType {
@@ -52,6 +53,7 @@ export class TreeComponent implements OnInit {
   @Input() showOnlyFolders = false;
   @Input() enableDrag = false;
   @Input() hideReadOnly = false;
+  @Input() searchSuggestions: Observable<DocumentAbstract[]>;
 
   @Output() selected = new EventEmitter<string[]>();
   @Output() activate = new EventEmitter<string[]>();
@@ -92,6 +94,8 @@ export class TreeComponent implements OnInit {
 
   dataSource: DynamicDataSource;
   hasData: boolean;
+
+  emptySearchResults: TreeNode[] = [];
 
   dragManager: DragNDropUtils;
   isDragging = false;
@@ -148,6 +152,15 @@ export class TreeComponent implements OnInit {
     this.database.treeUpdates
       .pipe(untilDestroyed(this))
       .subscribe((data) => this.handleUpdate(data));
+
+    this.searchSuggestions
+      ?.pipe(
+        untilDestroyed(this),
+        map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0))
+      )
+      .subscribe((nodes) => {
+        this.emptySearchResults = nodes;
+      });
   }
 
   private handleActiveNodeSubscription() {

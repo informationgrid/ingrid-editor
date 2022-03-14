@@ -8,21 +8,18 @@
     <mat-list-option
         *ngFor="let doc of docs | async"
         (click)="makeSelection(doc)"
-        [class.marker-space]="
-            showSelection &&
-            (!currentSelection || currentSelection.id !== doc.id)
-        "
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
         [class.disabled]="doc.hasWritePermission === false"
     >
-        <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
+        <ige-document-icon
+            *ngIf="showIcons"
+            [doc]="doc"
+            mat-list-icon
+        ></ige-document-icon>
         <mat-icon
-            *ngIf="
-                showSelection &&
-                currentSelection &&
-                currentSelection.id === doc.id
-            "
+            *ngIf="showSelection"
+            [class.invisible]="currentSelection?.id !== doc.id"
             class="marker"
             matListIcon
             svgIcon="baseline-check-24px"

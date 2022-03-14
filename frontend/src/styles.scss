@@ -184,6 +184,13 @@ main-menu .mat-toolbar-multiple-rows {
   background-color: #c9e4ff;
 }
 
+.mat-list-option.selected {
+  background-color: $ige-mark-color !important;
+  &:hover {
+    background-color: darken($ige-mark-color, 5%) !important;
+  }
+}
+
 .invalid-feedback {
   position: absolute;
   font-size: 75%;

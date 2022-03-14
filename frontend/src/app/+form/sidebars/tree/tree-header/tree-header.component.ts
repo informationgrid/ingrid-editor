@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
 import { debounceTime, map } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
@@ -20,6 +20,7 @@ export class TreeHeaderComponent implements OnInit {
   @Input() showMultiSelectButton = true;
   @Input() multiSelectionModeEnabled = false;
   @Input() showSearch = true;
+  @Input() emptySearchResults: TreeNode[];
 
   @Input() checkToggleAll = false;
   @Input() indeterminateToggleAll = false;
@@ -47,12 +48,8 @@ export class TreeHeaderComponent implements OnInit {
   }
 
   search(value: string) {
-    if (!value) {
-      return;
-    }
-
-    if (value.length === 0) {
-      this.searchResult.next([]);
+    if (!value || value.length === 0) {
+      this.searchResult.next(this.emptySearchResults ?? []);
       return;
     }
 
