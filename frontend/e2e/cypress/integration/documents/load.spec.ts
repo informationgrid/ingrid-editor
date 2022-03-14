@@ -64,7 +64,7 @@ describe('Load documents', () => {
     // add address to document
     DocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
-    enterMcloudDocTestData.CreateDialog.setAddress('Limousin, Adresse');
+    enterMcloudDocTestData.setAddress('Limousin, Adresse');
     DocumentPage.saveDocument();
     // visit new catalog and make sure recently added address is not among the suggestions
     cy.kcLogout();
