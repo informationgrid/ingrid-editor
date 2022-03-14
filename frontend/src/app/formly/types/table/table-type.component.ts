@@ -260,7 +260,7 @@ export class TableTypeComponent
 
   showAddLinkDialog() {
     this.dialog
-      .open(LinkDialogComponent, { maxWidth: 600 })
+      .open(LinkDialogComponent, { maxWidth: 600, hasBackdrop: true })
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((result) => {

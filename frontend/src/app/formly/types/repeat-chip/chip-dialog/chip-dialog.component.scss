@@ -1,7 +1,9 @@
 .mat-selection-list {
   padding-top: 0;
 }
-
+.mat-dialog-title {
+  cursor: move;
+}
 ::ng-deep ige-chip-dialog {
   .mat-list-base .mat-list-item {
     .mat-list-item-content-reverse {

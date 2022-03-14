@@ -1,89 +1,95 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Adresse hinzufügen</span>
-    </h2>
-</div>
-<mat-dialog-content>
-    <ige-tree
-        [class.hide]="activeStep !== 1"
-        (selected)="updateAddressTree($event[0])"
-        data-cy="choose-address-tree"
-        [setActiveNode]="selectedNode"
-        [forAddresses]="true"
-        [disabledCondition]="disabledCondition"
-        [showHeaderOptions]="false"
-        [searchSuggestions]="recentAddresses$"
-        (error)="handleTreeError($event)"
-    ></ige-tree>
-
-    <div
-        class="side-padding"
-        [class.hide]="!typeSelectionEnabled || activeStep !== 2"
-    >
-        <div>Adresstyp zuordnen für:</div>
-        <div class="chosen-address">
-            <mat-icon [svgIcon]="selection?.icon"></mat-icon
-            ><span>{{ selection?.title }}</span>
-        </div>
-        <ige-document-list-item
-            [docs]="referenceTypes"
-            showSelection="true"
-            [denseMode]="true"
-            [hideDivider]="true"
-            [showIcons]="false"
-            (select)="setRefType($event)"
-        ></ige-document-list-item>
+<div
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    #contextChooseAddressContainer
+>
+    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">Adresse hinzufügen</span>
+        </h2>
     </div>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <ng-container *ngIf="activeStep === 1">
-        <button
-            mat-button
-            mat-dialog-close
-            cdkFocusInitial
-            color="primary"
-            data-cy="choose-address-cancel"
+    <mat-dialog-content>
+        <ige-tree
+            [class.hide]="activeStep !== 1"
+            (selected)="updateAddressTree($event[0])"
+            data-cy="choose-address-tree"
+            [setActiveNode]="selectedNode"
+            [forAddresses]="true"
+            [disabledCondition]="disabledCondition"
+            [showHeaderOptions]="false"
+            [searchSuggestions]="recentAddresses$"
+            (error)="handleTreeError($event)"
+        ></ige-tree>
+
+        <div
+            class="side-padding"
+            [class.hide]="!typeSelectionEnabled || activeStep !== 2"
         >
-            Abbrechen
-        </button>
-    </ng-container>
-    <ng-container *ngIf="activeStep === 2">
-        <button
-            mat-button
-            cdkFocusInitial
-            color="primary"
-            data-cy="choose-address-previous-step"
-            (click)="activeStep = 1"
-        >
-            Zurück
-        </button>
-    </ng-container>
-    <div fxFlex></div>
-    <ng-container *ngIf="typeSelectionEnabled && activeStep == 1">
-        <button
-            mat-flat-button
-            color="primary"
-            data-cy="choose-address-next-step"
-            [disabled]="!selection || selection._type === 'FOLDER'"
-            (click)="activeStep = 2"
-        >
-            Weiter
-        </button>
-    </ng-container>
-    <ng-container *ngIf="!typeSelectionEnabled || activeStep == 2">
-        <button
-            mat-flat-button
-            color="primary"
-            data-cy="choose-address-confirm"
-            [disabled]="
-                !selection || !selectedType || selection._type === 'FOLDER'
-            "
-            (click)="getResult()"
-        >
-            Übernehmen
-        </button>
-    </ng-container>
-</mat-dialog-actions>
+            <div>Adresstyp zuordnen für:</div>
+            <div class="chosen-address">
+                <mat-icon [svgIcon]="selection?.icon"></mat-icon
+                ><span>{{ selection?.title }}</span>
+            </div>
+            <ige-document-list-item
+                [docs]="referenceTypes"
+                showSelection="true"
+                [denseMode]="true"
+                [hideDivider]="true"
+                [showIcons]="false"
+                (select)="setRefType($event)"
+            ></ige-document-list-item>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <ng-container *ngIf="activeStep === 1">
+            <button
+                mat-button
+                mat-dialog-close
+                cdkFocusInitial
+                color="primary"
+                data-cy="choose-address-cancel"
+            >
+                Abbrechen
+            </button>
+        </ng-container>
+        <ng-container *ngIf="activeStep === 2">
+            <button
+                mat-button
+                cdkFocusInitial
+                color="primary"
+                data-cy="choose-address-previous-step"
+                (click)="activeStep = 1"
+            >
+                Zurück
+            </button>
+        </ng-container>
+        <div fxFlex></div>
+        <ng-container *ngIf="typeSelectionEnabled && activeStep == 1">
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="choose-address-next-step"
+                [disabled]="!selection || selection._type === 'FOLDER'"
+                (click)="activeStep = 2"
+            >
+                Weiter
+            </button>
+        </ng-container>
+        <ng-container *ngIf="!typeSelectionEnabled || activeStep == 2">
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="choose-address-confirm"
+                [disabled]="
+                    !selection || !selectedType || selection._type === 'FOLDER'
+                "
+                (click)="getResult()"
+            >
+                Übernehmen
+            </button>
+        </ng-container>
+    </mat-dialog-actions>
+</div>

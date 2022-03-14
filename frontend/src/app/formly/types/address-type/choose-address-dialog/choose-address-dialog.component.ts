@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   Inject,
   OnDestroy,
   OnInit,
@@ -46,7 +47,7 @@ export interface ChooseAddressResponse {
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
-
+  @ViewChild("contextChooseAddressContainer") container: ElementRef;
   selection: DocumentAbstract;
   selectedType: string;
   selectedNode = new BehaviorSubject<string>(null);

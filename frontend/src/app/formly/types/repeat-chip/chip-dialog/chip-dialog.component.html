@@ -1,36 +1,38 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Auswahl treffen</span>
-    </h2>
-</div>
-<mat-dialog-content>
-    <mat-selection-list
-        #choice
-        [(ngModel)]="data.model"
-        data-cy="chip-dialog-option-list"
-    >
-        <mat-list-option
-            *ngFor="let option of data.options | async"
-            [value]="option.value"
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextChipContainer>
+    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">Auswahl treffen</span>
+        </h2>
+    </div>
+    <mat-dialog-content>
+        <mat-selection-list
+            #choice
+            [(ngModel)]="data.model"
+            data-cy="chip-dialog-option-list"
         >
-            {{ option.label }}
-        </mat-list-option>
-    </mat-selection-list>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button mat-dialog-close data-cy="chip-dialog-abort">
-        Abbrechen
-    </button>
-    <div fxFlex></div>
-    <button
-        mat-flat-button
-        color="primary"
-        data-cy="chip-dialog-confirm"
-        [mat-dialog-close]="getSelection(choice.selectedOptions.selected)"
-    >
-        Übernehmen
-    </button>
-</mat-dialog-actions>
+            <mat-list-option
+                *ngFor="let option of data.options | async"
+                [value]="option.value"
+            >
+                {{ option.label }}
+            </mat-list-option>
+        </mat-selection-list>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-button mat-dialog-close data-cy="chip-dialog-abort">
+            Abbrechen
+        </button>
+        <div fxFlex></div>
+        <button
+            mat-flat-button
+            color="primary"
+            data-cy="chip-dialog-confirm"
+            [mat-dialog-close]="getSelection(choice.selectedOptions.selected)"
+        >
+            Übernehmen
+        </button>
+    </mat-dialog-actions>
+</div>

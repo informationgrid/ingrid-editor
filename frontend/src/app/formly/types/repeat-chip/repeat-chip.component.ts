@@ -35,6 +35,7 @@ export class RepeatChipComponent extends FieldArrayType {
           options: this.to.options,
           model: this.model,
         },
+        hasBackdrop: true,
       })
       .afterClosed()
       .subscribe((response) => {
