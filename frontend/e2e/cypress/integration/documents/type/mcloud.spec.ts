@@ -193,7 +193,7 @@ describe('mCLOUD documents', function () {
       cy.contains('button', 'Ok').should('be.disabled');
     });
 
-    it.only('document that is planned to be published should not be able to be edited, saved or published (#3562)', () => {
+    it('document that is planned to be published should not be able to be edited, saved or published (#3562)', () => {
       Tree.openNode(['Neue Testdokumente', 'Datum_Ebene_2_4']);
 
       // planned publish info should be visible
