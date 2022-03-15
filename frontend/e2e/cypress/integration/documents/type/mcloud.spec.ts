@@ -179,6 +179,7 @@ describe('mCLOUD documents', function () {
       const wrongDate_1 = '03.03.2021';
       const wrongDate_2 = 'abc';
       const wrongDate_3 = '02.03.2';
+      const wrongDate_4 = Utils.getFormattedDate(new Date());
       Tree.openNode(['TestDocResearch3']);
       DocumentPage.choosePublishOption(PublishOptions.PlanPublish);
       cy.contains('button', 'Ok').should('be.disabled');
@@ -188,10 +189,15 @@ describe('mCLOUD documents', function () {
       cy.contains('button', 'Ok').should('be.disabled');
       DocumentPage.fillInPublishingDate(wrongDate_3);
       cy.contains('button', 'Ok').should('be.disabled');
+      DocumentPage.fillInPublishingDate(wrongDate_4);
+      cy.contains('button', 'Ok').should('be.disabled');
     });
 
-    it('document that is planned to be published should not be able to be edited, saved or published (#3562)', () => {
+    it.only('document that is planned to be published should not be able to be edited, saved or published (#3562)', () => {
       Tree.openNode(['Neue Testdokumente', 'Datum_Ebene_2_4']);
+
+      // planned publish info should be visible
+      cy.get('.publish-pending-info').should('be.visible');
       // text fields are disabled
       cy.get('textarea').each(el => {
         cy.wrap(el).should('be.disabled');
