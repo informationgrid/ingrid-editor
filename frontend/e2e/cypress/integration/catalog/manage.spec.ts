@@ -59,10 +59,7 @@ describe('Catalog management', () => {
       cy.reload();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
-      ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
-        'equal',
-        Utils.getFormattedDate(new Date()) + ' ' + Utils.getHourAndMinute(new Date())
-      );
+      ManageCatalogPage.getDateOfChangesInCatalog('Test').should('equal', Utils.getFormattedDateTime(new Date()));
     });
   });
 
@@ -97,7 +94,7 @@ describe('Catalog management', () => {
     let user: UserFormData = {
       firstName: catalogFirstname,
       lastName: 'temp' + Utils.randomString(),
-      email: 'testcatalog' + Utils.randomdoubleDigitString() + '@thisauthor.com',
+      email: 'testcatalog' + Utils.randomDoubleDigitString() + '@thisauthor.com',
       login: 'some_random_catalohlogin' + Utils.randomString(),
       role: 'Katalog-Administrator',
       groups: [],

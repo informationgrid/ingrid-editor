@@ -467,7 +467,7 @@ describe('Meta data administrator with a group', () => {
     let user: UserFormData = {
       firstName: 'random' + Utils.randomString(),
       lastName: 'author' + Utils.randomString(),
-      email: 'test' + Utils.randomdoubleDigitString() + '@thisauthor.com',
+      email: 'test' + Utils.randomDoubleDigitString() + '@thisauthor.com',
       login: 'some_random_authorlogin' + Utils.randomString(),
       role: 'Autor',
       groups: [],

@@ -78,7 +78,7 @@ export class AddressPage extends DocumentPage {
     cy.get("[data-cy='Organisation'] input").clear().type(name);
   }
 
-  static addStreetName(name: string = Utils.randomdoubleDigitString() + '. Street') {
+  static addStreetName(name: string = Utils.randomDoubleDigitString() + '. Street') {
     cy.get('[data-cy="Adresse"] input').first().type(name);
   }
 

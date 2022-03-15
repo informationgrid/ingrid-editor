@@ -470,8 +470,8 @@ describe('User', () => {
   });
 
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
-    const uid1 = Utils.randomdoubleDigitString();
-    const uid2 = Utils.randomdoubleDigitString();
+    const uid1 = Utils.randomDoubleDigitString();
+    const uid2 = Utils.randomDoubleDigitString();
     let firstUserLogIn = 'first-new-meta' + uid1;
     let firstUserEmail = 'first-new-meta' + uid1 + '@wemove.com';
     let secondUserLogIn = 'second-new-meta' + uid2;

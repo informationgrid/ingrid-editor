@@ -158,7 +158,7 @@ describe('mCLOUD documents', function () {
     });
 
     it('should plan publishing of document and reverse it (#3562)', () => {
-      const publishDate = Utils.getFormattedDateInTheFuture(new Date());
+      const publishDate = Utils.getFormattedDate(new Date(Date.now() + Utils.MILLISECONDS_IN_DAY));
       Tree.openNode(['TestDocResearch3']);
       DocumentPage.planPublishing(publishDate);
       // stop planned publishing
@@ -167,7 +167,7 @@ describe('mCLOUD documents', function () {
     });
 
     it('should plan publishing of document via dialog and reverse it (#3562)', () => {
-      const publishDate = Utils.getFormattedDateInTheFuture(new Date());
+      const publishDate = Utils.getFormattedDate(new Date(Date.now() + Utils.MILLISECONDS_IN_DAY));
       Tree.openNode(['TestDocResearch3']);
       DocumentPage.planPublishing(publishDate, true);
       // stop planned publishing
