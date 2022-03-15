@@ -2,7 +2,8 @@
 // see: https://github.com/angular/components/issues/4609
 .mat-dialog-override {
   mat-dialog-container {
-    > :first-child {
+    > :first-child,
+    .cdk-drag {
       display: flex;
       flex-direction: column;
       flex: 1;
