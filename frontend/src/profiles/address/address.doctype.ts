@@ -3,7 +3,6 @@ import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { IgeDocument } from "../../app/models/ige-document";
 import { map } from "rxjs/operators";
 
 export class AddressDoctype extends BaseDoctype {
@@ -25,53 +24,6 @@ export class AddressDoctype extends BaseDoctype {
             'model.organization ? "Organisationsdaten" : "Persönliche Daten"',
         },
         fieldGroup: [
-          {
-            wrappers: ["panel"],
-            templateOptions: {
-              externalLabel: "Organisation",
-            },
-            expressionProperties: {
-              "templateOptions.required":
-                "(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0) || (model.organization && model.organization.length !== 0)",
-            },
-            fieldGroup: [
-              {
-                fieldGroupClassName: "display-flex",
-                fieldGroup: [
-                  {
-                    key: "organization",
-                    className: "width-100 organization",
-                    type: "input",
-                    templateOptions: {
-                      label: "Organisation",
-                      appearance: "outline",
-                    },
-                    expressionProperties: {
-                      "templateOptions.required":
-                        "(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)",
-                    },
-                  },
-                ],
-              },
-              {
-                fieldGroupClassName: "display-flex",
-                fieldGroup: [
-                  {
-                    key: "department",
-                    className: "width-100 organization animated",
-                    type: "input",
-                    templateOptions: {
-                      label: "Abteilung/Referat",
-                      appearance: "outline",
-                      animation: true,
-                    },
-                    hideExpression:
-                      "!model.organization || model.organization.length === 0",
-                  },
-                ],
-              },
-            ],
-          },
           {
             wrappers: ["panel"],
             templateOptions: {
@@ -315,9 +267,5 @@ export class AddressDoctype extends BaseDoctype {
     codelistQuery: CodelistQuery
   ) {
     super(codelistService, codelistQuery);
-  }
-
-  getIconClass(doc: IgeDocument): string {
-    return doc.organization?.length > 0 ? "Institution" : "Freie-Adresse";
   }
 }

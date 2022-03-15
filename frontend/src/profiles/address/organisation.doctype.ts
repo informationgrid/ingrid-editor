@@ -123,8 +123,4 @@ export abstract class OrganisationDoctype extends BaseDoctype {
   ) {
     super(codelistService, codelistQuery);
   }
-
-  getIconClass(doc: IgeDocument): string {
-    return doc.organization?.length > 0 ? "Institution" : "Freie-Adresse";
-  }
 }
