@@ -623,7 +623,7 @@ export class TreeComponent implements OnInit {
 
     this.activeNodeId = id;
     if (emitActive) {
-      setTimeout(() => this.activate.next([node._uuid]), 500);
+      this.activate.next([node._uuid]);
     }
   }
 }
