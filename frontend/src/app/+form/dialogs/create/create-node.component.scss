@@ -4,6 +4,10 @@
   display: none !important;
 }
 
+.mat-dialog-title {
+  cursor: move;
+}
+
 :host {
   flex: 1 1 auto; // IE 11
 

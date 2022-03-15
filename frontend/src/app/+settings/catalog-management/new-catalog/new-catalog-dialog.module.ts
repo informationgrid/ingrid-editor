@@ -13,6 +13,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { NewCatalogDialogComponent } from "./new-catalog-dialog.component";
 import { FormFieldsModule } from "../../../form-fields/form-fields.module";
 import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [NewCatalogDialogComponent],
@@ -30,6 +31,7 @@ import { SharedPipesModule } from "../../../directives/shared-pipes.module";
     MatIconModule,
     FormFieldsModule,
     SharedPipesModule,
+    DragDropModule,
   ],
 })
 export class NewCatalogDialogModule {}

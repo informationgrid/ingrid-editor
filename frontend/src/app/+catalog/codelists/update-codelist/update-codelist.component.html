@@ -1,79 +1,81 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close data-cy="dlg-close">
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Eintrag bearbeiten</span>
-    </h2>
-</div>
-<mat-dialog-content fxLayout="column" [formGroup]="formGroup">
-    <mat-form-field appearance="outline">
-        <mat-label>Id</mat-label>
-        <input
-            matInput
-            igeFocus
-            formControlName="id"
-            data-cy="codelist-entry-id"
-        />
-        <mat-error>Die ID ist bereits vergeben</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-        <mat-label>Beschreibung</mat-label>
-        <textarea
-            matInput
-            formControlName="description"
-            data-cy="codelist-entry-description"
-        ></textarea>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-        <mat-label>Data</mat-label>
-        <input
-            matInput
-            placeholder='{"url":"https://xxx"}'
-            formControlName="data"
-            data-cy="codelist-entry-data"
-        />
-    </mat-form-field>
-    <div formArrayName="fields">
-        <div
-            *ngFor="let field of fields; let i = index"
-            [formGroupName]="i"
-            fxLayout="row"
-            fxLayoutGap="20px"
-        >
-            <mat-form-field appearance="outline">
-                <mat-label>Schlüssel</mat-label>
-                <input
-                    matInput
-                    formControlName="key"
-                    [attr.data-cy]="'codelist-entry-key-' + i"
-                />
-            </mat-form-field>
-            <mat-form-field appearance="outline" fxFlex>
-                <mat-label>Titel</mat-label>
-                <input
-                    matInput
-                    formControlName="value"
-                    [attr.data-cy]="'codelist-entry-title-' + i"
-                />
-            </mat-form-field>
-            <button mat-icon-button (click)="removeEntry(i)">
-                <mat-icon>clear</mat-icon>
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextCodeListContainer>
+    <div cdkDragHandle class="dialog-title-wrapper">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close data-cy="dlg-close">
+                <mat-icon>close</mat-icon>
             </button>
-        </div>
+            <span class="text">Eintrag bearbeiten</span>
+        </h2>
     </div>
-    <ige-add-button (add)="addEntry()"></ige-add-button>
-</mat-dialog-content>
+    <mat-dialog-content fxLayout="column" [formGroup]="formGroup">
+        <mat-form-field appearance="outline">
+            <mat-label>Id</mat-label>
+            <input
+                matInput
+                igeFocus
+                formControlName="id"
+                data-cy="codelist-entry-id"
+            />
+            <mat-error>Die ID ist bereits vergeben</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Beschreibung</mat-label>
+            <textarea
+                matInput
+                formControlName="description"
+                data-cy="codelist-entry-description"
+            ></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Data</mat-label>
+            <input
+                matInput
+                placeholder='{"url":"https://xxx"}'
+                formControlName="data"
+                data-cy="codelist-entry-data"
+            />
+        </mat-form-field>
+        <div formArrayName="fields">
+            <div
+                *ngFor="let field of fields; let i = index"
+                [formGroupName]="i"
+                fxLayout="row"
+                fxLayoutGap="20px"
+            >
+                <mat-form-field appearance="outline">
+                    <mat-label>Schlüssel</mat-label>
+                    <input
+                        matInput
+                        formControlName="key"
+                        [attr.data-cy]="'codelist-entry-key-' + i"
+                    />
+                </mat-form-field>
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Titel</mat-label>
+                    <input
+                        matInput
+                        formControlName="value"
+                        [attr.data-cy]="'codelist-entry-title-' + i"
+                    />
+                </mat-form-field>
+                <button mat-icon-button (click)="removeEntry(i)">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </div>
+        </div>
+        <ige-add-button (add)="addEntry()"></ige-add-button>
+    </mat-dialog-content>
 
-<mat-dialog-actions>
-    <button mat-flat-button mat-dialog-close>Abbrechen</button>
-    <div fxFlex></div>
-    <button
-        mat-flat-button
-        color="primary"
-        [disabled]="formGroup.invalid"
-        (click)="closeWithResult()"
-    >
-        {{ isNew ? "Hinzufügen" : "Ändern" }}
-    </button>
-</mat-dialog-actions>
+    <mat-dialog-actions>
+        <button mat-flat-button mat-dialog-close>Abbrechen</button>
+        <div fxFlex></div>
+        <button
+            mat-flat-button
+            color="primary"
+            [disabled]="formGroup.invalid"
+            (click)="closeWithResult()"
+        >
+            {{ isNew ? "Hinzufügen" : "Ändern" }}
+        </button>
+    </mat-dialog-actions>
+</div>

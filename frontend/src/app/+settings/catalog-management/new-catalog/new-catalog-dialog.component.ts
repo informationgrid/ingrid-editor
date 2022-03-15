@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, ElementRef, Inject, ViewChild } from "@angular/core";
 import {
   CatalogService,
   Profile,
@@ -14,6 +14,7 @@ export interface CatalogSettings {
   templateUrl: "new-catalog-dialog.component.html",
 })
 export class NewCatalogDialogComponent {
+  @ViewChild("contextNewCatalogContainer") container: ElementRef;
   model: CatalogSettings = {};
 
   constructor(

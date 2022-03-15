@@ -1,30 +1,36 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Benutzer hinzufügen</span>
-    </h2>
-</div>
-<mat-dialog-content [formGroup]="form">
-    <div class="no-selection-text">
-        Wählen Sie einen bestehenden Nutzer-Login aus oder legen Sie ein neues
-        Login an.
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextUserContainer>
+    <div class="dialog-title-wrapper">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">Benutzer hinzufügen</span>
+        </h2>
     </div>
-    <ng-container>
-        <formly-form [form]="form" [fields]="formlyFieldConfig" [model]="model">
-        </formly-form>
-    </ng-container>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button mat-dialog-close color="primary">Abbrechen</button>
-    <div fxFlex></div>
-    <button
-        mat-flat-button
-        color="primary"
-        [disabled]="form.invalid"
-        (click)="this.createUser()"
-    >
-        Anlegen
-    </button>
-</mat-dialog-actions>
+    <mat-dialog-content [formGroup]="form">
+        <div class="no-selection-text">
+            Wählen Sie einen bestehenden Nutzer-Login aus oder legen Sie ein
+            neues Login an.
+        </div>
+        <ng-container>
+            <formly-form
+                [form]="form"
+                [fields]="formlyFieldConfig"
+                [model]="model"
+            >
+            </formly-form>
+        </ng-container>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-button mat-dialog-close color="primary">Abbrechen</button>
+        <div fxFlex></div>
+        <button
+            mat-flat-button
+            color="primary"
+            [disabled]="form.invalid"
+            (click)="this.createUser()"
+        >
+            Anlegen
+        </button>
+    </mat-dialog-actions>
+</div>

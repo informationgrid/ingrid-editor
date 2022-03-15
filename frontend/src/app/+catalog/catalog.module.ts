@@ -29,6 +29,8 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-presenter.module";
 import { LogResultComponent } from "./indexing/log-result/log-result.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { DndDirective } from "../directives/dnd.directive";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   imports: [
@@ -56,6 +58,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
     MatMenuModule,
     MatChipsModule,
     MatProgressBarModule,
+    DragDropModule,
   ],
   providers: [CatalogService],
   declarations: [

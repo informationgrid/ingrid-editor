@@ -1,4 +1,10 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { CodelistEntry } from "../../../store/codelist/codelist.model";
 import {
@@ -16,6 +22,7 @@ import {
   styleUrls: ["./update-codelist.component.scss"],
 })
 export class UpdateCodelistComponent implements OnInit {
+  @ViewChild("contextCodeListContainer") container: ElementRef;
   fields: any[];
   isNew = true;
 

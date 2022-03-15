@@ -55,6 +55,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.dialog
       .open(UpdateCodelistComponent, {
         minWidth: 400,
+        hasBackdrop: true,
         disableClose: true,
         data: {
           ids: this.selectedCodelist.entries

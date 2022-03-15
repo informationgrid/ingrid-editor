@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { GroupService } from "../../../services/role/group.service";
 import { Group } from "../../../models/user-group";
@@ -11,6 +11,7 @@ import { GroupQuery } from "../../../store/group/group.query";
   templateUrl: "./new-group-dialog.component.html",
 })
 export class NewGroupDialogComponent implements OnInit {
+  @ViewChild("contextGroupContainer") container: ElementRef;
   form = new FormGroup({
     name: new FormControl("", Validators.required),
   });

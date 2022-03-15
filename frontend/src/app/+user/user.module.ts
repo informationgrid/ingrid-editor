@@ -40,6 +40,7 @@ import { UserManagementService } from "./user-management.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { RouterModule } from "@angular/router";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   imports: [
@@ -65,6 +66,7 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
     MatProgressSpinnerModule,
     MatSnackBarModule,
     SharedPipesModule,
+    DragDropModule,
   ],
   declarations: [
     UserComponent,
