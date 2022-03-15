@@ -98,7 +98,7 @@ describe('author with groups', () => {
 
     // also: make sure the suggestions don't contain forbidden documents
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_3);
-    cy.get('mat-option .doc-item').should('not.contain', searchTerm_3).click();
+    cy.get('ige-tree mat-tree-node').should('not.contain', searchTerm_3);
   });
 
   it('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
@@ -121,7 +121,7 @@ describe('author with groups', () => {
 
     // also: make sure the suggestions don't contain forbidden documents
     cy.get('ige-tree .mat-input-element').clear().click().type(searchTerm_3);
-    cy.get('mat-option .doc-item').should('not.contain', searchTerm_3).click();
+    cy.get('ige-tree mat-tree-node').should('not.contain', searchTerm_3);
   });
 
   it('Section "Nutzer und Rechte" should not be visible to an author (#2670)', () => {
