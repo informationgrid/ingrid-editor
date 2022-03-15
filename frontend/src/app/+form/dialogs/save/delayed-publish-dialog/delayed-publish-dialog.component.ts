@@ -21,6 +21,7 @@ export class DelayedPublishDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.minDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() + 1);
   }
 
   setDateAndPublish() {
