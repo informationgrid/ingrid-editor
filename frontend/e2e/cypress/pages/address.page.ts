@@ -59,8 +59,9 @@ export class AddressPage extends DocumentPage {
   }
 
   static addAddressToTestDocument(path: string[], addressType: string) {
-    cy.get('[data-cy="Addresses"] button').first().click();
+    cy.get('[data-cy=Addresses]').contains('Hinzufügen').click();
     Tree.openNodeInsideDialog(path);
+    cy.get('[data-cy=choose-address-next-step]').click();
     this.selectOptionAsync('address-type-select', addressType);
     cy.contains('button', 'Übernehmen').click();
   }
