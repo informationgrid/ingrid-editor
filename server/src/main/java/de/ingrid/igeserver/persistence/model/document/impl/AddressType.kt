@@ -35,7 +35,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
     }
 
     override fun onUnpublish(doc: Document) {
-        super.onDelete(doc)
+        super.onUnpublish(doc)
         val sqlQuery = """
             SELECT DISTINCT d.uuid, title 
             FROM document d, document_wrapper dw 
