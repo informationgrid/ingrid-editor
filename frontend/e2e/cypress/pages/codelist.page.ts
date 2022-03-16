@@ -16,13 +16,13 @@ export class CodelistPage {
 
   static confirmAddNewEntry() {
     cy.intercept('PUT', /api\/codelist\/manage/).as('addEntry');
-    cy.get('ige-update-codelist > mat-dialog-actions span.mat-button-wrapper').contains('Hinzufügen').click();
+    cy.contains('ige-update-codelist mat-dialog-actions span.mat-button-wrapper', 'Hinzufügen').click();
     cy.wait('@addEntry');
   }
 
   static confirmModifiedEntry() {
     cy.intercept('PUT', /api\/codelist\/manage/).as('modifyEntry');
-    cy.get('ige-update-codelist > mat-dialog-actions span.mat-button-wrapper').contains('Ändern').click();
+    cy.get('ige-update-codelist mat-dialog-actions span.mat-button-wrapper').contains('Ändern').click();
     cy.wait('@modifyEntry');
   }
 
