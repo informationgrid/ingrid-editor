@@ -232,6 +232,15 @@ export class AdminUserPage extends BasePage {
     });
   }
 
+  static getInfoInHeader(key: keysInHeader, headerOpen: boolean = false): Chainable<String> {
+    if (!headerOpen) {
+      cy.get('.user-title .menu-button').eq(0).click();
+    }
+    return cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ') span').then(node => {
+      return node.text();
+    });
+  }
+
   static checkRoleSymbol(username: string, iconname: string) {
     cy.get('#sidebarUser tr').contains(username).parent().parent().find(iconname).should('be.visible');
   }

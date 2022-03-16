@@ -2,7 +2,6 @@ import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administr
 import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
-import { DashboardPage } from '../../pages/dashboard.page';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
 
@@ -521,8 +520,12 @@ describe('User', () => {
     AdminUserPage.visit();
     AdminUserPage.selectUser('autor');
     AdminUserPage.verifyInfoInHeader(keysInHeader.LastLogin, dateOfToday);
-    // change user profile and make sure information is updated accordingly
-    AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
-    AdminUserPage.verifyInfoInHeader(keysInHeader.EditDate, dateOfToday);
+    AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true).then(oldEditDate => {
+      // change user profile and make sure information is updated accordingly
+      AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
+      AdminUserPage.verifyInfoInHeader(keysInHeader.EditDate, dateOfToday);
+      // check that the edit date has changed
+      AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true).should('not.equal', oldEditDate);
+    });
   });
 });
