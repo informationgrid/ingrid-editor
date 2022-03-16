@@ -96,6 +96,9 @@ export class FormularService {
   }
 
   setAdditionalSections(sections: string[]) {
-    this.sections$.next([...this.profileSections, ...sections]);
+    // prevent ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() =>
+      this.sections$.next([...this.profileSections, ...sections])
+    );
   }
 }
