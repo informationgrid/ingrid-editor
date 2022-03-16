@@ -39,6 +39,7 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
+import { DocumentResponse } from "../../models/document-response";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -129,7 +130,7 @@ export class DocumentService {
     address?: boolean,
     updateStore = true,
     useUuid = false
-  ): Observable<IgeDocument> {
+  ): Observable<DocumentResponse> {
     this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
       tap((doc) => {
@@ -359,7 +360,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json], json.metadata._parent)),
       map((json) => {
         json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
         return json;
@@ -592,24 +593,24 @@ export class DocumentService {
   }
 
   private mapToDocumentAbstracts(
-    docs: IgeDocument[],
+    docs: DocumentResponse[],
     parentId?: string
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id ? doc._id.toString() : null,
-        icon: this.profileService.getDocumentIcon(doc),
-        title: doc.title || "-Kein Titel-",
-        _uuid: doc._uuid,
-        _state: doc._state,
-        _hasChildren: doc._hasChildren,
+        id: doc.metadata._id ? doc.metadata._id.toString() : null,
+        icon: this.profileService.getDocumentIcon(doc.document),
+        title: doc.document.title || "-Kein Titel-",
+        _uuid: doc.document._uuid,
+        _state: doc.metadata._state,
+        _hasChildren: doc.metadata._hasChildren,
         _parent: parentId ? parentId.toString() : null,
-        _type: doc._type,
-        _modified: doc._modified,
-        _pendingDate: doc._pendingDate,
-        hasWritePermission: doc.hasWritePermission ?? false,
+        _type: doc.document._type,
+        _modified: doc.metadata._modified,
+        _pendingDate: doc.metadata._pendingDate,
+        hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
-          doc.hasOnlySubtreeWritePermission ?? false,
+          doc.metadata.hasOnlySubtreeWritePermission ?? false,
       };
     });
   }
@@ -625,8 +626,8 @@ export class DocumentService {
     }
   }
 
-  private updateTreeStore(doc: IgeDocument, address: boolean) {
-    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+  private updateTreeStore(doc: DocumentResponse, address: boolean) {
+    const absDoc = this.mapToDocumentAbstracts([doc], doc.metadata._parent)[0];
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
@@ -643,9 +644,27 @@ export class DocumentService {
   private mapSearchResults(
     result: ServerSearchResult | ResearchResponse
   ): SearchResult {
+    const abstractDocs = result.hits.map((doc) => {
+      return {
+        id: doc._id ? doc._id.toString() : null,
+        icon: this.profileService.getDocumentIcon(doc),
+        title: doc.title || "-Kein Titel-",
+        _uuid: doc._uuid,
+        _state: doc._state,
+        _hasChildren: doc._hasChildren,
+        _parent: null,
+        _type: doc._type,
+        _modified: doc._modified,
+        _pendingDate: doc._pendingDate,
+        hasWritePermission: doc.hasWritePermission ?? false,
+        hasOnlySubtreeWritePermission:
+          doc.hasOnlySubtreeWritePermission ?? false,
+      };
+    });
+
     return {
       totalHits: result.totalHits,
-      hits: this.mapToDocumentAbstracts(result.hits, null),
+      hits: abstractDocs,
     } as SearchResult;
   }
 

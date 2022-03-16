@@ -38,6 +38,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
+import { DocumentMetadata } from "../../models/document-response";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -58,7 +59,18 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() set model(value: IgeDocument) {
     this._model = value;
     this.docIcon = this.profileService.getDocumentIcon(value);
-    this.state = DocumentUtils.getStateClass(value._state, value._type);
+    this.state = DocumentUtils.getStateClass(
+      this._metadata?._state,
+      value._type
+    );
+  }
+
+  _metadata: DocumentMetadata;
+  @Input() set(metadata: DocumentMetadata) {
+    this.state = DocumentUtils.getStateClass(
+      metadata?._state,
+      this._model?._type
+    );
   }
 
   @Input() sections: string[] = [];

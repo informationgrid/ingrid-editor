@@ -3,15 +3,10 @@ import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../../dialogs/confirm/confirm-dialog.component";
 import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 import { DocumentService } from "../../../services/document/document.service";
-import { map } from "rxjs/operators";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
-import { IgeDocument } from "../../../models/ige-document";
+import { DocumentResponse } from "../../../models/document-response";
 
 @Component({
   selector: "permission-table",
@@ -89,11 +84,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
       }
 
       this.getDocument(doc.id).then((igeDoc) => {
-        doc.hasWritePermission = igeDoc.hasWritePermission;
+        doc.hasWritePermission = igeDoc.metadata.hasWritePermission;
         doc.hasOnlySubtreeWritePermission =
-          igeDoc.hasOnlySubtreeWritePermission;
-        doc.isFolder = igeDoc._type === "FOLDER";
-        doc.title = igeDoc.title;
+          igeDoc.metadata.hasOnlySubtreeWritePermission;
+        doc.isFolder = igeDoc.document._type === "FOLDER";
+        doc.title = igeDoc.document.title;
 
         // downgrade permission if rights are not sufficient
         this.adjustPermission(doc);
@@ -108,7 +103,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
   }
 
-  getDocument(id: string): Promise<IgeDocument> {
+  getDocument(id: string): Promise<DocumentResponse> {
     return this.documentService.load(id, this.forAddress).toPromise();
   }
 
@@ -127,6 +122,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.onChange(this.val);
   }
 
+  // TODO: Refactor so that permission field is not stored in doc as an extra field
   private adjustPermission(doc: any) {
     // all permissions are allowed
     if (doc.hasWritePermission) return;

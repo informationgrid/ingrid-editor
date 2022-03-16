@@ -36,6 +36,7 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
+import { DocumentMetadata } from "../../../models/document-response";
 
 @UntilDestroy()
 @Component({
@@ -87,6 +88,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
+  docMetadata: DocumentMetadata;
 
   constructor(
     private formularService: FormularService,
@@ -278,12 +280,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         tap(
           (doc) =>
             (this.readonly =
-              !doc.hasWritePermission || doc._pendingDate != null)
+              !doc.metadata.hasWritePermission ||
+              doc.metadata._pendingDate != null)
         ),
-        tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
+        tap((doc) =>
+          this.loadSubscription.push(this.updateBreadcrumb(doc.metadata._id))
+        ),
+        tap((response) => (this.docMetadata = response.metadata))
       )
       .subscribe(
-        (doc) => this.updateFormWithData(doc),
+        (doc) => this.updateFormWithData(doc.document),
         (error: HttpErrorResponse) =>
           this.handleLoadError(error, previousDocUuid)
       );

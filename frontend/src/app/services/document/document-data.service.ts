@@ -4,6 +4,7 @@ import { IgeDocument } from "../../models/ige-document";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
+import { DocumentResponse } from "../../models/document-response";
 
 @Injectable({
   providedIn: "root",
@@ -23,13 +24,13 @@ export class DocumentDataService {
     return this.http.get<any[]>(url);
   }
 
-  load(id: string, useUuid = false): Observable<IgeDocument> {
+  load(id: string, useUuid = false): Observable<DocumentResponse> {
     if (useUuid) {
-      return this.http.get<IgeDocument>(
+      return this.http.get<DocumentResponse>(
         this.configuration.backendUrl + "datasetsByUuid/" + id
       );
     } else {
-      return this.http.get<IgeDocument>(
+      return this.http.get<DocumentResponse>(
         this.configuration.backendUrl + "datasets/" + id
       );
     }
@@ -88,8 +89,8 @@ export class DocumentDataService {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }
 
-  revert(id: string): Observable<IgeDocument> {
-    return this.http.put<IgeDocument>(
+  revert(id: string): Observable<DocumentResponse> {
+    return this.http.put<DocumentResponse>(
       this.configuration.backendUrl + "datasets/" + id + "?revert=true",
       {}
     );
@@ -105,9 +106,9 @@ export class DocumentDataService {
     srcIDs: string[],
     dest: string,
     includeTree: boolean
-  ): Observable<IgeDocument[]> {
+  ): Observable<DocumentResponse[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
-    return this.http.post<IgeDocument[]>(
+    return this.http.post<DocumentResponse[]>(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/copy",
       body
     );

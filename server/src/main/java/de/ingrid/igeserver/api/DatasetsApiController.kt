@@ -2,10 +2,9 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.model.CopyOptions
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.model.SearchResult
+import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @RestController
@@ -247,7 +245,6 @@ class DatasetsApiController @Autowired constructor(
     }
 
 
-
     override fun getChildren(
         principal: Principal,
         parentId: String?,
@@ -365,7 +362,7 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         uuid: String,
         publish: Boolean?
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentResponse> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
 
@@ -376,7 +373,7 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         id: Int,
         publish: Boolean?
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentResponse> {
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -385,17 +382,39 @@ class DatasetsApiController @Autowired constructor(
 
             val doc =
                 documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
-            doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
-            doc.data.put(FIELD_PARENT, wrapper.parent?.id)
-            doc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-            doc.hasWritePermission = wrapper.hasWritePermission
-            doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-            val jsonDoc = documentService.convertToJsonNode(doc)
-            return ResponseEntity.ok(jsonDoc)
+            
+            val rawDocument = doc.data.apply { 
+                put("title", doc.title)
+                put(FIELD_DOCUMENT_TYPE, doc.type)
+            }
+            
+            return ResponseEntity.ok(
+                DocumentResponse(
+                    rawDocument,
+                    createMetadata(wrapper, doc)
+                )
+            )
         } catch (ex: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")
         }
 
+    }
+
+    private fun createMetadata(wrapper: DocumentWrapper, doc: Document): DocumentMetadata {
+        return DocumentMetadata(
+            wrapper.id!!.toString(),
+            wrapper.type!!,
+            doc.created!!,
+            doc.modified!!,
+            doc.createdby!!,
+            doc.modifiedby!!,
+            wrapper.getParentUuid(),
+            wrapper.pending_date,
+            wrapper.countChildren > 0,
+            wrapper.getState(),
+            wrapper.hasWritePermission,
+            wrapper.hasOnlySubtreeWritePermission
+        )
     }
 
     override fun getPath(

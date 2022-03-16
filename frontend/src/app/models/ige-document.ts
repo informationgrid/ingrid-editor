@@ -1,17 +1,17 @@
 export type DocumentState = "P" | "W" | "PW";
 
 export class IgeDocument {
+  // the document type, which defines the formular fields
+  _type: string;
+
+  // the title of the document, which also can be dynamically added by other fields
+  title?: string;
+
   // the ID of the document, which can be undefined for new documents
   _id?: string;
 
   // the ID of the wrapper document, which contains this document
   _uuid?: string;
-
-  // the title of the document, which also can be dynamically added by other fields
-  title?: string;
-
-  // the document type, which defines the formular fields
-  _type: string;
 
   // the hierarchical parent of this document
   _parent: string;

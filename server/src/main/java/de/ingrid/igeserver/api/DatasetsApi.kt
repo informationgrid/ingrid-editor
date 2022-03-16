@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.DocumentResponse
 import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -81,7 +82,7 @@ interface DatasetsApi {
     fun getByID(
             principal: Principal,
             @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
-            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
+            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<DocumentResponse>
 
     @Operation(description = "Retrieve a dataset by a given UUID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])
@@ -89,7 +90,7 @@ interface DatasetsApi {
     fun getByUUID(
             principal: Principal,
             @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
-            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<JsonNode>
+            @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?): ResponseEntity<DocumentResponse>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])
