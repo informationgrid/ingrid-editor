@@ -18,7 +18,7 @@ import {
   DocumentAbstract,
 } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
-import { applyTransaction, transaction } from "@datorama/akita";
+import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { MessageService } from "../message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
@@ -376,6 +376,13 @@ export class DocumentService {
   }
 
   getPath(id: string): Observable<ShortTreeNode[]> {
+    let treeEntities = this.getEntitiesFromStoreContainingId(id);
+    const path = this.getPathFromTreeStore(treeEntities, id);
+
+    if (path !== null) {
+      return of(path.reverse());
+    }
+
     return this.dataService.getPath(id).pipe(
       catchError((error) => {
         if (error.status === 404) {
@@ -386,6 +393,14 @@ export class DocumentService {
       }),
       map((path) => this.preparePath(path))
     );
+  }
+
+  private getEntitiesFromStoreContainingId(id: string) {
+    let treeEntities = this.treeStore.getValue().entities;
+    if (!treeEntities[id]) {
+      treeEntities = this.addressTreeStore.getValue().entities;
+    }
+    return treeEntities;
   }
 
   /**
@@ -603,7 +618,7 @@ export class DocumentService {
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: parentId ? parentId.toString() : null,
+        _parent: doc._parent,
         _type: doc._type,
         _modified: doc._modified,
         _pendingDate: doc._pendingDate,
@@ -753,6 +768,38 @@ export class DocumentService {
           pathItem.permission.canOnlyWriteSubtree,
           !pathItem.permission.canWrite
         )
+    );
+  }
+
+  private getPathFromTreeStore(
+    entities: HashMap<DocumentAbstract>,
+    id: string
+  ): ShortTreeNode[] {
+    const entity = entities[id];
+
+    if (entity) {
+      const shortTreeNode = this.mapEntityToShortTreeNode(entity);
+      if (entity._parent == null) {
+        return [shortTreeNode];
+      }
+      const pathFromTreeStore = this.getPathFromTreeStore(
+        entities,
+        entity._parent
+      );
+      if (pathFromTreeStore === null) return null;
+      return [shortTreeNode, ...pathFromTreeStore];
+    }
+
+    // if a parent could not be found, get path from backend
+    return null;
+  }
+
+  private mapEntityToShortTreeNode(entity: DocumentAbstract) {
+    return new ShortTreeNode(
+      entity.id.toString(),
+      entity.title,
+      entity.hasOnlySubtreeWritePermission,
+      !entity.hasWritePermission
     );
   }
 }
