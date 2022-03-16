@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Inject,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../../../../services/codelist/codelist.service";
@@ -21,8 +15,6 @@ export interface ChipDialogData {
   styleUrls: ["./chip-dialog.component.scss"],
 })
 export class ChipDialogComponent implements OnInit {
-  @ViewChild("contextChipContainer") container: ElementRef;
-
   constructor(@Inject(MAT_DIALOG_DATA) public data: ChipDialogData) {}
 
   ngOnInit(): void {}

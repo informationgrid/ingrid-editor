@@ -2,9 +2,7 @@ import {
   AfterContentChecked,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   OnInit,
-  ViewChild,
 } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
@@ -23,7 +21,6 @@ import { IgeError } from "../../../models/ige-error";
   styleUrls: ["./new-user-dialog.component.scss"],
 })
 export class NewUserDialogComponent implements OnInit, AfterContentChecked {
-  @ViewChild("contextUserContainer") container: ElementRef;
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
     tap((users) => (this.externalUsers = users))
