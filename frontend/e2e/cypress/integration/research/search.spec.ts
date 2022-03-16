@@ -230,7 +230,6 @@ describe('Research Page', () => {
     ResearchPage.openSavedSearch('savedSearchProfileLimitedScope', 'save description to test existence and scope');
     cy.get('.location').should('not.be.empty');
     // create globally visible search
-    ResearchPage.visit();
     ResearchPage.search('das');
     ResearchPage.saveSearchProfile(
       'savedSearchProfileExtendedScope',
