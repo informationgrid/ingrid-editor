@@ -17,6 +17,8 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
 
     override val className = "AddressDoc"
 
+    val referenceFieldInDocuments = "addresses"
+
     override fun onDelete(doc: Document) {
         super.onDelete(doc)
         val sqlQuery = """
@@ -25,7 +27,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             WHERE (
                 dw.deleted = 0 AND
                 (dw.draft = d.id OR dw.published = d.id OR dw.pending = d.id) 
-                AND data->'addresses' @> '[{"ref": "${doc.uuid}"}]');
+                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
@@ -42,7 +44,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             WHERE (
                 dw.deleted = 0 AND
                 (dw.pending = d.id OR dw.published = d.id) 
-                AND data->'addresses' @> '[{"ref": "${doc.uuid}"}]');
+                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
