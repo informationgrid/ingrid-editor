@@ -1,6 +1,7 @@
 import { BasePage, UserAndRights } from './base.page';
 import { DashboardPage } from './dashboard.page';
 import Chainable = Cypress.Chainable;
+import { ProfilePage } from './profile.page';
 
 export interface UserFormData {
   login: string;
@@ -366,12 +367,7 @@ export class AdminUserPage extends BasePage {
 
         // Here we have to reload otherwise the because logout does not redirect to login page
         cy.reload();
-        cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
-
-        cy.get('#username').type(userLogIn);
-        cy.get('#password').type(psw);
-        cy.get('#kc-login').click();
-        cy.wait(1000);
+        ProfilePage.loginUsingLoginPage(userLogIn, psw);
 
         cy.get('#kc-content-wrapper').should('contain', 'Sie müssen Ihr Passwort ändern,');
 

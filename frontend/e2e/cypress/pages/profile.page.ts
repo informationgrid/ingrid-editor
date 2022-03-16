@@ -5,7 +5,7 @@ export class ProfilePage {
     cy.wait('@getUser');
   }
 
-  static loginWithLoginPage(username: string, password: string) {
+  static loginUsingLoginPage(username: string, password: string) {
     cy.get('.title', { timeout: 20000 }).should('contain', 'InGrid');
     cy.get('#username').type(username);
     cy.get('#password').type(password);
