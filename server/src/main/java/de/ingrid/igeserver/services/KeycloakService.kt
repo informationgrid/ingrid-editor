@@ -424,6 +424,18 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private val chars = ('a'..'Z') + ('A'..'Z') + ('0'..'9')
-    private fun generatePassword(): String = List(16) { chars.random() }.joinToString("")
+    private val letters = ('a'..'z')
+    private val capitalLetters = ('A'..'Z')
+    private val digits = ('0'..'9')
+    private val specialChars = listOf('!', '@', '#', '$', '%', '*', '+', '=', ':', ';', '<', '>', ',', '.', '?')
+    private val allChars = letters + capitalLetters + digits + specialChars
+    private val passwordLength = 16
+    private fun generatePassword(): String {
+        // make sure one of each char Type is present
+        val oneOfEach = listOf(letters.random(), capitalLetters.random(), digits.random(), specialChars.random())
+        var password = List(passwordLength - oneOfEach.size) { allChars.random() } + oneOfEach
+        // shuffle to randomize oneOfEach position
+        password = password.shuffled()
+        return password.joinToString("")
+    }
 }
