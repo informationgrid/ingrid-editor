@@ -3,13 +3,8 @@ import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../../dialogs/confirm/confirm-dialog.component";
 import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 import { DocumentService } from "../../../services/document/document.service";
-import { map } from "rxjs/operators";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
 import { IgeDocument } from "../../../models/ige-document";
 
@@ -109,7 +104,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   getDocument(id: string): Promise<IgeDocument> {
-    return this.documentService.load(id, this.forAddress).toPromise();
+    return this.documentService.load(id, this.forAddress, false).toPromise();
   }
 
   getIcon(element) {
