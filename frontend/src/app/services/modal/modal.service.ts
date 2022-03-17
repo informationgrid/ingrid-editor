@@ -18,11 +18,15 @@ export class ModalService {
 
   constructor(private dialog: MatDialog, private ngZone: NgZone) {}
 
-  confirmWith(options: ConfirmDialogData): Observable<boolean> {
+  confirmWith(
+    options: ConfirmDialogData,
+    hasBackdrop = true
+  ): Observable<boolean> {
     return this.dialog
       .open(ConfirmDialogComponent, {
         data: options,
         maxWidth: 700,
+        hasBackdrop: hasBackdrop,
       })
       .afterClosed();
   }
