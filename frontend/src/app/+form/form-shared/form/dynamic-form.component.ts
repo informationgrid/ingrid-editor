@@ -51,9 +51,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
 
-  // set tree node when we don't explicitly click on it (initialization or reset after unsaved changes)
-  activeId: string;
-
   sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
@@ -171,24 +168,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       )
     );
 
-    const externalTreeNodeChange$ = this.query.explicitActiveNode$.pipe(
-      untilDestroyed(this),
-      filter((node) => node !== undefined && node !== null)
-    );
-
     showFormDashboard$.subscribe(() => {
       // when clicking on root node in breadcrumb we need to set opened document to null
       // otherwise the last one will be loaded again
       this.documentService.updateOpenedDocumentInTreestore(null, this.address);
       this.router.navigate([this.address ? "/address" : "/form"]);
-    });
-
-    // only activate tree node (when rejecting unsaved changes dialog)
-    // -> this is handled in sidebar-component now
-    // this is used by the history plugin
-    // TODO: move functionality to sidebar component
-    externalTreeNodeChange$.subscribe((node) => {
-      this.activeId = node.id;
     });
 
     this.handleJsonViewPlugin();
@@ -280,6 +264,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
             (this.readonly =
               !doc.hasWritePermission || doc._pendingDate != null)
         ),
+        tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
         tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
       .subscribe(
@@ -323,7 +308,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private resetForm() {
     this.fields = [];
-    this.activeId = null;
+    this.treeService.selectTreeNode(this.address, null);
     this.form.reset();
     this.documentService.updateOpenedDocumentInTreestore(
       null,
