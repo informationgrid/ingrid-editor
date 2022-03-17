@@ -41,6 +41,10 @@ export class FormMessageComponent implements OnInit {
     this.messageService.message$
       .pipe(untilDestroyed(this))
       .subscribe((type) => this.handleMessage(type));
+
+    this.messageService.clearMessages$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => this.resetAllMessages());
   }
 
   private handleMessage(type: FormMessageType) {
@@ -57,6 +61,11 @@ export class FormMessageComponent implements OnInit {
 
   resetMessage(type: FormMessageType) {
     this.types = this.types.filter((t) => t !== type);
+    this.cdr.markForCheck();
+  }
+
+  resetAllMessages() {
+    this.types = [];
     this.cdr.markForCheck();
   }
 

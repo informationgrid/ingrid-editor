@@ -36,6 +36,7 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
+import { MessageService } from "../../../services/message.service";
 
 @UntilDestroy()
 @Component({
@@ -91,6 +92,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
     private documentService: DocumentService,
     private modalService: ModalService,
+    private messageService: MessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
     private treeQuery: TreeQuery,
@@ -241,6 +243,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.resetForm();
       return;
     }
+
+    // clear potential messages from previous document
+    this.messageService.clearMessages();
 
     this.updateScrollPosition();
 

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { FormMessageType } from "../+form/form-info/form-message/form-message.component";
 import { Subject } from "rxjs";
 
@@ -7,6 +7,7 @@ import { Subject } from "rxjs";
 })
 export class MessageService {
   message$ = new Subject<FormMessageType>();
+  clearMessages$ = new EventEmitter<boolean>();
 
   constructor() {}
 
@@ -22,5 +23,9 @@ export class MessageService {
       severity: "error",
       message,
     });
+  }
+
+  clearMessages() {
+    this.clearMessages$.next();
   }
 }
