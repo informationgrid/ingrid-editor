@@ -249,7 +249,7 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         parentId: String?,
         isAddress: Boolean
-    ): ResponseEntity<List<JsonNode>> {
+    ): ResponseEntity<List<DocumentAbstract>> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
@@ -266,11 +266,26 @@ class DatasetsApiController @Autowired constructor(
         val childDocs = children
             .map { doc ->
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
-                latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
-                latest.data.put(FIELD_PARENT, doc.parent?.id)
-                documentService.convertToJsonNode(latest)
+                convertToDocumentAbstract(doc, latest)
             }
         return ResponseEntity.ok(childDocs)
+    }
+
+    private fun convertToDocumentAbstract(wrapper: DocumentWrapper, document: Document): DocumentAbstract {
+        return DocumentAbstract(
+            wrapper.id.toString(),
+            document.title,
+            document.uuid,
+            wrapper.getState(),
+            wrapper.countChildren > 0,
+            wrapper.getParentUuid(),
+            document.type,
+            document.modified,
+            wrapper.pending_date,
+            wrapper.hasWritePermission,
+            document.hasOnlySubtreeWritePermission,
+        )
+        
     }
 
     private fun getRootDocsFromGroup(
@@ -403,7 +418,6 @@ class DatasetsApiController @Autowired constructor(
     private fun createMetadata(wrapper: DocumentWrapper, doc: Document): DocumentMetadata {
         return DocumentMetadata(
             wrapper.id!!.toString(),
-            wrapper.type!!,
             doc.created!!,
             doc.modified!!,
             doc.createdby!!,

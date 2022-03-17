@@ -214,7 +214,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.docEvents
       .afterSave$(this.address)
-      .subscribe((data) => this.updateFormWithData(data));
+      .subscribe((data) => this.updateFormWithData(data, null));
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
@@ -276,7 +276,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         tap((response) => (this.docMetadata = response.metadata))
       )
       .subscribe(
-        (doc) => this.updateFormWithData(doc.document),
+        (doc) => this.updateFormWithData(doc.document, doc.metadata),
         (error: HttpErrorResponse) =>
           this.handleLoadError(error, previousDocUuid)
       );
@@ -325,7 +325,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private updateFormWithData(data: IgeDocument) {
+  private updateFormWithData(data: IgeDocument, meta: DocumentMetadata) {
     if (data === null) {
       return;
     }
@@ -351,7 +351,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.model = { ...data };
-      this.initializeForm(data.hasWritePermission && !this.readonly);
+      this.initializeForm(meta.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);

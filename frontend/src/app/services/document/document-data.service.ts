@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { DocumentResponse } from "../../models/document-response";
+import { DocumentAbstract } from "../../store/document/document.model";
 
 @Injectable({
   providedIn: "root",
@@ -18,10 +19,13 @@ export class DocumentDataService {
     );
   }
 
-  getChildren(parentId: string, isAddress = false): Observable<any[]> {
+  getChildren(
+    parentId: string,
+    isAddress = false
+  ): Observable<DocumentAbstract[]> {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
-    return this.http.get<any[]>(url);
+    return this.http.get<DocumentAbstract[]>(url);
   }
 
   load(id: string, useUuid = false): Observable<DocumentResponse> {

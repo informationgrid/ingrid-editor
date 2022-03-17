@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.DocumentAbstract
 import de.ingrid.igeserver.model.DocumentResponse
 import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
@@ -74,7 +75,7 @@ interface DatasetsApi {
     fun getChildren(
             principal: Principal,
             @Parameter(description = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(value = "parentId", required = false) parentId: String?,
-            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<JsonNode>>
+            @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(value = "address", required = false) isAddress: Boolean): ResponseEntity<List<DocumentAbstract>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The dataset with the given ID."), ApiResponse(responseCode = "500", description = "Unexpected error")])

@@ -119,10 +119,9 @@ export class DocumentService {
     parentId: string,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => this.mapToDocumentAbstracts(docs, parentId)),
-      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs))
-    );
+    return this.dataService
+      .getChildren(parentId, isAddress)
+      .pipe(tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)));
   }
 
   load(

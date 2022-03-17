@@ -695,14 +695,14 @@ class DocumentService @Autowired constructor(
         // we need to detach entity, otherwise unwanted updated operations can happen when we change this
         // this happened by modifying the data-field and doing a flush, which lead to an update of the document
         // and increase of the version
-        entityManager.detach(objectNode)
+        /*entityManager.detach(objectNode)
 
         objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
         objectNode.wrapperId = wrapper.id
         objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
-        objectNode.catalogIdentifier = catalogId
+        objectNode.catalogIdentifier = catalogId*/
 
         return objectNode
     }
@@ -715,10 +715,10 @@ class DocumentService @Autowired constructor(
         options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
     ): Document {
         // set empty parent fields explicitly to null
-        val parent = docData.data.has(FIELD_PARENT)
+/*        val parent = docData.data.has(FIELD_PARENT)
         if (!parent || docData.data.get(FIELD_PARENT).asText().isEmpty()) {
             docData.data.put(FIELD_PARENT, null as String?)
-        }
+        }*/
 
         // get latest references from links
         if (resolveLinks) {
