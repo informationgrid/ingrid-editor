@@ -40,7 +40,9 @@ export class RedirectFormGuard implements CanActivate {
           address: false,
         });
       }
-      if (!route.params.id) {
+      if (route.params.id) {
+        this.reloadDataset(route.params.id, false);
+      } else {
         const previousOpenedDocId = this.getOpenedDocumentId(false);
         return this.handleNavigation(route, previousOpenedDocId, false);
       }
@@ -52,7 +54,9 @@ export class RedirectFormGuard implements CanActivate {
           address: true,
         });
       }
-      if (!route.params.id) {
+      if (route.params.id) {
+        this.reloadDataset(route.params.id, true);
+      } else {
         const previousOpenedDocId = this.getOpenedDocumentId(true);
         return this.handleNavigation(route, previousOpenedDocId, true);
       }
@@ -73,11 +77,14 @@ export class RedirectFormGuard implements CanActivate {
   ): boolean {
     if (uuid && route.params.id !== uuid) {
       this.router.navigate([forAddress ? "/address" : "/form", { id: uuid }]);
-      this.documentService.reload$.next({
-        uuid: uuid,
-        forAddress: forAddress,
-      });
       return false;
     }
+  }
+
+  private reloadDataset(uuid: string, forAddress: boolean) {
+    this.documentService.reload$.next({
+      uuid: uuid,
+      forAddress: forAddress,
+    });
   }
 }
