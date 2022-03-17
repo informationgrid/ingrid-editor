@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { FrontendGroup, Group } from "../../models/user-group";
-import { Observable, of } from "rxjs";
+import { merge, Observable, of, timer } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
@@ -10,7 +10,7 @@ import {
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
-import { filter, map, tap } from "rxjs/operators";
+import { filter, map, mapTo, mergeAll, takeUntil, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
@@ -107,26 +107,26 @@ export class GroupComponent implements OnInit, AfterViewInit {
             filter((group) => group?.id),
             map((group) => JSON.parse(JSON.stringify(group))) // group needs to be extensible
           )
-          .subscribe((group) => this.updateUserOnPage(group));
+          .subscribe((group) => this.updateGroupOnPage(group));
     });
   }
 
   loadGroup(id: number) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
+        this.previousGroupId = id;
         this.isLoading = true;
         this.form.disable();
         this.groupService
           .getGroup(id)
-          .subscribe((fetchedGroup) => this.updateUserOnPage(fetchedGroup));
+          .subscribe((fetchedGroup) => this.updateGroupOnPage(fetchedGroup));
       } else {
         this.groupService.setActive(this.previousGroupId);
       }
-      this.previousGroupId = this.groupQuery.getActiveId();
     });
   }
 
-  private updateUserOnPage(group: Group) {
+  private updateGroupOnPage(group: Group) {
     if (!group.permissions) {
       group.permissions = new Permissions();
     }
@@ -135,11 +135,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.form.markAsPristine();
     this.form.enable();
     this.isLoading = false;
-    this.groupService.getGroupManager(group.id).subscribe((manager) => {
-      if (this.selectedGroup) this.selectedGroup.manager = manager.login;
-    });
     this.loadGroupUsers(group.id);
-    this.groupService.setActive(group.id);
   }
 
   saveGroup(): void {
@@ -152,7 +148,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
       )
       .subscribe((group) => {
         if (group) {
-          this.updateUserOnPage(group);
+          this.updateGroupOnPage(group);
         }
       });
   }

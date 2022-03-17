@@ -28,10 +28,9 @@ export class GroupService {
   }
 
   getGroup(id: number): Observable<Group> {
-    return this.dataService.getGroup(id).pipe(
-      map((json) => this.prepareGroup([json])[0]),
-      tap((group) => this.groupStore.setActive(group.id))
-    );
+    return this.dataService
+      .getGroup(id)
+      .pipe(map((json) => this.prepareGroup([json])[0]));
   }
 
   getGroupManager(id: number): Observable<User> {

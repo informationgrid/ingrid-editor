@@ -22,10 +22,6 @@ import { filter, take } from "rxjs/operators";
 export class SidebarComponent implements OnInit {
   @Input() address = false;
 
-  @Input() set activeId(id: string) {
-    this.activeTreeNode.next(id);
-  }
-
   @Output() dropped = new EventEmitter();
 
   updateTree = new Subject<TreeAction[]>();
@@ -62,6 +58,8 @@ export class SidebarComponent implements OnInit {
     }
 
     this.setInitialTreeNode();
+
+    this.handleExplicitlySetNodes();
 
     // TODO: sure? Improve performance by keeping store! Make it more intelligent
     //       to avoid node creation from dashboard conflict
@@ -116,7 +114,7 @@ export class SidebarComponent implements OnInit {
     if (handled) {
       this.router.navigate([this.path, { id: selectedDocUuids[0] }]);
     } else {
-      this.activeId = currentId;
+      this.activeTreeNode.next(currentId);
     }
   }
 
@@ -134,5 +132,11 @@ export class SidebarComponent implements OnInit {
   // otherwise adding new node from dashboard would lead to an error
   private clearTreeStore() {
     this.treeStore.set([]);
+  }
+
+  private handleExplicitlySetNodes() {
+    this.treeQuery.explicitActiveNode$.subscribe((node) => {
+      this.activeTreeNode.next(node?.id ?? null);
+    });
   }
 }

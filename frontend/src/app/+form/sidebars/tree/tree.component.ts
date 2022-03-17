@@ -53,6 +53,7 @@ export class TreeComponent implements OnInit {
   @Input() showOnlyFolders = false;
   @Input() enableDrag = false;
   @Input() hideReadOnly = false;
+  @Input() ignoreTreeUpdates = false;
   @Input() searchSuggestions: Observable<DocumentAbstract[]>;
 
   @Output() selected = new EventEmitter<string[]>();
@@ -149,9 +150,11 @@ export class TreeComponent implements OnInit {
     // expanding the path if any
     this.handleTreeExpandToInitialNode();
 
-    this.database.treeUpdates
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => this.handleUpdate(data));
+    if (!this.ignoreTreeUpdates) {
+      this.database.treeUpdates
+        .pipe(untilDestroyed(this))
+        .subscribe((data) => this.handleUpdate(data));
+    }
 
     this.searchSuggestions
       ?.pipe(

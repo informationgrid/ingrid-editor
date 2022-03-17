@@ -104,7 +104,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   getDocument(id: string): Promise<DocumentResponse> {
-    return this.documentService.load(id, this.forAddress).toPromise();
+    return this.documentService.load(id, this.forAddress, false).toPromise();
   }
 
   getIcon(element) {

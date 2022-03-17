@@ -198,11 +198,15 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     );
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);
-      const uuid = this.query.getEntity(nodeId)._uuid;
-      this.router.navigate([
-        this.forAddress ? "/address" : "/form",
-        { id: uuid },
-      ]);
+      if (nodeId) {
+        const uuid = this.query.getEntity(nodeId)._uuid;
+        this.router.navigate([
+          this.forAddress ? "/address" : "/form",
+          { id: uuid },
+        ]);
+      } else {
+        this.router.navigate([this.forAddress ? "/address" : "/form"]);
+      }
     }
   }
 }

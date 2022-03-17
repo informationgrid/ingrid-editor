@@ -22,7 +22,7 @@ export class BasePage {
 
   // TODO: use this function for all select inputs
   static selectOptionAsync(selectDataCyName: string, label: string, placeholder = 'Bitte wählen ...') {
-    cy.get(`[data-cy="${selectDataCyName}"]`).contains(label).click();
+    cy.contains(`[data-cy="${selectDataCyName}"] div`, label, { timeout: 8000 }).click();
   }
 }
 
