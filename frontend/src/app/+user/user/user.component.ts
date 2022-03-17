@@ -75,6 +75,7 @@ export class UserComponent
     const groupId = +groupIdString;
     const doReload = this.groupQuery.getActiveId() === groupId;
     this.groupService.getGroup(groupId).subscribe((group) => {
+      this.groupService.setActive(groupId);
       this.router.navigate(["/manage/group"]);
 
       if (doReload) this.groupService.forceReload$.next();
