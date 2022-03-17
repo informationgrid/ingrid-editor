@@ -618,7 +618,7 @@ export class DocumentService {
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: doc._parent,
+        _parent: doc._parent?.toString() ?? null,
         _type: doc._type,
         _modified: doc._modified,
         _pendingDate: doc._pendingDate,
