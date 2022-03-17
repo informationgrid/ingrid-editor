@@ -80,4 +80,5 @@ if (hasProperty('buildProfile')) {
 clean {
   // do nothing to improve speed
   // delete packageNpmApp.archivePath
+  delete "./target"
 }
