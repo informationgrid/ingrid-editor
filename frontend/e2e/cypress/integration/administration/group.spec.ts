@@ -224,6 +224,16 @@ describe('Group', () => {
     );
   });
 
+  it('should show correct bread crumbs of documents in group view', () => {
+    const groupName = 'group_10';
+    const docName = 'Datum_Ebene_2_3';
+    const docPath = 'Daten/Neue Testdokumente';
+    AdminGroupPage.selectGroup(groupName);
+    cy.contains('permission-table .mat-row', docName).within(_ => {
+      cy.get('ige-breadcrumb').invoke('text').should('equal', docPath);
+    });
+  });
+
   it('should show correct information in group header', () => {
     /* 1. last-edited-date */
     // change an existing group and make sure the "last-edited" date is updated

@@ -391,9 +391,9 @@ describe('Research Page', () => {
     });
   });
 
-  it('time-related search witch an interval that spans one day should return only documents belonging to this date (#3040)', () => {
+  it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
     ResearchPage.setDate('start', '22.07.2021');
-    ResearchPage.setDate('end', '23.07.2021');
+    ResearchPage.setDate('end', '22.07.2021');
     ResearchPage.waitForSearch();
 
     // iterate through every result to check date
