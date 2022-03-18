@@ -140,7 +140,11 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
-    this.dragManager = new DragNDropUtils(this.treeControl, this.docBehaviour);
+    this.dragManager = new DragNDropUtils(
+      this.treeControl,
+      this.docBehaviour,
+      this.forAddresses
+    );
     //previous code used to be in constructor
 
     this.database.hideReadOnly = this.hideReadOnly;
