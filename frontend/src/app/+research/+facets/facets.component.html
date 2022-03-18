@@ -115,6 +115,7 @@
                         matInput
                         placeholder="Von"
                         [matDatepicker]="startDate"
+                        [matDatepickerFilter]="filterForStartDate"
                     />
                     <mat-datepicker-toggle
                         matSuffix
@@ -128,6 +129,7 @@
                         matInput
                         placeholder="Bis"
                         [matDatepicker]="endDate"
+                        [matDatepickerFilter]="filterForEndDate"
                     />
                     <mat-datepicker-toggle
                         matSuffix

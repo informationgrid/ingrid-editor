@@ -78,6 +78,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private allFacets: Facets;
   private boxes: Rectangle[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
+  private timeGroupId: string;
 
   form: FormGroup = this.fb.group({});
 
@@ -148,6 +149,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       if (group.viewComponent === "RADIO") {
         // TODO: implement
       } else if (group.viewComponent === "TIMESPAN") {
+        this.timeGroupId = group.id;
         this.form.addControl(
           group.id,
           this.fb.group({
@@ -269,4 +271,13 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private getSpatialKey() {
     return Object.keys((<FormGroup>this.form.get("spatial")).controls)[0];
   }
+
+  filterForStartDate = (d: Date | null): boolean => {
+    const endDate = this.form.get(this.timeGroupId).get("end").value;
+    return endDate === null || d <= endDate;
+  };
+
+  filterForEndDate = (d: Date | null): boolean => {
+    return d >= this.form.get(this.timeGroupId).get("start").value;
+  };
 }
