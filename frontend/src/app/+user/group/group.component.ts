@@ -136,6 +136,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.form.enable();
     this.isLoading = false;
     this.loadGroupUsers(group.id);
+    this.groupService.setActive(group.id);
   }
 
   saveGroup(): void {
