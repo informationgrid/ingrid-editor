@@ -58,7 +58,7 @@ class ImportService {
 
         // TODO: should we fail if there's no UUID? Imported document might not have a unique ID!?
         val uuid = document.get(FIELD_UUID)?.asText()
-        
+
         // check if document already exists
         val wrapper = try {
             if (uuid == null) {
@@ -75,8 +75,8 @@ class ImportService {
 
         val docObj = documentService.convertToDocument(document)
 
-        val createDocument = if (wrapper == null || options.options == "create_under_target") {
-            val doc = documentService.createDocument(
+        val createDocumentWrapper = if (wrapper == null || options.options == "create_under_target") {
+            documentService.createDocument(
                 principal,
                 catalogId,
                 document,
@@ -84,7 +84,6 @@ class ImportService {
                 false,
                 false
             )
-            documentService.convertToDocument(doc)
         } else {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
@@ -92,8 +91,8 @@ class ImportService {
             documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj, false)
         }
 
-        // TODO: return created document instead of transformed JSON
-        return Pair(createDocument, importer.typeInfo.id)
+        val latestVersion = documentService.getLatestDocument(createDocumentWrapper)
+        return Pair(latestVersion, importer.typeInfo.id)
     }
 
     private fun handleOptions(

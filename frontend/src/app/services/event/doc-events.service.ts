@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { Observable, Subject } from "rxjs";
 import { filter } from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
+import { DocumentResponse } from "../../models/document-response";
 
 export interface BeforePublishData {
   errors: any[];
@@ -14,7 +15,7 @@ export interface BeforePublishData {
 export class DocEventsService {
   private _beforePublish$ = new Subject<any>();
   private _beforeSave$ = new Subject<void>();
-  private _afterSave$ = new Subject<any>();
+  private _afterSave$ = new Subject<DocumentResponse>();
   private _afterLoadAndSet$ = new Subject<any>();
 
   constructor(private router: Router) {}
@@ -31,7 +32,7 @@ export class DocEventsService {
     );
   }
 
-  afterSave$(address: boolean): Observable<IgeDocument> {
+  afterSave$(address: boolean): Observable<DocumentResponse> {
     return this._afterSave$.pipe(filter(() => this.belongsToThisPage(address)));
   }
 
@@ -56,11 +57,11 @@ export class DocEventsService {
     this._beforeSave$.next();
   }
 
-  sendAfterSave(data: IgeDocument) {
+  sendAfterSave(data: DocumentResponse) {
     this._afterSave$.next(data);
   }
 
-  sendAfterLoadAndSet(data: IgeDocument) {
+  sendAfterLoadAndSet(data: DocumentResponse) {
     this._afterSave$.next(data);
   }
 }

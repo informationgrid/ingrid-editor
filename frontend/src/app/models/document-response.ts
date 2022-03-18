@@ -11,6 +11,7 @@ export interface DocumentMetadata {
   _pendingDate: Date;
   _hasChildren: boolean;
   _state: DocumentState;
+  _version: number;
   hasWritePermission: boolean;
   hasOnlySubtreeWritePermission: boolean;
 }

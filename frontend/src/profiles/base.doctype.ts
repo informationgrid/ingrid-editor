@@ -20,6 +20,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     {
       key: "_type",
     },
+    // additional fields added from metadata needed for correct saving
+    {
+      key: "_id",
+    },
     {
       key: "_version",
     },

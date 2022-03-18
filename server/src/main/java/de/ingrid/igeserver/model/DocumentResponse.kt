@@ -5,6 +5,7 @@ import java.time.OffsetDateTime
 import java.util.*
 data class DocumentResponse(val document: JsonNode, val metadata: DocumentMetadata)
 
+// TODO: rename fields with no underscore!
 data class DocumentMetadata(
     val _id: String,
     val _created: OffsetDateTime,
@@ -15,11 +16,8 @@ data class DocumentMetadata(
     val _pendingDate: OffsetDateTime?,
     val _hasChildren: Boolean,
     val _state: String,
+    val _version: Int,
     val hasWritePermission: Boolean,
-    val hasOnlySubtreeWritePermission: Boolean,
-    /*
-    FIELD_VERSION,
-            "_wrapperId",
-            */
+    val hasOnlySubtreeWritePermission: Boolean
 )
 

@@ -188,17 +188,17 @@ export class DocumentService {
   }
 
   postSaveActions(
-    json: any,
+    response: DocumentResponse,
     isNewDoc: boolean,
     path: string[],
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    this.docEvents.sendAfterSave(json);
+    this.docEvents.sendAfterSave(response);
 
-    const parentId = json._parent;
-    const info = this.mapToDocumentAbstracts([json], parentId)[0];
+    const parentId = response.metadata._parent;
+    const info = this.mapToDocumentAbstracts([response], parentId)[0];
 
     // after renaming a folder the folder must still be expandable
     if (!isNewDoc) {

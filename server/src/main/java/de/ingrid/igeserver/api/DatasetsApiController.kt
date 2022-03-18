@@ -43,13 +43,14 @@ class DatasetsApiController @Autowired constructor(
         data: JsonNode,
         address: Boolean,
         publish: Boolean
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentResponse> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val parent = data.get(FIELD_PARENT)
         val parentId = if (parent == null || parent.isNull) null else parent.asInt()
         val resultDoc = documentService.createDocument(principal, catalogId, data, parentId, address, publish)
-        return ResponseEntity.ok(resultDoc)
+        val doc = prepareDocumentForFrontend(resultDoc, publish, catalogId);
+        return ResponseEntity.ok(doc)
     }
 
     /**
@@ -64,10 +65,10 @@ class DatasetsApiController @Autowired constructor(
         unpublish: Boolean,
         cancelPendingPublishing: Boolean,
         revert: Boolean
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentResponse> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val resultDoc = if (revert) {
+        val resultDocWrapper = if (revert) {
             documentService.revertDocument(principal, catalogId, id)
         } else if (unpublish) {
             documentService.unpublishDocument(principal, catalogId, id)
@@ -77,8 +78,8 @@ class DatasetsApiController @Autowired constructor(
             val doc = documentService.convertToDocument(data)
             documentService.updateDocument(principal, catalogId, id, doc, publish, publishDate)
         }
-        val node = documentService.convertToJsonNode(resultDoc)
-        return ResponseEntity.ok(node)
+        val doc = prepareDocumentForFrontend(resultDocWrapper, publish, catalogId)
+        return ResponseEntity.ok(doc)
     }
 
     @Transactional
@@ -163,14 +164,16 @@ class DatasetsApiController @Autowired constructor(
         ).forEach { objectNode.remove(it) }
 
         val copiedParent =
-            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false) as ObjectNode
+            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false)
+        val latestVersion = documentService.getLatestDocument(copiedParent)
+        val copiedParentJson = documentService.convertToJsonNode(latestVersion) as ObjectNode
 
         if (options.includeTree) {
-            val count = handleCopySubTree(principal, catalogId, copiedParent, origParentId, options, isAddress)
-            copiedParent.put(FIELD_HAS_CHILDREN, count > 0)
+            val count = handleCopySubTree(principal, catalogId, copiedParentJson, origParentId, options, isAddress)
+            copiedParentJson.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
-        return copiedParent
+        return copiedParentJson
     }
 
     private fun handleCopySubTree(
@@ -285,7 +288,7 @@ class DatasetsApiController @Autowired constructor(
             wrapper.hasWritePermission,
             document.hasOnlySubtreeWritePermission,
         )
-        
+
     }
 
     private fun getRootDocsFromGroup(
@@ -395,24 +398,30 @@ class DatasetsApiController @Autowired constructor(
             // TODO: catalogId is not necessary anymore
             val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
 
-            val doc =
-                documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
-            
-            val rawDocument = doc.data.apply { 
-                put("title", doc.title)
-                put(FIELD_DOCUMENT_TYPE, doc.type)
-            }
-            
-            return ResponseEntity.ok(
-                DocumentResponse(
-                    rawDocument,
-                    createMetadata(wrapper, doc)
-                )
-            )
+            return ResponseEntity.ok(prepareDocumentForFrontend(wrapper, publish ?: false, catalogId))
         } catch (ex: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")
         }
 
+    }
+
+    private fun prepareDocumentForFrontend(
+        wrapper: DocumentWrapper,
+        publish: Boolean,
+        catalogId: String
+    ): DocumentResponse {
+        val doc =
+            documentService.getLatestDocument(wrapper, onlyPublished = publish, catalogId = catalogId)
+
+        val rawDocument = doc.data.apply {
+            put("title", doc.title)
+            put(FIELD_DOCUMENT_TYPE, doc.type)
+        }
+
+        return DocumentResponse(
+            rawDocument,
+            createMetadata(wrapper, doc)
+        )
     }
 
     private fun createMetadata(wrapper: DocumentWrapper, doc: Document): DocumentMetadata {
@@ -426,6 +435,7 @@ class DatasetsApiController @Autowired constructor(
             wrapper.pending_date,
             wrapper.countChildren > 0,
             wrapper.getState(),
+            doc.version!!,
             wrapper.hasWritePermission,
             wrapper.hasOnlySubtreeWritePermission
         )

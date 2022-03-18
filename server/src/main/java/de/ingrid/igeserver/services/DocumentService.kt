@@ -235,7 +235,7 @@ class DocumentService @Autowired constructor(
         parentId: Int?,
         address: Boolean = false,
         publish: Boolean = false
-    ): JsonNode {
+    ): DocumentWrapper {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
@@ -279,10 +279,7 @@ class DocumentService @Autowired constructor(
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
         // also run update pipes!
-        val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
-        val latestDocument = getLatestDocumentVersion(postWrapper, false)
-
-        return convertToJsonNode(latestDocument)
+        return runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
     }
 
     /**
@@ -374,7 +371,7 @@ class DocumentService @Autowired constructor(
         data: Document,
         publish: Boolean = false,
         publishDate: Date? = null,
-    ): Document {
+    ): DocumentWrapper {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
         // run pre-update pipe(s)
@@ -397,8 +394,7 @@ class DocumentService @Autowired constructor(
 
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
-            val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
-            return getLatestDocument(postWrapper, catalogId = catalogId)
+            return runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
@@ -521,7 +517,7 @@ class DocumentService @Autowired constructor(
         docWrapperRepo.save(markedDoc)
     }
 
-    fun revertDocument(principal: Principal, catalogId: String, id: Int): Document {
+    fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentWrapper {
 
         // remove draft version
         val wrapper = getWrapperByDocumentId(id)
@@ -548,10 +544,10 @@ class DocumentService @Autowired constructor(
         val postRevertPayload = PostRevertPayload(docType, doc, updatedWrapper)
         postRevertPipe.runFilters(postRevertPayload, filterContext)
 
-        return postRevertPayload.document
+        return postRevertPayload.wrapper
     }
 
-    fun unpublishDocument(principal: Principal, catalogId: String, id: Int): Document {
+    fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentWrapper {
         // remove publish
         val wrapper = getWrapperByDocumentId(id)
         assert(wrapper.published != null)
@@ -581,10 +577,10 @@ class DocumentService @Autowired constructor(
         val postUnpublishPayload = PostUnpublishPayload(docType, doc, wrapper)
         postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
 
-        return postUnpublishPayload.document
+        return postUnpublishPayload.wrapper
     }
 
-    fun cancelPendingPublishing(principal: Principal, catalogId: String, id: Int): Document {
+    fun cancelPendingPublishing(principal: Principal, catalogId: String, id: Int): DocumentWrapper {
         // remove pending
         val wrapper = getWrapperByDocumentId(id)
         assert(wrapper.pending != null)
@@ -598,7 +594,7 @@ class DocumentService @Autowired constructor(
         wrapper.pending_date = null
         docWrapperRepo.save(wrapper)
 
-        return getLatestDocument(wrapper, catalogId = catalogId)
+        return wrapper
     }
 
     fun removePendingVersion(id: Int): DocumentWrapper {

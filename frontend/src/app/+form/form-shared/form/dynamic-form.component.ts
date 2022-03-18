@@ -214,7 +214,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.docEvents
       .afterSave$(this.address)
-      .subscribe((data) => this.updateFormWithData(data, null));
+      .subscribe((data) =>
+        this.updateFormWithData(data.document, data.metadata)
+      );
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
@@ -350,7 +352,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.profileQuery.getProfile(profile).hasOptionalFields;
       }
 
-      this.model = { ...data };
+      this.model = { ...data, _id: meta._id, _version: meta._version };
       this.initializeForm(meta.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
