@@ -4,6 +4,7 @@ import { Tree } from '../../pages/tree.partial';
 import { Address, AddressPage } from '../../pages/address.page';
 import { CatalogsTabmenu } from '../../pages/base.page';
 import { CodelistPage } from '../../pages/codelist.page';
+import { Menu } from '../../pages/menu';
 
 describe('Behaviours', () => {
   beforeEach(() => {
@@ -119,19 +120,19 @@ describe('Behaviours', () => {
     });
 
     it('should show and hide the create folder button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Folder Plugin', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewFolder).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Folder Plugin', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
     });
 

@@ -1,5 +1,6 @@
 import { BasePage, CatalogsTabmenu } from './base.page';
 import { DocumentPage } from './document.page';
+import { Menu } from './menu';
 
 export class BehavioursPage extends BasePage {
   static checkPageContains(cssItem: string, wordlist: string[]) {
@@ -13,7 +14,7 @@ export class BehavioursPage extends BasePage {
   }
 
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
-    cy.get(DocumentPage.Sidemenu.Katalogverwaltung).click({ force: true });
+    Menu.switchTo('CATALOG');
     // use a longer timeout since element is currently animating error could occur
     cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
   }
