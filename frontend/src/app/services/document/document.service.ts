@@ -197,7 +197,7 @@ export class DocumentService {
 
     this.docEvents.sendAfterSave(response);
 
-    const parentId = response.metadata._parent;
+    const parentId = response.metadata.parent;
     const info = this.mapToDocumentAbstracts([response], parentId)[0];
 
     // after renaming a folder the folder must still be expandable
@@ -359,7 +359,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
-      map((json) => this.mapToDocumentAbstracts([json], json.metadata._parent)),
+      map((json) => this.mapToDocumentAbstracts([json], json.metadata.parent)),
       map((json) => {
         json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
         return json;
@@ -612,16 +612,16 @@ export class DocumentService {
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc.metadata._id ? doc.metadata._id.toString() : null,
+        id: doc.metadata.id ? doc.metadata.id.toString() : null,
         icon: this.profileService.getDocumentIcon(doc.document),
         title: doc.document.title || "-Kein Titel-",
         _uuid: doc.document._uuid,
-        _state: doc.metadata._state,
-        _hasChildren: doc.metadata._hasChildren,
-        _parent: doc.metadata._parent?.toString() ?? null,
+        _state: doc.metadata.state,
+        _hasChildren: doc.metadata.hasChildren,
+        _parent: doc.metadata.parent?.toString() ?? null,
         _type: doc.document._type,
-        _modified: doc.metadata._modified,
-        _pendingDate: doc.metadata._pendingDate,
+        _modified: doc.metadata.modified,
+        _pendingDate: doc.metadata.pendingDate,
         hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.metadata.hasOnlySubtreeWritePermission ?? false,
@@ -641,7 +641,7 @@ export class DocumentService {
   }
 
   private updateTreeStore(doc: DocumentResponse, address: boolean) {
-    const absDoc = this.mapToDocumentAbstracts([doc], doc.metadata._parent)[0];
+    const absDoc = this.mapToDocumentAbstracts([doc], doc.metadata.parent)[0];
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 

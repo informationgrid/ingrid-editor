@@ -267,13 +267,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           (doc) =>
             (this.readonly =
               !doc.metadata.hasWritePermission ||
-              doc.metadata._pendingDate != null)
+              doc.metadata.pendingDate != null)
         ),
         tap((doc) =>
-          this.treeService.selectTreeNode(this.address, doc.metadata._id)
+          this.treeService.selectTreeNode(this.address, doc.metadata.id)
         ),
         tap((doc) =>
-          this.loadSubscription.push(this.updateBreadcrumb(doc.metadata._id))
+          this.loadSubscription.push(this.updateBreadcrumb(doc.metadata.id))
         ),
         tap((response) => (this.docMetadata = response.metadata))
       )
@@ -352,7 +352,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.profileQuery.getProfile(profile).hasOptionalFields;
       }
 
-      this.model = { ...data, _id: meta._id, _version: meta._version };
+      this.model = { ...data, _id: meta.id, _version: meta.version };
       this.initializeForm(meta.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {

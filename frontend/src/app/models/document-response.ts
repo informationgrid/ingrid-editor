@@ -1,19 +1,19 @@
 import { DocumentState, IgeDocument } from "./ige-document";
 
 export interface DocumentMetadata {
-  _id: string;
-  _type: string;
-  _created: Date;
-  _modified: Date;
-  _createdBy: string;
-  _modifiedBy: string;
-  _parent: string;
-  _pendingDate: Date;
-  _hasChildren: boolean;
-  _state: DocumentState;
-  _version: number;
-  hasWritePermission: boolean;
+  created: Date;
+  createdBy: string;
+  hasChildren: boolean;
   hasOnlySubtreeWritePermission: boolean;
+  hasWritePermission: boolean;
+  id: string;
+  modified: Date;
+  modifiedBy: string;
+  parent: string;
+  pendingDate: Date;
+  state: DocumentState;
+  type: string;
+  version: number;
 }
 
 export interface DocumentResponse {

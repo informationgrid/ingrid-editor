@@ -60,7 +60,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     this._model = value;
     this.docIcon = this.profileService.getDocumentIcon(value);
     this.state = DocumentUtils.getStateClass(
-      this._metadata?._state,
+      this._metadata?.state,
       value._type
     );
   }
@@ -68,7 +68,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   _metadata: DocumentMetadata;
   @Input() set(metadata: DocumentMetadata) {
     this.state = DocumentUtils.getStateClass(
-      metadata?._state,
+      metadata?.state,
       this._model?._type
     );
   }
