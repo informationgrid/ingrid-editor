@@ -113,6 +113,7 @@ abstract class EntityType {
     fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         val latestDocument = documentService.getLatestDocument(wrapper, options.onlyPublished, catalogId = catalogId)
+        latestDocument.state = wrapper.getState()
         val latestDocumentJson = documentService.convertToJsonNode(latestDocument)
 
         if (options.forExport) {
@@ -151,7 +152,7 @@ abstract class EntityType {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalogIdentifier!!, uuid, options)
+                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalog?.identifier!!, uuid, options)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
