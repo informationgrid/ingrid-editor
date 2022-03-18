@@ -90,8 +90,7 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))';
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
-    // give application time to show the api-created document
-    AddressPage.visit();
+    cy.wait(1000);
     DocumentPage.visit();
     Tree.openNode(['api-' + docName]);
 

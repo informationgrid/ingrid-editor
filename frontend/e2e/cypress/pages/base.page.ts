@@ -24,6 +24,14 @@ export class BasePage {
   static selectOptionAsync(selectDataCyName: string, label: string, placeholder = 'Bitte wählen ...') {
     cy.contains(`[data-cy="${selectDataCyName}"] div`, label, { timeout: 8000 }).click();
   }
+
+  static selectOption(selectDataCyName: string, label: string) {
+    cy.get(`[data-cy=${selectDataCyName}]`).click();
+    // wait for animation
+    cy.wait(300);
+    cy.get('mat-option').contains(label).click();
+    cy.get('[data-cy=spatial-dialog-type] .mat-select-value-text').should('have.text', label);
+  }
 }
 
 export enum CatalogsTabmenu {

@@ -53,6 +53,7 @@ export class AddressPage extends DocumentPage {
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789', index: number = 0) {
     cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
+    // TODO: replace with BasePage.selectOption()
     cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').eq(index).click();
     cy.get('mat-option').contains(chooseContact).click();
     cy.get('[data-cy=Kontakt] ').find('input').eq(index).type(connection);

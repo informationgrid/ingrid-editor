@@ -1,5 +1,5 @@
 import { DocumentPage } from './document.page';
-import { Utils } from './utils';
+import { BasePage } from './base.page';
 
 export class enterMcloudDocTestData {
   static setDescription(text: string) {
@@ -70,6 +70,7 @@ export class enterMcloudDocTestData {
       .click();
 
     if (data?.type) {
+      // TODO: replace with BasePage.selectOption()
       cy.get('mat-dialog-container mat-select').click();
       cy.get('mat-option').contains(data.type).click();
       cy.wait(500);
@@ -102,9 +103,7 @@ export class enterMcloudDocTestData {
   }
 
   static selectSpatialType(selectType: string) {
-    cy.get('[data-cy=spatial-dialog-type]').click();
-    cy.get('mat-option').contains(selectType).click();
-    cy.contains('[data-cy=spatial-dialog-type] .mat-select-value-text', selectType);
+    BasePage.selectOption('spatial-dialog-type', selectType);
   }
 
   static setSpatialBbox(title: string, locationText: string) {
@@ -160,7 +159,7 @@ export class enterMcloudDocTestData {
 
   static setOpenedSpatialWKT(title: string, locationText: string) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
-    this.selectSpatialType('WKT');
+    this.selectSpatialType('Raumbezug (WKT)');
     cy.get('[data-cy=spatial-dialog-wkt]')
       .clear()
       .type(locationText)

@@ -43,6 +43,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static addNewUserRole(roleTitle: string) {
+    // TODO: replace with BasePage.selectOption()
     cy.get('ige-new-user-dialog mat-select').click();
     cy.get('mat-option').contains(roleTitle).click();
   }
@@ -130,6 +131,7 @@ export class AdminUserPage extends BasePage {
 
   static addGroupToUser(groupName: string) {
     // TODO: remove wait when we find another way to wait for field to be initialized
+    // TODO: replace with BasePage.selectOption()
     cy.wait(200);
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
     cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
@@ -192,6 +194,7 @@ export class AdminUserPage extends BasePage {
   static changeManager(name: string) {
     cy.get('#formUser [data-mat-icon-name=Mehr]').click();
     cy.get('.mat-menu-content').children().first().click();
+    // TODO: replace with BasePage.selectOption()
     cy.get('ige-edit-manager-dialog').find('.mat-select-arrow').click();
     cy.get('[role="listbox"]').should('be.visible').contains('mat-option', name).click();
     cy.intercept('GET', /api\/users\//).as('setManager');
@@ -263,6 +266,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static changeUserRole(newRole: string, confirm: boolean = false) {
+    // TODO: replace with BasePage.selectOption()
     cy.get('[data-cy="Rolle"]').click();
     cy.get('mat-option').contains(newRole).click();
     if (confirm) {

@@ -16,6 +16,7 @@ export class BehavioursPage extends BasePage {
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
     Menu.switchTo('CATALOG');
     // use a longer timeout since element is currently animating error could occur
+    cy.wait(500);
     cy.get('ige-catalog-settings a.mat-tab-link:nth-child(' + tabmenu + ')', { timeout: 10000 }).click();
   }
 

@@ -26,6 +26,7 @@ export class ExportPage {
   }
 
   static selectOption(option: string) {
+    // TODO: replace with BasePage.selectOption()
     cy.get('form mat-select').click();
     cy.get('mat-option').contains(option).click();
   }

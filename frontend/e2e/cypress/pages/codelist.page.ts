@@ -31,6 +31,7 @@ export class CodelistPage {
   }
 
   static chooseDataFormat(format: Formats) {
+    // TODO: replace with BasePage.selectOption()
     cy.get('mat-select').click();
     cy.get('mat-option').contains(format).click();
   }
