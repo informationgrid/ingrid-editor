@@ -130,6 +130,7 @@
                         placeholder="Bis"
                         [matDatepicker]="endDate"
                         [matDatepickerFilter]="filterForEndDate"
+                        (dateChange)="modifyEndDate()"
                     />
                     <mat-datepicker-toggle
                         matSuffix
