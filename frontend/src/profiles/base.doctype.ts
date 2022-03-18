@@ -25,6 +25,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       key: "_id",
     },
     {
+      key: "_uuid",
+    },
+    {
       key: "_version",
     },
   ];

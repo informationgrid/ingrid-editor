@@ -13,6 +13,7 @@ export interface DocumentMetadata {
   pendingDate: Date;
   state: DocumentState;
   type: string;
+  uuid: string;
   version: number;
 }
 

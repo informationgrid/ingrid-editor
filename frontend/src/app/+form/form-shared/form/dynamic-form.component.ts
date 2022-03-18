@@ -352,7 +352,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.profileQuery.getProfile(profile).hasOptionalFields;
       }
 
-      this.model = { ...data, _id: meta.id, _version: meta.version };
+      this.model = {
+        ...data,
+        _id: meta.id,
+        _uuid: meta.uuid,
+        _version: meta.version,
+      };
       this.initializeForm(meta.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {

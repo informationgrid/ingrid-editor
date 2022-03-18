@@ -7,10 +7,11 @@ data class DocumentResponse(val document: JsonNode, val metadata: DocumentMetada
 
 data class DocumentMetadata(
     val id: String,
+    val uuid: String,
     val created: OffsetDateTime,
     val modified: OffsetDateTime,
-    val createdBy: String,
-    val modifiedBy: String,
+    val createdBy: String?,
+    val modifiedBy: String?,
     val parent: String?,
     val pendingDate: OffsetDateTime?,
     val hasChildren: Boolean,

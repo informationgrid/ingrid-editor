@@ -119,9 +119,10 @@ export class DocumentService {
     parentId: string,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
-    return this.dataService
-      .getChildren(parentId, isAddress)
-      .pipe(tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)));
+    return this.dataService.getChildren(parentId, isAddress).pipe(
+      map((docs) => this.addExtraInfoToChildren(docs)),
+      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs))
+    );
   }
 
   load(
@@ -819,5 +820,12 @@ export class DocumentService {
       entity.hasOnlySubtreeWritePermission,
       !entity.hasWritePermission
     );
+  }
+
+  private addExtraInfoToChildren(docs: DocumentAbstract[]) {
+    docs.forEach(
+      (doc) => (doc.icon = this.profileService.getDocumentIcon(doc))
+    );
+    return docs;
   }
 }

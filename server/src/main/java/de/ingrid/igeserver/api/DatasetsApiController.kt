@@ -427,11 +427,12 @@ class DatasetsApiController @Autowired constructor(
     private fun createMetadata(wrapper: DocumentWrapper, doc: Document): DocumentMetadata {
         return DocumentMetadata(
             wrapper.id!!.toString(),
+            wrapper.uuid,
             doc.created!!,
             doc.modified!!,
-            doc.createdby!!,
-            doc.modifiedby!!,
-            wrapper.getParentUuid(),
+            doc.createdby,
+            doc.modifiedby,
+            wrapper.parent?.id?.toString(),
             wrapper.pending_date,
             wrapper.countChildren > 0,
             wrapper.getState(),
