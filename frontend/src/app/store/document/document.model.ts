@@ -14,6 +14,7 @@ export interface DocumentAbstract {
   _uuid: any;
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
+  isRoot: boolean;
 }
 
 export const ADDRESS_ROOT_NODE: Partial<DocumentAbstract> = {

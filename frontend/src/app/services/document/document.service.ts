@@ -625,6 +625,7 @@ export class DocumentService {
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
+        isRoot: parentId === null,
       };
     });
   }

@@ -61,11 +61,8 @@ export class DynamicDatabase {
     if (forceFromServer) {
       children = [];
     } else {
-      if (isAddress) {
-        children = this.addressTreeQuery.getChildren(parentId);
-      } else {
-        children = this.treeQuery.getChildren(parentId);
-      }
+      const query = isAddress ? this.addressTreeQuery : this.treeQuery;
+      children = query.getChildren(parentId);
     }
 
     if (children.length > 0) {

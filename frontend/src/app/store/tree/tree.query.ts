@@ -43,7 +43,9 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
   }
 
   getChildren(parent: string): DocumentAbstract[] {
-    return this.getAll().filter((doc) => doc._parent === parent);
+    return this.getAll().filter((doc) =>
+      parent === null ? doc.isRoot : doc._parent === parent
+    );
   }
 
   getParents(id: string): ShortTreeNode[] {

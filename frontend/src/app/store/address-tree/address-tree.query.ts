@@ -39,7 +39,7 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
 
   getChildren(parent: string): DocumentAbstract[] {
     return this.getAll()
-      .filter((doc) => doc._parent === parent)
+      .filter((doc) => (parent === null ? doc.isRoot : doc._parent === parent))
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
