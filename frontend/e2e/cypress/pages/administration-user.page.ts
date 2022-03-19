@@ -231,18 +231,27 @@ export class AdminUserPage extends BasePage {
     // open up header
     cy.get('.user-title .menu-button').eq(0).click();
     // verify information
-    cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
+    cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ')').within(() => {
       cy.get('div').eq(1).should('have.text', value);
     });
   }
 
-  static getInfoInHeader(key: keysInHeader, headerOpen: boolean = false): Chainable<String> {
+  static getInfoInHeader(key: keysInHeader, headerOpen = false, fromTitleAttribute = false): Chainable<String> {
     if (!headerOpen) {
       cy.get('.user-title .menu-button').eq(0).click();
     }
-    return cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ') span').then(node => {
-      return node.text();
-    });
+    if (fromTitleAttribute) {
+      return cy
+        .get('[data-cy=headerMoreData] > div:nth-child(' + key + ') span')
+        .invoke('attr', 'title')
+        .then(title => {
+          return title ?? '';
+        });
+    } else {
+      return cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ') span').then(node => {
+        return node.text();
+      });
+    }
   }
 
   static checkRoleSymbol(username: string, iconname: string) {

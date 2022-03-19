@@ -511,7 +511,7 @@ describe('User', () => {
 
   it('should update user information (#2972)', () => {
     const dateOfToday = Utils.getFormattedDate(new Date());
-    // log in as some user
+    // log in as some user to update last login information
     cy.kcLogout();
     cy.kcLogin('autor');
     // log in as admin and make sure "last logged in" contains right information
@@ -520,12 +520,12 @@ describe('User', () => {
     AdminUserPage.visit();
     AdminUserPage.selectUser('autor');
     AdminUserPage.verifyInfoInHeader(keysInHeader.LastLogin, dateOfToday);
-    AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true).then(oldEditDate => {
+    AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(oldEditDate => {
       // change user profile and make sure information is updated accordingly
       AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
-      AdminUserPage.verifyInfoInHeader(keysInHeader.EditDate, dateOfToday);
-      // check that the edit date has changed
-      AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true).should('not.equal', oldEditDate);
+      AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(newEditDate => {
+        cy.wrap(oldEditDate).should('not.eql', newEditDate);
+      });
     });
   });
 });
