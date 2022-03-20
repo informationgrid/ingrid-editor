@@ -6,7 +6,7 @@ describe('Toolbar behavior', () => {
     cy.kcLogout();
     cy.kcLogin('user').as('tokens');
     cy.visit('/form');
-    cy.get('mat-toolbar').should('be.visible');
+    cy.get('mat-toolbar', { timeout: 10000 }).should('be.visible');
   });
 
   it('initially only create folder and create doc are enabled', () => {
