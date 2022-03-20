@@ -1,5 +1,7 @@
 import { FacetGroup, Facets } from "./research.service";
 
+const almost24hours = 24 * 60 * 60 * 1000 - 1;
+
 export class BackendQuery {
   private readonly term: string;
   private clauses: any;
@@ -76,7 +78,10 @@ export class BackendQuery {
   ) {
     switch (facetGroup.viewComponent) {
       case "TIMESPAN":
-        return [groupValue.start, groupValue.end];
+        return [
+          groupValue.start,
+          BackendQuery.modifyToEndOfDay(groupValue.end),
+        ];
       case "SPATIAL":
         const spatial = groupValue[facetGroup.filter[0].id].value;
         return [spatial.lat1, spatial.lon1, spatial.lat2, spatial.lon2];
@@ -104,5 +109,16 @@ export class BackendQuery {
     } else {
       return activeItemsFromGroup;
     }
+  }
+
+  /**
+   * When setting the end date, then add almost a whole day to search till the end of the day
+   * @param endDate
+   */
+  private static modifyToEndOfDay(endDate) {
+    if (endDate) {
+      return new Date(new Date(endDate).getTime() + almost24hours);
+    }
+    return endDate;
   }
 }

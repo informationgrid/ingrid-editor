@@ -62,7 +62,9 @@ export class TabSearchComponent implements OnInit {
       )
       .subscribe((entity: FacetQuery) => {
         this.researchService.setActiveQuery(null);
-        this.form.setValue(entity.model);
+        // add a little delay in case facet component is still initializing (coming from saved searches)
+        // so we get the correct value before search is started
+        setTimeout(() => this.form.setValue(entity.model));
       });
   }
 
@@ -134,14 +136,7 @@ export class TabSearchComponent implements OnInit {
   private async initFacets() {
     return this.researchService
       .getQuickFilter()
-      .pipe(
-        tap((filters) => (this.facets = filters)),
-        // tap(() => this.updateFilterGroup()),
-        tap(() => {
-          // this.isInitialized.next(true);
-          // this.updateSpatialFromModel(this._parameter);
-        })
-      )
+      .pipe(tap((filters) => (this.facets = filters)))
       .toPromise();
   }
 }

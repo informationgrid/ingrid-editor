@@ -27,8 +27,6 @@ export interface FacetUpdate {
   fieldsWithParameters: { [x: string]: any[] };
 }
 
-const almost24hours = 24 * 60 * 60 * 1000 - 1;
-
 @UntilDestroy()
 @Component({
   selector: "ige-facets",
@@ -282,18 +280,4 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   filterForEndDate = (d: Date | null): boolean => {
     return d >= this.form.get(this.timeGroupId).get("start").value;
   };
-
-  /**
-   * When setting the end date, then add almost a whole day to search till the end of the day
-   * @param e
-   */
-  modifyEndDate(e) {
-    const timeControl = this.form.get(this.timeGroupId);
-    const endDate = timeControl.get("end").value;
-    if (!endDate) return;
-
-    timeControl
-      .get("end")
-      .setValue(new Date(endDate.getTime() + almost24hours));
-  }
 }
