@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   ViewChild,
@@ -41,6 +42,10 @@ export class SelectTypeComponent extends FieldType implements OnInit {
   filteredOptions: SelectOptionUi[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
+  constructor(private cdr: ChangeDetectorRef) {
+    super();
+  }
+
   ngOnInit() {
     super.ngOnInit();
 
@@ -73,6 +78,12 @@ export class SelectTypeComponent extends FieldType implements OnInit {
         tap(() => this.updateSelectField(this.formControl.value))
       )
       .subscribe();
+
+    // during publish make sure this control is showing the error
+    setTimeout(() => {
+      this.formControl.markAsTouched();
+      this.cdr.markForCheck();
+    });
   }
 
   private updateSelectField(value) {
