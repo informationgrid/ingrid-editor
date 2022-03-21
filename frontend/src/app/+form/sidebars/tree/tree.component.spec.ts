@@ -580,6 +580,7 @@ describe("TreeComponent", () => {
             _pendingDate: null,
             _parent: "",
             hasWritePermission: true,
+            isRoot: true,
           },
           {
             id: "2",
@@ -593,6 +594,7 @@ describe("TreeComponent", () => {
             _pendingDate: null,
             _parent: "",
             hasWritePermission: true,
+            isRoot: true,
           },
         ],
       });
@@ -767,6 +769,7 @@ describe("TreeComponent", () => {
           _pendingDate: null,
           _modified: false,
           icon: "",
+          isRoot: !options.parent,
         },
       ],
       parent: options.parent || null,
