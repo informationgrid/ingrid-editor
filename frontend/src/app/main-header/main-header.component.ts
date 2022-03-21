@@ -1,4 +1,6 @@
 import { Component, OnInit } from "@angular/core";
+import { Clipboard } from "@angular/cdk/clipboard";
+import { DatePipe } from "@angular/common";
 import {
   ConfigService,
   UserInfo,
@@ -33,7 +35,9 @@ export class MainHeaderComponent implements OnInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private clipboard: Clipboard,
+    private datepipe: DatePipe
   ) {}
 
   ngOnInit() {
@@ -66,5 +70,22 @@ export class MainHeaderComponent implements OnInit {
 
   openProfileSettings() {
     this.router.navigate(["/profile"]);
+  }
+
+  copy() {
+    let versionDate = this.datepipe.transform(
+      this.version.date,
+      "dd.LL.yyyy, HH:mm"
+    );
+
+    this.clipboard.copy(
+      this.version.version +
+        "\n" +
+        versionDate +
+        "\n" +
+        "GIT Commit ID" +
+        "\n" +
+        this.version.commitId
+    );
   }
 }
