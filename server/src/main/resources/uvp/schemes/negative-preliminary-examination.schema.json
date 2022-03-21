@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$ref": "#/definitions/AdmissionProcedure",
+  "$ref": "#/definitions/NegativePreliminaryExamination",
   "definitions": {
-    "AdmissionProcedure": {
+    "NegativePreliminaryExamination": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -11,7 +11,7 @@
           "format": "uuid"
         },
         "_type": {
-          "const": "UvpAdmissionProcedureDoc"
+          "const": "UvpNegativePreliminaryExaminationDoc"
         },
         "title": {
           "type": "string"
@@ -34,21 +34,19 @@
           },
           "minItems": 1
         },
-        "receiptDate": {
+        "decisionDate": {
           "type": "string",
           "format": "date-time"
         },
         "eiaNumber": {
           "$ref": "#/definitions/KeyValue"
         },
-        "prelimAssessment": {
-          "type": "boolean"
-        },
-        "processingSteps": {
-          "type": "array",
+        "uvpNegativeDecisionDocs": {
+          "type": ["array"],
           "items": {
-            "$ref": "#/definitions/ProcessingStep"
-          }
+            "$ref": "#/definitions/Doc"
+          },
+          "minItems": 1
         }
       },
       "required": [
@@ -58,11 +56,11 @@
         "description",
         "publisher",
         "spatial",
-        "receiptDate",
+        "decisionDate",
         "eiaNumber",
-        "prelimAssessment"
+        "uvpNegativeDecisionDocs"
       ],
-      "title": "AdmissionProcedure"
+      "title": "NegativePreliminaryExamination"
     },
     "KeyValue": {
       "type": "object",
@@ -82,125 +80,6 @@
         }
       },
       "title": "KeyValue"
-    },
-    "ProcessingStep": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "enum": [
-            "publicDisclosure",
-            "publicHearing",
-            "decisionOfAdmission"
-          ]
-        }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "publicDisclosure"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "publicDisclosure"
-              },
-              "disclosureDate": {
-                "$ref": "#/definitions/Date"
-              },
-              "announcementDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "applicationDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "reportsRecommendationDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "furtherDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "publicHearing"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "publicHearing"
-              },
-              "publicHearingDate": {
-                "$ref": "#/definitions/Date"
-              },
-              "considerationDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "decisionOfAdmission"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "decisionOfAdmission"
-              },
-              "decisionDate": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "approvalDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "decisionDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "required": [],
-      "title": "ProcessingStep"
     },
     "Doc": {
       "type": "object",

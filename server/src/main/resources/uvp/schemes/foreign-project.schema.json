@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$ref": "#/definitions/AdmissionProcedure",
+  "$ref": "#/definitions/ForeignProject",
   "definitions": {
-    "AdmissionProcedure": {
+    "ForeignProject": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -11,7 +11,7 @@
           "format": "uuid"
         },
         "_type": {
-          "const": "UvpAdmissionProcedureDoc"
+          "const": "UvpForeignProjectDoc"
         },
         "title": {
           "type": "string"
@@ -34,20 +34,10 @@
           },
           "minItems": 1
         },
-        "receiptDate": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "eiaNumber": {
-          "$ref": "#/definitions/KeyValue"
-        },
-        "prelimAssessment": {
-          "type": "boolean"
-        },
         "processingSteps": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ProcessingStep"
+            "$ref": "#/definitions/ProcessingStepForeign"
           }
         }
       },
@@ -57,12 +47,9 @@
         "title",
         "description",
         "publisher",
-        "spatial",
-        "receiptDate",
-        "eiaNumber",
-        "prelimAssessment"
+        "spatial"
       ],
-      "title": "AdmissionProcedure"
+      "title": "ForeignProject"
     },
     "KeyValue": {
       "type": "object",
@@ -83,13 +70,12 @@
       },
       "title": "KeyValue"
     },
-    "ProcessingStep": {
+    "ProcessingStepForeign": {
       "type": "object",
       "properties": {
         "type": {
           "enum": [
             "publicDisclosure",
-            "publicHearing",
             "decisionOfAdmission"
           ]
         }
@@ -143,32 +129,6 @@
           "if": {
             "properties": {
               "type": {
-                "const": "publicHearing"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "publicHearing"
-              },
-              "publicHearingDate": {
-                "$ref": "#/definitions/Date"
-              },
-              "considerationDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
                 "const": "decisionOfAdmission"
               }
             }
@@ -200,7 +160,7 @@
         }
       ],
       "required": [],
-      "title": "ProcessingStep"
+      "title": "ProcessingStepForeign"
     },
     "Doc": {
       "type": "object",

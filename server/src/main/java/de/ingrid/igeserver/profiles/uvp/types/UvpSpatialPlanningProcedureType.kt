@@ -14,6 +14,8 @@ class UvpSpatialPlanningProcedureType @Autowired constructor() : EntityType() {
 
     val log = logger()
 
+    override val jsonSchema = "/uvp/schemes/spatial-or-line.schema.json"
+
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
     }

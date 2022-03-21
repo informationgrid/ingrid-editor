@@ -14,6 +14,8 @@ class UvpForeignProjectType @Autowired constructor() : EntityType() {
 
     val log = logger()
 
+    override val jsonSchema = "/uvp/schemes/foreign-project.schema.json"
+
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
     }

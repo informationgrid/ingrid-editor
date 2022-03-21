@@ -7,24 +7,21 @@ import de.ingrid.igeserver.schema.SchemaUtils.Companion.validate
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
-class UvpSchema : AnnotationSpec() {
+class UvpForeignProjectSchema : AnnotationSpec() {
 
-    private val schema = "/uvp/schemes/admission-procedure.schema.json"
+    private val schema = "/uvp/schemes/foreign-project.schema.json"
     private val requiredFields = listOf(
         "_uuid",
         "_type",
         "title",
         "description",
         "publisher",
-        "spatial",
-        "receiptDate",
-        "eiaNumber",
-        "prelimAssessment"
+        "spatial"
     )
 
     @Test
     fun minimal() {
-        val json = getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
+        val json = getJsonFileContent("/export/uvp/foreign-project.minimal.json")
         val result = validate(json, schema)
         result.valid shouldBe true
     }

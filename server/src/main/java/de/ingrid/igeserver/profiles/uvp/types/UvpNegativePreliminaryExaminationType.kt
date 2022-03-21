@@ -14,6 +14,8 @@ class UvpNegativePreliminaryExaminationType @Autowired constructor() : EntityTyp
 
     val log = logger()
 
+    override val jsonSchema = "/uvp/schemes/negative-preliminary-examination.schema.json"
+
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
     }
