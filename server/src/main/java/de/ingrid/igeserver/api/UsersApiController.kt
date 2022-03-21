@@ -96,7 +96,8 @@ open class UsersApiController : UsersApi {
                 user.email,
                 user.firstName,
                 user.lastName,
-                password
+                password,
+                user.login
             )
 
         }
@@ -313,7 +314,7 @@ open class UsersApiController : UsersApi {
 
         val result = catalogService.getUserOfCatalog(id)
             .map { it.userId }
-        
+
         return ResponseEntity.ok(result)
     }
 
