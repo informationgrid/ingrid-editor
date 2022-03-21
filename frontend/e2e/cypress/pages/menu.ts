@@ -39,7 +39,7 @@ export class Menu {
         cy.get('.main-page-title').should('contain', 'Daten');
         return;
       case 'ADDRESSES':
-        cy.get('.main-page-title').should('contain', 'Adressen');
+        cy.get('.main-page-title').should('contain', 'Adressen', { timeout: 6000 });
         return;
       case 'RESEARCH':
         cy.url().should('contain', '/research/');

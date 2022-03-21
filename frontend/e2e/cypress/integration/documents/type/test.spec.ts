@@ -10,8 +10,7 @@ describe('addresses inside test catalogue', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('ige3').as('tokens');
-    cy.visit('/form');
-    cy.get('mat-toolbar').should('be.visible');
+    DocumentPage.visit();
   });
 
   it('should create a new address inside catalogue of type test', () => {
@@ -19,8 +18,7 @@ describe('addresses inside test catalogue', () => {
     const lastName = 'Meier';
     const title = `${lastName}, ${firstName}`;
 
-    // we should use cy.visit because it is a first time in the test we go to address page
-    AddressPage.visit();
+    Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
     AddressPage.CreateDialog.fill(new Address('', firstName, lastName), ['Adressen'], true);
     cy.contains('button', 'Anlegen').click();
