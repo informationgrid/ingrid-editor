@@ -19,7 +19,8 @@ describe('addresses inside test catalogue', () => {
     const lastName = 'Meier';
     const title = `${lastName}, ${firstName}`;
 
-    Menu.switchTo('ADDRESSES');
+    // we should use cy.visit because it is a first time in the test we go to address page
+    AddressPage.visit();
     AddressPage.CreateDialog.open();
     AddressPage.CreateDialog.fill(new Address('', firstName, lastName), ['Adressen'], true);
     cy.contains('button', 'Anlegen').click();

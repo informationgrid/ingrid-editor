@@ -363,7 +363,7 @@ describe('Research Page', () => {
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
       ResearchPage.clearDateField('start');
       ResearchPage.waitForSearch();
-      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+      ResearchPage.getSearchResultCount().should('be.gte', temporallyFiltered);
     });
   });
 

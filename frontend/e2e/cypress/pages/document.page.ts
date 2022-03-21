@@ -103,7 +103,7 @@ export class DocumentPage extends BasePage {
       beforeLength = length;
       cy.log('nodes count before: ' + length);
       this.fillCreateDialog(title);
-      cy.get('mat-tree mat-tree-node').should('have.length.at.least', beforeLength + 1);
+      cy.get('mat-tree mat-tree-node').should('have.length.at.least', beforeLength + 1, { timeout: 6000 });
     });
   }
 
