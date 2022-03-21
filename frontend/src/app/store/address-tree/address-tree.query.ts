@@ -43,12 +43,13 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  getParents(id: string): ShortTreeNode[] {
+  getParents(id: string): DocumentAbstract[] {
     const parents = [];
-    let parent = this.getEntity(id)._parent;
+    let entity = this.getEntity(id);
+    let parent = this.getEntity(entity._parent);
     while (parent) {
       parents.push(parent);
-      parent = this.getEntity(parent)._parent;
+      parent = this.getEntity(parent._parent);
     }
     return parents;
   }

@@ -266,6 +266,8 @@ export class CopyCutPastePlugin extends Plugin {
 
   private isChildOfSelectedParent(id: string, selection: string[]): boolean {
     const parents = this.query.getParents(id);
-    return parents.some((parent) => selection.indexOf(parent.id) !== -1);
+    return parents.some(
+      (parent) => selection.indexOf(parent.id.toString()) !== -1
+    );
   }
 }

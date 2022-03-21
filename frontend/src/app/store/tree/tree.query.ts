@@ -48,7 +48,7 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
     );
   }
 
-  getParents(id: string): ShortTreeNode[] {
+  getParents(id: string): DocumentAbstract[] {
     const parents = [];
     let entity = this.getEntity(id);
     let parent = this.getEntity(entity._parent);

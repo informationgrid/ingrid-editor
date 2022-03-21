@@ -131,17 +131,27 @@ export class PublishPlugin extends SaveBase {
     this.docEvents.sendBeforePublish(validation);
     const formIsInvalid = this.formStateService.getForm().invalid;
 
+    const allParentsPublished = this.checkForAllParentsPublished();
+
     const hasOtherErrors = validation.errors.length > 0;
-    if (formIsInvalid || hasOtherErrors) {
-      const errors = this.calculateErrors(this.getForm().controls).join(",");
-      console.warn("Invalid fields:", errors);
-      if (hasOtherErrors) console.warn("Other errors:", validation.errors);
+
+    if (!allParentsPublished) {
       this.modalService.showJavascriptError(
-        "Es müssen alle Felder korrekt ausgefüllt werden."
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann."
       );
       return false;
+    } else {
+      if (formIsInvalid || hasOtherErrors) {
+        const errors = this.calculateErrors(this.getForm().controls).join(",");
+        console.warn("Invalid fields:", errors);
+        if (hasOtherErrors) console.warn("Other errors:", validation.errors);
+        this.modalService.showJavascriptError(
+          "Es müssen alle Felder korrekt ausgefüllt werden."
+        );
+        return false;
+      }
+      return true;
     }
-    return true;
   }
 
   publish() {
@@ -305,5 +315,12 @@ export class PublishPlugin extends SaveBase {
 
   private unpublish(id: string) {
     this.documentService.unpublish(id, this.forAddress).subscribe();
+  }
+
+  private checkForAllParentsPublished() {
+    const id = this.getForm().value._id;
+    return this.tree
+      .getParents(id)
+      .every((entity) => entity._type === "FOLDER" || entity._state === "P");
   }
 }
