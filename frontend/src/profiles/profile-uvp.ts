@@ -5,7 +5,7 @@ import { ProfileService } from "../app/services/profile.service";
 import { SpatialPlanningProcedureDoctype } from "./uvp/spatial-planning-procedure.doctype";
 import { NegativePreliminaryExaminationDoctype } from "./uvp/negative-preliminary-examination.doctype";
 import { ForeignProjectsDoctype } from "./uvp/foreign-projects.doctype";
-import { UvpAddressDoctype } from "./uvp/uvp-address.doctype";
+import { UvpPersonDoctype } from "./uvp/uvp-person.doctype";
 import { UvpOrganisationDoctype } from "./uvp/uvp-organisation.doctype";
 
 @Component({
@@ -19,7 +19,7 @@ class UVPComponent {
     spatialPlanningProcedureDoctype: SpatialPlanningProcedureDoctype,
     negativePreliminaryExaminationDoctype: NegativePreliminaryExaminationDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
-    address: UvpAddressDoctype,
+    address: UvpPersonDoctype,
     organisation: UvpOrganisationDoctype
   ) {
     service.registerProfiles([

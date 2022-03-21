@@ -5,7 +5,7 @@ import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { map } from "rxjs/operators";
 
-export class AddressDoctype extends BaseDoctype {
+export class PersonDoctype extends BaseDoctype {
   label = "Person";
 
   iconClass = "Freie-Adresse";
