@@ -20,6 +20,19 @@ export class SelectOption {
     this.label = label;
     this.value = value;
   }
+
+  forBackend(): { key: string; value?: string } {
+    if (this.value === null || this.value === undefined) {
+      return {
+        key: null,
+        value: this.label,
+      };
+    } else {
+      return {
+        key: this.value,
+      };
+    }
+  }
 }
 
 export interface SelectOptionUi extends SelectOption {
@@ -128,10 +141,7 @@ export class CodelistService {
 
   mapToOptions(codelists: Codelist[]): SelectOptionUi[] {
     return codelists
-      .map((cl) => ({
-        value: cl.id,
-        label: cl.name,
-      }))
+      .map((cl) => new SelectOption(cl.id, cl.name))
       .sort((a, b) => a.label.localeCompare(b.label));
   }
 

@@ -30,6 +30,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   parameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new FormControl();
+  filterCtrl: FormControl;
   private manualUpdate = new Subject<string>();
 
   constructor() {
@@ -37,6 +38,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.to.asSelect && this.to.showSearch) {
+      this.filterCtrl = new FormControl();
+      this.filterCtrl.valueChanges
+        .pipe(untilDestroyed(this))
+        .subscribe((value) => this.manualUpdate.next(value));
+    }
+
     if (this.to.options instanceof Observable) {
       this.to.options
         .pipe(
@@ -77,12 +85,18 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   addToList(option: SelectOptionUi) {
     // ignore duplicate entries
-    if (option.value === "" || this.model.indexOf(option.value) !== -1) {
+    const containsCodelistItem =
+      option.value &&
+      this.model.map((item) => item.key).indexOf(option.value) !== -1;
+    const containsFreeEntry =
+      option.label &&
+      this.model.map((item) => item.value).indexOf(option.label) !== -1;
+    if (option.value === "" || containsCodelistItem || containsFreeEntry) {
       return;
     }
 
     const prepared = new SelectOption(option.value, option.label);
-    this.add(null, prepared);
+    this.add(null, prepared.forBackend());
 
     this.inputControl.setValue(null);
 
@@ -99,19 +113,26 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  private _filter(option: SelectOptionUi): SelectOptionUi[] {
+  private _filter(option: SelectOptionUi | string): SelectOptionUi[] {
     if (!option) {
       return this.parameterOptions;
     }
-    return this.parameterOptions?.filter(
-      (originOption) => originOption.value !== option.value
-    );
+
+    if (typeof option === "string") {
+      return this.parameterOptions?.filter(
+        (originOption) => originOption.label.indexOf(option) !== -1
+      );
+    } else {
+      return this.parameterOptions?.filter(
+        (originOption) => originOption.value !== option.value
+      );
+    }
   }
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      option.disabled = (<SelectOptionUi[]>this.model).some(
-        (modelOption) => modelOption.value === option.value
+      option.disabled = (<{ key; value? }[]>this.model).some(
+        (modelOption) => modelOption.key === option.value
       );
       return option;
     });
@@ -133,10 +154,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   // TODO: do not use template function!
-  getParameter(option: SelectOption) {
+  getParameter(option: { key; value? }) {
     return (
-      this.parameterOptions?.find((param) => param.value + "" === option.value)
-        ?.label ?? option.label
+      this.parameterOptions?.find((param) => param.value === option.key)
+        ?.label ?? option.value
     );
   }
 
@@ -152,5 +173,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     } else {
       this.selector.close();
     }
+  }
+
+  addFreeEntry(value: string) {
+    // check if really free entry
+    const option = this.parameterOptions?.find(
+      (param) => param.label === value
+    );
+    this.addToList(option ?? new SelectOption(null, value));
   }
 }

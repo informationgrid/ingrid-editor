@@ -3,7 +3,7 @@ import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { BehaviorSubject, Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { catchError, map, tap } from "rxjs/operators";
-import { SelectOptionUi } from "../codelist/codelist.service";
+import { SelectOption, SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
@@ -20,9 +20,9 @@ import { AuthenticationFactory } from "../../security/auth.factory";
 })
 export class UserService {
   availableRoles: SelectOptionUi[] = [
-    { label: "Katalog-Administrator", value: "cat-admin" },
-    { label: "Metadaten-Administrator", value: "md-admin" },
-    { label: "Autor", value: "author" },
+    new SelectOption("cat-admin", "Katalog-Administrator"),
+    new SelectOption("md-admin", "Metadaten-Administrator"),
+    new SelectOption("author", "Autor"),
   ];
 
   roleIcon = {
@@ -134,7 +134,7 @@ export class UserService {
     return this.getExternalUsers().pipe(
       map((users) =>
         users.map((user) => {
-          return { label: user.login, value: user.login };
+          return new SelectOption(user.login, user.login);
         })
       )
     );

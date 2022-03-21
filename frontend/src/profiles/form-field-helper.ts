@@ -70,6 +70,23 @@ export class FormFieldHelper {
     };
   }
 
+  addRepeatList(id, label, options?) {
+    return {
+      key: id,
+      type: "repeatList",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: label,
+        placeholder: "Bitte wählen...",
+        options: options?.options,
+        codelistId: options?.codelistId,
+        required: options?.required,
+        asSelect: options?.asSelect,
+        showSearch: options?.showSearch,
+      },
+    };
+  }
+
   addAutocomplete(id, label, options?) {
     return {
       key: id,

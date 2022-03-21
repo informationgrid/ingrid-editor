@@ -36,11 +36,15 @@
     class="width-100"
 >
     <mat-select
-        #selector
         [placeholder]="to.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
     >
+        <mat-option *ngIf="to.showSearch">
+            <ngx-mat-select-search
+                [formControl]="filterCtrl"
+            ></ngx-mat-select-search>
+        </mat-option>
         <mat-option
             *ngFor="let option of filteredOptions | async"
             [value]="option"
@@ -68,9 +72,7 @@
             matInput
             [formControl]="inputControl"
             [required]="to.required && formControl.invalid"
-            (keydown.enter)="
-                addToList({ value: null, label: repeatListInput.value })
-            "
+            (keydown.enter)="addFreeEntry(repeatListInput.value)"
             [matAutocomplete]="auto"
         />
         <mat-autocomplete

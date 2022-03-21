@@ -3,6 +3,7 @@ import { AddressType, Doctype } from "../app/services/formular/doctype";
 import { merge, Observable } from "rxjs";
 import {
   CodelistService,
+  SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
@@ -83,7 +84,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     field: string
   ): Observable<SelectOptionUi[]> {
     return this.getCodelistForSelect(codelistId, field).pipe(
-      map((cl) => [{ label: "", value: undefined }].concat(cl))
+      map((cl) => [new SelectOption(undefined, "")].concat(cl))
     );
   }
 
@@ -151,12 +152,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
 
       if (fieldKey) {
-        this.fieldsMap.push({
-          value: fieldKey,
-          label:
-            field.templateOptions?.externalLabel ||
-            field.templateOptions?.label,
-        });
+        this.fieldsMap.push(
+          new SelectOption(
+            fieldKey,
+            field.templateOptions?.externalLabel || field.templateOptions?.label
+          )
+        );
       }
     });
   }
