@@ -17,5 +17,6 @@ export class UvpPersonDoctype extends PersonDoctype {
   ) {
     super(storageService, codelistService, codelistQuery);
     this.addressType = "person";
+    this.hideAdministrativeArea = true;
   }
 }

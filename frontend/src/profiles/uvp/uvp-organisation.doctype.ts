@@ -17,5 +17,6 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
   ) {
     super(storageService, codelistService, codelistQuery);
     this.addressType = "organization";
+    this.hideAdministrativeArea = true;
   }
 }

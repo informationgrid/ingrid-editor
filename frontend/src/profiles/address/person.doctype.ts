@@ -12,8 +12,11 @@ export class PersonDoctype extends BaseDoctype {
 
   isAddressType = true;
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  hideCountryAndAdministrativeArea = false;
+  hideAdministrativeArea = false;
+
+  documentFields() {
+    const fields = <FormlyFieldConfig[]>[
       {
         wrappers: ["section"],
         templateOptions: {
@@ -260,6 +263,18 @@ export class PersonDoctype extends BaseDoctype {
         ],
       },
     ];
+
+    if (this.hideAdministrativeArea) {
+      const country = fields[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
+      country.className = null;
+      delete fields[1].fieldGroup[1].fieldGroup[3];
+      fields[1].fieldGroup[1].fieldGroup.push(country);
+    }
+    if (this.hideCountryAndAdministrativeArea) {
+      delete fields[1].fieldGroup[1].fieldGroup[3];
+    }
+    return fields;
+  }
 
   constructor(
     storageService: DocumentService,

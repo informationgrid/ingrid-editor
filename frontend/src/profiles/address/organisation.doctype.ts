@@ -3,7 +3,6 @@ import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { IgeDocument } from "../../app/models/ige-document";
 import { map } from "rxjs/operators";
 
 export abstract class OrganisationDoctype extends BaseDoctype {
@@ -13,8 +12,11 @@ export abstract class OrganisationDoctype extends BaseDoctype {
 
   isAddressType = true;
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  hideCountryAndAdministrativeArea = false;
+  hideAdministrativeArea = false;
+
+  documentFields() {
+    const fields = <FormlyFieldConfig[]>[
       this.addSection("Organisationsdaten", [
         {
           wrappers: ["panel"],
@@ -110,11 +112,44 @@ export abstract class OrganisationDoctype extends BaseDoctype {
                 }),
               ],
             },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addSelect("administrativeArea", null, {
+                  fieldLabel: "Verwaltungsgebiet",
+                  showSearch: true,
+                  wrappers: null,
+                  className: "flex-1",
+                  options: this.getCodelistForSelect(110, "administrativeArea"),
+                  codelistId: 110,
+                }),
+                this.addSelect("country", null, {
+                  fieldLabel: "Land",
+                  showSearch: true,
+                  wrappers: null,
+                  className: "flex-1",
+                  options: this.getCodelistForSelect(6200, "country"),
+                  codelistId: 6200,
+                }),
+              ],
+            },
           ],
           { fieldGroupClassName: null }
         ),
       ]),
     ];
+
+    if (this.hideAdministrativeArea) {
+      const country = fields[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
+      country.className = null;
+      delete fields[1].fieldGroup[1].fieldGroup[3];
+      fields[1].fieldGroup[1].fieldGroup.push(country);
+    }
+    if (this.hideCountryAndAdministrativeArea) {
+      delete fields[1].fieldGroup[1].fieldGroup[3];
+    }
+    return fields;
+  }
 
   protected constructor(
     storageService: DocumentService,
