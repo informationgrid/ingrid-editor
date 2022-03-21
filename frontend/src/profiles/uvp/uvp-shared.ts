@@ -44,7 +44,7 @@ export class UvpShared extends BaseDoctype {
           } else {
             return `<a href="${
               this.configService.getConfiguration().backendUrl
-            }upload/${form.get("_uuid").value}/${
+            }upload/${form.root.get("_uuid").value}/${
               link.uri
             }" class="no-text-transform">${link.uri}</a>`;
           }
