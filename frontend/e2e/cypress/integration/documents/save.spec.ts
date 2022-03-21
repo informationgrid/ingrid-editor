@@ -246,6 +246,7 @@ describe('General create documents/folders', () => {
 
       // check for the order after reload
       cy.reload();
+      cy.get(mCLOUDSelector, { timeout: 10000 }).should('exist');
 
       DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category3, 0);
       DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category2, 2);
@@ -279,6 +280,8 @@ describe('General create documents/folders', () => {
 
       // reload and make sure of ordering
       cy.reload();
+      cy.get(openDataSelector, { timeout: 10000 }).should('exist');
+
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory3, 0);
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory2, 2);
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 1);
@@ -301,6 +304,8 @@ describe('General create documents/folders', () => {
 
       // reload and make sure of ordering
       cy.reload();
+      cy.get(addressSelector, { timeout: 10000 }).should('exist');
+
       DocumentPage.checkOfExistingItem(addressSelector, address2, 0);
       DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
     });
@@ -347,7 +352,9 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload({ timeout: 10000 });
+      cy.reload();
+      cy.get("[data-cy='Zeitbezug der Ressource']", { timeout: 10000 }).should('exist');
+
       DocumentPage.scrollToSection('Zeitbezüge');
 
       DocumentPage.checkOfExistingItem(
@@ -389,8 +396,11 @@ describe('General create documents/folders', () => {
       DocumentPage.dragItem(downloadSelector, '[data-cy="Downloads-table"] mat-row ', 0, 0, 100);
 
       DocumentPage.saveDocument();
+
       // // reload and make sure of ordering
-      cy.reload({ timeout: 10000 });
+      cy.reload();
+      cy.get(downloadSelector, { timeout: 10000 }).should('exist');
+
       DocumentPage.scrollToSection('mCLOUD');
 
       DocumentPage.checkOfExistingItem(downloadSelector, 'youtube', 0);

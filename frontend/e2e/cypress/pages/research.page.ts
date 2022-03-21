@@ -277,7 +277,8 @@ export class ResearchPage {
   }
 
   static waitForSearch() {
-    cy.get('.mat-spinner', { timeout: 10000 }).should('exist');
+    // wait a bit for search to be started and only wait for spinner is gone
+    cy.wait(500);
     cy.get('.mat-spinner').should('not.exist');
   }
 }

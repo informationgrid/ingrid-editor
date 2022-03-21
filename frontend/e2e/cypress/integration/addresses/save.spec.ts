@@ -319,10 +319,11 @@ describe('General create addresses/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload({ timeout: 10000 });
+      cy.reload();
+      cy.get('[data-cy=Kontakt]', { timeout: 10000 }).should('exist');
 
-      DocumentPage.checkOfExistingItem('[data-cy="Kontakt"] ige-repeat .mat-input-element', contact2, 2, true);
-      DocumentPage.checkOfExistingItem('[data-cy="Kontakt"] ige-repeat .mat-input-element', contact3, 1, true);
+      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact2, 2, true);
+      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact3, 1, true);
     });
   });
 });

@@ -45,7 +45,7 @@ export class AddressPage extends DocumentPage {
   }
 
   static visit() {
-    cy.intercept('GET', 'api/tree/children?address=true').as('treeCallAddress');
+    cy.intercept({ method: 'GET', url: 'api/tree/children?address=true', times: 1 }).as('treeCallAddress');
     cy.visit('address');
     cy.wait('@treeCallAddress', { timeout: 10000 });
   }
@@ -53,10 +53,10 @@ export class AddressPage extends DocumentPage {
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789', index: number = 0) {
     cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
-    // TODO: replace with BasePage.selectOption()
+    // TODO: replace with BasePage.selectOption() -> difficult since, there are more than one select boxes
     cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').eq(index).click();
     cy.get('mat-option').contains(chooseContact).click();
-    cy.get('[data-cy=Kontakt] ').find('input').eq(index).type(connection);
+    cy.get('[data-cy=Kontakt] ').find('input').eq(index).clear().type(connection);
   }
 
   static addAddressToTestDocument(path: string[], addressType: string) {
