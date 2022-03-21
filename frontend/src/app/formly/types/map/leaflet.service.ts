@@ -49,9 +49,9 @@ export class LeafletService {
   }
 
   private defaultLayer = () =>
-    new TileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    new TileLayer("//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png", {
       attribution:
-        '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+        '&copy; <a href="https://openstreetmap.de">OpenStreetMap</a> contributors',
     });
 
   constructor() {
