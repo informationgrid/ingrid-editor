@@ -8,9 +8,13 @@ export class LineAndSpatialShared extends UvpShared {
         this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
           required: true,
         }),
-        this.addAddressCard("publisher", "Ansprechpartner", {
-          required: true,
-        }),
+        this.addAddressCard(
+          "publisher",
+          "Kontaktdaten der verfahrensführenden Behörde",
+          {
+            required: true,
+          }
+        ),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
