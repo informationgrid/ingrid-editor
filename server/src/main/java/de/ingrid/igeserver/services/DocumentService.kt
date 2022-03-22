@@ -353,15 +353,18 @@ class DocumentService @Autowired constructor(
     }
 
     fun publishPendingDocuments(principal: Principal, catalogId: String) {
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+
         docWrapperRepo.findAllPending(catalogId)
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
             .forEach {
                 try {
-                    updateDocument(principal, catalogId, it.id!!, it.pending!!, true)
-                    removePendingVersion(it.id!!)
-                } catch (ex: PostSaveException) {
-                    log.error("Error during post publishing document: ${it.id}", ex)
-                    removePendingVersion(it.id!!)
+                    updateWrapper(it, true, null, it.pending!!)
+                    docWrapperRepo.saveAndFlush(it)
+                    val docType = getDocumentType(it.type!!)
+                    runPostUpdatePipes(docType, it.published!!, it, filterContext, true, null)
+                } catch (e: Exception) {
+                    log.error("Error during publishing pending document: ${it.id}", e)
                 }
             }
 
@@ -393,11 +396,12 @@ class DocumentService @Autowired constructor(
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             // update wrapper to document association
-            updateWrapper(preUpdatePayload, publish, publishDate, updatedDoc)
+            updateWrapper(preUpdatePayload.wrapper, publish, publishDate, updatedDoc)
 
             // save wrapper
             val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
-            val postWrapper = runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
+            val postWrapper =
+                runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
             return getLatestDocument(postWrapper, catalogId = catalogId)
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -409,12 +413,12 @@ class DocumentService @Autowired constructor(
     }
 
     private fun updateWrapper(
-        preUpdatePayload: PreUpdatePayload,
+        documentWrapper: DocumentWrapper,
         publish: Boolean,
         publishDate: Date? = null,
         updatedDoc: Document
     ) {
-        with(preUpdatePayload.wrapper) {
+        with(documentWrapper) {
             if (publish && publishDate == null) {
                 // move published version to archive
                 if (published != null) {
@@ -431,6 +435,8 @@ class DocumentService @Autowired constructor(
 
                 // remove draft version
                 draft = null
+                pending = null
+                pending_date = null
             } else if (publish && publishDate != null) {
                 // add delayed publishing
                 pending = updatedDoc
