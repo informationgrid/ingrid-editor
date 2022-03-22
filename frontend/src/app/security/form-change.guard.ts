@@ -36,12 +36,12 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
-    // TODO: unsubscribe from form plugins
     if (
       currentState.url.indexOf("/form") === 0 &&
       nextState.url.indexOf("/form") === -1
     ) {
       console.log("redirect from form");
+      // unsubscribe from form plugins
       this.behaviourService.registerState$.next({
         register: false,
         address: false,
@@ -51,6 +51,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       nextState.url.indexOf("/address") === -1
     ) {
       console.log("redirect from address");
+      // subscribe form plugins
       this.behaviourService.registerState$.next({
         register: false,
         address: true,

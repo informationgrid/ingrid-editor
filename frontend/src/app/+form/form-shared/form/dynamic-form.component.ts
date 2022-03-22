@@ -231,13 +231,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param {string} id is the ID of document to be loaded
    */
   loadDocument(id: string) {
-    // create new form group since it can become corrupted, probably because of page caching
-    // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
-    this.form = new FormGroup({});
-
-    // update form here instead of onInit, because of caching problem, where no onInit method is called
-    // after revisiting the page
-    this.formStateService.updateForm(this.form);
+    let previousDocUuid = this.form.value._uuid;
 
     if (id === undefined) {
       this.resetForm();
@@ -251,8 +245,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.showValidationErrors = false;
 
-    let previousDocUuid = this.form.value._uuid;
-
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
         subscription.unsubscribe()
@@ -264,11 +256,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
-        tap(
-          (doc) =>
-            (this.readonly =
-              !doc.hasWritePermission || doc._pendingDate != null)
-        ),
+        tap(() => this.createNewForm()),
+        tap((doc) => this.handleReadOnlyState(doc)),
         tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
         tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
@@ -278,8 +267,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.handleLoadError(error, previousDocUuid)
       );
 
-    // const updateBreadcrumbSubscription = this.updateBreadcrumb(id);
     this.loadSubscription.push(loadSubscription);
+  }
+
+  private handleReadOnlyState(doc: IgeDocument) {
+    this.readonly = !doc.hasWritePermission || doc._pendingDate != null;
   }
 
   private updateBreadcrumb(id: string) {
@@ -408,5 +400,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleOptionals($event: MatSlideToggleChange) {
     this.formOptions.formState.hideOptionals = !$event.checked;
+  }
+
+  private createNewForm() {
+    // create new form group since it can become corrupted, probably because of page caching
+    // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
+    this.form = new FormGroup({});
+
+    // update form here instead of onInit, because of caching problem, where no onInit method is called
+    // after revisiting the page
+    this.formStateService.updateForm(this.form);
   }
 }
