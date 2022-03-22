@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -108,7 +109,7 @@ public class Config {
     @Value("${upload.trash.retentionTime:0}")
     public int uploadTrashRetentionTime;
 
-    @Value("${upload.trash.retentionTime:24}")
+    @Value("${upload.unsaved.retentionTime:24}")
     public int uploadUnsavedRetentionTime;
 
     /**
@@ -119,8 +120,6 @@ public class Config {
 
     @Value("${mdek.directLink:}")
     public String mdekDirectLink;
-
-
 
     private final XPathService getCommunicationTemplate() throws Exception {
 

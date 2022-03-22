@@ -38,6 +38,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -561,7 +562,9 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
+    @Scheduled(cron = "${upload.cleanup.schedule}")
     public void cleanup() throws IOException {
+        log.error("Run Storage Cleanup!");
         // delete empty directories
         final Path trashPath = Paths.get(this.docsDir, TRASH_PATH);
         final Path archivePath = Paths.get(this.docsDir, ARCHIVE_PATH);
@@ -572,7 +575,7 @@ public class FileSystemStorage implements Storage {
         if(this.unsavedRetentionTime > 0)
         try (Stream<Path> stream = Files.walk(unsavedPath)) {
             final List<Path> oldFiles = stream
-                    .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(this.unsavedRetentionTime)).getMillis())
+                    .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardHours(this.unsavedRetentionTime)).getMillis())
                     .collect(Collectors.toList());
             for (final Path oldFile : oldFiles) {
                 Files.delete(oldFile);
@@ -584,7 +587,7 @@ public class FileSystemStorage implements Storage {
         if(this.trashRetentionTime > 0)
             try (Stream<Path> stream = Files.walk(trashPath)) {
                 final List<Path> oldFiles = stream
-                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardDays(this.trashRetentionTime)).getMillis())
+                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardHours(this.trashRetentionTime)).getMillis())
                         .collect(Collectors.toList());
                 for (final Path oldFile : oldFiles) {
                     Files.delete(oldFile);
