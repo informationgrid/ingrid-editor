@@ -1,9 +1,7 @@
-package de.ingrid.igeserver.schema
+package de.ingrid.igeserver.schema.mcloud
 
+import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.core.spec.style.AnnotationSpec
-import de.ingrid.igeserver.schema.SchemaUtils.Companion.extractMissingRequiredFields
-import de.ingrid.igeserver.schema.SchemaUtils.Companion.getJsonFileContent
-import de.ingrid.igeserver.schema.SchemaUtils.Companion.validate
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
@@ -25,31 +23,31 @@ class McloudSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.minimal.json")
-        val result = validate(json, schema)
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.minimal.json")
+        val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun more() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.json")
-        val result = validate(json, schema)
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.json")
+        val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun full() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
-        val result = validate(json, schema)
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.full.json")
+        val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun fail() {
         val json = "{}"
-        val result = validate(json, schema)
+        val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe false
-        val requiredErrors = extractMissingRequiredFields(result)
+        val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
 
         requiredErrors.size shouldBeExactly requiredFields.size
         requiredErrors shouldBe requiredFields
