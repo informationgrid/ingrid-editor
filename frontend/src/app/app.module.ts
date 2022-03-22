@@ -1,5 +1,5 @@
 import { AppComponent } from "./app.component";
-import { DatePipe, registerLocaleData } from "@angular/common";
+import { registerLocaleData } from "@angular/common";
 import { CustomReuseStrategy, routing } from "./app.router";
 import { BrowserModule } from "@angular/platform-browser";
 import {
@@ -255,7 +255,6 @@ export function animationExtension(field: FormlyFieldConfig) {
       useFactory: rxStompServiceFactory,
       deps: [InjectableRxStompConfig],
     },
-    DatePipe,
 
     // PLUGINS
     pluginProvider,

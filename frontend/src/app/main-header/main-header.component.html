@@ -142,10 +142,7 @@
                 <span mat-menu-item>Über {{t("application")}} EDITOR</span>
                 -->
                 <mat-divider></mat-divider>
-                <div
-                    (click)="$event.stopPropagation()"
-                    class="versioninfo no-bottom-padding"
-                >
+                <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>
                     <div>
                         {{ version.version }},
@@ -154,7 +151,6 @@
                     <div>GIT Commit ID</div>
                     <div>{{ version.commitId }}</div>
                 </div>
-                <button mat-menu-item (click)="copy()">Kopieren</button>
             </mat-menu>
         </span>
     </mat-toolbar-row>
