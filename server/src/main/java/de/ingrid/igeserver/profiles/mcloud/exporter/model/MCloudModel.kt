@@ -41,7 +41,7 @@ data class MCloudModel(
 
     val realSpatials: List<SpatialModel>?
         get() {
-            return data.spatials?.filter { it.type == "free" }
+            return data.spatials?.filter { it.type == "free" || it.type == "wkt" }
         }
 
     val allData: List<String>?
@@ -110,9 +110,9 @@ data class MCloudModel(
         }
         return null
     }
-    
+
     fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
-        return if (key == null) value ?: "" 
+        return if (key == null) value ?: ""
         else {
             val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
             if (codelistValue == null) {

@@ -1,9 +1,12 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?) {
+
+    val log = logger()
 
     data class BoundingBoxModel(val lat1: Float, val lon1: Float, val lat2: Float, val lon2: Float)
 
@@ -26,6 +29,21 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
     }
 
     private fun getWktCoordinates(): String? {
-        TODO("Not yet implemented")
+        if (this.wkt != null) {
+            try{
+                var coordsPos = wkt.indexOf("(");
+                var coords = wkt.substring(coordsPos).trim();
+                coords = coords.replace("\\(".toRegex(), "[").replace("\\)".toRegex(), "]")
+                coords = coords.replace("\\[(\\s*[-0-9][^\\]]*\\,[^\\]]*[0-9]\\s*)\\]".toRegex(), "[[$1]]")
+                coords = coords.replace("([0-9])\\s*\\,\\s*([-0-9])".toRegex(), "$1], [$2")
+                coords = coords.replace("([0-9])\\s+([-0-9])".toRegex(), "$1, $2")
+
+                return coords;
+            } catch (ex:Exception){
+                log.error(ex)
+            }
+        }
+
+        return null
     }
 }
