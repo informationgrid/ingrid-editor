@@ -116,7 +116,7 @@ export class TableTypeComponent
           } else {
             this.dataSource.data.splice(index, 1, result);
           }
-          this.updateTableDataToForm();
+          this.updateTableDataToForm(this.dataSource.data);
         }
       });
   }
@@ -156,8 +156,7 @@ export class TableTypeComponent
     const updated = this.dataSource.data.filter(
       (row) => !this.selection.selected.includes(row)
     );
-    this.dataSource = new MatTableDataSource<any>(updated);
-    this.updateFormControl(this.dataSource.data);
+    this.updateTableDataToForm(updated);
 
     this.selection.clear();
 
@@ -172,7 +171,7 @@ export class TableTypeComponent
       event.previousIndex,
       event.currentIndex
     );
-    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
+    this.updateTableDataToForm(this.dataSource.data);
   }
 
   private prepareFormattedValues(value: any[]) {
@@ -217,7 +216,7 @@ export class TableTypeComponent
       .filter((file) => this.isNotInTable(file))
       .forEach((file) => this.addUploadInfoToDatasource(file));
 
-    this.updateTableDataToForm();
+    this.updateTableDataToForm(this.dataSource.data);
   }
 
   private getUploadFieldKey(): string {
@@ -265,13 +264,13 @@ export class TableTypeComponent
       .pipe(filter((result) => result))
       .subscribe((result) => {
         this.addLinkInfoToDatasource(result);
-        this.updateTableDataToForm();
+        this.updateTableDataToForm(this.dataSource.data);
       });
   }
 
-  private updateTableDataToForm() {
-    this.dataSource = new MatTableDataSource<any>(this.dataSource.data);
-    this.updateFormControl(this.dataSource.data);
+  private updateTableDataToForm(data: any[]) {
+    this.dataSource = new MatTableDataSource<any>(data);
+    this.updateFormControl(data);
   }
 
   update() {
