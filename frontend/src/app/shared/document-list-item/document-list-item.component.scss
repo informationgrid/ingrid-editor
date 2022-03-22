@@ -33,12 +33,15 @@
     display: flex;
     align-self: flex-start;
     height: 24px;
-    margin-right: 12px;
     padding: 0;
 
     &.marker ::ng-deep .coloring {
       fill: $ige-check-color;
     }
+  }
+
+  .add-padding-right {
+    padding-right: 12px;
   }
 
   span.mat-line {

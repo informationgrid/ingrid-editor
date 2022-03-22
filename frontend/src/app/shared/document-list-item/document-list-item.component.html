@@ -21,6 +21,7 @@
             *ngIf="showSelection"
             [class.invisible]="currentSelection?.id !== doc.id"
             class="marker"
+            [class.add-padding-right]="showIcons"
             matListIcon
             svgIcon="baseline-check-24px"
         ></mat-icon>
