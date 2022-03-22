@@ -32,9 +32,11 @@ export class FormFieldHelper {
       wrappers: ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
-        autosize: true,
+        autosize: false,
         autosizeMinRows: 3,
-        autosizeMaxRows: 8,
+        attributes: {
+          style: "resize:vertical;min-height:54px",
+        },
         appearance: "outline",
         required: options?.required,
       },
