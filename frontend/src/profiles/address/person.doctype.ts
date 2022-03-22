@@ -53,11 +53,14 @@ export class PersonDoctype extends BaseDoctype {
                   {
                     key: "academic-title",
                     className: "flex-1 pad-right",
-                    type: "select",
+                    type: "autocomplete",
+                    wrappers: ["form-field"],
                     templateOptions: {
+                      highlightMatches: true,
+                      hideDeleteButton: true,
                       label: "Titel",
                       appearance: "outline",
-                      options: this.getCodelistForSelectWithEmtpyOption(
+                      options: this.getCodelistForSelect(
                         4305,
                         "academic-title"
                       ),
