@@ -7,6 +7,7 @@ import { NegativePreliminaryExaminationDoctype } from "./uvp/negative-preliminar
 import { ForeignProjectsDoctype } from "./uvp/foreign-projects.doctype";
 import { UvpPersonDoctype } from "./uvp/uvp-person.doctype";
 import { UvpOrganisationDoctype } from "./uvp/uvp-organisation.doctype";
+import { LineDeterminationDoctype } from "./uvp/line-determination.doctype";
 
 @Component({
   template: "dynamic component",
@@ -17,6 +18,7 @@ class UVPComponent {
     folder: FolderDoctype,
     admissionProcedureDoctype: AdmissionProcedureDoctype,
     spatialPlanningProcedureDoctype: SpatialPlanningProcedureDoctype,
+    lineDeterminationDoctype: LineDeterminationDoctype,
     negativePreliminaryExaminationDoctype: NegativePreliminaryExaminationDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
@@ -26,6 +28,7 @@ class UVPComponent {
       folder,
       admissionProcedureDoctype,
       spatialPlanningProcedureDoctype,
+      lineDeterminationDoctype,
       negativePreliminaryExaminationDoctype,
       foreignProjectsDoctype,
       address,
