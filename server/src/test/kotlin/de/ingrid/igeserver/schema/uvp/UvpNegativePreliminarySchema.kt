@@ -27,20 +27,13 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
         result.valid shouldBe true
     }
 
-    /*@Test
-    fun more() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.json")
-        val result = validate(json)
-        assertThat(result.valid).isTrue
-    }
-
     @Test
     fun full() {
-        val json = getJsonFileContent("/export/mcloud/mcloud.full.json")
-        val result = validate(json)
-        assertThat(result.valid).isTrue
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/negative-preliminary.maximal.json")
+        val result = SchemaUtils.validate(json, schema)
+        result.valid shouldBe true
     }
-*/
+    
     @Test
     fun fail() {
         val json = "{}"

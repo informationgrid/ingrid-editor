@@ -1,0 +1,45 @@
+{
+  "title": "Maximal",
+  "_uuid": "8d5cc899-ca1c-4ee5-84f0-5e282b54464d",
+  "_type": "UvpNegativePreliminaryExaminationDoc",
+  "spatial": [
+    {
+      "type": "free",
+      "title": "Neuer Raumbezug",
+      "value": {
+        "lat1": 51.549751017014195,
+        "lat2": 52.22779941887071,
+        "lon1": 10.283203125000002,
+        "lon2": 11.359863281250002
+      }
+    }
+  ],
+  "eiaNumber": [
+    {
+      "key": "1"
+    },
+    {
+      "key": "203"
+    }
+  ],
+  "publisher": [
+    {
+      "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e",
+      "type": {
+        "key": "1"
+      }
+    }
+  ],
+  "description": "aaa",
+  "decisionDate": "2022-03-06T23:00:00.000Z",
+  "uvpNegativeDecisionDocs": [
+    {
+      "title": "schema (2)",
+      "downloadURL": {
+        "uri": "schema (2)",
+        "value": "schema (2)",
+        "asLink": false
+      }
+    }
+  ]
+}

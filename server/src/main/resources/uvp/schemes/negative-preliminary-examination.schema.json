@@ -39,10 +39,14 @@
           "format": "date-time"
         },
         "eiaNumber": {
-          "$ref": "#/definitions/KeyValue"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "minItems": 1
         },
         "uvpNegativeDecisionDocs": {
-          "type": ["array"],
+          "type": "array",
           "items": {
             "$ref": "#/definitions/Doc"
           },

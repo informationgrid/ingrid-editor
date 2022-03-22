@@ -39,10 +39,11 @@
           "format": "date-time"
         },
         "eiaNumber": {
-          "$ref": "#/definitions/KeyValue"
-        },
-        "prelimAssessment": {
-          "type": "boolean"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "minItems": 1
         },
         "processingSteps": {
           "type": "array",
@@ -59,8 +60,7 @@
         "publisher",
         "spatial",
         "receiptDate",
-        "eiaNumber",
-        "prelimAssessment"
+        "eiaNumber"
       ],
       "title": "SpatialOrLine"
     },

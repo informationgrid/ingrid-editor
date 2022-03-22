@@ -1,0 +1,99 @@
+{
+  "title": "Maximal",
+  "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
+  "_type": "UvpForeignProjectDoc",
+  "description": "Maximales Auslandsverfahren",
+  "publisher": [
+    {
+      "type": {
+        "key": "7"
+      },
+      "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e"
+    }
+  ],
+  "spatial": [
+    {
+      "value": {
+        "lat1": 50.56928286558243,
+        "lon1": 8.613281250000002,
+        "lat2": 53.22576843579022,
+        "lon2": 13.0078125
+      },
+      "title": "Neuer Raumbezug",
+      "type": "free"
+    }
+  ],
+  "processingSteps": [
+    {
+      "type": "publicDisclosure",
+      "disclosureDate": {
+        "start": "2022-02-28T23:00:00.000Z",
+        "end": "2022-03-16T23:00:00.000Z"
+      },
+      "announcementDocs": [
+        {
+          "title": "schema (2)",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema (2)",
+            "uri": "schema (2)"
+          }
+        }
+      ],
+      "applicationDocs": [
+        {
+          "title": "schema (1)",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema (1)",
+            "uri": "schema (1)"
+          }
+        }
+      ],
+      "reportsRecommendationDocs": [
+        {
+          "title": "881F58E9-5174-4639-8C35-A58237CA37B0.png",
+          "downloadURL": {
+            "asLink": false,
+            "value": "881F58E9-5174-4639-8C35-A58237CA37B0.png",
+            "uri": "881F58E9-5174-4639-8C35-A58237CA37B0.png"
+          }
+        }
+      ],
+      "furtherDocs": [
+        {
+          "title": "02655036944959.pdf",
+          "downloadURL": {
+            "asLink": false,
+            "value": "02655036944959.pdf",
+            "uri": "02655036944959.pdf"
+          }
+        }
+      ]
+    },
+    {
+      "type": "decisionOfAdmission",
+      "decisionDate": "2022-03-19T23:00:00.000Z",
+      "approvalDocs": [
+        {
+          "title": "ant.install.log",
+          "downloadURL": {
+            "asLink": false,
+            "value": "ant.install.log",
+            "uri": "ant.install.log"
+          }
+        }
+      ],
+      "decisionDocs": [
+        {
+          "title": "export (3).json",
+          "downloadURL": {
+            "asLink": false,
+            "value": "export (3).json",
+            "uri": "export (3).json"
+          }
+        }
+      ]
+    }
+  ]
+}

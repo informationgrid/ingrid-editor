@@ -24,9 +24,11 @@
     }
   ],
   "receiptDate": "2022-02-21T23:00:00.000Z",
-  "eiaNumber": {
-    "key": "24"
-  },
+  "eiaNumber": [
+    {
+      "key": "24"
+    }
+  ],
   "prelimAssessment": true,
   "processingSteps": []
 }

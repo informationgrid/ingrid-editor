@@ -23,9 +23,11 @@
       "type": "free"
     }
   ],
-  "eiaNumber": {
-    "key": "24"
-  },
+  "eiaNumber": [
+    {
+      "key": "24"
+    }
+  ],
   "decisionDate": "2022-03-06T23:00:00.000Z",
   "uvpNegativeDecisionDocs": [
     {
