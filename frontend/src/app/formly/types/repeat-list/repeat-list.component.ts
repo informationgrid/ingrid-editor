@@ -132,7 +132,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
       option.disabled = (<{ key; value? }[]>this.model).some(
-        (modelOption) => modelOption.key === option.value
+        (modelOption) => modelOption && modelOption.key === option.value
       );
       return option;
     });
@@ -155,6 +155,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   // TODO: do not use template function!
   getParameter(option: { key; value? }) {
+    if (!option) return "";
+
     return (
       this.parameterOptions?.find((param) => param.value === option.key)
         ?.label ?? option.value
