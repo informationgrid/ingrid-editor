@@ -10,7 +10,7 @@
         cdkDrag
         [cdkDragDisabled]="to.noDrag"
         class="clickable list-item"
-        (click)="this.onItemClick(model[i]?.value)"
+        (click)="this.onItemClick(model[i]?.key)"
     >
         <span class="list-display-element">
             <mat-icon

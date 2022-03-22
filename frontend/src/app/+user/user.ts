@@ -21,15 +21,13 @@ export abstract class User {
 
 export class FrontendUser extends User {
   permissions?: Permissions;
-  groups?: SelectOption[];
+  groups?: { key: string; value?: string }[];
 
   constructor(user?: BackendUser, igeGroups?: Group[]) {
     super(user);
 
     if (user) {
-      this.groups = user.groups?.map(
-        (groupId) => new SelectOption(groupId + "", null)
-      );
+      this.groups = user.groups?.map((groupId) => ({ key: groupId + "" }));
     }
   }
 }

@@ -69,7 +69,7 @@ export class UserService {
   updateUser(user: FrontendUser): Observable<FrontendUser> {
     const userForBackend = <BackendUser>{
       ...user,
-      groups: user.groups.map((group) => +group.value),
+      groups: user.groups.map((group) => +group.key),
     };
 
     return this.dataService.saveUser(userForBackend).pipe(
