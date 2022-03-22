@@ -36,7 +36,7 @@ class MCloudPublishExport @Autowired constructor(
         try {
             when (docType) {
                 "mCloudDoc" -> indexMCloudDoc(context, docId)
-                "AddressDoc" -> indexReferencesMCloudDocs(context, docId)
+                "McloudAddressDoc" -> indexReferencesMCloudDocs(context, docId)
                 else -> return payload
             }
         } catch (ex: NoNodeAvailableException) {
