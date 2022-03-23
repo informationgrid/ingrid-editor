@@ -5,6 +5,10 @@
   display: block;
 }
 
+:host-context(.mat-dialog-container) :host {
+  background-color: #ffffff;
+}
+
 .header {
   padding: 0 12px;
 

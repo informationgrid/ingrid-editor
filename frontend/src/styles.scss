@@ -186,6 +186,7 @@ main-menu .mat-toolbar-multiple-rows {
 
 .mat-list-option.selected {
   background-color: $ige-mark-color !important;
+
   &:hover {
     background-color: darken($ige-mark-color, 5%) !important;
   }
@@ -799,10 +800,6 @@ mat-selection-list.with-menu .mat-list-text {
       top: 0;
       background-color: #ffffff;
       border-radius: 4px;
-
-      &:not(.mat-form-field-outline-thick) > div {
-        border: none;
-      }
     }
 
     .mat-form-field-prefix,
@@ -818,6 +815,15 @@ mat-selection-list.with-menu .mat-list-text {
       }
     }
   }
+}
+
+ige-sidebar
+  ige-tree-header
+  .ige-form-field
+  .mat-form-field-wrapper
+  .mat-form-field-outline:not(.mat-form-field-outline-thick)
+  > div {
+  border: none;
 }
 
 /* DRAG N DROP ANIMIATION */
@@ -872,6 +878,7 @@ mat-icon.wide-icon-26px {
     background-color: #ffffff;
   }
 }
+
 .mat-table.dark .mat-row:hover {
   background-color: darken($ige-background, 5%);
 }
@@ -924,6 +931,7 @@ mat-icon.wide-icon-26px {
 /* Slide toggle (stretched) */
 .mat-slide-toggle.stretch {
   display: block;
+
   .mat-slide-toggle-label {
     justify-content: space-between;
   }
