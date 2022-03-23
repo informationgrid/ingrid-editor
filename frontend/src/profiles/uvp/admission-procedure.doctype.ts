@@ -56,10 +56,10 @@ export class AdmissionProcedureDoctype extends UvpShared {
         this.addDatepicker("receiptDate", "Eingang des Antrags", {
           required: true,
         }),
-        this.addRepeatList("eiaNumber", "UVP-Nummer", {
+        this.addRepeatList("eiaNumbers", "UVP-Nummern", {
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumber"),
+          options: this.getCodelistForSelect(9000, "eiaNumbers"),
           codelistId: 9000,
           asSelect: true,
         }),

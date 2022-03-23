@@ -35,10 +35,10 @@ export class NegativePreliminaryExaminationDoctype extends UvpShared {
         this.addSpatial("spatial", null, {
           required: true,
         }),
-        this.addRepeatList("eiaNumber", "UVP-Nummer", {
+        this.addRepeatList("eiaNumbers", "UVP-Nummern", {
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumber"),
+          options: this.getCodelistForSelect(9000, "eiaNumbers"),
           codelistId: 9000,
           asSelect: true,
         }),
