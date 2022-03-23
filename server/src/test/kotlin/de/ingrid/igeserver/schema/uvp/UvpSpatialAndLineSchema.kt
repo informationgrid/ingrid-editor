@@ -5,9 +5,9 @@ import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
-class UvpAdmissionProcedureSchema : AnnotationSpec() {
+class UvpSpatialAndLineSchema : AnnotationSpec() {
 
-    private val schema = "/uvp/schemes/admission-procedure.schema.json"
+    private val schema = "/uvp/schemes/spatial-or-line.schema.json"
     private val requiredFields = listOf(
         "_uuid",
         "_type",
@@ -16,24 +16,23 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
         "publisher",
         "spatial",
         "receiptDate",
-        "eiaNumber",
-        "prelimAssessment"
+        "eiaNumber"
     )
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/spatial-planning-procedure.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.maximal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/spatial-planning-procedure.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
-
+    
     @Test
     fun fail() {
         val json = "{}"

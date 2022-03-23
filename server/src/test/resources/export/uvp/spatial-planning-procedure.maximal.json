@@ -1,0 +1,130 @@
+{
+  "title": "Maximal",
+  "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
+  "_type": "UvpSpatialPlanningProcedureDoc",
+  "description": "Minimales Raumbezugsverfahren",
+  "publisher": [
+    {
+      "type": {
+        "key": "7"
+      },
+      "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e"
+    }
+  ],
+  "spatial": [
+    {
+      "value": {
+        "lat1": 50.56928286558243,
+        "lon1": 8.613281250000002,
+        "lat2": 53.22576843579022,
+        "lon2": 13.0078125
+      },
+      "title": "Neuer Raumbezug",
+      "type": "free"
+    }
+  ],
+  "eiaNumber": [
+    {
+      "key": "24"
+    }
+  ],
+  "receiptDate": "2022-03-06T23:00:00.000Z",
+  "processingSteps": [
+    {
+      "type": "publicDisclosure",
+      "disclosureDate": {
+        "start": "2022-03-06T23:00:00.000Z",
+        "end": "2022-03-14T23:00:00.000Z"
+      },
+      "announcementDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ],
+      "applicationDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ],
+      "reportsRecommendationDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ],
+      "furtherDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ]
+    },
+    {
+      "type": "publicHearing",
+      "publicHearingDate": {
+        "start": "2022-03-06T23:00:00.000Z",
+        "end": "2022-03-14T23:00:00.000Z"
+      },
+      "considerationDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ]
+    },
+    {
+      "type": "decisionOfAdmission",
+      "decisionDate": "2022-03-23T23:00:00.000Z",
+      "approvalDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        }
+      ],
+      "decisionDocs": [
+        {
+          "title": "schema.txt",
+          "downloadURL": {
+            "asLink": false,
+            "value": "schema.txt",
+            "uri": "schema.txt"
+          }
+        },
+        {
+          "title": "Normaler Link",
+          "downloadURL": {
+            "asLink": true,
+            "value": "https://fefefe.ed",
+            "uri": "https://fefefe.ed"
+          }
+        }
+      ]
+    }
+  ]
+}
