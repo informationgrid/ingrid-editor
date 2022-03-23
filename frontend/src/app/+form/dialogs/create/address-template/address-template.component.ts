@@ -47,10 +47,25 @@ export class AddressTemplateComponent implements OnInit {
         filter((types) => types.length > 0),
         map((types) => this.filterDocTypesByParent(types, parent)),
         map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => this.setDocType(types[0])),
-        tap((types) => this.initialActiveDocumentType.next(types[0]))
+        tap((types) => this.setInitialTypeFirstTime(types)),
+        filter((types) => this.skipIfSame(types))
       )
       .subscribe((result) => (this.documentTypes = result));
+  }
+
+  private setInitialTypeFirstTime(types: DocumentAbstract[]) {
+    // only set it first time
+    if (!this.form.get("choice").value) {
+      this.setDocType(types[0]);
+      this.initialActiveDocumentType.next(types[0]);
+    }
+  }
+
+  private skipIfSame(types: DocumentAbstract[]) {
+    return (
+      types.map((item) => item.id).join() !==
+      this.documentTypes?.map((item) => item.id).join()
+    );
   }
 
   private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {

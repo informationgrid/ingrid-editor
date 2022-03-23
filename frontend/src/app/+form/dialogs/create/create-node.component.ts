@@ -21,6 +21,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
+import { combineLatest, Subject } from "rxjs";
 
 export interface CreateOptions {
   parent: string;
@@ -47,6 +48,8 @@ export class CreateNodeComponent implements OnInit {
   selectedLocation: string = null;
   pathWithWritePermission = false;
   private query: TreeQuery | AddressTreeQuery;
+  docTypeChoice: string;
+  docTypeChanged$ = new Subject();
 
   constructor(
     private config: ConfigService,
@@ -97,12 +100,16 @@ export class CreateNodeComponent implements OnInit {
       this.initializeForAddresses();
     }
 
-    this.query.breadcrumb$
-      .pipe(
-        untilDestroyed(this),
-        tap((path) => this.mapPath(path))
-      )
-      .subscribe();
+    this.formGroup.valueChanges.pipe(untilDestroyed(this)).subscribe((value) =>
+      setTimeout(() => {
+        this.docTypeChoice = value.choice;
+        this.docTypeChanged$.next();
+      }, 0)
+    );
+
+    combineLatest([this.query.breadcrumb$, this.docTypeChanged$])
+      .pipe(untilDestroyed(this))
+      .subscribe((path) => this.mapPath(path[0]));
   }
 
   async handleCreate() {
@@ -153,14 +160,22 @@ export class CreateNodeComponent implements OnInit {
       return;
     }
 
-    const type = this.query.getOpenedDocument()?._type;
+    this.path = this.getPathAllowedToAdd([...path]);
+    this.parent = this.path[this.path.length - 1]?.id ?? null;
+  }
+
+  private getPathAllowedToAdd(path: ShortTreeNode[]): ShortTreeNode[] {
+    const lastNode = path.pop();
+    const entity = this.query.getEntity(lastNode.id);
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
       this.forAddress,
-      { type: type }
+      { type: entity._type },
+      this.docTypeChoice
     );
-
-    this.path = cannotAddBelow ? path.slice(0, -1) : [...path];
-    this.parent = this.path[this.path.length - 1]?.id ?? null;
+    if (cannotAddBelow) {
+      return this.getPathAllowedToAdd(path);
+    }
+    return [...path, lastNode];
   }
 
   private initializeForDocumentsAndFolders() {

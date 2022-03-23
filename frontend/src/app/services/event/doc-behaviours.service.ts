@@ -7,10 +7,17 @@ import { ProfileAbstract } from "../../store/profile/profile.model";
   providedIn: "root",
 })
 export class DocBehavioursService {
-  private disabledCondition = (forAddress: boolean, node: TreeNode) => {
+  private disabledCondition = (
+    forAddress: boolean,
+    node: TreeNode,
+    typeToInsert: string = null
+  ) => {
     if (forAddress) {
       const profile = this.profileService.getProfile(node.type);
-      return profile.addressType === "person";
+      return (
+        profile.addressType === "person" ||
+        (typeToInsert === "FOLDER" && node.type !== "FOLDER")
+      );
     }
     return node.type !== "FOLDER";
   };

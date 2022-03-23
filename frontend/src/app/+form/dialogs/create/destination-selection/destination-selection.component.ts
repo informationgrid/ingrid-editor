@@ -16,7 +16,10 @@ import { DocBehavioursService } from "../../../../services/event/doc-behaviours.
 export class DestinationSelectionComponent implements OnInit {
   @Input() forAddress: boolean;
   @Input() disableRoot = false;
+  @Input() typeToInsert: string;
+
   @Output() choice = new EventEmitter<string>();
+
   parent: string = null;
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new BehaviorSubject<string>(null);
@@ -46,7 +49,11 @@ export class DestinationSelectionComponent implements OnInit {
 
   disabledCondition() {
     return (node: TreeNode) => {
-      return this.docBehaviours.cannotAddDocumentBelow()(this.forAddress, node);
+      return this.docBehaviours.cannotAddDocumentBelow()(
+        this.forAddress,
+        node,
+        this.typeToInsert
+      );
     };
   }
 

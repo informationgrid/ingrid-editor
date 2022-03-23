@@ -29,7 +29,8 @@ export class DragNDropUtils {
         ? true
         : !this.docBehaviour.cannotAddDocumentBelow()(
             this.forAddress,
-            droppedNode
+            droppedNode,
+            this.dragNode.type
           );
 
     if (isAllowed && droppedNode !== this.dragNode) {
@@ -75,7 +76,8 @@ export class DragNDropUtils {
 
       const isAllowed = !this.docBehaviour.cannotAddDocumentBelow()(
         this.forAddress,
-        node
+        node,
+        this.dragNode.type
       );
       if (isAllowed) {
         this.dragNodeExpandOverNode = node;
