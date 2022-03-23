@@ -217,12 +217,13 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
+      // We need to change the test select the predefined data then no need for reload or save document
       let category1 = 'Bahn';
       let category2 = 'Straßen';
       let category3 = 'Luft- und Raumfahrt';
-
       let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
-
+      let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(3) ';
+      let mCLOUDSelectorTargetNode = mCLOUDSelector + ' .cdk-drag:nth-child(1) ';
       Tree.openNode(['New Folder For New Users', 'New Document']);
       DocumentPage.scrollToSection('mCLOUD');
       enterMcloudDocTestData.setCategory(category1);
@@ -233,15 +234,10 @@ describe('General create documents/folders', () => {
 
       enterMcloudDocTestData.setCategory(category3, false);
       cy.get(mCLOUDSelector).contains(category3);
-
+      DocumentPage.saveDocument();
+      cy.reload();
       // change the order of mCloud categories by dragging then save
-      DocumentPage.dragItem(
-        mCLOUDSelector + ' mat-chip',
-        '[data-cy="mCLOUD Kategorie"] mat-chip-list:last',
-        2,
-        -200,
-        0
-      );
+      DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, 2, -200, 0);
       DocumentPage.saveDocument();
 
       // check for the order after reload
@@ -259,6 +255,8 @@ describe('General create documents/folders', () => {
       let openDataCategory3 = 'Internationale Themen';
 
       let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
+      let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(3) ';
+      let openDataSelectorTargetNode = openDataSelector + ' .cdk-drag:nth-child(1) ';
       enterMcloudDocTestData.setOpenDataCategory(openDataCategory1);
       cy.get(openDataSelector).contains(openDataCategory1);
 
@@ -267,15 +265,11 @@ describe('General create documents/folders', () => {
 
       enterMcloudDocTestData.setOpenDataCategory(openDataCategory3, false);
       cy.get(openDataSelector).contains(openDataCategory3);
+      DocumentPage.saveDocument();
+      cy.reload();
 
       // change the order of mCloud categories by dragging then save
-      DocumentPage.dragItem(
-        openDataSelector + ' mat-chip',
-        '[data-cy="OpenData Kategorie"] mat-chip-list:last',
-        2,
-        -200,
-        0
-      );
+      DocumentPage.dragItem(openDataSelectorSourceNode, openDataSelectorTargetNode, 2, -200, 0);
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
@@ -290,15 +284,16 @@ describe('General create documents/folders', () => {
     it('check for ordering and sorting address lists in the mCLOUD document', () => {
       let address1 = 'mclould_address';
       let address2 = 'Published Testorganization';
-      let addressSelector = '[data-cy="Adressen"] .address-cards .address-card-wrapper';
-
+      let addressSelector = '[data-cy="Adressen"] .address-cards ';
+      let addressSelectorSourceNode = addressSelector + ' .cdk-drag:nth-child(1)';
+      let addressSelectorTargetNode = addressSelector + ' .cdk-drag:nth-child(2)';
       Tree.openNode(['New Folder For New Users', 'New Document']);
       enterMcloudDocTestData.setAddress(address1);
       enterMcloudDocTestData.setAddress(address2);
 
       DocumentPage.scrollToSection('Allgemeines');
 
-      DocumentPage.dragItem(addressSelector, '[data-cy="Adressen"] .address-cards .address-card-wrapper', 1, -200, 0);
+      DocumentPage.dragItem(addressSelectorSourceNode, addressSelectorTargetNode, 1, -200, 0);
 
       DocumentPage.saveDocument();
 
@@ -306,8 +301,8 @@ describe('General create documents/folders', () => {
       cy.reload();
       cy.get(addressSelector, { timeout: 10000 }).should('exist');
 
-      DocumentPage.checkOfExistingItem(addressSelector, address2, 0);
-      DocumentPage.checkOfExistingItem(addressSelector, address1, 1);
+      DocumentPage.checkOfExistingItem(addressSelector + ' .address-card-wrapper', address2, 0);
+      DocumentPage.checkOfExistingItem(addressSelector + ' .address-card-wrapper', address1, 1);
     });
 
     it('check for ordering and sorting Zeitbezug der Ressource lists in the mCLOUD document', () => {
@@ -318,6 +313,10 @@ describe('General create documents/folders', () => {
       let type2 = 'Erstellung';
 
       let resourceDateSelector = '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag-handle';
+      let resourceDateSelectorSourceNode =
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag:nth-child(1) .cdk-drag-handle';
+      let resourceDateSelectorTargetNode =
+        '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
@@ -332,19 +331,19 @@ describe('General create documents/folders', () => {
       // does not mix with the first one
       cy.wait(1200);
       DocumentPage.scrollToSection('Zeitbezüge');
-      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Zeitbezug der Ressource"] ige-repeat ', 1, 0, 70);
+      DocumentPage.dragItem(resourceDateSelectorSourceNode, resourceDateSelectorTargetNode, 1, 0, 70);
 
       // check the new position of the items before saving to make sure the dragging was successful
       cy.wait(2000);
       DocumentPage.checkOfExistingItem(
         '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
         '12.02.2022',
-        2,
+        0,
         true
       );
       DocumentPage.checkOfExistingItem(
         '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '11.02.2025',
+        '10.02.2023',
         1,
         true
       );
@@ -360,12 +359,12 @@ describe('General create documents/folders', () => {
       DocumentPage.checkOfExistingItem(
         '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
         '12.02.2022',
-        2,
+        0,
         true
       );
       DocumentPage.checkOfExistingItem(
         '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '11.02.2025',
+        '10.02.2023',
         1,
         true
       );
@@ -380,6 +379,9 @@ describe('General create documents/folders', () => {
       let link3 = 'https://www.amazon.de/';
 
       let downloadSelector = '[data-cy="Downloads-table"] mat-row mat-cell';
+      let downloadSelectorSourceNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(2)';
+      let downloadSelectorTargetNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(3)';
+
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       DocumentPage.scrollToSection('mCLOUD');
@@ -391,9 +393,9 @@ describe('General create documents/folders', () => {
       // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
       // does not mix with the first one
       cy.wait(1200);
-
+      cy.reload();
       DocumentPage.scrollToSection('mCLOUD');
-      DocumentPage.dragItem(downloadSelector, '[data-cy="Downloads-table"] mat-row ', 0, 0, 100);
+      DocumentPage.dragItem(downloadSelectorSourceNode, downloadSelectorTargetNode, 0, 0, 100);
 
       DocumentPage.saveDocument();
 

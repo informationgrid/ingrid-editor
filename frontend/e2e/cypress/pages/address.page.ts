@@ -50,6 +50,7 @@ export class AddressPage extends DocumentPage {
     cy.wait('@treeCallAddress', { timeout: 10000 });
   }
 
+  // TODO: remove default values and call with specific parameters
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789', index: number = 0) {
     cy.get('[data-cy=create-action]').should('not.exist');
     cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();

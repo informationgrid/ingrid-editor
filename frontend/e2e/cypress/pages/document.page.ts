@@ -465,7 +465,6 @@ export class DocumentPage extends BasePage {
   ) {
     // it is supposed to use trigger dragstart and trigger start drop, but it does not work here with categories
     cy.get(sourceNode)
-      .eq(indexOfDraggedCategory)
       .drag(targetNode, {
         force: true // applied to both the source and target element
       })
@@ -473,9 +472,10 @@ export class DocumentPage extends BasePage {
         assert.isTrue(success);
       });
 
-    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
-
-    cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
+    cy.get(targetNode).click();
+    // we still need the code below in case click failed in future drag and drop tests
+    // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
+    // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
   }
 
   static checkOfExistingItem(node: string, itemName: string, index: number = -1, inputString: boolean = false) {

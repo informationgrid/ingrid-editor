@@ -3,6 +3,7 @@ import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { Todo } from '@datorama/akita/src/__tests__/setup';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
@@ -244,7 +245,6 @@ describe('General create addresses/folders', () => {
     it('should behave correctly after deleting subfolder (#2929)', () => {
       // create folder
       const folderName = 'folder_to_be_deleted';
-      AddressPage.visit();
       AddressPage.createFolder(folderName);
 
       cy.get(DocumentPage.title).should('have.text', folderName);
@@ -267,7 +267,6 @@ describe('General create addresses/folders', () => {
     it('should actualize tree after deleting (#3048)', () => {
       // create folder
       const folderName = 'folder_to_be_later_deleted';
-      AddressPage.visit();
       Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
       AddressPage.createFolder(folderName);
       cy.get(DocumentPage.title).should('have.text', folderName);
@@ -292,6 +291,7 @@ describe('General create addresses/folders', () => {
       cy.contains('mat-tree-node', folderName).should('not.exist');
     });
 
+    // TODO Remove add contact function and used predefined one
     it('check for ordering and sorting "Kontakt" lists in the address document (organization)', () => {
       let contact1 = 'user@test.com';
       let contact2 = '1243543436';
@@ -300,12 +300,10 @@ describe('General create addresses/folders', () => {
       let type2 = 'Telefon';
       let type3 = 'Fax';
 
-      AddressPage.visit();
-
-      let resourceDateSelector = '[data-cy="Kontakt"] ige-repeat .cdk-drag-handle';
+      let resourceDateSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
+      let targetSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(1)';
 
       Tree.openNode(['mclould_address']);
-
       AddressPage.addContact(type1, contact1, 0);
       AddressPage.addContact(type2, contact2, 1);
       AddressPage.addContact(type3, contact3, 2);
@@ -315,15 +313,16 @@ describe('General create addresses/folders', () => {
       // does not mix with the first one
       cy.wait(1500);
 
-      DocumentPage.dragItem(resourceDateSelector, '[data-cy="Kontakt"] ige-repeat ', 1, 0, 100);
+      DocumentPage.dragItem(resourceDateSelector, targetSelector, 1, 0, 100);
+
       DocumentPage.saveDocument();
 
-      // // reload and make sure of ordering
+      // reload and make sure of ordering
       cy.reload();
       cy.get('[data-cy=Kontakt]', { timeout: 10000 }).should('exist');
 
-      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact2, 2, true);
-      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact3, 1, true);
+      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact2, 0, true);
+      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact1, 1, true);
     });
   });
 });
