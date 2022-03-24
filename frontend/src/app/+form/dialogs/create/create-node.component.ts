@@ -107,9 +107,15 @@ export class CreateNodeComponent implements OnInit {
       }, 0)
     );
 
-    combineLatest([this.query.breadcrumb$, this.docTypeChanged$])
+    // set initial path to current position
+    this.query.breadcrumb$
       .pipe(untilDestroyed(this))
-      .subscribe((path) => this.mapPath(path[0]));
+      .subscribe((path) => this.mapPath(path));
+
+    // update path depending on selected document type
+    this.docTypeChanged$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => this.mapPath(this.path));
   }
 
   async handleCreate() {

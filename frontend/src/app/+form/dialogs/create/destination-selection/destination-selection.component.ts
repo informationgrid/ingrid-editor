@@ -58,7 +58,12 @@ export class DestinationSelectionComponent implements OnInit {
   }
 
   updateParent(node: string[], source: "Tree" | "List") {
-    this.parent = node[0] ?? null;
+    const newParent = node[0] ?? null;
+    if (this.parent === newParent) {
+      return;
+    }
+
+    this.parent = newParent;
 
     if (source === "List") {
       this.activeTreeNode.next(null);
