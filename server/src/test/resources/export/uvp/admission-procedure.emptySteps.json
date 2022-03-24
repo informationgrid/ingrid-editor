@@ -1,0 +1,45 @@
+{
+  "title": "Minimal",
+  "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
+  "_type": "UvpAdmissionProcedureDoc",
+  "description": "Minimales Zulassungsverfahren",
+  "publisher": [
+    {
+      "type": {
+        "key": "7"
+      },
+      "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e"
+    }
+  ],
+  "spatial": [
+    {
+      "value": {
+        "lat1": 50.56928286558243,
+        "lon1": 8.613281250000002,
+        "lat2": 53.22576843579022,
+        "lon2": 13.0078125
+      },
+      "title": "Neuer Raumbezug",
+      "type": "free"
+    }
+  ],
+  "receiptDate": "2022-02-21T23:00:00.000Z",
+  "eiaNumber": [
+    {
+      "key": "24"
+    }
+  ],
+  "prelimAssessment": true,
+  "processingSteps": [
+    {
+      "type": "publicDisclosure"
+      
+    },
+    {
+      "type": "publicHearing"
+    },
+    {
+      "type": "decisionOfAdmission"
+    }
+  ]
+}

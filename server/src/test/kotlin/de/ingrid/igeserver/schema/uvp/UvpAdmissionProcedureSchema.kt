@@ -19,6 +19,15 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
         "eiaNumber",
         "prelimAssessment"
     )
+    
+    private val requiredStepFields = listOf(
+        "disclosureDate",
+        "announcementDocs",
+        "applicationDocs",
+        "publicHearingDate",
+        "considerationDocs",
+        "decisionDate"
+    )
 
     @Test
     fun minimal() {
@@ -33,6 +42,24 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
+
+    @Test
+    fun emptySteps() {
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.emptySteps.json")
+        val result = SchemaUtils.validate(json, schema)
+        result.valid shouldBe false
+        
+        val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
+        requiredErrors.size shouldBeExactly requiredStepFields.size
+        requiredErrors shouldBe requiredStepFields
+    }
+
+/*    @Test
+    fun wrongFieldInStep() {
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.maximal.json")
+        val result = SchemaUtils.validate(json, schema)
+        result.valid shouldBe true
+    }*/
 
     @Test
     fun fail() {

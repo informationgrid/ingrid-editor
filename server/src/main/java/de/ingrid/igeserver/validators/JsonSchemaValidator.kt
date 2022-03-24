@@ -57,9 +57,7 @@ class JsonSchemaValidator @Autowired constructor(
             return null
         }
 
-        val schemaContent = resource.readText()
-
-        val schema = JSONSchema.parse(schemaContent)
+        val schema = JSONSchema.parseFile(resource.file)
         val output = schema.validateBasic(json)
         log.debug("Document valid: ${output.valid}")
         output.errors?.forEach {

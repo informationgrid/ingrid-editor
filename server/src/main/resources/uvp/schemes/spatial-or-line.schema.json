@@ -22,7 +22,7 @@
         "publisher": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Publisher"
+            "$ref": "refs/general.schema.json#/definitions/Publisher"
           },
           "minItems": 1,
           "maxItems": 1
@@ -30,7 +30,7 @@
         "spatial": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Spatial"
+            "$ref": "refs/general.schema.json#/definitions/Spatial"
           },
           "minItems": 1
         },
@@ -41,14 +41,14 @@
         "eiaNumber": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "refs/general.schema.json#/definitions/KeyValue"
           },
           "minItems": 1
         },
         "processingSteps": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ProcessingStep"
+            "$ref": "refs/processing-steps-default.schema.json"
           }
         }
       },
@@ -63,250 +63,6 @@
         "eiaNumber"
       ],
       "title": "SpatialOrLine"
-    },
-    "KeyValue": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "key": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "value": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      },
-      "title": "KeyValue"
-    },
-    "ProcessingStep": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "enum": [
-            "publicDisclosure",
-            "publicHearing",
-            "decisionOfAdmission"
-          ]
-        }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "publicDisclosure"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "publicDisclosure"
-              },
-              "disclosureDate": {
-                "$ref": "#/definitions/Date"
-              },
-              "announcementDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "applicationDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "reportsRecommendationDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "furtherDocs": {
-                "type": ["null","array"],
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "publicHearing"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "publicHearing"
-              },
-              "publicHearingDate": {
-                "$ref": "#/definitions/Date"
-              },
-              "considerationDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "decisionOfAdmission"
-              }
-            }
-          },
-          "then": {
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "const": "decisionOfAdmission"
-              },
-              "decisionDate": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "approvalDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              },
-              "decisionDocs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Doc"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "required": [],
-      "title": "ProcessingStep"
-    },
-    "Doc": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "downloadURL": {
-          "$ref": "#/definitions/DownloadURL"
-        }
-      },
-      "required": [],
-      "title": "Doc"
-    },
-    "DownloadURL": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "asLink": {
-          "type": "boolean"
-        },
-        "value": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        }
-      },
-      "required": [],
-      "title": "DownloadURL"
-    },
-    "Date": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "start": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "end": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [],
-      "title": "Date"
-    },
-    "Publisher": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "ref": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/definitions/KeyValue"
-        }
-      },
-      "required": [
-        "ref",
-        "type"
-      ],
-      "title": "Publisher"
-    },
-    "Spatial": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "value": {
-          "$ref": "#/definitions/BoundingBox"
-        }
-      },
-      "required": [],
-      "title": "Spatial"
-    },
-    "BoundingBox": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "lat1": {
-          "type": "number"
-        },
-        "lat2": {
-          "type": "number"
-        },
-        "lon1": {
-          "type": "number"
-        },
-        "lon2": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "lat1",
-        "lat2",
-        "lon1",
-        "lon2"
-      ],
-      "title": "Value"
     }
   }
 }

@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "DecisionOfAdmission": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "decisionOfAdmission"
+        },
+        "decisionDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "approvalDocs": {
+          "type": "array",
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          }
+        },
+        "decisionDocs": {
+          "type": "array",
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          }
+        }
+      },
+      "required": [
+        "decisionDate"
+      ]
+    
+    },
+    "PublicDisclosure": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "publicDisclosure"
+        },
+        "disclosureDate": {
+          "$ref": "general.schema.json#/definitions/Date"
+        },
+        "announcementDocs": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          },
+          "minItems": 1
+        },
+        "applicationDocs": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          },
+          "minItems": 1
+        },
+        "reportsRecommendationDocs": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          }
+        },
+        "furtherDocs": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          }
+        }
+      },
+      "required": [
+        "disclosureDate",
+        "announcementDocs",
+        "applicationDocs"
+      ]
+    },
+    "PublicHearing": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "publicHearing"
+        },
+        "publicHearingDate": {
+          "$ref": "general.schema.json#/definitions/Date"
+        },
+        "considerationDocs": {
+          "type": "array",
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "publicHearingDate",
+        "considerationDocs"
+      ]
+    }
+  }
+}

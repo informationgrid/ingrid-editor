@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "enum": [
+        "publicDisclosure",
+        "decisionOfAdmission"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "publicDisclosure"
+          }
+        }
+      },
+      "then": {
+        "$ref": "processing-steps-definition.schema.json#/definitions/PublicDisclosure"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "decisionOfAdmission"
+          }
+        }
+      },
+      "then": {
+        "$ref": "processing-steps-definition.schema.json#/definitions/DecisionOfAdmission"
+      }
+    }
+  ],
+  "required": [],
+  "title": "ProcessingSteps"
+}
