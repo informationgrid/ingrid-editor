@@ -38,7 +38,7 @@
           "type": "string",
           "format": "date-time"
         },
-        "eiaNumber": {
+        "eiaNumbers": {
           "type": "array",
           "items": {
             "$ref": "refs/general.schema.json#/definitions/KeyValue"
@@ -61,7 +61,7 @@
         "publisher",
         "spatial",
         "decisionDate",
-        "eiaNumber",
+        "eiaNumbers",
         "uvpNegativeDecisionDocs"
       ],
       "title": "NegativePreliminaryExamination"

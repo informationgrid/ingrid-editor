@@ -16,7 +16,7 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
         "publisher",
         "spatial",
         "decisionDate",
-        "eiaNumber",
+        "eiaNumbers",
         "uvpNegativeDecisionDocs"
     )
 

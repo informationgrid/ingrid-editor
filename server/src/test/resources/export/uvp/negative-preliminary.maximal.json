@@ -14,7 +14,7 @@
       }
     }
   ],
-  "eiaNumber": [
+  "eiaNumbers": [
     {
       "key": "1"
     },
@@ -34,10 +34,10 @@
   "decisionDate": "2022-03-06T23:00:00.000Z",
   "uvpNegativeDecisionDocs": [
     {
-      "title": "schema (2)",
+      "title": "schema",
       "downloadURL": {
-        "uri": "schema (2)",
-        "value": "schema (2)",
+        "uri": "schema",
+        "value": "schema",
         "asLink": false
       }
     }

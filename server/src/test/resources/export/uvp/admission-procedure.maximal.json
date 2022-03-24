@@ -24,7 +24,7 @@
     }
   ],
   "receiptDate": "2022-02-21T23:00:00.000Z",
-  "eiaNumber": [
+  "eiaNumbers": [
     {
       "key": "24"
     }
@@ -39,41 +39,41 @@
       },
       "announcementDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ],
       "applicationDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ],
       "reportsRecommendationDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ],
       "furtherDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ]
@@ -86,11 +86,11 @@
       },
       "considerationDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ]
@@ -100,21 +100,21 @@
       "decisionDate": "2022-03-23T23:00:00.000Z",
       "approvalDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         }
       ],
       "decisionDocs": [
         {
-          "title": "schema (2).txt",
+          "title": "schema.txt",
           "downloadURL": {
             "asLink": false,
-            "value": "schema (2).txt",
-            "uri": "schema (2).txt"
+            "value": "schema.txt",
+            "uri": "schema.txt"
           }
         },
         {

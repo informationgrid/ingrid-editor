@@ -16,7 +16,7 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
         "publisher",
         "spatial",
         "receiptDate",
-        "eiaNumber",
+        "eiaNumbers",
         "prelimAssessment"
     )
     
@@ -54,12 +54,13 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
         requiredErrors shouldBe requiredStepFields
     }
 
-/*    @Test
+    @Test
     fun wrongFieldInStep() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.maximal.json")
+        // this json contains field "furtherDocs" which does not belong to step "publicHearing"
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.wrongStepField.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
-    }*/
+        result.valid shouldBe false
+    }
 
     @Test
     fun fail() {

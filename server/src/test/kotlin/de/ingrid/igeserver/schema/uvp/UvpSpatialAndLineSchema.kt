@@ -16,7 +16,7 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
         "publisher",
         "spatial",
         "receiptDate",
-        "eiaNumber"
+        "eiaNumbers"
     )
 
     @Test

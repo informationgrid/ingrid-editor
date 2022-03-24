@@ -38,7 +38,7 @@
           "type": "string",
           "format": "date-time"
         },
-        "eiaNumber": {
+        "eiaNumbers": {
           "type": "array",
           "items": {
             "$ref": "refs/general.schema.json#/definitions/KeyValue"
@@ -63,7 +63,7 @@
         "publisher",
         "spatial",
         "receiptDate",
-        "eiaNumber",
+        "eiaNumbers",
         "prelimAssessment"
       ],
       "title": "AdmissionProcedure"
