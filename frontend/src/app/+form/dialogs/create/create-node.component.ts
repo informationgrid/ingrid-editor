@@ -171,6 +171,8 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private getPathAllowedToAdd(path: ShortTreeNode[]): ShortTreeNode[] {
+    if (path.length === 0) return [];
+
     const lastNode = path.pop();
     const entity = this.query.getEntity(lastNode.id);
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
