@@ -276,7 +276,7 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.assertFileUpload();
     // check number of unzipped files in table
-    cy.get('[data-cy="Downloads-table"] mat-row', { timeout: 8000 }).should('have.length', 4);
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
 
     // upload file and activate unzip option
     enterMcloudDocTestData.openDownloadDialog();
