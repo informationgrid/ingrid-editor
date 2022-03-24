@@ -571,11 +571,14 @@ class DocumentService @Autowired constructor(
         // if no draft version exists, move published version to draft
         if (wrapper.draft == null) {
             wrapper.draft = wrapper.published
-            wrapper.published = null
         } else {
             // else delete published version which automatically sets published version in wrapper to null
             docRepo.delete(wrapper.published!!)
         }
+        
+        // explicitly set published to null (to also determine state correctly)
+        wrapper.published = null
+        
         docWrapperRepo.save(wrapper)
 
         // remove from index
