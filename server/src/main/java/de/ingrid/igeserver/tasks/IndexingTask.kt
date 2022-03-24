@@ -211,7 +211,6 @@ class IndexingTask @Autowired constructor(
     /**
      * Indexing of a single document into an Elasticsearch index.
      */
-    // TODO: implement
     fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
 
         val exporter = indexService.getExporter(category, format)

@@ -85,7 +85,7 @@ dependencies {
 //    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.31'
+    implementation 'net.pwall.json:json-kotlin-schema:0.32'
     
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.4'
