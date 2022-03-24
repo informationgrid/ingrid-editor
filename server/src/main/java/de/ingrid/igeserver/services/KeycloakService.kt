@@ -22,6 +22,7 @@ import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
@@ -215,6 +216,9 @@ class KeycloakService : UserManagementService {
 
     override fun getCurrentPrincipal(): Principal? {
         val securityContext: SecurityContext? = SecurityContextHolder.getContext()
+        if (securityContext?.authentication is UsernamePasswordAuthenticationToken) {
+            return securityContext.authentication
+        }
         return securityContext?.authentication?.principal as KeycloakPrincipal<*>?
     }
 

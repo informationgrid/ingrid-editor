@@ -63,9 +63,7 @@ class IndexingTask @Autowired constructor(
 
     fun indexByScheduler(catalogId: String, format: String) {
         Timer("ManualIndexing", false).schedule(0) {
-            val auth: Authentication =
-                UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-            SecurityContextHolder.getContext().authentication = auth
+            runAsCatalogAdministrator()
             startIndexing(catalogId, format)
         }
     }
@@ -213,6 +211,8 @@ class IndexingTask @Autowired constructor(
      */
     fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
 
+        runAsCatalogAdministrator()
+        
         val exporter = indexService.getExporter(category, format)
 
         try {
@@ -305,12 +305,15 @@ class IndexingTask @Autowired constructor(
     private fun addSchedule(config: IndexConfig): ScheduledFuture<*>? {
         val trigger = CronTrigger(config.cron)
         return scheduler.schedule({
-            val auth: Authentication =
-                UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-            SecurityContextHolder.getContext().authentication = auth
-
+            runAsCatalogAdministrator()
             startIndexing(config.catalogId, "portal")
         }, trigger)
+    }
+
+    private fun runAsCatalogAdministrator() {
+        val auth: Authentication =
+            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+        SecurityContextHolder.getContext().authentication = auth
     }
 
     fun updateTaskTrigger(database: String, exportFormat: String, cronPattern: String) {

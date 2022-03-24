@@ -69,8 +69,7 @@ class MCloudPublishExport @Autowired constructor(
     private fun indexMCloudDoc(context: Context, docId: String) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.
-        updateDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
 
     }
 }
