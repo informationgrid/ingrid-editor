@@ -470,9 +470,8 @@ export class DocumentPage extends BasePage {
       })
       .then(success => {
         assert.isTrue(success);
+        cy.get(targetNode).click();
       });
-
-    cy.get(targetNode).click();
     // we still need the code below in case click failed in future drag and drop tests
     // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
     // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
