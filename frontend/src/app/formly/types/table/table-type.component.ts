@@ -88,10 +88,16 @@ export class TableTypeComponent
   }
 
   removeRow(index: number) {
+    this.selection.deselect(this.dataSource.data[index]);
+
     this.dataSource = new MatTableDataSource<any>(
       this.dataSource.data.filter((item, indexItem) => indexItem !== index)
     );
     this.updateFormControl(this.dataSource.data);
+
+    if (this.dataSource.data.length === 0) {
+      this.toggleBatchMode(false);
+    }
   }
 
   editRow(index: number) {
