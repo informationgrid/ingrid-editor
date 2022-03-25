@@ -509,7 +509,7 @@ describe('User', () => {
     AdminUserPage.userShouldNotExist('me@wemove.com');
   });
 
-  it.only('should update user information (#2972)', () => {
+  it('should update user information (#2972)', () => {
     const dateOfToday = Utils.getFormattedDate(new Date());
 
     AdminUserPage.selectUser('autornew2');
