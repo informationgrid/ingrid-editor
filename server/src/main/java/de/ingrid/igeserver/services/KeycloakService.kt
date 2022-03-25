@@ -118,7 +118,7 @@ class KeycloakService : UserManagementService {
         ignoreUsers: Set<User> = emptySet()
     ): List<User> {
         try {
-            val users = roles[roleName].roleUserMembers
+            val users = roles[roleName].getRoleUserMembers(0, 10000)
                 .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
