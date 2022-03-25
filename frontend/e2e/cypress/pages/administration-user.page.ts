@@ -248,7 +248,7 @@ export class AdminUserPage extends BasePage {
           return title ?? '';
         });
     } else {
-      return cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ') span').then(node => {
+      return cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ') div:nth-child(2)').then(node => {
         return node.text();
       });
     }
