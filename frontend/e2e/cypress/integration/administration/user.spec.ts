@@ -509,22 +509,30 @@ describe('User', () => {
     AdminUserPage.userShouldNotExist('me@wemove.com');
   });
 
-  it('should update user information (#2972)', () => {
+  it.only('should update user information (#2972)', () => {
     const dateOfToday = Utils.getFormattedDate(new Date());
-    // log in as some user to update last login information
-    cy.kcLogout();
-    cy.kcLogin('autor');
-    // log in as admin and make sure "last logged in" contains right information
-    cy.kcLogout();
-    cy.kcLogin('user');
-    AdminUserPage.visit();
-    AdminUserPage.selectUser('autor');
-    AdminUserPage.verifyInfoInHeader(keysInHeader.LastLogin, dateOfToday);
-    AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(oldEditDate => {
-      // change user profile and make sure information is updated accordingly
-      AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
-      AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(newEditDate => {
-        cy.wrap(oldEditDate).should('not.eql', newEditDate);
+
+    AdminUserPage.selectUser('autornew2');
+    AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
+      // log in as some user to update last login information
+      cy.kcLogout();
+      cy.kcLogin('autornew2');
+      DocumentPage.visit();
+      // log in as admin and make sure "last logged in" contains right information
+      cy.kcLogout();
+      cy.kcLogin('user');
+      AdminUserPage.visit();
+      AdminUserPage.selectUser('autornew2');
+      // make sure last-login-date is not identical to old login-date, but identical to current date
+      AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(newLoginDate => {
+        cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('equal', dateOfToday);
+      });
+      AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(oldEditDate => {
+        // change user profile and make sure information is updated accordingly
+        AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
+        AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(newEditDate => {
+          cy.wrap(oldEditDate).should('not.eql', newEditDate);
+        });
       });
     });
   });
