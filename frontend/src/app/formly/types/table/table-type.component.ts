@@ -140,8 +140,8 @@ export class TableTypeComponent
       : this.dataSource.data.forEach((row) => this.selection.select(row));
   }
 
-  toggleBatchMode() {
-    this.batchMode = !this.batchMode;
+  toggleBatchMode(forceState?: boolean) {
+    this.batchMode = forceState ?? !this.batchMode;
 
     if (this.batchMode) {
       this.displayedColumns.unshift("_select_");
@@ -161,7 +161,7 @@ export class TableTypeComponent
     this.selection.clear();
 
     if (updated.length === 0) {
-      this.batchMode = false;
+      this.toggleBatchMode(false);
     }
   }
 
