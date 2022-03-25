@@ -470,6 +470,7 @@ export class DocumentPage extends BasePage {
       })
       .then(success => {
         assert.isTrue(success);
+        cy.wait(300);
         cy.get(targetNode).click();
       });
     // we still need the code below in case click failed in future drag and drop tests
