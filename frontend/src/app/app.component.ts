@@ -1,12 +1,13 @@
 import { Component, HostListener, OnInit } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
-import { DomSanitizer } from "@angular/platform-browser";
+import { DomSanitizer, Title } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { Subject } from "rxjs";
+import { ConfigService } from "./services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -16,13 +17,16 @@ import { Subject } from "rxjs";
 })
 export class AppComponent implements OnInit {
   sessionRefresher$ = new Subject();
+  favIcon: HTMLLinkElement = document.querySelector("#appIcon");
 
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
+    private configService: ConfigService,
     private codelistService: CodelistService,
     registry: MatIconRegistry,
     domSanitizer: DomSanitizer,
-    private authFactory: AuthenticationFactory
+    private authFactory: AuthenticationFactory,
+    private titleService: Title
   ) {
     // TODO: get RoleMapping from each role so that we can give permissions in client correctly
     /*this.roleService.getGroup('admin')
@@ -65,6 +69,13 @@ export class AppComponent implements OnInit {
     //       loaded and replaced in store overwriting catalog codelists
     //       Catalog Codelists should be loaded initially into the correct store!
     codelistService.fetchCatalogCodelists();
+
+    const profile =
+      this.configService.$userInfo.getValue().currentCatalog?.type;
+    if (profile == "mcloud") {
+      this.favIcon.href = "/assets/profiles/mcloud/assets/icons/favicon.ico";
+      titleService.setTitle("mCLOUD Editor");
+    }
   }
 
   @HostListener("click")
