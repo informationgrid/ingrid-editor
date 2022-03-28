@@ -164,7 +164,7 @@ export class UvpShared extends BaseDoctype {
 
   addPublisher() {
     return this.addAddressCard(
-      "publisher",
+      "pointOfContact",
       "Kontaktdaten der verfahrensführenden Behörde",
       {
         required: true,
