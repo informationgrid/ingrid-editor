@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "1.0.0",
+  "$id": "AdmissionProcedure#1.0.0",
   "$ref": "#/definitions/AdmissionProcedure",
   "definitions": {
     "AdmissionProcedure": {
