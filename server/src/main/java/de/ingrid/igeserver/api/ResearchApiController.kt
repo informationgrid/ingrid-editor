@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.Facets
+import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
@@ -57,10 +58,14 @@ class ResearchApiController @Autowired constructor(
 
     }
 
-    override fun searchSql(principal: Principal, sqlQuery: String): ResponseEntity<ResearchResponse> {
+    override fun searchSql(principal: Principal, sqlQuery: String, page: Int?, pageSize: Int?): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = researchService.querySql(principal, catalogId, sqlQuery)
+        val paging = if (page != null && pageSize != null) {
+            ResearchPaging(page, pageSize)
+        } else ResearchPaging()
+        
+        val result = researchService.querySql(principal, catalogId, sqlQuery, paging)
         return ResponseEntity.ok(result)
     }
 

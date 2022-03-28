@@ -117,10 +117,18 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
-  searchBySQL(sql: string): Observable<ResearchResponse> {
+  searchBySQL(
+    sql: string,
+    page?: number,
+    pageSize?: number
+  ): Observable<ResearchResponse> {
+    let paging = "";
+    if (page && pageSize) {
+      paging = `?page=${page}&pageSize=${pageSize}`;
+    }
     return this.http
       .post<ResearchResponse>(
-        `${this.configuration.backendUrl}search/querySql`,
+        `${this.configuration.backendUrl}search/querySql${paging}`,
         sql
       )
       .pipe(map((result) => this.mapDocumentIcons(result)));

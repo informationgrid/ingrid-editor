@@ -53,7 +53,9 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun searchSql(
         principal: Principal,
-        @Parameter(description = "the sql query") @RequestBody sqlQuery: String
+        @Parameter(description = "the sql query") @RequestBody sqlQuery: String,
+        @Parameter(description = "the page of the results") @RequestParam page: Int?,
+        @Parameter(description = "the size of the results to show") @RequestParam pageSize: Int?,
     ): ResponseEntity<ResearchResponse>
 
     @Operation
