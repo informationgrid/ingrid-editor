@@ -11,6 +11,7 @@ open class ValidationException: ClientException {
     companion object {
         private const val ERROR_CODE = "VALIDATION_ERROR"
         private const val ERROR_TEXT_INVALID = "One or more fields are invalid: \${fieldNames}."
+        private const val ERROR_TEXT = "The validation failed for this document"
 
         /**
          * Factory method for invalid fields
@@ -18,6 +19,10 @@ open class ValidationException: ClientException {
         fun withInvalidFields(vararg fields: InvalidField, cause: Throwable? = null) : ValidationException {
             val errorText = getErrorText(ERROR_TEXT_INVALID, mapOf("fieldNames" to fields.joinToString(", ") { it -> it.name }))
             return ValidationException(STATUS_CODE, ERROR_CODE, errorText, mapOf("fields" to fields), cause)
+        }
+        
+        fun withReason(reason: String, data: Any?, cause: Throwable? = null) : ValidationException {
+            return ValidationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
         }
     }
 }

@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.validators
 
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
@@ -63,6 +64,11 @@ class JsonSchemaValidator @Autowired constructor(
         output.errors?.forEach {
             log.error("${it.error} - ${it.instanceLocation}")
         }
+
+        if (!output.valid) {
+            throw ValidationException.withReason("JSON schema validation failed", output.errors)
+        }
+
         return output
     }
 }

@@ -20,6 +20,7 @@ import {
   DocEventsService,
 } from "../../../services/event/doc-events.service";
 import { MessageService } from "../../../services/message.service";
+import { SessionStore } from "../../../store/session.store";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -47,9 +48,10 @@ export class PublishPlugin extends SaveBase {
     public dialog: MatDialog,
     public formStateService: FormStateService,
     public documentService: DocumentService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    sessionStore: SessionStore
   ) {
-    super();
+    super(sessionStore);
     this.isActive = true;
   }
 

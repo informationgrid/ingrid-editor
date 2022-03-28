@@ -24,6 +24,11 @@ export abstract class SaveBase extends Plugin {
   documentService: DocumentService;
   formToolbarService: FormToolbarService;
 
+  protected constructor(sessionStore: SessionStore) {
+    super();
+    this.sessionStore = sessionStore;
+  }
+
   handleError(error, data: IgeDocument, address: boolean): Observable<void> {
     if (error?.error?.errorCode === "POST_SAVE_ERROR") {
       console.error(error?.error?.errorText);
@@ -47,7 +52,17 @@ export abstract class SaveBase extends Plugin {
       error?.status === 400 &&
       error?.error.errorCode === "VALIDATION_ERROR"
     ) {
-      this.sessionStore.update({
+      console.error("JSON schema error:", error.error.data);
+      const igeError = new IgeError(
+        "Es trat ein Fehler bei der JSON-Schema Validierung auf."
+      );
+      igeError.detail = error?.error?.data?.error
+        ?.map((item) => item.error)
+        ?.filter((item) => item.indexOf("A subschema had errors") === -1);
+      throw igeError;
+
+      // TODO: update store to show backend validation errors in form
+      /*this.sessionStore.update({
         serverValidationErrors: ServerValidation.prepareServerValidationErrors(
           error.error.data
         ),
@@ -58,6 +73,7 @@ export abstract class SaveBase extends Plugin {
           // error: {message: ServerValidation.prepareServerError(error?.error)})
         ),
       });
+      */
     } else {
       this.messageService.sendError(
         "Der Datensatz wurde nicht erfolgreich veröffentlicht: " +

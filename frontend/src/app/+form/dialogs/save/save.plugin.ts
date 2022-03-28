@@ -10,6 +10,7 @@ import { catchError, filter, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
 import { MessageService } from "../../../services/message.service";
+import { SessionStore } from "../../../store/session.store";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -31,9 +32,10 @@ export class SavePlugin extends SaveBase {
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public formStateService: FormStateService,
-    public documentService: DocumentService
+    public documentService: DocumentService,
+    sessionStore: SessionStore
   ) {
-    super();
+    super(sessionStore);
   }
 
   register() {
