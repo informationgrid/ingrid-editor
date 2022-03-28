@@ -15,6 +15,8 @@ export abstract class OrganisationDoctype extends BaseDoctype {
   hideCountryAndAdministrativeArea = false;
   hideAdministrativeArea = false;
 
+  private fieldWithAddressReferences: string;
+
   documentFields() {
     const fields = <FormlyFieldConfig[]>[
       this.addSection("Organisationsdaten", [
@@ -137,6 +139,7 @@ export abstract class OrganisationDoctype extends BaseDoctype {
           { fieldGroupClassName: null }
         ),
       ]),
+      this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
 
     if (this.hideAdministrativeArea) {
@@ -154,8 +157,10 @@ export abstract class OrganisationDoctype extends BaseDoctype {
   protected constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
+    fieldWithAddressReferences: string
   ) {
     super(codelistService, codelistQuery);
+    this.fieldWithAddressReferences = fieldWithAddressReferences;
   }
 }

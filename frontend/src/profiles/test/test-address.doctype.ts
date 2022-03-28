@@ -15,6 +15,6 @@ export class TestAddressDoctype extends PersonDoctype {
     codelistService: CodelistService,
     codelistQuery: CodelistQuery
   ) {
-    super(storageService, codelistService, codelistQuery);
+    super(storageService, codelistService, codelistQuery, "addresses");
   }
 }

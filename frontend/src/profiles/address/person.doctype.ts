@@ -14,6 +14,7 @@ export class PersonDoctype extends BaseDoctype {
 
   hideCountryAndAdministrativeArea = false;
   hideAdministrativeArea = false;
+  private fieldWithAddressReferences: string;
 
   documentFields() {
     const fields = <FormlyFieldConfig[]>[
@@ -265,6 +266,7 @@ export class PersonDoctype extends BaseDoctype {
           },
         ],
       },
+      this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
 
     if (this.hideAdministrativeArea) {
@@ -282,8 +284,10 @@ export class PersonDoctype extends BaseDoctype {
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
+    fieldWithAddressReferences: string
   ) {
     super(codelistService, codelistQuery);
+    this.fieldWithAddressReferences = fieldWithAddressReferences;
   }
 }

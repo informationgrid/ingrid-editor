@@ -237,4 +237,15 @@ export class FormFieldHelper {
       },
     };
   }
+
+  addReferencesForAddress(referenceField: string) {
+    return {
+      type: "referencedDocuments",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: "Zugeordnete Datensätze",
+        referenceField: referenceField,
+      },
+    };
+  }
 }
