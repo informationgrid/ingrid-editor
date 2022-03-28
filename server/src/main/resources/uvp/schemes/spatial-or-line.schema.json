@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "1.0.0",
   "$ref": "#/definitions/SpatialOrLine",
   "definitions": {
     "SpatialOrLine": {
@@ -19,10 +20,10 @@
         "description": {
           "type": "string"
         },
-        "publisher": {
+        "pointOfContact": {
           "type": "array",
           "items": {
-            "$ref": "refs/general.schema.json#/definitions/Publisher"
+            "$ref": "refs/general.schema.json#/definitions/PointOfContact"
           },
           "minItems": 1,
           "maxItems": 1
@@ -57,7 +58,7 @@
         "_type",
         "title",
         "description",
-        "publisher",
+        "pointOfContact",
         "spatial",
         "receiptDate",
         "eiaNumbers"
