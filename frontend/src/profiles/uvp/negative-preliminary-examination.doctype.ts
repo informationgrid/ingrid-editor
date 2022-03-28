@@ -23,13 +23,7 @@ export class NegativePreliminaryExaminationDoctype extends UvpShared {
         this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
           required: true,
         }),
-        this.addAddressCard(
-          "publisher",
-          "Kontaktdaten der verfahrensführenden Behörde",
-          {
-            required: true,
-          }
-        ),
+        this.addPublisher(),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {

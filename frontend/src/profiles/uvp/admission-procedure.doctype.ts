@@ -23,31 +23,7 @@ export class AdmissionProcedureDoctype extends UvpShared {
         this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
           required: true,
         }),
-        this.addAddressCard(
-          "publisher",
-          "Kontaktdaten der verfahrensführenden Behörde",
-          {
-            required: true,
-            allowedTypes: ["7"],
-            validators: {
-              needPublisher: {
-                expression: (ctrl) =>
-                  ctrl.value
-                    ? ctrl.value.some((row) => row.type.key === "7")
-                    : false,
-                message:
-                  "Es muss ein Ansprechpartner als Adresse angegeben sein",
-              },
-              publisherPublished: {
-                expression: (ctrl) =>
-                  ctrl.value
-                    ? ctrl.value.every((row) => row.ref._state === "P")
-                    : false,
-                message: "Alle Adressen müssen veröffentlicht sein",
-              },
-            },
-          }
-        ),
+        this.addPublisher(),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
