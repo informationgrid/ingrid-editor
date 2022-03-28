@@ -28,3 +28,8 @@ export interface CodelistEntryBackend {
   localisations: any;
   data: string;
 }
+
+export interface BackendOption {
+  key: string;
+  value?: string;
+}
