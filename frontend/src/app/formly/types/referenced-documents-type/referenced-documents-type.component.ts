@@ -57,6 +57,13 @@ export class ReferencedDocumentsTypeComponent
         filter(() => this.showReferences)
       )
       .subscribe((uuid) => this.searchReferences(uuid));
+
+    this.documentService.reload$
+      .pipe(
+        filter(() => this.showReferences),
+        map((item) => item.uuid)
+      )
+      .subscribe((uuid) => this.searchReferences(uuid));
   }
 
   searchReferences(uuid: string, page = 1) {
