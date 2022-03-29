@@ -102,7 +102,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         takeWhile((item) => item.value !== null)
       )
       .subscribe((data) => {
-        console.log("Token in LocalStorage has changed", data);
+        console.debug("Token in LocalStorage has changed", data);
         if (!data.value) {
           this.keycloak.logout();
           this.storageService.clear("ige-refresh-token");
