@@ -7,9 +7,9 @@ import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 
-class UvpAdmissionProcedureSchema : AnnotationSpec() {
+class UvpApprovalProcedureSchema : AnnotationSpec() {
 
-    private val schema = "/uvp/schemes/admission-procedure.schema.json"
+    private val schema = "/uvp/schemes/approval-procedure.schema.json"
     private val requiredFields = listOf(
         "_uuid",
         "_type",
@@ -33,21 +33,21 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.maximal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
 
     @Test
     fun emptySteps() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.emptySteps.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.emptySteps.json")
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
             result.valid shouldBe false
@@ -61,7 +61,7 @@ class UvpAdmissionProcedureSchema : AnnotationSpec() {
     @Test
     fun wrongFieldInStep() {
         // this json contains field "furtherDocs" which does not belong to step "publicHearing"
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/admission-procedure.wrongStepField.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.wrongStepField.json")
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
             result.valid shouldBe false

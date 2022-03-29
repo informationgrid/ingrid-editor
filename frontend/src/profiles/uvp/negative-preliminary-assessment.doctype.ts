@@ -10,8 +10,8 @@ import { UvpShared } from "./uvp-shared";
 @Injectable({
   providedIn: "root",
 })
-export class NegativePreliminaryExaminationDoctype extends UvpShared {
-  id = "UvpNegativePreliminaryExaminationDoc";
+export class NegativePreliminaryAssessmentDoctype extends UvpShared {
+  id = "UvpNegativePreliminaryAssessmentDoc";
 
   label = "Negative Vorprüfung";
 

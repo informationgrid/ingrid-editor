@@ -9,7 +9,7 @@ import io.kotest.matchers.shouldBe
 
 class UvpNegativePreliminarySchema : AnnotationSpec() {
 
-    private val schema = "/uvp/schemes/negative-preliminary-examination.schema.json"
+    private val schema = "/uvp/schemes/negative-preliminary-assessment.schema.json"
     private val requiredFields = listOf(
         "_uuid",
         "_type",

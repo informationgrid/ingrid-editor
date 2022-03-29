@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UvpAdmissionProcedureType @Autowired constructor() : EntityType() {
-    override val className = "UvpAdmissionProcedureDoc"
+class UvpNegativePreliminaryAssessmentType @Autowired constructor() : EntityType() {
+    override val className = "UvpNegativePreliminaryAssessmentDoc"
     override val profiles = arrayOf("uvp")
 
     val log = logger()
 
-    override val jsonSchema = "/uvp/schemes/admission-procedure.schema.json"
+    override val jsonSchema = "/uvp/schemes/negative-preliminary-assessment.schema.json"
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
@@ -37,25 +37,4 @@ class UvpAdmissionProcedureType @Autowired constructor() : EntityType() {
     private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
         return replaceUuidWithReferenceData(doc, "pointOfContact", options)
     }
-    
-    override fun getUploads(doc: Document): List<String> {
-        /*if( doc.data.get("distributions") != null) {
-            val files = doc.data.get("distributions")
-                .filter { download -> !download.get("link").get("asLink").booleanValue() }
-                .map { download -> getUploadFile(download)}
-
-            return files
-        }*/
-        return emptyList()
-    }
-
-    /*private fun getUploadFile(download: JsonNode): String {
-        if (download.get("link").get("uri") !== null) {
-            return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8")
-        } else {
-            return download.get("link").get("value").textValue()
-        }
-    }*/
-
-
 }

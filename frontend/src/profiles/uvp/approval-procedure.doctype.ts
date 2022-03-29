@@ -10,8 +10,8 @@ import { ConfigService } from "../../app/services/config/config.service";
 @Injectable({
   providedIn: "root",
 })
-export class AdmissionProcedureDoctype extends UvpShared {
-  id = "UvpAdmissionProcedureDoc";
+export class ApprovalProcedureDoctype extends UvpShared {
+  id = "UvpApprovalProcedureDoc";
 
   label = "Zulassungsverfahren";
 

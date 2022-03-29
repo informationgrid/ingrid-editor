@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "NegativePreliminaryExamination#1.0.0",
-  "$ref": "#/definitions/NegativePreliminaryExamination",
+  "$id": "ApprovalProcedure#1.0.0",
+  "$ref": "#/definitions/ApprovalProcedure",
   "definitions": {
-    "NegativePreliminaryExamination": {
+    "ApprovalProcedure": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -12,7 +12,7 @@
           "format": "uuid"
         },
         "_type": {
-          "const": "UvpNegativePreliminaryExaminationDoc"
+          "const": "UvpApprovalProcedureDoc"
         },
         "title": {
           "type": "string"
@@ -35,7 +35,7 @@
           },
           "minItems": 1
         },
-        "decisionDate": {
+        "receiptDate": {
           "type": "string",
           "format": "date-time"
         },
@@ -46,12 +46,14 @@
           },
           "minItems": 1
         },
-        "uvpNegativeDecisionDocs": {
+        "prelimAssessment": {
+          "type": "boolean"
+        },
+        "processingSteps": {
           "type": "array",
           "items": {
-            "$ref": "refs/general.schema.json#/definitions/Doc"
-          },
-          "minItems": 1
+            "$ref": "refs/processing-steps-default.schema.json"
+          }
         }
       },
       "required": [
@@ -61,11 +63,11 @@
         "description",
         "pointOfContact",
         "spatial",
-        "decisionDate",
+        "receiptDate",
         "eiaNumbers",
-        "uvpNegativeDecisionDocs"
+        "prelimAssessment"
       ],
-      "title": "NegativePreliminaryExamination"
+      "title": "ApprovalProcedure"
     }
   }
 }
