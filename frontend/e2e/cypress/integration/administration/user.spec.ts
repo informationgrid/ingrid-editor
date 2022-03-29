@@ -248,9 +248,6 @@ describe('User', () => {
   });
 
   it('should show only the names, emails, logins and organisations as result of a user search (#2551)', () => {
-    cy.get('user-table').should('contain', 'Katalog');
-    cy.get('user-table').should('contain', 'Majid');
-
     AdminUserPage.searchForUser('Katalog');
     AdminUserPage.searchForUser('Katalog', 'Majid', false);
 

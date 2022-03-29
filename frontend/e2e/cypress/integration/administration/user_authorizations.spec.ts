@@ -782,9 +782,16 @@ describe('Catalogue admin', () => {
   it('catalogue admin should be able to see everything', () => {
     //Dashboard should give overview of data
     DashboardPage.visit();
-    cy.contains('In Bearbeitung').parent().should('not.contain', 0);
-    cy.contains('Veröffentlicht').parent().should('not.contain', 0);
-    cy.get('text.text').should('not.contain', 0);
+    DashboardPage.getCount('[data-cy=editModeDocument]').then(num => {
+      expect(num).greaterThan(0);
+    });
+    DashboardPage.getCount('[data-cy=publishModeDocument]').then(num => {
+      expect(num).greaterThan(0);
+    });
+
+    DashboardPage.getCount('text.text').then(num => {
+      expect(num).greaterThan(0);
+    });
 
     //Documents and addresses should be present
     DocumentPage.visit();

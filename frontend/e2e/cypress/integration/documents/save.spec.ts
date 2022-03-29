@@ -216,13 +216,15 @@ describe('General create documents/folders', () => {
       cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
     });
 
-    it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
+    it.only('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
       // We need to change the test select the predefined data then no need for reload or save document
       let category1 = 'Bahn';
       let category2 = 'Straßen';
-      let category3 = 'Luft- und Raumfahrt';
+      let category31 = 'Luft- und Raumfahrt';
+      let category3 = 'Infrastruktur';
+
       let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
-      let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(3) ';
+      let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(4) ';
       let mCLOUDSelectorTargetNode = mCLOUDSelector + ' .cdk-drag:nth-child(1) ';
       Tree.openNode(['New Folder For New Users', 'New Document']);
       DocumentPage.scrollToSection('mCLOUD');
@@ -231,6 +233,9 @@ describe('General create documents/folders', () => {
 
       enterMcloudDocTestData.setCategory(category2, false);
       cy.get(mCLOUDSelector).contains(category2);
+
+      enterMcloudDocTestData.setCategory(category31, false);
+      cy.get(mCLOUDSelector).contains(category31);
 
       enterMcloudDocTestData.setCategory(category3, false);
       cy.get(mCLOUDSelector).contains(category3);
@@ -252,16 +257,20 @@ describe('General create documents/folders', () => {
       // add openData categories and check of the order after drag and drop
       let openDataCategory1 = 'Energie';
       let openDataCategory2 = 'Gesundheit';
+      let openDataCategory31 = 'Regionen und Städte';
       let openDataCategory3 = 'Internationale Themen';
 
       let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
-      let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(3) ';
+      let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(4) ';
       let openDataSelectorTargetNode = openDataSelector + ' .cdk-drag:nth-child(1) ';
       enterMcloudDocTestData.setOpenDataCategory(openDataCategory1);
       cy.get(openDataSelector).contains(openDataCategory1);
 
       enterMcloudDocTestData.setOpenDataCategory(openDataCategory2, false);
       cy.get(openDataSelector).contains(openDataCategory2);
+
+      enterMcloudDocTestData.setOpenDataCategory(openDataCategory31, false);
+      cy.get(openDataSelector).contains(openDataCategory31);
 
       enterMcloudDocTestData.setOpenDataCategory(openDataCategory3, false);
       cy.get(openDataSelector).contains(openDataCategory3);
