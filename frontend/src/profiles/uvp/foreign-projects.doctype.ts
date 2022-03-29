@@ -23,7 +23,7 @@ export class ForeignProjectsDoctype extends UvpShared {
         this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
           required: true,
         }),
-        this.addPublisher(),
+        this.addPointOfContact(),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
