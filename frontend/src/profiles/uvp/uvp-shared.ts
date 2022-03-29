@@ -169,6 +169,7 @@ export class UvpShared extends BaseDoctype {
       {
         required: true,
         allowedTypes: ["7"],
+        max: 1,
         validators: {
           needPublisher: {
             expression: (ctrl) =>

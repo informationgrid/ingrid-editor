@@ -52,6 +52,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
+        max: options?.max,
       },
       validators: options?.validators,
     };
