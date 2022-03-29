@@ -148,7 +148,7 @@ export class AddressPage extends DocumentPage {
 
   static deleteLoadedNode() {
     cy.get(AddressPage.Toolbar['Delete']).click();
-    cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');
+    cy.intercept('GET', /api\/datasetsByUuid/).as('deleteRequest');
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
   }
