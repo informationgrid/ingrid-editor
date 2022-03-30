@@ -262,32 +262,27 @@ describe('General create addresses/folders', () => {
       cy.contains('mat-dialog-container', 'Möchten Sie wirklich diese Datensätze löschen:');
     });
 
-    // TODO: use prepared addresses / folders for this test instead of creating them
     it('should actualize tree after deleting (#3048)', () => {
       // create folder
-      const folderName = 'folder_to_be_later_deleted';
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
-      AddressPage.createFolder(folderName);
-      cy.get(DocumentPage.title).should('have.text', folderName);
+      const folderName = 'leerer_Ordner_3';
+      const addressName = 'Adresse, Friesland';
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C', folderName]);
 
       // delete the folder
       AddressPage.deleteLoadedNode();
 
       // check if folder has been deleted and is not visible anymore
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C']);
       cy.contains('mat-tree-node', folderName).should('not.exist');
 
-      // create an address
-      AddressPage.CreateDialog.open();
-      AddressPage.addOrganizationName('Organisation_9');
-      cy.get('[data-cy=create-action]').click();
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C', addressName]);
 
       // delete the address
       AddressPage.deleteLoadedNode();
 
       // check if address has been deleted and is not visible anymore
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
-      cy.contains('mat-tree-node', folderName).should('not.exist');
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C']);
+      cy.contains('mat-tree-node', addressName).should('not.exist');
     });
 
     // TODO Remove add contact function and used predefined one
