@@ -21,11 +21,7 @@ export class PersonDoctype extends BaseDoctype {
       {
         wrappers: ["section"],
         templateOptions: {
-          label: "Allgemeines",
-        },
-        expressionProperties: {
-          "templateOptions.label":
-            'model.organization ? "Organisationsdaten" : "Persönliche Daten"',
+          label: "Persönliche Daten",
         },
         fieldGroup: [
           {
@@ -70,17 +66,12 @@ export class PersonDoctype extends BaseDoctype {
                 ],
               },
             ],
-            hideExpression:
-              "(!model.firstName && !model.lastName) || (model.firstName.length === 0 && model.lastName && model.lastName.length === 0)",
           },
           {
             wrappers: ["panel"],
             templateOptions: {
               externalLabel: "Name",
-            },
-            expressionProperties: {
-              "templateOptions.required":
-                "!model.organization || model.organization.length === 0",
+              required: true,
             },
             fieldGroup: [
               {
@@ -102,6 +93,7 @@ export class PersonDoctype extends BaseDoctype {
                     templateOptions: {
                       label: "Nachname",
                       appearance: "outline",
+                      required: true,
                     },
                   },
                 ],
