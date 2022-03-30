@@ -10,6 +10,7 @@ import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.index.IndexService
+import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -306,7 +307,7 @@ class IndexingTask @Autowired constructor(
         val trigger = CronTrigger(config.cron)
         return scheduler.schedule({
             runAsCatalogAdministrator()
-            startIndexing(config.catalogId, "portal")
+            startIndexing(config.catalogId, config.exportFormat)
         }, trigger)
     }
 
@@ -316,19 +317,19 @@ class IndexingTask @Autowired constructor(
         SecurityContextHolder.getContext().authentication = auth
     }
 
-    fun updateTaskTrigger(database: String, exportFormat: String, cronPattern: String) {
+    fun updateTaskTrigger(config: IndexConfigOptions) {
 
-        val schedule = scheduledFutures.find { it.catalogId == database }
+        val schedule = scheduledFutures.find { it.catalogId == config.catalogId }
         schedule?.future?.cancel(false)
         scheduledFutures.remove(schedule)
-        if (cronPattern.isEmpty()) {
-            log.info("Indexing Task for '$database' disabled")
+        if (config.cronPattern.isEmpty()) {
+            log.info("Indexing Task for '${config.catalogId}' disabled")
         } else {
-            val config = IndexConfig(database, exportFormat, cronPattern)
-            val newFuture = addSchedule(config)
-            config.future = newFuture
-            scheduledFutures.add(config)
-            log.info("Indexing Task for '$database' rescheduled")
+            val indexConfig = IndexConfig(config.catalogId, config.exportFormat, config.cronPattern)
+            val newFuture = addSchedule(indexConfig)
+            indexConfig.future = newFuture
+            scheduledFutures.add(indexConfig)
+            log.info("Indexing Task for '${config.catalogId}' rescheduled")
         }
 
     }
@@ -341,11 +342,11 @@ class IndexingTask @Autowired constructor(
 
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? {
 
-        val cron = catalog.settings?.indexCronPattern
-        return if (cron == null) {
+        val settings = catalog.settings
+        return if (settings?.indexCronPattern == null || settings.exportFormat == null) {
             null
         } else {
-            IndexConfig(catalog.identifier, "portal", cron)
+            IndexConfig(catalog.identifier, settings.exportFormat!!, settings.indexCronPattern!!)
         }
 
     }

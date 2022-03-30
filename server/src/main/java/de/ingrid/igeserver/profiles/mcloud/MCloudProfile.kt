@@ -37,9 +37,10 @@ class MCloudProfile @Autowired constructor(
     @JsonIgnore val dateService: DateService
 ) : CatalogProfile {
 
-    override val identifier: String = "mcloud"
-    override val title: String = "mCLOUD Katalog"
-    override val description: String? = null
+    override val identifier = "mcloud"
+    override val title = "mCLOUD Katalog"
+    override val description = null
+    override val indexExportFormatID = "portal"
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(

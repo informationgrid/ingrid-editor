@@ -51,7 +51,7 @@ export class IndexingComponent implements OnInit {
     }
 
     this.indexService
-      .getCronPattern()
+      .getIndexConfig()
       .subscribe((config) => this.cronField.setValue(config.cronPattern));
 
     this.indexService.fetchLastLog();

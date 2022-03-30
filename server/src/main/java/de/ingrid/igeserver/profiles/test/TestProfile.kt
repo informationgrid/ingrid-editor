@@ -11,16 +11,17 @@ import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
-import de.ingrid.igeserver.research.quickfilter.*
+import de.ingrid.igeserver.research.quickfilter.DocTest
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
@@ -44,12 +45,10 @@ class TestProfile : CatalogProfile {
     @JsonIgnore
     lateinit var dateService: DateService
 
-    @Value("#{'\${spring.profiles.active:}'.indexOf('demo') != -1}")
-    private val demoMode = false
-
-    override val identifier: String = "test"
-    override val title: String = "Test Katalog"
-    override val description: String? = null
+    override val identifier = "test"
+    override val title = "Test Katalog"
+    override val description = null
+    override val indexExportFormatID = null
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
