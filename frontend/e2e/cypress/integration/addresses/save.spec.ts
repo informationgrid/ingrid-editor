@@ -148,7 +148,6 @@ describe('General create addresses/folders', () => {
       AddressPage.publishIsUnsuccessful();
 
       cy.get('[data-cy="Kontakt"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
-      AddressPage.deleteLoadedNode();
     });
 
     it('should withdraw publication of published address', () => {
