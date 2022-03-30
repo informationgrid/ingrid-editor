@@ -216,7 +216,7 @@ describe('General create documents/folders', () => {
       cy.hasErrorDialog('Um Ordner zu löschen, müssen diese leer sein');
     });
 
-    it.only('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
+    it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
       // We need to change the test select the predefined data then no need for reload or save document
       let category1 = 'Bahn';
       let category2 = 'Straßen';
