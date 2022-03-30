@@ -217,77 +217,35 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
-      // We need to change the test select the predefined data then no need for reload or save document
-      let category1 = 'Bahn';
-      let category2 = 'Straßen';
-      let category31 = 'Luft- und Raumfahrt';
-      let category3 = 'Infrastruktur';
-
+      let category1 = 'Infrastruktur';
       let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
       let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(4) ';
       let mCLOUDSelectorTargetNode = mCLOUDSelector + ' .cdk-drag:nth-child(1) ';
       Tree.openNode(['New Folder For New Users', 'New Document']);
-      DocumentPage.scrollToSection('mCLOUD');
-      enterMcloudDocTestData.setCategory(category1);
-      cy.get(mCLOUDSelector).contains(category1);
 
-      enterMcloudDocTestData.setCategory(category2, false);
-      cy.get(mCLOUDSelector).contains(category2);
-
-      enterMcloudDocTestData.setCategory(category31, false);
-      cy.get(mCLOUDSelector).contains(category31);
-
-      enterMcloudDocTestData.setCategory(category3, false);
-      cy.get(mCLOUDSelector).contains(category3);
-      DocumentPage.saveDocument();
-      cy.reload();
       // change the order of mCloud categories by dragging then save
-      DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, 2, -200, 0);
+      DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, -400, 0, true);
       DocumentPage.saveDocument();
 
       // check for the order after reload
       cy.reload();
       cy.get(mCLOUDSelector, { timeout: 10000 }).should('exist');
+      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category1, 0);
 
-      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category3, 0);
-      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category2, 2);
-      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category1, 1);
-
-      DocumentPage.scrollToSection('mCLOUD');
-      // add openData categories and check of the order after drag and drop
-      let openDataCategory1 = 'Energie';
-      let openDataCategory2 = 'Gesundheit';
-      let openDataCategory31 = 'Regionen und Städte';
-      let openDataCategory3 = 'Internationale Themen';
-
+      //  check of the order after drag and drop
+      let openDataCategory1 = 'Internationale Themen';
       let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
-      let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(4) ';
+      let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(4)  ';
       let openDataSelectorTargetNode = openDataSelector + ' .cdk-drag:nth-child(1) ';
-      enterMcloudDocTestData.setOpenDataCategory(openDataCategory1);
-      cy.get(openDataSelector).contains(openDataCategory1);
-
-      enterMcloudDocTestData.setOpenDataCategory(openDataCategory2, false);
-      cy.get(openDataSelector).contains(openDataCategory2);
-
-      enterMcloudDocTestData.setOpenDataCategory(openDataCategory31, false);
-      cy.get(openDataSelector).contains(openDataCategory31);
-
-      enterMcloudDocTestData.setOpenDataCategory(openDataCategory3, false);
-      cy.get(openDataSelector).contains(openDataCategory3);
-      DocumentPage.saveDocument();
-      cy.reload();
 
       // change the order of mCloud categories by dragging then save
-      DocumentPage.dragItem(openDataSelectorSourceNode, openDataSelectorTargetNode, 2, -200, 0);
+      DocumentPage.dragItem(openDataSelectorSourceNode, openDataSelectorTargetNode, -400, 0, true);
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
       cy.reload();
       cy.get(openDataSelector, { timeout: 10000 }).should('exist');
-
-      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory3, 0);
-      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory2, 2);
-      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 1);
+      DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 0);
     });
 
     it('check for ordering and sorting address lists in the mCLOUD document', () => {
@@ -297,12 +255,8 @@ describe('General create documents/folders', () => {
       let addressSelectorSourceNode = addressSelector + ' .cdk-drag:nth-child(1)';
       let addressSelectorTargetNode = addressSelector + ' .cdk-drag:nth-child(2)';
       Tree.openNode(['New Folder For New Users', 'New Document']);
-      enterMcloudDocTestData.setAddress(address1);
-      enterMcloudDocTestData.setAddress(address2);
-
       DocumentPage.scrollToSection('Allgemeines');
-
-      DocumentPage.dragItem(addressSelectorSourceNode, addressSelectorTargetNode, 1, -200, 0);
+      DocumentPage.dragItem(addressSelectorSourceNode, addressSelectorTargetNode);
 
       DocumentPage.saveDocument();
 
@@ -315,13 +269,6 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting Zeitbezug der Ressource lists in the mCLOUD document', () => {
-      let date1 = new Date(2023, 2, 10);
-      let date2 = new Date(2022, 2, 12);
-      let date3 = new Date(2025, 2, 11);
-      let type1 = 'Letzte Änderung';
-      let type2 = 'Erstellung';
-
-      let resourceDateSelector = '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag-handle';
       let resourceDateSelectorSourceNode =
         '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag:nth-child(1) .cdk-drag-handle';
       let resourceDateSelectorTargetNode =
@@ -330,33 +277,7 @@ describe('General create documents/folders', () => {
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       DocumentPage.scrollToSection('Zeitbezüge');
-
-      enterMcloudDocTestData.setTimeReference(date1, type1, 0);
-      enterMcloudDocTestData.setTimeReference(date2, type2, 1);
-      enterMcloudDocTestData.setTimeReference(date3, type1, 2);
-      DocumentPage.saveDocument();
-
-      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
-      // does not mix with the first one
-      cy.wait(1200);
-      DocumentPage.scrollToSection('Zeitbezüge');
-      DocumentPage.dragItem(resourceDateSelectorSourceNode, resourceDateSelectorTargetNode, 1, 0, 70);
-
-      // check the new position of the items before saving to make sure the dragging was successful
-      cy.wait(2000);
-      DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '12.02.2022',
-        0,
-        true
-      );
-      DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '10.02.2023',
-        1,
-        true
-      );
-
+      DocumentPage.dragItem(resourceDateSelectorSourceNode, resourceDateSelectorTargetNode);
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
@@ -380,13 +301,6 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting Download links in the mCLOUD document', () => {
-      let title1 = 'google';
-      let title2 = 'youtube';
-      let title3 = 'amazon';
-      let link1 = 'https://www.google.com';
-      let link2 = 'https://www.youtube.com/';
-      let link3 = 'https://www.amazon.de/';
-
       let downloadSelector = '[data-cy="Downloads-table"] mat-row mat-cell';
       let downloadSelectorSourceNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(2)';
       let downloadSelectorTargetNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(3)';
@@ -394,17 +308,7 @@ describe('General create documents/folders', () => {
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       DocumentPage.scrollToSection('mCLOUD');
-      enterMcloudDocTestData.setAddDownload(title1, link1);
-      enterMcloudDocTestData.setAddDownload(title2, link2);
-      enterMcloudDocTestData.setAddDownload(title3, link3);
-      DocumentPage.saveDocument();
-
-      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
-      // does not mix with the first one
-      cy.wait(1200);
-      cy.reload();
-      DocumentPage.scrollToSection('mCLOUD');
-      DocumentPage.dragItem(downloadSelectorSourceNode, downloadSelectorTargetNode, 0, 0, 100);
+      DocumentPage.dragItem(downloadSelectorSourceNode, downloadSelectorTargetNode);
 
       DocumentPage.saveDocument();
 

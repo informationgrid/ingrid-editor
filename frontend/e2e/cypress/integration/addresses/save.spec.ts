@@ -285,29 +285,15 @@ describe('General create addresses/folders', () => {
       cy.contains('mat-tree-node', addressName).should('not.exist');
     });
 
-    // TODO Remove add contact function and used predefined one
     it('check for ordering and sorting "Kontakt" lists in the address document (organization)', () => {
       let contact1 = 'user@test.com';
       let contact2 = '1243543436';
-      let contact3 = 'F12321';
-      let type1 = 'E-Mail';
-      let type2 = 'Telefon';
-      let type3 = 'Fax';
-
       let resourceDateSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
       let targetSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(1)';
 
       Tree.openNode(['mclould_address']);
-      AddressPage.addContact(type1, contact1, 0);
-      AddressPage.addContact(type2, contact2, 1);
-      AddressPage.addContact(type3, contact3, 2);
-      DocumentPage.saveDocument();
 
-      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
-      // does not mix with the first one
-      cy.wait(1500);
-
-      DocumentPage.dragItem(resourceDateSelector, targetSelector, 1, 0, 100);
+      DocumentPage.dragItem(resourceDateSelector, targetSelector);
 
       DocumentPage.saveDocument();
 
