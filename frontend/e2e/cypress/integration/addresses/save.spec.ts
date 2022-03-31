@@ -205,10 +205,10 @@ describe('General create addresses/folders', () => {
     });
 
     it('should check address header information', () => {
-      let newOrgName = 'Franken, Adressetwo';
-      Tree.openNode(['Neue Testadressen', 'Franken, Adresse']);
+      let newOrgName = 'Burgenland, Adresse-modified';
+      Tree.openNode(['Neue Testadressen', 'Burgenland, Adresse']);
 
-      AddressPage.editOrganizationName('Franken, Adressetwo');
+      AddressPage.editOrganizationName(newOrgName);
       AddressPage.saveChangesOfProfile(newOrgName);
 
       // check that last-edited date has been updated
