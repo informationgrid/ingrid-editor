@@ -43,7 +43,7 @@ class IgeAclService @Autowired constructor(
                 isAllowed = when (permissionLevel) {
                     "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
                     "readTree" -> isAllowed(acl, BasePermission.READ, sids)
-                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
+                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids) || isAllowed(acl, BasePermission.WRITE, sids)
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
