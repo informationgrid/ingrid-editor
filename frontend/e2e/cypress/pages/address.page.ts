@@ -47,7 +47,7 @@ export class AddressPage extends DocumentPage {
   static visit() {
     cy.intercept({ method: 'GET', url: 'api/tree/children?address=true', times: 1 }).as('treeCallAddress');
     cy.visit('address');
-    cy.wait('@treeCallAddress', { timeout: 10000 });
+    cy.wait('@treeCallAddress', { timeout: 21000 });
   }
 
   // TODO: remove default values and call with specific parameters
