@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <div *ngIf="showMore" status class="status">
+    <div status class="status" [class.hide]="!showMore">
         <div class="copy-button-area">
             <div class="extra-large-spacing link-text">
                 <a href="#" (click)="copyContent($event)">Kopieren</a>
