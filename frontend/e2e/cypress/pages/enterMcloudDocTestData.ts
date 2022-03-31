@@ -182,8 +182,8 @@ export class enterMcloudDocTestData {
 
   static setTimeReference(date: Date, choose: string, index: number = 0) {
     cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').click();
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat ')
-      .find('mat-select')
+    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat mat-select ')
+      .find('span')
       .eq(index)
 
       .click({ force: true });
