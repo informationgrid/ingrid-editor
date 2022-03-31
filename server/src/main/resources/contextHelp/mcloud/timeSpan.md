@@ -5,4 +5,4 @@ docType: mCloudDoc
 profile: mcloud
 ---
 
-Hier soll die Zeitspanne der Entstehung der eigentlichen Daten (z.B. Messdaten) eingetragen werden. Es stehen umfassende Möglichkeiten zur exakten Eingabe der abgedeckten Zeitspanne zur Verfügung, damit später einmal eine exakte zeitliche Suche möglich ist.<br /><br />In der mCLOUD erscheint dieser Eintrag in der Detailansicht als „Aktualität der Daten“.
+Hier soll die Zeitspanne eingetragen werden, die die zugrunde liegenden Daten abdecken (z.B. Messdaten).<br />Ein Tagesdatum wird als 'am' angegeben, eine klar begrenzte Zeitspanne als 'von - bis', ansonsten können hier auch offene Zeitspannen eingegeben werden ('seit' oder 'bis').<br /><br />In der mCLOUD erscheint dieser Eintrag als „Zeitbezug der Daten“.

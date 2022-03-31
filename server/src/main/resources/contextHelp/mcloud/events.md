@@ -5,4 +5,4 @@ docType: mCloudDoc
 profile: mcloud
 ---
 
-Angabe, wann die eigentlichen Daten erstellt und/oder zuletzt revidiert wurden. Die Erfassung dieser Information ist z.B. für eine spätere zeitliche Suche relevant.
+Angabe, wann die eigentlichen Daten erstellt und/oder zuletzt revidiert wurden. Dies wird nicht in der mCLOUD angezeigt und dient zum internen Aufbau einer Chronologie der Änderungen der Daten.
