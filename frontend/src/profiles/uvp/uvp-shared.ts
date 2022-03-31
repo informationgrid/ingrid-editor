@@ -146,11 +146,11 @@ export class UvpShared extends BaseDoctype {
             required: true,
           }),
           this.addTable("approvalDocs", "Auslegungsinformationen", {
-            required: false,
+            required: true,
             columns: this.columnsForDocumentTable,
           }),
           this.addTable("decisionDocs", "Entscheidung", {
-            required: false,
+            required: true,
             columns: this.columnsForDocumentTable,
           }),
         ]),
