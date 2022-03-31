@@ -190,15 +190,8 @@ describe('Group', () => {
   });
 
   it('should be possible to jump between groups and associated users', () => {
-    const group = 'z_group' + Utils.randomString();
+    const group = 'group_11';
     const user = 'autor test';
-    const groupOther = 'test_gruppe_1';
-
-    // create a new group
-    AdminGroupPage.addNewGroup(group);
-
-    // TODO: remove this when refresh of group is fixed, after a user is assigned the group which is already opened
-    AdminGroupPage.selectGroup(groupOther);
 
     // add group to user
     AdminGroupPage.goToTabmenu(UserAndRights.User);
