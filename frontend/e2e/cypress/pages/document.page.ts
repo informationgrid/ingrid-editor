@@ -60,12 +60,11 @@ export class DocumentPage extends BasePage {
       cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').type(searchString);
     }
 
-    static searchAndSelect(searchString: string, addressType: string) {
-      // TODO replace addressType with proper addressType class or enum
+    static searchAndSelect(searchString: string) {
       this.search(searchString);
       // result can be detached form dom so we need to wait a bit, see: https://github.com/cypress-io/cypress/issues/7306
       cy.wait(1000);
-      cy.get('ige-document-list-item').contains(searchString).click();
+      cy.contains('ige-document-list-item', searchString, { timeout: 8000 }).click();
     }
   };
 
