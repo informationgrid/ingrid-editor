@@ -28,6 +28,7 @@ export class ForeignProjectsDoctype extends UvpShared {
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
           required: true,
+          limitTypes: ["free"],
         }),
         {
           key: "processingSteps",

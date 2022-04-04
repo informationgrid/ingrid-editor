@@ -28,6 +28,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
           required: true,
+          limitTypes: ["free"],
         }),
         this.addRepeatList("eiaNumbers", "UVP-Nummern", {
           required: true,

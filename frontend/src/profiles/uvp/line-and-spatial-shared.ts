@@ -13,6 +13,7 @@ export class LineAndSpatialShared extends UvpShared {
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
           required: true,
+          limitTypes: ["free"],
         }),
         this.addDatepicker("receiptDate", "Eingang des Antrags", {
           required: true,
