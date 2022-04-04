@@ -32,6 +32,7 @@ class PostMigrationTask(
 ) {
     val log = logger()
 
+    // this ensures that the post migration task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)
     fun onStartup() {
         val catalogs = getCatalogsForPostMigration()

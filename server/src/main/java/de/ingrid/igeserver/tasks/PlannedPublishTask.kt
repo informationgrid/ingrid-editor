@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component
 class PlannedPublishTask(val documentService: DocumentService, val catalogService: CatalogService) {
     val log = logger()
 
+    // this ensures that the post migration task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)
     fun onReady() {
         plannedPublishTask()
