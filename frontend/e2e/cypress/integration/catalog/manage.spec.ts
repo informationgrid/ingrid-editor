@@ -56,9 +56,7 @@ describe('Catalog management', () => {
       // add document
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
       // refresh page
-      cy.reload();
-      // just wait for one second after reload
-      cy.wait(1000);
+      ManageCatalogPage.visit();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
       ManageCatalogPage.getDateOfChangesInCatalog('Test').should('equal', Utils.getFormattedDateTime(new Date()));
