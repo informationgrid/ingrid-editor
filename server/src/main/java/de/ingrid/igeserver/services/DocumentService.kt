@@ -148,6 +148,10 @@ class DocumentService @Autowired constructor(
         }
     }
 
+    fun getAllDocumentWrappers(catalogIdentifier: String): List<DocumentWrapper> {
+        return docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    }
+
     fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
@@ -575,10 +579,10 @@ class DocumentService @Autowired constructor(
             // else delete published version which automatically sets published version in wrapper to null
             docRepo.delete(wrapper.published!!)
         }
-        
+
         // explicitly set published to null (to also determine state correctly)
         wrapper.published = null
-        
+
         docWrapperRepo.save(wrapper)
 
         // remove from index

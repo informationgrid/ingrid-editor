@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -8,13 +9,15 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
-import javax.annotation.PostConstruct
+import java.security.Principal
 import javax.persistence.EntityManager
 
 @Component
@@ -29,7 +32,7 @@ class PostMigrationTask(
 ) {
     val log = logger()
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent::class)
     fun onStartup() {
         val catalogs = getCatalogsForPostMigration()
         if (catalogs.isEmpty()) return
@@ -62,6 +65,7 @@ class PostMigrationTask(
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
+        adaptUVPFolderStructure(catalogIdentifier)
         saveAllGroupsOfCatalog(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
@@ -73,6 +77,60 @@ class PostMigrationTask(
             .forEach { group ->
                 groupService.update(catalogIdentifier, group.id!!, group, true)
             }
+    }
+
+    private fun adaptUVPFolderStructure(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
+        documentService.getAllDocumentWrappers(catalogIdentifier).forEach { doc ->
+            log.info("Migrate document: ${doc.id}")
+            migratePath(doc)
+        }
+
+    }
+
+    private fun migratePath(doc: DocumentWrapper) {
+        val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
+        val reorderedPath = oldPath.subList(1, oldPath.size) + oldPath[0] // Style: [FolderId, ..., typeFolderId]
+        val pathTitles = reorderedPath.map {
+            val wrapper = documentService.getWrapperByDocumentId(it.toInt())
+            documentService.getLatestDocument(wrapper).title!!
+        }
+
+        val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
+
+        doc.path = newPath.map { it.toString() }
+        documentService.aclService.updateParent(doc.id!!, newPath.last())
+        doc.parent = documentService.docWrapperRepo.findById(newPath.last()).get()
+        documentService.docWrapperRepo.save(doc)
+    }
+
+    private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val createdPathIds = mutableListOf<Int>()
+        var parentId: Int? = null
+        for (title in titles) {
+            val foundChild = documentService.findChildren(
+                catalogIdentifier,
+                parentId
+            ).hits.filter { documentService.getLatestDocument(it).title == title }
+            if (foundChild.isEmpty()) {
+                //create new folder
+                val folderData = jacksonObjectMapper().createObjectNode()
+                    .put("_type", "FOLDER")
+                    .put("_parent", parentId.toString())
+                    .put("title", title)
+                val folderDoc =
+                    documentService.createDocument(auth as Principal, catalogIdentifier, folderData, parentId)
+
+                parentId = folderDoc.get("_id").asInt()
+
+            } else {
+                //found folder
+                parentId = foundChild.first().id!!
+            }
+            createdPathIds.add(parentId)
+        }
+        return createdPathIds
     }
 
     private fun enhanceGroupsWithReferencedAddresses(catalogIdentifier: String) {
