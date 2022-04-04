@@ -56,7 +56,7 @@ export class CreateDocumentPlugin extends Plugin {
         tooltip: "Neuen Datensatz erstellen",
         matSvgVariable: "Neuer-Datensatz",
         eventId: "NEW_DOC",
-        pos: 10,
+        pos: 1,
         active: true,
       },
     ];

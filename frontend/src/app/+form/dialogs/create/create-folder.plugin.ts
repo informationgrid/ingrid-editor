@@ -50,7 +50,7 @@ export class CreateFolderPlugin extends Plugin {
       tooltip: "Ordner erstellen",
       matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
-      pos: 1,
+      pos: 10,
       active: true,
     });
 
