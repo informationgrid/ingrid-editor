@@ -6,6 +6,7 @@ import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { ConfigService } from "../../app/services/config/config.service";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { UvpShared } from "./uvp-shared";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -33,7 +34,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
         this.addRepeatList("eiaNumbers", "UVP-Nummern", {
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumbers"),
+          options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
+            map((list) => this.sortUVPNumber(list))
+          ),
           codelistId: 9000,
           asSelect: true,
         }),

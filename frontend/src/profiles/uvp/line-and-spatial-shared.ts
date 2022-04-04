@@ -1,5 +1,6 @@
 import { UvpShared } from "./uvp-shared";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { map } from "rxjs/operators";
 
 export class LineAndSpatialShared extends UvpShared {
   documentFields = () =>
@@ -21,7 +22,9 @@ export class LineAndSpatialShared extends UvpShared {
         this.addRepeatList("eiaNumbers", "UVP-Nummern", {
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumbers"),
+          options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
+            map((list) => this.sortUVPNumber(list))
+          ),
           codelistId: 9000,
           asSelect: true,
         }),
