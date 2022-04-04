@@ -85,16 +85,16 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       this.leaflet.nativeElement,
       {}
     );
-    setTimeout(() => this.updateView(this.data ? this.data.type : "free"));
+    setTimeout(() => this.updateView(this.data?.type ?? "free"));
   }
 
   updateBoundingBox(result: SpatialBoundingBox) {
     this.result.value = result;
   }
 
-  updateView(id: SpatialLocationType) {
-    this.view = id;
-    this.result.type = id;
+  updateView(viewType: SpatialLocationType) {
+    this.view = viewType;
+    this.result.type = viewType;
     this.result.value = null;
 
     // @ts-ignore

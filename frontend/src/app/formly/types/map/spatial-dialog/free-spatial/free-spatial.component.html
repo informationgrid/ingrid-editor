@@ -1,5 +1,7 @@
 <div fxLayout="column" class="free-spatial-wrapper">
-    <div class="place-title small-bottom">Raumbezug herstellen</div>
+    <div *ngIf="!hideTitle" class="place-title small-bottom">
+        Raumbezug herstellen
+    </div>
 
     <div class="dlg-field-label">Ort</div>
     <mat-form-field appearance="outline">

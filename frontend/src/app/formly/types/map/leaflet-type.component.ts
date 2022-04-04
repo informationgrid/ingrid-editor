@@ -164,7 +164,10 @@ export class LeafletTypeComponent
         maxWidth: 1260,
         minWidth: 600,
         // minHeight: '85vh',
-        data: this.locations[locationIndex],
+        data: {
+          ...this.locations[locationIndex],
+          limitTypes: this.to.limitTypes,
+        },
       })
       .afterClosed()
       .subscribe((result: SpatialLocation) => {

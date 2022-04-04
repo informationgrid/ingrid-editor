@@ -25,6 +25,7 @@ import { LeafletService } from "../../leaflet.service";
 export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
   @Input() initial: SpatialBoundingBox;
+  @Input() hideTitle: boolean;
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
 

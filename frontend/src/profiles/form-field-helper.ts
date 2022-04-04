@@ -166,6 +166,7 @@ export class FormFieldHelper {
         mapOptions: {},
         externalLabel: label,
         height: 386,
+        limitTypes: options?.limitTypes,
       },
     };
   }
