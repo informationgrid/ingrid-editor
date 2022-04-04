@@ -34,6 +34,10 @@ class UVPComponent {
       address,
       organisation,
     ]);
+
+    service.updateUIProfileStore({
+      hideFormHeaderInfos: ["type"],
+    });
   }
 }
 

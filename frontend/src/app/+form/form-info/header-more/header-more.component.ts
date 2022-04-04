@@ -30,10 +30,19 @@ import { ProfileQuery } from "../../../store/profile/profile.query";
 export class HeaderMoreComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() showMore = false;
+  hideFields: any;
 
   constructor(private profileQuery: ProfileQuery) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.hideFields =
+      this.profileQuery
+        .getValue()
+        .ui.hideFormHeaderInfos?.reduce((acc, val) => {
+          acc[val] = true;
+          return acc;
+        }, {}) ?? {};
+  }
 
   getState(state: DocumentState) {
     return DocumentUtils.getStateName(state);
