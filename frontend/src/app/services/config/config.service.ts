@@ -16,7 +16,8 @@ export class Configuration {
     public contextPath: string,
     public backendUrl: string,
     public featureFlags: any,
-    public brokerUrl: string
+    public brokerUrl: string,
+    public menuGroups: any
   ) {}
 }
 
@@ -54,6 +55,40 @@ export class ConfigService {
   defaultConfig: Partial<Configuration> = {
     contextPath: "/",
     featureFlags: {},
+    menuGroups: [
+      {
+        title: "Einstellungen",
+        adminOnly: true,
+        entries: [
+          {
+            label: "Allgemein",
+            isRouterLink: true,
+            link: "/settings/general",
+          },
+          {
+            label: "Codelist Repository",
+            isRouterLink: true,
+            link: "/settings/codelist",
+          },
+          {
+            label: "Katalogverwaltung",
+            isRouterLink: true,
+            link: "/settings/catalog",
+          },
+        ],
+      },
+      {
+        title: "Informationen",
+        adminOnly: false,
+        entries: [
+          {
+            label: "Hilfe",
+            isRouterLink: false,
+            link: "#",
+          },
+        ],
+      },
+    ],
   };
 
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
