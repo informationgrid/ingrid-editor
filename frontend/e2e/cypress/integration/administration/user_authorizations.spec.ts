@@ -886,7 +886,8 @@ describe('Catalogue admin', () => {
     // change catalog admin role to author
     AdminUserPage.visit();
     let userLogin = 'author-profile-test';
-    AdminUserPage.selectUser(userLogin);
+    // select unused author to upgrade
+    AdminUserPage.selectUser('autornew');
     AdminUserPage.changeUserRole('Metadaten-Administrator', true);
     // login with new role and check if the new author does not have admin rights
     cy.kcLogout();
