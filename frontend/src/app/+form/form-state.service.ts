@@ -6,7 +6,7 @@ import { FormGroup } from "@angular/forms";
 })
 export class FormStateService {
   private form: FormGroup;
-  private textareaElementsHeights: string[] = [];
+  private textareaElementsHeights: any[] = [];
 
   updateForm(form: FormGroup) {
     this.form = form;
@@ -26,18 +26,23 @@ export class FormStateService {
   }
 
   // save current height of all textareas of current document type from the DOM
-  storeTextareaElementsIds(textareaElements) {
+  storeTextareaElementsHeights(selector: string) {
+    // get and store textareaElements heights
+    let textareaElements = this.getTextareaElements(selector);
     textareaElements.forEach((textarea: HTMLElement) => {
       this.textareaElementsHeights[textarea.id] = textarea.style.height;
     });
   }
 
   // restore height of all textareas if found in memory for the new document type
-  restoreTextareaElementsIds(textareaElements) {
-    textareaElements.forEach((textarea: HTMLElement) => {
-      if (this.textareaElementsHeights[textarea.id] != undefined) {
-        textarea.style.height = this.textareaElementsHeights[textarea.id];
-      }
-    });
+  restoreTextareaElementsHeights(selector: string) {
+    setTimeout(() => {
+      let textareaElements = this.getTextareaElements(selector);
+      textareaElements.forEach((textarea: HTMLElement) => {
+        if (this.textareaElementsHeights[textarea.id] != undefined) {
+          textarea.style.height = this.textareaElementsHeights[textarea.id];
+        }
+      });
+    }, 100);
   }
 }
