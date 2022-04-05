@@ -333,19 +333,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
-        let textareaElements = this.formStateService.getTextareaElements(
-          "form formly-field-mat-textarea textarea"
-        );
-        this.formStateService.storeTextareaElementsHeights(
-          "form formly-field-mat-textarea textarea"
-        );
+        this.formStateService.storeTextareaElementsHeights();
 
         // switch to the right profile depending on the data
         this.fields = this.switchProfile(profile);
 
-        this.formStateService.restoreTextareaElementsHeights(
-          "form formly-field-mat-textarea textarea"
-        );
+        this.formStateService.restoreTextareaElementsHeights();
 
         this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields =

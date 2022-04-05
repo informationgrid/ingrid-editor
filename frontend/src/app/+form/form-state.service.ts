@@ -26,18 +26,22 @@ export class FormStateService {
   }
 
   // save current height of all textareas of current document type from the DOM
-  storeTextareaElementsHeights(selector: string) {
+  storeTextareaElementsHeights() {
     // get and store textareaElements heights
-    let textareaElements = this.getTextareaElements(selector);
+    let textareaElements = this.getTextareaElements(
+      "form formly-field-mat-textarea textarea"
+    );
     textareaElements.forEach((textarea: HTMLElement) => {
       this.textareaElementsHeights[textarea.id] = textarea.style.height;
     });
   }
 
   // restore height of all textareas if found in memory for the new document type
-  restoreTextareaElementsHeights(selector: string) {
+  restoreTextareaElementsHeights() {
     setTimeout(() => {
-      let textareaElements = this.getTextareaElements(selector);
+      let textareaElements = this.getTextareaElements(
+        "form formly-field-mat-textarea textarea"
+      );
       textareaElements.forEach((textarea: HTMLElement) => {
         if (this.textareaElementsHeights[textarea.id] != undefined) {
           textarea.style.height = this.textareaElementsHeights[textarea.id];
