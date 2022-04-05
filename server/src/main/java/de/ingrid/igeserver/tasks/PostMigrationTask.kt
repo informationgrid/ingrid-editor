@@ -91,7 +91,7 @@ class PostMigrationTask(
             null,
             isAddress = true
         ).hits.filter { "UvpAddressDoc" == it.type!! }.forEach {
-            val doc = documentService.getLatestDocument(it)
+            val doc = documentService.getLatestDocument(it, resolveLinks = false)
             val organization = doc.data.get("organization").asText()
             if (organization.isNullOrEmpty()) {
                 // free address without organization. no action needed
@@ -132,7 +132,7 @@ class PostMigrationTask(
         val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
         val pathTitles = reducedPath.map {
             val wrapper = documentService.getWrapperByDocumentId(it.toInt())
-            documentService.getLatestDocument(wrapper).title!!
+            documentService.getLatestDocument(wrapper, resolveLinks = false).title!!
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
@@ -143,7 +143,7 @@ class PostMigrationTask(
             val folderWithSameNameAndPath = documentService.findChildren(
                 doc.catalog!!.identifier,
                 newPath.lastOrNull(),
-            ).hits.find { documentService.getLatestDocument(it).title == documentService.getLatestDocument(doc).title }
+            ).hits.find { documentService.getLatestDocument(it, resolveLinks = false).title == documentService.getLatestDocument(doc, resolveLinks = false).title }
 
             if (folderWithSameNameAndPath != null) {
                 return
@@ -165,7 +165,7 @@ class PostMigrationTask(
             val foundChild = documentService.findChildren(
                 catalogIdentifier,
                 parentId
-            ).hits.filter { documentService.getLatestDocument(it).title == title }
+            ).hits.filter { documentService.getLatestDocument(it, resolveLinks = false).title == title }
             if (foundChild.isEmpty()) {
                 //create new folder
                 val folderData = jacksonObjectMapper().createObjectNode()
