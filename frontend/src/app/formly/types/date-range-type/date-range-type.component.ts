@@ -20,6 +20,18 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
       this.formControl.value ?? { start: null, end: null }
     );
 
+    this.formControl.addValidators([
+      (ctrl) => {
+        if (this.rangeFormGroup.controls.end.hasError("matEndDateInvalid")) {
+          return {
+            matEndDateInvalid: {
+              message: "Das Enddatum liegt vor dem Startdatum",
+            },
+          };
+        } else return null;
+      },
+    ]);
+
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
@@ -34,5 +46,7 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
 
   updateFormControl() {
     this.formControl.setValue(this.rangeFormGroup.value);
+    this.formControl.markAsTouched();
+    this.formControl.markAsDirty();
   }
 }
