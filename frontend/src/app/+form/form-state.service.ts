@@ -6,7 +6,7 @@ import { FormGroup } from "@angular/forms";
 })
 export class FormStateService {
   private form: FormGroup;
-  private textareaElementsHeights: any[] = [];
+  private textareaElementsHeights: any = {};
 
   updateForm(form: FormGroup) {
     this.form = form;
@@ -14,10 +14,6 @@ export class FormStateService {
 
   getForm() {
     return this.form;
-  }
-
-  setTextareaElementsHeights(Heights) {
-    this.textareaElementsHeights = Heights;
   }
 
   getTextareaElements(selector: string) {
