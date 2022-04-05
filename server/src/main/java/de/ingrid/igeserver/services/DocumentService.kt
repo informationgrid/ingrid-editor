@@ -148,8 +148,11 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getAllDocumentWrappers(catalogIdentifier: String): List<DocumentWrapper> {
-        return docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
+        return if (includeFolders)
+            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+        else
+            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
     fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {

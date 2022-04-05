@@ -66,9 +66,10 @@ class PostMigrationTask(
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
-        adaptUVPFolderStructure(catalogIdentifier)
         saveAllGroupsOfCatalog(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
+        uvpAdaptFolderStructure(catalogIdentifier)
+        uvpSplitFreeAddresses(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
     }
 
@@ -80,9 +81,44 @@ class PostMigrationTask(
             }
     }
 
-    private fun adaptUVPFolderStructure(catalogIdentifier: String) {
+    private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-        documentService.getAllDocumentWrappers(catalogIdentifier).forEach { doc ->
+        val auth = SecurityContextHolder.getContext().authentication
+
+        // root Addresses which aren't organizations are free addresses
+        documentService.findChildrenDocs(
+            catalogIdentifier,
+            null,
+            isAddress = true
+        ).hits.filter { "UvpAddressDoc" == it.type!! }.forEach {
+            val doc = documentService.getLatestDocument(it)
+            val organization = doc.data.get("organization").asText()
+            if (organization.isNullOrEmpty()) {
+                // free address without organization. no action needed
+                return
+            } else {
+                //{"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
+                //create parent organization
+                val organizationData = jacksonObjectMapper().createObjectNode()
+                    .put("_type", "UvpOrganisationDoc")
+                    .putNull("_parent")
+                    .put("title", organization)
+                    .put("organization", organization)
+                val organizationDoc = documentService.createDocument(auth as Principal, catalogIdentifier, organizationData, null, address = true)
+                val parentId = organizationDoc.get("_id").asInt()
+
+                it.path = listOf(parentId.toString())
+                it.parent = documentService.docWrapperRepo.findById(parentId).get()
+                // save
+                documentService.aclService.updateParent(it.id!!, parentId)
+                documentService.docWrapperRepo.save(it)
+            }
+        }
+    }
+
+    private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
+        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
             log.info("Migrate document: ${doc.id}")
             migratePath(doc)
         }
@@ -91,17 +127,33 @@ class PostMigrationTask(
 
     private fun migratePath(doc: DocumentWrapper) {
         val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
-        val reorderedPath = oldPath.subList(1, oldPath.size) + oldPath[0] // Style: [FolderId, ..., typeFolderId]
-        val pathTitles = reorderedPath.map {
+        // skip root folders
+        if (oldPath.isEmpty()) return
+        val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
+        val pathTitles = reducedPath.map {
             val wrapper = documentService.getWrapperByDocumentId(it.toInt())
             documentService.getLatestDocument(wrapper).title!!
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
 
+
+        if (doc.type == "FOLDER") {
+            // make sure not folders with the same name are not saved more than once
+            val folderWithSameNameAndPath = documentService.findChildren(
+                doc.catalog!!.identifier,
+                newPath.lastOrNull(),
+            ).hits.find { documentService.getLatestDocument(it).title == documentService.getLatestDocument(doc).title }
+
+            if (folderWithSameNameAndPath != null) {
+                return
+            }
+        }
+
         doc.path = newPath.map { it.toString() }
-        documentService.aclService.updateParent(doc.id!!, newPath.last())
-        doc.parent = documentService.docWrapperRepo.findById(newPath.last()).get()
+        doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
+        // save
+        documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
         documentService.docWrapperRepo.save(doc)
     }
 

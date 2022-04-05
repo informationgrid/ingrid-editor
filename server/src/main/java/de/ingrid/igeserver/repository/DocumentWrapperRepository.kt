@@ -38,6 +38,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.type != 'FOLDER' AND d.deleted != 1")
     fun findAllDocumentsByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
+    @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.deleted != 1")
+    fun findAllDocumentsAndFoldersByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
+
     @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = ?2 AND d.deleted != 1")
     fun findAllByCatalog_IdentifierAndCategory(catalog_identifier: String, category: String): List<DocumentWrapper>
