@@ -112,8 +112,7 @@ export class AutocompleteTypeComponent
     const hasSameKey = key !== null && key === this.formControl.value?.key;
     const hasSameValue =
       key === null && value === this.formControl.value?.value;
-    const hasSameNullValue =
-      this.formControl.value === null && key === null && !value;
+    const hasSameNullValue = !this.formControl.value && key === null && !value;
 
     if (hasSameKey || hasSameValue || hasSameNullValue) {
       return;
