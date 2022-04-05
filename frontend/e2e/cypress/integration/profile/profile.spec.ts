@@ -30,6 +30,7 @@ describe('Profile', () => {
     cy.kcLogout();
     cy.kcLogin('ige2_with_new_pass');
     ProfilePage.visit();
+    cy.kcLogout();
   });
 
   it('should update autor password', () => {
@@ -44,6 +45,7 @@ describe('Profile', () => {
     ProfilePage.visit();
     // reset the password
     ProfilePage.changePassword('autornew', 'autornew', 'autornew');
+    cy.kcLogout();
   });
 
   it('should update meta admin password', () => {
@@ -56,6 +58,7 @@ describe('Profile', () => {
     cy.kcLogout();
     cy.kcLogin('meta3-profile-test-with-new-pass');
     ProfilePage.visit();
+    cy.kcLogout();
   });
 
   it('should update user email', () => {
