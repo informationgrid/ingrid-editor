@@ -8,7 +8,7 @@ import { Utils } from '../../pages/utils';
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
   });
 
   // tested in dashboard
@@ -101,7 +101,7 @@ describe('Load documents', () => {
     );
     // log in as different user
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
 
     // check header
     DocumentPage.visit();

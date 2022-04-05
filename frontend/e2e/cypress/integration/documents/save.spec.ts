@@ -6,7 +6,7 @@ import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 describe('General create documents/folders', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     DocumentPage.visit();
   });
 

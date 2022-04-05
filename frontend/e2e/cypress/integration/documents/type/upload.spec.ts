@@ -5,7 +5,7 @@ import { enterMcloudDocTestData, FileHandlingOptions } from '../../../pages/ente
 describe('Upload Tests', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     DocumentPage.visit();
   });
 

@@ -9,7 +9,7 @@ import { Menu } from '../../pages/menu';
 describe('Behaviours', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     CodelistPage.visit();
   });
 

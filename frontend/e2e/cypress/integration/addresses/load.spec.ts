@@ -5,7 +5,7 @@ import { Tree } from '../../pages/tree.partial';
 describe('Load addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     AddressPage.visit();
   });
 

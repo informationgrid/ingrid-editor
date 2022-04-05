@@ -13,7 +13,7 @@ import { Tree } from '../../pages/tree.partial';
 describe('Research Page', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ResearchPage.visit();
   });
 
@@ -243,7 +243,7 @@ describe('Research Page', () => {
     );
     // log in as different user and trigger saved search
     cy.kcLogout();
-    cy.kcLogin('meta');
+    cy.kcLogin('meta1-without-groups');
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
     ResearchPage.openSavedSearch(
@@ -264,7 +264,7 @@ describe('Research Page', () => {
     );
     // log in as different user
     cy.kcLogout();
-    cy.kcLogin('meta');
+    cy.kcLogin('meta1-without-groups');
     // make sure global search can not be deleted
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);

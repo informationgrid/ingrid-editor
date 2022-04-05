@@ -8,7 +8,7 @@ import { Todo } from '@datorama/akita/src/__tests__/setup';
 describe('General create addresses/folders', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     AddressPage.visit();
   });
 

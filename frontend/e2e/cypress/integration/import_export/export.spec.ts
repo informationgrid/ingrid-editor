@@ -4,7 +4,7 @@ import { Tree } from '../../pages/tree.partial';
 describe('Export', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ExportPage.visit();
   });
 

@@ -10,7 +10,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ManageCatalogPage.visit();
   });
 
@@ -136,7 +136,7 @@ describe('Catalog management', () => {
   // send an API call to set current catalog to 'test'
   after(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
         url: `${Cypress.config('baseUrl')}/api/user/catalog/test`,

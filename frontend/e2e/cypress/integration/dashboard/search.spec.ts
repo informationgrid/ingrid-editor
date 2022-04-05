@@ -6,7 +6,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Search', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     cy.visit('');
   });
 

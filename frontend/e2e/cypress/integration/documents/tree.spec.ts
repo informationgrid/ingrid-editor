@@ -8,7 +8,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Tree', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     DocumentPage.visit();
   });
 

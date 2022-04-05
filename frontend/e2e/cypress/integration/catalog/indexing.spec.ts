@@ -7,7 +7,7 @@ import { CodelistPage } from '../../pages/codelist.page';
 describe('Indexing', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     CodelistPage.visit();
   });
 

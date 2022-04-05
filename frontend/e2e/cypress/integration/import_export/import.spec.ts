@@ -7,7 +7,7 @@ import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 describe('Import Tests', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ImportPage.visit();
   });
 
