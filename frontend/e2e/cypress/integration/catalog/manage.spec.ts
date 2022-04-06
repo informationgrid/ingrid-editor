@@ -55,11 +55,16 @@ describe('Catalog management', () => {
     ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
       // add document
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
+      const lastDocCreateDate = new Date();
+
       // refresh page
       ManageCatalogPage.visit();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
-      ManageCatalogPage.getDateOfChangesInCatalog('Test').should('equal', Utils.getFormattedDateTime(new Date()));
+      ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
+        'equal',
+        Utils.getFormattedDateTime(lastDocCreateDate)
+      );
     });
   });
 
