@@ -15,10 +15,7 @@ import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
-import de.ingrid.igeserver.research.quickfilter.DocMCloud
-import de.ingrid.igeserver.research.quickfilter.ExceptFolders
-import de.ingrid.igeserver.research.quickfilter.Published
-import de.ingrid.igeserver.research.quickfilter.TimeSpan
+import de.ingrid.igeserver.research.quickfilter.*
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
 import de.ingrid.igeserver.services.DateService
@@ -45,16 +42,11 @@ class MCloudProfile @Autowired constructor(
         return arrayOf(
             FacetGroup(
                 "state", "Allgemein", arrayOf(
-                    Published(),
+                    Draft(),
                     ExceptFolders()
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
                 combine = Operator.AND
-            ),
-            FacetGroup(
-                "docType", "Dokumententyp", arrayOf(
-                    DocMCloud()
-                )
             ),
             FacetGroup(
                 "spatial", "Raumbezug", arrayOf(
@@ -63,7 +55,7 @@ class MCloudProfile @Autowired constructor(
                 viewComponent = ViewComponent.SPATIAL
             ),
             FacetGroup(
-                "timeRef", "Zeitbezug", arrayOf(
+                "timeRef", "Aktualität der Metadaten", arrayOf(
                     TimeSpan()
                 ),
                 viewComponent = ViewComponent.TIMESPAN
@@ -75,7 +67,7 @@ class MCloudProfile @Autowired constructor(
         return arrayOf(
             FacetGroup(
                 "state", "Allgemein", arrayOf(
-                    Published(),
+                    Draft(),
                     ExceptFolders()
                 ),
                 viewComponent = ViewComponent.CHECKBOX
@@ -353,23 +345,6 @@ class MCloudProfile @Autowired constructor(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-        val querymCloud = Query().apply {
-            this.catalog = catalogRepo.findByIdentifier(catalogId)
-            category = "facet"
-            name = "Alle mCloud-Dokumente"
-            description = "Zeigt alle Dokumente vom Typ mCloud"
-            data = jacksonObjectMapper().createObjectNode().apply {
-                val model = jacksonObjectMapper().createObjectNode().apply {
-                    put("type", "selectDocuments")
-                    set<ObjectNode>("docType", jacksonObjectMapper().createObjectNode().apply {
-                        put("selectDocMCloud", true)
-                    })
-                }
-                set<ObjectNode>("model", model)
-            }
-            modified = dateService.now()
-        }
-        query.save(querymCloud)
     }
 
     override fun getElasticsearchMapping(format: String): String {
