@@ -588,9 +588,6 @@ class DocumentService @Autowired constructor(
 
         docWrapperRepo.save(wrapper)
 
-        // remove from index
-        removeFromIndex(wrapper.uuid)
-
         val doc = this.getLatestDocument(wrapper, catalogId = catalogId)
 
         // run post-unpublish pipe(s)
@@ -625,7 +622,7 @@ class DocumentService @Autowired constructor(
         return wrapper
     }
 
-    private fun removeFromIndex(id: String) {
+    fun removeFromIndex(id: String) {
         try {
             if (indexManager != null) {
                 val oldIndex = indexManager!!.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
