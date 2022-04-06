@@ -18,41 +18,52 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
 
   iconClass = "negative-vorpruefung";
 
+  forPublish = false;
+
   documentFields = () =>
-    <FormlyFieldConfig[]>[
-      this.addSection("Allgemeines", [
-        this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
-          required: true,
-        }),
-        this.addPointOfContact(),
-      ]),
-      this.addSection("Raumbezug", [
-        this.addSpatial("spatial", null, {
-          required: true,
-          limitTypes: ["free"],
-        }),
-        this.addRepeatList("eiaNumbers", "UVP-Nummern", {
-          required: true,
-          showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
-            map((list) => this.sortUVPNumber(list))
-          ),
-          codelistId: 9000,
-          asSelect: true,
-        }),
-        this.addDatepicker("decisionDate", "Datum der Entscheidung", {
-          required: true,
-        }),
-        this.addTable(
-          "uvpNegativeDecisionDocs",
-          "Ergebnis der UVP-Vorprüfung",
-          {
-            required: true,
-            columns: this.columnsForDocumentTable,
-          }
-        ),
-      ]),
-    ];
+    !this.forPublish
+      ? <FormlyFieldConfig[]>[
+          this.addSection("Allgemeines", [
+            this.addPointOfContact(),
+            this.addDatepicker("decisionDate", "Datum der Entscheidung", {
+              required: true,
+            }),
+          ]),
+        ]
+      : <FormlyFieldConfig[]>[
+          this.addSection("Allgemeines", [
+            this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
+              required: true,
+            }),
+            this.addPointOfContact(),
+          ]),
+          this.addSection("Raumbezug", [
+            this.addSpatial("spatial", null, {
+              required: true,
+              limitTypes: ["free"],
+            }),
+            this.addRepeatList("eiaNumbers", "UVP-Nummern", {
+              required: true,
+              showSearch: true,
+              options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
+                map((list) => this.sortUVPNumber(list))
+              ),
+              codelistId: 9000,
+              asSelect: true,
+            }),
+            this.addDatepicker("decisionDate", "Datum der Entscheidung", {
+              required: true,
+            }),
+            this.addTable(
+              "uvpNegativeDecisionDocs",
+              "Ergebnis der UVP-Vorprüfung",
+              {
+                required: true,
+                columns: this.columnsForDocumentTable,
+              }
+            ),
+          ]),
+        ];
 
   constructor(
     storageService: DocumentService,
