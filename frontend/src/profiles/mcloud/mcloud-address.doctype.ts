@@ -19,6 +19,8 @@ export class McloudAddressDoctype extends OrganisationDoctype {
   ) {
     super(storageService, codelistService, codelistQuery, "addresses");
     this.addressType = "organization";
-    this.hideCountryAndAdministrativeArea = true;
+    this.options = {
+      hideCountryAndAdministrativeArea: true,
+    };
   }
 }

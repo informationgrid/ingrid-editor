@@ -17,6 +17,9 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
   ) {
     super(storageService, codelistService, codelistQuery, "pointOfContact");
     this.addressType = "organization";
-    this.hideAdministrativeArea = true;
+    this.options = {
+      hideAdministrativeArea: true,
+      defaultCountry: { key: "276" },
+    };
   }
 }

@@ -147,6 +147,7 @@ export class FormFieldHelper {
       key: id,
       type: "select",
       className: options?.className,
+      defaultValue: options?.defaultValue,
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]

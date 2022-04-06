@@ -3,6 +3,13 @@ import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { AddressShared } from "./address.shared";
+import { BackendOption } from "../../app/store/codelist/codelist.model";
+
+interface PersonOptions {
+  defaultCountry: BackendOption;
+  hideCountryAndAdministrativeArea: boolean;
+  hideAdministrativeArea: boolean;
+}
 
 export class PersonDoctype extends AddressShared {
   label = "Person";
@@ -11,8 +18,8 @@ export class PersonDoctype extends AddressShared {
 
   isAddressType = true;
 
-  hideCountryAndAdministrativeArea = false;
-  hideAdministrativeArea = false;
+  options: Partial<PersonOptions>;
+
   private fieldWithAddressReferences: string;
 
   documentFields() {
@@ -72,18 +79,20 @@ export class PersonDoctype extends AddressShared {
       ]),
       this.addSection("Kommunikation", [
         this.addContact(),
-        this.addAddressSection(),
+        this.addAddressSection({
+          defaultCountry: this.options?.defaultCountry,
+        }),
       ]),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
 
-    if (this.hideAdministrativeArea) {
+    if (this.options?.hideAdministrativeArea) {
       const country = fields[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
       country.className = null;
       delete fields[1].fieldGroup[1].fieldGroup[3];
       fields[1].fieldGroup[1].fieldGroup.push(country);
     }
-    if (this.hideCountryAndAdministrativeArea) {
+    if (this.options?.hideCountryAndAdministrativeArea) {
       delete fields[1].fieldGroup[1].fieldGroup[3];
     }
     return fields;

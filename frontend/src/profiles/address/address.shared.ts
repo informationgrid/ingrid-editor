@@ -1,6 +1,11 @@
 import { BaseDoctype } from "../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { map } from "rxjs/operators";
+import { BackendOption } from "../../app/store/codelist/codelist.model";
+
+interface AddressOptions {
+  defaultCountry: BackendOption;
+}
 
 export abstract class AddressShared extends BaseDoctype {
   addContact(): FormlyFieldConfig {
@@ -30,7 +35,8 @@ export abstract class AddressShared extends BaseDoctype {
       ],
     });
   }
-  addAddressSection(): FormlyFieldConfig {
+
+  addAddressSection(options?: AddressOptions): FormlyFieldConfig {
     return this.addGroup(
       "address",
       "Adresse",
@@ -86,6 +92,7 @@ export abstract class AddressShared extends BaseDoctype {
               className: "flex-1",
               options: this.getCodelistForSelect(6200, "country"),
               codelistId: 6200,
+              defaultValue: options?.defaultCountry,
             }),
           ],
         },

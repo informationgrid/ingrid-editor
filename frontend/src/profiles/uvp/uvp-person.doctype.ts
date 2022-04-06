@@ -17,6 +17,9 @@ export class UvpPersonDoctype extends PersonDoctype {
   ) {
     super(storageService, codelistService, codelistQuery, "pointOfContact");
     this.addressType = "person";
-    this.hideAdministrativeArea = true;
+    this.options = {
+      hideAdministrativeArea: true,
+      defaultCountry: { key: "276" },
+    };
   }
 }
