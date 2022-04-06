@@ -15,7 +15,7 @@ export class ForeignProjectsDoctype extends UvpShared {
 
   label = "Ausländisches Vorhaben";
 
-  iconClass = "Projekt";
+  iconClass = "auslaendisches-vorhaben";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[

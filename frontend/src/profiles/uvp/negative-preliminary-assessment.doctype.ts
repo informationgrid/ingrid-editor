@@ -16,7 +16,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
 
   label = "Negative Vorprüfung";
 
-  iconClass = "Projekt";
+  iconClass = "negative-vorpruefung";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[

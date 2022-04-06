@@ -16,7 +16,7 @@ export class ApprovalProcedureDoctype extends UvpShared {
 
   label = "Zulassungsverfahren";
 
-  iconClass = "Projekt";
+  iconClass = "zulassungsverfahren";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[

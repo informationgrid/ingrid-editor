@@ -14,7 +14,7 @@ export class LineDeterminationDoctype extends LineAndSpatialShared {
 
   label = "Linienbestimmung";
 
-  iconClass = "Projekt";
+  iconClass = "linienbestimmungsverfahren";
 
   constructor(
     storageService: DocumentService,
