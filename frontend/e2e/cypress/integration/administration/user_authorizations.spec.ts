@@ -899,7 +899,7 @@ describe('Catalogue admin', () => {
     // change the role back again to catalog admin
     cy.kcLogin('eins');
     AdminUserPage.visit();
-    AdminUserPage.selectUser(userLogin);
+    AdminUserPage.selectUser('autornew');
     AdminUserPage.changeUserRole('Autor', true);
   });
 });
