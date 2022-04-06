@@ -269,7 +269,7 @@ export class UvpShared extends BaseDoctype {
         const model = other.form.root.value;
         let receiptDate = this.convertToIsoDate(model.receiptDate);
         let lowestDisclosureDate = model.processingSteps
-          .filter((step) => step.type === "publicDisclosure")
+          ?.filter((step) => step.type === "publicDisclosure")
           .map((step) => this.convertToIsoDate(step.disclosureDate?.start))
           .sort((a, b) => (a < b && a !== null ? -1 : 1))[0];
 
