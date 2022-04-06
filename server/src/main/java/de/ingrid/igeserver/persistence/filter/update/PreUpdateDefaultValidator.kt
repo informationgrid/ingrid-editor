@@ -1,9 +1,10 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.update
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
+import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.springframework.stereotype.Component
 
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class DefaultUpdateValidator : Filter<PreUpdatePayload> {
+class PreUpdateDefaultValidator : Filter<PreUpdatePayload> {
 
     companion object {
         private val PROFILES = arrayOf<String>()

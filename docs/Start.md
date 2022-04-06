@@ -278,7 +278,7 @@ fun updateDocument(id: String, data: JsonNode, publish: Boolean = false) {
 
 A special category of audit log records are data history records. They are used to document changes made to the application data. The data history log is realized in the following way:
 
-- The `de.ingrid.igeserver.persistence.filter.DataHistoryLogger` class that is implemented as an extension (`Filter`) of the `Pipe<PostPersistencePayload>` extension point and therefor invoked after each persistence operation
+- The `de.ingrid.igeserver.persistence.filter.persistence.DataHistoryLogger` class that is implemented as an extension (`Filter`) of the `Pipe<PostPersistencePayload>` extension point and therefor invoked after each persistence operation
 - This class uses the following parameters when creating an audit log record:
   - _Category_: Value of `audit.log.data-history-category` defined in `application.properties` (default: _data-history_)
   - _Logger_: Value of `audit.log.data-history-logger` defined in `application.properties` (default: _audit.data-history_)

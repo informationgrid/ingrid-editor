@@ -123,8 +123,8 @@ Pipes and filters are configured mainly using Spring's dependency injection with
   ```
   pipes.filter.order={\
     'PreUpdatePipe': {\
-      'de.ingrid.igeserver.persistence.filter.DefaultUpdateValidator',\
-      'de.ingrid.igeserver.persistence.filter.DefaultDocumentUpdater'\
+      'de.ingrid.igeserver.persistence.filter.update.DefaultUpdateValidator',\
+      'de.ingrid.igeserver.persistence.filter.update.DefaultDocumentUpdater'\
     }\
   }
   ```
@@ -230,4 +230,3 @@ class DocumentService : MapperService() {
     - Both
       - Pipe specific parameters in run method vs pipe specific payload
 
-    

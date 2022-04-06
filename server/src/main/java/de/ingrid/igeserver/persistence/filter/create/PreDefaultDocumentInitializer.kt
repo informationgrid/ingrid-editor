@@ -1,8 +1,9 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.create
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.persistence.filter.PreCreatePayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -19,7 +20,7 @@ import java.util.*
  * Filter for processing document data send from the client before insert
  */
 @Component
-class DefaultDocumentInitializer @Autowired constructor(
+class PreDefaultDocumentInitializer @Autowired constructor(
     val dateService: DateService,
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,

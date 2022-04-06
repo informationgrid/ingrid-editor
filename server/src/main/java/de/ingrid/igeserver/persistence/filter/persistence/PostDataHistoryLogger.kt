@@ -1,8 +1,9 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.persistence
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.persistence.filter.PostPersistencePayload
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component
  * NOTE This class uses AuditLogger to create and log messages
  */
 @Component
-class DataHistoryLogger @Autowired constructor(
+class PostDataHistoryLogger @Autowired constructor(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService
 ) : Filter<PostPersistencePayload> {
