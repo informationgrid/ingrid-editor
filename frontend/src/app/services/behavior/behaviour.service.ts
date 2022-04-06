@@ -104,6 +104,10 @@ export class BehaviourService {
     this.behaviours$.next(behaviours);
   }
 
+  addSystemBehaviourFromProfile(plugin: Plugin) {
+    this.systemBehaviours.push(plugin);
+  }
+
   private updateState(behaviours: BehaviourFormatBackend[]) {
     const activate: Plugin[] = [];
     const deactivate: Plugin[] = [];
