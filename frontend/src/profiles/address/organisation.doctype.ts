@@ -1,11 +1,10 @@
 import { DocumentService } from "../../app/services/document/document.service";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { map } from "rxjs/operators";
+import { AddressShared } from "./address.shared";
 
-export abstract class OrganisationDoctype extends BaseDoctype {
+export abstract class OrganisationDoctype extends AddressShared {
   label = "Organisation";
 
   iconClass = "Institution";
@@ -41,103 +40,8 @@ export abstract class OrganisationDoctype extends BaseDoctype {
         },
       ]),
       this.addSection("Kommunikation", [
-        {
-          key: "contact",
-          type: "repeat",
-          wrappers: ["panel"],
-          className: "contact",
-          templateOptions: {
-            externalLabel: "Kontakt",
-            required: true,
-          },
-          fieldArray: {
-            fieldGroupClassName: "display-flex",
-            fieldGroup: [
-              this.addSelect("type", null, {
-                className: "flex-1",
-                wrappers: null,
-                fieldLabel: "Art",
-                required: true,
-                options: this.getCodelistForSelect(4430, "type").pipe(
-                  map((items) =>
-                    items.filter(
-                      (item) => item.value !== "5" && item.value !== "6"
-                    )
-                  )
-                ),
-              }),
-              this.addInput("connection", null, {
-                fieldLabel: "Verbindung",
-                required: true,
-                className: "flex-3",
-                validators: {
-                  validation: ["emailInRepeat"],
-                },
-              }),
-            ],
-          },
-        },
-        this.addGroup(
-          "address",
-          "Adresse",
-          [
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addInput("street", null, {
-                  fieldLabel: "Straße/Hausnummer",
-                  className: "width-100",
-                }),
-              ],
-            },
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addInput("zip-code", null, {
-                  fieldLabel: "PLZ",
-                }),
-                this.addInput("city", null, {
-                  fieldLabel: "Ort",
-                  className: "flex-3",
-                }),
-              ],
-            },
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addInput("zip-po-box", null, {
-                  fieldLabel: "PLZ (Postfach)",
-                }),
-                this.addInput("po-box", null, {
-                  fieldLabel: "Postfach",
-                  className: "flex-3",
-                }),
-              ],
-            },
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addSelect("administrativeArea", null, {
-                  fieldLabel: "Verwaltungsgebiet",
-                  showSearch: true,
-                  wrappers: null,
-                  className: "flex-1",
-                  options: this.getCodelistForSelect(110, "administrativeArea"),
-                  codelistId: 110,
-                }),
-                this.addSelect("country", null, {
-                  fieldLabel: "Land",
-                  showSearch: true,
-                  wrappers: null,
-                  className: "flex-1",
-                  options: this.getCodelistForSelect(6200, "country"),
-                  codelistId: 6200,
-                }),
-              ],
-            },
-          ],
-          { fieldGroupClassName: null }
-        ),
+        this.addContact(),
+        this.addAddressSection(),
       ]),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];

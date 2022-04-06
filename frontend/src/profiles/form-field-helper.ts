@@ -90,16 +90,37 @@ export class FormFieldHelper {
     };
   }
 
+  addRepeat(id, label, options?) {
+    return {
+      key: id,
+      type: "repeat",
+      wrappers: ["panel"],
+      className: options?.className,
+      templateOptions: {
+        externalLabel: label,
+        required: options?.required,
+        minLength: options?.required ? 1 : undefined,
+      },
+      fieldArray: {
+        fieldGroupClassName: "display-flex",
+        fieldGroup: options?.fields,
+      },
+    };
+  }
+
   addAutocomplete(id, label, options?) {
     return {
       key: id,
       type: "autocomplete",
-      wrappers: ["panel", "form-field"],
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
-        placeholder: "Bitte wählen",
+        placeholder: options?.placeholder ?? "Bitte wählen",
         appearance: "outline",
         required: options?.required,
+        highlightMatches: options?.highlightMatches,
+        hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
       },
     };
