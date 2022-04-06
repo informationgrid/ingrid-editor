@@ -21,14 +21,14 @@ describe('Profile', () => {
   });
 
   it('should update catalog admin password', () => {
-    cy.kcLogin('ige2').as('tokens');
+    cy.kcLogin('catalog-profile-test').as('tokens');
     ProfilePage.visit();
     // change user password with new password
     ProfilePage.changePassword('ige2', 'mdek', 'ige2');
 
     // login again with new password using new fixture file
     cy.kcLogout();
-    cy.kcLogin('ige2_with_new_pass');
+    cy.kcLogin('catalog-profile-test-with-new-pass');
     ProfilePage.visit();
     cy.kcLogout();
   });

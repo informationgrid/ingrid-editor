@@ -6,7 +6,7 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 describe('performance tests for large amounts of data', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige4').as('tokens');
+    cy.kcLogin('catalog-for-mass-data').as('tokens');
   });
 
   it('navigate to a nested folder', () => {
