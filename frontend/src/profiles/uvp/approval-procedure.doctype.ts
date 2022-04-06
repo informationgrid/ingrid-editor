@@ -20,54 +20,61 @@ export class ApprovalProcedureDoctype extends UvpShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addSection("Allgemeines", [
-        this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
-          required: true,
-        }),
-        this.addPointOfContact(),
-      ]),
-      this.addSection("Raumbezug", [
-        this.addSpatial("spatial", null, {
-          required: true,
-          limitTypes: ["free"],
-        }),
-        this.addDatepicker("receiptDate", "Eingang des Antrags", {
-          required: true,
-        }),
-        this.addRepeatList("eiaNumbers", "UVP-Nummern", {
-          required: true,
-          showSearch: true,
-          options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
-            map((list) => this.sortUVPNumber(list))
-          ),
-          codelistId: 9000,
-          asSelect: true,
-        }),
-        this.addRadioboxes("prelimAssessment", "Vorprüfung durchgeführt", {
-          required: true,
-          options: [
-            {
-              value: "Ja",
-              id: true,
-            },
-            {
-              value: "Nein",
-              id: false,
-            },
-          ],
-        }),
-        {
-          key: "processingSteps",
-          type: "uvpPhases",
-          fieldArray: {
-            fieldGroup: [
-              this.addPublicDisclosure(),
-              this.addPublicHearing(),
-              this.addDecisionOfAdmission(),
-            ],
-          },
+      {
+        validators: {
+          receiptDate: this.receiptDateValidator(),
         },
-      ]),
+        fieldGroup: [
+          this.addSection("Allgemeines", [
+            this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
+              required: true,
+            }),
+            this.addPointOfContact(),
+          ]),
+          this.addSection("Raumbezug", [
+            this.addSpatial("spatial", null, {
+              required: true,
+              limitTypes: ["free"],
+            }),
+            this.addDatepicker("receiptDate", "Eingang des Antrags", {
+              required: true,
+            }),
+            this.addRepeatList("eiaNumbers", "UVP-Nummern", {
+              required: true,
+              showSearch: true,
+              options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
+                map((list) => this.sortUVPNumber(list))
+              ),
+              codelistId: 9000,
+              asSelect: true,
+            }),
+            this.addRadioboxes("prelimAssessment", "Vorprüfung durchgeführt", {
+              required: true,
+              options: [
+                {
+                  value: "Ja",
+                  id: true,
+                },
+                {
+                  value: "Nein",
+                  id: false,
+                },
+              ],
+            }),
+            {
+              key: "processingSteps",
+              type: "uvpPhases",
+              fieldArray: {
+                fieldGroup: [
+                  this.addPublicDisclosure(),
+                  this.addPublicHearing(),
+                  this.addDecisionOfAdmission(),
+                ],
+              },
+            },
+          ]),
+        ],
+      },
     ];
 
   constructor(

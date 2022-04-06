@@ -188,6 +188,7 @@ export class FormFieldHelper {
         required: options?.required,
       },
       hideExpression: options?.hideExpression,
+      validators: options?.validators,
     };
   }
 
@@ -206,6 +207,19 @@ export class FormFieldHelper {
         required: options?.required,
       },
       hideExpression: options?.hideExpression,
+      validators: options?.validators ?? {
+        required: {
+          expression: (ctrl) =>
+            !options?.required ||
+            !(ctrl.value?.start === null && ctrl.value?.end === null),
+        },
+        validStartEnd: {
+          expression: (ctrl) =>
+            (ctrl.value?.start === null && ctrl.value?.end === null) ||
+            (ctrl.value?.start && ctrl.value?.end),
+          message: "Das Start- und Enddatum muss gültig sein",
+        },
+      },
     };
   }
 

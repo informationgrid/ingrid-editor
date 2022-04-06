@@ -263,6 +263,32 @@ export class UvpShared extends BaseDoctype {
     });
   }
 
+  receiptDateValidator() {
+    return {
+      expression: (ctrl, other) => {
+        const model = other.form.root.value;
+        let receiptDate = this.convertToIsoDate(model.receiptDate);
+        let lowestDisclosureDate = model.processingSteps
+          .filter((step) => step.type === "publicDisclosure")
+          .map((step) => this.convertToIsoDate(step.disclosureDate?.start))
+          .sort((a, b) => (a < b && a !== null ? -1 : 1))[0];
+
+        if (!lowestDisclosureDate) return true;
+
+        return receiptDate < lowestDisclosureDate;
+      },
+      message: "Das Datum muss vor dem Beginn der ersten Auslegung sein.",
+      errorPath: "receiptDate",
+    };
+  }
+
+  private convertToIsoDate(date: Date | string) {
+    if (typeof date !== "string") {
+      return date?.toISOString();
+    }
+    return date;
+  }
+
   // get the string from a text without the number part (e.g. (6,'6a') => 'a')
   private getStringFromNumText(number, text) {
     let str = text;
