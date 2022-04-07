@@ -13,6 +13,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { Router } from "@angular/router";
+import { UpdateType } from "../../../models/update-type.enum";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -64,7 +65,11 @@ export class HistoryPlugin extends Plugin {
       .pipe(filter((doc) => doc !== null))
       .subscribe((doc) => this.addDocToStack(doc));
 
-    this.subscriptions.push(treeSubscription);
+    const deleteSubscription = this.tree.datasetsChanged$
+      .pipe(filter((info) => info?.type === UpdateType.Delete))
+      .subscribe((info) => this.removeDeletedDocsFromStack(info.data));
+
+    this.subscriptions.push(treeSubscription, deleteSubscription);
   }
 
   private setupFields() {
@@ -105,7 +110,6 @@ export class HistoryPlugin extends Plugin {
       this.pointer++;
     }
 
-    // this.stack$.next(this.stack);
     this.handleButtonState();
   }
 
@@ -118,12 +122,6 @@ export class HistoryPlugin extends Plugin {
         this.handlePrevious();
       }
     });
-
-    /*
-        this.stack$
-          .pipe(untilDestroyed(this))
-          .subscribe(stack => this.handleButtonState(stack));
-    */
   }
 
   private addToolbarButtons() {
@@ -193,6 +191,13 @@ export class HistoryPlugin extends Plugin {
     // close the popup if it's still open
     // popup.close(this.popupMenu);
 
+    // if current node is not last from stack we go to end of stack
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== this.stack[this.pointer].id) {
+      this.gotoNode(this.stack[this.pointer]);
+      return;
+    }
+
     const node = this.stack[this.pointer - 1];
     this.ignoreNextPush = true;
     if (this.pointer > 0) {
@@ -226,5 +231,16 @@ export class HistoryPlugin extends Plugin {
       "toolBtnNextInHistory",
       this.hasNext()
     );
+  }
+
+  private removeDeletedDocsFromStack(docs: DocumentAbstract[]) {
+    docs.forEach((doc) => {
+      const stackItemIndex = this.stack.findIndex((item) => item.id === doc.id);
+      if (stackItemIndex !== -1) {
+        this.stack.splice(stackItemIndex, 1);
+        if (this.stack.length === this.pointer) this.pointer--;
+      }
+    });
+    this.handleButtonState();
   }
 }
