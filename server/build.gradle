@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.6.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.6.5'
+    ext.spring_boot_version = '2.6.6'
     ext.hibernate_version = '5.6.5.Final'
     ext.jackson_version = '2.13.1'
     ext.kotest_version = '5.0.3' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
@@ -57,7 +57,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.apache.logging.log4j:log4j-api-kotlin:1.1.0"
-    //implementation "de.ingrid.portal:ingrid-upload-utils:1.0-SNAPSHOT"
     implementation "org.apache.tika:tika-core:1.22"
     implementation "org.glassfish.jersey.media:jersey-media-multipart:2.32"
 
@@ -86,7 +85,7 @@ dependencies {
 
     // JSON schema validation
     implementation 'net.pwall.json:json-kotlin-schema:0.32'
-    
+
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.4'
     implementation 'org.keycloak:keycloak-admin-client:12.0.4'
