@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UvpNegativePreliminaryExaminationType @Autowired constructor() : EntityType() {
-    override val className = "UvpNegativePreliminaryExaminationDoc"
+class UvpNegativePreliminaryAssessmentType @Autowired constructor() : EntityType() {
+    override val className = "UvpNegativePreliminaryAssessmentDoc"
     override val profiles = arrayOf("uvp")
 
     val log = logger()
 
-    override val jsonSchema = "/uvp/schemes/negative-preliminary-examination.schema.json"
+    override val jsonSchema = "/uvp/schemes/negative-preliminary-assessment.schema.json"
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
@@ -25,16 +25,16 @@ class UvpNegativePreliminaryExaminationType @Autowired constructor() : EntityTyp
     }
 
     private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
-        return replaceWithReferenceUuid(doc, "publisher")
+        return replaceWithReferenceUuid(doc, "pointOfContact")
     }
 
     override fun getReferenceIds(doc: Document): List<String> {
-        return doc.data.path("publisher").map { address ->
+        return doc.data.path("pointOfContact").map { address ->
             address.path("ref").textValue()
         }
     }
 
     private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        return replaceUuidWithReferenceData(doc, "publisher", options)
+        return replaceUuidWithReferenceData(doc, "pointOfContact", options)
     }
 }

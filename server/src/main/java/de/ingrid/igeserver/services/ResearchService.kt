@@ -262,7 +262,7 @@ class ResearchService {
         else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
         else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
 
-    fun querySql(principal: Principal, catalogId: String, sqlQuery: String): ResearchResponse {
+    fun querySql(principal: Principal, catalogId: String, sqlQuery: String, paging: ResearchPaging = ResearchPaging()): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
         var finalQuery = ""
@@ -271,10 +271,16 @@ class ResearchService {
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
 
-            val result = sendQuery(finalQuery, emptyList(), ResearchPaging())
+            val result = sendQuery(finalQuery, emptyList(), paging)
             val map = filterAndMapResult(result, isAdmin, principal)
 
-            return ResearchResponse(map.size, map)
+            val totalHits = if (paging.pageSize != Int.MAX_VALUE) {
+                getTotalHits(finalQuery, emptyList())
+            } else {
+                map.size
+            }
+
+            return ResearchResponse(totalHits, map)
         } catch (error: Exception) {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,

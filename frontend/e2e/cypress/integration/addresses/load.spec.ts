@@ -5,7 +5,7 @@ import { Tree } from '../../pages/tree.partial';
 describe('Load addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     AddressPage.visit();
   });
 
@@ -50,5 +50,16 @@ describe('Load addresses', () => {
     cy.get(AddressPage.Sidemenu.Daten).click();
     cy.get(AddressPage.Sidemenu.Adressen).click();
     cy.get(AddressPage.title).should('have.text', addressTitle);
+  });
+
+  it('should be able to jump between address and document to which it has been associated', () => {
+    // open address
+    Tree.openNode(['Neue Testadressen', 'Adresse, Venetien']);
+    // open up display "zugeordnete Datensätze"
+    cy.get('[data-cy="Zugeordnete Datensätze"] button').click();
+    cy.get('ige-referenced-documents-type .mat-list-item').each(item => {
+      cy.wrap(item).click();
+      cy.contains('ige-header-title-row', item.text(), { timeout: 8000 });
+    });
   });
 });

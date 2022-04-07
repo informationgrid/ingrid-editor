@@ -43,6 +43,8 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   removeSection(index: number) {
     this.dialog
       .open(ConfirmDialogComponent, {
+        autoFocus: "first-tabbable",
+        hasBackdrop: true,
         data: <ConfirmDialogData>{
           title: "Schritt entfernen",
           message: "Wollen Sie den Schritt wirklich entfernen?",

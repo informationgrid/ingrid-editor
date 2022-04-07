@@ -606,7 +606,7 @@ export class DocumentService {
     }
   }
 
-  private mapToDocumentAbstracts(
+  mapToDocumentAbstracts(
     docs: IgeDocument[],
     parentId?: string
   ): DocumentAbstract[] {

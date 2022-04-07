@@ -1,0 +1,23 @@
+<button mat-button class="toggle-ref-docs-btn" (click)="toggleList()">
+    {{ showReferences ? "Ausblenden" : "Anzeigen" }}
+</button>
+
+<ng-container *ngIf="showReferences">
+    <mat-paginator
+        *ngIf="totalHits > 0; else emptyRefs"
+        [length]="totalHits"
+        [pageSize]="pageSize"
+        [hidePageSize]="true"
+        (page)="switchPage($event)"
+    ></mat-paginator>
+
+    <ng-template #emptyRefs>
+        <p>Es existieren keine Referenzen auf diese Adresse</p>
+    </ng-template>
+
+    <ige-document-list-item
+        [docs]="docs"
+        [removeSelectionAfter]="true"
+        (select)="openReference($event)"
+    ></ige-document-list-item>
+</ng-container>

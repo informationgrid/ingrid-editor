@@ -3,6 +3,7 @@ package de.ingrid.igeserver.index
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -78,19 +79,20 @@ class IndexService @Autowired constructor(
     fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter =
         exportService.getExporter(category, exportFormat)
 
-    fun updateConfig(catalogId: String, cronPattern: String) {
+    fun updateConfig(config: IndexConfigOptions) {
 
-        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val catalog = catalogRepo.findByIdentifier(config.catalogId)
         if (catalog.settings == null) {
-            catalog.settings = CatalogSettings(cronPattern)
+            catalog.settings = CatalogSettings(config.cronPattern)
         } else {
-            catalog.settings!!.indexCronPattern = cronPattern
+            catalog.settings!!.indexCronPattern = config.cronPattern
         }
+        catalog.settings!!.exportFormat = config.exportFormat
         catalogRepo.save(catalog)
 
     }
 
-    fun getConfig(catalogId: String): String? = catalogRepo.findByIdentifier(catalogId).settings?.indexCronPattern
+    fun getConfig(catalogId: String): CatalogSettings? = catalogRepo.findByIdentifier(catalogId).settings
 
     fun getLastLog(catalogId: String): IndexMessage? {
 

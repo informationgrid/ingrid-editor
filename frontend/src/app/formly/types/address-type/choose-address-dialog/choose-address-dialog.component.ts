@@ -13,6 +13,7 @@ import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.qu
 import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import {
   CodelistService,
+  SelectOption,
   SelectOptionUi,
 } from "../../../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
@@ -25,7 +26,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSelect } from "@angular/material/select";
-import { ProfileAbstract } from "../../../../store/profile/profile.model";
+import { BackendOption } from "../../../../store/codelist/codelist.model";
 
 export interface ChooseAddressDialogData {
   address: AddressRef;
@@ -33,7 +34,7 @@ export interface ChooseAddressDialogData {
 }
 
 export interface ChooseAddressResponse {
-  type: string;
+  type: BackendOption;
   address: DocumentAbstract;
 }
 
@@ -138,7 +139,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.selectedType = address.type;
+    // in case the previous type is not allowed anymore, we use the new allowed type
+    const isAllowed = this.isTypeAllowed(address);
+    if (isAllowed) {
+      this.selectedType = address.type.key;
+    }
     this.selectedNode.next(address.ref._id);
   }
 
@@ -169,5 +174,12 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   setRefType($event: DocumentAbstract) {
     this.selectedType = $event.id.toString();
+  }
+
+  private isTypeAllowed(address: AddressRef) {
+    return (
+      this.filterByAllowedTypes([new SelectOption(address.type?.key, "")])
+        .length > 0
+    );
   }
 }

@@ -67,7 +67,7 @@
       "required": [],
       "title": "Date"
     },
-    "Publisher": {
+    "PointOfContact": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -82,7 +82,7 @@
         "ref",
         "type"
       ],
-      "title": "Publisher"
+      "title": "PointOfContact"
     },
     "Spatial": {
       "type": "object",

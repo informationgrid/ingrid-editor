@@ -31,7 +31,7 @@
 </div>
 
 <ige-add-button
-    *ngIf="formControl.enabled"
+    *ngIf="formControl.enabled && (!to.max || to.max > addresses.length)"
     (add)="addAddress()"
     [showRequiredError]="formControl.invalid && formControl.errors?.required"
 ></ige-add-button>

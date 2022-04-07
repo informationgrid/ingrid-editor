@@ -9,9 +9,10 @@ import {
 import { IgeDocument } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
 import { DocumentUtils } from "../../../../services/document.utils";
+import { BackendOption } from "../../../../store/codelist/codelist.model";
 
 export interface AddressRef {
-  type: string;
+  type: BackendOption;
   ref: Partial<IgeDocument>;
 }
 
@@ -32,7 +33,7 @@ export class AddressCardComponent implements OnInit {
   content: {
     iconClass: string;
     iconState: string;
-    role: string;
+    role: string | BackendOption;
     title: string;
     secondTitle: string;
     emailOrPhone: string;

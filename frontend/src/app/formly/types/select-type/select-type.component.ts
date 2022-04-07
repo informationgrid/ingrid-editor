@@ -47,8 +47,6 @@ export class SelectTypeComponent extends FieldType implements OnInit {
   }
 
   ngOnInit() {
-    super.ngOnInit();
-
     this.filterCtrl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
@@ -78,12 +76,6 @@ export class SelectTypeComponent extends FieldType implements OnInit {
         tap(() => this.updateSelectField(this.formControl.value))
       )
       .subscribe();
-
-    // during publish make sure this control is showing the error
-    setTimeout(() => {
-      this.formControl.markAsTouched();
-      this.cdr.markForCheck();
-    });
   }
 
   private updateSelectField(value) {
@@ -129,7 +121,6 @@ export class SelectTypeComponent extends FieldType implements OnInit {
       );
     }
 
-    this.formControl.markAsTouched();
     this.formControl.markAsDirty();
   }
 

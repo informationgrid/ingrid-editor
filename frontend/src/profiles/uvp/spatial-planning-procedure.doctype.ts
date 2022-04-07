@@ -14,7 +14,7 @@ export class SpatialPlanningProcedureDoctype extends LineAndSpatialShared {
 
   label = "Raumordnungsverfahren";
 
-  iconClass = "Projekt";
+  iconClass = "raumordnungsverfahren";
 
   constructor(
     storageService: DocumentService,

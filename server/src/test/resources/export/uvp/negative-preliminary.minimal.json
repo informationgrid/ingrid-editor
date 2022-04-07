@@ -1,9 +1,9 @@
 {
   "title": "Minimal",
   "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
-  "_type": "UvpNegativePreliminaryExaminationDoc",
+  "_type": "UvpNegativePreliminaryAssessmentDoc",
   "description": "Minimales Negatives Verfahren",
-  "publisher": [
+  "pointOfContact": [
     {
       "type": {
         "key": "7"

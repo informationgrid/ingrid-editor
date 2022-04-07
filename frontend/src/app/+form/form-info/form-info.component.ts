@@ -164,10 +164,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   }
 
   private determineToggleState(top) {
-    if (!this.showScrollHeader) {
-      this.initialHeaderOffset = this.stickyHeader.nativeElement.offsetTop - 56;
-    }
-
+    this.initialHeaderOffset = this.stickyHeader.nativeElement.offsetTop - 56;
     return top > this.initialHeaderOffset;
   }
 

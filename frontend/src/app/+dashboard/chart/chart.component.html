@@ -46,7 +46,9 @@
         fxLayoutAlign="space-between"
     >
         <div class="box working">
-            <div class="count">{{ dataSeq.first }}</div>
+            <div data-cy="editModeDocument" class="count">
+                {{ dataSeq.first }}
+            </div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
                 {{ (dataSeq.first / total) * 100 ?? 0 | number: "1.0-0" }}%
@@ -54,7 +56,9 @@
         </div>
 
         <div class="box">
-            <div class="count">{{ dataSeq.second }}</div>
+            <div data-cy="publishModeDocument" class="count">
+                {{ dataSeq.second }}
+            </div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
                 {{ (dataSeq.second / total) * 100 ?? 0 | number: "1.0-0" }}%

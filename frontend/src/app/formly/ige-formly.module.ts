@@ -69,6 +69,12 @@ import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
 import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.component";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { ReferencedDocumentsTypeComponent } from "./types/referenced-documents-type/referenced-documents-type.component";
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from "@angular/material/paginator";
+import { IgePagingIntl } from "../shared/IgePagingIntl";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -143,6 +149,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "uvpPhases",
           component: UvpSectionsComponent,
         },
+        {
+          name: "referencedDocuments",
+          component: ReferencedDocumentsTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
@@ -183,6 +193,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SharedPipesModule,
     FormlySelectModule,
     NgxMatSelectSearchModule,
+    MatPaginatorModule,
   ],
   providers: [
     {
@@ -197,6 +208,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
       useFactory: scrollFactory,
       deps: [Overlay],
+    },
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
     },
   ],
   declarations: [
@@ -228,6 +243,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UploadFilesDialogComponent,
     SelectTypeComponent,
     UvpSectionsComponent,
+    ReferencedDocumentsTypeComponent,
   ],
   exports: [
     ReactiveFormsModule,

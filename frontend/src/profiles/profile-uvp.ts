@@ -1,39 +1,73 @@
-import { AdmissionProcedureDoctype } from "./uvp/admission-procedure.doctype";
+import { ApprovalProcedureDoctype } from "./uvp/approval-procedure.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { Component, NgModule } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { SpatialPlanningProcedureDoctype } from "./uvp/spatial-planning-procedure.doctype";
-import { NegativePreliminaryExaminationDoctype } from "./uvp/negative-preliminary-examination.doctype";
+import { NegativePreliminaryAssessmentDoctype } from "./uvp/negative-preliminary-assessment.doctype";
 import { ForeignProjectsDoctype } from "./uvp/foreign-projects.doctype";
 import { UvpPersonDoctype } from "./uvp/uvp-person.doctype";
 import { UvpOrganisationDoctype } from "./uvp/uvp-organisation.doctype";
 import { LineDeterminationDoctype } from "./uvp/line-determination.doctype";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
+import { filter, map } from "rxjs/operators";
+import { Plugin } from "../app/+catalog/+behaviours/plugin";
 
 @Component({
   template: "dynamic component",
 })
 class UVPComponent {
   constructor(
-    service: ProfileService,
+    profileService: ProfileService,
+    behaviourService: BehaviourService,
     folder: FolderDoctype,
-    admissionProcedureDoctype: AdmissionProcedureDoctype,
+    approvalProcedureDoctype: ApprovalProcedureDoctype,
     spatialPlanningProcedureDoctype: SpatialPlanningProcedureDoctype,
     lineDeterminationDoctype: LineDeterminationDoctype,
-    negativePreliminaryExaminationDoctype: NegativePreliminaryExaminationDoctype,
+    negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
     organisation: UvpOrganisationDoctype
   ) {
-    service.registerProfiles([
+    this.addBehaviour(behaviourService, negativeAssessmentDoctype);
+
+    profileService.registerProfiles([
       folder,
-      admissionProcedureDoctype,
+      approvalProcedureDoctype,
       spatialPlanningProcedureDoctype,
       lineDeterminationDoctype,
-      negativePreliminaryExaminationDoctype,
+      negativeAssessmentDoctype,
       foreignProjectsDoctype,
       address,
       organisation,
     ]);
+
+    this.modifyFormHeader(profileService);
+  }
+
+  private modifyFormHeader(service: ProfileService) {
+    service.updateUIProfileStore({
+      hideFormHeaderInfos: ["type"],
+    });
+  }
+
+  private addBehaviour(
+    behaviourService: BehaviourService,
+    negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype
+  ) {
+    const behaviour = new PublishNegativeAssessmentBehaviour();
+    behaviourService.addSystemBehaviourFromProfile(behaviour);
+
+    behaviourService.theSystemBehaviours$
+      .pipe(
+        map((plugins) => this.getActiveState(plugins, behaviour.id)),
+        filter((isActive) => isActive)
+      )
+      .subscribe(() => (negativeAssessmentDoctype.forPublish = true));
+  }
+
+  private getActiveState(plugins: Plugin[], behaviourId: string) {
+    return plugins.find((plugin) => plugin.id === behaviourId)?.isActive;
   }
 }
 

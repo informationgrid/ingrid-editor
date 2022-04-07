@@ -10,7 +10,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ManageCatalogPage.visit();
   });
 
@@ -55,11 +55,16 @@ describe('Catalog management', () => {
     ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
       // add document
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
+      const lastDocCreateDate = new Date();
+
       // refresh page
-      cy.reload();
+      ManageCatalogPage.visit();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
-      ManageCatalogPage.getDateOfChangesInCatalog('Test').should('equal', Utils.getFormattedDateTime(new Date()));
+      ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
+        'equal',
+        Utils.getFormattedDateTime(lastDocCreateDate)
+      );
     });
   });
 
@@ -136,7 +141,7 @@ describe('Catalog management', () => {
   // send an API call to set current catalog to 'test'
   after(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
         url: `${Cypress.config('baseUrl')}/api/user/catalog/test`,

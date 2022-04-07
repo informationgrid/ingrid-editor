@@ -1,9 +1,9 @@
 {
   "title": "Minimal",
   "_uuid": "87dc26e4-30b2-4956-915c-ad743c325a8c",
-  "_type": "UvpAdmissionProcedureDoc",
+  "_type": "UvpApprovalProcedureDoc",
   "description": "Minimales Zulassungsverfahren",
-  "publisher": [
+  "pointOfContact": [
     {
       "type": {
         "key": "7"
@@ -32,21 +32,14 @@
   "prelimAssessment": true,
   "processingSteps": [
     {
-      "type": "publicHearing",
-      "publicHearingDate": {
-        "start": "2022-03-06T23:00:00.000Z",
-        "end": "2022-03-14T23:00:00.000Z"
-      },
-      "furtherDocs": [
-        {
-          "title": "schema.txt",
-          "downloadURL": {
-            "asLink": false,
-            "value": "schema.txt",
-            "uri": "schema.txt"
-          }
-        }
-      ]
+      "type": "publicDisclosure"
+      
+    },
+    {
+      "type": "publicHearing"
+    },
+    {
+      "type": "decisionOfAdmission"
     }
   ]
 }

@@ -10,6 +10,7 @@ interface CatalogProfile {
     val identifier: String
     val title: String
     val description: String?
+    val indexExportFormatID: String?
 
     @JsonIgnore
     fun getFacetDefinitionsForDocuments(): Array<FacetGroup>

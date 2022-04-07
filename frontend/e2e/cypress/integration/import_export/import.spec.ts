@@ -7,7 +7,7 @@ import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 describe('Import Tests', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     ImportPage.visit();
   });
 
@@ -89,7 +89,7 @@ describe('Import Tests', () => {
     // add address to document
     DocumentPage.visit();
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
-    enterMcloudDocTestData.setAddress('Franken, Adressetwo');
+    enterMcloudDocTestData.setAddress('Franken, Adresse');
     AddressPage.saveDocument();
     // import file
     ImportPage.visit();
@@ -102,8 +102,8 @@ describe('Import Tests', () => {
     ImportPage.closeDialogAndImport();
 
     ImportPage.jumpToDocument('Tiefes Dokument');
-    DocumentPage.jumpFromDocumentToAddress('Franken, Adressetwo');
-    cy.get(DocumentPage.title).should('have.text', 'Franken, Adressetwo');
+    DocumentPage.jumpFromDocumentToAddress('Franken, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Franken, Adresse');
     Tree.checkPath(['Adressen', 'Neue Testadressen']);
   });
 

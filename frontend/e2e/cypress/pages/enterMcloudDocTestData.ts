@@ -7,16 +7,16 @@ export class enterMcloudDocTestData {
     cy.get('[data-cy=Beschreibung] textarea').should('have.value', text);
   }
 
-  static setAddress(addressText: string, addressType: string = 'Herausgeber') {
+  static setAddress(addressText: string) {
     cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
-    DocumentPage.AddAddressDialog.searchAndSelect(addressText, addressType);
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText);
     cy.get('[data-cy="choose-address-confirm"]').click();
     cy.get('[data-cy=Adressen]').contains(addressText);
   }
 
   static checkAddressSelectable(addressText: string, shouldBeSelectable: boolean) {
     cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
-    DocumentPage.AddAddressDialog.searchAndSelect(addressText, 'Herausgeber');
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText);
     cy.get('[data-cy="choose-address-confirm"]').should(shouldBeSelectable ? 'be.enabled' : 'be.disabled');
   }
 
@@ -182,8 +182,8 @@ export class enterMcloudDocTestData {
 
   static setTimeReference(date: Date, choose: string, index: number = 0) {
     cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').click();
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat ')
-      .find('mat-select')
+    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat mat-select ')
+      .find('span')
       .eq(index)
 
       .click({ force: true });

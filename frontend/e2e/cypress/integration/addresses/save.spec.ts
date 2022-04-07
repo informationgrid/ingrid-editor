@@ -8,7 +8,7 @@ import { Todo } from '@datorama/akita/src/__tests__/setup';
 describe('General create addresses/folders', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     AddressPage.visit();
   });
 
@@ -148,7 +148,6 @@ describe('General create addresses/folders', () => {
       AddressPage.publishIsUnsuccessful();
 
       cy.get('[data-cy="Kontakt"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
-      AddressPage.deleteLoadedNode();
     });
 
     it('should withdraw publication of published address', () => {
@@ -206,10 +205,10 @@ describe('General create addresses/folders', () => {
     });
 
     it('should check address header information', () => {
-      let newOrgName = 'Franken, Adressetwo';
-      Tree.openNode(['Neue Testadressen', 'Franken, Adresse']);
+      let newOrgName = 'Burgenland, Adresse-modified';
+      Tree.openNode(['Neue Testadressen', 'Burgenland, Adresse']);
 
-      AddressPage.editOrganizationName('Franken, Adressetwo');
+      AddressPage.editOrganizationName(newOrgName);
       AddressPage.saveChangesOfProfile(newOrgName);
 
       // check that last-edited date has been updated
@@ -263,57 +262,38 @@ describe('General create addresses/folders', () => {
       cy.contains('mat-dialog-container', 'Möchten Sie wirklich diese Datensätze löschen:');
     });
 
-    // TODO: use prepared addresses / folders for this test instead of creating them
     it('should actualize tree after deleting (#3048)', () => {
       // create folder
-      const folderName = 'folder_to_be_later_deleted';
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
-      AddressPage.createFolder(folderName);
-      cy.get(DocumentPage.title).should('have.text', folderName);
+      const folderName = 'leerer_Ordner_3';
+      const addressName = 'Adresse, Friesland';
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C', folderName]);
 
       // delete the folder
       AddressPage.deleteLoadedNode();
 
       // check if folder has been deleted and is not visible anymore
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C']);
       cy.contains('mat-tree-node', folderName).should('not.exist');
 
-      // create an address
-      AddressPage.CreateDialog.open();
-      AddressPage.addOrganizationName('Organisation_9');
-      cy.get('[data-cy=create-action]').click();
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C', addressName]);
 
       // delete the address
       AddressPage.deleteLoadedNode();
 
       // check if address has been deleted and is not visible anymore
-      Tree.openNode(['Neue Testadressen', 'Ordner 2. Ebene']);
-      cy.contains('mat-tree-node', folderName).should('not.exist');
+      Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_C']);
+      cy.contains('mat-tree-node', addressName).should('not.exist');
     });
 
-    // TODO Remove add contact function and used predefined one
     it('check for ordering and sorting "Kontakt" lists in the address document (organization)', () => {
       let contact1 = 'user@test.com';
       let contact2 = '1243543436';
-      let contact3 = 'F12321';
-      let type1 = 'E-Mail';
-      let type2 = 'Telefon';
-      let type3 = 'Fax';
-
       let resourceDateSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
       let targetSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(1)';
 
       Tree.openNode(['mclould_address']);
-      AddressPage.addContact(type1, contact1, 0);
-      AddressPage.addContact(type2, contact2, 1);
-      AddressPage.addContact(type3, contact3, 2);
-      DocumentPage.saveDocument();
 
-      // here we have to give sometime between the two save actions so that the checking  of the 'gespeichert' message for the second save
-      // does not mix with the first one
-      cy.wait(1500);
-
-      DocumentPage.dragItem(resourceDateSelector, targetSelector, 1, 0, 100);
+      DocumentPage.dragItem(resourceDateSelector, targetSelector);
 
       DocumentPage.saveDocument();
 

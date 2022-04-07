@@ -52,6 +52,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
+        max: options?.max,
       },
       validators: options?.validators,
     };
@@ -89,16 +90,37 @@ export class FormFieldHelper {
     };
   }
 
+  addRepeat(id, label, options?) {
+    return {
+      key: id,
+      type: "repeat",
+      wrappers: ["panel"],
+      className: options?.className,
+      templateOptions: {
+        externalLabel: label,
+        required: options?.required,
+        minLength: options?.required ? 1 : undefined,
+      },
+      fieldArray: {
+        fieldGroupClassName: "display-flex",
+        fieldGroup: options?.fields,
+      },
+    };
+  }
+
   addAutocomplete(id, label, options?) {
     return {
       key: id,
       type: "autocomplete",
-      wrappers: ["panel", "form-field"],
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
-        placeholder: "Bitte wählen",
+        placeholder: options?.placeholder ?? "Bitte wählen",
         appearance: "outline",
         required: options?.required,
+        highlightMatches: options?.highlightMatches,
+        hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
       },
     };
@@ -125,6 +147,7 @@ export class FormFieldHelper {
       key: id,
       type: "select",
       className: options?.className,
+      defaultValue: options?.defaultValue,
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -165,6 +188,7 @@ export class FormFieldHelper {
         mapOptions: {},
         externalLabel: label,
         height: 386,
+        limitTypes: options?.limitTypes,
       },
     };
   }
@@ -186,6 +210,7 @@ export class FormFieldHelper {
         required: options?.required,
       },
       hideExpression: options?.hideExpression,
+      validators: options?.validators,
     };
   }
 
@@ -204,6 +229,19 @@ export class FormFieldHelper {
         required: options?.required,
       },
       hideExpression: options?.hideExpression,
+      validators: options?.validators ?? {
+        required: {
+          expression: (ctrl) =>
+            !options?.required ||
+            !(ctrl.value?.start === null && ctrl.value?.end === null),
+        },
+        validStartEnd: {
+          expression: (ctrl) =>
+            (ctrl.value?.start === null && ctrl.value?.end === null) ||
+            (ctrl.value?.start && ctrl.value?.end),
+          message: "Das Start- und Enddatum muss gültig sein",
+        },
+      },
     };
   }
 
@@ -234,6 +272,17 @@ export class FormFieldHelper {
         valueProp: "id",
         options: options?.options,
         required: options?.required,
+      },
+    };
+  }
+
+  addReferencesForAddress(referenceField: string) {
+    return {
+      type: "referencedDocuments",
+      wrappers: ["panel"],
+      templateOptions: {
+        externalLabel: "Zugeordnete Datensätze",
+        referenceField: referenceField,
       },
     };
   }

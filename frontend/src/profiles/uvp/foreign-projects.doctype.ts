@@ -15,7 +15,7 @@ export class ForeignProjectsDoctype extends UvpShared {
 
   label = "Ausländisches Vorhaben";
 
-  iconClass = "Projekt";
+  iconClass = "auslaendisches-vorhaben";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -23,17 +23,12 @@ export class ForeignProjectsDoctype extends UvpShared {
         this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
           required: true,
         }),
-        this.addAddressCard(
-          "publisher",
-          "Kontaktdaten der verfahrensführenden Behörde",
-          {
-            required: true,
-          }
-        ),
+        this.addPointOfContact(),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
           required: true,
+          limitTypes: ["free"],
         }),
         {
           key: "processingSteps",

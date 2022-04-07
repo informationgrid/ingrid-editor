@@ -61,8 +61,11 @@ export class DocumentListItemComponent implements OnInit {
   makeSelection(doc: DocumentAbstract) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
-    if (this.removeSelectionAfter && this.list) this.list.deselectAll();
-    this.currentSelection = doc;
+    if (this.removeSelectionAfter && this.list) {
+      this.list.deselectAll();
+    } else {
+      this.currentSelection = doc;
+    }
     this.select.next(doc);
   }
 

@@ -5,7 +5,7 @@ import { CodelistPage, Formats } from '../../pages/codelist.page';
 describe('Codelist', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     CodelistPage.visit();
   });
 

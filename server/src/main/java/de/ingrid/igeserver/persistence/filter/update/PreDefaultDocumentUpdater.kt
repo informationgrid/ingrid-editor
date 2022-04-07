@@ -1,8 +1,9 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.update
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.FIELD_PARENT
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before update
  */
 @Component
-class DefaultDocumentUpdater @Autowired constructor(
+class PreDefaultDocumentUpdater @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,
     var authUtils: AuthUtils

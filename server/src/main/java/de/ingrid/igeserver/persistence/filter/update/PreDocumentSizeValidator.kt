@@ -1,16 +1,17 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.update
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import org.springframework.stereotype.Component
 
 /**
  * Filter for processing document data send from the client before publish
  */
 @Component
-class DocumentSizeValidator : Filter<PreUpdatePayload> {
+class PreDocumentSizeValidator : Filter<PreUpdatePayload> {
 
     val MAXIMUM_DOCUMENT_SIZE = 32000000 // 32MB
 

@@ -26,6 +26,7 @@ export class IndexingComponent implements OnInit {
   isActivated: boolean;
   showMore = false;
   indexingIsRunning = false;
+  initialized = false;
 
   liveImportMessage: Observable<LogResult> = merge(
     this.indexService.lastLog$,
@@ -51,7 +52,8 @@ export class IndexingComponent implements OnInit {
     }
 
     this.indexService
-      .getCronPattern()
+      .getIndexConfig()
+      .pipe(tap(() => (this.initialized = true)))
       .subscribe((config) => this.cronField.setValue(config.cronPattern));
 
     this.indexService.fetchLastLog();

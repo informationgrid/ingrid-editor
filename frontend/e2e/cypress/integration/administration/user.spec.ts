@@ -8,7 +8,7 @@ import { Menu } from '../../pages/menu';
 describe('User', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     AdminUserPage.visit();
   });
 
@@ -248,9 +248,6 @@ describe('User', () => {
   });
 
   it('should show only the names, emails, logins and organisations as result of a user search (#2551)', () => {
-    cy.get('user-table').should('contain', 'Katalog');
-    cy.get('user-table').should('contain', 'Majid');
-
     AdminUserPage.searchForUser('Katalog');
     AdminUserPage.searchForUser('Katalog', 'Majid', false);
 
@@ -422,7 +419,7 @@ describe('User', () => {
     // logout from admin and login as catalog admin
     // get number of users and compare the two numbers
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     AdminUserPage.visit();
     cy.get('.page-title')
       .contains('Nutzer (')
@@ -514,13 +511,13 @@ describe('User', () => {
 
     AdminUserPage.selectUser('autornew2');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
-      // log in as some user to update last login information
+      // log in as a user to update last login information
       cy.kcLogout();
       cy.kcLogin('autornew2');
       DocumentPage.visit();
       // log in as admin and make sure "last logged in" contains right information
       cy.kcLogout();
-      cy.kcLogin('user');
+      cy.kcLogin('super-admin');
       AdminUserPage.visit();
       AdminUserPage.selectUser('autornew2');
       // make sure last-login-date is not identical to old login-date, but identical to current date

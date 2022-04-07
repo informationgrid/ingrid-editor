@@ -8,7 +8,7 @@ describe('Gremlin Tests', () => {
 
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     cy.visit('form');
 
     cy.window().then(testedWindow => {

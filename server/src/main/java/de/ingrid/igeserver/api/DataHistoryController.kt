@@ -2,7 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.DataHistoryRecord
 import de.ingrid.igeserver.model.SearchResult
-import de.ingrid.igeserver.persistence.filter.DataHistoryLogger
+import de.ingrid.igeserver.persistence.filter.persistence.PostDataHistoryLogger
 import de.ingrid.igeserver.services.AuditLogger
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -29,7 +29,7 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
         sortOrder: String?
     ): ResponseEntity<SearchResult<DataHistoryRecord>> {
 
-        val records = auditLogger.find(DataHistoryLogger.LOGGER_NAME, id, user, action, from, to, sort, sortOrder)
+        val records = auditLogger.find(PostDataHistoryLogger.LOGGER_NAME, id, user, action, from, to, sort, sortOrder)
         val searchResult = SearchResult<DataHistoryRecord>()
         searchResult.totalHits = records.totalHits
         searchResult.hits = records.hits.map { record ->

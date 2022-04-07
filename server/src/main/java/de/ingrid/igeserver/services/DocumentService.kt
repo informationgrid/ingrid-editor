@@ -148,6 +148,13 @@ class DocumentService @Autowired constructor(
         }
     }
 
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
+        return if (includeFolders)
+            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+        else
+            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    }
+
     fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
@@ -575,14 +582,11 @@ class DocumentService @Autowired constructor(
             // else delete published version which automatically sets published version in wrapper to null
             docRepo.delete(wrapper.published!!)
         }
-        
+
         // explicitly set published to null (to also determine state correctly)
         wrapper.published = null
-        
-        docWrapperRepo.save(wrapper)
 
-        // remove from index
-        removeFromIndex(wrapper.uuid)
+        docWrapperRepo.save(wrapper)
 
         val doc = this.getLatestDocument(wrapper, catalogId = catalogId)
 
@@ -618,7 +622,7 @@ class DocumentService @Autowired constructor(
         return wrapper
     }
 
-    private fun removeFromIndex(id: String) {
+    fun removeFromIndex(id: String) {
         try {
             if (indexManager != null) {
                 val oldIndex = indexManager!!.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)

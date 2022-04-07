@@ -1,15 +1,16 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.publish
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import org.springframework.stereotype.Component
 
 /**
  * Filter for processing document data send from the client before publish
  */
 @Component
-class DefaultDocumentPublisher : Filter<PrePublishPayload> {
+class PreDefaultDocumentPublisher : Filter<PrePublishPayload> {
 
     override val profiles = arrayOf<String>()
 

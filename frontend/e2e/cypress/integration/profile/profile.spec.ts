@@ -6,7 +6,7 @@ describe('Profile', () => {
   });
 
   it('should check metadata administrator information', () => {
-    cy.kcLogin('meta2').as('tokens');
+    cy.kcLogin('meta2-with-groups').as('tokens');
     ProfilePage.visit();
     let groups = ['test_gruppe_1', 'gruppe_mit_ortsrechten'];
     ProfilePage.checkUserInformation('MetaAdmin', 'mitGruppen', 'meta2', 'Metadaten-Administrator', groups);
@@ -21,41 +21,44 @@ describe('Profile', () => {
   });
 
   it('should update catalog admin password', () => {
-    cy.kcLogin('ige2').as('tokens');
+    cy.kcLogin('catalog-profile-test').as('tokens');
     ProfilePage.visit();
     // change user password with new password
     ProfilePage.changePassword('ige2', 'mdek', 'ige2');
 
     // login again with new password using new fixture file
     cy.kcLogout();
-    cy.kcLogin('ige2_with_new_pass');
+    cy.kcLogin('catalog-profile-test-with-new-pass');
     ProfilePage.visit();
+    cy.kcLogout();
   });
 
   it('should update autor password', () => {
-    cy.kcLogin('autornew').as('tokens');
+    cy.kcLogin('author-profile-test').as('tokens');
     ProfilePage.visit();
     // change user password with new password
     ProfilePage.changePassword('autornew', 'autornew', 'autornewpass');
 
     // login again with new password using new fixture file
     cy.kcLogout();
-    cy.kcLogin('autornew_with_new_pass');
+    cy.kcLogin('author-profile-test-with-new-pass');
     ProfilePage.visit();
     // reset the password
     ProfilePage.changePassword('autornew', 'autornew', 'autornew');
+    cy.kcLogout();
   });
 
   it('should update meta admin password', () => {
-    cy.kcLogin('meta3').as('tokens');
+    cy.kcLogin('meta3-profile-test').as('tokens');
     ProfilePage.visit();
     // change user password with new password
     ProfilePage.changePassword('meta3', 'meta3', 'meta3new');
 
     // login again with new password using new fixture file
     cy.kcLogout();
-    cy.kcLogin('meta3_with_new_pass');
+    cy.kcLogin('meta3-profile-test-with-new-pass');
     ProfilePage.visit();
+    cy.kcLogout();
   });
 
   it('should update user email', () => {
@@ -80,7 +83,7 @@ describe('Profile', () => {
   });
 
   it('author should be able to update name and email (#3576)', () => {
-    cy.kcLogin('autor').as('tokens');
+    cy.kcLogin('author-without-groups').as('tokens');
     let newEmail = 'autortest@123omething.com';
     let newFirstName = 'testAutor';
     let newLastName = 'Autor2';

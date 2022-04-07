@@ -1,15 +1,16 @@
-package de.ingrid.igeserver.persistence.filter
+package de.ingrid.igeserver.persistence.filter.delete
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.persistence.filter.PreDeletePayload
 import org.springframework.stereotype.Component
 
 /**
  * Filter for processing document data send from the client before delete
  */
 @Component
-class DefaultDocumentRemover : Filter<PreDeletePayload> {
+class PreDefaultDocumentRemover : Filter<PreDeletePayload> {
 
     override val profiles = arrayOf<String>()
 

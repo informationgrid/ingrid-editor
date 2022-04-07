@@ -8,7 +8,7 @@ import { Menu } from '../../pages/menu';
 describe('Dashboard', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     cy.visit('');
   });
 

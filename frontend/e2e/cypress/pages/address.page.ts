@@ -47,7 +47,7 @@ export class AddressPage extends DocumentPage {
   static visit() {
     cy.intercept({ method: 'GET', url: 'api/tree/children?address=true', times: 1 }).as('treeCallAddress');
     cy.visit('address');
-    cy.wait('@treeCallAddress', { timeout: 10000 });
+    cy.wait('@treeCallAddress', { timeout: 21000 });
   }
 
   // TODO: remove default values and call with specific parameters
@@ -147,8 +147,9 @@ export class AddressPage extends DocumentPage {
   }
 
   static deleteLoadedNode() {
+    cy.wait(300);
     cy.get(AddressPage.Toolbar['Delete']).click();
-    cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');
+    cy.intercept('GET', /api\/datasetsByUuid/).as('deleteRequest');
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
   }

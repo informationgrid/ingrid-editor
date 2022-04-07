@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$ref": "#/definitions/NegativePreliminaryExamination",
+  "$id": "NegativePreliminaryAssessment#1.0.0",
+  "$ref": "#/definitions/NegativePreliminaryAssessment",
   "definitions": {
-    "NegativePreliminaryExamination": {
+    "NegativePreliminaryAssessment": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -11,7 +12,7 @@
           "format": "uuid"
         },
         "_type": {
-          "const": "UvpNegativePreliminaryExaminationDoc"
+          "const": "UvpNegativePreliminaryAssessmentDoc"
         },
         "title": {
           "type": "string"
@@ -19,10 +20,10 @@
         "description": {
           "type": "string"
         },
-        "publisher": {
+        "pointOfContact": {
           "type": "array",
           "items": {
-            "$ref": "refs/general.schema.json#/definitions/Publisher"
+            "$ref": "refs/general.schema.json#/definitions/PointOfContact"
           },
           "minItems": 1,
           "maxItems": 1
@@ -58,13 +59,13 @@
         "_type",
         "title",
         "description",
-        "publisher",
+        "pointOfContact",
         "spatial",
         "decisionDate",
         "eiaNumbers",
         "uvpNegativeDecisionDocs"
       ],
-      "title": "NegativePreliminaryExamination"
+      "title": "NegativePreliminaryAssessment"
     }
   }
 }

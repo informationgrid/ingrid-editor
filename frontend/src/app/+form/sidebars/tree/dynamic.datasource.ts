@@ -2,7 +2,11 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import { CollectionViewer, SelectionChange } from "@angular/cdk/collections";
+import {
+  CollectionViewer,
+  DataSource,
+  SelectionChange,
+} from "@angular/cdk/collections";
 import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DynamicDatabase } from "./dynamic.database";
@@ -18,7 +22,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
  */
 @UntilDestroy()
 @Injectable()
-export class DynamicDataSource {
+export class DynamicDataSource extends DataSource<TreeNode> {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
   nodeExpanded$ = new Subject<string>();
 
@@ -37,7 +41,9 @@ export class DynamicDataSource {
     private _treeControl: FlatTreeControl<TreeNode>,
     private _database: DynamicDatabase,
     private treeService: TreeService
-  ) {}
+  ) {
+    super();
+  }
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
     this._treeControl.expansionModel.changed
@@ -55,6 +61,8 @@ export class DynamicDataSource {
       map(() => this.data)
     );
   }
+
+  disconnect(collectionViewer: CollectionViewer) {}
 
   /** Handle expand/collapse behaviors */
   handleTreeControl(change: SelectionChange<TreeNode>) {
@@ -263,43 +271,6 @@ export class DynamicDataSource {
     }
 
     this.dataChange.next(this.data);
-  }
-
-  addRootNode(doc: DocumentAbstract) {
-    const docAsTreeNode = this._database.mapDocumentsToTreeNodes([doc], 0);
-
-    const indexOfPreviousNodeInTree = this.getIndexToInsertNode(
-      docAsTreeNode,
-      doc
-    );
-
-    this.data.splice(indexOfPreviousNodeInTree, 0, ...docAsTreeNode);
-    this.dataChange.next(this.data);
-  }
-
-  private getIndexToInsertNode(
-    docAsTreeNode: TreeNode[],
-    doc: DocumentAbstract
-  ): number {
-    // FIXME: during tests it happened that a new document was created before tree loaded root nodes
-    if (!this.data) {
-      return 0;
-    }
-
-    // get calculated position with only root nodes (using sort method)
-    let indexOfNewDoc = this.data
-      .filter((document) => document.level === 0)
-      .concat(docAsTreeNode)
-      .sort(this.treeService.getSortTreeNodesFunction())
-      .findIndex((document) => document._id === doc.id);
-
-    // if node has children, make sure to insert AFTER those
-    while (this.data[indexOfNewDoc] && this.data[indexOfNewDoc].level > 0) {
-      indexOfNewDoc++;
-    }
-
-    // get index of complete tree with eventually expanded nodes
-    return this.data.indexOf(this.data[indexOfNewDoc]);
   }
 
   getNode(nodeId: string): TreeNode {

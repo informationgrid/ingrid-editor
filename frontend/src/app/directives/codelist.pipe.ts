@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { CodelistQuery } from "../store/codelist/codelist.query";
 import { CodelistService } from "../services/codelist/codelist.service";
-import { Codelist } from "../store/codelist/codelist.model";
+import { BackendOption, Codelist } from "../store/codelist/codelist.model";
 import { filter, map, take } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 
@@ -14,7 +14,11 @@ export class CodelistPipe implements PipeTransform {
     private codelistService: CodelistService
   ) {}
 
-  transform(value: string, id: string, lang = "de"): Observable<string> {
+  transform(
+    value: string | BackendOption,
+    id: string,
+    lang = "de"
+  ): Observable<string> {
     const codelist = this.codelistQuery.getEntity(id);
 
     if (!codelist) {
@@ -35,7 +39,7 @@ export class CodelistPipe implements PipeTransform {
 
   private getEntryFromCodelist(
     codelist: Codelist,
-    value: string | { key; value },
+    value: string | BackendOption,
     id: any
   ) {
     let codelistValue = value;

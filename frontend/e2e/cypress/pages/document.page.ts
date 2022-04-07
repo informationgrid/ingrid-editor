@@ -60,12 +60,11 @@ export class DocumentPage extends BasePage {
       cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').type(searchString);
     }
 
-    static searchAndSelect(searchString: string, addressType: string) {
-      // TODO replace addressType with proper addressType class or enum
+    static searchAndSelect(searchString: string) {
       this.search(searchString);
       // result can be detached form dom so we need to wait a bit, see: https://github.com/cypress-io/cypress/issues/7306
       cy.wait(1000);
-      cy.get('ige-document-list-item').contains(searchString).click();
+      cy.contains('ige-document-list-item', searchString, { timeout: 8000 }).click();
     }
   };
 
@@ -453,15 +452,16 @@ export class DocumentPage extends BasePage {
   }
 
   /**
-   * @param {number} xCoordinate is how much the chip should be dragged horizontally
-   * @param {number} yCoordinate is how much the chip should be dragged vertically
+   * @param xCoordinate is how much the chip should be dragged horizontally
+   * @param yCoordinate is how much the chip should be dragged vertically
+   * @param  useCoordinates some tests cannot use drag and drop without coordinates
    */
   static dragItem(
     sourceNode: string,
     targetNode: string,
-    indexOfDraggedCategory: number,
-    xCoordinate: number,
-    yCoordinate: number
+    xCoordinate: number = 0,
+    yCoordinate: number = 0,
+    useCoordinates: boolean = false
   ) {
     // it is supposed to use trigger dragstart and trigger start drop, but it does not work here with categories
     cy.get(sourceNode)
@@ -471,11 +471,16 @@ export class DocumentPage extends BasePage {
       .then(success => {
         assert.isTrue(success);
         cy.wait(300);
-        cy.get(targetNode).click();
+        if (!useCoordinates) {
+          cy.get(targetNode).click();
+        }
       });
-    // we still need the code below in case click failed in future drag and drop tests
-    // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
-    // cy.get(sourceNode).eq(indexOfDraggedCategory).trigger('mouseup', { force: true });
+
+    // we need the code below for test that use coordinates
+    if (useCoordinates) {
+      cy.get(sourceNode).trigger('mousemove', xCoordinate, yCoordinate, { force: true });
+      cy.get(sourceNode).trigger('mouseup', { force: true });
+    }
   }
 
   static checkOfExistingItem(node: string, itemName: string, index: number = -1, inputString: boolean = false) {

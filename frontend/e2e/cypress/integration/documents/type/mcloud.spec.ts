@@ -9,7 +9,7 @@ import { AdminUserPage } from '../../../pages/administration-user.page';
 describe('mCLOUD documents', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     DocumentPage.visit();
   });
 
@@ -51,7 +51,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.saveDocument();
       // log in as user with limited access rights and check access
       cy.kcLogout();
-      cy.kcLogin('meta2');
+      cy.kcLogin('meta2-with-groups');
       DocumentPage.visit();
       // open folder containing document in question
       Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D']);

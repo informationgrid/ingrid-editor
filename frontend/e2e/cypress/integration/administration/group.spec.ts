@@ -9,7 +9,7 @@ import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 describe('Group', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     AdminUserPage.visit();
 
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
@@ -190,15 +190,8 @@ describe('Group', () => {
   });
 
   it('should be possible to jump between groups and associated users', () => {
-    const group = 'z_group' + Utils.randomString();
+    const group = 'group_11';
     const user = 'autor test';
-    const groupOther = 'test_gruppe_1';
-
-    // create a new group
-    AdminGroupPage.addNewGroup(group);
-
-    // TODO: remove this when refresh of group is fixed, after a user is assigned the group which is already opened
-    AdminGroupPage.selectGroup(groupOther);
 
     // add group to user
     AdminGroupPage.goToTabmenu(UserAndRights.User);
@@ -280,7 +273,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure it's not possible for meta data admin to assign full access to document
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(group2);
@@ -294,7 +287,7 @@ describe('Group', () => {
       });
     // change access right in meta data admin's assigned group
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(group1);
@@ -302,7 +295,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure access right can now be changed by meta data admin
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(group2);
@@ -320,7 +313,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure meta data admin does not see group
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     cy.contains('groups-table tr', groupName).should('not.exist');

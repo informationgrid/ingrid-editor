@@ -38,15 +38,17 @@ class IndexApiController @Autowired constructor(
 
     override fun setConfig(principal: Principal, config: IndexConfigOptions): ResponseEntity<Void> {
 
-        indexService.updateConfig(config.catalogId, config.cronPattern)
-        indexingTask.updateTaskTrigger(config.catalogId, "portal", config.cronPattern)
+        indexService.updateConfig(config)
+        indexingTask.updateTaskTrigger(config)
 
         return ResponseEntity.ok().build()
     }
 
     override fun getConfig(principal: Principal, id: String): ResponseEntity<IndexConfigOptions> {
 
-        return ResponseEntity.ok(IndexConfigOptions(id, indexService.getConfig(id) ?: ""))
+        val catalog = catalogService.getCatalogById(id)
+        val profile = catalogService.getCatalogProfile(catalog.type)
+        return ResponseEntity.ok(IndexConfigOptions(id, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
 
     }
 

@@ -8,7 +8,7 @@ import { AdminUserPage } from '../../pages/administration-user.page';
 describe('edit documents', function () {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     DocumentPage.visit();
   });
 
@@ -80,7 +80,7 @@ describe('edit documents', function () {
       AdminUserPage.saveUser();
       // log in as user that is assigned read-only access
       cy.kcLogout();
-      cy.kcLogin('autor');
+      cy.kcLogin('author-without-groups');
       // open document
       DocumentPage.visit();
       Tree.openNode(['Datum_Ebene_2_3']);

@@ -1,7 +1,7 @@
 {
   "title": "Maximal",
   "_uuid": "8d5cc899-ca1c-4ee5-84f0-5e282b54464d",
-  "_type": "UvpNegativePreliminaryExaminationDoc",
+  "_type": "UvpNegativePreliminaryAssessmentDoc",
   "spatial": [
     {
       "type": "free",
@@ -22,7 +22,7 @@
       "key": "203"
     }
   ],
-  "publisher": [
+  "pointOfContact": [
     {
       "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e",
       "type": {

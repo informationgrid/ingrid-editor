@@ -5,7 +5,7 @@ import { enterMcloudDocTestData, FileHandlingOptions } from '../../../pages/ente
 describe('Upload Tests', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('user').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     DocumentPage.visit();
   });
 
@@ -289,5 +289,63 @@ describe('Upload Tests', () => {
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
       cy.wrap(item).should('contain.text', unzippedFiles[index]);
     });
+  });
+
+  it('should delete file from download table via batch edit row (#3661 (1))', () => {
+    const upload = 'export(16).json';
+
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2D', 'Ordner_Ebene_3G', 'Datum_Ebene_4_14']);
+    // check existence of download table entry
+    cy.contains('[data-cy="Downloads-table"] mat-row', upload);
+    // delete
+    cy.contains('button', 'Bearbeiten').click();
+    cy.get('.table-batch-edit-row mat-checkbox').click();
+    cy.contains('.table-batch-edit-row button', 'Löschen').click();
+    // check that download table has disappeared
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    // check that row to delete entries has disappeared
+    cy.get('.table-batch-edit-row').should('not.exist');
+    DocumentPage.saveDocument();
+    // check that after saving table and row are still not there
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    cy.get('.table-batch-edit-row').should('not.exist');
+  });
+
+  it('should delete file from download table via individual button (#3661 (2))', () => {
+    const upload = 'export(11).json';
+
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2D', 'Ordner_Ebene_3H', 'Datum_Ebene_4_15']);
+    // check existence of download table entry
+    cy.contains('[data-cy="Downloads-table"] mat-row', upload);
+    // delete
+    cy.get('[data-cy="Downloads-table"] mat-row [svgicon="Mehr"]').click();
+    cy.contains('.mat-menu-panel button', 'Löschen').click();
+    // check that download table has disappeared
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    DocumentPage.saveDocument();
+    // check that after saving table is still not there
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+  });
+
+  it('should delete multiple entries from download table via batch edit option', () => {
+    const downloadEntries = ['export(7).json', 'export(8).json', 'export(9).json'];
+
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2D', 'Ordner_Ebene_3G', 'Datum_Ebene_4_13']);
+    // check existence of download table entries
+    cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
+      cy.wrap(item).should('contain.text', downloadEntries[index]);
+    });
+    // delete
+    cy.contains('button', 'Bearbeiten').click();
+    cy.get('.table-batch-edit-row mat-checkbox').click();
+    cy.contains('.table-batch-edit-row button', 'Löschen').click();
+    // check that download table has disappeared
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    // check that row to delete entries has disappeared
+    cy.get('.table-batch-edit-row').should('not.exist');
+    DocumentPage.saveDocument();
+    // check that after saving table and row are still not there
+    cy.get('[data-cy="Downloads-table"]').should('not.exist');
+    cy.get('.table-batch-edit-row').should('not.exist');
   });
 });

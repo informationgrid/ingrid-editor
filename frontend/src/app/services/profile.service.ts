@@ -104,4 +104,12 @@ export class ProfileService {
   private finishProfileInitialization() {
     this.profileStore.set(this.mapDocumentTypes(this.doctypes));
   }
+
+  updateUIProfileStore(data: any) {
+    this.profileStore.update((state) => ({
+      ui: {
+        ...data,
+      },
+    }));
+  }
 }

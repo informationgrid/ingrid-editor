@@ -12,17 +12,6 @@
         <div class="shortcut">
             <button
                 mat-button
-                (click)="createNewFolder()"
-                [disabled]="!canCreateDataset"
-            >
-                <mat-icon
-                    class="material-icons-outlined"
-                    svgIcon="outline-create_new_folder-24px"
-                ></mat-icon>
-                <span>Neuer Ordner</span>
-            </button>
-            <button
-                mat-button
                 (click)="createNewDocument()"
                 [disabled]="!canCreateDataset"
             >
@@ -31,6 +20,17 @@
                     svgIcon="Neuer-Datensatz"
                 ></mat-icon>
                 <span>Neuer Datensatz</span>
+            </button>
+            <button
+                mat-button
+                (click)="createNewFolder()"
+                [disabled]="!canCreateDataset"
+            >
+                <mat-icon
+                    class="material-icons-outlined"
+                    svgIcon="outline-create_new_folder-24px"
+                ></mat-icon>
+                <span>Neuer Ordner</span>
             </button>
             <button
                 mat-button

@@ -37,9 +37,10 @@ class UvpProfile @Autowired constructor(
     @JsonIgnore val dateService: DateService
 ) : CatalogProfile {
 
-    override val identifier: String = "uvp"
-    override val title: String = "UVP Katalog"
-    override val description: String? = null
+    override val identifier = "uvp"
+    override val title = "UVP Katalog"
+    override val description = null
+    override val indexExportFormatID = null
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(

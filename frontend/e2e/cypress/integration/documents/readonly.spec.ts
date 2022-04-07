@@ -12,7 +12,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Read Only Documents', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
   });
 
   // tested in dashboard
@@ -23,7 +23,7 @@ describe('Read Only Documents', () => {
 
     // create new document
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     DocumentPage.visit();
     DocumentPage.createDocument(tempLocalFile);
     AdminUserPage.visit();
@@ -35,7 +35,7 @@ describe('Read Only Documents', () => {
     cy.kcLogout();
 
     // try to edit
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
     Tree.openNode([tempLocalFile]);
     // if editing is forbidden, the form fields are disabled
@@ -56,7 +56,7 @@ describe('Read Only Documents', () => {
 
     // create new folder
     cy.kcLogout();
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
     DocumentPage.visit();
     DocumentPage.createFolder(readOnlyFolder);
     AdminUserPage.visit();
@@ -68,7 +68,7 @@ describe('Read Only Documents', () => {
 
     // login as meta2
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
 
     // try to move a folder to the read-only folder
     DocumentPage.visit();
@@ -107,7 +107,7 @@ describe('Read Only Documents', () => {
     cy.kcLogout();
 
     // login as super admin
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
 
     // set access to read-only
     AdminUserPage.visit();
@@ -118,7 +118,7 @@ describe('Read Only Documents', () => {
     AdminGroupPage.saveGroup();
     // logout from super user and login as meta2
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
 
     // try to copy a document from the read-only folder to another folder
@@ -136,7 +136,7 @@ describe('Read Only Documents', () => {
     cy.kcLogout();
 
     // login as super admin
-    cy.kcLogin('user');
+    cy.kcLogin('super-admin');
 
     // create a folder
     // create a document inside the folder
@@ -169,7 +169,7 @@ describe('Read Only Documents', () => {
 
     // logout from super user and login as meta2
     cy.kcLogout();
-    cy.kcLogin('meta2');
+    cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
     // try to copy a document to the read-only folder
     Tree.openNode([documentName]);
