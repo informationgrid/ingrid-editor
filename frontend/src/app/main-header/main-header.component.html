@@ -107,40 +107,33 @@
                         EDITOR</mat-card-title
                     >
                 </div>
-                <span *ngIf="isAdmin">
-                    <span mat-menu-item disabled class="category-item"
-                        >Einstellungen</span
-                    >
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item [routerLink]="['/settings/general']">
-                        Allgemein
-                    </button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item [routerLink]="['/settings/codelist']">
-                        Codelist Repository
-                    </button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item [routerLink]="['/settings/catalog']">
-                        Katalogverwaltung
-                    </button>
-                    <mat-divider></mat-divider>
-                    <span mat-menu-item disabled class="category-item"
-                        >Informationen</span
-                    >
-                    <mat-divider></mat-divider>
-                </span>
-                <a
-                    *ngIf="externalHelp"
-                    mat-menu-item
-                    href="{{ externalHelp }}"
-                    target="_blank"
-                    >Hilfe</a
-                >
-                <span *ngIf="!externalHelp" mat-menu-item>Hilfe</span>
-                <!--
-                <mat-divider></mat-divider>
-                <span mat-menu-item>Über {{t("application")}} EDITOR</span>
-                -->
+
+                <div *ngFor="let group of config.menuGroups">
+                    <div *ngIf="!group.adminOnly || isAdmin">
+                        <span mat-menu-item disabled class="category-item">{{
+                            group.title
+                        }}</span>
+                        <mat-divider></mat-divider>
+                        <div *ngFor="let entry of group.entries">
+                            <button
+                                *ngIf="entry.isRouterLink"
+                                mat-menu-item
+                                [routerLink]="[entry.link]"
+                            >
+                                {{ entry.label }}
+                            </button>
+                            <a
+                                *ngIf="!entry.isRouterLink"
+                                mat-menu-item
+                                href="{{ entry.link }}"
+                                target="_blank"
+                                >{{ entry.label }}</a
+                            >
+                            <mat-divider></mat-divider>
+                        </div>
+                    </div>
+                </div>
+
                 <mat-divider></mat-divider>
                 <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>

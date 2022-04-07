@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import {
   ConfigService,
+  Configuration,
   UserInfo,
   Version,
 } from "../services/config/config.service";
@@ -26,6 +27,7 @@ export class MainHeaderComponent implements OnInit {
   initials: string;
   isAdmin: boolean;
   externalHelp: string;
+  config: Configuration;
 
   constructor(
     private configService: ConfigService,
@@ -52,6 +54,7 @@ export class MainHeaderComponent implements OnInit {
         this.pageTitle = this.route.snapshot.firstChild.routeConfig.path;
       }
     });
+    this.config = this.configService.getConfiguration();
   }
 
   logout() {
