@@ -8,7 +8,6 @@ import { DocumentPage } from '../../pages/document.page';
 import { DashboardPage } from '../../pages/dashboard.page';
 import { AddressPage } from '../../pages/address.page';
 import { Menu } from '../../pages/menu';
-import { Tree } from '../../pages/tree.partial';
 
 describe('Research Page', () => {
   beforeEach(() => {
@@ -29,34 +28,14 @@ describe('Research Page', () => {
   it('should do general search with only-published-filter for documents/addresses', () => {
     ResearchPage.search(' ');
     ResearchPage.getSearchResultCount().then(allCount => {
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
-      //ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
+      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Unpublished);
       ResearchPage.getSearchResultCount().should(res => {
         expect(res).to.be.lessThan(allCount).and.to.be.greaterThan(0);
       });
     });
   });
 
-  it('should filter search to show only documents with mCLOUD document type', () => {
-    ResearchPage.search(' ');
-    ResearchPage.getSearchResultCount().then(allCount => {
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.mCloud);
-      ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
-    });
-  });
-
-  // Test document type does not exist in mCLOUD-profile anymore and does not need to be tested
-  xit('should filter search to show only documents with Test document type', () => {
-    ResearchPage.search('er');
-    ResearchPage.getSearchResultCount().then(allCount => {
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Test);
-      // since there are no Test documents in this catalog, expect result to be 0
-      ResearchPage.checkNoSearchResults();
-    });
-  });
-
   it('should search for documents with spatial reference', () => {
-    /*ResearchPage.search(' ');*/
     ResearchPage.getSearchResultCount().then(allCount => {
       ResearchPage.createSpatialReference('Deutschland', 'testSpatial1');
       ResearchPage.getSearchResultCount().should('be.lessThan', allCount).and('be.greaterThan', 0);
@@ -64,7 +43,6 @@ describe('Research Page', () => {
   });
 
   it('should start new search for documents after editing spatial reference', () => {
-    //    ResearchPage.search(' ');
     ResearchPage.createSpatialReference('Deutschland');
     ResearchPage.getSearchResultCount().then(filteredResult => {
       ResearchPage.editSpatialReference('Rheinland-Pfalz');
@@ -110,22 +88,20 @@ describe('Research Page', () => {
     cy.contains('td', 'testToDeleteFromResearchPage').should('not.exist');
   });
 
-  // #3403
-  xit('should do search by using feldbezogene Suche', () => {
+  xit('should do search by using feldbezogene Suche (#3403)', () => {
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     ResearchPage.search('title:Testorganisation');
     ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
   });
 
-  // #3432
-  it('should do search by using document ID', () => {
+  it('should do search by using document ID (#3432)', () => {
     ResearchPage.search('98b74a0e-0473-4a73-b0ff-c7764c8a25db');
     cy.contains('td', 'TestDocResearch1');
     ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
   it('should make sure CSV-file of search has been downloaded', () => {
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Unpublished);
     cy.intercept('GET', /192.168.0.[0-9]{3}\/.+\.js$/).as('csvRequest');
     ResearchPage.getCSVFile();
     cy.wait('@csvRequest');
@@ -315,7 +291,7 @@ describe('Research Page', () => {
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
     ResearchPage.getSearchResultCount().should('equal', 1);
 
-    //check if search accepts potFentially problematic strings
+    //check if search accepts potentially problematic strings
     ResearchPage.search(',./;\'[]\\-=\n <>?:"{}|_+\n!@#$%^&*()`~');
     cy.get('.error').should('not.exist');
 
@@ -345,7 +321,7 @@ describe('Research Page', () => {
   });
 
   it('should verify content of downloaded CSV file', () => {
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
     ResearchPage.changeViewNumberDocuments();
     ResearchPage.downloadCSVFile();
     ResearchPage.getResultListItems().then(arr1 => {
@@ -431,23 +407,12 @@ describe('Research Page', () => {
     ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
-  it('should do time-related search together with search for published documents (#3040)', () => {
+  it('should do time-related search together with search for unpublished documents (#3040)', () => {
     ResearchPage.setDate('start', '20.06.2021');
     ResearchPage.setDate('end', '29.07.2022');
     ResearchPage.waitForSearch();
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.OnlyPublished);
-      ResearchPage.waitForSearch();
-      ResearchPage.getSearchResultCount().should('be.lessThan', temporallyFiltered);
-    });
-  });
-
-  it('should do time-related search together with document type search (#3040)', () => {
-    ResearchPage.setDate('start', '10.05.2021');
-    ResearchPage.setDate('end', '30.08.2021');
-    ResearchPage.waitForSearch();
-    ResearchPage.getSearchResultCount().then(temporallyFiltered => {
-      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.mCloud);
+      ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.Unpublished);
       ResearchPage.waitForSearch();
       ResearchPage.getSearchResultCount().should('be.lessThan', temporallyFiltered);
     });

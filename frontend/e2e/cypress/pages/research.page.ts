@@ -284,7 +284,7 @@ export class ResearchPage {
 }
 
 export enum FilterExtendedSearch {
-  OnlyPublished = '.mat-checkbox-inner-container > input[name="selectPublished"]',
+  Unpublished = '.mat-checkbox-inner-container > input[name="selectDraft"]',
   NoFolders = '.mat-checkbox-inner-container > input[name="exceptFolders"]',
   mCloud = '.mat-checkbox-inner-container > input[name="selectDocMCloud"]',
   Test = '.mat-checkbox-inner-container > input[name="selectDocTest"]'
