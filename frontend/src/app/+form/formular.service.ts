@@ -10,7 +10,8 @@ import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MessageService } from "../services/message.service";
 import { ProfileQuery } from "../store/profile/profile.query";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
+import { filter, map, mergeMap, toArray } from "rxjs/operators";
 
 @Injectable()
 export class FormularService {
@@ -87,12 +88,24 @@ export class FormularService {
   }
 
   getSectionsFromProfile(profile: FormlyFieldConfig[]): void {
-    const sections = profile
-      .filter((item) => item.wrappers?.indexOf("section") >= 0)
-      .map((item) => item.templateOptions.label);
+    const getSectionItem = (item: FormlyFieldConfig) => {
+      return item?.wrappers?.indexOf("section") >= 0
+        ? [item]
+        : item.fieldGroup ?? [];
+    };
 
-    this.profileSections = sections;
-    this.sections$.next(sections);
+    of(profile)
+      .pipe(
+        mergeMap((items) => items),
+        mergeMap((item) => getSectionItem(item)),
+        filter((item) => item?.wrappers?.indexOf("section") >= 0),
+        map((item) => item.templateOptions.label),
+        toArray()
+      )
+      .subscribe((sections) => {
+        this.profileSections = sections;
+        this.sections$.next(sections);
+      });
   }
 
   setAdditionalSections(sections: string[]) {
