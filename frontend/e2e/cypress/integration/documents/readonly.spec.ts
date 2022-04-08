@@ -18,24 +18,9 @@ describe('Read Only Documents', () => {
   // tested in dashboard
   // it('should load a document from dashboard', () => {
   it('meta data admin with groups should not be able to edit/move/delete a data document of his assigned groups if access is read-only (#2778)', () => {
-    let tempLocalFile = 'tempLocalFile' + Utils.randomString();
-    let groupName = 'gruppe_mit_ortsrechten';
+    let tempLocalFile = 'Doc_h';
 
-    // create new document
-    cy.kcLogout();
-    cy.kcLogin('super-admin');
-    DocumentPage.visit();
-    DocumentPage.createDocument(tempLocalFile);
-    AdminUserPage.visit();
-    AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(groupName);
-    AdminGroupPage.addDocumentToGroup(tempLocalFile, 'Daten');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
-    AdminGroupPage.saveGroup();
-    cy.kcLogout();
-
-    // try to edit
-    cy.kcLogin('meta2-with-groups');
+    // try to edit document
     DocumentPage.visit();
     Tree.openNode([tempLocalFile]);
     // if editing is forbidden, the form fields are disabled
@@ -50,25 +35,9 @@ describe('Read Only Documents', () => {
   });
 
   it('meta data admin with groups should not be able to move a data document to a read-only folder', () => {
-    const readOnlyFolder = 'Folder_for_meta2' + Utils.randomString();
+    const readOnlyFolder = 'Folder_d';
     const folderToMove = 'Ordner_Ebene_3D';
     const documentToMove = 'Datum_Ebene_3_3';
-
-    // create new folder
-    cy.kcLogout();
-    cy.kcLogin('super-admin');
-    DocumentPage.visit();
-    DocumentPage.createFolder(readOnlyFolder);
-    AdminUserPage.visit();
-    AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
-    AdminGroupPage.addDocumentToGroup(readOnlyFolder, 'Daten');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
-    AdminGroupPage.saveGroup();
-
-    // login as meta2
-    cy.kcLogout();
-    cy.kcLogin('meta2-with-groups');
 
     // try to move a folder to the read-only folder
     DocumentPage.visit();
@@ -100,29 +69,12 @@ describe('Read Only Documents', () => {
   });
 
   it('should be able to copy a read only document #3512', function () {
-    const readOnlyFolder = 'Folder1 For Meta2 ';
-    const documentToCopy = 'document1_meta2';
-
-    // logout
-    cy.kcLogout();
-
-    // login as super admin
-    cy.kcLogin('super-admin');
-
-    // set access to read-only
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup('group1_meta2');
-    cy.get('.user-title').contains('group1_meta2');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Daten');
-    AdminGroupPage.saveGroup();
-    // logout from super user and login as meta2
-    cy.kcLogout();
-    cy.kcLogin('meta2-with-groups');
-    DocumentPage.visit();
+    const readOnlyFolder = 'Folder_e';
+    const documentToCopy = 'Doc_ee_1';
 
     // try to copy a document from the read-only folder to another folder
-    Tree.openNode([readOnlyFolder, 'Sub Folder', documentToCopy]);
+    DocumentPage.visit();
+    Tree.openNode([readOnlyFolder, 'Folder_ee', documentToCopy]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
     Tree.openNodeInsideDialog(['Folder2 For Meta2']);
@@ -138,29 +90,10 @@ describe('Read Only Documents', () => {
     // login as super admin
     cy.kcLogin('super-admin');
 
-    // create a folder
-    // create a document inside the folder
-    const documentName = 'document-for-meta2' + Utils.randomString();
-    const groupName = 'group-for-meta2' + Utils.randomString();
-    const parentFolder = 'folder-for-meta2' + Utils.randomString();
+    const documentName = 'Doc_c_1';
+    const groupName = 'group_for_meta2';
 
-    // go to groups create  a group
-    // add the document group
-    // assign the group to user
-    DocumentPage.visit();
-    DocumentPage.createFolder(parentFolder);
-    Tree.openNode([parentFolder]);
-    DocumentPage.createDocument(documentName);
-
-    // set access to read-only
     AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.addNewGroup(groupName);
-    AdminGroupPage.addNestedDocumentToGroup([parentFolder, documentName], 'Daten');
-    cy.get('.user-title').contains(groupName);
-    UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
-    AdminGroupPage.saveGroup();
-
     // assign the group to user meta2
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.selectUser('MetaAdmin mitGruppen');

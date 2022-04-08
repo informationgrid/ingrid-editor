@@ -372,7 +372,7 @@ describe('Tree', () => {
 
     it('should move a root folder into a folder', () => {
       // Bug #2091
-      const testFolder = 'Folder_d';
+      const testFolder = 'Folder_f';
 
       Tree.openNode([testFolder]);
       CopyCutUtils.move(['Testdokumente']);
