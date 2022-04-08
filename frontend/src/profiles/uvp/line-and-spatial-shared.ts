@@ -23,6 +23,9 @@ export class LineAndSpatialShared extends UvpShared {
             }),
             this.addDatepicker("receiptDate", "Eingang des Antrags", {
               required: true,
+              datepickerOptions: {
+                max: new Date(),
+              },
             }),
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,

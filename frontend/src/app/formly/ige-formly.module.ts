@@ -174,6 +174,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "lowercase",
           message: "Dieses Feld darf keine Großbuchstaben enthalten",
         },
+        {
+          name: "matDatepickerMin",
+          message: "Das Datum ist außerhalb des gültigen Bereichs",
+        },
+        {
+          name: "matDatepickerMax",
+          message: "Das Datum ist außerhalb des gültigen Bereichs",
+        },
       ] /*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },

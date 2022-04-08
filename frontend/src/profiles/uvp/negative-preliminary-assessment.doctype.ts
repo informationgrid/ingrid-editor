@@ -27,6 +27,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
             this.addPointOfContact(),
             this.addDatepicker("decisionDate", "Datum der Entscheidung", {
               required: true,
+              datepickerOptions: {
+                max: new Date(),
+              },
             }),
           ]),
         ]
@@ -53,6 +56,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
             }),
             this.addDatepicker("decisionDate", "Datum der Entscheidung", {
               required: true,
+              datepickerOptions: {
+                max: new Date(),
+              },
             }),
             this.addTable(
               "uvpNegativeDecisionDocs",

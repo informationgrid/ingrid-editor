@@ -208,6 +208,7 @@ export class FormFieldHelper {
         placeholder: options?.placeholder ?? "TT.MM.JJJJ",
         appearance: "outline",
         required: options?.required,
+        datepickerOptions: options?.datepickerOptions,
       },
       hideExpression: options?.hideExpression,
       validators: options?.validators,

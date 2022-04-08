@@ -147,6 +147,9 @@ export class UvpShared extends BaseDoctype {
           { key: "type" },
           this.addDatepicker("decisionDate", "Datum der Entscheidung", {
             required: true,
+            datepickerOptions: {
+              max: new Date(),
+            },
           }),
           this.addTable("approvalDocs", "Auslegungsinformationen", {
             required: true,
