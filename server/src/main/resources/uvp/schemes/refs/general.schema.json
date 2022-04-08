@@ -92,7 +92,7 @@
           "type": "string"
         },
         "title": {
-          "type": "string"
+          "type": ["null","string"]
         },
         "value": {
           "$ref": "#/definitions/BoundingBox"
