@@ -2,7 +2,6 @@ import { DocumentPage } from '../../pages/document.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
-import { xit } from 'mocha';
 import { AddressPage } from '../../pages/address.page';
 
 describe('Tree', () => {
@@ -46,9 +45,7 @@ describe('Tree', () => {
 
   describe('DragnDrop', () => {
     it('should move a document into an opened folder', () => {
-      const docName = 'drag&drop to a folder';
-
-      DocumentPage.createDocument(docName);
+      const docName = 'Doc_z';
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
@@ -75,15 +72,10 @@ describe('Tree', () => {
     });
 
     it('should move a document into a deeply nested folder with hovered node', () => {
-      const docName = 'drag&drop to a deep folder';
-      const deepFolder = 'Folder';
-      const deepFolder2 = 'deep Folder';
-      const deepFolder3 = 'deeper Folder';
-
-      DocumentPage.createDocument(docName);
-      DocumentPage.createFolder(deepFolder);
-      DocumentPage.createFolder(deepFolder2);
-      DocumentPage.createFolder(deepFolder3);
+      const docName = 'Doc_y';
+      const deepFolder = 'Folder_m';
+      const deepFolder2 = 'Folder_m_A';
+      const deepFolder3 = 'Folder_m_AA';
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
@@ -93,13 +85,10 @@ describe('Tree', () => {
     });
 
     it('should move a multiple documents into a nested folder, move it back and redo it again', () => {
-      const docName1 = 'document-one-to-move';
-      const docName2 = 'document-two-to-move';
-      const deepFolder = 'Folder-for-multiple-documents';
+      const docName1 = 'Doc_v';
+      const docName2 = 'Doc_x';
+      const deepFolder = 'Folder_z';
       let documentsArray = [docName1, docName2];
-      DocumentPage.createDocument(docName1);
-      DocumentPage.createDocument(docName2);
-      DocumentPage.createFolder(deepFolder);
 
       Tree.multiSelectObject('mat-tree', documentsArray);
       CopyCutUtils.dragdrop(docName1, [deepFolder], true, true);
@@ -123,9 +112,7 @@ describe('Tree', () => {
       // when we drop the document before the folder is expanded, then it happened the new moved node was the only
       // one under the parent folder
 
-      const docName = 'drag&drop to a node';
-
-      DocumentPage.createDocument(docName);
+      const docName = 'Doc_u';
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 
@@ -159,36 +146,26 @@ describe('Tree', () => {
     });
 
     it('should auto-expand a deeply nested folder', () => {
-      const docName = 'Tester deep auto-expand';
-      const deepFolder = 'Deep auto-expanding1';
-      const deepFolder2 = 'Deep auto-expanding2';
-      const deepFolder3 = 'Deep deep folder';
-
-      Tree.openNode([dragAndDropFolder]);
-      DocumentPage.createDocument(docName);
-      DocumentPage.createFolder(deepFolder);
-      DocumentPage.createFolder(deepFolder2);
-      DocumentPage.createFolder(deepFolder3);
-
-      // to close for checking auto-expanding by hovered node
-      Tree.clickOnNodeWithTitle(deepFolder);
+      const docName = 'Doc_t';
+      const deepFolder = 'Folder_q';
+      const deepFolder2 = 'Folder_q_A';
+      const deepFolder3 = 'Folder_q_AA';
 
       CopyCutUtils.dragdrop(docName, [deepFolder, deepFolder2, deepFolder3], false);
 
       // check if nodes are expanded
-      Tree.selectNodeAndCheckPath(deepFolder3, ['Daten', dragAndDropFolder, deepFolder, deepFolder2]);
+      Tree.selectNodeAndCheckPath(deepFolder3, ['Daten', deepFolder, deepFolder2]);
 
       // check if document has NOT been moved
-      Tree.selectNodeAndCheckPath(docName, ['Daten', dragAndDropFolder]);
+      Tree.selectNodeAndCheckPath(docName, ['Daten']);
     });
   });
 
   describe('Copy', () => {
     it('should not be possible to copy a node under itself', () => {
-      const docName = 'copy into myself0';
+      const docName = 'Doc_s';
 
-      DocumentPage.createDocument(docName);
-
+      Tree.openNode([docName]);
       // because of 'not.contain.value' we can not use CopyCutUtils.copyObject()
       cy.get('[data-cy=toolbar_COPY]').click();
       cy.get('[data-cy=copyMenu_COPY]').click();
@@ -196,11 +173,8 @@ describe('Tree', () => {
     });
 
     it('should not be possible to copy a node inside a folder into the same one (#2064)', () => {
-      const testFolder = 'copy into myself1';
-      const testFolder2 = 'copy into myself2';
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createFolder(testFolder2);
+      const testFolder = 'Folder_u';
+      const testFolder2 = 'Folder_u_1';
 
       Tree.openNode([testFolder]);
 
@@ -210,13 +184,9 @@ describe('Tree', () => {
 
     it('should not be possible to copy a document/folder under a document', () => {
       // only folders can contain sub-elements
-      const docName = 'root doc';
-      const testFolder = 'folder: copy me under a doc';
-      const docName2 = 'doc: copy me under a doc';
-
-      DocumentPage.createDocument(docName);
-      DocumentPage.createDocument(docName2);
-      DocumentPage.createFolder(testFolder);
+      const docName = 'Doc_r';
+      const testFolder = 'Folder_w';
+      const docName2 = 'Doc_q';
 
       Tree.selectNodeAndCheckPath(docName2, ['Daten']);
 
@@ -234,9 +204,9 @@ describe('Tree', () => {
     });
 
     it('should copy a root document into a folder', () => {
-      const docName = 'copy me into a folder' + Utils.randomString();
+      const docName = 'Doc_p';
 
-      DocumentPage.createDocument(docName);
+      Tree.openNode([docName]);
 
       let newDocUrl;
       return cy.url().then(url => {
@@ -255,9 +225,9 @@ describe('Tree', () => {
     });
 
     it('should copy a root document into a deeply nested folder', () => {
-      const docName = 'copy me to a deepfolder';
+      const docName = 'Doc_o';
 
-      DocumentPage.createDocument(docName);
+      Tree.openNode([docName]);
 
       CopyCutUtils.copyObject(['Testdokumente', 'Ordner 2. Ebene']);
 
@@ -276,11 +246,9 @@ describe('Tree', () => {
     });
 
     it('should copy a root folder (without sub-tree) into a folder', () => {
-      const testFolder = 'copy me into a folder2';
-      const docName = 'childDoc';
+      // choose folder that contains child node
+      const testFolder = 'Folder_t';
 
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
       Tree.openNode([testFolder]);
 
       CopyCutUtils.copyObject(['Testdokumente']);
@@ -295,11 +263,9 @@ describe('Tree', () => {
     });
 
     it('should copy a root folder (with sub-tree) into a folder', () => {
-      const docName = 'copy me from a folder ';
-      const testFolder = 'i am root';
+      const docName = 'doc_s_1';
+      const testFolder = 'Folder_s';
 
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
       Tree.openNode([testFolder]);
 
       CopyCutUtils.copyObjectWithTree(['Testdokumente']);
@@ -316,11 +282,8 @@ describe('Tree', () => {
     });
 
     it('should copy a root tree to a sub folder', () => {
-      const testFolder = 'copy me to a subfolder';
-      const docName = 'i am under a folder';
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
+      // choose non-empty folder
+      const testFolder = 'Folder_r';
 
       Tree.openNode([testFolder]);
       CopyCutUtils.copyObjectWithTree(['Testdokumente', 'Ordner 2. Ebene']);
@@ -329,13 +292,8 @@ describe('Tree', () => {
     });
 
     it('should copy a tree inside a folder to root', () => {
-      const testFolder = 'copy me from a subfolder';
-      const docName = 'iam under a folder';
-
-      Tree.openNode(['Testdokumente']);
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
+      const testFolder = 'Ordner_2_A';
+      const docName = 'Doc_2A_1';
 
       Tree.openNode(['Testdokumente', testFolder]);
       CopyCutUtils.copyObjectWithTree();
@@ -347,14 +305,8 @@ describe('Tree', () => {
   describe('Cut', () => {
     it('should be possible to move a root node under the root node', () => {
       // at the moment it's allowed since there's no harm
-      const testFolder = 'move me under root node' + Utils.randomString();
-      const docName = 'document level 2' + Utils.randomString();
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
-
-      // Check path
-      Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
+      const testFolder = 'Folder_j';
+      const docName = 'Doc_j_1';
 
       Tree.openNode([testFolder]);
       CopyCutUtils.move();
@@ -370,10 +322,9 @@ describe('Tree', () => {
 
     it('should be possible to move a node inside a folder into the same one', () => {
       // at the moment it's allowed since there's no harm
-      const testFolder = 'move me into the same folder';
+      const testFolder = 'Ordner_2_C';
 
-      Tree.openNode(['Testdokumente']);
-      DocumentPage.createFolder(testFolder);
+      Tree.openNode(['Testdokumente', testFolder]);
 
       CopyCutUtils.move(['Testdokumente']);
 
@@ -381,9 +332,9 @@ describe('Tree', () => {
     });
 
     it('should move a root document into a folder', () => {
-      const docName = 'move me into a folder';
+      const docName = 'Doc_p';
 
-      DocumentPage.createDocument(docName);
+      Tree.openNode([docName]);
 
       CopyCutUtils.move(['Testdokumente']);
 
@@ -391,9 +342,9 @@ describe('Tree', () => {
     });
 
     it('should move a root document into a deep folder', () => {
-      const docName = 'move me into a deep folder';
+      const docName = 'Doc_n';
 
-      DocumentPage.createDocument(docName);
+      Tree.openNode([docName]);
 
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
 
@@ -401,9 +352,7 @@ describe('Tree', () => {
     });
 
     it('should move a root folder into a deep folder', () => {
-      const testFolder = 'move me to a deep folder';
-
-      DocumentPage.createFolder(testFolder);
+      const testFolder = 'Folder_n';
 
       Tree.openNode([testFolder]);
       CopyCutUtils.move(['Testdokumente', 'Ordner 2. Ebene']);
@@ -412,11 +361,10 @@ describe('Tree', () => {
     });
 
     it('should move a document from a folder to the root', () => {
-      const docName = 'move me from a deep folder';
+      const docName = 'Doc_2B_1';
 
-      Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
+      Tree.openNode(['Testdokumente', 'Ordner_2_B', docName]);
 
-      DocumentPage.createDocument(docName);
       CopyCutUtils.move();
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
@@ -424,9 +372,7 @@ describe('Tree', () => {
 
     it('should move a root folder into a folder', () => {
       // Bug #2091
-      const testFolder = 'move me1';
-
-      DocumentPage.createFolder(testFolder);
+      const testFolder = 'Folder_d';
 
       Tree.openNode([testFolder]);
       CopyCutUtils.move(['Testdokumente']);
@@ -451,11 +397,8 @@ describe('Tree', () => {
     });
 
     it('should move a folder with sub-tree without splitting them (#2091)', () => {
-      const testFolder = 'move me' + Utils.randomString();
-      const docName = 'level two' + Utils.randomString();
-
-      DocumentPage.createFolder(testFolder);
-      DocumentPage.createDocument(docName);
+      const testFolder = 'Folder_k';
+      const docName = 'Folder_k_A';
 
       Tree.openNode([testFolder, docName]);
       Tree.selectNodeAndCheckPath(docName, ['Daten', testFolder]);
