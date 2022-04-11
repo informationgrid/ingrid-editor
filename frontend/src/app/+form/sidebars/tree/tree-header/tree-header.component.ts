@@ -53,6 +53,9 @@ export class TreeHeaderComponent implements OnInit {
       return;
     }
 
+    // trim leading and trailing whitespace
+    value = value.trim();
+
     this.db
       .search(value, this.isAddress)
       .pipe(map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)))

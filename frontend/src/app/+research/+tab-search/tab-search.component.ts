@@ -71,10 +71,11 @@ export class TabSearchComponent implements OnInit {
   startSearch() {
     this.isSearching = true;
     const model = this.form.value;
+    const query = model.query.trim();
 
     setTimeout(() => {
       return this.researchService
-        .search(model.query, { type: model.type, ...model.facets })
+        .search(query, { type: model.type, ...model.facets })
         .pipe(
           catchError((err) => this.handleSearchError(err)),
           // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
