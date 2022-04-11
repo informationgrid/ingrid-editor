@@ -452,6 +452,8 @@ export class DocumentPage extends BasePage {
   }
 
   /**
+   * @param sourceNode
+   * @param targetNode
    * @param xCoordinate is how much the chip should be dragged horizontally
    * @param yCoordinate is how much the chip should be dragged vertically
    * @param  useCoordinates some tests cannot use drag and drop without coordinates

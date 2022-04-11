@@ -494,10 +494,11 @@ describe('User', () => {
     cy.kcLogout();
     cy.kcLogin('zwei');
     // super admin should not be visible
-    AdminUserPage.visit();
+    Menu.switchTo('USERS');
     AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
     // switch catalog
-    ManageCatalogPage.visit();
+    Menu.switchToGeneral('CATALOG_MANAGEMENT');
+
     ManageCatalogPage.switchToCatalog('Test_Mass_Data');
     // a cat admin assigned to the same catalog should be visible
     Menu.switchTo('USERS');

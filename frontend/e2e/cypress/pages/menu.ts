@@ -1,6 +1,7 @@
 import { ResearchPage } from './research.page';
 
 export type Page = 'DASHBOARD' | 'DOCUMENTS' | 'ADDRESSES' | 'RESEARCH' | 'REPORTS' | 'USERS' | 'IMPORT' | 'CATALOG';
+export type GeneralPage = 'GENERAL' | 'CODELIST_REPOSITORY' | 'CATALOG_MANAGEMENT';
 
 export class Menu {
   static switchTo(page: Page) {
@@ -9,7 +10,12 @@ export class Menu {
     Menu.waitForPage(page);
   }
 
-  private static mapPageToRouterLink(page: Page) {
+  static switchToGeneral(page: GeneralPage) {
+    cy.get('[data-cy=header-info-button]').click();
+    cy.get('button').contains('Katalogverwaltung').click();
+  }
+
+  private static mapPageToRouterLink(page: Page | GeneralPage) {
     switch (page) {
       case 'DASHBOARD':
         return '/dashboard';
@@ -27,6 +33,12 @@ export class Menu {
         return '/importExport';
       case 'CATALOG':
         return '/catalogs';
+      case 'GENERAL':
+        return 'Allgemein';
+      case 'CODELIST_REPOSITORY':
+        return 'Codelist Repository';
+      case 'CATALOG_MANAGEMENT':
+        return 'Katalogverwaltung';
     }
   }
 

@@ -227,11 +227,6 @@ describe('General create documents/folders', () => {
       DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, -400, 0, true);
       DocumentPage.saveDocument();
 
-      // check for the order after reload
-      cy.reload();
-      cy.get(mCLOUDSelector, { timeout: 10000 }).should('exist');
-      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category1, 0);
-
       //  check of the order after drag and drop
       let openDataCategory1 = 'Internationale Themen';
       let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
@@ -239,6 +234,7 @@ describe('General create documents/folders', () => {
       let openDataSelectorTargetNode = openDataSelector + ' .cdk-drag:nth-child(1) ';
 
       // change the order of mCloud categories by dragging then save
+      DocumentPage.checkOfExistingItem(mCLOUDSelector + ' mat-chip', category1, 0);
       DocumentPage.dragItem(openDataSelectorSourceNode, openDataSelectorTargetNode, -400, 0, true);
       DocumentPage.saveDocument();
 

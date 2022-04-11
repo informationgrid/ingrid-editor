@@ -124,8 +124,7 @@ describe('Catalog management', () => {
     ResearchPage.search('a');
     ResearchPage.checkNoSearchResults();
 
-    cy.get('[data-cy=header-info-button]').click();
-    cy.get('button').contains('Katalogverwaltung').click();
+    Menu.switchToGeneral('CATALOG_MANAGEMENT');
 
     ManageCatalogPage.switchToCatalog('Test');
 
