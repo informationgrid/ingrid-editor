@@ -134,59 +134,6 @@ ngx-skeleton-loader {
   padding: 10px;
 }
 
-// Tables
-
-.selected {
-  background: $ige-mark-color;
-}
-
-.thin-column {
-  width: 1px;
-}
-
-td {
-  font-size: 16px;
-  font-weight: 400;
-  padding: 10px 12px !important;
-
-  div {
-    font-weight: 500;
-  }
-
-  .td-subtitle {
-    font-size: 14px;
-    font-weight: 400;
-    color: $ige-hint-color;
-  }
-}
-
-table {
-  cursor: pointer;
-
-  td.mat-cell:last-of-type {
-    text-align: left;
-    padding-right: 24px !important;
-  }
-  td.mat-cell:first-of-type {
-    padding-left: 24px !important;
-  }
-
-  ::ng-deep {
-    .mat-sort-header-content {
-      padding: 0 12px;
-    }
-  }
-}
-
-.mat-row .menu-button {
-  visibility: hidden;
-  margin-right: 7px;
-}
-
-.mat-row:hover .menu-button {
-  visibility: visible;
-}
-
 ige-search-field {
   ::ng-deep {
     .mat-form-field {
@@ -195,31 +142,4 @@ ige-search-field {
       font-weight: 400;
     }
   }
-}
-
-.legend {
-  padding: 0 0 20px 14px;
-}
-
-mat-toolbar-row {
-  padding: 0;
-}
-
-.no-selection-placeholder {
-  .no-selection-text {
-    line-height: 22px;
-    padding-top: 30px;
-    text-align: center;
-  }
-}
-
-.table-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.section-title {
-  font-weight: 500;
-  padding: 10px 5px 10px 24px;
 }

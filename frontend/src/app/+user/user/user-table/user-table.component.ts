@@ -15,13 +15,17 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { filter } from "rxjs/operators";
+import { GeneralTable } from "../../general.table";
 
 @Component({
   selector: "user-table",
   templateUrl: "./user-table.component.html",
-  styleUrls: ["../../user.styles.scss"],
+  styleUrls: ["../../table.styles.scss"],
 })
-export class UserTableComponent implements OnInit, AfterViewInit {
+export class UserTableComponent
+  extends GeneralTable
+  implements OnInit, AfterViewInit
+{
   @Input() simple = false;
 
   @Input()
@@ -31,7 +35,7 @@ export class UserTableComponent implements OnInit, AfterViewInit {
 
     // select previously selected group
     const selectedUser = this.selection.selected[0];
-    if (selectedUser) this.setSelectionToUser(selectedUser);
+    if (selectedUser) this.setSelectionToItem(selectedUser?.login, "login");
   }
 
   @Input()
@@ -49,9 +53,9 @@ export class UserTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[];
   dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
-  isLoading = true;
 
   constructor(public userService: UserService) {
+    super();
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<User>(
@@ -87,34 +91,9 @@ export class UserTableComponent implements OnInit, AfterViewInit {
     this.selectedUser
       .pipe(filter((user) => this.selection.selected[0]?.login !== user?.login))
       .subscribe((user) => {
-        this.setSelectionToUser(user);
-        this.updatePaginator(user?.login);
+        this.setSelectionToItem(user?.login, "login");
+        this.updatePaginator(user?.login, "login");
       });
-  }
-
-  private updatePaginator(id) {
-    if (this.paginator) {
-      let indexInDatasource = this.dataSource.data.findIndex(
-        (d) => d.login === id
-      );
-      const pageNumber = Math.max(
-        0,
-        Math.floor(indexInDatasource / this.paginator.pageSize)
-      );
-
-      this.paginator.pageIndex = pageNumber;
-      this.paginator.page.next({
-        pageIndex: pageNumber,
-        pageSize: this.paginator.pageSize,
-        length: this.paginator.length,
-      });
-    }
-  }
-
-  private setSelectionToUser(user: User) {
-    this.selection.select(
-      this.dataSource.data.find((d) => d.login == user?.login)
-    );
   }
 
   ngAfterViewInit() {

@@ -14,13 +14,17 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
+import { GeneralTable } from "../../general.table";
 
 @Component({
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
-  styleUrls: ["../../user.styles.scss"],
+  styleUrls: ["../../table.styles.scss"],
 })
-export class GroupsTableComponent implements OnInit, AfterViewInit {
+export class GroupsTableComponent
+  extends GeneralTable
+  implements OnInit, AfterViewInit
+{
   @Input()
   set groups(val: Group[]) {
     if (val) this.isLoading = false;
@@ -28,7 +32,7 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
 
     // select previously selected group
     const selectedGroup = this.selection.selected[0];
-    if (selectedGroup) this.setSelectionToGroup(selectedGroup.id);
+    if (selectedGroup) this.setSelectionToItem(selectedGroup.id, "id");
   }
 
   @Input()
@@ -48,9 +52,9 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ["role-icon", "name", "settings"];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
-  isLoading = true;
 
   constructor() {
+    super();
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<Group>(
@@ -70,35 +74,9 @@ export class GroupsTableComponent implements OnInit, AfterViewInit {
     this.selectedGroup
       .pipe(filter((groupId) => this.selection.selected[0]?.id !== groupId))
       .subscribe((groupId) => {
-        this.setSelectionToGroup(groupId);
-        this.updatePaginator(groupId);
+        this.setSelectionToItem(groupId, "id");
+        this.updatePaginator(groupId, "id");
       });
-  }
-
-  private setSelectionToGroup(groupId: number) {
-    this.selection.select(
-      this.dataSource.data.find((group) => group.id == groupId)
-    );
-  }
-
-  // TODO: refactor to use same generic function in user and groups table
-  private updatePaginator(id) {
-    if (this.paginator) {
-      let indexInDatasource = this.dataSource.data.findIndex(
-        (d) => d.id === id
-      );
-      const pageNumber = Math.max(
-        0,
-        Math.floor(indexInDatasource / this.paginator.pageSize)
-      );
-
-      this.paginator.pageIndex = pageNumber;
-      this.paginator.page.next({
-        pageIndex: pageNumber,
-        pageSize: this.paginator.pageSize,
-        length: this.paginator.length,
-      });
-    }
   }
 
   ngAfterViewInit() {
