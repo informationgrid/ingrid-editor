@@ -25,6 +25,10 @@
 
   &.cdk-drag-disabled {
     cursor: default;
+
+    &.clickable {
+      cursor: pointer;
+    }
   }
 
   .mat-icon-button {
