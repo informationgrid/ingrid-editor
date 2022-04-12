@@ -423,7 +423,7 @@ export class DocumentPage extends BasePage {
     // sometimes we're too fast, so that the form is not synched with the store
     cy.wait(300);
     cy.get(DocumentPage.Toolbar.Save).click();
-    cy.get('[data-cy="form-message"]').contains('gespeichert');
+    cy.get('[data-cy="form-message"]', { timeout: 10000 }).contains('gespeichert');
   }
 
   static checkOnlyActiveToolbarButtons(buttonIds: string[], toBeIgnored: string[] = []) {
