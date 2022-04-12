@@ -324,6 +324,7 @@ describe('Research Page', () => {
     ResearchPage.search('test');
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
     ResearchPage.changeViewNumberDocuments('50');
+    ResearchPage.waitForSearch();
     ResearchPage.downloadCSVFile();
     ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
