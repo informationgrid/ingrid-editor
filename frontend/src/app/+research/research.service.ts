@@ -101,6 +101,8 @@ export class ResearchService {
       pageSize: number;
     }
   ): Observable<ResearchResponse> {
+    // Remove leading and trailing whitespace
+    term = term.trim();
     const backendQuery = new BackendQuery(
       term,
       model,

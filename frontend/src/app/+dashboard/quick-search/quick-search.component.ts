@@ -41,9 +41,6 @@ export class QuickSearchComponent implements OnInit {
       return;
     }
 
-    // trim leading and trailing whitespace
-    value = value?.trim();
-
     this.documentService.find(value, 5).subscribe((result) => {
       this.docs = this.highlightResult(result.hits, value);
       this.numDocs = result.totalHits;
