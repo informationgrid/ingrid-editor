@@ -68,9 +68,9 @@ export class ResearchPage {
     cy.wait('@filterRequest');
   }
 
-  static changeViewNumberDocuments(): void {
+  static changeViewNumberDocuments(size: '10' | '20' | '50'): void {
     cy.contains('.mat-paginator-page-size', 'Anzeige').click();
-    cy.contains('.mat-select-panel-wrap span', '50').parent().click();
+    cy.contains('.mat-select-panel-wrap span', size).parent().click();
   }
 
   static openSearchOptionTab(option: SearchOptionTabs): void {

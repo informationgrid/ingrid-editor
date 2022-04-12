@@ -493,8 +493,8 @@ describe('User', () => {
     // log in as cat admin
     cy.kcLogout();
     cy.kcLogin('zwei');
-    // super admin should not be visible
-    Menu.switchTo('USERS');
+    // reload with changed user loginn
+    AdminUserPage.visit();
     AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
     // switch catalog
     Menu.switchToGeneral('CATALOG_MANAGEMENT');

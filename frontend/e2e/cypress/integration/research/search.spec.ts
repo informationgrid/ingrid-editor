@@ -75,7 +75,7 @@ describe('Research Page', () => {
 
   it('should open respective document/address when clicking on search result', () => {
     ResearchPage.search('Test mCLOUD');
-    ResearchPage.changeViewNumberDocuments();
+    ResearchPage.changeViewNumberDocuments('50');
     ResearchPage.openDocumentFromResultList('Test mCLOUD Dokument');
     cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
   });
@@ -286,7 +286,7 @@ describe('Research Page', () => {
     Menu.switchTo('RESEARCH');
     ResearchPage.search("What's{");
     cy.get('.error').should('not.exist');
-    ResearchPage.changeViewNumberDocuments();
+    ResearchPage.changeViewNumberDocuments('50');
     // make sure there's an exact match (-> no substring match)
     cy.contains('td', "What's{This").should('have.text', " What's{This ");
     ResearchPage.getSearchResultCount().should('equal', 1);
@@ -321,8 +321,9 @@ describe('Research Page', () => {
   });
 
   it('should verify content of downloaded CSV file', () => {
+    ResearchPage.search('test');
     ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
-    ResearchPage.changeViewNumberDocuments();
+    ResearchPage.changeViewNumberDocuments('50');
     ResearchPage.downloadCSVFile();
     ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
