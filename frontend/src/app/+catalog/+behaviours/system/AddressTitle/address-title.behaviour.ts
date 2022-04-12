@@ -13,8 +13,8 @@ export class AddressTitleBehaviour extends Plugin {
   id = "plugin.address.title";
   name = "Template für die Generierung des Adressen-Titels";
   description =
-    'Definition für den Titel, der bei einer neuen Adresse generiert wird. Z.B.: organization + ", " + lastName + ", " + firstName<br>Verfügbare Felder sind: <b>firstName</b>, ' +
-    "<b>lastName</b> und <b>organization</b>";
+    'Definition für den Titel, der bei einer neuen Adresse generiert wird. Z.B.: firstName ? lastName + ", " + firstName : organization<br>Verfügbare Felder sind: <b>firstName</b> und ' +
+    "<b>lastName</b> für Personen und <b>organization</b> für Organisationen";
   group = "Adressen";
   defaultActive = false;
 
@@ -33,7 +33,7 @@ export class AddressTitleBehaviour extends Plugin {
       key: "template",
       type: "input",
       templateOptions: {
-        placeholder: 'organization + ", " + lastName + ", " + firstName',
+        placeholder: 'firstName ? lastName + ", " + firstName : organization',
         appearance: "outline",
         required: true,
       },
@@ -77,11 +77,13 @@ export class AddressTitleBehaviour extends Plugin {
     };
   }
 
-  private replaceVariables(text) {
-    return text
-      .replace("organization", "address.organization")
-      .replace("lastName", "address.lastName")
-      .replace("firstName", "address.firstName");
+  private replaceVariables(text: string) {
+    return !text
+      ? ""
+      : text
+          .replace(/organization/g, "address.organization")
+          .replace(/lastName/g, "address.lastName")
+          .replace(/firstName/g, "address.firstName");
   }
 
   register() {

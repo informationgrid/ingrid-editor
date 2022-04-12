@@ -515,12 +515,11 @@ export class DocumentService {
     if (this.alternateAddressTitle) {
       return this.alternateAddressTitle(address);
     } else {
-      const fields = [
-        address.organization,
-        address.lastName,
-        address.firstName,
-      ].filter((item) => item);
-      return fields.join(", ");
+      if (address.firstName) {
+        return address.lastName + ", " + address.firstName;
+      } else {
+        return address.organization;
+      }
     }
   }
 
