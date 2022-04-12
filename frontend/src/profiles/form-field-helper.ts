@@ -164,6 +164,7 @@ export class FormFieldHelper {
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 

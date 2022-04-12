@@ -3,8 +3,11 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { map } from "rxjs/operators";
 import { BackendOption } from "../../app/store/codelist/codelist.model";
 
-interface AddressOptions {
+export interface AddressOptions {
   defaultCountry: BackendOption;
+  hideCountryAndAdministrativeArea: boolean;
+  hideAdministrativeArea: boolean;
+  inheritAddress: boolean;
 }
 
 export abstract class AddressShared extends BaseDoctype {
@@ -36,7 +39,7 @@ export abstract class AddressShared extends BaseDoctype {
     });
   }
 
-  addAddressSection(options?: AddressOptions): FormlyFieldConfig {
+  addAddressSection(options?: Partial<AddressOptions>): FormlyFieldConfig {
     return this.addGroup(
       "address",
       "Adresse",
@@ -44,12 +47,14 @@ export abstract class AddressShared extends BaseDoctype {
         {
           key: "inheritAddress",
           type: "toggle",
-          defaultValue: true,
+          defaultValue: options.inheritAddress,
           templateOptions: {
             label: "Adressdaten aus übergeordneter Adresse übernehmen",
           },
           hideExpression: (_, formState) =>
-            !formState.mainModel._parent || formState.mainModel._parentIsFolder,
+            !options.inheritAddress ||
+            !formState.mainModel._parent ||
+            formState.mainModel._parentIsFolder,
         },
         {
           hideExpression: (model, formState) =>
@@ -90,32 +95,40 @@ export abstract class AddressShared extends BaseDoctype {
                 }),
               ],
             },
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addSelect("administrativeArea", null, {
-                  fieldLabel: "Verwaltungsgebiet",
-                  showSearch: true,
-                  wrappers: null,
-                  className: "flex-1",
-                  options: this.getCodelistForSelect(110, "administrativeArea"),
-                  codelistId: 110,
-                }),
-                this.addSelect("country", null, {
-                  fieldLabel: "Land",
-                  showSearch: true,
-                  wrappers: null,
-                  className: "flex-1",
-                  options: this.getCodelistForSelect(6200, "country"),
-                  codelistId: 6200,
-                  defaultValue: options?.defaultCountry,
-                }),
-              ],
-            },
+            this.getAdministrativeAreaAndCountry(options),
           ],
         },
       ],
       { fieldGroupClassName: null }
     );
+  }
+
+  private getAdministrativeAreaAndCountry(options: Partial<AddressOptions>) {
+    if (options.hideCountryAndAdministrativeArea) return {};
+
+    const country = this.addSelect("country", null, {
+      fieldLabel: "Land",
+      showSearch: true,
+      wrappers: null,
+      className: options.hideAdministrativeArea ? null : "flex-1",
+      options: this.getCodelistForSelect(6200, "country"),
+      codelistId: 6200,
+      defaultValue: options?.defaultCountry,
+    });
+    const administrativeArea = this.addSelect("administrativeArea", null, {
+      fieldLabel: "Verwaltungsgebiet",
+      showSearch: true,
+      wrappers: null,
+      className: "flex-1",
+      options: this.getCodelistForSelect(110, "administrativeArea"),
+      codelistId: 110,
+    });
+
+    return options.hideAdministrativeArea
+      ? country
+      : {
+          fieldGroupClassName: "display-flex",
+          fieldGroup: [administrativeArea, country],
+        };
   }
 }

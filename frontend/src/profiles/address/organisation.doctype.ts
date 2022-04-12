@@ -2,13 +2,7 @@ import { DocumentService } from "../../app/services/document/document.service";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { AddressShared } from "./address.shared";
-
-interface OrganisationOptions {
-  defaultCountry: any;
-  hideCountryAndAdministrativeArea: boolean;
-  hideAdministrativeArea: boolean;
-}
+import { AddressOptions, AddressShared } from "./address.shared";
 
 export abstract class OrganisationDoctype extends AddressShared {
   label = "Organisation";
@@ -17,12 +11,12 @@ export abstract class OrganisationDoctype extends AddressShared {
 
   isAddressType = true;
 
-  options: Partial<OrganisationOptions>;
+  options: Partial<AddressOptions>;
 
   private fieldWithAddressReferences: string;
 
   documentFields() {
-    const fields = <FormlyFieldConfig[]>[
+    return <FormlyFieldConfig[]>[
       this.addSection("Organisationsdaten", [
         {
           wrappers: ["panel"],
@@ -46,24 +40,10 @@ export abstract class OrganisationDoctype extends AddressShared {
       ]),
       this.addSection("Kommunikation", [
         this.addContact(),
-        this.addAddressSection({
-          defaultCountry: this.options?.defaultCountry,
-        }),
+        this.addAddressSection(this.options),
       ]),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
-
-    if (this.options?.hideAdministrativeArea) {
-      const country =
-        fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
-      country.className = null;
-      delete fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3];
-      fields[1].fieldGroup[1].fieldGroup[1].fieldGroup.push(country);
-    }
-    if (this.options?.hideCountryAndAdministrativeArea) {
-      delete fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3];
-    }
-    return fields;
   }
 
   protected constructor(
