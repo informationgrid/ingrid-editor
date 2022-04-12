@@ -1,6 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { Plugin } from "../plugin";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
   selector: "ige-behaviour-item",
@@ -12,6 +10,8 @@ export class BehaviourItemComponent implements OnInit {
   @Input() description: string;
   @Input() control: any;
 
+  @Output() change = new EventEmitter<void>();
+
   constructor() {}
 
   ngOnInit(): void {}
@@ -19,5 +19,6 @@ export class BehaviourItemComponent implements OnInit {
   updateFieldState(checked: boolean) {
     const form = this.control.form;
     checked ? form.enable() : form.disable();
+    this.change.next();
   }
 }

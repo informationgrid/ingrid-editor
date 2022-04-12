@@ -1,4 +1,4 @@
-<page-template [label]="title">
+<page-template-no-header [label]="title">
     <ng-container left-side>
         {{
             type === "form"
@@ -6,14 +6,6 @@
                 : "Hier können katalogspezifische Verhalten angepasst werden."
         }}
     </ng-container>
-
-    <div main-header fxLayout="column" fxFlex fxLayoutAlign="center start">
-        <div>
-            <button mat-flat-button color="primary" (click)="save()">
-                Speichern
-            </button>
-        </div>
-    </div>
 
     <div main-content fxFlex>
         <div class="scrollable">
@@ -24,8 +16,9 @@
                     [title]="plugin.name"
                     [description]="plugin.description"
                     [control]="fields[plugin.id]"
+                    (change)="save()"
                 ></ige-behaviour-item>
             </div>
         </div>
     </div>
-</page-template>
+</page-template-no-header>

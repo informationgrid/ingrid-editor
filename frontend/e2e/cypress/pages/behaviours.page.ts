@@ -9,10 +9,6 @@ export class BehavioursPage extends BasePage {
     });
   }
 
-  static saveCatalogSetting() {
-    cy.get('button').contains('Speichern').click();
-  }
-
   static openCatalogSettingsTab(tabmenu: CatalogsTabmenu) {
     Menu.switchTo('CATALOG');
     // use a longer timeout since element is currently animating error could occur
@@ -46,17 +42,14 @@ export class BehavioursPage extends BasePage {
     cy.get('ige-session-timeout-info').contains(timeout);
   }
 
-  static setCatalogSetting(settingTitle: string, desiredState: boolean, save = true): void {
+  static setCatalogSetting(settingTitle: string, desiredState: boolean): void {
     const toggleNeeded = BehavioursPage.getCatalogCheckbox(settingTitle).find('[aria-checked="' + !desiredState + '"]');
 
     if (toggleNeeded) this.toggleCatalogSetting(settingTitle);
-
-    if (save) this.saveCatalogSetting();
   }
 
   static setCatalogSettingInput(settingTitle: string, input: string) {
-    this.setCatalogSetting(settingTitle, true, false);
+    this.setCatalogSetting(settingTitle, true);
     this.setCatalogInputbox(settingTitle, input);
-    this.saveCatalogSetting();
   }
 }

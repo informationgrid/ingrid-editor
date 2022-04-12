@@ -10,6 +10,7 @@ import { PluginToken } from "../../tokens/plugin.token";
 import { ConfigService } from "../config/config.service";
 import { Behaviour } from "./behaviour";
 import { catchError, tap } from "rxjs/operators";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export interface BehaviourFormatBackend {
   _id: string;
@@ -42,7 +43,8 @@ export class BehaviourService {
     private profileQuery: ProfileQuery,
     private sessionQuery: SessionQuery,
     @Inject(PluginToken) private systemBehaviours: Plugin[],
-    private dataService: BehaviorDataService
+    private dataService: BehaviorDataService,
+    private toast: MatSnackBar
   ) {
     this.loadStoredBehaviours()
       .pipe(
@@ -100,7 +102,10 @@ export class BehaviourService {
 
   saveBehaviours(behaviours: BehaviourFormatBackend[]) {
     this.updateState(behaviours);
-    this.dataService.saveBehaviors(behaviours).subscribe();
+    this.dataService
+      .saveBehaviors(behaviours)
+      .pipe(tap(() => this.toast.open("Das Verhalten wurde gespeichert")))
+      .subscribe();
     this.behaviours$.next(behaviours);
   }
 

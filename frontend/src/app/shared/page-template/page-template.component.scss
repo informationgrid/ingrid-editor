@@ -23,7 +23,7 @@
     padding-bottom: 26px;
   }
 
-  .main-content {
+  :host-context(.white) .main-content {
     background-color: #ffffff;
   }
 }
