@@ -1,12 +1,12 @@
 import { FormGroup } from "@angular/forms";
-import { ConfigService } from "../../app/services/config/config.service";
-import { UploadService } from "../../app/shared/upload/upload.service";
+import { ConfigService } from "../../../app/services/config/config.service";
+import { UploadService } from "../../../app/shared/upload/upload.service";
 import {
   CodelistService,
   SelectOptionUi,
-} from "../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { BaseDoctype } from "../base.doctype";
+} from "../../../app/services/codelist/codelist.service";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export class UvpShared extends BaseDoctype {
