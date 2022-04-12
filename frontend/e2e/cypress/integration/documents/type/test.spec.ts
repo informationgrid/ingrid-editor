@@ -59,7 +59,7 @@ describe('addresses inside test catalogue', () => {
     const firstDoc = 'Datum_Ebene_4_1';
     const lastDoc = 'Datum_Ebene_4_2';
 
-    cy.get(DocumentPage.Sidemenu.Daten).click();
+    Menu.switchTo('DOCUMENTS');
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
     cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
     Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A']);

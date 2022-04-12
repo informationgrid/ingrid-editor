@@ -1,6 +1,7 @@
 import { DocumentPage, SEPARATOR } from '../../pages/document.page';
 import { AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
+import { Menu } from '../../pages/menu';
 
 describe('Load addresses', () => {
   beforeEach(() => {
@@ -46,9 +47,9 @@ describe('Load addresses', () => {
     const addressTitle = 'Testorganisation';
     Tree.openNode(['Testadressen', addressTitle]);
     cy.get(AddressPage.title).should('have.text', addressTitle);
-    cy.get(AddressPage.Sidemenu.Uebersicht).click();
-    cy.get(AddressPage.Sidemenu.Daten).click();
-    cy.get(AddressPage.Sidemenu.Adressen).click();
+    Menu.switchTo('DASHBOARD');
+    Menu.switchTo('DOCUMENTS');
+    Menu.switchTo('ADDRESSES');
     cy.get(AddressPage.title).should('have.text', addressTitle);
   });
 

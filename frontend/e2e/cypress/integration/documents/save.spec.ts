@@ -2,6 +2,7 @@ import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { Menu } from '../../pages/menu';
 
 describe('General create documents/folders', () => {
   beforeEach(() => {
@@ -171,7 +172,7 @@ describe('General create documents/folders', () => {
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
       cy.wait(500);
-      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      Menu.switchTo('DASHBOARD');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
@@ -179,7 +180,7 @@ describe('General create documents/folders', () => {
 
       // accept (don't save) -> should load new page
       cy.wait(500);
-      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      Menu.switchTo('DASHBOARD');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
@@ -191,14 +192,14 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
-      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      Menu.switchTo('DASHBOARD');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
       // check we are on dashboard page
       cy.url().should('include', '/dashboard');
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.wait(500);
       cy.get(DocumentPage.title).should('have.text', 'Test mCLOUD Dokument');
     });

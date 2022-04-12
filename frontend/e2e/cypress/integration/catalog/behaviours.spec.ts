@@ -29,7 +29,7 @@ describe('Behaviours', () => {
        * the template can't make first name appear in title: "Kein Titel" is shown instead */
       const organizationName = 'Sportclub';
 
-      cy.get(DocumentPage.Sidemenu.Adressen).click();
+      Menu.switchTo('ADDRESSES');
       AddressPage.createAddress(new Address(organizationName));
       cy.get(DocumentPage.title).should('have.text', organizationName);
 
@@ -39,7 +39,7 @@ describe('Behaviours', () => {
         'organization + " (Template)"'
       );
 
-      cy.get(DocumentPage.Sidemenu.Adressen).click();
+      Menu.switchTo('ADDRESSES');
 
       AddressPage.createAddress(new Address(organizationName));
       cy.get(DocumentPage.title).should('have.text', organizationName + ' (Template)');
@@ -51,71 +51,71 @@ describe('Behaviours', () => {
 
   describe('Form', () => {
     it('should toggle the JSON view of a document', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_SHOW_JSON]').should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Anzeige JSON Formular', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_SHOW_JSON]').should('be.visible');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Anzeige JSON Formular', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_SHOW_JSON]').should('not.exist');
       cy.get('as-split-area'[2]).should('not.exist');
     });
 
     it('should show and hide the publish button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_publish_now]').should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Publish Plugin', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_publish_now]').should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Publish Plugin', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_publish_now]').should('exist');
     });
 
     it('should show and hide the new document button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewDoc).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Neues Dokument Plugin', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewDoc).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Neues Dokument Plugin', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_NEW_DOC]').should('exist');
     });
 
     it('should show and hide the save button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Save).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Save Plugin', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Save).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Save Plugin', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Save).should('exist');
     });
 
@@ -137,41 +137,41 @@ describe('Behaviours', () => {
     });
 
     it('should show and hide the copy/cut button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Copy).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Copy Cut Paste', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Copy).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Copy Cut Paste', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Copy).should('exist');
     });
 
     it('should show and hide the delete doc/folder button', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Delete Docs Plugin', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Delete).should('not.exist');
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Delete Docs Plugin', true);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
     });
 
     it('should show and hide the history buttons', () => {
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Previous).should('exist');
       cy.get(DocumentPage.Toolbar.Next).should('exist');
 
@@ -179,7 +179,7 @@ describe('Behaviours', () => {
       BehavioursPage.setCatalogSetting('History Plugin', false);
 
       // check button disappears when behaviour disabled
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Previous).should('not.exist');
       cy.get(DocumentPage.Toolbar.Next).should('not.exist');
 
@@ -192,7 +192,7 @@ describe('Behaviours', () => {
       const secondObject = 'Ordner 2. Ebene';
       const thirdObject = 'Tiefes Dokument';
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
 
       // open 3 documents after another
       Tree.clickOnNodeWithTitle(firstObject);
@@ -232,7 +232,7 @@ describe('Behaviours', () => {
     it('should be only possible to delete non empty folders if behaviour is switched off', () => {
       const node = 'Testdokumente';
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       Tree.openNode([node]);
       Tree.checkNodeHasChildren(node);
       cy.get(DocumentPage.Toolbar['Delete']).click();
@@ -242,7 +242,7 @@ describe('Behaviours', () => {
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
       BehavioursPage.setCatalogSetting('Nur leere Ordner löschen', false);
 
-      cy.get(DocumentPage.Sidemenu.Daten).click();
+      Menu.switchTo('DOCUMENTS');
       Tree.openNode([node]);
       Tree.checkNodeHasChildren(node);
       cy.get(DocumentPage.Toolbar['Delete']).click();

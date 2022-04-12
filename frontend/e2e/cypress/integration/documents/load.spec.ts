@@ -4,6 +4,7 @@ import { Tree } from '../../pages/tree.partial';
 import { AddressPage } from '../../pages/address.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Utils } from '../../pages/utils';
+import { Menu } from '../../pages/menu';
 
 describe('Load documents', () => {
   beforeEach(() => {
@@ -54,9 +55,9 @@ describe('Load documents', () => {
   it('should open the previously selected document when going to another page and returning', function () {
     DocumentPage.visitSingleDoc();
     cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
-    cy.get(DocumentPage.Sidemenu.Uebersicht).click();
-    cy.get(DocumentPage.Sidemenu.Adressen).click();
-    cy.get(DocumentPage.Sidemenu.Daten).click();
+    Menu.switchTo('DASHBOARD');
+    Menu.switchTo('ADDRESSES');
+    Menu.switchTo('DOCUMENTS');
     cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
   });
 

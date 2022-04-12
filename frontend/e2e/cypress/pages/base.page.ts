@@ -10,13 +10,6 @@ export class BasePage {
   }
 
   static Sidemenu: Record<string, string> = {
-    Uebersicht: '[href="/dashboard"]',
-    Daten: '[href="/form"]',
-    Adressen: '[href="/address"]',
-    Recherche: '[href="/research"]',
-    NutzerUndRechte: '[href="/user"]',
-    ImportExport: '[href="/importExport"]',
-    Katalogverwaltung: '[href="/catalogs"]',
     Skalieren: '.mat-list-item[mattooltip="Vergrößern"]'
   };
 

@@ -146,7 +146,7 @@ describe('User', () => {
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
 
     // click on other menu page --> discard dialog must appear --> decline
-    cy.get(DocumentPage.Sidemenu.Adressen).click();
+    Menu.switchTo('ADDRESSES');
     AdminUserPage.cancelChanges();
   });
 

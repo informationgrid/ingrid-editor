@@ -4,6 +4,7 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Todo } from '@datorama/akita/src/__tests__/setup';
+import { Menu } from '../../pages/menu';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
@@ -226,7 +227,7 @@ describe('General create addresses/folders', () => {
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
       cy.wait(500);
-      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      Menu.switchTo('DASHBOARD');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
@@ -234,7 +235,7 @@ describe('General create addresses/folders', () => {
 
       // accept (don't safe) -> should load new page
       cy.wait(500);
-      cy.get(DocumentPage.Sidemenu.Uebersicht).click();
+      Menu.switchTo('DASHBOARD');
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
