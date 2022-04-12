@@ -75,6 +75,7 @@ import {
   MatPaginatorModule,
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
+import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -99,6 +100,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatCardModule,
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
+    FormlyMatToggleModule,
     FormlyModule.forChild({
       types: [
         {

@@ -138,6 +138,8 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
       },
+      expressionProperties: options?.expressionProperties,
+      hideExpression: options?.hideExpression,
       validators: options?.validators,
     };
   }

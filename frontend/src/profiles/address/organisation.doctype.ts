@@ -54,13 +54,14 @@ export abstract class OrganisationDoctype extends AddressShared {
     ];
 
     if (this.options?.hideAdministrativeArea) {
-      const country = fields[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
+      const country =
+        fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3]["fieldGroup"][1];
       country.className = null;
-      delete fields[1].fieldGroup[1].fieldGroup[3];
-      fields[1].fieldGroup[1].fieldGroup.push(country);
+      delete fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3];
+      fields[1].fieldGroup[1].fieldGroup[1].fieldGroup.push(country);
     }
     if (this.options?.hideCountryAndAdministrativeArea) {
-      delete fields[1].fieldGroup[1].fieldGroup[3];
+      delete fields[1].fieldGroup[1].fieldGroup[1].fieldGroup[3];
     }
     return fields;
   }

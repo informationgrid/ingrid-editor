@@ -42,58 +42,76 @@ export abstract class AddressShared extends BaseDoctype {
       "Adresse",
       [
         {
-          fieldGroupClassName: "display-flex",
-          fieldGroup: [
-            this.addInput("street", null, {
-              fieldLabel: "Straße/Hausnummer",
-              className: "width-100",
-            }),
-          ],
+          key: "inheritAddress",
+          type: "toggle",
+          defaultValue: true,
+          templateOptions: {
+            label: "Adressdaten aus übergeordneter Adresse übernehmen",
+          },
+          hideExpression: (_, formState) =>
+            !formState.mainModel._parent || formState.mainModel._parentIsFolder,
         },
         {
-          fieldGroupClassName: "display-flex",
+          hideExpression: (model, formState) =>
+            formState.mainModel._parent &&
+            !formState.mainModel._parentIsFolder &&
+            model.inheritAddress,
           fieldGroup: [
-            this.addInput("zip-code", null, {
-              fieldLabel: "PLZ",
-            }),
-            this.addInput("city", null, {
-              fieldLabel: "Ort",
-              className: "flex-3",
-            }),
-          ],
-        },
-        {
-          fieldGroupClassName: "display-flex",
-          fieldGroup: [
-            this.addInput("zip-po-box", null, {
-              fieldLabel: "PLZ (Postfach)",
-            }),
-            this.addInput("po-box", null, {
-              fieldLabel: "Postfach",
-              className: "flex-3",
-            }),
-          ],
-        },
-        {
-          fieldGroupClassName: "display-flex",
-          fieldGroup: [
-            this.addSelect("administrativeArea", null, {
-              fieldLabel: "Verwaltungsgebiet",
-              showSearch: true,
-              wrappers: null,
-              className: "flex-1",
-              options: this.getCodelistForSelect(110, "administrativeArea"),
-              codelistId: 110,
-            }),
-            this.addSelect("country", null, {
-              fieldLabel: "Land",
-              showSearch: true,
-              wrappers: null,
-              className: "flex-1",
-              options: this.getCodelistForSelect(6200, "country"),
-              codelistId: 6200,
-              defaultValue: options?.defaultCountry,
-            }),
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("street", null, {
+                  fieldLabel: "Straße/Hausnummer",
+                  className: "width-100",
+                }),
+              ],
+            },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("zip-code", null, {
+                  fieldLabel: "PLZ",
+                }),
+                this.addInput("city", null, {
+                  fieldLabel: "Ort",
+                  className: "flex-3",
+                }),
+              ],
+            },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addInput("zip-po-box", null, {
+                  fieldLabel: "PLZ (Postfach)",
+                }),
+                this.addInput("po-box", null, {
+                  fieldLabel: "Postfach",
+                  className: "flex-3",
+                }),
+              ],
+            },
+            {
+              fieldGroupClassName: "display-flex",
+              fieldGroup: [
+                this.addSelect("administrativeArea", null, {
+                  fieldLabel: "Verwaltungsgebiet",
+                  showSearch: true,
+                  wrappers: null,
+                  className: "flex-1",
+                  options: this.getCodelistForSelect(110, "administrativeArea"),
+                  codelistId: 110,
+                }),
+                this.addSelect("country", null, {
+                  fieldLabel: "Land",
+                  showSearch: true,
+                  wrappers: null,
+                  className: "flex-1",
+                  options: this.getCodelistForSelect(6200, "country"),
+                  codelistId: 6200,
+                  defaultValue: options?.defaultCountry,
+                }),
+              ],
+            },
           ],
         },
       ],

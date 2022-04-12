@@ -387,6 +387,7 @@ class DatasetsApiController @Autowired constructor(
                 documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
             doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
             doc.data.put(FIELD_PARENT, wrapper.parent?.id)
+            doc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
             doc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
