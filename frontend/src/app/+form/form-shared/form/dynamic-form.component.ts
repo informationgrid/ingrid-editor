@@ -347,6 +347,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.model = { ...data };
       this.formOptions.formState.mainModel = this.model;
+      this.formOptions.formState.parentIsFolder = data._parentIsFolder;
 
       this.initializeForm(data.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);

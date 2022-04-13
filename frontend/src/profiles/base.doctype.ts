@@ -28,9 +28,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       key: "_parent",
     },
     {
-      key: "_parentIsFolder",
-    },
-    {
       key: "_type",
       templateOptions: {
         label: "Typ",
