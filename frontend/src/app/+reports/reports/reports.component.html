@@ -1,127 +1,13 @@
-<mat-tab-group
-    animationDuration="0"
-    [dynamicHeight]="true"
-    class="page-tabs white"
->
-    <mat-tab label="Statistik">
-        <page-template-no-header label="Statistik">
-            <div left-side [formGroup]="form">
-                <mat-button-toggle-group
-                    value="selectDocuments"
-                    name="searchClass"
-                    aria-label="Typ"
-                    formControlName="type"
-                >
-                    <mat-button-toggle value="selectDocuments"
-                        >Daten
-                    </mat-button-toggle>
-                    <mat-button-toggle value="selectAddresses"
-                        >Adressen
-                    </mat-button-toggle>
-                </mat-button-toggle-group>
-                <ige-facets
-                    formControlName="facets"
-                    [facets]="facets"
-                    [forAddresses]="
-                        form.get('type').value === 'selectAddresses'
-                    "
-                    [forReports]="true"
-                    [refreshView]="facetViewRefresher"
-                ></ige-facets>
-            </div>
-            <div main-content fxLayout="column" fxLayoutGap="36px">
-                <div class="chart-container">
-                    <ige-chart
-                        [data]="chartDataPublished"
-                        showPercentages="true"
-                    ></ige-chart>
-                </div>
-                <ige-card-box fxFlex label="Datensätze">
-                    <table
-                        mat-table
-                        [dataSource]="dataSource"
-                        matSort
-                        class="width-100"
-                    >
-                        <!-- Type Icon Column -->
-                        <ng-container matColumnDef="icon" class="thin-column">
-                            <th mat-header-cell *matHeaderCellDef></th>
-                            <td mat-cell *matCellDef="let element">
-                                <mat-icon [svgIcon]="element.icon"></mat-icon>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="title">
-                            <th
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                            >
-                                Typ
-                            </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ getTitle(element.title) }}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="percentage">
-                            <th
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                            >
-                                Prozent
-                            </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ element.percentage }}%
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="count">
-                            <th
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                            >
-                                Anzahl
-                            </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ element.count }}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="published">
-                            <th
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                            >
-                                veröffentlicht
-                            </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ element.published }}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="working">
-                            <th
-                                mat-header-cell
-                                *matHeaderCellDef
-                                mat-sort-header
-                            >
-                                in Bearbeitung
-                            </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{ element.working }}
-                            </td>
-                        </ng-container>
+<nav mat-tab-nav-bar class="page-tabs-routing">
+    <a
+        *ngFor="let tab of tabs; let i = index"
+        mat-tab-link
+        routerLinkActive="active-link"
+        [routerLink]="tab.path"
+        [active]="activeLink == tab.path"
+    >
+        {{ tab.label }}
+    </a>
+</nav>
 
-                        <tr
-                            mat-header-row
-                            *matHeaderRowDef="displayedColumns"
-                        ></tr>
-                        <tr
-                            mat-row
-                            *matRowDef="let row; columns: displayedColumns"
-                        ></tr>
-                    </table>
-                </ige-card-box>
-            </div>
-        </page-template-no-header>
-    </mat-tab>
-</mat-tab-group>
+<router-outlet></router-outlet>

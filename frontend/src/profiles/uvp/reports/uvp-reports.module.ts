@@ -1,28 +1,23 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ReportsComponent } from "./reports/reports.component";
-import { routing } from "../+reports/reports.routing";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { MatTabsModule } from "@angular/material/tabs";
-import { SharedModule } from "../shared/shared.module";
-import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
-import { DateAdapter } from "@angular/material/core";
-import { GermanDateAdapter } from "../services/german-date.adapter";
 import { ReactiveFormsModule } from "@angular/forms";
-import { GeneralReportComponent } from "./general-report/general-report.component";
+import { UvpBerichtComponent } from "./uvp-bericht/uvp-bericht.component";
+import { SharedModule } from "../../../app/shared/shared.module";
+import { PageTemplateModule } from "../../../app/shared/page-template/page-template.module";
+import { DateAdapter } from "@angular/material/core";
+import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
 
 @NgModule({
-  declarations: [ReportsComponent, GeneralReportComponent],
+  declarations: [UvpBerichtComponent],
   imports: [
     CommonModule,
-    routing,
     PageTemplateModule,
     MatTabsModule,
     SharedModule,
-    DocumentIconModule,
     MatTableModule,
     MatSortModule,
     MatButtonToggleModule,
@@ -35,4 +30,4 @@ import { GeneralReportComponent } from "./general-report/general-report.componen
     },
   ],
 })
-export class ReportsModule {}
+export class UvpReportsModule {}

@@ -1,0 +1,73 @@
+@import "src/variables.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.main-content ::ng-deep .circle-3 {
+  stroke: $ige-background !important;
+}
+
+.chart-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.doc-item {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding-top: 0;
+
+  &.single {
+    margin: 0;
+    align-items: center;
+
+    .mat-list-icon {
+      align-self: unset;
+    }
+  }
+
+  &.dense {
+    mat-list-option {
+      height: 40px !important;
+    }
+  }
+
+  .mat-icon {
+    display: flex;
+    align-self: flex-start;
+    height: 24px;
+    margin-right: 12px;
+    padding: 0;
+
+    &.marker ::ng-deep .coloring {
+      fill: $ige-check-color;
+    }
+  }
+
+  span.mat-line {
+    line-height: 24px;
+  }
+
+  h3.mat-line {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .card-title {
+    flex: 1 1 auto;
+    white-space: normal;
+    line-height: 24px;
+  }
+
+  .date {
+    padding: 0 12px;
+  }
+}
+
+.mat-table td.mat-cell:last-of-type {
+  text-align: left;
+}

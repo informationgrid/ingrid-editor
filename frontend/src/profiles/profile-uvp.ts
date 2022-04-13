@@ -12,6 +12,13 @@ import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
 import { filter, map } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
+import { ReportsService } from "../app/+reports/reports.service";
+import { UvpBerichtComponent } from "./uvp/reports/uvp-bericht/uvp-bericht.component";
+import { Router, RouterModule } from "@angular/router";
+import { routes } from "../app/app.router";
+import { AuthGuard } from "../app/security/auth.guard";
+import { UvpReportsModule } from "./uvp/reports/uvp-reports.module";
+import { GeneralReportComponent } from "../app/+reports/general-report/general-report.component";
 
 @Component({
   template: "dynamic component",
@@ -19,6 +26,7 @@ import { Plugin } from "../app/+catalog/+behaviours/plugin";
 class UVPComponent {
   constructor(
     profileService: ProfileService,
+    reportsService: ReportsService,
     behaviourService: BehaviourService,
     folder: FolderDoctype,
     approvalProcedureDoctype: ApprovalProcedureDoctype,
@@ -27,7 +35,8 @@ class UVPComponent {
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
-    organisation: UvpOrganisationDoctype
+    organisation: UvpOrganisationDoctype,
+    private router: Router
   ) {
     this.addBehaviour(behaviourService, negativeAssessmentDoctype);
 
@@ -43,6 +52,8 @@ class UVPComponent {
     ]);
 
     this.modifyFormHeader(profileService);
+
+    this.addUVPReportTab(reportsService);
   }
 
   private modifyFormHeader(service: ProfileService) {
@@ -69,10 +80,35 @@ class UVPComponent {
   private getActiveState(plugins: Plugin[], behaviourId: string) {
     return plugins.find((plugin) => plugin.id === behaviourId)?.isActive;
   }
+
+  private addUVPReportTab(reportsService: ReportsService) {
+    reportsService.addTab({
+      label: "UVP Bericht",
+      path: "uvp-bericht",
+      component: UvpBerichtComponent,
+      // loadChildren: () =>
+      //   import("./uvp/reports/uvp-reports.module").then(
+      //     (m) => m.UvpReportsModule
+      //   ),
+    });
+  }
 }
 
 @NgModule({
   declarations: [UVPComponent],
+  // imports: [
+  //   RouterModule.forRoot([
+  //     {
+  //       path: "xxx",
+  //       loadChildren: () =>
+  //         import("./uvp/reports/uvp-reports.module").then((m) => m.UvpSharedModule),
+  //       //canActivate: [AuthGuard],
+  //       data: {
+  //         icon: "Uebersicht",
+  //       },
+  //     },
+  //   ]),
+  // ],
 })
 export class ProfilePack {
   static getMyComponent() {

@@ -80,6 +80,7 @@ import { RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
+import { UvpReportsModule } from "../profiles/uvp/reports/uvp-reports.module";
 
 registerLocaleData(de);
 
@@ -234,10 +235,6 @@ export function animationExtension(field: FormlyFieldConfig) {
         panelClass: "mat-dialog-override",
         hasBackdrop: true,
       },
-    },
-    {
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: { panelClass: "mat-dialog-override" },
     },
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
