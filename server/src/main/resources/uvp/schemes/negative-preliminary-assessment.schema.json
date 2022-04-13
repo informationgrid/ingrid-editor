@@ -58,12 +58,8 @@
         "_uuid",
         "_type",
         "title",
-        "description",
         "pointOfContact",
-        "spatial",
-        "decisionDate",
-        "eiaNumbers",
-        "uvpNegativeDecisionDocs"
+        "decisionDate"
       ],
       "title": "NegativePreliminaryAssessment"
     }
