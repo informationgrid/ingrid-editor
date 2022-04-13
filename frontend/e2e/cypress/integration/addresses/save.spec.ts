@@ -227,7 +227,7 @@ describe('General create addresses/folders', () => {
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
       cy.wait(500);
-      Menu.switchTo('DASHBOARD');
+      Menu.switchTo('DASHBOARD', false);
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
@@ -235,7 +235,7 @@ describe('General create addresses/folders', () => {
 
       // accept (don't safe) -> should load new page
       cy.wait(500);
-      Menu.switchTo('DASHBOARD');
+      Menu.switchTo('DASHBOARD', false);
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 

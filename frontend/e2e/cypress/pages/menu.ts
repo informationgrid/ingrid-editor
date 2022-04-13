@@ -4,10 +4,10 @@ export type Page = 'DASHBOARD' | 'DOCUMENTS' | 'ADDRESSES' | 'RESEARCH' | 'REPOR
 export type GeneralPage = 'GENERAL' | 'CODELIST_REPOSITORY' | 'CATALOG_MANAGEMENT';
 
 export class Menu {
-  static switchTo(page: Page) {
+  static switchTo(page: Page, waitForPage = true) {
     const routerLink = Menu.mapPageToRouterLink(page);
     cy.get(`[href="${routerLink}"]`).click();
-    Menu.waitForPage(page);
+    if (waitForPage) Menu.waitForPage(page);
   }
 
   static switchToGeneral(page: GeneralPage) {

@@ -172,7 +172,7 @@ describe('General create documents/folders', () => {
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
       cy.wait(500);
-      Menu.switchTo('DASHBOARD');
+      Menu.switchTo('DASHBOARD', false);
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-stay]').click();
 
@@ -180,7 +180,7 @@ describe('General create documents/folders', () => {
 
       // accept (don't save) -> should load new page
       cy.wait(500);
-      Menu.switchTo('DASHBOARD');
+      Menu.switchTo('DASHBOARD', false);
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
@@ -192,7 +192,7 @@ describe('General create documents/folders', () => {
       enterMcloudDocTestData.setDescription('modified test description');
 
       cy.wait(500);
-      Menu.switchTo('DASHBOARD');
+      Menu.switchTo('DASHBOARD', false);
       cy.get('.mat-dialog-title').contains('Änderungen speichern?');
       cy.get('[data-cy=confirm-dialog-leave]').click();
 
