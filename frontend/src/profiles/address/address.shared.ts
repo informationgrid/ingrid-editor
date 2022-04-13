@@ -39,7 +39,7 @@ export abstract class AddressShared extends BaseDoctype {
     });
   }
 
-  addAddressSection(options?: Partial<AddressOptions>): FormlyFieldConfig {
+  addAddressSection(options: Partial<AddressOptions> = {}): FormlyFieldConfig {
     return this.addGroup(
       "address",
       "Adresse",
