@@ -321,12 +321,15 @@ describe('Research Page', () => {
   });
 
   it('should verify content of downloaded CSV file', () => {
-    ResearchPage.search('test');
-    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
-    ResearchPage.changeViewNumberDocuments('50');
-    ResearchPage.waitForSearch();
+    cy.intercept('POST', '/api/search/query').as('search');
+    ResearchPage.search('ra');
+    cy.wait('@search')
+      .then(({ request, response }) => {
+        return response.body.hits.map(elem => elem.title);
+      })
+      .as('arr1');
     ResearchPage.downloadCSVFile();
-    ResearchPage.getResultListItems().then(arr1 => {
+    cy.get('@arr1').then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
         // compare the content of the two arrays
         expect(arr2).to.deep.eq(arr1);
