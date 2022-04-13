@@ -321,15 +321,11 @@ describe('Research Page', () => {
   });
 
   it('should verify content of downloaded CSV file', () => {
-    cy.intercept('POST', '/api/search/query').as('search');
-    ResearchPage.search('ra');
-    cy.wait('@search')
-      .then(({ request, response }) => {
-        return response.body.hits.map(elem => elem.title);
-      })
-      .as('arr1');
+    ResearchPage.search('Datum_Ebene');
+    ResearchPage.changeViewNumberDocuments('50');
+    ResearchPage.waitForSearch();
     ResearchPage.downloadCSVFile();
-    cy.get('@arr1').then(arr1 => {
+    ResearchPage.getResultListItems().then(arr1 => {
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
         // compare the content of the two arrays
         expect(arr2).to.deep.eq(arr1);
