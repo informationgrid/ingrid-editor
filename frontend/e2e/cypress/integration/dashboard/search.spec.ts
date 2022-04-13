@@ -60,21 +60,21 @@ describe('Search', function () {
   it('should open a document after clicking a searchresult', () => {
     const docName = 'TestDocResearch3';
     DashboardPage.search(docName);
-    cy.get('.highlight').click();
+    cy.get('.highlight').should('have.text', docName).click();
     cy.get(DocumentPage.title, { timeout: 10000 }).should('have.text', docName);
   });
 
   it('should find addresses and open it', () => {
     const addressName = 'Testorganisation';
     DashboardPage.search(addressName);
-    cy.get('.highlight').click();
+    cy.get('.highlight').should('have.text', addressName).click();
     cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', addressName);
   });
 
   it('should find folders and open it', () => {
     const folderName = 'Neue Testdokumente';
     DashboardPage.search(folderName);
-    cy.get('.highlight').click();
+    cy.get('.highlight').should('have.text', folderName).click();
     cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', folderName);
   });
 

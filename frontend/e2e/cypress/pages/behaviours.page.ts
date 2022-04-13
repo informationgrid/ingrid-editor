@@ -33,7 +33,7 @@ export class BehavioursPage extends BasePage {
       .parent()
       .parent()
       .parent()
-      .find('mat-card-content')
+      .find('.mat-input-element')
       .clear()
       .type(input);
   }

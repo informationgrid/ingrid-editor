@@ -1,7 +1,7 @@
 export class ManageCatalogPage {
   static visit() {
     cy.visit('settings/catalog');
-    cy.get('ige-catalog-management .page-title').should('contain.text', 'Katalogverwaltung');
+    cy.get('ige-catalog-management .page-title', { timeout: 10000 }).should('contain.text', 'Katalogverwaltung');
   }
 
   static openCatalogCardMenu(title: string) {
@@ -39,6 +39,7 @@ export class ManageCatalogPage {
       .find('.mat-card-subtitle')
       .then($node => {
         // extract part of the string that follows "Letzte Änderung am"
+        // @ts-ignore
         return /(?<=am\s).*$/.exec($node.text())[0].trim();
       });
   }
