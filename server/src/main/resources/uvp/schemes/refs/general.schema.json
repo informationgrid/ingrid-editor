@@ -29,6 +29,9 @@
         },
         "downloadURL": {
           "$ref": "#/definitions/DownloadURL"
+        },
+        "expiryDate":  {
+          "type": "string"
         }
       },
       "required": [],
