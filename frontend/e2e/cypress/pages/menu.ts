@@ -6,6 +6,7 @@ export type GeneralPage = 'GENERAL' | 'CODELIST_REPOSITORY' | 'CATALOG_MANAGEMEN
 export class Menu {
   static switchTo(page: Page, waitForPage = true) {
     const routerLink = Menu.mapPageToRouterLink(page);
+    cy.wait(500);
     cy.get(`[href="${routerLink}"]`).click();
     if (waitForPage) Menu.waitForPage(page);
   }
@@ -51,7 +52,7 @@ export class Menu {
         cy.get('.main-page-title').should('contain', 'Daten');
         return;
       case 'ADDRESSES':
-        cy.get('.main-page-title', { timeout: 10000 }).should('contain', 'Adressen');
+        cy.contains('.main-page-title', 'Adressen', { timeout: 10000 });
         return;
       case 'RESEARCH':
         cy.url().should('contain', '/research/');

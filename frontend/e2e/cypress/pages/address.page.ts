@@ -14,28 +14,43 @@ export const ROOT = `Adressen`;
 
 export class AddressPage extends DocumentPage {
   static CreateDialog = class extends DocumentPage.CreateDialog {
-    // TODO: should be separat functions to fill out person or organization and so avoid testType parameter
-    static fill(address: Address, targetTreePath: string[] = ['Adressen'], testType: boolean = false) {
-      if (testType) {
-        AddressPage.type('create-address-firstName', address.firstName);
-        AddressPage.type('create-address-lastName', address.lastName);
-      } else {
-        AddressPage.type('create-address-organization', address.organization);
-      }
+    static fillOrganizationType(address: Address, targetTreePath: string[] = ['Adressen']) {
+      AddressPage.type('create-address-organization', address.organization);
 
       if (targetTreePath.length > 0) {
         if (targetTreePath[0] == 'Adressen') {
-          cy.get('[data-cy=create-changeLocation]').click();
-          cy.get('ige-destination-selection mat-list-option').click();
-          //check if 'Adressen' is chosen
-          cy.get('[aria-selected=true]').contains('Adressen');
-          cy.get('[data-cy=create-applyLocation]').click();
+          AddressPage.chooseRootInAddressCreateDialog();
+        } else {
+          DocumentPage.changeLocation(targetTreePath);
+        }
+      }
+    }
+
+    static fillPersonType(address: Address, targetTreePath: string[] = ['Adressen']) {
+      AddressPage.type('create-address-firstName', address.firstName);
+      AddressPage.type('create-address-lastName', address.lastName);
+
+      if (targetTreePath.length > 0) {
+        if (targetTreePath[0] == 'Adressen') {
+          AddressPage.chooseRootInAddressCreateDialog();
         } else {
           DocumentPage.changeLocation(targetTreePath);
         }
       }
     }
   };
+
+  static chooseRootInAddressCreateDialog() {
+    cy.get('[data-cy=create-changeLocation]').click();
+    cy.get('ige-destination-selection mat-list-option').click();
+    //check if 'Adressen' is chosen
+    cy.get('[aria-selected=true]').contains('Adressen');
+    cy.get('[data-cy=create-applyLocation]').click();
+  }
+
+  static chooseAddressTypeInAddressCreateDialog(type: addressType) {
+    cy.contains('mat-list-option', type).click();
+  }
 
   static checkHeaderInformation(editDate: string) {
     cy.get('ige-header-title-row button').click();
@@ -87,7 +102,7 @@ export class AddressPage extends DocumentPage {
 
   static createAddress(address: Address, targetTreePath?: string[]) {
     this.CreateDialog.open();
-    this.CreateDialog.fill(address, targetTreePath);
+    this.CreateDialog.fillOrganizationType(address, targetTreePath);
     cy.intercept({
       pathname: '/api/datasets',
       query: {
@@ -160,4 +175,9 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
   }
+}
+
+export enum addressType {
+  Organisation = 'Organisation',
+  Person = 'Person'
 }

@@ -43,16 +43,16 @@ describe('General create addresses/folders', () => {
       createDialog.open();
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      createDialog.fill(new Address('Thomas-Organisation'));
+      createDialog.fillOrganizationType(new Address('Thomas-Organisation'));
       cy.get('[data-cy=create-action]').should('be.enabled');
 
-      createDialog.fill(new Address('', 'Herbst'));
+      createDialog.fillOrganizationType(new Address('', 'Herbst'));
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      createDialog.fill(new Address('', '', 'Ich AG'));
+      createDialog.fillOrganizationType(new Address('', '', 'Ich AG'));
       cy.get('[data-cy=create-action]').should('be.disabled');
 
-      createDialog.fill(new Address('', '', ''));
+      createDialog.fillOrganizationType(new Address('', '', ''));
       cy.get('[data-cy=create-action]').should('be.disabled');
     });
 

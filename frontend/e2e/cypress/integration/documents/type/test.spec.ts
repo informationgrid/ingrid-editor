@@ -20,7 +20,7 @@ describe('addresses inside test catalogue', () => {
 
     Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
-    AddressPage.CreateDialog.fill(new Address('', firstName, lastName), ['Adressen'], true);
+    AddressPage.CreateDialog.fillPersonType(new Address('', firstName, lastName), ['Adressen']);
     cy.contains('button', 'Anlegen').click();
     cy.contains('ige-tree', title);
     cy.contains('.title', title);
@@ -31,13 +31,13 @@ describe('addresses inside test catalogue', () => {
     AddressPage.CreateDialog.open();
     cy.get('[data-cy=create-action]').should('be.disabled');
 
-    AddressPage.CreateDialog.fill(new Address('', 'firstName' + Utils.randomString()), [], true);
+    AddressPage.CreateDialog.fillPersonType(new Address('', 'firstName' + Utils.randomString()), []);
     cy.get('[data-cy=create-action]').should('be.disabled');
 
-    AddressPage.CreateDialog.fill(new Address('', '', 'lastName' + Utils.randomString()), [], true);
+    AddressPage.CreateDialog.fillPersonType(new Address('', '', 'lastName' + Utils.randomString()), []);
     cy.get('[data-cy=create-action]').should('be.enabled');
 
-    AddressPage.CreateDialog.fill(new Address('', '', ''), [], true);
+    AddressPage.CreateDialog.fillPersonType(new Address('', '', ''), []);
     cy.get('[data-cy=create-action]').should('be.disabled');
   });
 
