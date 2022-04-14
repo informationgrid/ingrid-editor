@@ -22,10 +22,10 @@
     padding-top: 40px;
     padding-bottom: 26px;
   }
+}
 
-  :host-context(.white) .main-content {
-    background-color: #ffffff;
-  }
+:host-context(.white) .main-content {
+  background-color: #ffffff;
 }
 
 .header {
