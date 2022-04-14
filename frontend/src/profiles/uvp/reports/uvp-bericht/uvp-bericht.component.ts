@@ -56,13 +56,31 @@ export class UvpBerichtComponent implements AfterViewInit {
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case "eiaNumber": {
-          return new Date(item.date);
+          return this.getSortableEiaNumber(item.eiaNumber);
+        }
+        case "eiaCategory": {
+          return this.getSortableEiaNumber(item.eiaCategory);
         }
         default: {
           return item[property];
         }
       }
     };
+  }
+
+  getSortableEiaNumber(eiaNumber: string) {
+    const textpart = eiaNumber.split("-")[0];
+    let versionNumber = eiaNumber.split("-")[1];
+    versionNumber = versionNumber
+      .split(".")
+      .map((part) => {
+        return part.length === 1 ? "0" + part : part;
+      })
+      .join(".");
+
+    // Pad to 4 sub-version numbers (e.g. 13 -> 13.00.00.00)
+    versionNumber = versionNumber.padEnd(11, ".00");
+    return textpart + "-" + versionNumber;
   }
 
   getReport(formValue) {
