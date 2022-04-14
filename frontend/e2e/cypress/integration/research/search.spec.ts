@@ -324,8 +324,8 @@ describe('Research Page', () => {
     ResearchPage.search('Datum_Ebene');
     ResearchPage.changeViewNumberDocuments('50');
     ResearchPage.waitForSearch();
-    ResearchPage.downloadCSVFile();
     ResearchPage.getResultListItems().then(arr1 => {
+      ResearchPage.downloadCSVFile();
       ResearchPage.getSearchResultItemsFromCSV().then(arr2 => {
         // compare the content of the two arrays
         expect(arr2).to.deep.eq(arr1);
