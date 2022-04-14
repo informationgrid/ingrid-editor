@@ -16,18 +16,16 @@ import java.io.Writer
 @Profile("mcloud")
 class DcatApExporter : IgeExporter {
 
-    override val typeInfo: ExportTypeInfo
-        get() {
-            return ExportTypeInfo(
-                DocumentCategory.DATA,
-                "mcloudDcat",
-                "mCLOUD DCAT-AP.de",
-                "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
-                "text/xml",
-                "xml",
-                listOf("mcloud")
-            )
-        }
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "mcloudDcat",
+        "mCLOUD DCAT-AP.de",
+        "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
+        "text/xml",
+        "xml",
+        listOf("mcloud")
+    )
+
 
     override fun run(doc: Document, catalogId: String): Any {
         val engine = PebbleEngine.Builder()

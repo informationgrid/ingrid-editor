@@ -26,6 +26,7 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "2.4.0"
     id 'io.kotest' version '0.3.8'
     id "com.github.ben-manes.versions" version "0.42.0"
+    id "gg.jte.gradle" version "2.0.2"
 }
 
 apply plugin: 'kotlin' // Required for Kotlin integration
@@ -99,12 +100,12 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.0' // Attention: also update SwaggerDocumentationConfig.kt
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.3.2'
+    implementation 'org.postgresql:postgresql:42.3.3'
     implementation "org.hibernate:hibernate-core:$hibernate_version"
     implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.11.1') {
+    implementation('de.ingrid:ingrid-codelist-service:5.12.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -124,11 +125,15 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:5.11.0')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.12.0')
 
     implementation('de.ingrid:ingrid-ibus-client:5.11.0') {
         exclude group: 'org.apache.logging.log4j'
     }
+
+    // template engine jte
+    implementation group: 'gg.jte', name: 'jte', version: '2.0.2'
+    implementation 'gg.jte:jte-kotlin:2.0.2'
 }
 
 dependencyManagement {
@@ -176,6 +181,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = "11"
     }
+}
+
+jte {
+    contentType = gg.jte.ContentType.Plain
+    precompile()
+    generate()
 }
 
 test {

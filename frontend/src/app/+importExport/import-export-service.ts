@@ -48,6 +48,7 @@ export interface UploadAnalysis {
 })
 export class ImportExportService {
   private configuration: Configuration;
+  private catalogType: string;
 
   public static prepareExportInfo(
     docId: string,
@@ -64,6 +65,7 @@ export class ImportExportService {
 
   constructor(private http: HttpClient, configService: ConfigService) {
     this.configuration = configService.getConfiguration();
+    this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
   }
 
   import(file: File): Observable<any> {
@@ -78,13 +80,13 @@ export class ImportExportService {
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
     return this.http.get<ExportTypeInfo[]>(
-      this.configuration.backendUrl + "export?profile=mcloud"
+      this.configuration.backendUrl + "export?profile=" + this.catalogType
     );
   }
 
   getImportTypes(): Observable<ImportTypeInfo[]> {
     return this.http.get<ImportTypeInfo[]>(
-      this.configuration.backendUrl + "import?profile=mcloud"
+      this.configuration.backendUrl + "import?profile=mcloud" + this.catalogType
     );
   }
 }
