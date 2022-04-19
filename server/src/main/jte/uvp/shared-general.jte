@@ -8,7 +8,7 @@
 @endif
 <date>${page.getModified()}</date>
 <name>${page.getTitle()}</name>
-<descr>${page.getDescription()}</descr>
+<descr>${page.getData().getDescription()}</descr>
 <type>${page.getDocumentType()}</type>
 <spatialValue>${page.getSpatial()}</spatialValue>
 <addresses>

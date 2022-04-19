@@ -19,14 +19,11 @@ data class UVPModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_type") val type: String,
     val title: String,
-    val description: String?,
     val data: DataModel,
     @JsonDeserialize(using = DateDeserializer::class)
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
-    val distributions: List<DownloadModel>?,
-    val license: String?,
 ) {
 
     var documentType = mapDocumentType()
