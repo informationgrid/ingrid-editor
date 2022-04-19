@@ -33,7 +33,8 @@
           "items": {
             "$ref": "refs/general.schema.json#/definitions/Spatial"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 1
         },
         "receiptDate": {
           "type": "string",

@@ -29,6 +29,7 @@ export class ForeignProjectsDoctype extends UvpShared {
         this.addSpatial("spatial", null, {
           required: true,
           limitTypes: ["free"],
+          max: 1,
         }),
         {
           key: "processingSteps",

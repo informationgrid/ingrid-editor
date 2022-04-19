@@ -35,6 +35,7 @@ export class ApprovalProcedureDoctype extends UvpShared {
             this.addSpatial("spatial", null, {
               required: true,
               limitTypes: ["free"],
+              max: 1,
             }),
             this.addDatepicker("receiptDate", "Eingang des Antrags", {
               required: true,
