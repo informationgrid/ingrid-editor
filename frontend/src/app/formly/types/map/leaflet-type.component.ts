@@ -37,6 +37,7 @@ export class LeafletTypeComponent
 
   locationsWithColor$ = new BehaviorSubject<SpatialLocationWithColor[]>([]);
   hasAnyLocations = false;
+  maxLocationsReached = false;
 
   private leafletReference: L.Map;
   private locations: SpatialLocation[] = [];
@@ -107,6 +108,7 @@ export class LeafletTypeComponent
 
   private updateLocations(locations: SpatialLocationWithColor[]) {
     this.hasAnyLocations = locations.length > 0;
+    this.maxLocationsReached = locations.length >= this.to.max;
     this.locationsWithColor$.next(locations);
   }
 

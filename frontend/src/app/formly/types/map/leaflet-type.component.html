@@ -9,6 +9,7 @@
         Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
     </div>
     <button
+        *ngIf="!maxLocationsReached"
         type="button"
         mat-fab
         class="spatialBtn"
@@ -37,6 +38,7 @@
 
 <ige-spatial-list
     *ngIf="hasAnyLocations"
+    [class.list-padding]="!maxLocationsReached"
     [locations]="locationsWithColor$"
     [disabled]="formControl.disabled"
     (selectLocation)="highlightLocation($event)"
@@ -50,4 +52,7 @@
     <a *ngIf="to.hasContextHelp" (click)="showContextHelp($event)"
         >Hilfe zu Raumbezügen</a
     >
+    <div *ngIf="maxLocationsReached">
+        Die maximale erlaubte Anzahl an Raumbezügen ist bereits erreicht.
+    </div>
 </div>

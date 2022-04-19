@@ -1,5 +1,10 @@
 @import "src/variables";
 
+:host {
+  background-color: $ige-background;
+  display: block;
+}
+
 .coordinates > span {
   padding-right: 16px;
 }
@@ -9,11 +14,7 @@ h4 > span {
 }
 
 .mat-list-base {
-  padding-top: 40px;
-  background-color: $ige-background;
-
   .mat-list-item {
-    background-color: $ige-background;
     border-bottom: 2px solid #fff;
 
     &:hover {
