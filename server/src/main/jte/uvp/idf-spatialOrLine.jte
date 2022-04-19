@@ -14,10 +14,6 @@
                           type="${uvpNumber.getType()}">${uvpNumber.getUvpg()}</uvpg>
                 @endfor
             </uvpgs>
-            <datePeriod type="uvpNegativeApprovalDate">
-                <from>${page.getData().getDecisionDate()}</from>
-            </datePeriod>
-            @template.uvp.shared-docs(type = "uvpNegativeRelevantDocs", docs = page.getData().getUvpNegativeDecisionDocs())
             @template.uvp.shared-steps(page = page)
         </idf:idfMdMetadata>
     </idf:body>

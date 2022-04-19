@@ -3,18 +3,21 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.DownloadModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
+import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ApprovalProcedureModel(
+data class UVPModel(
     @JsonProperty("_uuid") val uuid: String,
+    @JsonProperty("_type") val type: String,
     val title: String,
     val description: String?,
     val data: DataModel,
@@ -26,7 +29,19 @@ data class ApprovalProcedureModel(
     val license: String?,
 ) {
 
-    var documentType = "12"
+    var documentType = mapDocumentType()
+
+    private fun mapDocumentType(): String {
+        return when (type) {
+            "UvpApprovalProcedureDoc" -> "10"
+            "UvpNegativePreliminaryAssessmentDoc" -> "12"
+            "UvpForeignProjectDoc" -> "11"
+            "UvpSpatialPlanningProcedureDoc" -> "13"
+            "UvpLineDeterminationDoc" -> "14"
+            else -> throw ServerException.withReason("Could not map document type: $type")
+        }
+    }
+
     val parentUuid: String? = data._parent
     val pointOfContact: AddressModel?
         get() {
@@ -37,9 +52,16 @@ data class ApprovalProcedureModel(
 
     fun getSpatial(): String? {
         return data.spatials
-            ?.filter { it.type == "free" }
-            ?.map { "${it.title}: ${it.value?.lon1}, ${it.value?.lat1}, ${it.value?.lon2}, ${it.value?.lat2}" }
+            ?.map { prepareSpatialString(it) }
             ?.getOrNull(0)
+    }
+
+    private fun prepareSpatialString(spatial: SpatialModel): String {
+        var coordinates = "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
+        if (spatial.title != null) {
+            coordinates = "${spatial.title}: $coordinates"
+        }
+        return coordinates
     }
 
     val steps = data.steps

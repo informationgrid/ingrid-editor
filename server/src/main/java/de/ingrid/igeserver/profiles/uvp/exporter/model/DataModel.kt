@@ -18,6 +18,10 @@ data class DataModel(
     val _parent: String?,
     val pointOfContact: List<AddressRefModel>?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
+    val receiptDate: String?,
+    val decisionDate: String?,
+    val uvpNegativeDecisionDocs: List<Document>?,
+    
 ) {
     var uvpNumbers: List<UVPNumber> = emptyList()
     private fun setEiaNumbers(value: List<KeyValueModel>) {

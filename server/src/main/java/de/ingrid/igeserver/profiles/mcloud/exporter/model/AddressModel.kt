@@ -2,6 +2,8 @@ package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
@@ -12,10 +14,26 @@ data class AddressModel(
     val title: String?,
     val contact: List<ContactModel>?,
     val address: Address?,
-    @JsonProperty("_parent") val parent: String?
+    var parentUuid: String? = null,
+    var parentName: String? = null,
 ) {
 
-    fun getNamePresentation() = organization ?: "$lastName, $firstName" 
+    companion object {
+        val documentService: DocumentService? by lazy {
+            SpringContext.getBean(DocumentService::class.java)
+        }
+    }
+
+    @JsonProperty("_parent")
+    private fun setParent(value: Int?) {
+        if (value != null) {
+            val parentAddress = documentService?.getWrapperByDocumentId(value)
+            parentUuid = parentAddress?.uuid
+            parentName = parentAddress?.published?.title
+        }
+    }
+
+    fun getNamePresentation() = organization ?: "$lastName, $firstName"
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")
     val email: String? get() = contactType("3")

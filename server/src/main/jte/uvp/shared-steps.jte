@@ -4,7 +4,7 @@
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicHearing
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepDecisionOfAdmission
 
-@param ApprovalProcedureModel page
+@param UVPModel page
 
 <steps>
     @for(Step step : page.getSteps())
