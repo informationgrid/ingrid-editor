@@ -126,7 +126,7 @@ describe('Dashboard', () => {
     it('should create a new address', () => {
       const instituteName = 'Test Adresse aus dashboard button ' + Utils.randomString();
       DashboardPage.startShortcutAction(Shortcuts.NewAddress);
-      AddressPage.CreateDialog.fill(new Address(instituteName, '', ''));
+      AddressPage.CreateDialog.fillOrganizationType(new Address(instituteName, '', ''));
       DocumentPage.CreateDialog.execute();
       cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instituteName);
     });
