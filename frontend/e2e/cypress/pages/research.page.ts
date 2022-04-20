@@ -165,6 +165,7 @@ export class ResearchPage {
       });
       // retrieve the part of the records that is relevant: the file name
       res_arr = new_arr.map(function (el: string) {
+        console.log(el[1]);
         return el[1];
       });
       //remove empty string at the end
@@ -177,6 +178,7 @@ export class ResearchPage {
     cy.intercept('GET', /\/[\w-.]+.js/).as('getCSV');
     cy.contains('ige-result-table button', 'CSV').click();
     cy.wait('@getCSV');
+    cy.wait(3000);
   }
 
   static saveSearchProfile(title: string, description: string, extendedScope = false): void {
