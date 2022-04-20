@@ -106,15 +106,17 @@ export class enterMcloudDocTestData {
     BasePage.selectOption('spatial-dialog-type', selectType);
   }
 
-  static setSpatialBbox(title: string, locationText: string) {
+  static setSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
     cy.get('[data-cy=spatialButton]').click();
-    this.setOpenedSpatialBbox(title, locationText);
+    this.setOpenedSpatialBbox(title, locationText, typeOption);
     cy.contains('.spatial-title', locationText);
   }
 
-  static setOpenedSpatialBbox(title: string, locationText: string) {
+  static setOpenedSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
     cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
-    this.selectSpatialType('Freier Raumbezug');
+    if (typeOption) {
+      this.selectSpatialType('Freier Raumbezug');
+    }
     cy.get('[data-cy=spatial-dialog-free]')
       .clear()
       .type(locationText)

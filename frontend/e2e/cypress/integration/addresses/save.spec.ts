@@ -177,7 +177,13 @@ describe('General create addresses/folders', () => {
       );
     });
 
-    xit('should not be able to withdraw publication of published address which is referenced in published or pending documents', () => {});
+    it('should not be able to withdraw publication of published address which is referenced in published or pending documents', () => {
+      Tree.openNode(['Neue Testadressen', 'Adresse, Venetien']);
+      DocumentPage.choosePublishOption(PublishOptions.Unpublish);
+      cy.contains('mat-dialog-container', 'Veröffentlichung zurückziehen');
+      cy.contains('button', 'Zurückziehen').click();
+      cy.contains('error-dialog', 'Adresse wird von anderen Datensätzen referenziert').should('exist');
+    });
   });
 
   describe('Dirty checks', () => {
