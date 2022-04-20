@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { SessionService } from "../services/session.service";
+import { SessionService, Tab } from "../services/session.service";
 import { MatTabNav } from "@angular/material/tabs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { filter } from "rxjs/operators";
 
 @UntilDestroy()
@@ -13,14 +13,19 @@ import { filter } from "rxjs/operators";
 export class OverviewComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;
 
-  tabs = [
-    { label: "Import", path: "import" },
-    { label: "Export", path: "export" },
-  ];
+  tabs: Tab[];
 
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.tabs = this.sessionService.getTabsFromRoute(
+      this.activatedRoute.snapshot
+    );
+
     this.sessionService
       .observeTabChange("import")
       .pipe(

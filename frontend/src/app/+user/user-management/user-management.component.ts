@@ -3,7 +3,7 @@ import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ActivatedRoute, Router } from "@angular/router";
-import { SessionService } from "../../services/session.service";
+import { SessionService, Tab } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
 
 @UntilDestroy()
@@ -15,10 +15,7 @@ import { GroupService } from "../../services/role/group.service";
 export class UserManagementComponent implements OnInit {
   currentComponent: UserComponent | GroupComponent;
 
-  tabs = [
-    { label: "Nutzer", path: "user" },
-    { label: "Gruppen & Rechte", path: "group" },
-  ];
+  tabs: Tab[];
 
   constructor(
     private router: Router,
@@ -26,6 +23,8 @@ export class UserManagementComponent implements OnInit {
     private groupService: GroupService,
     activeRoute: ActivatedRoute
   ) {
+    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
+
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used
     // example: reload page being on 2nd tab -> goto dashboard -> come back again

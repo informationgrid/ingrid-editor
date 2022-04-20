@@ -21,6 +21,7 @@ export const routing = RouterModule.forChild([
         canActivate: [AuthGuard],
         data: {
           permission: ["can_import"],
+          title: "Import",
         },
       },
       {
@@ -29,6 +30,7 @@ export const routing = RouterModule.forChild([
         canActivate: [AuthGuard],
         data: {
           permission: ["can_export"],
+          title: "Export",
         },
       },
     ],

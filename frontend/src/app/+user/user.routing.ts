@@ -4,7 +4,7 @@ import { UserManagementComponent } from "./user-management/user-management.compo
 import { DeactivateGuard } from "./deactivate.guard";
 import { UserComponent } from "./user/user.component";
 import { GroupComponent } from "./group/group.component";
-import { TabGuard } from "./tab.guard";
+import { TabGuard } from "../shared/tab.guard";
 
 export const routing = RouterModule.forChild([
   {
@@ -23,7 +23,8 @@ export const routing = RouterModule.forChild([
         canActivate: [TabGuard],
         canDeactivate: [DeactivateGuard],
         data: {
-          title: "user",
+          title: "Nutzer",
+          tabIdentifier: "manage",
         },
       },
       {
@@ -31,7 +32,7 @@ export const routing = RouterModule.forChild([
         component: GroupComponent,
         canDeactivate: [DeactivateGuard],
         data: {
-          title: "group",
+          title: "Gruppen & Rechte",
         },
       },
     ],

@@ -2,8 +2,14 @@ import { Injectable } from "@angular/core";
 import { SessionStore } from "../store/session.store";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
+import { ActivatedRouteSnapshot } from "@angular/router";
 
 export type TabPage = "research" | "manage" | "import" | "catalog";
+
+export interface Tab {
+  label: string;
+  path: string;
+}
 
 @Injectable({
   providedIn: "root",
@@ -37,5 +43,14 @@ export class SessionService {
 
   getCurrentTab(page: TabPage): number {
     return this.sessionQuery.getValue().ui.currentTab[page];
+  }
+
+  getTabsFromRoute(activeRoute: ActivatedRouteSnapshot): Tab[] {
+    return activeRoute.routeConfig.children
+      .filter((item) => item.path)
+      .map((item) => ({
+        label: item.data.title,
+        path: item.path,
+      }));
   }
 }
