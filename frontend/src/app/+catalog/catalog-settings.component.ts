@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatTabNav } from "@angular/material/tabs";
 import { SessionService } from "../services/session.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -47,7 +48,10 @@ export class CatalogSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.sessionService
       .observeTabChange("catalog")
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter((index) => index !== null)
+      )
       .subscribe((index) => {
         const tab = this.tabs[index] ?? this.tabs[0];
         tab.params

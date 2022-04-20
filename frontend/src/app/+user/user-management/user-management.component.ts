@@ -1,10 +1,9 @@
-import { AfterViewInit, Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Router } from "@angular/router";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { ActivatedRoute, Router } from "@angular/router";
 import { SessionService } from "../../services/session.service";
-import { filter } from "rxjs/operators";
 import { GroupService } from "../../services/role/group.service";
 
 @UntilDestroy()
@@ -24,8 +23,20 @@ export class UserManagementComponent implements OnInit {
   constructor(
     private router: Router,
     private sessionService: SessionService,
-    private groupService: GroupService
-  ) {}
+    private groupService: GroupService,
+    activeRoute: ActivatedRoute
+  ) {
+    // only update tab from route if it was set explicitly in URL
+    // otherwise the remembered state from store is used
+    // example: reload page being on 2nd tab -> goto dashboard -> come back again
+    const currentPath = activeRoute.snapshot.firstChild.url[0].path;
+    const activeTabIndex = this.tabs.findIndex(
+      (tab) => tab.path === currentPath
+    );
+    if (activeTabIndex !== 0) {
+      this.updateTab(activeTabIndex);
+    }
+  }
 
   @HostListener("window:beforeunload", ["$event"])
   unloadHandler() {
@@ -38,13 +49,6 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.groupService.getGroups();
-
-    this.sessionService
-      .observeTabChange("manage")
-      .pipe(untilDestroyed(this))
-      .subscribe((index) => {
-        this.router.navigate(["/manage/" + this.tabs[index].path]);
-      });
   }
 
   updateTab(index: number) {

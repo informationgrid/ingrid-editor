@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { SessionService } from "../services/session.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @UntilDestroy()
 @Component({
@@ -14,7 +16,25 @@ export class ResearchComponent implements OnInit {
     { label: "Gespeicherte Suchen", path: "queries" },
   ];
 
-  constructor() {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+    activeRoute: ActivatedRoute
+  ) {
+    // only update tab from route if it was set explicitly in URL
+    // otherwise the remembered state from store is used
+    const currentPath = activeRoute.snapshot.firstChild.url[0].path;
+    const activeTabIndex = this.tabs.findIndex(
+      (tab) => tab.path === currentPath
+    );
+    if (activeTabIndex !== 0) {
+      this.updateTab(activeTabIndex);
+    }
+  }
 
   ngOnInit() {}
+
+  updateTab(index: number) {
+    this.sessionService.updateCurrentTab("research", index);
+  }
 }
