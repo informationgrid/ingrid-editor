@@ -23,9 +23,24 @@
             class="header-info"
         >
             Katalog:
-            <span class="catalog-title" [matTooltip]="currentCatalog">{{
-                currentCatalog
-            }}</span>
+            <span
+                class="catalog-title"
+                [matTooltip]="currentCatalog"
+                [matMenuTriggerFor]="catMenu"
+                >{{ currentCatalog }}
+                <mat-icon *ngIf="otherAssignedCatalogs.length > 0"
+                    >keyboard_arrow_down</mat-icon
+                >
+            </span>
+            <mat-menu #catMenu="matMenu">
+                <span
+                    *ngFor="let catalog of otherAssignedCatalogs"
+                    mat-menu-item
+                    (click)="chooseCatalog(catalog.id)"
+                >
+                    {{ catalog.name }}
+                </span>
+            </mat-menu>
         </div>
 
         <span *ngIf="userInfo$ | async as userInfo">

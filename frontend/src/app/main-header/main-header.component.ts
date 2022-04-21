@@ -8,9 +8,10 @@ import {
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
+import { CatalogService } from "../+catalog/services/catalog.service";
 
 @Component({
   selector: "ige-main-header",
@@ -28,9 +29,11 @@ export class MainHeaderComponent implements OnInit {
   isAdmin: boolean;
   externalHelp: string;
   config: Configuration;
+  otherAssignedCatalogs: any[];
 
   constructor(
     private configService: ConfigService,
+    private catalogService: CatalogService,
     private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
@@ -45,6 +48,13 @@ export class MainHeaderComponent implements OnInit {
     this.externalHelp = userInfo?.externalHelp;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
+      tap(
+        (userInfo) =>
+          (this.otherAssignedCatalogs =
+            userInfo?.assignedCatalogs?.filter(
+              (c) => c.id !== userInfo.currentCatalog?.id
+            ) ?? [])
+      ),
       map((userInfo) => userInfo?.currentCatalog?.label)
     );
 
@@ -69,5 +79,16 @@ export class MainHeaderComponent implements OnInit {
 
   openProfileSettings() {
     this.router.navigate(["/profile"]);
+  }
+
+  chooseCatalog(id: string) {
+    // navigate to dashboard before switching catalog
+    this.router.navigate(["/dashboard"]).then((success) => {
+      // success can be null if no navigation happened
+      if (success != false)
+        this.catalogService.switchCatalog(id).subscribe(() => {
+          window.location.reload();
+        });
+    });
   }
 }

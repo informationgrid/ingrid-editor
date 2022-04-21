@@ -33,6 +33,8 @@ ige-session-timeout-info {
 }
 
 .catalog-title {
+  display: inline-flex;
+  align-items: center;
   color: $ige-primary;
 }
 
