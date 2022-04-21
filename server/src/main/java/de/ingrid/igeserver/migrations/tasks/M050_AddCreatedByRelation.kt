@@ -17,12 +17,12 @@ class M050_AddCreatedByRelation : MigrationBase("0.50") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
-        alter table document add createdByUser integer default null;
-        alter table document add modifiedByUser integer default null;
+        alter table document add createdbyuser integer default null;
+        alter table document add modifiedbyuser integer default null;
         alter table document ADD CONSTRAINT document_created_id_fkey
-            FOREIGN KEY (createdByUser) REFERENCES public.user_info(id) ON DELETE SET NULL;
+            FOREIGN KEY (createdbyuser) REFERENCES public.user_info(id) ON DELETE SET NULL;
         alter table document ADD CONSTRAINT document_modified_id_fkey
-            FOREIGN KEY (modifiedByUser) REFERENCES public.user_info(id) ON DELETE SET NULL;
+            FOREIGN KEY (modifiedbyuser) REFERENCES public.user_info(id) ON DELETE SET NULL;
     """.trimIndent()
 
     override fun exec() {
