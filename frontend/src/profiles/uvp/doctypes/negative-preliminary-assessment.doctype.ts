@@ -44,6 +44,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
             this.addSpatial("spatial", null, {
               required: true,
               limitTypes: ["free"],
+              max: 1,
             }),
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,

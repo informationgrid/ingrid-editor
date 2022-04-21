@@ -1,12 +1,8 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -21,25 +17,14 @@ class ExportApiController : ExportApi {
     private lateinit var exportService: ExportService
 
     @Autowired
-    private lateinit var documentService: DocumentService
-
-    @Autowired
     private lateinit var catalogService: CatalogService
 
-    override fun export(principal: Principal, data: ExportRequestParameter): ResponseEntity<String?> {
+    override fun export(principal: Principal, data: ExportRequestParameter): ResponseEntity<ByteArray?> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = exportService.export(catalogId, data)
 
-        // TODO: option to export addresses too?
-        val doc = documentService.getWrapperByDocumentIdAndCatalog(catalogId, data.id)
-        // TODO: options come from parameters
-        val options = UpdateReferenceOptions(true, true)
-        val docVersion = documentService.getLatestDocument(doc, options, catalogId = catalogId)
-
-        val exporter = exportService.getExporter(DocumentCategory.DATA, data.exportFormat)
-        val result = exporter.run(docVersion, catalogId)
-        val stringResult = if (result is ObjectNode) result.toPrettyString() else result as String
-        return ResponseEntity.ok(stringResult)
+        return ResponseEntity.ok(result)
     }
 
     override fun exportTypes(principal: Principal, profile: String): ResponseEntity<List<ExportTypeInfo>> {

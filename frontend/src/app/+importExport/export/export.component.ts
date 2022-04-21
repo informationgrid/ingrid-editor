@@ -52,8 +52,7 @@ export class ExportComponent implements OnInit {
 
   ngOnInit() {
     this.optionsFormGroup = this._formBuilder.group({
-      tree: ["dataset", Validators.required],
-      option: new FormControl({ value: "dataset", disabled: true }),
+      option: new FormControl("dataset"),
       drafts: new FormControl(),
       format: new FormControl(),
     });
@@ -75,7 +74,6 @@ export class ExportComponent implements OnInit {
     let model = this.optionsFormGroup.value;
     const options = ImportExportService.prepareExportInfo(
       this.selectedIds[0],
-      model.format.type,
       model
     );
     this.exportService

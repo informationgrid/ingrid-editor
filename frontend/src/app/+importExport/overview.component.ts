@@ -1,38 +1,42 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
-import { SessionService } from "../services/session.service";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { SessionService, Tab } from "../services/session.service";
 import { MatTabNav } from "@angular/material/tabs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],
 })
-export class OverviewComponent implements OnInit, AfterViewInit {
+export class OverviewComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;
 
-  activeLink = "import";
+  tabs: Tab[];
 
-  tabs = [
-    { label: "Import", path: "import" },
-    { label: "Export", path: "export" },
-  ];
-
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.tabs = this.sessionService.getTabsFromRoute(
+      this.activatedRoute.snapshot
+    );
+
     this.sessionService
       .observeTabChange("import")
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter((index) => index !== null)
+      )
       .subscribe((index) => {
         const tab = this.tabs[index];
-        this.activeLink = tab.path;
         this.router.navigate(["/importExport/" + tab.path]);
       });
   }
-
-  ngAfterViewInit(): void {}
 
   updateTab(index: number) {
     this.sessionService.updateCurrentTab("import", index);

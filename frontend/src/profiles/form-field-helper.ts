@@ -192,6 +192,7 @@ export class FormFieldHelper {
         externalLabel: label,
         height: 386,
         limitTypes: options?.limitTypes,
+        max: options?.max,
       },
     };
   }

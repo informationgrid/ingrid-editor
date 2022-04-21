@@ -80,7 +80,7 @@ export class SpatialListComponent implements OnInit {
         data: {
           title: "Raumbezug löschen",
           message: "Möchten Sie wirklich diesen Raumbezug löschen?",
-          list: [location.title],
+          list: location.title ? [location.title] : undefined,
         } as ConfirmDialogData,
       })
       .afterClosed()

@@ -22,15 +22,30 @@ import javax.validation.Valid
 
 @Tag(name = "Export", description = "the export API")
 interface ExportApi {
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "The stored dataset, which might contain additional storage information."
+        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+    )
+    @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     fun export(
-            principal: Principal,
-            @Parameter(description = "The dataset to be exported.", required = true) @RequestBody data: @Valid ExportRequestParameter): ResponseEntity<String?>
+        principal: Principal,
+        @Parameter(
+            description = "The dataset to be exported.",
+            required = true
+        ) @RequestBody data: @Valid ExportRequestParameter
+    ): ResponseEntity<ByteArray?>
 
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "The supported types for export."), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "The supported types for export."
+        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+    )
     @GetMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun exportTypes(
-            principal: Principal,
-            @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String): ResponseEntity<List<ExportTypeInfo>>
+        principal: Principal,
+        @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String
+    ): ResponseEntity<List<ExportTypeInfo>>
 }
