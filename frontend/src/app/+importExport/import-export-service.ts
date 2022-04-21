@@ -7,16 +7,19 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { FileUploadModel } from "../shared/upload/fileUploadModel";
 
+export type ExportMethod = "dataset" | "belowDataset" | "datasetAndBelow";
+
 export interface ExportOptions {
   id: string;
-  includeSubDocs: boolean;
+  method: ExportMethod;
   exportFormat: string;
   useDraft: boolean;
 }
 
 export interface ExportFormOptions {
-  tree: "dataset" | "sub" | "thisAndSub";
+  option: ExportMethod;
   drafts: boolean;
+  format: any;
 }
 
 export interface ExportTypeInfo {
@@ -52,13 +55,12 @@ export class ImportExportService {
 
   public static prepareExportInfo(
     docId: string,
-    format: string,
     options: ExportFormOptions
   ): ExportOptions {
     return {
       id: docId,
-      includeSubDocs: options.tree === "sub" || options.tree === "thisAndSub",
-      exportFormat: format,
+      method: options.option,
+      exportFormat: options.format.type,
       useDraft: options.drafts,
     };
   }

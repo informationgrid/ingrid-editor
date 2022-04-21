@@ -1,9 +1,12 @@
 package de.ingrid.igeserver.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-class ExportRequestParameter(
-    @JsonProperty("id") val id: String,
-    @JsonProperty("exportFormat") val exportFormat: String,
-    @JsonProperty("useDraft") val isUseDraft: Boolean = false
+data class ExportRequestParameter(
+    val id: String,
+    val exportFormat: String,
+    val useDraft: Boolean = false,
+    val method: ExportMethod
 )
+
+enum class ExportMethod {
+    dataset, belowDataset, datasetAndBelow
+}
