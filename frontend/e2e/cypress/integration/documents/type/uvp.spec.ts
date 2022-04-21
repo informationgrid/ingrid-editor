@@ -3,9 +3,9 @@ import { Utils } from '../../../pages/utils';
 import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { uvpPage } from '../../../pages/uvp.page';
+import { AddressDetails, uvpPage } from '../../../pages/uvp.page';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
-import { ResearchPage } from '../../../pages/research.page';
+import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 
 describe('uvp documents', () => {
   beforeEach(() => {
@@ -145,5 +145,74 @@ describe('uvp documents', () => {
     cy.contains('button', 'Anlegen').click();
     // make sure that slide toggle that indicates inheritance of addresses is not there
     cy.get('[data-cy="Adresse"] mat-slide-toggle').should('not.exist');
+  });
+
+  // not working right now (21.04.22)
+  it('an address of type organization moved under an organization should preserve its own address (#3743)', () => {
+    Menu.switchTo('ADDRESSES');
+    Tree.openNode(['Adresse, Organisation_4']);
+    CopyCutUtils.move(['Organisation_12']);
+    // make sure that slide toggle that indicates inheritance of addresses is not checked
+    cy.get('[data-cy="Adresse"] mat-slide-toggle input').invoke('attr', 'aria-checked').should('eq', 'false');
+  });
+
+  // not working right now (21.04.22)
+  it('an address of type person moved under an organization should preserve its own address (#3743)', () => {
+    Menu.switchTo('ADDRESSES');
+    Tree.openNode(['Dude, Some']);
+    CopyCutUtils.move(['Organisation_12']);
+    // make sure that slide toggle that indicates inheritance of addresses is not checked
+    cy.get('[data-cy="Adresse"] mat-slide-toggle input').invoke('attr', 'aria-checked').should('eq', 'false');
+  });
+
+  it('should not be possible to move address of type person under another address of type person', () => {
+    const unmovableAddress = 'Huber, Hans';
+    Menu.switchTo('ADDRESSES');
+    // try to move by drag and drop
+    CopyCutUtils.simpleDragdropWithoutAutoExpand(unmovableAddress, 'Schneider, Fritz');
+    // if moving fails, there is no prompt to confirm the action
+    cy.contains('mat-dialog-container', 'Verschieben bestätigen').should('not.exist');
+
+    // try to move by menu
+    Tree.openNode([unmovableAddress]);
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(CopyOption.MOVE).click();
+    cy.contains('mat-dialog-content mat-tree mat-tree-node', 'Schneider, Fritz').should('have.class', 'disabled');
+  });
+
+  it('should not be possible to create address of type person under another address of type person', () => {
+    const parentAddress = 'Schneider, Fritz';
+    Menu.switchTo('ADDRESSES');
+    AddressPage.CreateDialog.open();
+    cy.contains('button', 'Ordner ändern').click();
+    cy.contains('mat-dialog-content mat-tree mat-tree-node', parentAddress).should('have.class', 'disabled');
+  });
+
+  it('should not be possible to copy address of type person under another address of type person', () => {
+    const parentAddress = 'Schneider, Fritz';
+    Menu.switchTo('ADDRESSES');
+    AddressPage.CreateDialog.open();
+    cy.contains('button', 'Ordner ändern').click();
+    cy.contains('mat-dialog-content mat-tree mat-tree-node', parentAddress).should('have.class', 'disabled');
+  });
+
+  it('should be possible to add individual address after inheriting the address of the higher-level entity', () => {
+    Menu.switchTo('ADDRESSES');
+    AddressPage.CreateDialog.open();
+    AddressPage.CreateDialog.fillOrganizationType(new Address('child_organization_1', '', ''), ['Organisation_13']);
+    cy.contains('button', 'Anlegen').click();
+    // make sure that slide toggle that indicates inheritance of addresses is checked
+    cy.get('[data-cy="Adresse"] mat-slide-toggle input').invoke('attr', 'aria-checked').should('eq', 'true');
+    // uncheck slide toggle
+    cy.get('[data-cy="Adresse"] .mat-slide-toggle-thumb').click();
+    // add new address data
+    uvpPage.addAddressElement(AddressDetails.Street, 'Waldstrasse');
+    uvpPage.addAddressElement(AddressDetails.Zipcode, '54321');
+    uvpPage.addAddressElement(AddressDetails.City, 'Köln');
+    DocumentPage.saveDocument();
+    // check that after saving the correct values are there
+    uvpPage.checkAddressElement(AddressDetails.Street, 'Waldstrasse');
+    uvpPage.checkAddressElement(AddressDetails.Zipcode, '54321');
+    uvpPage.checkAddressElement(AddressDetails.City, 'Köln');
   });
 });

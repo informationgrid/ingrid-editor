@@ -39,4 +39,19 @@ export class uvpPage {
     cy.get('[data-cy="choose-address-confirm"]').click();
     cy.get('[data-cy="Kontaktdaten der verfahrensführenden Behörde"]').contains(addressText);
   }
+
+  static addAddressElement(addressElement: AddressDetails, value: string) {
+    cy.get('[data-cy="Adresse"] input').eq(addressElement).type(value);
+    this.checkAddressElement(addressElement, value);
+  }
+
+  static checkAddressElement(addressElement: AddressDetails, value: string) {
+    cy.get('[data-cy="Adresse"] input').eq(addressElement).should('have.value', value);
+  }
+}
+
+export enum AddressDetails {
+  Street = 1,
+  Zipcode,
+  City
 }
