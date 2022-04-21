@@ -93,6 +93,18 @@ class Document {
     @JsonProperty("_modifiedBy")
     var modifiedby: String? = null
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "createdbyuser", nullable = true)
+    @JsonIgnore
+    var createdByUser: UserInfo? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "modifiedbyuser", nullable = true)
+    @JsonIgnore
+    var modifiedByUser: UserInfo? = null
+
+
     @Transient
     @JsonProperty("_state")
     var state: String? = null

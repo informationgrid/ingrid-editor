@@ -6,6 +6,7 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component
 @Component
 class PreDefaultDocumentUpdater @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
+    val catalogService: CatalogService,
     val catalogRepo: CatalogRepository,
     var authUtils: AuthUtils
 ) : Filter<PreUpdatePayload> {
@@ -51,6 +53,7 @@ class PreDefaultDocumentUpdater @Autowired constructor(
         val draftId = payload.wrapper.draft?.id
         val createdDate = payload.wrapper.draft?.created ?: payload.wrapper.published?.created
         val createdBy = payload.wrapper.draft?.createdby ?: payload.wrapper.published?.createdby
+        val createdbyUser = payload.wrapper.draft?.createdByUser ?: payload.wrapper.published?.createdByUser
 
         with(payload.document) {
             // remove parent from document (only store parent in wrapper)
@@ -62,11 +65,13 @@ class PreDefaultDocumentUpdater @Autowired constructor(
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(context.principal!!)
+            modifiedByUser =  catalogService.getDbUserFromPrincipal(context.principal!!)
 
             // set server side fields from previous document version
             id = id ?: draftId
             created = createdDate
             createdby = createdBy
+            createdByUser = createdbyUser
 
             // handle linked docs
             payload.type.pullReferences(this)

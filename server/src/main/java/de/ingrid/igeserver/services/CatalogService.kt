@@ -36,6 +36,13 @@ class CatalogService @Autowired constructor(
         return getCurrentCatalogForUser(userId)
     }
 
+
+    fun getDbUserFromPrincipal(principal: Principal): UserInfo? {
+        principal as Authentication
+        val userLogin = authUtils.getUsernameFromPrincipal(principal)
+        return getUser(userLogin)
+    }
+
     private fun getCurrentCatalogForUser(userId: String): String {
 
         val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
