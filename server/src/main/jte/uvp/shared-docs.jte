@@ -4,7 +4,7 @@
 @param String type
 @param List<Document> docs
 
-@if (!docs.isEmpty())
+@if (docs != null && !docs.isEmpty())
     <docs type="${type}">
         @for(Document doc : docs)
             <doc>

@@ -13,7 +13,7 @@ data class AddressModel(
     val organization: String?,
     val title: String?,
     val contact: List<ContactModel>?,
-    val address: Address?,
+    val address: Address = Address("", "", "", "", "", null, null),
     var parentUuid: String? = null,
     var parentName: String? = null,
 ) {
@@ -23,6 +23,7 @@ data class AddressModel(
             SpringContext.getBean(DocumentService::class.java)
         }
     }
+    
 
     @JsonProperty("_parent")
     private fun setParent(value: Int?) {
@@ -32,7 +33,7 @@ data class AddressModel(
             parentName = parentAddress?.published?.title
         }
     }
-
+    
     fun getNamePresentation() = organization ?: "$lastName, $firstName"
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")

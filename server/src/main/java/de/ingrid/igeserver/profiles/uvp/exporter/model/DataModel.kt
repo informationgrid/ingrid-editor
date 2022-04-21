@@ -21,8 +21,8 @@ data class DataModel(
     val receiptDate: String?,
     val decisionDate: String?,
     val uvpNegativeDecisionDocs: List<Document>?,
-    
-) {
+
+    ) {
     var uvpNumbers: List<UVPNumber> = emptyList()
     private fun setEiaNumbers(value: List<KeyValueModel>) {
         uvpNumbers = value.mapNotNull {
@@ -77,25 +77,30 @@ interface Step
 data class StepPublicDisclosure(
     val type: String,
     val disclosureDate: RangeModel,
-    val announcementDocs: List<Document>,
-    val applicationDocs: List<Document>,
-    val reportsRecommendationDocs: List<Document>,
-    val furtherDocs: List<Document>
+    val announcementDocs: List<Document>?,
+    val applicationDocs: List<Document>?,
+    val reportsRecommendationDocs: List<Document>?,
+    val furtherDocs: List<Document>?
 ) : Step
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class StepPublicHearing(
     val type: String,
-    val publicHearingDate: RangeModel,
-    val considerationDocs: List<Document>
-) : Step
+    val considerationDocs: List<Document>?
+) : Step {
+
+    var publicHearingDate: RangeModel? = null
+        set(value) {
+            field = value ?: RangeModel(null, null)
+        }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class StepDecisionOfAdmission(
     val type: String,
     val decisionDate: String,
-    val approvalDocs: List<Document>,
-    val decisionDocs: List<Document>
+    val approvalDocs: List<Document>?,
+    val decisionDocs: List<Document>?
 ) : Step
 
 @JsonIgnoreProperties(ignoreUnknown = true)
