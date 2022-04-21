@@ -115,4 +115,35 @@ describe('uvp documents', () => {
     // publish
     DocumentPage.publishNow();
   });
+
+  it('address created under organisation should inherit its address (#3743)', () => {
+    Menu.switchTo('ADDRESSES');
+    AddressPage.CreateDialog.open();
+    AddressPage.CreateDialog.fillOrganizationType(new Address('child_organization', '', ''), [
+      'Adresse, Organisation_4'
+    ]);
+    cy.contains('button', 'Anlegen').click();
+    // make sure that slide toggle that indicates inheritance of addresses is checked
+    cy.get('[data-cy="Adresse"] mat-slide-toggle input').invoke('attr', 'aria-checked').should('eq', 'true');
+  });
+
+  it('address created under root should not inherit its address (#3743)', () => {
+    Menu.switchTo('ADDRESSES');
+    AddressPage.CreateDialog.open();
+    AddressPage.CreateDialog.fillOrganizationType(new Address('root_organization', '', ''));
+    cy.contains('button', 'Anlegen').click();
+    // make sure that slide toggle that indicates inheritance of addresses is not there
+    cy.get('[data-cy="Adresse"] mat-slide-toggle').should('not.exist');
+  });
+
+  it('address created under folder should not inherit its address (#3743)', () => {
+    Menu.switchTo('ADDRESSES');
+    // create address under a folder
+    Tree.openNode(['address_folder_1']);
+    AddressPage.CreateDialog.open();
+    AddressPage.CreateDialog.fillOrganizationType(new Address('sub_organization', '', ''));
+    cy.contains('button', 'Anlegen').click();
+    // make sure that slide toggle that indicates inheritance of addresses is not there
+    cy.get('[data-cy="Adresse"] mat-slide-toggle').should('not.exist');
+  });
 });
