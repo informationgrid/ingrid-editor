@@ -2,9 +2,10 @@
     <a
         *ngFor="let tab of tabs; let i = index"
         mat-tab-link
+        #rla="routerLinkActive"
         routerLinkActive="active-link"
         [routerLink]="tab.path"
-        [active]="activeLink == tab.path"
+        [active]="rla.isActive"
     >
         {{ tab.label }}
     </a>
