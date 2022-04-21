@@ -116,15 +116,30 @@ export class UvpBerichtComponent implements AfterViewInit {
     this.dataSource.data.forEach((row) => {
       fileText += `${row.eiaNumber};${row.eiaCategory};${row.count}\n`;
     });
-    var blob = new Blob([fileText], {
+    const blob = new Blob([fileText], {
       type: "text/plain;charset=utf-8",
     });
     const filename =
       this.startDate || this.endDate
-        ? `report-${this.startDate?.slice(0, 10) ?? ""}__${
-            this.endDate?.slice(0, 10) ?? ""
-          }.csv`
+        ? `report-${this.convertISOtoSimpleLocaleDate(
+            this.startDate
+          )}__${this.convertISOtoSimpleLocaleDate(this.endDate)}.csv`
         : "report.csv";
     saveAs(blob, filename);
+  }
+
+  /**
+   * Converts an ISO date to a simple locale date string
+   * e.g: 2022-03-31T22:00:00.000Z -> 2022-04-01    //(UTC+2)
+   * @param date
+   * @private
+   */
+  private convertISOtoSimpleLocaleDate(date: string) {
+    if (!date) return "";
+    return new Date(Date.parse(date)).toLocaleDateString("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
   }
 }

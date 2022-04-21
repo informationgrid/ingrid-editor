@@ -123,7 +123,6 @@ class UvpReportApiController @Autowired constructor(
 
         val nativeQuery = getQueryWithTimeFilter(PROCEDURE_DATES_SQL, from, to)
 
-        // TODO: get Results and calculate average
         val queryResults = nativeQuery.resultList as List<Array<out Any?>>
         var totalDuration: Long = 0;
         queryResults.forEach {
