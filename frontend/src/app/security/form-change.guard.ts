@@ -38,7 +38,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
   ): Observable<boolean> {
     if (
       currentState.url.indexOf("/form") === 0 &&
-      nextState.url.indexOf("/form") === -1
+      nextState.url.indexOf("/form") !== 0
     ) {
       console.log("redirect from form");
       // unsubscribe from form plugins
@@ -48,7 +48,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
       });
     } else if (
       currentState.url.indexOf("/address") === 0 &&
-      nextState.url.indexOf("/address") === -1
+      nextState.url.indexOf("/address") !== 0
     ) {
       console.log("redirect from address");
       // subscribe form plugins
