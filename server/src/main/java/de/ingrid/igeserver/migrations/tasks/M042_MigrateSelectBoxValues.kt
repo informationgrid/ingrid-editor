@@ -36,7 +36,9 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
     @Autowired
     private lateinit var codelistHandler: CodelistHandler
 
-    override fun exec() {
+    override fun exec() {}
+
+    override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList
             setAuthentication()
@@ -79,7 +81,13 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         doc.data.set<JsonNode>(field, updatedValue)
     }
 
-    private fun handleCodelistValue(codelistId: String, item: ObjectNode, catalogIdentifier: String, field: String, value: String): String? {
+    private fun handleCodelistValue(
+        codelistId: String,
+        item: ObjectNode,
+        catalogIdentifier: String,
+        field: String,
+        value: String
+    ): String? {
         var codelist = this.codelistHandler.getCodelists(listOf(codelistId))
         if (codelist.isEmpty()) {
             codelist = this.codelistHandler.getCatalogCodelists(catalogIdentifier)
@@ -103,9 +111,9 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
     private fun migrateNestedField(doc: Document, field: String, nestedField: String) {
         val temporal = doc.data.get(field) ?: return
         if (temporal.isNull) return
-        
+
         temporal as ObjectNode
-            
+
         val value = temporal.get(nestedField) ?: return
         if (value.isNull) return
 
@@ -131,7 +139,9 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
             if (value != null) {
                 if (codelistId != null) {
-                    val codelistValue = handleCodelistValue(codelistId, item, doc.catalog?.identifier.toString(), field, value) ?: return
+                    val codelistValue =
+                        handleCodelistValue(codelistId, item, doc.catalog?.identifier.toString(), field, value)
+                            ?: return
                     value = codelistValue
                 }
                 val updatedValue = jacksonObjectMapper().createObjectNode().apply {
