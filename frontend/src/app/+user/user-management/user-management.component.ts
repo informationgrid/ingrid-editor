@@ -21,7 +21,7 @@ export class UserManagementComponent implements OnInit {
     private router: Router,
     private sessionService: SessionService,
     private groupService: GroupService,
-    activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute
   ) {
     this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
 
@@ -51,6 +51,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   updateTab(index: number) {
-    this.sessionService.updateCurrentTab("manage", index);
+    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
+    this.sessionService.updateCurrentTab("manage", tabPaths[index]);
   }
 }

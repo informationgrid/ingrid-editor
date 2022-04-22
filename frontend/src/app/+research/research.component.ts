@@ -15,7 +15,7 @@ export class ResearchComponent {
   constructor(
     private router: Router,
     private sessionService: SessionService,
-    activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute
   ) {
     this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
 
@@ -31,6 +31,7 @@ export class ResearchComponent {
   }
 
   updateTab(index: number) {
-    this.sessionService.updateCurrentTab("research", index);
+    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
+    this.sessionService.updateCurrentTab("research", tabPaths[index]);
   }
 }

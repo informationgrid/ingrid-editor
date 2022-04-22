@@ -72,4 +72,17 @@ export class SideMenuComponent implements OnInit {
     let neededPermission = route.data?.permission;
     return this.configService.hasPermission(neededPermission);
   }
+
+  gotoPage(path: string) {
+    const tab = this.session.getValue().ui.currentTab[path];
+    if (tab) {
+      const tabWithParameter = tab.split(";");
+      const newPath = [path, tabWithParameter[0]];
+      if (tabWithParameter.length > 1)
+        newPath.push(JSON.parse(tabWithParameter[1]));
+      this.router.navigate(newPath);
+    } else {
+      this.router.navigate([path]);
+    }
+  }
 }

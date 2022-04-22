@@ -26,19 +26,21 @@ export class OverviewComponent implements OnInit {
       this.activatedRoute.snapshot
     );
 
-    this.sessionService
-      .observeTabChange("import")
-      .pipe(
-        untilDestroyed(this),
-        filter((index) => index !== null)
-      )
-      .subscribe((index) => {
-        const tab = this.tabs[index];
-        this.router.navigate(["/importExport/" + tab.path]);
-      });
+    // only update tab from route if it was set explicitly in URL
+    // otherwise the remembered state from store is used
+    const currentPath = this.activatedRoute.snapshot.firstChild.url[0].path;
+    const activeTabIndex = this.tabs.findIndex(
+      (tab) => tab.path === currentPath
+    );
+    if (activeTabIndex !== 0) {
+      this.updateTab(activeTabIndex);
+    }
   }
 
   updateTab(index: number) {
-    this.sessionService.updateCurrentTab("import", index);
+    const tabPath = this.sessionService.getTabPaths(
+      this.activatedRoute.snapshot
+    );
+    this.sessionService.updateCurrentTab("importExport", tabPath[index]);
   }
 }

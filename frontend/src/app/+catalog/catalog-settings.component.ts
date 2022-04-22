@@ -31,7 +31,7 @@ export class CatalogSettingsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    activeRoute: ActivatedRoute,
+    private activeRoute: ActivatedRoute,
     private sessionService: SessionService
   ) {
     // only update tab from route if it was set explicitly in URL
@@ -45,22 +45,19 @@ export class CatalogSettingsComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    this.sessionService
-      .observeTabChange("catalog")
-      .pipe(
-        untilDestroyed(this),
-        filter((index) => index !== null)
-      )
-      .subscribe((index) => {
-        const tab = this.tabs[index] ?? this.tabs[0];
-        tab.params
-          ? this.router.navigate(["/catalogs/" + tab.path, tab.params])
-          : this.router.navigate(["/catalogs/" + tab.path]);
-      });
-  }
+  ngOnInit(): void {}
 
   updateTab(index: number) {
-    this.sessionService.updateCurrentTab("catalog", index);
+    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
+    const params = this.tabs.find(
+      (item) => item.path === tabPaths[index]
+    ).params;
+
+    this.sessionService.updateCurrentTab(
+      "catalogs",
+      params
+        ? [tabPaths[index], JSON.stringify(params)].join(";")
+        : tabPaths[index]
+    );
   }
 }

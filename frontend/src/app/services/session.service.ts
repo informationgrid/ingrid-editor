@@ -4,7 +4,8 @@ import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { ActivatedRouteSnapshot } from "@angular/router";
 
-export type TabPage = "research" | "manage" | "import" | "catalog";
+// the values must match with the actual route!
+export type TabPage = "research" | "manage" | "importExport" | "catalogs";
 
 export interface Tab {
   label: string;
@@ -20,7 +21,7 @@ export class SessionService {
     private sessionQuery: SessionQuery
   ) {}
 
-  updateCurrentTab(page: TabPage, tabIndex: number) {
+  updateCurrentTab(page: TabPage, tabIndex: string) {
     this.sessionStore.update((state) => {
       const newTabState = {};
       newTabState[page] = tabIndex;
@@ -37,13 +38,13 @@ export class SessionService {
     });
   }
 
-  observeTabChange(page: TabPage): Observable<number> {
+  observeTabChange(page: TabPage): Observable<string> {
     return this.sessionQuery.select((state) => state.ui.currentTab[page]);
   }
 
-  getCurrentTab(page: TabPage): number {
+  /*getCurrentTab(page: TabPage): number {
     return this.sessionQuery.getValue().ui.currentTab[page];
-  }
+  }*/
 
   getTabsFromRoute(activeRoute: ActivatedRouteSnapshot): Tab[] {
     return activeRoute.routeConfig.children
@@ -52,5 +53,11 @@ export class SessionService {
         label: item.data.title,
         path: item.path,
       }));
+  }
+
+  getTabPaths(activeRoute: ActivatedRouteSnapshot) {
+    return activeRoute.routeConfig.children
+      .filter((item) => item.path)
+      .map((item) => item.path);
   }
 }

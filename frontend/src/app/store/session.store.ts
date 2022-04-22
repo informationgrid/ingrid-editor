@@ -12,10 +12,10 @@ export interface SessionState {
     showJSONView?: boolean;
     userTableWidth?: number;
     currentTab: {
-      research: number;
-      manage: number;
-      import: number;
-      catalog: number;
+      research: string;
+      manage: string;
+      importExport: string;
+      catalogs: string;
     };
   };
   latestDocuments: DocumentAbstract[];
@@ -42,8 +42,8 @@ export function createInitialState(): SessionState {
       currentTab: {
         research: null,
         manage: null,
-        import: null,
-        catalog: null,
+        importExport: null,
+        catalogs: null,
       },
     },
     latestDocuments: [],
