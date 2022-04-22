@@ -1,13 +1,11 @@
-import { ResearchPage } from './research.page';
-
 export type Page = 'DASHBOARD' | 'DOCUMENTS' | 'ADDRESSES' | 'RESEARCH' | 'REPORTS' | 'USERS' | 'IMPORT' | 'CATALOG';
 export type GeneralPage = 'GENERAL' | 'CODELIST_REPOSITORY' | 'CATALOG_MANAGEMENT';
 
 export class Menu {
   static switchTo(page: Page, waitForPage = true) {
-    const routerLink = Menu.mapPageToRouterLink(page);
+    const menuId = Menu.mapPageToMenuId(page);
     cy.wait(500);
-    cy.get(`[href="${routerLink}"]`).click();
+    cy.get(`[data-cy="${menuId}"]`).click();
     if (waitForPage) Menu.waitForPage(page);
   }
 
@@ -16,24 +14,24 @@ export class Menu {
     cy.get('button').contains('Katalogverwaltung').click();
   }
 
-  private static mapPageToRouterLink(page: Page | GeneralPage) {
+  private static mapPageToMenuId(page: Page | GeneralPage) {
     switch (page) {
       case 'DASHBOARD':
-        return '/dashboard';
+        return 'dashboard';
       case 'DOCUMENTS':
-        return '/form';
+        return 'form';
       case 'ADDRESSES':
-        return '/address';
+        return 'address';
       case 'RESEARCH':
-        return '/research';
+        return 'research';
       case 'REPORTS':
-        return '/reports';
+        return 'reports';
       case 'USERS':
-        return '/manage';
+        return 'manage';
       case 'IMPORT':
-        return '/importExport';
+        return 'importExport';
       case 'CATALOG':
-        return '/catalogs';
+        return 'catalogs';
       case 'GENERAL':
         return 'Allgemein';
       case 'CODELIST_REPOSITORY':
