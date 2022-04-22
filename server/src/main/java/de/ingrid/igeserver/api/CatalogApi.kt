@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @Tag(name = "Catalogs", description = "Handle catalog requests")
 interface CatalogApi {
@@ -25,7 +27,7 @@ interface CatalogApi {
             description = "Unexpected error"
         )]
     )
-    fun catalogs(): ResponseEntity<List<de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog>>
+    fun catalogs(): ResponseEntity<List<Catalog>>
 
     // @PreAuthorize("hasRole('admin')")
     @PostMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -61,6 +63,14 @@ interface CatalogApi {
     ): ResponseEntity<Void>
 
     @GetMapping(value = ["/catalogStatistic/{identifier}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @Operation(responses = [], summary = "Get static of a catalog")
+    @Operation(responses = [], summary = "Get statistic of a catalog")
     fun catalogStatistic(@PathVariable identifier: String): ResponseEntity<CatalogStatistic>
+
+    @GetMapping(value = ["/catalogConfig"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(responses = [], summary = "Get configuration of a catalog")
+    fun getCatalogConfig(principal: Principal): ResponseEntity<CatalogConfigRequest>
+
+    @PutMapping(value = ["/catalogConfig"])
+    @Operation(responses = [], summary = "Save configuration of a catalog")
+    fun saveCatalogConfig(principal: Principal, @RequestBody data: CatalogConfigRequest): ResponseEntity<Unit>
 }

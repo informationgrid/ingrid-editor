@@ -101,6 +101,11 @@ class CatalogService @Autowired constructor(
     fun initializeCatalog(catalogId: String, type: String) {
         initializeCodelists(catalogId, type)
         initializeQueries(catalogId, type)
+        initializeCatalogConfig(catalogId)
+    }
+
+    private fun initializeCatalogConfig(catalogId: String) {
+        updateCatalogConfig(catalogId, config = CatalogConfig(elasticsearchAlias = catalogId))
     }
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
@@ -317,5 +322,15 @@ class CatalogService @Autowired constructor(
         user.role = igeUser.role?.name ?: ""
         user.organisation = igeUser.data?.organisation ?: ""
         return user
+    }
+
+    fun updateCatalogConfig(identifier: String, name: String? = null, description: String? = null, config: CatalogConfig) {
+        val catalog = catalogRepo.findByIdentifier(identifier)
+        catalog.apply {
+            if (name != null) this.name = name
+            if (description != null) this.description = description
+            settings?.config = config
+        }
+        catalogRepo.save(catalog)
     }
 }

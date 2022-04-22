@@ -29,8 +29,9 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-presenter.module";
 import { LogResultComponent } from "./indexing/log-result/log-result.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { DndDirective } from "../directives/dnd.directive";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { ConfigurationComponent } from "./configuration/configuration.component";
+import { FormlyModule } from "@ngx-formly/core";
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     MatChipsModule,
     MatProgressBarModule,
     DragDropModule,
+    FormlyModule,
   ],
   providers: [CatalogService],
   declarations: [
@@ -67,6 +69,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     IndexingComponent,
     UpdateCodelistComponent,
     LogResultComponent,
+    ConfigurationComponent,
   ],
   exports: [RouterModule],
 })

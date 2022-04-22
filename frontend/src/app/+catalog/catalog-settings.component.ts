@@ -4,8 +4,7 @@ import { FormPluginsService } from "../+form/form-shared/form-plugins.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatTabNav } from "@angular/material/tabs";
 import { SessionService } from "../services/session.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter } from "rxjs/operators";
+import { UntilDestroy } from "@ngneat/until-destroy";
 
 @UntilDestroy()
 @Component({
@@ -27,6 +26,7 @@ export class CatalogSettingsComponent implements OnInit {
       params: { type: "catalog" },
     },
     { label: "Indizierung", path: "indexing" },
+    { label: "Konfiguration", path: "config" },
   ];
 
   constructor(

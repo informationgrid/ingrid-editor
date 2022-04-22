@@ -4,6 +4,7 @@ import { CatalogSettingsComponent } from "./catalog-settings.component";
 import { CatalogCodelistsComponent } from "./codelists/catalog-codelists.component";
 import { IndexingComponent } from "./indexing/indexing.component";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
+import { ConfigurationComponent } from "./configuration/configuration.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -43,6 +44,13 @@ export const routing = RouterModule.forChild([
         component: IndexingComponent,
         data: {
           title: "indexing",
+        },
+      },
+      {
+        path: "config",
+        component: ConfigurationComponent,
+        data: {
+          title: "Konfiguration",
         },
       },
     ],

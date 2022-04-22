@@ -10,6 +10,10 @@
   padding-top: 0.95em; // TODO: use 1.55em to center aligned to field
 }
 
+:host-context(ige-configuration) .label-wrapper {
+  width: 160px;
+}
+
 :host-context(ige-form-wrapper) .label-wrapper {
   width: 272px;
 }

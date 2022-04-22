@@ -1,0 +1,20 @@
+<page-template label="Konfiguration" class="white">
+    <ng-container left-side> ... </ng-container>
+
+    <div main-header fxFlex>
+        <button
+            mat-flat-button
+            color="primary"
+            [disabled]="form.invalid"
+            (click)="save()"
+        >
+            Speichern
+        </button>
+    </div>
+
+    <div main-content fxFlex class="main">
+        <div class="scrollable">
+            <formly-form [form]="form" [fields]="fields"></formly-form>
+        </div>
+    </div>
+</page-template>

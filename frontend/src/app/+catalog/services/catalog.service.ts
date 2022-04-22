@@ -10,6 +10,7 @@ import { CatalogDataService } from "./catalog-data.service";
 import { HttpClient } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export interface Profile {
   id: string;
@@ -28,6 +29,7 @@ export class CatalogService {
     private dataService: CatalogDataService,
     private http: HttpClient,
     private catalogStore: CatalogStore,
+    private snackbar: MatSnackBar,
     configService: ConfigService
   ) {
     this.configuration = configService.getConfiguration();
@@ -138,6 +140,38 @@ export class CatalogService {
       name: catalog.label,
       description: catalog.description,
       type: catalog.type,
+    };
+  }
+
+  getConfig(): Observable<any> {
+    return this.http
+      .get<any>(this.configuration.backendUrl + "catalogConfig")
+      .pipe(
+        map((response) => ({
+          ...response.config,
+          catalogName: response.name,
+          description: response.description,
+        }))
+      );
+  }
+
+  saveConfig(value: any) {
+    const body = this.prepareBody(value);
+    this.http
+      .put(this.configuration.backendUrl + "catalogConfig", body)
+      .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")))
+      .subscribe();
+  }
+
+  private prepareBody(value: any) {
+    const name = value.catalogName;
+    const description = value.description;
+    delete value.name;
+    delete value.description;
+    return {
+      name: name,
+      description: description,
+      config: value,
     };
   }
 }
