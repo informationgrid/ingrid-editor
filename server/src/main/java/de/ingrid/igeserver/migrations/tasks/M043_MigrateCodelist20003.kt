@@ -35,8 +35,9 @@ class M043_MigrateCodelist20003 : MigrationBase("0.43") {
     val target =
         listOf("api", "atomFeed", "download", "ftp", "portal", "software", "sos", "wcs", "wfs", "wms", "wmts")
 
+    override fun exec() {}
 
-    override fun exec() {
+    override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc WHERE doc.type='mCloudDoc'").resultList
             setAuthentication()
