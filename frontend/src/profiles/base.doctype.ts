@@ -94,16 +94,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
 
-    this.codelistService.byId(codelistId + "");
-
-    return merge(
-      this.codelistQuery.selectEntity(codelistId),
-      this.codelistQuery.selectCatalogCodelist(codelistId + "")
-    ).pipe(
-      filter((codelist) => !!codelist),
-      // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
-      map((codelist) => CodelistService.mapToSelectSorted(codelist))
-    );
+    return this.codelistService.observe(codelistId + "");
   }
 
   init(help: string[]) {

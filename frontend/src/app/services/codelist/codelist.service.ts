@@ -7,10 +7,11 @@ import {
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
 import { CodelistStore } from "../../store/codelist/codelist.store";
-import { Observable, ReplaySubject } from "rxjs";
+import { merge, Observable, Subject } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { distinct, filter, map, switchMap, tap } from "rxjs/operators";
 import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
+import { CodelistQuery } from "../../store/codelist/codelist.query";
 
 export class SelectOption {
   label: string;
@@ -44,7 +45,7 @@ export interface SelectOptionUi extends SelectOption {
   providedIn: "root",
 })
 export class CodelistService {
-  private requestedCodelists = new ReplaySubject<string[]>(100);
+  private requestedCodelists = new Subject<string[]>();
 
   static mapToSelectSorted = (codelist: Codelist): SelectOptionUi[] => {
     if (!codelist) {
@@ -66,6 +67,7 @@ export class CodelistService {
 
   constructor(
     private store: CodelistStore,
+    protected codelistQuery: CodelistQuery,
     private dataService: CodelistDataService
   ) {
     this.requestedCodelists
@@ -83,6 +85,8 @@ export class CodelistService {
   }
 
   byId(id: string): void {
+    if (this.queue.indexOf(id) !== -1) return;
+
     this.queue.push(id);
 
     if (!this.batchProcessed) return;
@@ -214,5 +218,25 @@ export class CodelistService {
         }));
       });
     });
+  }
+
+  observe(codelistId: string) {
+    const alreadyInQueue = this.queue.some((item) => item === codelistId);
+    const alreadyInStore =
+      this.codelistQuery.getCatalogCodelist(codelistId) ||
+      this.codelistQuery.getEntity(codelistId);
+
+    if (!alreadyInQueue || !alreadyInStore) {
+      this.byId(codelistId);
+    }
+
+    return merge(
+      this.codelistQuery.selectEntity(codelistId),
+      this.codelistQuery.selectCatalogCodelist(codelistId)
+    ).pipe(
+      filter((codelist) => !!codelist),
+      // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
+      map((codelist) => CodelistService.mapToSelectSorted(codelist))
+    );
   }
 }
