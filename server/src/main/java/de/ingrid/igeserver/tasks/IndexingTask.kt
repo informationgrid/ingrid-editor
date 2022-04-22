@@ -20,7 +20,6 @@ import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
@@ -55,9 +54,6 @@ class IndexingTask @Autowired constructor(
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
     private val cancellations = HashMap<String, Boolean>()
 
-    @Value("\${elastic.alias}")
-    private lateinit var elasticsearchAlias: String
-
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
@@ -78,6 +74,8 @@ class IndexingTask @Autowired constructor(
         val message = IndexMessage()
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         categories.forEach categoryLoop@{ category ->
             // needed information:
@@ -97,7 +95,7 @@ class IndexingTask @Autowired constructor(
 
             // pre phase
             val info = try {
-                indexPrePhase(categoryAlias, catalogId, format)
+                indexPrePhase(categoryAlias, catalog.type, format, elasticsearchAlias)
             } catch (ex: Exception) {
                 val errorMessage = "Error during Index Pre-Phase: ${ex.message}"
                 log.error(errorMessage, ex)
@@ -169,6 +167,9 @@ class IndexingTask @Autowired constructor(
 
     }
 
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
+        catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
+
     private fun updateIndexLog(
         catalogId: String,
         message: IndexMessage
@@ -213,8 +214,10 @@ class IndexingTask @Autowired constructor(
     fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
 
         runAsCatalogAdministrator()
-        
+
         val exporter = indexService.getExporter(category, format)
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         try {
             val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
@@ -222,18 +225,18 @@ class IndexingTask @Autowired constructor(
             val export = exporter.run(doc, catalogId)
 
             log.debug("Exported document: $export")
-            val indexInfo = getOrPrepareIndex(catalogId, category, format)
+            val indexInfo = getOrPrepareIndex(catalogId, category, format, elasticsearchAlias)
             indexManager.update(indexInfo, convertToElasticDocument(export), false)
         } catch (ex: NoSuchElementException) {
             throw NotFoundException.withMissingPublishedVersion(docId, ex)
         }
     }
 
-    private fun getOrPrepareIndex(catalogId: String, category: DocumentCategory, format: String): IndexInfo {
+    private fun getOrPrepareIndex(catalogType: String, category: DocumentCategory, format: String, elasticsearchAlias: String): IndexInfo {
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
         if (oldIndex == null) {
             val categoryAlias = "${elasticsearchAlias}_${category.value}"
-            val (_, newIndex) = indexPrePhase(categoryAlias, catalogId, format)
+            val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
             oldIndex = newIndex
             indexManager.addToAlias(elasticsearchAlias, newIndex)
         }
@@ -255,9 +258,8 @@ class IndexingTask @Autowired constructor(
     }
 
 
-    private fun indexPrePhase(alias: String, catalogId: String, format: String): Pair<String, String> {
-        val catalog = catalogRepo.findByIdentifier(catalogId)
-        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+    private fun indexPrePhase(alias: String, catalogType: String, format: String, elasticsearchAlias: String): Pair<String, String> {
+        val catalogProfile = catalogService.getCatalogProfile(catalogType)
 
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
         val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, elasticsearchAlias)

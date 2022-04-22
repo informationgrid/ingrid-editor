@@ -11,12 +11,13 @@ import {
   Configuration,
 } from "../services/config/config.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("CatalogService", () => {
   let spectator: SpectatorService<CatalogService>;
   const createService = createServiceFactory({
     service: CatalogService,
-    imports: [HttpClientTestingModule],
+    imports: [HttpClientTestingModule, MatSnackBarModule],
     providers: [
       mockProvider(ConfigService, {
         getConfiguration: () =>

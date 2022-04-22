@@ -31,7 +31,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -106,9 +105,6 @@ class DocumentService @Autowired constructor(
 
     @Autowired
     private lateinit var entityManager: EntityManager
-
-    @Value("\${elastic.alias}")
-    private lateinit var elasticsearchAlias: String
 
     enum class DocumentState(val value: String) {
         PUBLISHED("P"),
@@ -622,7 +618,9 @@ class DocumentService @Autowired constructor(
         return wrapper
     }
 
-    fun removeFromIndex(id: String) {
+    fun removeFromIndex(catalogId: String, id: String) {
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         try {
             if (indexManager != null) {
                 val oldIndex = indexManager!!.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
@@ -640,6 +638,10 @@ class DocumentService @Autowired constructor(
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
     }
+
+    // TODO: the same function is also defined in IndexingTask
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
+        catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
 
     fun getDocumentStatistic(catalogId: String): StatisticResponse {
 

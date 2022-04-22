@@ -20,7 +20,7 @@ class PostDefaultDocumentUnpublisher @Autowired constructor(@Lazy val documentSe
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
 
         // remove from index
-        this.documentService.removeFromIndex(payload.wrapper.uuid)
+        this.documentService.removeFromIndex(context.catalogId, payload.wrapper.uuid)
 
         return payload
     }

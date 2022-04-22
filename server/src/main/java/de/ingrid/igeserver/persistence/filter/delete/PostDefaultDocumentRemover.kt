@@ -22,7 +22,7 @@ class PostDefaultDocumentRemover @Autowired constructor(@Lazy val documentServic
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
 
         // remove from index
-        this.documentService.removeFromIndex(payload.wrapper.uuid)
+        this.documentService.removeFromIndex(context.catalogId, payload.wrapper.uuid)
 
         return payload
     }
