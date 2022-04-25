@@ -238,6 +238,12 @@ jib {
         permissions = [
             '/*.sh': '755'
         ]
+        paths {
+            path {
+                from = file('build/resources/main/static')
+                into = '/app/resources/static'
+            }
+        }
     }
 }
 
