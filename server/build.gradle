@@ -47,14 +47,30 @@ repositories {
     }
 }
 
+configurations {
+    webapp
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
+        exclude group: 'com.sun.mail', module: 'javax.mail'
+        exclude group: 'javax.mail', module: 'mailapi'
+    }
+}
+
 // Profile support
 if (!hasProperty('buildProfile') || getProperty('buildProfile') == 'cypress') apply from: "profile-dev.gradle"
 
 // for faster development ignore frontend project and its long build time
 if (hasProperty('buildProfile')) {
     dependencies {
-        runtimeOnly project(':frontend')
+        webapp project( ':frontend')
     }
+
+    def unzippedDir = file('build/resources/main').getAbsolutePath()
+    task unzip(type:Copy) {
+        into unzippedDir from zipTree(configurations.webapp.singleFile)
+    }
+    build.finalizedBy(unzip)
 }
 
 dependencies {
@@ -145,15 +161,6 @@ dependencyManagement {
         dependency 'org.elasticsearch.client:elasticsearch-rest-client:6.8.4'
         dependency 'org.elasticsearch.plugin:transport-netty4-client:6.8.4'
         dependency 'org.elasticsearch.client:transport:6.8.4'
-    }
-}
-
-configurations {
-    all {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
-        exclude group: 'com.sun.mail', module: 'javax.mail'
-        exclude group: 'javax.mail', module: 'mailapi'
     }
 }
 
