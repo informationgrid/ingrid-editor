@@ -70,7 +70,7 @@ if (hasProperty('buildProfile')) {
     task unzip(type:Copy) {
         into unzippedDir from zipTree(configurations.webapp.singleFile)
     }
-    build.finalizedBy(unzip)
+    jar.finalizedBy(unzip)
 }
 
 dependencies {
