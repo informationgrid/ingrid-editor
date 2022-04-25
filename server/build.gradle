@@ -240,6 +240,9 @@ jib {
         ]
         paths {
             path {
+                from = file('src/main/jib')
+            }
+            path {
                 from = file('build/resources/main/static')
                 into = '/app/resources/static'
             }
