@@ -32,7 +32,7 @@ class UvpProfile @Autowired constructor(
     override val identifier = "uvp"
     override val title = "UVP Katalog"
     override val description = null
-    override val indexExportFormatID = null
+    override val indexExportFormatID = "indexUvpIDF"
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
