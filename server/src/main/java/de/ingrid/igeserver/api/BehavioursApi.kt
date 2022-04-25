@@ -19,10 +19,10 @@ import java.security.Principal
 interface BehavioursApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours are returned.")])
     @GetMapping(value = ["/behaviours"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getBehaviours(principal: Principal): ResponseEntity<List<de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour>>
+    fun getBehaviours(principal: Principal): ResponseEntity<List<Behaviour>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours have been set.")])
     @PostMapping(value = ["/behaviours"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setBehaviours(principal: Principal, 
+    fun setBehaviours(principal: Principal,
                       @Parameter(required = true) @RequestBody behaviours: List<Behaviour>): ResponseEntity<Void>
 }
