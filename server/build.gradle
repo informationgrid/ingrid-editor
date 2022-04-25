@@ -1,3 +1,6 @@
+import java.nio.file.Paths
+import gg.jte.ContentType
+
 buildscript {
     ext.kotlin_version = '1.6.10' // Required for Kotlin integration
     ext.spring_boot_version = '2.6.6'
@@ -184,7 +187,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 jte {
-    contentType = gg.jte.ContentType.Plain
+    sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates", "export")
+    contentType = ContentType.Plain
     precompile()
     generate()
 }
