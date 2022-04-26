@@ -17,9 +17,9 @@
         *ngFor="let field of field.fieldGroup; let i = index"
         class="display-flex"
         cdkDrag
-        [cdkDragDisabled]="formControl.disabled"
+        [cdkDragDisabled]="formControl.disabled || to.noDrag"
     >
-        <mat-icon *ngIf="formControl.enabled" cdkDragHandle>
+        <mat-icon *ngIf="formControl.enabled && !to.noDrag" cdkDragHandle>
             drag_indicator
         </mat-icon>
         <formly-field [field]="field" class="flex-1"></formly-field>
