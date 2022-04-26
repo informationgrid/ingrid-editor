@@ -218,14 +218,14 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
-      let category1 = 'Infrastruktur';
+      let category1 = 'Straßen';
       let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
-      let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(4) ';
+      let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(2) ';
       let mCLOUDSelectorTargetNode = mCLOUDSelector + ' .cdk-drag:nth-child(1) ';
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       // change the order of mCloud categories by dragging then save
-      DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, -400, 0, true);
+      DocumentPage.dragItem(mCLOUDSelectorSourceNode, mCLOUDSelectorTargetNode, -50, 0, true);
       DocumentPage.saveDocument();
 
       //  check of the order after drag and drop
