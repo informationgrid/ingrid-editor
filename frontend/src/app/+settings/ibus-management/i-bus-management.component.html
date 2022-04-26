@@ -1,0 +1,24 @@
+<page-template label="iBus Verwaltung">
+    <div left-side>
+        Auf dieser Seite können Sie verschiedene iBusse hinzufügen, die in einem
+        oder mehreren Katalogen verwendet werden können.
+    </div>
+
+    <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
+        <div>
+            <button mat-flat-button color="primary" (click)="save()">
+                Speichern
+            </button>
+        </div>
+    </div>
+
+    <div main-content>
+        <div class="scrollable">
+            <formly-form
+                [form]="form"
+                [model]="model"
+                [fields]="fields"
+            ></formly-form>
+        </div>
+    </div>
+</page-template>

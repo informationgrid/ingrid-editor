@@ -4,6 +4,7 @@ import { GeneralSettingsComponent } from "./general-settings/general-settings.co
 import { CodelistsComponent } from "./codelists/codelists.component";
 import { CatalogManagementComponent } from "./catalog-management/catalog-management.component";
 import { AuthGuard } from "../security/auth.guard";
+import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -20,21 +21,28 @@ export const routing = RouterModule.forChild([
         path: "general",
         component: GeneralSettingsComponent,
         data: {
-          title: "general",
+          title: "Allgemein",
         },
       },
       {
         path: "codelist",
         component: CodelistsComponent,
         data: {
-          title: "codelist",
+          title: "Codelist Repository",
         },
       },
       {
         path: "catalog",
         component: CatalogManagementComponent,
         data: {
-          title: "catalog",
+          title: "Katalog-Verwaltung",
+        },
+      },
+      {
+        path: "ibus",
+        component: IBusManagementComponent,
+        data: {
+          title: "iBus-Verwaltung",
         },
       },
     ],

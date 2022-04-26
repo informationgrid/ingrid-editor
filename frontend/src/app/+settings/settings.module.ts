@@ -26,6 +26,9 @@ import { NewCatalogDialogModule } from "./catalog-management/new-catalog/new-cat
 import { MatMenuModule } from "@angular/material/menu";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-presenter.module";
+import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
+import { FormlyModule } from "@ngx-formly/core";
+import { IgeFormlyModule } from "../formly/ige-formly.module";
 
 @NgModule({
   declarations: [
@@ -34,6 +37,7 @@ import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-p
     CodelistsComponent,
     CatalogManagementComponent,
     CatalogDetailComponent,
+    IBusManagementComponent,
   ],
   imports: [
     CommonModule,
@@ -58,6 +62,8 @@ import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-p
     MatMenuModule,
     PageTemplateModule,
     CodelistPresenterModule,
+    FormlyModule,
+    IgeFormlyModule,
   ],
 })
 export class SettingsModule {}

@@ -75,6 +75,11 @@ export class ConfigService {
             isRouterLink: true,
             link: "/settings/catalog",
           },
+          {
+            label: "iBus",
+            isRouterLink: true,
+            link: "/settings/ibus",
+          },
         ],
       },
       {
@@ -164,5 +169,13 @@ export class ConfigService {
         user?.permissions?.indexOf(<string>neededPermission) !== -1
       );
     }
+  }
+
+  saveIBusConfig(value: any) {
+    return this.http.put<any>(this.config.backendUrl + "config/ibus", value);
+  }
+
+  getIBusConfig() {
+    return this.http.get<any>(this.config.backendUrl + "config/ibus");
   }
 }

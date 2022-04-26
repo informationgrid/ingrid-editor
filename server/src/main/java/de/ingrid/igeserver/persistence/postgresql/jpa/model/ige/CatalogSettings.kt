@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import de.ingrid.igeserver.api.messaging.IndexMessage
 
 data class CatalogSettings(
@@ -12,5 +13,12 @@ data class CatalogSettings(
 data class CatalogConfig(
     val partner: String? = null,
     val provider: String? = null,
-    val elasticsearchAlias: String? = null
+    val elasticsearchAlias: String? = null,
+    val ibus: IBusConfig? = IBusConfig()
+)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class IBusConfig(
+    val url: String? = null,
+    val ip: String = "127.0.0.1",
+    val port: Int = 9200
 )

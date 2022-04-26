@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.FrontendConfiguration
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.services.SettingsService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -22,6 +25,9 @@ class ConfigApiController : ConfigApi {
     @Value("\${frontend.keycloak.enable}")
     var keycloakEnabled: Boolean = true
 
+    @Autowired
+    lateinit var settingsService: SettingsService
+
     override fun get(): ResponseEntity<FrontendConfiguration> {
 
         return ResponseEntity.ok().body(
@@ -32,6 +38,21 @@ class ConfigApiController : ConfigApi {
                 keycloakEnabled = keycloakEnabled
             )
         )
+
+    }
+
+    override fun getIBus(): ResponseEntity<List<IBusConfig>> {
+
+        return ResponseEntity.ok().body(
+            settingsService.getIBusConfig()
+        )
+
+    }
+
+    override fun setIBus(config: List<IBusConfig>): ResponseEntity<Unit> {
+
+        settingsService.setIBusConfig(config)
+        return ResponseEntity.ok().build()
 
     }
 
