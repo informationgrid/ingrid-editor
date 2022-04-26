@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.elasticsearch.IBusIndexManager
+import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.api.NotFoundException
@@ -17,9 +19,14 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
+import de.ingrid.utils.PlugDescription
 import org.apache.logging.log4j.kotlin.logger
+import org.elasticsearch.common.Strings
+import org.elasticsearch.common.xcontent.XContentBuilder
+import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
@@ -31,10 +38,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
-import kotlin.NoSuchElementException
+import javax.annotation.PostConstruct
 import kotlin.concurrent.schedule
 
 
@@ -44,9 +52,13 @@ class IndexingTask @Autowired constructor(
     private val indexService: IndexService,
     private val catalogService: CatalogService,
     private val notify: IndexingNotifier,
-    private val indexManager: IndexManager,
+    private val directIndexManager: IndexManager,
+    private val iBusIndexManager: IBusIndexManager,
     private val catalogRepo: CatalogRepository,
+    @Value("\${elastic.communication.ibus:true}")
+    private val indexThroughIBus: Boolean
 ) : SchedulingConfigurer, DisposableBean {
+
 
     val log = logger()
     val executor = Executors.newSingleThreadScheduledExecutor()
@@ -57,6 +69,12 @@ class IndexingTask @Autowired constructor(
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
+    private lateinit var indexManager: IIndexManager
+
+    @PostConstruct
+    fun init() {
+        indexManager = if (indexThroughIBus) iBusIndexManager else directIndexManager
+    }
 
     fun indexByScheduler(catalogId: String, format: String) {
         Timer("ManualIndexing", false).schedule(0) {
@@ -232,13 +250,18 @@ class IndexingTask @Autowired constructor(
         }
     }
 
-    private fun getOrPrepareIndex(catalogType: String, category: DocumentCategory, format: String, elasticsearchAlias: String): IndexInfo {
+    private fun getOrPrepareIndex(
+        catalogType: String,
+        category: DocumentCategory,
+        format: String,
+        elasticsearchAlias: String
+    ): IndexInfo {
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
         if (oldIndex == null) {
             val categoryAlias = "${elasticsearchAlias}_${category.value}"
             val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
             oldIndex = newIndex
-            indexManager.addToAlias(elasticsearchAlias, newIndex)
+            // TODO: indexManager.addToAlias(elasticsearchAlias, newIndex)
         }
 
         return IndexInfo().apply {
@@ -258,7 +281,12 @@ class IndexingTask @Autowired constructor(
     }
 
 
-    private fun indexPrePhase(alias: String, catalogType: String, format: String, elasticsearchAlias: String): Pair<String, String> {
+    private fun indexPrePhase(
+        alias: String,
+        catalogType: String,
+        format: String,
+        elasticsearchAlias: String
+    ): Pair<String, String> {
         val catalogProfile = catalogService.getCatalogProfile(catalogType)
 
         val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
@@ -273,9 +301,54 @@ class IndexingTask @Autowired constructor(
     }
 
     private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String) {
+
+        // update central index with iPlug information
+        if (indexThroughIBus) {
+            val info = IndexInfo().apply {
+                toIndex = newIndex
+                toAlias = alias
+                toType = "base"
+                docIdField = "id"
+            }
+            val plugIdInfo = indexManager.getIndexTypeIdentifier(info)
+            indexManager.updateIPlugInformation(
+                plugIdInfo,
+                getIPlugInfo(plugIdInfo, info, newIndex, false, null, null)
+            )
+        }
+
         // switch alias and delete old index
         indexManager.switchAlias(alias, oldIndex, newIndex)
         removeOldIndices(newIndex)
+    }
+
+    @Throws(IOException::class)
+    private fun getIPlugInfo(
+        infoId: String,
+        info: IndexInfo,
+        indexName: String,
+        running: Boolean,
+        count: Int?,
+        totalCount: Int?
+    ): String? {
+
+        val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
+            .field("plugId", "TODO: communicationProxyUrl")
+            .field("indexId", infoId)
+            .field("iPlugName", "TODO: IGE-NG")
+            .field("linkedIndex", indexName)
+            .field("linkedType", info.toType)
+            .field("adminUrl", "https://xxx")
+            .field("lastHeartbeat", Date())
+            .field("lastIndexed", Date())
+            .field("plugdescription", PlugDescription())
+            .startObject("indexingState")
+            .field("numProcessed", count)
+            .field("totalDocs", totalCount)
+            .field("running", running)
+            .endObject()
+            .endObject()
+        return Strings.toString(xContentBuilder)
     }
 
     private fun removeOldIndices(newIndex: String) {
