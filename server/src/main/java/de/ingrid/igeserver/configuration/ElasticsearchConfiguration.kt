@@ -7,5 +7,4 @@ import org.springframework.context.annotation.Profile
 @Configuration
 @Profile("elasticsearch")
 @ComponentScan(basePackages = ["de.ingrid.elasticsearch"])
-open class ElasticsearchConfiguration {
-}
+class ElasticsearchConfiguration

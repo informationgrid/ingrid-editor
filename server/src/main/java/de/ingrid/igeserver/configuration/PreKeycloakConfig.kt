@@ -10,7 +10,7 @@ open class PreKeycloakConfig {
      * Use properties in application.properties instead of keycloak.json
      */
     @Bean
-    open fun keycloakConfigResolver(): KeycloakSpringBootConfigResolver {
+    fun keycloakConfigResolver(): KeycloakSpringBootConfigResolver {
         return KeycloakSpringBootConfigResolver()
     }
 }

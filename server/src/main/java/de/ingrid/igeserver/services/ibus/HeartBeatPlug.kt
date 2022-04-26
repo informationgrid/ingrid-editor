@@ -112,7 +112,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                         /*if (LOG.isInfoEnabled()) {
                             LOG.info("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
                         }*/
-                        // read plugdescription from file system in case it was changed externally and 
+                        // read plugdescription from file system in case it was changed externally and
                         // could not be updated in all IConfigurable instances
 //                        _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
 //                        _plugDescription.setMd5Hash(md5);
@@ -141,7 +141,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                                 at de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(HeartBeatPlug.java:127)
                                 at java.util.TimerThread.mainLoop(Timer.java:512)
                                 at java.util.TimerThread.run(Timer.java:462)
-                     * 
+                     *
                      */if (_plugDescription == null || _plugDescription!!.metadata == null) {
                         LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...")
                         try {
@@ -214,7 +214,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             while (iterator.hasNext()) {
                 val heartBeat = iterator.next()
                 if (heartBeat.hasFailed()) {
-                    // restart complete communication (since it's not possible 
+                    // restart complete communication (since it's not possible
                     // yet just to restart a single one)
                     try {
                         LOG.info("Restart iBusClient with all connections")
@@ -313,7 +313,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                         iBus,
                         _plugDescription,
                         _period.toLong(),
-                        _injectors!!
+                        _injectors
                     )
                     _heartBeats[busUrl] = heartBeat
                 }

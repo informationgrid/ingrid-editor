@@ -27,7 +27,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver
     ]
 )
 @Configuration
-open class SwaggerDocumentationConfig : WebMvcConfigurer {
+class SwaggerDocumentationConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
             .allowedMethods(
