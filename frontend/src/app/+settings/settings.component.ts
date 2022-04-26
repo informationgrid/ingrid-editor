@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router, RouterLinkActive } from "@angular/router";
+import { SessionService, Tab } from "../services/session.service";
 
 @Component({
   selector: "settings",
@@ -9,16 +10,14 @@ import { ActivatedRoute, Router, RouterLinkActive } from "@angular/router";
 export class SettingsComponent implements OnInit {
   activeLink = "general";
 
-  tabs = [
-    { label: "Allgemein", path: "general" },
-    { label: "Codelist Repository", path: "codelist" },
-    { label: "Katalogverwaltung", path: "catalog" },
-  ];
+  tabs: Tab[];
 
-  constructor(router: Router) {
-    this.activeLink =
-      router.getCurrentNavigation()?.extractedUrl?.root?.children?.primary
-        ?.segments[1]?.path ?? "general";
+  constructor(
+    router: Router,
+    private sessionService: SessionService,
+    private activeRoute: ActivatedRoute
+  ) {
+    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
   }
 
   ngOnInit(): void {}
