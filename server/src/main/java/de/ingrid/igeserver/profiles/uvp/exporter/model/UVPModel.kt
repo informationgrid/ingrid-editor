@@ -26,6 +26,8 @@ data class UVPModel(
     val _modified: OffsetDateTime,
 ) {
 
+    val spatialTitle = data.spatials?.get(0)?.title
+
     var documentType = mapDocumentType()
 
     private fun mapDocumentType(): String {
@@ -68,7 +70,8 @@ data class UVPModel(
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
-        var coordinates = "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
+        var coordinates =
+            "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
         if (spatial.title != null) {
             coordinates = "${spatial.title}: $coordinates"
         }
@@ -98,8 +101,26 @@ data class UVPModel(
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS");
     val modified: String
         get() {
             return _modified.format(formatterOnlyDate)
         }
+
+    fun modifiedAsString(): String {
+        return _modified.format(formatterNoSeparator)
+    }
+
+    fun getUvpAddressAsString(): String {
+        if (pointOfContact == null) return ""
+
+        return with(pointOfContact!!) {
+            organization ?: listOf(
+                getCodelistValue("4300", salutation),
+                getCodelistValue("4305", academicTitle),
+                firstName,
+                lastName
+            ).filterNotNull().joinToString(" ")
+        }
+    }
 }

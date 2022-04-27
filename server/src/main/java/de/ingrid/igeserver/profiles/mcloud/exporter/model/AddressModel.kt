@@ -8,6 +8,8 @@ import de.ingrid.igeserver.utils.SpringContext
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
+    val salutation: KeyValueModel?,
+    @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
     val firstName: String?,
     val lastName: String?,
     val organization: String?,
