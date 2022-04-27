@@ -3,301 +3,303 @@
     "enabled": true
   },
   "properties": {
-    "priority": {
-      "type": "short"
+    "iPlugId": {
+      "type": "keyword",
+      "store": true
+    },
+    "partner": {
+      "type": "keyword",
+      "store": true
+    },
+    "provider": {
+      "type": "keyword",
+      "store": true
+    },
+    "datatype": {
+      "type": "keyword",
+      "store": true
+    },
+    "dataSourceName": {
+      "type": "keyword",
+      "store": true
+    },
+    "location": {
+      "type": "text"
+    },
+    "lon_min": {
+      "type": "double"
+    },
+    "lon_max": {
+      "type": "double"
+    },
+    "lat_min": {
+      "type": "double"
+    },
+    "lat_max": {
+      "type": "double"
+    },
+    "lon_center": {
+      "type": "double",
+      "store": true
+    },
+    "lat_center": {
+      "type": "double",
+      "store": true
+    },
+    "uvp_category": {
+      "type": "keyword",
+      "store": true
+    },
+    "uvp_number": {
+      "type": "keyword",
+      "store": true
+    },
+    "uvp_steps": {
+      "type": "keyword",
+      "store": true
+    },
+    "uvp_address": {
+      "type": "text",
+      "store": true
+    },
+    "t01_object.mod_time": {
+      "type": "keyword",
+      "store": true
+    },
+    "t01_object.obj_id": {
+      "type": "keyword",
+      "store": true
+    },
+    "t01_object.obj_class": {
+      "type": "keyword",
+      "store": true
+    },
+    "t01_object.org_obj_id": {
+      "type": "keyword"
+    },
+    "t012_obj_adr.adr_id": {
+      "type": "keyword"
+    },
+    "t01_object.mod_uuid": {
+      "type": "keyword"
+    },
+    "t01_object.responsible_uuid": {
+      "type": "keyword"
+    },
+    "t011_obj_geo.datasource_uuid": {
+      "type": "keyword"
+    },
+    "t022_adr_adr.adr_from_id": {
+      "type": "keyword"
+    },
+    "t022_adr_adr.adr_to_id": {
+      "type": "keyword"
+    },
+    "object_reference.obj_to_uuid": {
+      "type": "keyword"
+    },
+    "refering_service_uuid": {
+      "type": "keyword"
+    },
+    "refering.object_reference.obj_uuid": {
+      "type": "keyword"
+    },
+    "t02_address.id": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.adr_id": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address2.adr_id": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address3.adr_id": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address4.adr_id": {
+      "type": "keyword"
+    },
+    "t02_address5.adr_id": {
+      "type": "keyword"
+    },
+    "t02_address.parents.title": {
+      "type": "keyword",
+      "store": true
+    },
+    "children.address_node.addr_type": {
+      "type": "keyword",
+      "store": true
+    },
+    "t021_communication.comm_value": {
+      "type": "keyword",
+      "store": true
+    },
+    "t021_communication.commtype_value": {
+      "type": "keyword",
+      "store": true
+    },
+    "t021_communication.commtype_key": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.title": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.title_key": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.address_value": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.address_key": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.firstname": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.lastname": {
+      "type": "keyword",
+      "store": true
+    },
+    "t02_address.org_adr_id": {
+      "type": "keyword"
+    },
+    "t02_address.mod_uuid": {
+      "type": "keyword"
+    },
+    "t02_address.responsible_uuid": {
+      "type": "keyword"
+    },
+    "t03_catalogue.cat_uuid": {
+      "type": "keyword"
+    },
+    "t03_catalogue.mod_uuid": {
+      "type": "keyword"
+    },
+    "parent.object_node.obj_uuid": {
+      "type": "keyword"
+    },
+    "children.object_node.obj_uuid": {
+      "type": "keyword"
+    },
+    "parent.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "parent2.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "parent3.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "parent4.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "parent5.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "children.address_node.addr_uuid": {
+      "type": "keyword"
+    },
+    "boost": {
+      "type": "float",
+      "store": true,
+      "null_value": 0.0
     },
     "title": {
       "type": "text",
       "analyzer": "german",
       "store": true,
       "fields": {
-        "phrase": {
-          "type": "text",
-          "analyzer": "ngram_phrase",
-          "search_analyzer": "phrase"
-        },
         "ngram": {
-          "type": "text",
+          "type":  "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type": "text",
+          "type":  "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
       }
     },
-    "description": {
+    "summary": {
       "type": "text",
       "analyzer": "german",
       "store": true,
       "fields": {
-        "phrase": {
-          "type": "text",
-          "analyzer": "ngram_phrase",
-          "search_analyzer": "phrase"
-        },
         "ngram": {
-          "type": "text",
+          "type":  "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type": "text",
+          "type":  "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
       }
     },
-    "creator": {
-      "properties": {
-        "name": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+    "content": {
+      "type": "text",
+      "analyzer": "german",
+      "store": true,
+      "fields": {
+        "ngram": {
+          "type":  "text",
+          "analyzer": "ngram",
+          "search_analyzer": "german"
         },
-        "mbox": {
-          "type": "keyword"
+        "edge_ngram": {
+          "type":  "text",
+          "analyzer": "edge_ngram",
+          "search_analyzer": "german"
         }
       }
     },
-    "publisher": {
-      "properties": {
-        "name": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
-        },
-        "homepage": {
-          "type": "keyword"
-        },
-        "organization": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
-        }
-      }
+    "x1": {
+      "type": "double",
+      "store": true
     },
-    "contact_point": {
-      "properties": {
-        "hasUID": {
-          "type": "keyword"
-        },
-        "fn": {
-          "type": "keyword"
-        },
-        "organization-name": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
-        },
-        "street-address": {
-          "type": "keyword"
-        },
-        "region": {
-          "type": "keyword"
-        },
-        "country-name": {
-          "type": "keyword"
-        },
-        "postal-code": {
-          "type": "keyword"
-        },
-        "hasEmail": {
-          "type": "keyword"
-        },
-        "hasTelephone": {
-          "type": "keyword"
-        },
-        "hasURL": {
-          "type": "keyword"
-        }
-      }
+    "x2": {
+      "type": "double",
+      "store": true
     },
-    "type": {
-      "type": "keyword"
+    "y1": {
+      "type": "double",
+      "store": true
     },
-    "keywords": {
-      "type": "keyword"
+    "y2": {
+      "type": "double",
+      "store": true
     },
-    "theme": {
-      "type": "keyword"
+    "idf": {
+      "type": "text",
+      "store": true,
+      "index": false
     },
-    "issued": {
-      "type": "date"
+    "created": {
+      "type": "date",
+      "store": true
     },
     "modified": {
-      "type": "date"
+      "type": "date",
+      "store": true
     },
-    "accrual_periodicity": {
+    "approval_date": {
+      "type": "keyword",
+      "store": true
+    },
+    "sort_hash": {
       "type": "keyword"
-    },
-    "access_rights": {
-      "type": "text"
-    },
-    "distribution": {
-      "properties": {
-        "id": {
-          "type": "keyword"
-        },
-        "title": {
-          "type": "text"
-        },
-        "description": {
-          "type": "text"
-        },
-        "format": {
-          "type": "keyword"
-        },
-        "accessURL": {
-          "type": "keyword"
-        },
-        "issued": {
-          "type": "date"
-        },
-        "modified": {
-          "type": "date"
-        },
-        "byteSize": {
-          "type": "long"
-        }
-      }
-    },
-    "extras": {
-      "properties": {
-        "metadata": {
-          "properties": {
-            "harvested": {
-              "type": "date"
-            },
-            "issued": {
-              "type": "date"
-            },
-            "modified": {
-              "type": "date"
-            },
-            "source": {
-              "properties": {
-                "raw_data_source": {
-                  "type": "text",
-                  "index": false
-                },
-                "portal_link": {
-                  "type": "text",
-                  "index": false
-                },
-                "attribution": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "is_valid": {
-              "type": "boolean",
-              "null_value": true
-            },
-            "harvesting_errors": {
-              "type": "text"
-            }
-          }
-        },
-        "generated_id": {
-          "type": "keyword"
-        },
-        "display_contact": {
-          "properties": {
-            "name": {
-              "type": "text",
-              "fields": {
-                "raw": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "url": {
-              "type": "text"
-            }
-          }
-        },
-        "license": {
-          "properties": {
-            "id": {
-              "type": "keyword",
-              "fields": {
-                "analyzed": {
-                  "type": "text"
-                }
-              }
-            },
-            "title": {
-              "type": "keyword",
-              "fields": {
-                "analyzed": {
-                  "type": "text"
-                }
-              }
-            },
-            "url": {
-              "type": "keyword"
-            }
-          }
-        },
-        "spatial": {
-          "type": "geo_shape"
-        },
-        "spatial_text": {
-          "type": "text"
-        },
-        "temporal": {
-          "type": "date_range"
-        },
-        "groups": {
-          "type": "keyword"
-        },
-        "subgroups": {
-          "type": "keyword"
-        },
-        "harvested_data": {
-          "type": "text",
-          "index": false
-        },
-        "mfund_fkz": {
-          "type": "keyword"
-        },
-        "mfund_project_title": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
-        },
-        "subsection": {
-          "properties": {
-            "title": {
-              "type": "text"
-            },
-            "description": {
-              "type": "text"
-            }
-          }
-        },
-        "all": {
-          "type": "text"
-        }
-      }
     }
   }
 }

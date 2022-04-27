@@ -1,4 +1,9 @@
 {
+  "index" : {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0,
+    "max_ngram_diff": 50
+  },
   "analysis": {
     "filter": {
       "german_stop": {
@@ -16,7 +21,7 @@
       },
       "edge_ngram": {
         "type": "edge_ngram",
-        "min_gram": 2,
+        "min_gram": 3,
         "max_gram": 50
       }
     },
@@ -43,14 +48,6 @@
           "german_stemmer",
           "edge_ngram",
           "unique"
-        ]
-      },
-      "ngram_phrase": {
-        "type": "custom",
-        "tokenizer": "keyword",
-        "filter": [
-          "lowercase",
-          "ngram"
         ]
       },
       "phrase": {

@@ -53,6 +53,20 @@ data class UVPModel(
             ?.getOrNull(0)
     }
 
+    fun getSpatial(field: String): Float? {
+        val value = data.spatials
+            ?.getOrNull(0)
+            ?.value ?: return null
+
+        return when (field) {
+            "lat1" -> value.lat1
+            "lon1" -> value.lon1
+            "lat2" -> value.lat2
+            "lon2" -> value.lon2
+            else -> null
+        }
+    }
+
     private fun prepareSpatialString(spatial: SpatialModel): String {
         var coordinates = "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
         if (spatial.title != null) {

@@ -130,7 +130,7 @@ class IndexingTask @Autowired constructor(
                 realIndexName = info.second
                 toType = "base"
                 toAlias = categoryAlias
-                docIdField = "uuid"
+                docIdField = "t01_object.obj_id"
             }
 
             var page = -1
@@ -268,7 +268,7 @@ class IndexingTask @Autowired constructor(
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
-            docIdField = "uuid"
+            docIdField = "t01_object.obj_id" // TODO: make docIdField dynamic
         }
     }
 
@@ -303,6 +303,14 @@ class IndexingTask @Autowired constructor(
     private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String) {
 
         // update central index with iPlug information
+        updateIBusInformation(newIndex, alias)
+
+        // switch alias and delete old index
+        indexManager.switchAlias(alias, oldIndex, newIndex)
+        removeOldIndices(newIndex)
+    }
+
+    private fun updateIBusInformation(newIndex: String, alias: String) {
         if (indexThroughIBus) {
             val info = IndexInfo().apply {
                 toIndex = newIndex
@@ -316,10 +324,6 @@ class IndexingTask @Autowired constructor(
                 getIPlugInfo(plugIdInfo, info, newIndex, false, null, null)
             )
         }
-
-        // switch alias and delete old index
-        indexManager.switchAlias(alias, oldIndex, newIndex)
-        removeOldIndices(newIndex)
     }
 
     @Throws(IOException::class)
