@@ -34,6 +34,7 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
         pd.put("useRemoteElasticsearch", indexThroughIBus)
         pd.dataSourceName = "IGE-NG"
         pd.proxyServiceURL = config.url
+        pd.iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
         return pd
 
     }
