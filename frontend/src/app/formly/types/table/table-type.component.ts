@@ -294,7 +294,7 @@ export class TableTypeComponent
         this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
       if (options.onClick) {
         options.onClick(
-          this.form.get("_uuid").value,
+          this.form.root.get("_uuid").value,
           element[uploadKey].uri,
           $event
         );
