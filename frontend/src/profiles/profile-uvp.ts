@@ -14,11 +14,6 @@ import { filter, map } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpBerichtComponent } from "./uvp/reports/uvp-bericht/uvp-bericht.component";
-import { Router, RouterModule } from "@angular/router";
-import { routes } from "../app/app.router";
-import { AuthGuard } from "../app/security/auth.guard";
-import { UvpReportsModule } from "./uvp/reports/uvp-reports.module";
-import { GeneralReportComponent } from "../app/+reports/general-report/general-report.component";
 
 @Component({
   template: "dynamic component",
@@ -35,8 +30,7 @@ class UVPComponent {
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
-    organisation: UvpOrganisationDoctype,
-    private router: Router
+    organisation: UvpOrganisationDoctype
   ) {
     this.addBehaviour(behaviourService, negativeAssessmentDoctype);
 

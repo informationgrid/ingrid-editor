@@ -110,11 +110,6 @@ export class BehavioursComponent implements OnInit {
     return items.reduce((acc: any, plugin: Plugin) => {
       const formGroup = new FormGroup({});
 
-      // add isActive state to profile specific behaviours which are loaded delayed
-      if (plugin.isActive === undefined) {
-        this.behaviourService.applyActiveStates([plugin]);
-      }
-
       // initially set disabled state for fields
       if (plugin.fields.length > 0 && !plugin.isActive) {
         // we need to build form when we want to set it disabled initialially

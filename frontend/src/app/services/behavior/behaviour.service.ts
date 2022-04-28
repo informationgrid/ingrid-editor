@@ -110,6 +110,7 @@ export class BehaviourService {
   }
 
   addSystemBehaviourFromProfile(plugin: Plugin) {
+    this.applyActiveStates([plugin]);
     this.systemBehaviours.push(plugin);
   }
 
