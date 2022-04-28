@@ -37,6 +37,9 @@ export class AddressTitleBehaviour extends Plugin {
         appearance: "outline",
         required: true,
       },
+      modelOptions: {
+        updateOn: "blur",
+      },
       validators: {
         template: {
           expression: this.validateInputString(),

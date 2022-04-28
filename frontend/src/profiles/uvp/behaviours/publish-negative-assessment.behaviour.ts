@@ -5,7 +5,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   name = "'Negative Vorprüfungen' veröffentlichen";
   description =
     "Es werden zusätzliche Formularfelder angezeigt, die für die vollständige Erfassung einer negativen Vorprüfung" +
-    "benötigt werden. Die negativen Vorprüfungen werden nur im Portal angezeigt, wenn diese Option ausgewählt ist." +
+    "benötigt werden. Die negativen Vorprüfungen werden nur im Portal angezeigt, wenn diese Option ausgewählt ist. " +
     "Bitte nach Änderung der Option die Seite neu laden.";
   defaultActive = false;
   group = "UVP";
@@ -13,5 +13,13 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   constructor() {
     super();
     console.log("contruct PublishNegativeAssessmentBehaviour");
+
+    this.fields.push({
+      key: "onlyWithSpatial",
+      type: "toggle",
+      templateOptions: {
+        label: "Nur mit Raumbezügen",
+      },
+    });
   }
 }
