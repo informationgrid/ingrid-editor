@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
+import de.ingrid.utils.PlugDescription
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -22,5 +23,20 @@ class SettingsService @Autowired constructor(val repoSettings: SettingsRepositor
         val configFromDBOrNew = repoSettings.findByKey("ibus") ?: Settings().apply { key = "ibus" }
         configFromDBOrNew.value = config
         repoSettings.save(configFromDBOrNew)
+    }
+
+    fun getPlugDescription(): PlugDescription {
+        val pd = PlugDescription().apply {
+            put("useRemoteElasticsearch", true)
+            dataSourceName = "IGE-NG"
+            proxyServiceURL = "ige-ng"
+            iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
+        }
+
+        pd.md5Hash = ""
+        val md5 = pd.hashCode().toString()
+
+        return pd.apply { md5Hash = md5 }
+
     }
 }

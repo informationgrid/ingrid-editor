@@ -17,25 +17,18 @@ import javax.annotation.PostConstruct
 @Profile("ibus")
 class IBusService @Autowired constructor(val settingsService: SettingsService) : HeartBeatPlug(60000) {
 
-    private var indexThroughIBus: Boolean = true
-
     @PostConstruct
     fun init() {
-        settingsService.getIBusConfig().forEach { config ->
-            this.connectIBus(config)
-            this.configure(getPlugDescription(config))
-        }
+        val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
+        settingsService.getIBusConfig().forEach { this.connectIBus(it) }
+        this.configure(getPlugDescription(iBusUrls))
     }
 
-    private fun getPlugDescription(config: IBusConfig): PlugDescription {
+    private fun getPlugDescription(urls: List<String>): PlugDescription {
 
-        val pd = PlugDescription()
-        pd.addBusUrl("${config.ip}:${config.port}")
-        pd.put("useRemoteElasticsearch", indexThroughIBus)
-        pd.dataSourceName = "IGE-NG"
-        pd.proxyServiceURL = config.url
-        pd.iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
-        return pd
+        return settingsService.getPlugDescription().apply {
+            urls.forEach { addBusUrl(it) }
+        }
 
     }
 
@@ -62,10 +55,11 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
     private fun connectIBus(parameter: IBusConfig): BusClient? {
         val config = ClientConfiguration().apply {
             name = "ige-ng"
-            val connection = ClientConnection()
-            connection.serverIp = parameter.ip
-            connection.serverPort = parameter.port
-            connection.serverName = parameter.url
+            val connection = ClientConnection().apply {
+                serverIp = parameter.ip
+                serverPort = parameter.port
+                serverName = parameter.url
+            }
             addClientConnection(connection)
         }
         val communication = StartCommunication.create(config)

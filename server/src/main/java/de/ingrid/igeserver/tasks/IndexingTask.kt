@@ -18,8 +18,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.utils.ElasticDocument
-import de.ingrid.utils.PlugDescription
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.common.Strings
 import org.elasticsearch.common.xcontent.XContentBuilder
@@ -50,6 +50,7 @@ import kotlin.concurrent.schedule
 @Profile("elasticsearch")
 class IndexingTask @Autowired constructor(
     private val indexService: IndexService,
+    private val settingsService: SettingsService,
     private val catalogService: CatalogService,
     private val notify: IndexingNotifier,
     private val directIndexManager: IndexManager,
@@ -166,7 +167,7 @@ class IndexingTask @Autowired constructor(
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
             // post phase
-            indexPostPhase(elasticsearchAlias, info.first, info.second)
+            indexPostPhase(elasticsearchAlias, info.first, info.second, category.value)
 
         }
 
@@ -300,28 +301,22 @@ class IndexingTask @Autowired constructor(
         return Pair(oldIndex, newIndex)
     }
 
-    private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String) {
+    private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String, category: String) {
 
         // update central index with iPlug information
-        updateIBusInformation(newIndex, alias)
+        updateIBusInformation(newIndex, alias, category)
 
         // switch alias and delete old index
         indexManager.switchAlias(alias, oldIndex, newIndex)
         removeOldIndices(newIndex)
     }
 
-    private fun updateIBusInformation(newIndex: String, alias: String) {
+    private fun updateIBusInformation(newIndex: String, alias: String, category: String) {
         if (indexThroughIBus) {
-            val info = IndexInfo().apply {
-                toIndex = newIndex
-                toAlias = alias
-                toType = "base"
-                docIdField = "id"
-            }
-            val plugIdInfo = indexManager.getIndexTypeIdentifier(info)
+            val plugIdInfo = "ige-ng:$alias:$category"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, info, newIndex, false, null, null)
+                getIPlugInfo(plugIdInfo, newIndex, false, null, null)
             )
         }
     }
@@ -329,7 +324,6 @@ class IndexingTask @Autowired constructor(
     @Throws(IOException::class)
     private fun getIPlugInfo(
         infoId: String,
-        info: IndexInfo,
         indexName: String,
         running: Boolean,
         count: Int?,
@@ -337,15 +331,15 @@ class IndexingTask @Autowired constructor(
     ): String? {
 
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
-            .field("plugId", "TODO: communicationProxyUrl")
+            .field("plugId", "ige-ng")
             .field("indexId", infoId)
-            .field("iPlugName", "TODO: IGE-NG")
+            .field("iPlugName", "IGE-NG")
             .field("linkedIndex", indexName)
-            .field("linkedType", info.toType)
+            .field("linkedType", "base")
             .field("adminUrl", "https://xxx")
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
-            .field("plugdescription", PlugDescription())
+            .field("plugdescription", settingsService.getPlugDescription())
             .startObject("indexingState")
             .field("numProcessed", count)
             .field("totalDocs", totalCount)

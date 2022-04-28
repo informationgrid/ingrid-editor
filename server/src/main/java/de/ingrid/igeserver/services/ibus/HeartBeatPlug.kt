@@ -29,18 +29,18 @@ import de.ingrid.utils.metadata.Metadata
 import de.ingrid.utils.processor.IPostProcessor
 import de.ingrid.utils.processor.IPreProcessor
 import de.ingrid.utils.query.IngridQuery
-import de.ingrid.utils.xml.PlugdescriptionSerializer
 import org.apache.commons.logging.LogFactory
 import java.io.File
 import java.io.IOException
 import java.util.*
+
 
 abstract class HeartBeatPlug : IPlug, IConfigurable {
     internal class HeartBeat(
         private val _name: String,
         val _busUrl: String,
         var _bus: IBus,
-        private var _plugDescription: PlugDescription?,
+        private var _plugDescription: PlugDescription,
         period: Long,
         var metadataInjectors: Array<IMetadataInjector>?
     ) : TimerTask() {
@@ -78,7 +78,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             isEnable = false
             isAccurate = false
             try {
-                if (_bus.containsPlugDescription(_plugDescription!!.plugId, _plugDescription!!.md5Hash)) {
+                if (_bus.containsPlugDescription(_plugDescription.plugId, _plugDescription.md5Hash)) {
                     _bus.removePlugDescription(_plugDescription)
                 }
             } catch (e: Exception) {
@@ -91,33 +91,21 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             if (isEnable) { // && !_heartBeatFailed) {
                 _heartBeatCount++
                 try {
-                    val oldMetadataHashCode = _plugDescription!!.metadata.hashCode()
-                    injectMetadatas(_plugDescription)
-                    val newMetadataHashCode = _plugDescription!!.metadata.hashCode()
-                    val changedMetadata = oldMetadataHashCode != newMetadataHashCode
-                    plugdescriptionAsFile = _plugDescription!!.desrializedFromFolder
-                    //                    final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
-                    val plugId = _plugDescription!!.plugId
+                    // reset md5Hash for correct calculation
+                    _plugDescription.md5Hash = ""
 
-                    /*if (changedMetadata) {
-                        LOG.info("Detect changed metadata: " + changedMetadata);
-                        LOG.info("Metadata: " + _plugDescription.getMetadata());
-                        if (_bus.containsPlugDescription(plugId, md5)) {
-                            LOG.info("remove plugdescription.");
-                            _bus.removePlugDescription(_plugDescription);
-                        }
-                    }*/LOG.info("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
-                    val containsPlugDescription = false // _bus.containsPlugDescription(plugId, md5);
+                    val md5 = _plugDescription.hashCode().toString()
+                    val plugId = _plugDescription.plugId
+
+                    LOG.info("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
+                    val containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
                     if (!containsPlugDescription) {
-                        /*if (LOG.isInfoEnabled()) {
+                        if (LOG.isInfoEnabled()) {
                             LOG.info("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
-                        }*/
-                        // read plugdescription from file system in case it was changed externally and
-                        // could not be updated in all IConfigurable instances
-//                        _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
-//                        _plugDescription.setMd5Hash(md5);
-                        injectMetadatas(_plugDescription)
-                        //                        _plugDescription = _filters.filter(_plugDescription);
+                        }
+                        _plugDescription.md5Hash = md5
+//                        injectMetadatas(_plugDescription)
+//                        _plugDescription = _filters.filter(_plugDescription);
                         _bus.addPlugDescription(_plugDescription)
                         if (LOG.isDebugEnabled) {
                             LOG.debug("added or updated plug description to bus [$_busUrl]: $_plugDescription")
@@ -132,27 +120,6 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                     LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription + " Error message: " + e.message)
                     isAccurate = false
                     //this._heartBeatFailed = true;
-
-                    // try to reload plugdescription in case it was reseted
-                    // suspicious Exception:
-                    /*
-                     * ERROR: 2012-11-26 18:39:48.458: de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(169): Can not send heartbeat [3].
-                         java.lang.NullPointerException
-                                at de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(HeartBeatPlug.java:127)
-                                at java.util.TimerThread.mainLoop(Timer.java:512)
-                                at java.util.TimerThread.run(Timer.java:462)
-                     *
-                     */if (_plugDescription == null || _plugDescription!!.metadata == null) {
-                        LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...")
-                        try {
-                            _plugDescription = PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile)
-                            injectMetadatas(_plugDescription)
-                        } catch (e1: IOException) {
-                            LOG.error("Cannot deserialize plugdescription from: $plugdescriptionAsFile", e1)
-                        } catch (e1: Exception) {
-                            LOG.error("Cannot inject Metadate into plugdescription.", e1)
-                        }
-                    }
                 }
             } else {
                 LOG.debug("Heartbeat not sent since it was disabled or a failure! ($this)")
@@ -177,7 +144,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             plugDescription.metadata = metadata
         }
 
-        fun setPlugDescription(plugDescription: PlugDescription?) {
+        fun setPlugDescription(plugDescription: PlugDescription) {
             _plugDescription = plugDescription
         }
 
@@ -256,7 +223,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
 
     private val _heartBeats: MutableMap<String, HeartBeat> = LinkedHashMap()
     private val _period: Int
-    private var _plugDescription: PlugDescription? = null
+    private lateinit var _plugDescription: PlugDescription
 
     //    private final PlugDescriptionFieldFilters _filters;
     private val _injectors: Array<IMetadataInjector>?
@@ -291,13 +258,17 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             injector.configure(plugDescription);
         }*/
 
+        val clone = plugDescription.clone() as PlugDescription
+        clone.remove("busUrls")
+//        clone.remove("METADATAS")
+
         // stop and remove existing heartbeats
 //        _plugDescription = _filters.filter(plugDescription);
-        _plugDescription = plugDescription
-        _plugDescription!!.metadata = Metadata()
+        _plugDescription = clone
+//        _plugDescription.metadata = Metadata()
         val busClient = BusClientFactory.getBusClient()
         if (busClient != null) {
-            _plugDescription!!.proxyServiceURL = busClient.peerName
+            _plugDescription.proxyServiceURL = busClient.peerName
             // remove old hearbeats
             stopHeartBeats()
             _heartBeats.clear()
@@ -319,6 +290,8 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                 }
                 val heartBeat = _heartBeats[busUrl]
                 heartBeat!!.setPlugDescription(_plugDescription)
+                // force adding of plugdescription the first time
+                iBus.addPlugDescription(_plugDescription)
             }
             //_heartBeatMonitor = new HeartBeatMonitor(20000, _heartBeats);
         }
