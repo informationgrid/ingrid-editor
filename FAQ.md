@@ -1,3 +1,68 @@
+# Apache Configuration
+
+When the IGE-NG is installed there are two options how to access the application.
+
+* directly on a domain/sub-domain (e.g. https://ige-ng.informationgrid.eu)
+* under a context path on a domain (e.g. https://informationgrid.eu/ige-ng)
+
+This needs different configurations.
+
+## Domain/Sub-Domain
+
+Apache
+```
+<VirtualHost *:443>
+    ServerName domain.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/...
+    SSLCertificateKeyFile /etc/letsencrypt/...
+    SSLCertificateChainFile /etc/letsencrypt/...
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+    
+    RewriteCond %{HTTP:Connection} Upgrade [NC]
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteRule /(.*) ws://localhost:18101/$1 [P,L]
+    
+    <IfModule proxy_module>
+        RewriteEngine on
+        ProxyPass / http://localhost:18101/
+        ProxyPassReverse / http://localhost:18101/
+    </IfModule>
+    
+    ProxyRequests Off
+    ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
+</VirtualHost>
+```
+
+## Context-Path
+
+Nginx
+```
+location /ige-ng/ {
+  proxy_pass http://<IP>;
+  proxy_redirect default;
+  
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+  proxy_set_header Host $http_host;
+  proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+You also need to add define some environment variables in your docker-compose.yml:
+
+```
+CONTEXT_PATH=/ige-ng
+BROKER_URL=wss://<DOMAIN>/ige-ng/ws
+```
+
 # Create a new profile
 
 ## Frontend
