@@ -31,12 +31,14 @@ import org.elasticsearch.common.Strings
 import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.ExecutionException
 
 @Service
+@Profile("elasticsearch")
 class IPlugHeartbeatElasticsearch @Autowired constructor(
     indexManager: IndexManager?,
     ibusIndexManager: IBusIndexManager?,
