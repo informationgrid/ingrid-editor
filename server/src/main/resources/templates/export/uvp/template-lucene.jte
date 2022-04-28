@@ -5,7 +5,7 @@
 @param UVPModel page
 
 {
-    "iPlugId": "/ingrid-group:ige-ng",
+    "iPlugId": "ige-ng",
     "dataSourceName": "IPlug IGE-NG wemove",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
