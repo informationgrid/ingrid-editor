@@ -8,14 +8,18 @@
 }
 
 .mat-divider {
-  height: 30px;
-  margin: 30px -24px 0 -36px;
+  border: 0;
+  height: 4px;
+  background: linear-gradient(90deg, $ige-background-bar, $ige-background);
+  margin: 40px -24px 20px -36px;
 }
 
-h3 {
-  color: $ige-primary;
-  margin-top: 0;
-  font-weight: normal;
-  font-size: 24px;
-  cursor: default;
+:host {
+  ::ng-deep h3 {
+    color: $ige-primary;
+    margin-top: 0;
+    font-weight: normal;
+    font-size: 24px;
+    cursor: default;
+  }
 }

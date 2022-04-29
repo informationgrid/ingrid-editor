@@ -22,12 +22,20 @@
   padding: 4px 0 4px 12px;
 }
 
+ige-form-label {
+  margin-bottom: 12px;
+}
+
 :host {
   ::ng-deep .mat-checkbox .mat-checkbox-ripple {
     height: 32px;
     width: 32px;
     left: calc(50% - 16px);
     top: calc(50% - 16px);
+  }
+
+  ::ng-deep a {
+    font-weight: 400;
   }
 
   .edit-mode ::ng-deep mat-header-cell:first-of-type,
@@ -44,7 +52,7 @@
 mat-row,
 mat-header-row {
   background-color: $ige-background;
-  border-bottom-color: #ffffff;
+  border-bottom-color: $ige-background-bar;
 }
 
 .select-controls {

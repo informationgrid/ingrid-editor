@@ -1,7 +1,8 @@
 {
   "menu": {
     "application": "UVP",
-    "logo": "assets/profiles/uvp/assets/icons/logo.svg"
+    "logo": "assets/profiles/uvp/assets/icons/logo.svg",
+    "form": "Vorhaben"
   },
   "dashboard": {
     "welcome": "Willkommen im UVP Editor",

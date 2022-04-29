@@ -21,7 +21,7 @@ export abstract class OrganisationDoctype extends AddressShared {
         {
           wrappers: ["panel"],
           templateOptions: {
-            externalLabel: "Organisation",
+            externalLabel: "Bezeichnung",
             required: true,
           },
           fieldGroup: [
@@ -29,7 +29,7 @@ export abstract class OrganisationDoctype extends AddressShared {
               fieldGroupClassName: "",
               fieldGroup: [
                 this.addInput("organization", null, {
-                  fieldLabel: "Organisation",
+                  fieldLabel: "Bezeichnung",
                   required: true,
                   className: "width-100 organization",
                 }),

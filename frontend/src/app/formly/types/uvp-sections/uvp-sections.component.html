@@ -17,16 +17,33 @@
             <mat-icon>close</mat-icon>
         </button>
     </div>
+    <div style="display: flex; justify-content: center">
+        <button
+            mat-flat-button
+            color="primary"
+            class="button-square-icon padding-btn"
+            [matMenuTriggerFor]="menu"
+        >
+            <mat-icon color="white">add</mat-icon>
+            <span class="btn-title">Schritt Hinzufügen</span>
+        </button>
+    </div>
 </ng-container>
-
-<button
-    mat-stroked-button
-    class="button-square-icon padding-btn"
-    [matMenuTriggerFor]="menu"
->
-    <mat-icon>add</mat-icon>
-    <span class="btn-title">Schritt Hinzufügen</span>
-</button>
+<ng-container *ngIf="field.fieldGroup.length < 1">
+    <mat-divider></mat-divider>
+    <ige-section-wrapper>
+        <h3>Verfahrenschritte</h3>
+        <button
+            mat-flat-button
+            color="primary"
+            class="button-square-icon padding-btn"
+            [matMenuTriggerFor]="menu"
+        >
+            <mat-icon color="white">add</mat-icon>
+            <span class="btn-title">Hinzufügen</span>
+        </button>
+    </ige-section-wrapper>
+</ng-container>
 
 <mat-menu #menu="matMenu">
     <button

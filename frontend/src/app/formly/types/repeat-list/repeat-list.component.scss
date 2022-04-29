@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  margin-top: 1em;
+}
+
 .component-list {
   max-width: 100%;
   //border: solid 1px #ccc;

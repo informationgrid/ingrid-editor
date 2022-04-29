@@ -49,6 +49,7 @@
 
 .save-buttons {
   .toolbar-save-button {
+    color: $ige-secondary;
     background: white;
   }
 
@@ -76,6 +77,10 @@
     margin-left: 1px;
     padding: 0;
   }
+}
+
+::ng-deep .publish-menu {
+  max-width: 500px;
 }
 
 .mat-icon-button:not([disabled]):hover {
