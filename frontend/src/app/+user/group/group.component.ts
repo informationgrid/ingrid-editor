@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { FrontendGroup, Group } from "../../models/user-group";
-import { merge, Observable, of, timer } from "rxjs";
+import { Observable, of } from "rxjs";
 import {
   AbstractControl,
   FormBuilder,
@@ -10,7 +10,7 @@ import {
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
-import { filter, map, mapTo, mergeAll, takeUntil, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,

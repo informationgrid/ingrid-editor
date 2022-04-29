@@ -1,13 +1,13 @@
-import { ComponentFactoryResolver, Injectable } from "@angular/core";
-import { ConfigService } from "./config/config.service";
+import { Injectable, Type } from "@angular/core";
+import { ConfigService, UserInfo } from "./config/config.service";
 import { Doctype } from "./formular/doctype";
 import { ModalService } from "./modal/modal.service";
 import { ProfileStore } from "../store/profile/profile.store";
 import { ProfileAbstract } from "../store/profile/profile.model";
 import { IgeDocument } from "../models/ige-document";
 import { ContextHelpService } from "./context-help/context-help.service";
-import { forkJoin } from "rxjs";
-import { tap } from "rxjs/operators";
+import { forkJoin, from, Observable } from "rxjs";
+import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -16,30 +16,39 @@ export class ProfileService {
   private doctypes: Doctype[] = [];
 
   constructor(
-    private resolver: ComponentFactoryResolver,
     private configService: ConfigService,
     private profileStore: ProfileStore,
     private contextHelpService: ContextHelpService,
-    errorService: ModalService
-  ) {
-    configService.$userInfo.subscribe((info) => {
-      if (info?.assignedCatalogs?.length > 0 && info?.currentCatalog?.type) {
-        const profile = info.currentCatalog.type;
+    private errorService: ModalService
+  ) {}
 
-        import("../../profiles/profile-" + profile)
-          .then(({ ProfilePack }) => {
-            console.log("Loaded module: ", ProfilePack);
+  initProfile(): Observable<Type<any>> {
+    return this.configService.$userInfo.pipe(
+      filter((info) => ProfileService.userHasAnyCatalog(info)),
+      switchMap((info) => ProfileService.importProfile(info)),
+      map(({ ProfilePack }) => ProfileService.getComponent(ProfilePack)),
+      catchError((error) => {
+        this.errorService.showJavascriptError(error.message, error.stack);
+        throw error;
+      })
+    );
+  }
 
-            const MyComponent = ProfilePack.getMyComponent();
-            const factory = this.resolver.resolveComponentFactory(MyComponent);
-            // @ts-ignore
-            factory.create(factory.ngModule.injector);
-          })
-          .catch((e) => {
-            errorService.showJavascriptError(e.message, e.stack);
-          });
-      }
-    });
+  private static getComponent(ProfilePack) {
+    console.log("Loaded module: ", ProfilePack);
+    return ProfilePack.getMyComponent() as Type<any>;
+  }
+
+  private static importProfile(info: UserInfo) {
+    return from(import("../../profiles/profile-" + info.currentCatalog.type));
+  }
+
+  private static userHasAnyCatalog(info: UserInfo) {
+    return (
+      info?.assignedCatalogs?.length > 0 &&
+      info?.currentCatalog?.type !== undefined &&
+      info?.currentCatalog?.type !== null
+    );
   }
 
   getProfiles(): Doctype[] {
@@ -106,7 +115,7 @@ export class ProfileService {
   }
 
   updateUIProfileStore(data: any) {
-    this.profileStore.update((state) => ({
+    this.profileStore.update(() => ({
       ui: {
         ...data,
       },

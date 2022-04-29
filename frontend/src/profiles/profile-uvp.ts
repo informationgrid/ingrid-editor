@@ -13,7 +13,6 @@ import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-neg
 import { filter, map } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
-import { UvpBerichtComponent } from "./uvp/reports/uvp-bericht/uvp-bericht.component";
 
 @Component({
   template: "dynamic component",

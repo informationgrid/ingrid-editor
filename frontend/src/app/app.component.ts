@@ -1,4 +1,9 @@
-import { Component, HostListener, OnInit } from "@angular/core";
+import {
+  Component,
+  HostListener,
+  OnInit,
+  ViewContainerRef,
+} from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer, Title } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
@@ -8,6 +13,7 @@ import { throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
+import { ProfileService } from "./services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -23,46 +29,16 @@ export class AppComponent implements OnInit {
     private behaviourService: BehaviourService /*for initialization!*/,
     private configService: ConfigService,
     private codelistService: CodelistService,
-    registry: MatIconRegistry,
-    domSanitizer: DomSanitizer,
+    private registry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
     private authFactory: AuthenticationFactory,
-    private titleService: Title
+    private titleService: Title,
+    private profileService: ProfileService,
+    private viewContainerRef: ViewContainerRef
   ) {
-    // TODO: get RoleMapping from each role so that we can give permissions in client correctly
-    /*this.roleService.getGroup('admin')
-      .subscribe(role => {
-        console.log('my roles:', role);
-      });*/
+    this.loadProfile();
 
-    // useful tool for merging SVG files: merge-svg-files via npm
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-navigation.svg"
-      )
-    );
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-doc-types.svg"
-      )
-    );
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-toolbar.svg"
-      )
-    );
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-general.svg"
-      )
-    );
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-button.svg"
-      )
-    );
-    registry.addSvgIconSet(
-      domSanitizer.bypassSecurityTrustResourceUrl("assets/images/banner.svg")
-    );
+    this.loadIcons();
 
     // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
     //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
@@ -70,12 +46,53 @@ export class AppComponent implements OnInit {
     //       Catalog Codelists should be loaded initially into the correct store!
     codelistService.fetchCatalogCodelists();
 
+    // TODO: remove profile specific logic here
     const profile =
       this.configService.$userInfo.getValue().currentCatalog?.type;
     if (profile == "mcloud") {
       this.favIcon.href = "/assets/profiles/mcloud/assets/icons/favicon.ico";
       titleService.setTitle("mCLOUD Editor");
     }
+  }
+
+  private loadIcons() {
+    // useful tool for merging SVG files: merge-svg-files via npm
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/icons/icon-navigation.svg"
+      )
+    );
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/icons/icon-doc-types.svg"
+      )
+    );
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/icons/icon-toolbar.svg"
+      )
+    );
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/icons/icon-general.svg"
+      )
+    );
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/icons/icon-button.svg"
+      )
+    );
+    this.registry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        "assets/images/banner.svg"
+      )
+    );
+  }
+
+  private loadProfile() {
+    this.profileService.initProfile().subscribe((componentType) => {
+      this.viewContainerRef.createComponent(componentType);
+    });
   }
 
   @HostListener("click")
