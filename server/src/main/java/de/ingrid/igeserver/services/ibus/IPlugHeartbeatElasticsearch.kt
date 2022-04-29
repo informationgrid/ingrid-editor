@@ -38,7 +38,7 @@ import java.util.*
 import java.util.concurrent.ExecutionException
 
 @Service
-@Profile("elasticsearch")
+@Profile("elasticsearch & ibus")
 class IPlugHeartbeatElasticsearch @Autowired constructor(
     indexManager: IndexManager?,
     ibusIndexManager: IBusIndexManager?,

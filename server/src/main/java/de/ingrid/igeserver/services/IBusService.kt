@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 @Service
-@Profile("ibus")
+@Profile("ibus & elasticsearch")
 class IBusService @Autowired constructor(val settingsService: SettingsService) : HeartBeatPlug(60000) {
 
     @PostConstruct
