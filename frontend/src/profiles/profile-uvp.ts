@@ -10,9 +10,10 @@ import { UvpOrganisationDoctype } from "./uvp/doctypes/uvp-organisation.doctype"
 import { LineDeterminationDoctype } from "./uvp/doctypes/line-determination.doctype";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
-import { filter, map } from "rxjs/operators";
+import { filter, map, take } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
+import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
   template: "dynamic component",
@@ -29,9 +30,12 @@ class UVPComponent {
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
-    organisation: UvpOrganisationDoctype
+    organisation: UvpOrganisationDoctype,
+    router: Router
   ) {
     this.addBehaviour(behaviourService, negativeAssessmentDoctype);
+
+    this.handleInitialRouteToReport(router);
 
     profileService.registerProfiles([
       folder,
@@ -47,6 +51,21 @@ class UVPComponent {
     this.modifyFormHeader(profileService);
 
     this.addUVPReportTab(reportsService);
+  }
+
+  private handleInitialRouteToReport(router: Router) {
+    router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        take(1)
+      )
+      .subscribe((event: NavigationEnd) => {
+        if (event.url === "/reports/uvp-bericht") {
+          setTimeout(() => {
+            router.navigate([event.url]);
+          });
+        }
+      });
   }
 
   private modifyFormHeader(service: ProfileService) {
@@ -83,6 +102,7 @@ class UVPComponent {
           (m) => m.UvpReportsModule
         ),
     });
+    reportsService.updateRouter();
   }
 }
 

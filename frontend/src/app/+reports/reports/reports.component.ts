@@ -15,7 +15,5 @@ export class ReportsComponent {
     reportsService.tabs.pipe(untilDestroyed(this)).subscribe((tabs) => {
       this.tabs = tabs;
     });
-
-    reportsService.updateRouter();
   }
 }
