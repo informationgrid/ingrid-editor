@@ -1,14 +1,7 @@
 import { BehaviourService } from "./behaviour.service";
 import { inject } from "@angular/core/testing";
-import { OpenDataBehaviour } from "../../+catalog/+behaviours/form/OpenData/open-data.behaviour";
 import { Behaviour } from "./behaviour";
 import { createServiceFactory, SpectatorService } from "@ngneat/spectator";
-
-// const behaviourService: BehaviourService;
-
-class StorageServiceMock {
-  beforeSave;
-}
 
 class BehaviourMock {
   behaviours: Behaviour[] = [
@@ -21,7 +14,6 @@ class BehaviourMock {
       register: function (form) {},
       unregister: function () {},
     },
-    new OpenDataBehaviour(null),
   ];
 }
 
@@ -40,7 +32,6 @@ describe("Behaviour", () => {
       // behaviourService = TestBed.get( BehaviourService );
       expect(behaviourService.behaviours.length).toEqual(2);
       expect(behaviourService.behaviours[0].id).toEqual("xxx");
-      expect(behaviourService.behaviours[1].id).toEqual("open-data");
     }
   ));
 
