@@ -59,10 +59,7 @@ import { SessionTimeoutInterceptor } from "./services/session-timeout.intercepto
 import { SessionTimeoutInfoComponent } from "./main-header/session-timeout-info/session-timeout-info.component";
 import { TimePipe } from "./directives/time.pipe";
 import { FormFieldsModule } from "./form-fields/form-fields.module";
-import {
-  AnimationWrapper,
-  AnimationWrapperComponent,
-} from "./animation-wrapper.component";
+import { AnimationWrapperComponent } from "./animation-wrapper.component";
 import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatSnackBarModule,
@@ -80,7 +77,6 @@ import { RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
-import { UvpReportsModule } from "../profiles/uvp/reports/uvp-reports.module";
 
 registerLocaleData(de);
 
@@ -134,7 +130,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     AnimationWrapperComponent,
   ],
   imports: [
-    environment.production ? [] : AkitaNgDevtools.forRoot(),
+    environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
     KeycloakAngularModule,
     AngularSplitModule,
     MatTooltipModule,

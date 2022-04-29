@@ -79,11 +79,10 @@ class UVPComponent {
     reportsService.addTab({
       label: "UVP Bericht",
       path: "uvp-bericht",
-      component: UvpBerichtComponent,
-      // loadChildren: () =>
-      //   import("./uvp/reports/uvp-reports.module").then(
-      //     (m) => m.UvpReportsModule
-      //   ),
+      loadChildren: () =>
+        import("./uvp/reports/uvp-reports.module").then(
+          (m) => m.UvpReportsModule
+        ),
     });
   }
 }

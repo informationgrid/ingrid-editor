@@ -10,10 +10,22 @@ import { SharedModule } from "../../../app/shared/shared.module";
 import { PageTemplateModule } from "../../../app/shared/page-template/page-template.module";
 import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
+import { RouterModule, Routes } from "@angular/router";
+import { AuthGuard } from "../../../app/security/auth.guard";
+
+const routes: Routes = [
+  {
+    path: "",
+    component: UvpBerichtComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ["admin", "author"] },
+  },
+];
 
 @NgModule({
   declarations: [UvpBerichtComponent],
   imports: [
+    RouterModule.forChild(routes),
     CommonModule,
     PageTemplateModule,
     MatTabsModule,
