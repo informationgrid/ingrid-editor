@@ -22,7 +22,6 @@ export class IBusManagementComponent implements OnInit {
   }
 
   save() {
-    console.log(this.form.value);
     this.configService.saveIBusConfig(this.form.value.ibus).subscribe();
   }
 }

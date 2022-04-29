@@ -4,7 +4,6 @@ import { FormsModule } from "@angular/forms";
 import { routing } from "./ige-form.routing";
 import { SharedModule } from "../shared/shared.module";
 import { NominatimService } from "../formly/types/map/nominatim.service";
-import { IgeWizardModule } from "../wizard/wizard.module";
 import { ScrollToDirective } from "../directives/scrollTo.directive";
 import { MatCardModule } from "@angular/material/card";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -33,7 +32,6 @@ import { CreateNodeModule } from "./dialogs/create/create-node.module";
   imports: [
     RouterModule.forChild(routing),
     CommonModule,
-    IgeWizardModule,
     SharedModule,
     MatFormFieldModule,
     MatInputModule,
