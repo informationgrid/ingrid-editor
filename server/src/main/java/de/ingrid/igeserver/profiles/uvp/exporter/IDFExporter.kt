@@ -46,7 +46,7 @@ class IDFExporter : IgeExporter {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     override fun run(doc: Document, catalogId: String): Any {
-        val output: TemplateOutput = StringOutput()
+        val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc)["model"], output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -108,9 +108,9 @@ private class XMLStringOutput : StringOutput() {
         if (value == null) return
         super.writeUserContent(
             StringEscapeUtils.escapeXml11(value)
-                .replace("\n", "&#10;")
-                .replace("\r", "&#13;")
-                .replace("\t", "&#9;")
+//                .replace("\n", "&#10;")
+//                .replace("\r", "&#13;")
+//                .replace("\t", "&#9;")
         )
     }
 }
