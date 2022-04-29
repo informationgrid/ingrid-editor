@@ -12,6 +12,7 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
+import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -29,9 +30,9 @@ import javax.xml.transform.stream.StreamSource
 @Service
 @Profile("uvp")
 class IDFExporter : IgeExporter {
-    
+
     val log = logger()
-    
+
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "uvpIDF",
@@ -48,7 +49,9 @@ class IDFExporter : IgeExporter {
         val output: TemplateOutput = StringOutput()
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc)["model"], output)
         // pretty printing takes around 5ms
-        val prettyXml = prettyFormat(output.toString(), 4)
+        // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
+        //       are new lines for example
+        val prettyXml = output.toString() // prettyFormat(output.toString(), 4)
         log.debug(prettyXml)
         return prettyXml
     }
@@ -66,7 +69,10 @@ class IDFExporter : IgeExporter {
                 transformerFactory.newTransformer(StreamSource(javaClass.getResourceAsStream("/prettyprint.xsl")))
             transformer.setOutputProperty(OutputKeys.INDENT, "yes")
             transformer.transform(xmlInput, xmlOutput)
-            xmlOutput.writer.toString()
+            xmlOutput.writer.toString()/*
+                .replace("\n", "&#10;")
+                .replace("\r", "&#13;")
+                .replace("\t", "&#9;")*/
         } catch (e: Exception) {
             throw RuntimeException(e) // simple exception handling, please review it
         }
@@ -94,5 +100,17 @@ class IDFExporter : IgeExporter {
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf("model" to mapper.convertValue(json, UVPModel::class.java))
 
+    }
+}
+
+private class XMLStringOutput : StringOutput() {
+    override fun writeUserContent(value: String?) {
+        if (value == null) return
+        super.writeUserContent(
+            StringEscapeUtils.escapeXml11(value)
+                .replace("\n", "&#10;")
+                .replace("\r", "&#13;")
+                .replace("\t", "&#9;")
+        )
     }
 }

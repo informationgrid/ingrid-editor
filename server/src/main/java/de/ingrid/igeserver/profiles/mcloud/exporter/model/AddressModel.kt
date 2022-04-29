@@ -80,7 +80,7 @@ data class ContactModel(val type: KeyValueModel?, val connection: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Address(
-    val inheritAddress: Boolean,
+    val inheritAddress: Boolean = false,
     val street: String?,
     @JsonProperty("zip-code") val zipCode: String?,
     val city: String?,
