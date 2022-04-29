@@ -19,6 +19,19 @@ export class UvpShared extends BaseDoctype {
     super(codelistService, codelistQuery);
   }
 
+  dateTooBigValidator = {
+    dateToBig: {
+      expression: (field) => {
+        if (field.value === null) return true;
+        const value = field.value?.toISOString
+          ? field.value.toISOString()
+          : field.value;
+        return value <= new Date().toISOString();
+      },
+      message: () => "Das Datum darf nicht in der Zukunft liegen",
+    },
+  };
+
   protected columnsForDocumentTable = [
     {
       key: "title",
@@ -150,6 +163,7 @@ export class UvpShared extends BaseDoctype {
             datepickerOptions: {
               max: new Date(),
             },
+            validators: { ...this.dateTooBigValidator },
           }),
           this.addTable("approvalDocs", "Auslegungsinformationen", {
             required: true,

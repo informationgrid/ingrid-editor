@@ -178,11 +178,11 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         },
         {
           name: "matDatepickerMin",
-          message: "Das Datum ist außerhalb des gültigen Bereichs",
+          message: "Das Datum liegt weiter zurück als erlaubt",
         },
         {
           name: "matDatepickerMax",
-          message: "Das Datum ist außerhalb des gültigen Bereichs",
+          message: "Das Datum ist größer als erlaubt",
         },
       ] /*,
       wrappers: [

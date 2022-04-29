@@ -27,6 +27,7 @@ export class LineAndSpatialShared extends UvpShared {
               datepickerOptions: {
                 max: new Date(),
               },
+              validators: { ...this.dateTooBigValidator },
             }),
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,

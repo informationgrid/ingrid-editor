@@ -30,6 +30,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               datepickerOptions: {
                 max: new Date(),
               },
+              validators: { ...this.dateTooBigValidator },
             }),
           ]),
         ]
@@ -60,6 +61,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               datepickerOptions: {
                 max: new Date(),
               },
+              validators: { ...this.dateTooBigValidator },
             }),
             this.addTable(
               "uvpNegativeDecisionDocs",
