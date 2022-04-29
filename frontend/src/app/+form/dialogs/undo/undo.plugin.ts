@@ -1,10 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormGroup } from "@angular/forms";
-import { FormularService } from "../../formular.service";
-import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -25,18 +22,52 @@ export class UndoPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(
-    private formToolbarService: FormToolbarService,
-    private formService: FormularService,
-    private modalService: ModalService,
-    private docEvents: DocEventsService
-  ) {
+  constructor(private formToolbarService: FormToolbarService) {
     super();
   }
 
   register() {
     super.register();
 
+    this.addToolbarButtons();
+
+    // add event handler for revert
+    const toolbarEventSubscription =
+      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
+        if (eventId === this.eventUndoId) {
+          this.undo();
+        } else if (eventId === this.eventRedoId) {
+          this.redo();
+        }
+      });
+
+    /*const afterLoadSubscription = this.docEvents
+      .afterLoadAndSet$(this.forAddress)
+      .subscribe((data) => {
+        // if (data) {
+        this.history = [];
+        this.redoHistory = [];
+        // this.actionTriggered = true;
+
+        this.formToolbarService.setButtonState("toolBtnUndo", false);
+
+        // add behaviour to set active states for toolbar buttons
+        // need to add behaviour after each load since form-object changes!
+
+        // FIXME: form is not available when opening a document, going to dashboard and back to form again
+        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
+        this.addBehaviour();
+
+        this.subscriptions.push(
+          toolbarEventSubscription,
+          afterLoadSubscription
+        );
+        // }
+      });*/
+    this.subscriptions.push(toolbarEventSubscription);
+  }
+
+  private addToolbarButtons() {
     this.formToolbarService.addButton({
       id: "toolBtnUndoSeparator",
       isSeparator: true,
@@ -62,40 +93,6 @@ export class UndoPlugin extends Plugin {
       pos: 160,
       active: false,
     });
-
-    // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventUndoId) {
-          this.undo();
-        } else if (eventId === this.eventRedoId) {
-          this.redo();
-        }
-      });
-
-    const afterLoadSubscription = this.docEvents
-      .afterLoadAndSet$(this.forAddress)
-      .subscribe((data) => {
-        // if (data) {
-        this.history = [];
-        this.redoHistory = [];
-        // this.actionTriggered = true;
-
-        this.formToolbarService.setButtonState("toolBtnUndo", false);
-
-        // add behaviour to set active states for toolbar buttons
-        // need to add behaviour after each load since form-object changes!
-
-        // FIXME: form is not available when opening a document, going to dashboard and back to form again
-        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
-        this.addBehaviour();
-
-        this.subscriptions.push(
-          toolbarEventSubscription,
-          afterLoadSubscription
-        );
-        // }
-      });
   }
 
   private undo() {
@@ -143,31 +140,31 @@ export class UndoPlugin extends Plugin {
   /**
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
-  private addBehaviour() {
-    /*
-        const formData = this.formService.requestFormValues();
+  /*
+private addBehaviour() {
+      const formData = this.formService.requestFormValues();
 
-        this.form = formData.form;
-        this.formValueSubscription = this.form.valueChanges
-          .pipe(
-            debounceTime(500)
-          )
-          .subscribe((value) => {
-            console.log('The form value changed:', value);
+      this.form = formData.form;
+      this.formValueSubscription = this.form.valueChanges
+        .pipe(
+          debounceTime(500)
+        )
+        .subscribe((value) => {
+          console.log('The form value changed:', value);
 
-            // if we used the undo/redo button then ignore this event
-            if (this.actionTriggered) {
-              this.actionTriggered = false;
-              // return;
-            }
+          // if we used the undo/redo button then ignore this event
+          if (this.actionTriggered) {
+            this.actionTriggered = false;
+            // return;
+          }
 
-            // only push if other field was changed, otherwise remove last change and push new value
-            // => so we only remember complete field changes instead of each character
-            this.history.push(value);
-            if (this.history.length > 1) {
-              this.formToolbarService.setButtonState('toolBtnUndo', true);
-            }
-          });
-    */
-  }
+          // only push if other field was changed, otherwise remove last change and push new value
+          // => so we only remember complete field changes instead of each character
+          this.history.push(value);
+          if (this.history.length > 1) {
+            this.formToolbarService.setButtonState('toolBtnUndo', true);
+          }
+        });
+}
+  */
 }

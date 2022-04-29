@@ -137,6 +137,7 @@ export class DocumentService {
           this.updateTreeStore(doc, address);
         }
       }),
+      tap((doc) => this.docEvents.sendAfterLoadAndSet(doc)),
       catchError((e: HttpErrorResponse) => this.handleLoadError(e)),
       finalize(() => this.documentOperationFinished$.next(true))
     );

@@ -35,7 +35,7 @@ export class DocEventsService {
     return this._afterSave$.pipe(filter(() => this.belongsToThisPage(address)));
   }
 
-  afterLoadAndSet$(address: boolean): Observable<void> {
+  afterLoadAndSet$(address: boolean): Observable<IgeDocument> {
     return this._afterLoadAndSet$.pipe(
       filter(() => this.belongsToThisPage(address))
     );
@@ -61,6 +61,6 @@ export class DocEventsService {
   }
 
   sendAfterLoadAndSet(data: IgeDocument) {
-    this._afterSave$.next(data);
+    this._afterLoadAndSet$.next(data);
   }
 }
