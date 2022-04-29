@@ -13,6 +13,7 @@ import { DynamicDatabase } from "../../../sidebars/tree/dynamic.database";
 import { ConfigService } from "../../../../services/config/config.service";
 import { of, Subject } from "rxjs";
 import { recentDocuments } from "../../../../_test-data/documents";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("DestinationSelectionComponent", () => {
   let spectator: Spectator<DestinationSelectionComponent>;
@@ -27,6 +28,7 @@ describe("DestinationSelectionComponent", () => {
       HttpClientTestingModule,
       MatDialogModule,
       RouterTestingModule,
+      MatSnackBarModule,
     ],
     componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
