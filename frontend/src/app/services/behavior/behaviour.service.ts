@@ -104,7 +104,7 @@ export class BehaviourService {
     this.updateState(behaviours);
     this.dataService
       .saveBehaviors(behaviours)
-      .pipe(tap(() => this.toast.open("Das Verhalten wurde gespeichert")))
+      .pipe(tap(() => this.toast.open("Die Konfiguration wurde gespeichert")))
       .subscribe();
     this.behaviours$.next(behaviours);
   }

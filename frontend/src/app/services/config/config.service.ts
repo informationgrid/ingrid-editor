@@ -5,6 +5,8 @@ import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { tap } from "rxjs/operators";
 
 export class Configuration {
   constructor(
@@ -12,7 +14,6 @@ export class Configuration {
     public keycloakRealm: string,
     public keycloakClientId: string,
     public keycloakEnabled: boolean,
-
     public contextPath: string,
     public backendUrl: string,
     public featureFlags: any,
@@ -101,7 +102,7 @@ export class ConfigService {
   private dataService: ConfigDataService;
   private isAdministrator = false;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private snackbar: MatSnackBar) {
     this.dataService = new ConfigDataService(http);
   }
 
@@ -172,7 +173,9 @@ export class ConfigService {
   }
 
   saveIBusConfig(value: any) {
-    return this.http.put<any>(this.config.backendUrl + "config/ibus", value);
+    return this.http
+      .put<any>(this.config.backendUrl + "config/ibus", value)
+      .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
   }
 
   getIBusConfig() {
