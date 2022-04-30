@@ -1,7 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ReportsComponent } from "./reports/reports.component";
-import { routing } from "../+reports/reports.routing";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { MatTabsModule } from "@angular/material/tabs";
 import { SharedModule } from "../shared/shared.module";
@@ -13,12 +12,13 @@ import { DateAdapter } from "@angular/material/core";
 import { GermanDateAdapter } from "../services/german-date.adapter";
 import { ReactiveFormsModule } from "@angular/forms";
 import { GeneralReportComponent } from "./general-report/general-report.component";
+import { LazyReportsRouting } from "./lazy-reports.routing";
 
 @NgModule({
   declarations: [ReportsComponent, GeneralReportComponent],
   imports: [
     CommonModule,
-    routing,
+    LazyReportsRouting,
     PageTemplateModule,
     MatTabsModule,
     SharedModule,

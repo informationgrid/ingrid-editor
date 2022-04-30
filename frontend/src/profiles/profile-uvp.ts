@@ -35,8 +35,6 @@ class UVPComponent {
   ) {
     this.addBehaviour(behaviourService, negativeAssessmentDoctype);
 
-    this.handleInitialRouteToReport(router);
-
     profileService.registerProfiles([
       folder,
       approvalProcedureDoctype,
@@ -51,21 +49,6 @@ class UVPComponent {
     this.modifyFormHeader(profileService);
 
     this.addUVPReportTab(reportsService);
-  }
-
-  private handleInitialRouteToReport(router: Router) {
-    router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        take(1)
-      )
-      .subscribe((event: NavigationEnd) => {
-        if (event.url === "/reports/uvp-bericht") {
-          setTimeout(() => {
-            router.navigate([event.url]);
-          });
-        }
-      });
   }
 
   private modifyFormHeader(service: ProfileService) {
@@ -94,7 +77,7 @@ class UVPComponent {
   }
 
   private addUVPReportTab(reportsService: ReportsService) {
-    reportsService.addTab({
+    reportsService.addRoute({
       path: "uvp-bericht",
       loadChildren: () =>
         import("./uvp/reports/uvp-reports.module").then(
@@ -104,7 +87,6 @@ class UVPComponent {
         title: "UVP Bericht",
       },
     });
-    reportsService.updateRouter();
   }
 }
 
