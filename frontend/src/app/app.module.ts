@@ -77,6 +77,9 @@ import { RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
+import { ReplaceAddressDialogComponent } from "./+catalog/+behaviours/system/DeleteReferenceHandler/replace-address-dialog/replace-address-dialog.component";
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { SharedModule } from "./shared/shared.module";
 
 registerLocaleData(de);
 
@@ -119,6 +122,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     HelpComponent,
     ErrorDialogComponent,
     ConfirmDialogComponent,
+    ReplaceAddressDialogComponent,
     OneColumnWrapperComponent,
     FullWidthWrapperComponent,
     SectionWrapper,
@@ -133,6 +137,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
     KeycloakAngularModule,
     AngularSplitModule,
+    DragDropModule,
     MatTooltipModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -184,6 +189,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     SharedDocumentItemModule,
     FormFieldsModule,
     TranslocoRootModule,
+    SharedModule,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap

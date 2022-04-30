@@ -8,6 +8,13 @@ export interface BeforePublishData {
   errors: any[];
 }
 
+export interface ErrorWithHandled {
+  errorCode: String;
+  response: {
+    handled: boolean;
+  };
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -16,6 +23,8 @@ export class DocEventsService {
   private _beforeSave$ = new Subject<void>();
   private _afterSave$ = new Subject<any>();
   private _afterLoadAndSet$ = new Subject<any>();
+
+  private _onError$ = new Subject<ErrorWithHandled>();
 
   constructor(private router: Router) {}
 
@@ -62,5 +71,15 @@ export class DocEventsService {
 
   sendAfterLoadAndSet(data: IgeDocument) {
     this._afterLoadAndSet$.next(data);
+  }
+
+  sendOnError(errorCode: String) {
+    const response = { handled: false };
+    this._onError$.next({ errorCode: errorCode, response: response });
+    return response.handled;
+  }
+
+  onError(address: boolean) {
+    return this._onError$.pipe(filter(() => this.belongsToThisPage(address)));
   }
 }

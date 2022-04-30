@@ -321,6 +321,10 @@ export class DocumentService {
 
   private handleDeleteError(error): Observable<any> {
     const errorCode = error?.error?.errorCode;
+
+    const handled = this.docEvents.sendOnError(errorCode);
+    if (handled) return of();
+
     switch (errorCode) {
       case "IS_REFERENCED_ERROR":
         this.handleIsReferencedError(error);
