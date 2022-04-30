@@ -5,10 +5,10 @@ import { ReportsComponent } from "./reports/reports.component";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 
 interface RouterTab {
-  label: string;
   path: string;
   component?: any;
   loadChildren?: any;
+  data?: any;
 }
 
 @Injectable({
@@ -17,7 +17,11 @@ interface RouterTab {
 export class ReportsService {
   tabs: BehaviorSubject<RouterTab[]>;
   initialTabs = [
-    { label: "Statistik", path: "general", component: GeneralReportComponent },
+    {
+      path: "general",
+      component: GeneralReportComponent,
+      data: { title: "Statistik" },
+    },
   ];
 
   initialChildren: Route[] = [
@@ -42,10 +46,12 @@ export class ReportsService {
         ? {
             path: tab.path,
             component: tab.component,
+            data: tab.data,
           }
         : {
             path: tab.path,
             loadChildren: tab.loadChildren,
+            data: tab.data,
           };
     });
 

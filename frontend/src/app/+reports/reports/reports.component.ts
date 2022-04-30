@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ReportsService } from "../reports.service";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { SessionService } from "../../services/session.service";
+import { ActivatedRoute } from "@angular/router";
 
 @UntilDestroy()
 @Component({
@@ -11,9 +12,7 @@ import { ReportsService } from "../reports.service";
 export class ReportsComponent {
   tabs = [];
 
-  constructor(reportsService: ReportsService) {
-    reportsService.tabs.pipe(untilDestroyed(this)).subscribe((tabs) => {
-      this.tabs = tabs;
-    });
+  constructor(sessionService: SessionService, activeRoute: ActivatedRoute) {
+    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
   }
 }

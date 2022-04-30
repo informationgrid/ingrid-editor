@@ -16,7 +16,7 @@ import { ReportsService } from "../app/+reports/reports.service";
 import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
-  template: "dynamic component",
+  template: "",
 })
 class UVPComponent {
   constructor(
@@ -95,12 +95,14 @@ class UVPComponent {
 
   private addUVPReportTab(reportsService: ReportsService) {
     reportsService.addTab({
-      label: "UVP Bericht",
       path: "uvp-bericht",
       loadChildren: () =>
         import("./uvp/reports/uvp-reports.module").then(
           (m) => m.UvpReportsModule
         ),
+      data: {
+        title: "UVP Bericht",
+      },
     });
     reportsService.updateRouter();
   }

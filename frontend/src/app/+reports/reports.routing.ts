@@ -1,7 +1,6 @@
 import { ReportsComponent } from "./reports/reports.component";
 import { RouterModule } from "@angular/router";
 import { GeneralReportComponent } from "./general-report/general-report.component";
-import { UvpBerichtComponent } from "../../profiles/uvp/reports/uvp-bericht/uvp-bericht.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -15,11 +14,10 @@ export const routing = RouterModule.forChild([
       {
         path: "general",
         component: GeneralReportComponent,
+        data: {
+          title: "Statistik",
+        },
       },
-      // {
-      //   path: "uvp_bericht",
-      //   component: UvpBerichtComponent,
-      // },
     ],
   },
 ]);
