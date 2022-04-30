@@ -39,17 +39,18 @@ export class TreeSelection {
         this.nodeSelectionToggle(node, $event);
         return;
       }
-      return this.handleSingleSelection(node);
+      const isUiEvent = $event !== undefined && $event !== null;
+      return this.handleSingleSelection(node, isUiEvent);
     }
   }
 
-  private handleSingleSelection(node: TreeNode) {
+  private handleSingleSelection(node: TreeNode, clickedOnNode = true) {
     // deselect all nodes first
     this.model.clear();
     this.model.select(node);
     this.activeNode = this.model.selected[0];
 
-    if (this.treeControl.isExpandable(node)) {
+    if (clickedOnNode && this.treeControl.isExpandable(node)) {
       this.treeControl.toggle(node);
     }
 

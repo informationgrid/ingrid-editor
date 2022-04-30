@@ -174,6 +174,8 @@ export class DynamicDataSource extends DataSource<TreeNode> {
         return;
       }
 
+      // when title changed the position in tree might change, so we collapse node to move all children along
+      const wasExpanded = this.data[index].isExpanded;
       this.collapseNode(this.data[index], index);
 
       if (index !== -1) {
@@ -184,6 +186,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
           level
         )[0];
         this.insertNodeInTree(updatedNode, updatedNode.parent);
+        if (wasExpanded) this.expandNode(updatedNode);
       }
     });
   }
