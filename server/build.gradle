@@ -231,7 +231,6 @@ jib {
     }
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'
-        jvmFlags = ['-Xmx768m', '-Dstorage.diskCache.bufferSize=256']
         entrypoint = ['/run.sh']
     }
     extraDirectories {
