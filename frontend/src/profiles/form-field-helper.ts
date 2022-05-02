@@ -126,7 +126,7 @@ export class FormFieldHelper {
     };
   }
 
-  addInput(id, label, options?) {
+  addInput(id, label, options?): FormlyFieldConfig {
     return {
       key: id,
       type: "input",
@@ -137,6 +137,9 @@ export class FormFieldHelper {
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
+      },
+      modelOptions: {
+        updateOn: "blur",
       },
       expressionProperties: options?.expressionProperties,
       hideExpression: options?.hideExpression,

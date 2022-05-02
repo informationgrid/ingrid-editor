@@ -1,11 +1,15 @@
 import { FormControl, ValidationErrors } from "@angular/forms";
 
 export function IpValidator(control: FormControl): ValidationErrors {
-  return /(\d{1,3}\.){3}\d{1,3}/.test(control.value) ? null : { ip: true };
+  return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
+    ? null
+    : { ip: true };
 }
 
 export function EmailValidator(control: FormControl): ValidationErrors {
-  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(control.value)
+  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(
+    control.value?.trim()
+  )
     ? null
     : { email: true };
 }
