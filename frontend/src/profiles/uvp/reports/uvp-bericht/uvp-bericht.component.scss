@@ -68,6 +68,18 @@
   }
 }
 
-.mat-table td.mat-cell:last-of-type {
+.mat-table td.mat-cell:last-of-type,
+.mat-table .mat-header-cell:last-of-type {
   text-align: left;
+}
+
+.download-button {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 12px;
+
+  button {
+    background: white;
+    padding: 0 6px;
+  }
 }

@@ -7,14 +7,47 @@
             [forReports]="true"
         ></ige-facets>
     </div>
-    <div main-content fxLayout="column" fxLayoutGap="36px">
-        <div>
-            Positive Vorprüfungen: {{ report?.positivePreliminaryAssessments }}
+    <div main-content fxLayout="column" fxLayoutGap="24px">
+        <div class="download-button">
+            <button
+                mat-stroked-button
+                color="primary"
+                class="button-square-icon padding-btn"
+                (click)="downloadReport()"
+                [disabled]="!report"
+            >
+                <mat-icon color="primary">download_outline</mat-icon>
+                <span class="btn-title">Bericht herunterladen</span>
+            </button>
         </div>
-        <div>
-            Negative Vorprüfungen: {{ report?.negativePreliminaryAssessments }}
-        </div>
-        <div>Durchschnittliche Verfahrensdauer: {{ averageDuration }}</div>
+        <ige-card-box fxFlex label="Kennzahlen">
+            <table
+                mat-table
+                [dataSource]="dataSourceMiscellaneous"
+                class="width-100"
+            >
+                <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef>Art</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.type }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="value">
+                    <th mat-header-cell *matHeaderCellDef>Wert</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.value }}
+                    </td>
+                </ng-container>
+                <tr
+                    mat-header-row
+                    *matHeaderRowDef="displayedColumnsMiscellaneous"
+                ></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumnsMiscellaneous"
+                ></tr>
+            </table>
+        </ige-card-box>
 
         <ige-card-box fxFlex label="Verwendete UVP Nummern">
             <table
@@ -54,14 +87,5 @@
                 ></tr>
             </table>
         </ige-card-box>
-
-        <button
-            mat-raised-button
-            color="primary"
-            (click)="downloadReport()"
-            [disabled]="!report"
-        >
-            Herunterladen
-        </button>
     </div>
 </page-template-no-header>

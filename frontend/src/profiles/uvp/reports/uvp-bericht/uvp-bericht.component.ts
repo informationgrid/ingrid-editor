@@ -42,7 +42,9 @@ export class UvpBerichtComponent implements AfterViewInit {
   };
   facetForm = new FormControl();
   dataSource = new MatTableDataSource([]);
+  dataSourceMiscellaneous = new MatTableDataSource([]);
   displayedColumns = ["eiaNumber", "eiaCategory", "count"];
+  displayedColumnsMiscellaneous = ["type", "value"];
 
   constructor(private uvpResearchService: UvpResearchService) {
     this.initData();
@@ -107,6 +109,20 @@ export class UvpBerichtComponent implements AfterViewInit {
     this.dataSource.data = this.uvpResearchService.createNumberStatistic(
       report.eiaStatistic
     );
+    this.dataSourceMiscellaneous.data = [
+      {
+        type: "Positive Vorprüfungen",
+        value: report.positivePreliminaryAssessments,
+      },
+      {
+        type: "Negative Vorprüfungen",
+        value: report.negativePreliminaryAssessments,
+      },
+      {
+        type: "Durchschnittliche Verfahrensdauer",
+        value: this.averageDuration,
+      },
+    ];
   }
 
   downloadReport() {
