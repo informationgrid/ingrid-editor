@@ -16,7 +16,7 @@ export interface FormDialogData {
 })
 export class FormDialogComponent implements OnDestroy {
   form = new FormGroup({});
-  titleText: String;
+  titleText: string;
   options: FormlyFormOptions = {};
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: FormDialogData) {

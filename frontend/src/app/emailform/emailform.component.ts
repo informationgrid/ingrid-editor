@@ -18,7 +18,7 @@ import { UserService } from "./../services/user/user.service";
 })
 export class EmailformComponent implements OnInit {
   @Input()
-  initialEmail: String;
+  initialEmail: string;
 
   @Output()
   onClose = new EventEmitter<String>();

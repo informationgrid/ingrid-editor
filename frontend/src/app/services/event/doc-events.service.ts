@@ -9,7 +9,7 @@ export interface BeforePublishData {
 }
 
 export interface ErrorWithHandled {
-  errorCode: String;
+  errorCode: string;
   response: {
     handled: boolean;
   };
@@ -73,7 +73,7 @@ export class DocEventsService {
     this._afterLoadAndSet$.next(data);
   }
 
-  sendOnError(errorCode: String) {
+  sendOnError(errorCode: string) {
     const response = { handled: false };
     this._onError$.next({ errorCode: errorCode, response: response });
     return response.handled;

@@ -140,12 +140,12 @@ export class ResearchPage {
     cy.wait('@deleteRequest');
   }
 
-  static getResultListItems(): Chainable<String[]> {
+  static getResultListItems(): Chainable<string[]> {
     return cy
       .get('ige-result-table')
       .find('td.mat-cell:nth-child(2)')
       .then(element => {
-        let arr: String[] = [];
+        let arr: string[] = [];
         element.each((index, el) => {
           arr.push(el.innerText.trim());
         });
@@ -154,7 +154,7 @@ export class ResearchPage {
   }
 
   static getSearchResultItemsFromCSV(): Chainable<String[]> {
-    let res_arr: String[] = [];
+    let res_arr: string[] = [];
     return cy.readFile('cypress/downloads/research.csv').then(content => {
       let raw_content = content.split('\n');
       // delete string with column names
