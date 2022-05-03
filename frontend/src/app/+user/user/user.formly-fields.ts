@@ -98,6 +98,8 @@ export const getUserFormFields = (
       type: "repeatList",
       wrappers: ["panel"],
       templateOptions: {
+        selectionEmptyNotice:
+          "Bitte weisen Sie dem Nutzer mindestens ein Gruppe zu",
         externalLabel: "Gruppen",
         placeholder: "Gruppe wählen...",
         options: groups.map((group) => {

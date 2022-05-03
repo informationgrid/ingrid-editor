@@ -44,7 +44,6 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         .pipe(untilDestroyed(this))
         .subscribe((value) => this.manualUpdate.next(value));
     }
-
     if (this.to.options instanceof Observable) {
       this.to.options
         .pipe(

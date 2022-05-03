@@ -1,5 +1,5 @@
 <div
-    *ngIf="field.fieldGroup.length > 0"
+    *ngIf="field.fieldGroup.length > 0; else noFieldsSelected"
     class="component-list"
     cdkDropList
     cdkDropListOrientation="vertical"
@@ -29,6 +29,17 @@
         </button>
     </div>
 </div>
+<ng-template #noFieldsSelected>
+    <div *ngIf="this.to.selectionEmptyNotice" class="no-fields-selected-notice">
+        <div class="infoIcon">
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+            ></mat-icon>
+        </div>
+        <span>{{ this.to.selectionEmptyNotice }}</span>
+    </div>
+</ng-template>
 
 <mat-form-field
     *ngIf="to.asSelect; else templateAutocomplete"
