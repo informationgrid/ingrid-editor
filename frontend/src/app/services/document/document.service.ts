@@ -807,4 +807,11 @@ export class DocumentService {
       !entity.hasWritePermission
     );
   }
+
+  replaceAddress(source: string, target: string): Observable<any> {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${source}/replaceAddress/${target}`,
+      null
+    );
+  }
 }

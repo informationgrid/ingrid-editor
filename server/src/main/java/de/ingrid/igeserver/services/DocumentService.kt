@@ -885,4 +885,8 @@ class DocumentService @Autowired constructor(
             *literals.toTypedArray()
         )
     }
+
+    fun replaceAddress(catalogId: String, source: String, target: String) {
+        docRepo.replaceReference(catalogId, source, target)
+    }
 }

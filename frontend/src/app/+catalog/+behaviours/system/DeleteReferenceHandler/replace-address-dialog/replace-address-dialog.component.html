@@ -1,25 +1,3 @@
-<!--<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">Adresse ersetzen</span>
-        </h2>
-    </div>
-    <mat-dialog-content> Content </mat-dialog-content>
-    <mat-dialog-actions>
-        <button mat-button mat-dialog-close data-cy="dialog-abort">
-            Abbrechen
-        </button>
-        <div fxFlex></div>
-        <button mat-flat-button color="primary" data-cy="dialog-confirm">
-            Adresse auswählen
-        </button>
-    </mat-dialog-actions>
-</div>-->
-
-<!--<div class="slider" (swipeleft)="swipe($event)" (swiperight)="swipe($event)">-->
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
         <h2 mat-dialog-title>
@@ -30,13 +8,7 @@
         </h2>
     </div>
     <mat-dialog-content>
-        <div
-            #slider
-            class="slider"
-            (panleft)="pan($event)"
-            (panright)="pan($event)"
-            (panend)="pan($event)"
-        >
+        <div class="slider">
             <div
                 #slideContainer
                 class="slide-container"
@@ -56,35 +28,52 @@
                     </p>
                     <ige-tree
                         style="width: 300px"
-                        (selected)="selectedAddress = $event"
+                        [forAddresses]="true"
+                        (activate)="selectedAddress = $event"
                     ></ige-tree>
+                </div>
+                <div class="slide">
+                    <p>Die Adresse wurde erfolgreich ersetzt.</p>
                 </div>
             </div>
         </div>
     </mat-dialog-content>
     <mat-dialog-actions>
-        <button mat-button mat-dialog-close data-cy="dialog-abort">
+        <button
+            *ngIf="page !== 2"
+            mat-button
+            mat-dialog-close
+            data-cy="dialog-abort"
+        >
             Abbrechen
         </button>
         <div fxFlex></div>
         <button
+            *ngIf="page === 0"
             mat-flat-button
             color="primary"
-            *ngIf="page < 1; else startBlock"
+            data-cy="dialog-choose-address"
             (click)="page = page + 1"
         >
             Adresse auswählen
         </button>
-        <ng-template #startBlock>
-            <button
-                mat-flat-button
-                color="primary"
-                mat-dialog-close
-                data-cy="dialog-replace-address"
-                [disabled]="!selectedAddress"
-            >
-                Adresse ersetzen
-            </button>
-        </ng-template>
+        <button
+            *ngIf="page === 1"
+            mat-flat-button
+            color="primary"
+            data-cy="dialog-replace-address"
+            [disabled]="!selectedAddress"
+            (click)="replaceAddress()"
+        >
+            Adresse ersetzen
+        </button>
+        <button
+            *ngIf="page === 2"
+            mat-flat-button
+            color="primary"
+            [mat-dialog-close]="true"
+        >
+            Schließen
+        </button>
     </mat-dialog-actions>
 </div>

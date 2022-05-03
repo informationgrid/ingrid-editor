@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -123,6 +124,16 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         ids.forEach { id -> handleMove(catalogId, id, options) }
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    override fun replaceAddress(
+        principal: Principal,
+        source: String,
+        target: String
+    ): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        this.documentService.replaceAddress(catalogId, source, target)
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -245,7 +256,6 @@ class DatasetsApiController @Autowired constructor(
             throw ConflictException.withReason("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
         }
     }
-
 
 
     override fun getChildren(

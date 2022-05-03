@@ -13,6 +13,7 @@ import { ProfileService } from "../../../services/profile.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { DocumentUtils } from "../../../services/document.utils";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Component({
   selector: "ige-header-title-row",
@@ -46,10 +47,23 @@ export class HeaderTitleRowComponent implements OnInit {
   showMore = false;
   showMoreActions = false;
 
+  // TODO: fill more actions by a service
+  moreActions = [
+    {
+      title: "Adresse ersetzen",
+      action: () =>
+        this.docEventsService.sendEvent({
+          type: "REPLACE_ADDRESS",
+          data: { uuid: this._model._uuid },
+        }),
+    },
+  ];
+
   constructor(
     private cdRef: ChangeDetectorRef,
     private profileService: ProfileService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private docEventsService: DocEventsService
   ) {}
 
   ngOnInit() {

@@ -3,8 +3,13 @@ import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
-import { ReplaceAddressDialogComponent } from "./replace-address-dialog/replace-address-dialog.component";
+import {
+  ReplaceAddressDialogComponent,
+  ReplaceAddressDialogData,
+} from "./replace-address-dialog/replace-address-dialog.component";
 import { ConfigService } from "../../../../services/config/config.service";
+import { Observable } from "rxjs";
+import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 
 @Injectable()
 export class DeleteReferenceHandlerPlugin extends Plugin {
@@ -19,6 +24,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
+    private tree: AddressTreeQuery,
     configService: ConfigService
   ) {
     super();
@@ -41,20 +47,35 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       .onError(this.forAddress)
       .pipe(filter((error) => error.errorCode === "IS_REFERENCED_ERROR"))
       .subscribe((error) => {
+        const selectedNodes = this.tree.getActive();
+
+        // only supported when one address was selected so far
+        if (selectedNodes.length > 1) {
+          return;
+        }
+
         error.response.handled = true;
 
-        this.showDialog();
+        this.showDialog(selectedNodes[0]._uuid)
+          .pipe(filter((response) => response))
+          .subscribe(() => this.docEvents.sendEvent({ type: "DELETE" }));
       });
 
-    this.subscriptions.push(subscription);
+    const onEvent = this.docEvents
+      .onEvent("REPLACE_ADDRESS")
+      .subscribe((event) => {
+        console.log("REPLACE_ADDRESS", event);
+        this.showDialog(event.data.uuid, false).subscribe();
+      });
+
+    this.subscriptions.push(subscription, onEvent);
   }
 
-  private showDialog() {
-    this.dialog
+  private showDialog(source: string, showInfo = true): Observable<any> {
+    return this.dialog
       .open(ReplaceAddressDialogComponent, {
-        data: {},
+        data: <ReplaceAddressDialogData>{ source: source, showInfo: showInfo },
       })
-      .afterClosed()
-      .subscribe((data) => console.log(data));
+      .afterClosed();
   }
 }

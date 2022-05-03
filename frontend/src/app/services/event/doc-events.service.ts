@@ -15,6 +15,11 @@ export interface ErrorWithHandled {
   };
 }
 
+export interface DocEvent {
+  type: string;
+  data?: any;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -25,6 +30,7 @@ export class DocEventsService {
   private _afterLoadAndSet$ = new Subject<any>();
 
   private _onError$ = new Subject<ErrorWithHandled>();
+  private _event = new Subject<DocEvent>();
 
   constructor(private router: Router) {}
 
@@ -81,5 +87,13 @@ export class DocEventsService {
 
   onError(address: boolean) {
     return this._onError$.pipe(filter(() => this.belongsToThisPage(address)));
+  }
+
+  sendEvent(event: DocEvent) {
+    this._event.next(event);
+  }
+
+  onEvent(type: string) {
+    return this._event.pipe(filter((eventItem) => eventItem.type === type));
   }
 }

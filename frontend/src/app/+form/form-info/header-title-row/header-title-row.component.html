@@ -51,11 +51,17 @@
         *ngIf="showMoreActions"
         mat-icon-button
         class="menu dark menu-button"
-        [matMenuTriggerFor]="moreActions"
+        [matMenuTriggerFor]="moreActionsMenu"
     >
         <mat-icon svgIcon="Mehr"></mat-icon>
-        <mat-menu #moreActions="matMenu">
-            <button mat-menu-item>Adresse ersetzen</button>
+        <mat-menu #moreActionsMenu="matMenu">
+            <button
+                mat-menu-item
+                *ngFor="let action of moreActions"
+                (click)="action.action()"
+            >
+                {{ action.title }}
+            </button>
         </mat-menu>
     </button>
 </div>

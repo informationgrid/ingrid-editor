@@ -1,4 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
+import { DocumentService } from "../../../../../services/document/document.service";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+
+export interface ReplaceAddressDialogData {
+  source: string;
+  showInfo: boolean;
+}
 
 @Component({
   selector: "ige-replace-address-dialog",
@@ -7,11 +14,26 @@ import { Component, OnInit } from "@angular/core";
 })
 export class ReplaceAddressDialogComponent implements OnInit {
   page: number = 0;
-  selectedAddress: any[];
+  selectedAddress: string[];
 
-  constructor() {}
+  private source: string;
+  showInfo = true;
 
-  ngOnInit(): void {}
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,
+    private documentService: DocumentService
+  ) {
+    this.source = data.source;
+    this.showInfo = data.showInfo;
+  }
 
-  pan($event) {}
+  ngOnInit(): void {
+    if (!this.showInfo) this.page = 1;
+  }
+
+  replaceAddress() {
+    this.documentService
+      .replaceAddress(this.source, this.selectedAddress[0])
+      .subscribe(() => this.page++);
+  }
 }
