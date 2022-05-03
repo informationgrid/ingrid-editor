@@ -31,6 +31,7 @@
             <mat-icon
                 [svgIcon]="docIcon"
                 [title]="form?.get('title')?.value"
+                [matTooltip]="form?.get('title')?.value"
                 [ngClass]="['document-icon', state]"
             ></mat-icon>
         </div>

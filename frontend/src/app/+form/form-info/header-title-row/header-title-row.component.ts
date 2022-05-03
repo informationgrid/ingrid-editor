@@ -28,6 +28,7 @@ export class HeaderTitleRowComponent implements OnInit {
     this._model = value;
     this.stateClass = this.getStateClass(value);
     this.icon = this.getIcon(value);
+    this.docTypeLabel = this.getDocumentType(value);
   }
 
   @Input() sections: string[];
@@ -40,6 +41,7 @@ export class HeaderTitleRowComponent implements OnInit {
   _model: IgeDocument;
   stateClass: string;
   icon: string;
+  docTypeLabel: string;
   showTitleInput = false;
   showMore = false;
 
@@ -63,6 +65,10 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private getIcon(doc: IgeDocument) {
     return this.profileService.getDocumentIcon(doc);
+  }
+
+  private getDocumentType(doc: IgeDocument) {
+    return this.profileService.getProfile(doc._type).label;
   }
 
   private getStateClass(model) {
