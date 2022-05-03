@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostDefaultUploadSaver @Autowired constructor(val storage: Storage) : Filter<PostUpdatePayload> {
 
-    override val profiles = arrayOf("mcloud")
+    override val profiles = arrayOf("mcloud", "uvp")
 
     override fun invoke(payload: PostUpdatePayload, context: Context): PostUpdatePayload {
         val docId = payload.document.uuid

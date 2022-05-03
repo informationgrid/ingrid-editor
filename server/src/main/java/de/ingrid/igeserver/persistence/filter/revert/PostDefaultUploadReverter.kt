@@ -16,7 +16,7 @@ class PostDefaultUploadReverter @Autowired constructor(
 ) :
     Filter<PostRevertPayload> {
 
-    override val profiles = arrayOf("mcloud")
+    override val profiles = arrayOf("mcloud", "uvp")
 
     override fun invoke(payload: PostRevertPayload, context: Context): PostRevertPayload {
         val docId = payload.document.uuid
