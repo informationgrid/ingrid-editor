@@ -16,6 +16,12 @@
     "uvp_address": [
         "${page.getUvpAddressAsString()}"
     ],
+    "uvp_number": ["${page.getUvpNumbersAsString("uvpg")}"],
+    "uvp_category": ["${page.getUvpNumbersAsString("category")}"],
+    "uvp_category_type": ["${page.getUvpNumbersAsString("type")}"],
+    "uvp_steps": [],
+    "needs_examination": false,
+    "approval_date": null,
     "location": ["${page.getSpatialTitle()}"],
     "created": "${page.get_created().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
     "modified": "${page.get_modified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",

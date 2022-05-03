@@ -98,6 +98,16 @@ data class UVPModel(
     fun getUvpNumbers(): List<UVPNumber> {
         return data.uvpNumbers
     }
+    fun getUvpNumbersAsString(field: String): String {
+        return getUvpNumbers()
+            .mapNotNull { when (field) {
+                "uvpg" -> it.uvpg
+                "type" -> it.type
+                "category" -> it.category
+                else -> null
+            } }
+            .joinToString("\", \"")
+    }
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
