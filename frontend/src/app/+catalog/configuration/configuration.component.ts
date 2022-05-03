@@ -12,6 +12,7 @@ import { CatalogService } from "../services/catalog.service";
 export class ConfigurationComponent implements OnInit {
   form = new FormGroup({});
   fields = fields(this.codelistService);
+  model: any = {};
 
   constructor(
     private codelistService: CodelistService,
@@ -19,9 +20,7 @@ export class ConfigurationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.catalogService
-      .getConfig()
-      .subscribe((value) => this.form.setValue(value));
+    this.catalogService.getConfig().subscribe((value) => (this.model = value));
   }
 
   save() {

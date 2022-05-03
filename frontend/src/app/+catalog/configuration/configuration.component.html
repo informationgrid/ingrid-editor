@@ -14,7 +14,11 @@
 
     <div main-content fxFlex class="main">
         <div class="scrollable">
-            <formly-form [form]="form" [fields]="fields"></formly-form>
+            <formly-form
+                [form]="form"
+                [model]="model"
+                [fields]="fields"
+            ></formly-form>
         </div>
     </div>
 </page-template>
