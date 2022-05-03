@@ -27,7 +27,6 @@ import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.ConflictHandling;
 import de.ingrid.mdek.upload.storage.Storage;
 import de.ingrid.mdek.upload.storage.StorageItem;
-import de.ingrid.mdek.upload.storage.impl.Scope;
 import de.ingrid.mdek.upload.storage.validate.IllegalNameException;
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import org.apache.logging.log4j.LogManager;
@@ -40,31 +39,12 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.CopyOption;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -814,6 +794,28 @@ public class FileSystemStorage implements Storage {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
                 throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+    }
+
+    @Override
+    public void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException{
+        var unpublishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.UNPUBLISHED);
+        var publishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.PUBLISHED);
+
+
+        final CopyOption[] copyOptions = {StandardCopyOption.REPLACE_EXISTING};
+
+        Stream.concat(unpublishedFiles.stream(),publishedFiles.stream()).forEach(f -> {
+            try {
+                var existingFile = ((FileSystemItem) f).getRealPath();
+
+                var targetPath = this.getUnpublishedPath(catalog, targetDatasetId, f.getRelativePath(), this.docsDir);
+                Files.createDirectories(targetPath.getParent());
+                Files.copy(existingFile, targetPath, copyOptions);
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);

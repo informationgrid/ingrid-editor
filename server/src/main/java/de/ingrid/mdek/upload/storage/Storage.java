@@ -23,9 +23,7 @@
 package de.ingrid.mdek.upload.storage;
 
 import de.ingrid.mdek.upload.ConflictException;
-import de.ingrid.mdek.upload.UploadException;
 import de.ingrid.mdek.upload.ValidationException;
-import de.ingrid.mdek.upload.storage.impl.FileSystemItem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -210,6 +208,15 @@ public interface Storage {
      * @throws IOException
      */
     void discardUnpublished(String catalog, String datasetID) throws IOException;
+
+    /**
+     * copy files from unpublished state and published state from source dataset to target dataset in unpublished state
+     *
+     * @param sourceDatasetID The UUID of the source dataset
+     * @param targetDatasetId The UUID of the target dataset
+     * @throws IOException
+     */
+    void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException;
 
     /**
      * remove files from unsaved state

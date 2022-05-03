@@ -11,6 +11,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.mdek.upload.storage.Storage
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -32,7 +33,8 @@ class DatasetsApiController @Autowired constructor(
     private val catalogService: CatalogService,
     private val docWrapperRepo: DocumentWrapperRepository,
     private val documentService: DocumentService,
-    private val aclService: IgeAclService
+    private val aclService: IgeAclService,
+    private val storage: Storage,
 ) : DatasetsApi {
 
     private val log = logger()
@@ -150,6 +152,7 @@ class DatasetsApiController @Autowired constructor(
         isAddress: Boolean
     ): JsonNode {
         val origParentId = doc[FIELD_ID].asInt()
+        val origParentUUID = doc[FIELD_UUID].asText()
 
         val objectNode = doc as ObjectNode
 
@@ -166,6 +169,8 @@ class DatasetsApiController @Autowired constructor(
 
         val copiedParent =
             documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false) as ObjectNode
+
+        storage.copyToUnpublished(catalogId, origParentUUID, copiedParent[FIELD_UUID].asText())
 
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent, origParentId, options, isAddress)
