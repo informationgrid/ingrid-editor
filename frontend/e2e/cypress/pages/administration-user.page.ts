@@ -170,7 +170,9 @@ export class AdminUserPage extends BasePage {
     cy.get('.page-title').contains('Nutzer (');
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
     cy.contains('user-table .mat-row', name).click();
-    cy.get('#formUser').should('be.visible');
+    // waiting for form to be shown can lead to error when we test dirty check
+    // and a dialog appears which overlays the formUser element
+    // cy.get('#formUser').should('be.visible');
   }
 
   static clearSearch() {

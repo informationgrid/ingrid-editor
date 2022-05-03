@@ -70,7 +70,7 @@ export class AdminGroupPage extends BasePage {
   static selectGroup(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table').contains(name).click();
-    cy.get('#formRoles').should('be.visible');
+    // cy.get('#formRoles').should('be.visible');
   }
 
   static clearSearch() {
