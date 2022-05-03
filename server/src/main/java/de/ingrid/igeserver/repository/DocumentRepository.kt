@@ -27,20 +27,43 @@ interface DocumentRepository : JpaRepository<Document, Int> {
      * This function is only allowed for catalog administrators and above, since documents might be changed
      * an author does not have access to.
      */
+    @Modifying
     @PreAuthorize("hasAnyRole('cat-admin', 'ige-super-admin')")
-    @Query(
-        """
+//    @Query(
+/*        """
         UPDATE document
-            SET data = replace(data::text, '"ref": "?2"',
-               '"ref": "?3"')::jsonb
+            SET data = replace(data::text, CONCAT('"ref": ', ?2), CONCAT('"ref": ', ?3))::jsonb
             WHERE id IN (SELECT doc.id as docId
                  FROM catalog,
                       document_wrapper dw, document doc
                  WHERE dw.catalog_id = catalog.id AND catalog.identifier = ?1 AND dw.deleted = 0
                    AND (dw.published = doc.id OR dw.draft = doc.id)
                    AND dw.category = 'data'
-                   AND doc.data::text ilike '%"ref": "?2"%')
+                   AND doc.data::text ilike CONCAT('%"ref": "', ?2, '%'))
+        """, nativeQuery = true
+    )*/
+    @Query(
+        value = """
+        UPDATE document
+        SET data = (replace(data\:\:text, :source, :target)\:\:jsonb)
+        WHERE id IN :refIds
         """, nativeQuery = true
     )
-    fun replaceReference(catalogId: String, source: String, target: String)
+    fun replaceReference(
+        @Param("source") source: String,
+        @Param("target") target: String,
+        @Param("refIds") refIds: List<Int>
+    )
+    
+    @Modifying
+    @Query(value = """
+        SELECT doc.id as docId
+                     FROM catalog,
+                          document_wrapper dw, document doc
+                     WHERE dw.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
+                       AND (dw.published = doc.id OR dw.draft = doc.id)
+                       AND dw.category = 'data'
+                       AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
+    """, nativeQuery = true)
+    fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
 }
