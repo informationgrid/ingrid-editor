@@ -6,9 +6,10 @@
 
 .steps {
   position: relative;
+  margin: 1px;
 }
 
-.btnRemove {
+.menu-button {
   position: absolute;
   top: 0;
   right: 0;
@@ -26,8 +27,20 @@ ige-section-wrapper {
   }
 }
 
-button {
+.add-button {
   margin-bottom: 24px;
+}
+
+.elevated {
+  margin: -5px;
+  padding: 5px;
+
+  &.menu-button {
+    margin: 0;
+    padding: 0;
+    top: 5px;
+    right: 5px;
+  }
 }
 
 .mat-divider {

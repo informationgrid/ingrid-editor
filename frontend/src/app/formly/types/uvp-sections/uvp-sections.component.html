@@ -3,25 +3,29 @@
         *ngFor="let currentField of field.fieldGroup; let i = index"
         class="steps"
         [class.mat-elevation-z4]="markSection[i]"
+        [class.elevated]="markSection[i]"
     >
         <formly-field [field]="currentField"></formly-field>
         <button
             type="button"
-            class="btnRemove"
+            class="menu dark menu-button"
+            [class.elevated]="markSection[i]"
             mat-icon-button
-            color="warn"
-            (click)="removeSection(i)"
             (mouseenter)="markSection[i] = true"
             (mouseleave)="markSection[i] = false"
+            [matMenuTriggerFor]="sectionMenu"
         >
-            <mat-icon>close</mat-icon>
+            <mat-icon svgIcon="Mehr"></mat-icon>
         </button>
+        <mat-menu #sectionMenu="matMenu">
+            <button mat-menu-item (click)="removeSection(i)">Löschen</button>
+        </mat-menu>
     </div>
     <div style="display: flex; justify-content: center">
         <button
             mat-flat-button
             color="primary"
-            class="button-square-icon padding-btn"
+            class="button-square-icon padding-btn add-button"
             [matMenuTriggerFor]="menu"
         >
             <mat-icon color="white">add</mat-icon>

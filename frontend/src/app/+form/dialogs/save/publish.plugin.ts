@@ -108,6 +108,11 @@ export class PublishPlugin extends SaveBase {
       isPrimary: true,
       menu: [
         {
+          eventId: this.eventPublishId,
+          label: "Jetzt veröffentlichen",
+          active: true,
+        },
+        {
           eventId: this.eventPlanPublishId,
           label: "Planen",
           active: true,

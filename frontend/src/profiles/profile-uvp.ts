@@ -52,9 +52,9 @@ class UVPComponent {
   }
 
   private modifyFormHeader(service: ProfileService) {
-    service.updateUIProfileStore({
+    /*    service.updateUIProfileStore({
       hideFormHeaderInfos: ["type"],
-    });
+    });*/
   }
 
   private addBehaviour(
