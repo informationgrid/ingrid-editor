@@ -10,7 +10,7 @@ import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { filter } from "rxjs/operators";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @UntilDestroy()
 @Injectable()
@@ -25,6 +25,7 @@ export class CreateDocumentPlugin extends Plugin {
   constructor(
     private config: ConfigService,
     private toolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
@@ -42,8 +43,8 @@ export class CreateDocumentPlugin extends Plugin {
     this.initializeButton();
 
     // add event handler for revert
-    const toolbarEventSubscription = this.toolbarService.toolbarEvent$
-      .pipe(filter((eventId) => eventId === "NEW_DOC"))
+    const toolbarEventSubscription = this.docEvents
+      .onEvent("NEW_DOC")
       .subscribe(() => this.newDoc());
 
     this.subscriptions.push(toolbarEventSubscription);

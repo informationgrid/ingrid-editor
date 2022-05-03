@@ -6,11 +6,11 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { catchError, filter, finalize } from "rxjs/operators";
+import { catchError, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
-import { MessageService } from "../../../services/message.service";
 import { SessionStore } from "../../../store/session.store";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -26,7 +26,7 @@ export class SavePlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
-    public messageService: MessageService,
+    private docEvents: DocEventsService,
     private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
@@ -55,8 +55,8 @@ export class SavePlugin extends SaveBase {
     });
 
     // add event handler for revert
-    const toolbarEventSubscription = this.formToolbarService.toolbarEvent$
-      .pipe(filter((eventId) => eventId === "SAVE"))
+    const toolbarEventSubscription = this.docEvents
+      .onEvent("SAVE")
       .subscribe(() => {
         const form: IgeDocument = this.getForm()?.value;
         if (form) {

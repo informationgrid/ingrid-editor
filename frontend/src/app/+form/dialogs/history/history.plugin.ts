@@ -14,6 +14,7 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { Router } from "@angular/router";
 import { UpdateType } from "../../../models/update-type.enum";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -40,6 +41,7 @@ export class HistoryPlugin extends Plugin {
   constructor(
     private router: Router,
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private docTreeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
     private docTreeQuery: TreeQuery,
@@ -114,14 +116,13 @@ export class HistoryPlugin extends Plugin {
   }
 
   private handleEvents() {
-    // react on event when button is clicked
-    this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-      if (eventId === "HISTORY_NEXT") {
-        this.handleNext();
-      } else if (eventId === "HISTORY_PREVIOUS") {
-        this.handlePrevious();
-      }
-    });
+    this.subscriptions.push(
+      // react on event when button is clicked
+      this.docEvents.onEvent("HISTORY_NEXT").subscribe(() => this.handleNext()),
+      this.docEvents
+        .onEvent("HISTORY_PREVIOUS")
+        .subscribe(() => this.handlePrevious())
+    );
   }
 
   private addToolbarButtons() {

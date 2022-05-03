@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormGroup } from "@angular/forms";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -22,7 +23,10 @@ export class UndoPlugin extends Plugin {
     return this._name;
   }
 
-  constructor(private formToolbarService: FormToolbarService) {
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService
+  ) {
     super();
   }
 
@@ -32,14 +36,10 @@ export class UndoPlugin extends Plugin {
     this.addToolbarButtons();
 
     // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventUndoId) {
-          this.undo();
-        } else if (eventId === this.eventRedoId) {
-          this.redo();
-        }
-      });
+    const toolbarEventSubscription = [
+      this.docEvents.onEvent(this.eventUndoId).subscribe(() => this.undo()),
+      this.docEvents.onEvent(this.eventRedoId).subscribe(() => this.redo()),
+    ];
 
     /*const afterLoadSubscription = this.docEvents
       .afterLoadAndSet$(this.forAddress)
@@ -64,7 +64,7 @@ export class UndoPlugin extends Plugin {
         );
         // }
       });*/
-    this.subscriptions.push(toolbarEventSubscription);
+    this.subscriptions.push(...toolbarEventSubscription);
   }
 
   private addToolbarButtons() {

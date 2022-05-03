@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { SessionStore } from "../../../../store/session.store";
+import { DocEventsService } from "../../../../services/event/doc-events.service";
 
 @Injectable()
 export class ShowJsonBehaviour extends Plugin {
@@ -15,6 +16,7 @@ export class ShowJsonBehaviour extends Plugin {
 
   constructor(
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private sessionStore: SessionStore
   ) {
     super();
@@ -38,12 +40,9 @@ export class ShowJsonBehaviour extends Plugin {
     });
 
     // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventShowJsonId) {
-          this.toggleJSONView();
-        }
-      });
+    const toolbarEventSubscription = this.docEvents
+      .onEvent(this.eventShowJsonId)
+      .subscribe(() => this.toggleJSONView());
 
     this.subscriptions.push(toolbarEventSubscription);
   }
