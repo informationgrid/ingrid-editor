@@ -9,3 +9,9 @@ mat-dialog-content {
 .mat-dialog-title {
   cursor: move;
 }
+
+:host {
+  ::ng-deep .label-wrapper {
+    padding-top: 0.8em !important;
+  }
+}
