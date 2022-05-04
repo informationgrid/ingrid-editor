@@ -63,7 +63,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       .subscribe((time) => {
         if (time % 60 == 0 || time < 300) {
           duration = this.calculateDuration();
-          this.updateStore(time);
+          this.updateStore(duration);
         }
       });
   }
