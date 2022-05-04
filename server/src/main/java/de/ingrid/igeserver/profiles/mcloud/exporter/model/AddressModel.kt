@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
@@ -46,13 +47,21 @@ data class AddressModel(
         if (parentId == null) return emptyAddress
 
         val parentAddress = documentService?.getWrapperByDocumentId(parentId) ?: return emptyAddress
+        if (parentAddress.type == "FOLDER") {
+            throw ServerException.withReason("Folder not allowed as parent of inherited address")
+        }
 
         val jsonParentAddress = parentAddress.published?.data?.get("address") ?: return emptyAddress
         val parent = jacksonObjectMapper().readValue(jsonParentAddress.toString(), Address::class.java)
 
-        return if (parent.inheritAddress)
-            getAddressInformationFromParent(parentAddress.parent?.id)
-        else parent
+        return try {
+            if (parent.inheritAddress && parentAddress.parent?.id != null)
+                getAddressInformationFromParent(parentAddress.parent?.id)
+            else parent
+        } catch(ex: ServerException) {
+            // parent probably was a folder and inherited field accidentally was set to true
+            parent
+        }
 
     }
 
