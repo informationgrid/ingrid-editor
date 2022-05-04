@@ -93,7 +93,7 @@ export class AddressPage extends DocumentPage {
   }
 
   static editOrganizationName(name: string = 'Organization' + Utils.randomString()) {
-    cy.get("[data-cy='Organisation'] input").clear().type(name);
+    cy.get("[data-cy='Bezeichnung'] input").clear().type(name);
   }
 
   static addStreetName(name: string = Utils.randomDoubleDigitString() + '. Street') {
