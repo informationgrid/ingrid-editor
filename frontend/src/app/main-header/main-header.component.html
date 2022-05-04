@@ -27,6 +27,7 @@
                 class="catalog-title"
                 [matTooltip]="currentCatalog"
                 [matMenuTriggerFor]="catMenu"
+                [class.empty-menu]="otherAssignedCatalogs.length == 0"
                 >{{ currentCatalog }}
                 <mat-icon *ngIf="otherAssignedCatalogs.length > 0"
                     >keyboard_arrow_down</mat-icon

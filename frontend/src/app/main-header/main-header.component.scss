@@ -36,6 +36,13 @@ ige-session-timeout-info {
   display: inline-flex;
   align-items: center;
   color: $ige-primary;
+  cursor: pointer;
+  pointer-events: auto;
+
+  &.empty-menu {
+    cursor: text;
+    pointer-events: none;
+  }
 }
 
 .link-button ::ng-deep .mat-button-wrapper {
