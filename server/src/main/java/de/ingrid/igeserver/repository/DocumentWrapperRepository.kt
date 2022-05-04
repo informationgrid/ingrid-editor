@@ -12,27 +12,27 @@ import java.util.*
 
 interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
 
-    @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
+    @PostAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     override fun findById(id: Int): Optional<DocumentWrapper>
 
     @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.id = ?1")
     fun findByIdNoPermissionCheck(id: Int): DocumentWrapper
 
-    @PostAuthorize("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(returnObject, 'READ')")
+    @PostAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
 
     fun existsById(uuid: String): Boolean
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d")
     fun getAll(): List<DocumentWrapper?>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
         catalog_identifier: String, parentUuid: String?, category: String
     ): List<DocumentWrapper>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findByParent_id(parent_id: Int): List<DocumentWrapper>
 
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.type != 'FOLDER' AND d.deleted != 1")
@@ -41,19 +41,19 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.deleted != 1")
     fun findAllDocumentsAndFoldersByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = ?2 AND d.deleted != 1")
     fun findAllByCatalog_IdentifierAndCategory(catalog_identifier: String, category: String): List<DocumentWrapper>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.draft IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1")
     fun findAllDrafts(catalogId: String): List<DocumentWrapper>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.published IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1" )
     fun findAllPublished(catalogId: String): List<DocumentWrapper>
 
-    @PostFilter("hasAnyRole('cat-admin', 'ige-super-admin') || hasPermission(filterObject, 'READ')")
+    @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.pending IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1" )
     fun findAllPending(catalogId: String): List<DocumentWrapper>
 
