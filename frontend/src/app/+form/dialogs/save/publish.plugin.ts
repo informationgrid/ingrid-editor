@@ -19,7 +19,6 @@ import {
   BeforePublishData,
   DocEventsService,
 } from "../../../services/event/doc-events.service";
-import { MessageService } from "../../../services/message.service";
 import { SessionStore } from "../../../store/session.store";
 
 @Injectable()
@@ -41,7 +40,6 @@ export class PublishPlugin extends SaveBase {
 
   constructor(
     public formToolbarService: FormToolbarService,
-    public messageService: MessageService,
     private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
@@ -63,23 +61,25 @@ export class PublishPlugin extends SaveBase {
     this.addToolbarButtons();
 
     // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventRevertId) {
-          this.revert();
-        } else if (eventId === this.eventPublishId) {
-          if (this.validateBeforePublish()) this.publish();
-        } else if (eventId === this.eventPlanPublishId) {
-          if (this.validateBeforePublish()) this.showPlanPublishingDialog();
-        } else if (eventId === this.eventUnpublishId) {
-          this.showUnpublishDialog();
-        }
-      });
+    const toolbarEventSubscription = [
+      this.docEvents.onEvent(this.eventRevertId).subscribe(() => this.revert()),
+      this.docEvents
+        .onEvent(this.eventPublishId)
+        .subscribe(() => this.validateBeforePublish() && this.publish()),
+      this.docEvents
+        .onEvent(this.eventPlanPublishId)
+        .subscribe(
+          () => this.validateBeforePublish() && this.showPlanPublishingDialog()
+        ),
+      this.docEvents
+        .onEvent(this.eventUnpublishId)
+        .subscribe(() => this.showUnpublishDialog()),
+    ];
 
     // add behaviour to set active states for toolbar buttons
     const behaviourSubscription = this.addBehaviour();
 
-    this.subscriptions.push(toolbarEventSubscription, behaviourSubscription);
+    this.subscriptions.push(...toolbarEventSubscription, behaviourSubscription);
   }
 
   private setupTree() {

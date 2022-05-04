@@ -48,9 +48,23 @@
     >
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
-    <!--    <button mat-icon-button class="menu dark menu-button">
+    <button
+        *ngIf="showMoreActions"
+        mat-icon-button
+        class="menu dark menu-button"
+        [matMenuTriggerFor]="moreActionsMenu"
+    >
         <mat-icon svgIcon="Mehr"></mat-icon>
-    </button>-->
+        <mat-menu #moreActionsMenu="matMenu">
+            <button
+                mat-menu-item
+                *ngFor="let action of moreActions"
+                (click)="action.action()"
+            >
+                {{ action.title }}
+            </button>
+        </mat-menu>
+    </button>
 </div>
 
 <ige-header-more [showMore]="showMore" [model]="_model"></ige-header-more>

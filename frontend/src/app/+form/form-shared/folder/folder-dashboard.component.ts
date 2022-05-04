@@ -12,6 +12,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @UntilDestroy()
 @Component({
@@ -36,6 +37,7 @@ export class FolderDashboardComponent {
     private addressTreeQuery: AddressTreeQuery,
     private configService: ConfigService,
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private router: Router,
     private docService: DocumentService,
     private formStateService: FormStateService,
@@ -74,11 +76,11 @@ export class FolderDashboardComponent {
   }
 
   createNewFolder() {
-    this.formToolbarService.toolbarEvent$.next("CREATE_FOLDER");
+    this.docEvents.sendEvent({ type: "CREATE_FOLDER" });
   }
 
   createNewDataset() {
-    this.formToolbarService.toolbarEvent$.next("NEW_DOC");
+    this.docEvents.sendEvent({ type: "NEW_DOC" });
   }
 
   async openDocument(uuid: string) {

@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 export interface DefaultToolbarItem {
   id: string;
@@ -35,11 +36,11 @@ export class FormToolbarService {
   toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
   // events coming from a toolbar button
-  toolbarEvent$ = new Subject<string>();
+  // toolbarEvent$ = new Subject<string>();
 
   private _buttons: Array<ToolbarItem | Separator> = [];
 
-  constructor() {}
+  constructor(private docEvents: DocEventsService) {}
 
   get buttons(): Array<ToolbarItem | Separator> {
     return this._buttons;
@@ -77,7 +78,7 @@ export class FormToolbarService {
   sendEvent(eventId: string) {
     // remove focus to prevent sending event by pressing space bar when focus didn't change
     (<HTMLButtonElement>document.activeElement).blur();
-    this.toolbarEvent$.next(eventId);
+    this.docEvents.sendEvent({ type: eventId });
   }
 
   /**

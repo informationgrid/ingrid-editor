@@ -885,4 +885,11 @@ class DocumentService @Autowired constructor(
             *literals.toTypedArray()
         )
     }
+
+    @Transactional
+    fun replaceAddress(catalogId: String, source: String, target: String) {
+        val refIds = docRepo.getDocIdsWithReferenceTo(catalogId, """\: \"$source\"""")
+//        println(refIds.joinToString(", "))
+        docRepo.replaceReference(source, target, refIds)
+    }
 }

@@ -2,10 +2,10 @@ import java.nio.file.Paths
 import gg.jte.ContentType
 
 buildscript {
-    ext.kotlin_version = '1.6.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.6.6'
-    ext.hibernate_version = '5.6.5.Final'
-    ext.jackson_version = '2.13.1'
+    ext.kotlin_version = '1.6.21' // Required for Kotlin integration
+    ext.spring_boot_version = '2.6.7'
+    ext.hibernate_version = '5.6.7.Final'
+    ext.jackson_version = '2.13.2'
     ext.kotest_version = '5.0.3' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
     repositories {
         mavenCentral()
@@ -25,7 +25,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.2.0'
+    id 'com.google.cloud.tools.jib' version '3.2.1'
     id "com.gorylenko.gradle-git-properties" version "2.4.0"
     id 'io.kotest' version '0.3.8'
     id "com.github.ben-manes.versions" version "0.42.0"
@@ -76,7 +76,7 @@ if (hasProperty('buildProfile')) {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.apache.logging.log4j:log4j-api-kotlin:1.1.0"
+    implementation "org.apache.logging.log4j:log4j-api-kotlin:1.2.0"
     implementation "org.apache.tika:tika-core:1.22"
     implementation "org.glassfish.jersey.media:jersey-media-multipart:2.32"
 
@@ -104,7 +104,7 @@ dependencies {
 //    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.32'
+    implementation 'net.pwall.json:json-kotlin-schema:0.34'
 
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.4'
@@ -181,6 +181,11 @@ if (hasProperty('filename')) {
 
 jar {
     enabled = false
+
+    // This line of code recursively collects and copies all of a project's files
+    // and adds them to the JAR itself. One can extend this task, to skip certain
+    // files or particular types at will
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 allOpen {

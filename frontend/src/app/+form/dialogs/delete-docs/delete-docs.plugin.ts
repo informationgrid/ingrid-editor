@@ -14,6 +14,7 @@ import { EventService, IgeEvent } from "../../../services/event/event.service";
 import { filter, take, tap } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -30,6 +31,7 @@ export class DeleteDocsPlugin extends Plugin {
 
   constructor(
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
@@ -56,12 +58,10 @@ export class DeleteDocsPlugin extends Plugin {
     });
 
     this.subscriptions.push(
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === "DELETE") {
-          this.eventService
-            .sendEventAndContinueOnSuccess(IgeEvent.DELETE)
-            .subscribe(() => this.showDeleteDialog());
-        }
+      this.docEvents.onEvent("DELETE").subscribe(() => {
+        this.eventService
+          .sendEventAndContinueOnSuccess(IgeEvent.DELETE)
+          .subscribe(() => this.showDeleteDialog());
       }),
 
       this.tree.selectActive().subscribe((data) => {

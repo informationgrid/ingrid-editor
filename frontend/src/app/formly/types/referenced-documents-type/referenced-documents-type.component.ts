@@ -60,6 +60,7 @@ export class ReferencedDocumentsTypeComponent
 
     this.documentService.reload$
       .pipe(
+        untilDestroyed(this),
         filter(() => this.showReferences),
         map((item) => item.uuid)
       )

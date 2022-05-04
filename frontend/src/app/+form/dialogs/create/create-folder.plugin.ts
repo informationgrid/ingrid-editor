@@ -11,6 +11,7 @@ import { DocumentService } from "../../../services/document/document.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @UntilDestroy()
 @Injectable()
@@ -31,6 +32,7 @@ export class CreateFolderPlugin extends Plugin {
   constructor(
     private config: ConfigService,
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
@@ -55,12 +57,9 @@ export class CreateFolderPlugin extends Plugin {
     });
 
     // add event handler for revert
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === this.eventCreateFolderId) {
-          this.createFolder();
-        }
-      });
+    const toolbarEventSubscription = this.docEvents
+      .onEvent(this.eventCreateFolderId)
+      .subscribe(() => this.createFolder());
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(

@@ -39,7 +39,7 @@ export class AddressCardComponent implements OnInit {
     emailOrPhone: string;
   };
   invalidAddressReference = false;
-  stateInfo: String = "";
+  stateInfo: string = "";
 
   constructor(private profileService: ProfileService) {}
 

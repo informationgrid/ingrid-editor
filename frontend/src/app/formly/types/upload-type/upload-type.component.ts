@@ -9,7 +9,7 @@ interface LinkType {
   value: string;
   uri: string;
   asLink: boolean;
-  documentID: String;
+  documentID: string;
 }
 
 @UntilDestroy()

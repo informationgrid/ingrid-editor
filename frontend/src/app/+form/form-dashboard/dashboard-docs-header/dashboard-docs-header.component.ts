@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Component({
   selector: "dashboard-docs-header",
@@ -10,16 +10,16 @@ export class DashboardDocsHeaderComponent implements OnInit {
   @Input() canCreateDatasets: boolean;
   @Input() canImport: boolean;
 
-  constructor(private formToolbarService: FormToolbarService) {}
+  constructor(private docEvents: DocEventsService) {}
 
   ngOnInit(): void {}
 
   createNewFolder() {
-    this.formToolbarService.toolbarEvent$.next("CREATE_FOLDER");
+    this.docEvents.onEvent("CREATE_FOLDER");
   }
 
   createNewDataset() {
-    this.formToolbarService.toolbarEvent$.next("NEW_DOC");
+    this.docEvents.onEvent("NEW_DOC");
   }
 
   importDataset() {}

@@ -321,6 +321,10 @@ export class DocumentService {
 
   private handleDeleteError(error): Observable<any> {
     const errorCode = error?.error?.errorCode;
+
+    const handled = this.docEvents.sendOnError(errorCode);
+    if (handled) return of();
+
     switch (errorCode) {
       case "IS_REFERENCED_ERROR":
         this.handleIsReferencedError(error);
@@ -801,6 +805,13 @@ export class DocumentService {
       entity.title,
       entity.hasOnlySubtreeWritePermission,
       !entity.hasWritePermission
+    );
+  }
+
+  replaceAddress(source: string, target: string): Observable<any> {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${source}/replaceAddress/${target}`,
+      null
     );
   }
 }

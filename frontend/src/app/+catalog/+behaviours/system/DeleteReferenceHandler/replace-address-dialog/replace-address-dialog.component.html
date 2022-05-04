@@ -1,0 +1,79 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">Adresse ersetzen</span>
+        </h2>
+    </div>
+    <mat-dialog-content>
+        <div class="slider">
+            <div
+                #slideContainer
+                class="slide-container"
+                [class.animate]="true"
+                [style.transform]="'translateX(-' + page * 100 + '%)'"
+            >
+                <div *ngIf="showInfo" class="slide">
+                    <p>
+                        Das Dokument wird bereits von mindestens einem Dokument
+                        referenziert. Möchten Sie die Adresse ersetzen?
+                    </p>
+                </div>
+                <div class="slide">
+                    <p>
+                        Bitte wählen Sie die Adresse aus, die in den
+                        referenzierten Datensätzen ersetzt werden soll:
+                    </p>
+                    <ige-tree
+                        style="width: 300px"
+                        [forAddresses]="true"
+                        (activate)="selectedAddress = $event"
+                    ></ige-tree>
+                </div>
+                <div class="slide">
+                    <p>Die Adresse wurde erfolgreich ersetzt.</p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button
+            *ngIf="page !== (showInfo ? 2 : 1)"
+            mat-button
+            mat-dialog-close
+            data-cy="dialog-abort"
+        >
+            Abbrechen
+        </button>
+        <div fxFlex></div>
+        <button
+            *ngIf="showInfo && page === 0"
+            mat-flat-button
+            color="primary"
+            data-cy="dialog-choose-address"
+            (click)="page = page + 1"
+        >
+            Adresse auswählen
+        </button>
+        <button
+            *ngIf="page === (showInfo ? 1 : 0)"
+            mat-flat-button
+            color="primary"
+            data-cy="dialog-replace-address"
+            [disabled]="!selectedAddress"
+            (click)="replaceAddress()"
+        >
+            Adresse ersetzen
+        </button>
+        <button
+            *ngIf="page === (showInfo ? 2 : 1)"
+            mat-flat-button
+            color="primary"
+            [mat-dialog-close]="true"
+        >
+            Schließen
+        </button>
+    </mat-dialog-actions>
+</div>

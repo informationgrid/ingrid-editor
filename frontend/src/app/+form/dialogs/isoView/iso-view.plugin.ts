@@ -3,6 +3,7 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class IsoViewPlugin extends Plugin {
@@ -12,6 +13,7 @@ export class IsoViewPlugin extends Plugin {
 
   constructor(
     private formToolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private dialog: MatDialog
   ) {
     super();
@@ -35,12 +37,9 @@ export class IsoViewPlugin extends Plugin {
     });
 
     // react on event when button is clicked
-    const toolbarEventSubscription =
-      this.formToolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === "ISO") {
-          this.showISODialog();
-        }
-      });
+    const toolbarEventSubscription = this.docEvents
+      .onEvent("ISO")
+      .subscribe(() => this.showISODialog());
 
     /*
     this.formService.selectedDocuments$.subscribe( data => {

@@ -18,7 +18,7 @@ export class Group {
 }
 
 export class FrontendGroup extends Group {
-  manager?: String;
+  manager?: string;
 }
 
 export class GroupData {

@@ -21,6 +21,7 @@ import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -44,6 +45,7 @@ export class CopyCutPastePlugin extends Plugin {
   constructor(
     private config: ConfigService,
     private toolbarService: FormToolbarService,
+    private docEvents: DocEventsService,
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private treeQuery: TreeQuery,
@@ -79,17 +81,11 @@ export class CopyCutPastePlugin extends Plugin {
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
     // add event handler for revert
-    const toolbarEventSubscription =
-      this.toolbarService.toolbarEvent$.subscribe((eventId) => {
-        if (eventId === "COPY") {
-          // this.handleEvent(UpdateType.Copy);
-          this.copy();
-        } else if (eventId === "CUT") {
-          this.cut();
-        } else if (eventId === "COPYTREE") {
-          this.copy(true);
-        }
-      });
+    const toolbarEventSubscription = [
+      this.docEvents.onEvent("COPY").subscribe(() => this.copy()),
+      this.docEvents.onEvent("CUT").subscribe(() => this.cut()),
+      this.docEvents.onEvent("COPYTREE").subscribe(() => this.copy(true)),
+    ];
 
     // set button state according to selected documents
     const treeQuerySubscription = this.query
@@ -129,7 +125,7 @@ export class CopyCutPastePlugin extends Plugin {
         }
       });
 
-    this.subscriptions.push(toolbarEventSubscription, treeQuerySubscription);
+    this.subscriptions.push(...toolbarEventSubscription, treeQuerySubscription);
   }
 
   private async checkForParentsWithSelectedChildren(
