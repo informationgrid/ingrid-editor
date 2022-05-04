@@ -31,7 +31,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 })
 export class LinkDialogComponent {
   private URL_REGEXP =
-    "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
+    "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?;&//=]*)";
 
   form = new FormGroup({
     title: new FormControl(),
