@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
+import { TreeNode } from "../../../../../store/tree/tree-node.model";
 
 export interface ReplaceAddressDialogData {
   source: string;
@@ -19,6 +20,7 @@ export class ReplaceAddressDialogComponent implements OnInit {
 
   private source: string;
   showInfo = true;
+  disableTreeNode = (node: TreeNode) => node._uuid === this.source;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,

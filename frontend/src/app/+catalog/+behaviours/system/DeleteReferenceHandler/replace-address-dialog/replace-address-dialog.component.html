@@ -29,6 +29,7 @@
                     <ige-tree
                         style="width: 300px"
                         [forAddresses]="true"
+                        [disabledCondition]="disableTreeNode"
                         (activate)="selectedAddress = $event"
                     ></ige-tree>
                 </div>
