@@ -75,7 +75,8 @@
         [class.edit-mode]="batchMode"
         [attr.data-cy]="to.externalLabel + '-table'"
         cdkDropList
-        (cdkDropListDropped)="drop($event)"
+        [cdkDragDisabled]="dragDisabled"
+        (cdkDropListDropped)="dragDisabled = true; drop($event)"
     >
         <ng-container
             *ngFor="let column of displayedColumns; let i = index"

@@ -1,14 +1,16 @@
 @import "src/variables";
 
-.mat-column-_actions_,
-.mat-column-_select_ {
-  width: 24px;
+.mat-column-_actions_ {
+  width: 40px;
+  min-width: 40px;
   flex: unset;
+  display: flex;
+  justify-content: center;
+}
 
-  &.mat-header-cell {
-    width: auto;
-    overflow: initial;
-  }
+.mat-column-_select_ {
+  width: 52px;
+  flex: unset;
 }
 
 .button-wrapper {

@@ -26,6 +26,7 @@
             <span
                 class="catalog-title"
                 [matTooltip]="currentCatalog"
+                [matTooltipShowDelay]="1000"
                 [matMenuTriggerFor]="catMenu"
                 [class.empty-menu]="otherAssignedCatalogs.length == 0"
                 >{{ currentCatalog }}

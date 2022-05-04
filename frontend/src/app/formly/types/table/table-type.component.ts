@@ -35,7 +35,7 @@ export class TableTypeComponent
   displayedColumnsReadOnly: string[];
   selection = new SelectionModel<any>(true, []);
   batchMode = false;
-  dragDisabled = false;
+  dragDisabled = true;
   formattedCell: Array<any> = [];
 
   private profile: string;
