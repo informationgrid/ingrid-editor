@@ -345,8 +345,8 @@ class DocumentService @Autowired constructor(
         listOf(
             FIELD_ID,
             FIELD_VERSION,
-            FIELD_CREATED,
-            FIELD_MODIFIED,
+//            FIELD_CREATED,
+//            FIELD_MODIFIED,
             FIELD_STATE,
             FIELD_HAS_CHILDREN,
             "hasWritePermission",
