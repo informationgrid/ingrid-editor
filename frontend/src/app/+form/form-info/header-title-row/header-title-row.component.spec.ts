@@ -8,6 +8,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { TextFieldModule } from "@angular/cdk/text-field";
 import { FormSharedModule } from "../../form-shared/form-shared.module";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("HeaderTitleRowComponent", () => {
   let spectator: Spectator<HeaderTitleRowComponent>;
@@ -21,6 +22,7 @@ describe("HeaderTitleRowComponent", () => {
       TextFieldModule,
       FormSharedModule,
       HttpClientTestingModule,
+      MatSnackBarModule,
     ],
     mocks: [ProfileService],
     detectChanges: false,
