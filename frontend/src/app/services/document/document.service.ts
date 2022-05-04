@@ -700,10 +700,27 @@ export class DocumentService {
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
+    // update moved datasets with new parent
     ids.forEach((id) => {
+      const parentId = store.getValue().entities[id]._parent;
+      if (parentId === null) return;
+
       store.update(id, { _parent: parent });
+
+      // update children information of parent of each moved dataset
+      const entities = store.getValue().entities;
+      const hasChildren = Object.keys(entities).some(
+        (key) => entities[key]._parent === parentId
+      );
+
+      if (!hasChildren) {
+        store.update(parentId, {
+          _hasChildren: false,
+        });
+      }
     });
 
+    // update children information of destination
     if (parent !== null) {
       store.update(parent, {
         _hasChildren: true,
