@@ -48,7 +48,7 @@
 }
 
 .save-buttons {
-  .toolbar-save-button {
+  .toolbar-save-button:not(.mat-button-disabled) {
     color: $ige-secondary;
     background: white;
   }

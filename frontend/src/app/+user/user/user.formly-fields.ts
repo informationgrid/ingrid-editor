@@ -99,7 +99,7 @@ export const getUserFormFields = (
       wrappers: ["panel"],
       templateOptions: {
         selectionEmptyNotice:
-          "Bitte weisen Sie dem Nutzer mindestens ein Gruppe zu",
+          "Bitte weisen Sie dem Nutzer mindestens eine Gruppe zu.",
         externalLabel: "Gruppen",
         placeholder: "Gruppe wählen...",
         options: groups.map((group) => {
