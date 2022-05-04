@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { tap } from "rxjs/operators";
 
 export interface ReplaceAddressDialogData {
   source: string;
@@ -13,7 +14,7 @@ export interface ReplaceAddressDialogData {
   styleUrls: ["./replace-address-dialog.component.scss"],
 })
 export class ReplaceAddressDialogComponent implements OnInit {
-  page: number = 0;
+  page = 0;
   selectedAddress: string[];
 
   private source: string;
@@ -27,13 +28,19 @@ export class ReplaceAddressDialogComponent implements OnInit {
     this.showInfo = data.showInfo;
   }
 
-  ngOnInit(): void {
-    if (!this.showInfo) this.page = 1;
-  }
+  ngOnInit(): void {}
 
   replaceAddress() {
     this.documentService
       .replaceAddress(this.source, this.selectedAddress[0])
+      .pipe(tap(() => this.reloadAddress()))
       .subscribe(() => this.page++);
+  }
+
+  private reloadAddress() {
+    this.documentService.reload$.next({
+      uuid: this.source,
+      forAddress: true,
+    });
   }
 }

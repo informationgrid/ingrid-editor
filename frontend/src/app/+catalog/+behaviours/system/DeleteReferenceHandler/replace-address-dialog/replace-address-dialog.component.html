@@ -15,7 +15,7 @@
                 [class.animate]="true"
                 [style.transform]="'translateX(-' + page * 100 + '%)'"
             >
-                <div class="slide">
+                <div *ngIf="showInfo" class="slide">
                     <p>
                         Das Dokument wird bereits von mindestens einem Dokument
                         referenziert. Möchten Sie die Adresse ersetzen?
@@ -40,7 +40,7 @@
     </mat-dialog-content>
     <mat-dialog-actions>
         <button
-            *ngIf="page !== 2"
+            *ngIf="page !== (showInfo ? 2 : 1)"
             mat-button
             mat-dialog-close
             data-cy="dialog-abort"
@@ -49,7 +49,7 @@
         </button>
         <div fxFlex></div>
         <button
-            *ngIf="page === 0"
+            *ngIf="showInfo && page === 0"
             mat-flat-button
             color="primary"
             data-cy="dialog-choose-address"
@@ -58,7 +58,7 @@
             Adresse auswählen
         </button>
         <button
-            *ngIf="page === 1"
+            *ngIf="page === (showInfo ? 1 : 0)"
             mat-flat-button
             color="primary"
             data-cy="dialog-replace-address"
@@ -68,7 +68,7 @@
             Adresse ersetzen
         </button>
         <button
-            *ngIf="page === 2"
+            *ngIf="page === (showInfo ? 2 : 1)"
             mat-flat-button
             color="primary"
             [mat-dialog-close]="true"
