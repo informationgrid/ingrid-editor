@@ -20,6 +20,7 @@ import {
   DocEventsService,
 } from "../../../services/event/doc-events.service";
 import { SessionStore } from "../../../store/session.store";
+import { MessageService } from "../../../services/message.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -47,9 +48,10 @@ export class PublishPlugin extends SaveBase {
     public formStateService: FormStateService,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
+    messageService: MessageService,
     sessionStore: SessionStore
   ) {
-    super(sessionStore);
+    super(sessionStore, messageService);
     this.isActive = true;
   }
 
@@ -132,6 +134,8 @@ export class PublishPlugin extends SaveBase {
   }
 
   private validateBeforePublish() {
+    this.messageService.clearMessages$.next();
+
     this.documentService.publishState$.next(true);
 
     const validation: BeforePublishData = { errors: [] };
