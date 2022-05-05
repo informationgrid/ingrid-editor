@@ -6,7 +6,7 @@ buildscript {
     ext.spring_boot_version = '2.6.7'
     ext.hibernate_version = '5.6.7.Final'
     ext.jackson_version = '2.13.2'
-    ext.kotest_version = '5.0.3' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
+    ext.kotest_version = '5.3.0' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
     repositories {
         mavenCentral()
     }
@@ -27,7 +27,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.2.1'
     id "com.gorylenko.gradle-git-properties" version "2.4.0"
-    id 'io.kotest' version '0.3.8'
+    id 'io.kotest' version '0.3.9'
     id "com.github.ben-manes.versions" version "0.42.0"
     id "gg.jte.gradle" version "2.0.2"
 }
@@ -135,7 +135,7 @@ dependencies {
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
-    testImplementation "io.kotest.extensions:kotest-extensions-spring:1.1.0" // to wire dependencies using Spring
+    testImplementation "io.kotest.extensions:kotest-extensions-spring:1.1.1" // to wire dependencies using Spring
     testImplementation "io.mockk:mockk:1.12.2"
     testImplementation "com.ninja-squad:springmockk:3.1.1"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
