@@ -17,16 +17,16 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 
 export abstract class SaveBase extends Plugin {
-  messageService: MessageService;
   dialog: MatDialog;
-  sessionStore: SessionStore;
   formStateService: FormStateService;
   documentService: DocumentService;
   formToolbarService: FormToolbarService;
 
-  protected constructor(sessionStore: SessionStore) {
+  protected constructor(
+    public sessionStore: SessionStore,
+    public messageService: MessageService
+  ) {
     super();
-    this.sessionStore = sessionStore;
   }
 
   handleError(error, data: IgeDocument, address: boolean): Observable<void> {
