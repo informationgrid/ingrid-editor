@@ -1,21 +1,20 @@
 <div fxFlex fxLayout="column" *ngIf="dataMap | async as dataSeq">
+    {{ strokeDash | json }}
     <svg viewBox="0 0 36 36" class="circular-chart">
         <path
-            *ngIf="dataSeq.first"
+            *ngIf="dataSeq.first != null"
             class="circle circle-1"
-            attr.stroke-dasharray="{{
-                calculateAdjustedStrokeDash(dataSeq.second)
-            }}, {{ calculateStrokeDash(dataSeq.first) }}"
+            [attr.stroke-dasharray]="strokeDash[0][0] + ', ' + strokeDash[0][1]"
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
         ></path>
         <path
-            *ngIf="dataSeq.second"
+            *ngIf="dataSeq.second != null"
             class="circle circle-2"
-            attr.stroke-dasharray="0, {{
-                calculateStrokeDash(dataSeq.second)
-            }}, {{ calculateAdjustedStrokeDash(dataSeq.first) }}"
+            [attr.stroke-dasharray]="
+                '0, ' + strokeDash[1][0] + ', ' + strokeDash[1][1]
+            "
             d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"

@@ -13,7 +13,7 @@ import {
   CreateNodeComponent,
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
-import { map, take } from "rxjs/operators";
+import { map } from "rxjs/operators";
 
 @Component({
   templateUrl: "./dashboard.component.html",
