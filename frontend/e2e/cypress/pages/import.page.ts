@@ -11,7 +11,7 @@ export class ImportPage {
     cy.intercept('POST', /api\/import\/analyze/).as('upload');
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
-    cy.get('.success-icon');
+    cy.get('.success-color');
   }
 
   static tryAddFileInWrongFormat(filePath: string) {

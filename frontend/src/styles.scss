@@ -570,6 +570,21 @@ ige-form-label + * {
   }
 }
 
+.mat-icon.big-icon {
+  width: 128px;
+  height: 128px;
+  font-size: 128px;
+  margin: 24px;
+}
+
+.success-color {
+  color: $ige-check-color;
+}
+
+.error-color {
+  color: $error-color;
+}
+
 /* validation error hide conditionally */
 
 .hide-validation {

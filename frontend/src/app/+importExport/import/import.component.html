@@ -28,7 +28,7 @@
                         <div *ngFor="let file of droppedFiles">
                             {{ file.data.name }}
                         </div>
-                        <mat-icon class="success-icon"
+                        <mat-icon class="big-icon success-color"
                             >check_circle_outline
                         </mat-icon>
                     </div>
@@ -170,11 +170,11 @@
 
                     <mat-icon
                         *ngIf="hasImportError; else success"
-                        class="error-icon"
+                        class="big-icon error-color"
                         >error_outline
                     </mat-icon>
                     <ng-template #success>
-                        <mat-icon class="success-icon"
+                        <mat-icon class="big-icon success-color"
                             >check_circle_outline
                         </mat-icon>
 
