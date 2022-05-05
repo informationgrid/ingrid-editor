@@ -1,8 +1,13 @@
+@import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
 @import gg.jte.support.ForSupport
 @import java.time.format.DateTimeFormatter
+@import java.util.Map
 
-@param UVPModel page
+@param Map<String, Object> map
+
+!{var page = ((UVPModel)map.get("model"));}
+!{var catalog = ((Catalog)map.get("catalog"));}
 
 {
     "iPlugId": "ige-ng",
@@ -13,6 +18,12 @@
     "x2": [${page.getSpatial("lon1")}],
     "y1": [${page.getSpatial("lat2")}],
     "y2": [${page.getSpatial("lon2")}],
+    "lon_min": "${page.getSpatial("lat1")}",
+    "lon_max": "${page.getSpatial("lon1")}",
+    "lat_min": "${page.getSpatial("lat2")}",
+    "lat_max": "${page.getSpatial("lon2")}",
+    "lon_center": "${page.getSpatialLonCenter()}",
+    "lat_center": "${page.getSpatialLatCenter()}",
     "uvp_address": [
         "${page.getUvpAddressAsString()}"
     ],
@@ -20,8 +31,8 @@
     "uvp_category": ["${page.getUvpNumbersAsString("category")}"],
     "uvp_category_type": ["${page.getUvpNumbersAsString("type")}"],
     "uvp_steps": ["${page.getStepsAsPhases()}"],
-    "needs_examination": false,
-    "approval_date": null,
+    "needs_examination": ${page.getData().getPrelimAssessment()},
+    "approval_date": [${page.getDecisionDate()}],
     "location": ["${page.getSpatialTitle()}"],
     "created": "${page.get_created().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
     "modified": "${page.get_modified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
@@ -45,19 +56,15 @@
     "children.object_node.obj_uuid": [],
     "organisation": "",
     "parent.object_node.obj_uuid": "",
-    "t012_obj_adr.adr_id": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+    "t012_obj_adr.adr_id": "",
     "t012_obj_adr.line": "1",
     "t012_obj_adr.mod_time": "",
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    <%--"t01_object.create_time": "${page.get_created()}",--%>
-    <%--"t01_object.loc_descr": "Hallo",--%>
     "t01_object.mod_time": "${page.get_modified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
-    <%--"t01_object.mod_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",--%>
     "t01_object.obj_class": "${page.getDocumentType()}",
     "t01_object.obj_id": "${page.getUuid()}",
-    <%--"t01_object.responsible_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",--%>
     @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
         "t021_communication.comm_type": "${entry.get().getType().getValue()}",
         "t021_communication.comm_value": "${entry.get().getConnection()}",
@@ -65,7 +72,7 @@
         "t021_communication.descr": "",
         "t021_communication.line": "${entry.getIndex() + 1}",
     @endfor
-    "t02_address.address_key": "2",
+    "t02_address.address_key": "",
     "t02_address.address_value": "${page.getPointOfContact().getTitle()}",
     "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
     "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
@@ -83,17 +90,16 @@
     "t02_address.postbox": "${page.getPointOfContact().getAddress().getPoBox()}",
     "t02_address.postbox_pc": "${page.getPointOfContact().getAddress().getZipPoBox()}",
     "t02_address.postcode": "${page.getPointOfContact().getAddress().getZipCode()}",
-    "t02_address.responsible_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+    "t02_address.responsible_uuid": "",
     "t02_address.street": "${page.getPointOfContact().getAddress().getStreet()}",
     "t02_address.title": "",
     "t02_address.title_key": "",
     "t02_address.typ": "2",
-    "t03_catalogue.cat_name": "IGE-NG uvp",
+    "t03_catalogue.cat_name": "${catalog.name}",
     "t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
     "t03_catalogue.cat_uuid": "",
     "t03_catalogue.country_code": "Deutschland",
     "t03_catalogue.country_key": "276",
-    "t03_catalogue.expiry_duration": "100",
     "t03_catalogue.language_code": "Deutsch",
     "t03_catalogue.language_key": "150",
     "t03_catalogue.mod_time": "",

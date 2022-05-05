@@ -20,6 +20,7 @@ data class DataModel(
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
     val receiptDate: String?,
     val decisionDate: String?,
+    val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
 
     ) {

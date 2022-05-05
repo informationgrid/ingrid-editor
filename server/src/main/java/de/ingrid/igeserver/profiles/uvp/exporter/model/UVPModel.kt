@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.DownloadModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
@@ -56,9 +55,7 @@ data class UVPModel(
     }
 
     fun getSpatial(field: String): Float? {
-        val value = data.spatials
-            ?.getOrNull(0)
-            ?.value ?: return null
+        val value = getSpatialBoundingBox() ?: return null
 
         return when (field) {
             "lat1" -> value.lat1
@@ -67,6 +64,22 @@ data class UVPModel(
             "lon2" -> value.lon2
             else -> null
         }
+    }
+
+    private fun getSpatialBoundingBox(): SpatialModel.BoundingBoxModel? {
+        return data.spatials
+            ?.getOrNull(0)
+            ?.value
+    }
+
+    fun getSpatialLonCenter(): Float? {
+        val bbox = getSpatialBoundingBox() ?: return null
+        return bbox.lat1 + (bbox.lon1 - bbox.lat1) / 2;
+    }
+
+    fun getSpatialLatCenter(): Float? {
+        val bbox = getSpatialBoundingBox() ?: return null
+        return bbox.lat2 + (bbox.lon2 - bbox.lat2) / 2;
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
@@ -87,6 +100,13 @@ data class UVPModel(
                 if (it is StepPublicHearing) return "phase2"
                 if (it is StepDecisionOfAdmission) return "phase3"
             }.joinToString("\", \"")
+    }
+
+    fun getDecisionDate(): String {
+        return data.steps
+            .filterIsInstance<StepDecisionOfAdmission>()
+            .map { OffsetDateTime.parse(it.decisionDate) }
+            .joinToString("\", \"") { it.format(formatterNoSeparator) }
     }
 
     companion object {
