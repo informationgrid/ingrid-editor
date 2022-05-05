@@ -53,7 +53,9 @@ export class AddressPage extends DocumentPage {
   }
 
   static checkHeaderInformation(editDate: string) {
-    cy.get('ige-header-title-row button').click();
+    cy.get('.title').within(_ => {
+      cy.findByText('keyboard_arrow_down').click();
+    });
     cy.get('ige-header-more').children().first().eq(0).contains('In Bearbeitung');
     cy.get('ige-header-more').children().contains('Adresse');
     cy.get('ige-header-more').children().last().contains(editDate);
