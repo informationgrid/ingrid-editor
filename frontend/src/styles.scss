@@ -399,13 +399,6 @@ formly-field {
     }
   }
 
-  &:last-of-type {
-    .mat-divider {
-      border-top-color: #fff !important;
-      height: 0;
-    }
-  }
-
   &.contact ige-repeat {
     padding-bottom: 12px;
   }
