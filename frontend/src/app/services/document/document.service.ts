@@ -352,11 +352,11 @@ export class DocumentService {
 
   private handleIsReferencedError(error) {
     console.error(error?.error?.errorText);
-    let uniqueUuids = [...new Set(error?.error?.data?.uuids)];
 
     this.messageService.sendError(
-      "Das Dokument wird von den folgenden Dokumenten referenziert: " +
-        uniqueUuids.join(", ")
+      `Das Dokument wird von mindestens einem Dokument referenziert.
+      Diese können über das Feld 'Zugeordnete Datensätze' angezeigt werden.
+      Lösen Sie diese auf oder wenden Sie sich an den Katalog-Administrator.`
     );
   }
 

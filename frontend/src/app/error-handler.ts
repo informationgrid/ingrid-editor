@@ -56,7 +56,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   private static translateMessage(error: IgeException) {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
-        return "Die Adresse wird von anderen Datensätzen referenziert. Bitte entfernen Sie zunächst die Referenzierungen.";
+        return "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.";
       case "CATALOG_NOT_FOUND":
         return `Dem Nutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       default:
