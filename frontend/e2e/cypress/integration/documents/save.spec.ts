@@ -299,14 +299,14 @@ describe('General create documents/folders', () => {
 
     it('check for ordering and sorting Download links in the mCLOUD document', () => {
       let downloadSelector = '[data-cy="Downloads-table"] mat-row mat-cell';
-      let downloadSelectorSourceNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(2)';
-      let downloadSelectorTargetNode = '[data-cy="Downloads-table"] .cdk-drag:nth-child(3)';
+      let downloadSelectorSourceNode = '[data-cy="Downloads-table"] mat-row:nth-child(2) mat-icon.cdk-drag-handle';
+      let downloadSelectorTargetNode = '[data-cy="Downloads-table"] mat-row:nth-child(3) mat-icon.cdk-drag-handle';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
       DocumentPage.scrollToSection('mCLOUD');
+      cy.contains('button', 'Bearbeiten').click();
       DocumentPage.dragItem(downloadSelectorSourceNode, downloadSelectorTargetNode);
-
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering

@@ -563,7 +563,9 @@ export class DocumentPage extends BasePage {
   }
 
   static openUpDocumentHeader() {
-    cy.get('.title .menu-button').click();
+    cy.get('.title').within(_ => {
+      cy.findByText('keyboard_arrow_down').click();
+    });
   }
 
   static checkEmptyDocumentTree() {

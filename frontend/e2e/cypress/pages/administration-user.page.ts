@@ -355,14 +355,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static checkForEmptyGroupDropdown() {
-    // if the dropdown contains no group, then the first child
-    // should be the MAT-FORM-FIELD that represents the dropdown
-    cy.get('[data-cy=Gruppen] ')
-      .get('ige-repeat-list')
-      .children()
-      .eq(0)
-      .should('have.prop', 'tagName')
-      .should('eq', 'MAT-FORM-FIELD');
+    cy.get('[data-cy=Gruppen] .no-fields-selected-notice').should('exist');
   }
 
   static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {
