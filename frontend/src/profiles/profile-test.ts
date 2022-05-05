@@ -7,7 +7,7 @@ import { ContextHelpService } from "../app/services/context-help/context-help.se
 import { TestAddressDoctype } from "./test/test-address.doctype";
 
 @Component({
-  template: "dynamic component",
+  template: "",
 })
 class TestComponent {
   constructor(

@@ -7,7 +7,7 @@ import { McloudAddressDoctype } from "./mcloud/mcloud-address.doctype";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 
 @Component({
-  template: "dynamic component",
+  template: "",
 })
 class MCloudComponent {
   constructor(
