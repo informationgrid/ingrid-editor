@@ -5,6 +5,7 @@ import de.ingrid.elasticsearch.IBusIndexManager
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
@@ -21,6 +22,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
+import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.elasticsearch.common.Strings
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory
@@ -438,6 +440,26 @@ class IndexingTask @Autowired constructor(
     fun cancelIndexing(catalogId: String) {
         this.cancellations[catalogId] = true
     }
+
+    fun removeFromIndex(catalogId: String, id: String) {
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
+        try {
+            val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+            val info = IndexInfo().apply {
+                realIndexName = oldIndex
+                toType = "base"
+                toAlias = elasticsearchAlias
+            }
+
+            if (oldIndex != null && indexManager.indexExists(oldIndex)) {
+                indexManager.delete(info, id, true)
+            }
+        } catch (ex: NoNodeAvailableException) {
+            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+        }
+    }
+
 }
 
 data class IndexConfig(

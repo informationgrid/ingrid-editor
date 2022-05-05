@@ -3,9 +3,6 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.elasticsearch.IndexManager
-import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
@@ -29,7 +26,6 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import org.apache.logging.log4j.kotlin.logger
-import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
@@ -99,9 +95,6 @@ class DocumentService @Autowired constructor(
 
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
-
-    @Autowired(required = false)
-    private var indexManager: IndexManager? = null
 
     @Autowired
     private lateinit var entityManager: EntityManager
@@ -616,27 +609,6 @@ class DocumentService @Autowired constructor(
         wrapper.pending_date = null
         docWrapperRepo.save(wrapper)
         return wrapper
-    }
-
-    fun removeFromIndex(catalogId: String, id: String) {
-        val catalog = catalogRepo.findByIdentifier(catalogId)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
-        try {
-            if (indexManager != null) {
-                val oldIndex = indexManager!!.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
-                val info = IndexInfo().apply {
-                    realIndexName = oldIndex
-                    toType = "base"
-                    toAlias = elasticsearchAlias
-                }
-
-                if (oldIndex != null && indexManager!!.indexExists(oldIndex)) {
-                    indexManager!!.delete(info, id, true)
-                }
-            }
-        } catch (ex: NoNodeAvailableException) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
-        }
     }
 
     // TODO: the same function is also defined in IndexingTask
