@@ -533,9 +533,13 @@ export class TreeComponent implements OnInit {
   }
 
   private async moveNodes(srcDocIds: string[], destination: string) {
+    const id = <string>srcDocIds[0];
+    const uuid = this.dataSource.getNode(id)._uuid;
+
     const treeNodes = srcDocIds.map((docId) =>
       this.dataSource.data.find((item) => item._id === docId)
     );
+
     treeNodes.forEach((node) => this.handleNodeRemoval(node));
 
     // make sure new parent has correct children info
@@ -549,7 +553,6 @@ export class TreeComponent implements OnInit {
     }
 
     // jump to new location of moved node (since backend already moved node)
-    const id = <string>srcDocIds[0];
     await this.jumpToNode(id, false);
 
     treeNodes.forEach((treeNode) =>
@@ -558,7 +561,6 @@ export class TreeComponent implements OnInit {
 
     // TODO: only set this if it's the currently loaded document
     this.activeNodeId = id;
-    const uuid = this.dataSource.getNode(id)._uuid;
     this.activate.next([uuid]);
   }
 
