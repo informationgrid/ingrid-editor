@@ -80,6 +80,15 @@ data class UVPModel(
 
     val steps = data.steps
 
+    fun getStepsAsPhases(): String {
+        return steps
+            .map {
+                if (it is StepPublicDisclosure) return "phase1"
+                if (it is StepPublicHearing) return "phase2"
+                if (it is StepDecisionOfAdmission) return "phase3"
+            }.joinToString("\", \"")
+    }
+
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
@@ -98,14 +107,17 @@ data class UVPModel(
     fun getUvpNumbers(): List<UVPNumber> {
         return data.uvpNumbers
     }
+
     fun getUvpNumbersAsString(field: String): String {
         return getUvpNumbers()
-            .mapNotNull { when (field) {
-                "uvpg" -> it.uvpg
-                "type" -> it.type
-                "category" -> it.category
-                else -> null
-            } }
+            .mapNotNull {
+                when (field) {
+                    "uvpg" -> it.uvpg
+                    "type" -> it.type
+                    "category" -> it.category
+                    else -> null
+                }
+            }
             .joinToString("\", \"")
     }
 

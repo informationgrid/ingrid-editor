@@ -19,7 +19,7 @@
     "uvp_number": ["${page.getUvpNumbersAsString("uvpg")}"],
     "uvp_category": ["${page.getUvpNumbersAsString("category")}"],
     "uvp_category_type": ["${page.getUvpNumbersAsString("type")}"],
-    "uvp_steps": [],
+    "uvp_steps": ["${page.getStepsAsPhases()}"],
     "needs_examination": false,
     "approval_date": null,
     "location": ["${page.getSpatialTitle()}"],
