@@ -5,12 +5,14 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostDeletePayload
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 /**
  * Filter for processing steps after removing the document.
  */
 @Component
+@Profile("elasticsearch")
 class PostDefaultDocumentRemover @Autowired constructor(val indexTask: IndexingTask) : Filter<PostDeletePayload> {
 
     override val profiles = arrayOf<String>()
