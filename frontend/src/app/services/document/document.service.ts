@@ -703,7 +703,6 @@ export class DocumentService {
     // update moved datasets with new parent
     ids.forEach((id) => {
       const parentId = store.getValue().entities[id]._parent;
-      if (parentId === null) return;
 
       store.update(id, { _parent: parent });
 
@@ -713,7 +712,7 @@ export class DocumentService {
         (key) => entities[key]._parent === parentId
       );
 
-      if (!hasChildren) {
+      if (parentId !== null && !hasChildren) {
         store.update(parentId, {
           _hasChildren: false,
         });

@@ -558,10 +558,6 @@ export class TreeComponent implements OnInit {
     treeNodes.forEach((treeNode) =>
       this.dataSource.insertNodeInTree(treeNode, destination)
     );
-
-    // TODO: only set this if it's the currently loaded document
-    this.activeNodeId = id;
-    this.activate.next([uuid]);
   }
 
   /**

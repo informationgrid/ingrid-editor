@@ -243,7 +243,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getSelectedDatasetsWithoutChildren() {
-    const selection = this.query.getActiveId().map((id) => id.toString());
+    const selection = this.getSelectedDatasets();
 
     const filtered = selection.filter(
       (id) => !this.isChildOfSelectedParent(id, selection)
