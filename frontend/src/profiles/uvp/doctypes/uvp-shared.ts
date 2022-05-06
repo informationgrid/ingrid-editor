@@ -100,10 +100,12 @@ export class UvpShared extends BaseDoctype {
             required: true,
             columns: this.columnsForDocumentTable,
           }),
+          this.addPublishConditionCheckbox("announcementDocs"),
           this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
             required: true,
             columns: this.columnsForDocumentTable,
           }),
+          this.addPublishConditionCheckbox("applicationDocs"),
           this.addTable(
             "reportsRecommendationDocs",
             "Berichte und Empfehlungen",
@@ -112,13 +114,22 @@ export class UvpShared extends BaseDoctype {
               columns: this.columnsForDocumentTable,
             }
           ),
+          this.addPublishConditionCheckbox("reportsRecommendationDocs"),
           this.addTable("furtherDocs", "Weitere Unterlagen", {
             required: false,
             columns: this.columnsForDocumentTable,
           }),
+          this.addPublishConditionCheckbox("furtherDocs"),
         ]),
       ],
     };
+  }
+
+  addPublishConditionCheckbox(id: string) {
+    return this.addCheckbox(id + "PublishDuringDisclosure", null, {
+      fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
+      hideExpression: (model) => !model[id] || model[id].length === 0,
+    });
   }
 
   addPublicHearing() {

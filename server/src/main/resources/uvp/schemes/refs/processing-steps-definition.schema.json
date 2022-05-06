@@ -48,6 +48,9 @@
           },
           "minItems": 1
         },
+        "announcementDocsPublishDuringDisclosure": {
+          "type": ["null", "boolean"]
+        },
         "applicationDocs": {
           "type": [
             "null",
@@ -58,6 +61,9 @@
           },
           "minItems": 1
         },
+        "applicationDocsPublishDuringDisclosure": {
+          "type": ["null", "boolean"]
+        },
         "reportsRecommendationDocs": {
           "type": [
             "null",
@@ -66,6 +72,9 @@
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           }
+        },
+        "reportsRecommendationDocsPublishDuringDisclosure": {
+          "type": ["null", "boolean"]
         },
         "furtherDocs": {
           "type": [
@@ -76,6 +85,9 @@
             "$ref": "general.schema.json#/definitions/Doc"
           }
         }
+      },
+      "furtherDocsPublishDuringDisclosure": {
+        "type": ["null", "boolean"]
       },
       "required": [
         "disclosureDate",

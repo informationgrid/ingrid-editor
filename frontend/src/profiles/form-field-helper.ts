@@ -264,6 +264,7 @@ export class FormFieldHelper {
         indeterminate: false,
         required: options?.required,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 
