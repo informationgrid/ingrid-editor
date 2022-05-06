@@ -20,7 +20,7 @@ export class UvpPersonDoctype extends PersonDoctype {
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276" },
-      inheritAddress: true,
+      inheritAddress: false,
     };
   }
 }

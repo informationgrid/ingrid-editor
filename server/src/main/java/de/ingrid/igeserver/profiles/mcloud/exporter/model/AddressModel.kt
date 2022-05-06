@@ -37,9 +37,10 @@ data class AddressModel(
     }
 
     init {
-        if (address.inheritAddress) {
+        // TODO: add functionality later (#)
+        /*if (address.inheritAddress) {
             address = getAddressInformationFromParent(parent)
-        }
+        }*/
     }
 
     private fun getAddressInformationFromParent(parentId: Int?): Address {
