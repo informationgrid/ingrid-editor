@@ -20,7 +20,8 @@ export class ReplaceAddressDialogComponent implements OnInit {
 
   private source: string;
   showInfo = true;
-  disableTreeNode = (node: TreeNode) => node._uuid === this.source;
+  disableTreeNode = (node: TreeNode) =>
+    node._uuid === this.source || node.state === "W";
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,
