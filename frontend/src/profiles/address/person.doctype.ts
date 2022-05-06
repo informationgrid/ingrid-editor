@@ -69,6 +69,9 @@ export class PersonDoctype extends AddressShared {
             },
           ],
         },
+        this.addCheckbox("hideAddress", null, {
+          fieldLabel: "Daten nicht anzeigen",
+        }),
       ]),
       this.addSection("Kommunikation", [
         this.addContact(),
