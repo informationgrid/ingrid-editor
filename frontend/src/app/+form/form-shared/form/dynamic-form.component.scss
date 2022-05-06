@@ -34,7 +34,10 @@
 }
 
 .form-content {
+  display: flex;
+  flex-direction: column;
   .form-inner {
+    flex: 1;
     padding: 20px 24px 0 36px;
     background-color: #ffffff;
 
