@@ -1,6 +1,8 @@
 import { DocumentPage } from './document.page';
 import { Utils } from './utils';
 import { Tree } from './tree.partial';
+import { UserAndRights } from './base.page';
+import Chainable = Cypress.Chainable;
 
 export class uvpPage {
   static setDescription(text: string) {
@@ -48,10 +50,76 @@ export class uvpPage {
   static checkAddressElement(addressElement: AddressDetails, value: string) {
     cy.get('[data-cy="Adresse"] input').eq(addressElement).should('have.value', value);
   }
+
+  static verifyUVPmetrics(category: UVPmetrics, value: string) {
+    cy.get('[label="Kennzahlen"] .mat-column-value')
+      .eq(category)
+      .then(extractedValue => {
+        expect(extractedValue.text().trim()).to.equal(value);
+      });
+  }
+
+  static getUVPmetrics(category: UVPmetrics): Chainable<number> {
+    return cy
+      .get('[label="Kennzahlen"] .mat-column-value')
+      .eq(category)
+      .then(value => {
+        return parseInt(value.text().trim());
+      });
+  }
+
+  static getUVPNumbermetrics(UVPnumber: string): Chainable<number> {
+    return cy
+      .contains('[label="Verwendete UVP Nummern"] .mat-row', UVPnumber)
+      .children()
+      .last()
+      .then(value => {
+        return parseInt(value.text().trim());
+      });
+  }
+
+  static goToTabmenu(tabmenu: UVPreports) {
+    cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
+    cy.contains('.page-title', 'UVP Bericht', { timeout: 10000 }).should('exist');
+    cy.get('[label="Kennzahlen"] tbody', { timeout: 8000 }).should('exist');
+    cy.wait(1000);
+  }
+
+  static downloadReport() {
+    cy.get('.download-button button').click();
+    cy.wait(3000);
+  }
+
+  static getReportFromFile(): Chainable<String[]> {
+    let res_arr: String[] = [];
+    return cy.readFile('cypress/downloads/report.csv').then(content => {
+      let raw_content = content.split('\n');
+      // delete string with column names
+      raw_content.shift();
+      // separate elements of single records
+      let new_arr = raw_content.map(function (el: string) {
+        return el.split(';');
+      });
+      new_arr.pop();
+      console.log(new_arr);
+      return;
+    });
+  }
 }
 
 export enum AddressDetails {
   Street = 1,
   Zipcode,
   City
+}
+
+export enum UVPmetrics {
+  positiveAudit = 1,
+  negativeAudit,
+  averageProcessLength
+}
+
+export enum UVPreports {
+  Statistic = '/reports/general',
+  Report = '/reports/uvp-bericht'
 }

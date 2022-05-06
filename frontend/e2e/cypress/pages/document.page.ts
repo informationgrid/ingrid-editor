@@ -198,6 +198,147 @@ export class DocumentPage extends BasePage {
     });
   }
 
+  static CreateNegativePreauditDocumentWithAPI(title: string) {
+    const json = {
+      title: title,
+      _type: 'UvpNegativePreliminaryAssessmentDoc',
+      decisionDate: '2021-09-19T22:00:00.000Z',
+      _parent: null
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
+  static CreateLinienbestimmungdocumentWithAPI(title: string) {
+    const json = {
+      title: title,
+      _type: 'UvpLineDeterminationDoc',
+      spatial: null,
+      eiaNumbers: [
+        {
+          key: '10'
+        }
+      ],
+      pointOfContact: null,
+      processingSteps: [
+        {
+          type: 'decisionOfAdmission',
+          approvalDocs: null,
+          decisionDate: '2022-04-11T22:00:00.000Z',
+          decisionDocs: null
+        }
+      ],
+      _parent: null
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
+  static CreateZulassungsverfahrenDocumentWithAPI(title: string) {
+    const json = {
+      title: title,
+      _type: 'UvpApprovalProcedureDoc',
+      spatial: null,
+      eiaNumbers: [],
+      description: null,
+      pointOfContact: null,
+      processingSteps: [
+        {
+          type: 'decisionOfAdmission',
+          approvalDocs: null,
+          decisionDate: '2022-05-01T22:00:00.000Z',
+          decisionDocs: null
+        }
+      ],
+      prelimAssessment: true,
+      _parent: null
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
+  static CreateRaumordnungverfahrenDocumentWithAPI(
+    title: string,
+    receiptDate: string = '2020-11-05T23:00:00.000Z',
+    decisionDate: string = '2022-03-18T23:00:00.000Z'
+  ) {
+    const json = {
+      title: title,
+      _type: 'UvpSpatialPlanningProcedureDoc',
+      spatial: null,
+      eiaNumbers: [],
+      description: null,
+      receiptDate: receiptDate,
+      pointOfContact: null,
+      processingSteps: [
+        {
+          type: 'publicDisclosure',
+          furtherDocs: null,
+          disclosureDate: {
+            end: '2021-04-27T22:00:00.000Z',
+            start: '2021-04-09T22:00:00.000Z'
+          },
+          applicationDocs: null,
+          announcementDocs: null,
+          reportsRecommendationDocs: null
+        },
+        {
+          type: 'publicHearing',
+          considerationDocs: null,
+          publicHearingDate: {
+            end: '2021-09-28T22:00:00.000Z',
+            start: '2021-09-11T22:00:00.000Z'
+          }
+        },
+        {
+          type: 'decisionOfAdmission',
+          approvalDocs: null,
+          decisionDate: decisionDate,
+          decisionDocs: null
+        }
+      ],
+      _parent: null
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
   static CreateTestDocumentWithAPI(title: string, published?: boolean) {
     const json = {
       _hasChildren: false,
