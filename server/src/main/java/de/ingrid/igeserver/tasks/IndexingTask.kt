@@ -12,10 +12,12 @@ import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.data.domain.Page
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -99,14 +102,8 @@ class IndexingTask @Autowired constructor(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         categories.forEach categoryLoop@{ category ->
-            // needed information:
-            //   database/catalog
-            //   indexingMethod: ibus or elasticsearch direct
-            //   indexName
-            // TODO: get alias from profile
             val categoryAlias = "${elasticsearchAlias}_${category.value}"
 
-            // TODO: support profile specific configuration which documents to be published
             val exporter = try {
                 indexService.getExporter(category, format)
             } catch (ex: ConfigurationException) {
@@ -118,15 +115,9 @@ class IndexingTask @Autowired constructor(
             val info = try {
                 indexPrePhase(categoryAlias, catalog.type, format, elasticsearchAlias)
             } catch (ex: Exception) {
-                val errorMessage = "Error during Index Pre-Phase: ${ex.message}"
-                log.error(errorMessage, ex)
-                notify.sendMessage(message.apply {
-                    errors.add(errorMessage)
-                })
+                notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
                 return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
             }
-
-            // TODO: dynamically get target to send exported documents
 
             // TODO: configure index name
             val indexInfo = IndexInfo().apply {
@@ -137,34 +128,18 @@ class IndexingTask @Autowired constructor(
             }
 
             var page = -1
-            do {
-                page++
-                val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
-                if (category == DocumentCategory.DATA) {
-                    message.numDocuments = docsToPublish.totalElements.toInt()
-                } else {
-                    message.numAddresses = docsToPublish.totalElements.toInt()
-                }
+            try {
+                do {
+                    page++
+                    // TODO: support profile specific configuration which documents to be published
+                    val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
+                    updateMessageWithDocumentInfo(message, category, docsToPublish)
 
-                docsToPublish.content
-                    .mapIndexedNotNull { index, doc ->
-                        handleCancelation(catalogId, message)
-                        sendNotification(category, message, index + (page * 10))
-                        log.debug("export ${doc.uuid}")
-                        try {
-                            exporter.run(doc, catalogId)
-                        } catch (ex: Exception) {
-                            val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
-                            log.error(errorMessage, ex)
-                            message.errors.add(errorMessage)
-                            sendNotification(category, message, index + (page * 10))
-                            null
-                        }
-                    }
-                    .onEach {
-                        indexManager.update(indexInfo, convertToElasticDocument(it), false)
-                    }
-            } while (!docsToPublish.isLast)
+                    exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
+                } while (!docsToPublish.isLast)
+            } catch (ex: Exception) {
+                notify.addAndSendMessageError(message, ex, "Error during indexing: ")
+            }
 
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
@@ -186,6 +161,47 @@ class IndexingTask @Autowired constructor(
         // save last indexing information to database for this catalog to get this in frontend
         updateIndexLog(catalogId, message)
 
+    }
+
+    private fun updateMessageWithDocumentInfo(
+        message: IndexMessage,
+        category: DocumentCategory,
+        docsToPublish: Page<Document>
+    ) {
+        if (category == DocumentCategory.DATA) {
+            message.numDocuments = docsToPublish.totalElements.toInt()
+        } else {
+            message.numAddresses = docsToPublish.totalElements.toInt()
+        }
+    }
+
+    private fun exportDocuments(
+        docsToPublish: Page<Document>,
+        catalogId: String,
+        message: IndexMessage,
+        category: DocumentCategory,
+        page: Int,
+        exporter: IgeExporter,
+        indexInfo: IndexInfo
+    ) {
+        docsToPublish.content
+            .mapIndexedNotNull { index, doc ->
+                handleCancelation(catalogId, message)
+                sendNotification(category, message, index + (page * 10))
+                log.debug("export ${doc.uuid}")
+                try {
+                    exporter.run(doc, catalogId)
+                } catch (ex: Exception) {
+                    val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
+                    log.error(errorMessage, ex)
+                    message.errors.add(errorMessage)
+                    sendNotification(category, message, index + (page * 10))
+                    null
+                }
+            }
+            .onEach {
+                indexManager.update(indexInfo, convertToElasticDocument(it), false)
+            }
     }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
