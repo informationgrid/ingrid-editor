@@ -3,6 +3,8 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
@@ -93,20 +95,23 @@ data class UVPModel(
 
     val steps = data.steps
 
-    fun getStepsAsPhases(): String {
+    fun getStepsAsPhases(): List<String> {
         return steps
             .map {
-                if (it is StepPublicDisclosure) return "phase1"
-                if (it is StepPublicHearing) return "phase2"
-                if (it is StepDecisionOfAdmission) return "phase3"
-            }.joinToString("\", \"")
+                when (it) {
+                    is StepPublicDisclosure -> "phase1"
+                    is StepPublicHearing -> "phase2"
+                    is StepDecisionOfAdmission -> "phase3"
+                    else -> "???"
+                }
+            }
     }
 
-    fun getDecisionDate(): String {
+    fun getDecisionDate(): List<String> {
         return data.steps
             .filterIsInstance<StepDecisionOfAdmission>()
             .map { OffsetDateTime.parse(it.decisionDate) }
-            .joinToString("\", \"") { it.format(formatterNoSeparator) }
+            .map { it.format(formatterNoSeparator) }
     }
 
     companion object {
@@ -128,19 +133,6 @@ data class UVPModel(
         return data.uvpNumbers
     }
 
-    fun getUvpNumbersAsString(field: String): String {
-        return getUvpNumbers()
-            .mapNotNull {
-                when (field) {
-                    "uvpg" -> it.uvpg
-                    "type" -> it.type
-                    "category" -> it.category
-                    else -> null
-                }
-            }
-            .joinToString("\", \"")
-    }
-
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS");
@@ -153,16 +145,36 @@ data class UVPModel(
         return _modified.format(formatterNoSeparator)
     }
 
-    fun getUvpAddressAsString(): String {
-        if (pointOfContact == null) return ""
+    fun getUvpAddressParents(): List<String> {
+        if (pointOfContact == null) return emptyList()
 
-        return with(pointOfContact!!) {
-            organization ?: listOf(
-                getCodelistValue("4300", salutation),
-                getCodelistValue("4305", academicTitle),
-                firstName,
-                lastName
-            ).filterNotNull().joinToString(" ")
+        return pointOfContact!!.getParentAddresses(pointOfContact!!.id)
+            .map { convertToReadableAddressFromJson(it.data) }
+    }
+
+    private fun convertToReadableAddressFromJson(address: ObjectNode): String {
+        val organization = address.get("organization")
+        return if (organization == null) {
+            getPersonStringFromJson(address)
+        } else {
+            organization.textValue()
         }
     }
+
+    private fun getPersonStringFromJson(address: ObjectNode): String {
+        val mapper = jacksonObjectMapper()
+        return listOfNotNull(
+            getCodelistValue(
+                "4300",
+                mapper.convertValue(address.get("salutation"), KeyValueModel::class.java)
+            ),
+            getCodelistValue(
+                "4305",
+                mapper.convertValue(address.get("academicTitle"), KeyValueModel::class.java)
+            ),
+            address.get("firstName").textValue(),
+            address.get("lastName").textValue()
+        ).joinToString(" ")
+    }
+
 }

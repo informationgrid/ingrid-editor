@@ -25,14 +25,36 @@
     "lon_center": "${page.getSpatialLonCenter()}",
     "lat_center": "${page.getSpatialLatCenter()}",
     "uvp_address": [
-        "${page.getUvpAddressAsString()}"
+    @for(var address : ForSupport.of(page.getUvpAddressParents()))
+        "${address.get()}"@if (!address.isLast()),@endif
+    @endfor 
     ],
-    "uvp_number": ["${page.getUvpNumbersAsString("uvpg")}"],
-    "uvp_category": ["${page.getUvpNumbersAsString("category")}"],
-    "uvp_category_type": ["${page.getUvpNumbersAsString("type")}"],
-    "uvp_steps": ["${page.getStepsAsPhases()}"],
+    "uvp_number": [
+    @for(var uvp : ForSupport.of(page.getUvpNumbers()))
+        "${uvp.get().getUvpg()}"@if (!uvp.isLast()),@endif
+    @endfor
+    ],
+    "uvp_category": [
+    @for(var uvp : ForSupport.of(page.getUvpNumbers()))
+        "${uvp.get().getCategory()}"@if (!uvp.isLast()),@endif
+    @endfor 
+    ],
+    "uvp_category_type": [
+    @for(var uvp : ForSupport.of(page.getUvpNumbers()))
+        "${uvp.get().getType()}"@if (!uvp.isLast()),@endif
+    @endfor 
+    ],
+    "uvp_steps": [
+    @for(var phase : ForSupport.of(page.getStepsAsPhases()))
+        "${phase.get()}"@if (!phase.isLast()),@endif
+    @endfor
+    ],
     "needs_examination": ${page.getData().getPrelimAssessment()},
-    "approval_date": [${page.getDecisionDate()}],
+    "approval_date": [
+    @for(var date : ForSupport.of(page.getDecisionDate()))
+        "${date.get()}"@if (!date.isLast()),@endif
+    @endfor 
+    ],
     "location": ["${page.getSpatialTitle()}"],
     "created": "${page.get_created().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
     "modified": "${page.get_modified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
@@ -13,6 +14,7 @@ import java.time.OffsetDateTime
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
+    @JsonProperty("_id") val id: Int,
     val salutation: KeyValueModel?,
     @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
     val firstName: String?,
@@ -42,6 +44,26 @@ data class AddressModel(
             address = getAddressInformationFromParent(parent)
         }*/
     }
+    
+    fun getParentAddresses(parentId: Int): MutableList<Document> {
+        val parent = documentService!!.getWrapperByDocumentId(parentId)
+        val publishedParent = parent.published
+        if (publishedParent == null || publishedParent.type == "FOLDER") {
+            return emptyList<Document>().toMutableList()
+        }
+
+        return if (parent.parent != null) {
+            val otherParent = getParentAddresses(parent.parent!!.id!!)
+            val hideAddress = isAddressHidden(publishedParent)
+            if (!hideAddress) otherParent.add(publishedParent)
+            otherParent
+        } else {
+            emptyList<Document>().toMutableList()
+        }
+    }
+
+    private fun isAddressHidden(publishedParent: Document) =
+        publishedParent.data.get("hideAddress")?.booleanValue() ?: false
 
     private fun getAddressInformationFromParent(parentId: Int?): Address {
         val emptyAddress = Address(false, "", "", "", "", "", null, null)
