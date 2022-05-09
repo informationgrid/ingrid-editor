@@ -49,7 +49,9 @@
         "${phase.get()}"@if (!phase.isLast()),@endif
     @endfor
     ],
-    "needs_examination": ${page.getData().getPrelimAssessment()},
+    @if(page.getData().getPrelimAssessment())
+    "needs_examination": true,
+    @endif
     "approval_date": [
     @for(var date : ForSupport.of(page.getDecisionDate()))
         "${date.get()}"@if (!date.isLast()),@endif

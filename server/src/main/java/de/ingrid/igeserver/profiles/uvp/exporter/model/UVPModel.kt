@@ -145,6 +145,12 @@ data class UVPModel(
         return _modified.format(formatterNoSeparator)
     }
 
+    fun getPostBoxString() : String {
+        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${getCodelistValue("6200", pointOfContact?.address?.country)}"
+    }
+    
+    fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
+
     fun getUvpAddressParents(): List<String> {
         if (pointOfContact == null) return emptyList()
 

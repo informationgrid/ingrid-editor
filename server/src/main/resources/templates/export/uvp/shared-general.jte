@@ -20,7 +20,10 @@
             <fax>${address.getFax()}</fax>
             <street>${address.getAddress().getStreet()}</street>
             <city>${address.getAddress().getCity()}</city>
-            <postalcode>${address.getAddress().getPoBox()}</postalcode>
+            <postalcode>${address.getAddress().getZipCode()}</postalcode>
+            @if (page.hasPoBox())
+            <postbox>${page.getPostBoxString()}</postbox>
+            @endif
             <country>${page.getCodelistValue("6200", address.getAddress().getCountry())}</country>
             <mail>${address.getEmail()}</mail>
             <url>${address.getHomepage()}</url>
