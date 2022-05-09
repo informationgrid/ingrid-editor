@@ -1,6 +1,6 @@
 import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administration-user.page';
 import { DocumentPage } from '../../pages/document.page';
-import { UserAndRights } from '../../pages/base.page';
+import { BasePage, UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
@@ -168,7 +168,7 @@ describe('User', () => {
 
     // error-message
     cy.get('[data-cy=error-dialog-title]').should('be.visible');
-    cy.get('[data-cy=error-dialog-content]').contains('Es existiert bereits ein Benutzer mit dem Login: ige');
+    BasePage.checkErrorDialogMessage('Es existiert bereits ein Benutzer mit dem Login: ige');
   });
 
   it('should not be possible for two users to have equal email addresses', () => {
@@ -189,7 +189,7 @@ describe('User', () => {
 
     // error-message
     cy.get('[data-cy=error-dialog-title]').should('be.visible');
-    cy.get('[data-cy=error-dialog-content]').contains('Es existiert bereits ein Benutzer mit dieser Mailadresse');
+    BasePage.checkErrorDialogMessage('Es existiert bereits ein Benutzer mit dieser Mailadresse');
   });
 
   it('should not be possible to change the login or the role after a user is created', () => {

@@ -3,6 +3,7 @@ import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { AddressPage } from '../../pages/address.page';
+import { BasePage } from '../../pages/base.page';
 
 describe('Tree', () => {
   beforeEach(() => {
@@ -535,7 +536,7 @@ describe('Tree', () => {
       Tree.openNode(['Neue Testdokumente', title]);
       CopyCutUtils.move(['Neue Testdokumente', title, title2]);
       // expect the error
-      cy.contains('[data-cy="error-dialog-content"]', 'Cannot copy');
+      BasePage.checkErrorDialogMessage('Cannot copy');
     });
   });
 });

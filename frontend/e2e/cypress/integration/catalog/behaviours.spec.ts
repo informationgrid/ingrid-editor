@@ -2,7 +2,7 @@ import { BehavioursPage } from '../../pages/behaviours.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { Address, AddressPage } from '../../pages/address.page';
-import { CatalogsTabmenu } from '../../pages/base.page';
+import { BasePage, CatalogsTabmenu } from '../../pages/base.page';
 import { CodelistPage } from '../../pages/codelist.page';
 import { Menu } from '../../pages/menu';
 
@@ -236,7 +236,7 @@ describe('Behaviours', () => {
       Tree.openNode([node]);
       Tree.checkNodeHasChildren(node);
       cy.get(DocumentPage.Toolbar['Delete']).click();
-      cy.get('[data-cy=error-dialog-content]').contains('Um Ordner zu löschen, müssen diese leer sein');
+      BasePage.checkErrorDialogMessage('Um Ordner zu löschen, müssen diese leer sein');
       cy.get('[data-cy=error-dialog-close]').click();
 
       BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Formulare);
