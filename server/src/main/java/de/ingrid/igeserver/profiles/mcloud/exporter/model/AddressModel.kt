@@ -121,5 +121,6 @@ data class Address(
     val administrativeArea: KeyValueModel?,
     val country: KeyValueModel?
 ) {
+    val countryKey = country?.key ?: ""
 
 }

@@ -101,7 +101,7 @@
     "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
     "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
     "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
-    "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountry().getKey()}",
+    "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
     "t02_address.create_time": "${page.getPointOfContact().getCreated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
     "t02_address.descr": "",
     "t02_address.firstname": "${page.getPointOfContact().getFirstName()}",
