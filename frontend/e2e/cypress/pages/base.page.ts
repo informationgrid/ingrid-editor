@@ -25,6 +25,10 @@ export class BasePage {
     cy.get('mat-option').contains(label).click();
     cy.get('[data-cy=spatial-dialog-type] .mat-select-value-text').should('have.text', label);
   }
+
+  static checkErrorDialogMessage(message: string) {
+    cy.get('[data-cy=error-dialog-content]').contains(message);
+  }
 }
 
 export enum CatalogsTabmenu {

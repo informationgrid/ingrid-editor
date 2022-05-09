@@ -339,6 +339,72 @@ export class DocumentPage extends BasePage {
     });
   }
 
+  static CreateForeignProjectDocumentWithAPI(title: string, spatial: any = []) {
+    const json = {
+      title: title,
+      _type: 'UvpForeignProjectDoc',
+      description: 'Beschreibung',
+      pointOfContact: [
+        {
+          type: {
+            key: '7'
+          },
+          ref: {
+            title: 'Adresse, Organisation_6',
+            hasWritePermission: true,
+            hasOnlySubtreeWritePermission: false,
+            _uuid: 'c3bfe0ec-9bcb-4db2-b124-2d4cd088cb3a',
+            _type: 'UvpOrganisationDoc',
+            _version: 1,
+            _created: '2022-04-20T17:07:11.875239+02:00',
+            _modified: '2022-04-20T17:09:19.985346+02:00',
+            _createdBy: 'uvp catalog',
+            _modifiedBy: 'uvp catalog',
+            _state: 'P',
+            _id: '12258',
+            address: {
+              city: null,
+              'po-box': null,
+              street: null,
+              country: {
+                key: '276'
+              },
+              'zip-code': null,
+              'zip-po-box': null
+            },
+            contact: [
+              {
+                type: {
+                  key: '1'
+                },
+                connection: '98473627438'
+              }
+            ],
+            organization: 'Adresse, Organisation_6',
+            _parent: 12263,
+            _hasChildren: false,
+            _parentIsFolder: true,
+            _pendingDate: null
+          }
+        }
+      ],
+      spatial: spatial,
+      processingSteps: [],
+      _parent: null
+    };
+
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        body: json,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  }
+
   static CreateTestDocumentWithAPI(title: string, published?: boolean) {
     const json = {
       _hasChildren: false,
