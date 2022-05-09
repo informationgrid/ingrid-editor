@@ -21,6 +21,7 @@ import { DateAgoPipe } from "../directives/date-ago.pipe";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { DashboardModule } from "./dashboard.module";
+import { MessageService } from "../services/messages/message.service";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -44,7 +45,13 @@ describe("DashboardComponent", () => {
     ],
     componentMocks: [QuickSearchComponent],
     providers: [],
-    mocks: [ConfigService, DocumentService, FormularService, ModalService],
+    mocks: [
+      ConfigService,
+      DocumentService,
+      FormularService,
+      ModalService,
+      MessageService,
+    ],
     detectChanges: false,
   });
 
