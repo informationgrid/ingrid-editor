@@ -163,14 +163,17 @@ export class AddressPage extends DocumentPage {
     cy.get('[role="listbox"]').contains(title).click();
   }
 
-  static deleteLoadedNode() {
+  static deleteLoadedNode(tryToDelete: boolean = false) {
     cy.wait(300);
     cy.get(AddressPage.Toolbar['Delete']).click();
-    cy.intercept('GET', /api\/datasetsByUuid/).as('deleteRequest');
-    cy.get('[data-cy="confirm-dialog-confirm"]').click();
-    cy.wait('@deleteRequest', { timeout: 10000 });
+    if (tryToDelete) {
+      cy.get('[data-cy="confirm-dialog-confirm"]').click();
+    } else {
+      cy.intercept('GET', /api\/datasetsByUuid/).as('deleteRequest');
+      cy.get('[data-cy="confirm-dialog-confirm"]').click();
+      cy.wait('@deleteRequest', { timeout: 10000 });
+    }
   }
-
   static tryIllegitimatDelete() {
     cy.get(AddressPage.Toolbar['Delete']).click();
     cy.intercept('DELETE', /api\/datasets/).as('deleteRequest');

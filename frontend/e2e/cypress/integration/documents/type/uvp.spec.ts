@@ -9,6 +9,7 @@ import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 import { ResearchPage } from '../../../pages/research.page';
 import { DashboardPage } from '../../../pages/dashboard.page';
 import doc = Mocha.reporters.doc;
+import { BasePage } from '../../../pages/base.page';
 
 describe('uvp documents', () => {
   beforeEach(() => {
@@ -317,5 +318,14 @@ describe('uvp documents', () => {
         }
       );
     });
+  });
+
+  it('should not be allowed to delete Address if it is still referenced in data records. (#3767)', () => {
+    Menu.switchTo('ADDRESSES');
+    Tree.openNode(['Referenced Org']);
+    AddressPage.deleteLoadedNode(true);
+    cy.get('ige-replace-address-dialog').contains(
+      'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
+    );
   });
 });
