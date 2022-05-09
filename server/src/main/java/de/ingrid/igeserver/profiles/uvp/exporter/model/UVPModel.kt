@@ -76,12 +76,12 @@ data class UVPModel(
 
     fun getSpatialLonCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat1 + (bbox.lon1 - bbox.lat1) / 2;
+        return bbox.lat1 + (bbox.lon1 - bbox.lat1) / 2
     }
 
     fun getSpatialLatCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat2 + (bbox.lon2 - bbox.lat2) / 2;
+        return bbox.lat2 + (bbox.lon2 - bbox.lat2) / 2
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
@@ -135,7 +135,7 @@ data class UVPModel(
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS");
+    private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")
     val modified: String
         get() {
             return _modified.format(formatterOnlyDate)
@@ -146,24 +146,24 @@ data class UVPModel(
     }
 
     fun getPostBoxString() : String {
-        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${getCodelistValue("6200", pointOfContact?.address?.country)}"
+        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${pointOfContact?.address?.city}"
     }
     
     fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<String> {
+    fun getUvpAddressParents(): List<AddressShort> {
         if (pointOfContact == null) return emptyList()
 
         return pointOfContact!!.getParentAddresses(pointOfContact!!.id)
             .map { convertToReadableAddressFromJson(it.data) }
     }
 
-    private fun convertToReadableAddressFromJson(address: ObjectNode): String {
+    private fun convertToReadableAddressFromJson(address: ObjectNode): AddressShort {
         val organization = address.get("organization")
         return if (organization == null) {
-            getPersonStringFromJson(address)
+            AddressShort(address.get("_uuid").textValue(), getPersonStringFromJson(address))
         } else {
-            organization.textValue()
+            AddressShort(address.get("_uuid").textValue(), organization.textValue())
         }
     }
 
@@ -184,3 +184,5 @@ data class UVPModel(
     }
 
 }
+
+data class AddressShort(val uuid: String, val title: String)

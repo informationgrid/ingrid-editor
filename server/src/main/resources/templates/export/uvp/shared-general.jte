@@ -27,11 +27,11 @@
             <country>${page.getCodelistValue("6200", address.getAddress().getCountry())}</country>
             <mail>${address.getEmail()}</mail>
             <url>${address.getHomepage()}</url>
-            @if(address.getParentUuid() != null)
-                <parent id="${address.getParentUuid()}">
-                    <name>${address.getParentName()}</name>
+            @for(var parent : page.getUvpAddressParents())
+                <parent id="${parent.getUuid()}">
+                    <name>${parent.getTitle()}</name>
                 </parent>
-            @endif
+            @endfor
         </address>
     @endif
 </addresses>

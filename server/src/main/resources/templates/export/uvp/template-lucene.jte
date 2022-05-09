@@ -26,7 +26,7 @@
     "lat_center": "${page.getSpatialLatCenter()}",
     "uvp_address": [
     @for(var address : ForSupport.of(page.getUvpAddressParents()))
-        "${address.get()}"@if (!address.isLast()),@endif
+        "${address.get().getTitle()}"@if (!address.isLast()),@endif
     @endfor 
     ],
     "uvp_number": [

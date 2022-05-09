@@ -23,8 +23,6 @@ data class AddressModel(
     val title: String?,
     val contact: List<ContactModel>?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
-    var parentUuid: String? = null,
-    var parentName: String? = null,
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("_created") val created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
