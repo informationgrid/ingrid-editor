@@ -4,10 +4,8 @@ import {
   VersionConflictChoice,
   VersionConflictDialogComponent,
 } from "../version-conflict-dialog/version-conflict-dialog.component";
-import { ServerValidation } from "../../../server-validation.util";
-import { ErrorDialogComponent } from "../../../dialogs/error/error-dialog.component";
 import { IgeError } from "../../../models/ige-error";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SessionStore } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
@@ -24,7 +22,7 @@ export abstract class SaveBase extends Plugin {
 
   protected constructor(
     public sessionStore: SessionStore,
-    public messageService: MessageService
+    public messageService: FormMessageService
   ) {
     super();
   }

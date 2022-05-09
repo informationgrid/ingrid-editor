@@ -29,6 +29,10 @@ import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-p
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { FormlyModule } from "@ngx-formly/core";
 import { IgeFormlyModule } from "../formly/ige-formly.module";
+import { MessagesManagementComponent } from "./messages-management/messages-management.component";
+import { SharedModule } from "../shared/shared.module";
+import { NewMessageDialogComponent } from "./messages-management/new-message-dialog/new-message-dialog.component";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
@@ -38,6 +42,8 @@ import { IgeFormlyModule } from "../formly/ige-formly.module";
     CatalogManagementComponent,
     CatalogDetailComponent,
     IBusManagementComponent,
+    MessagesManagementComponent,
+    NewMessageDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -64,6 +70,8 @@ import { IgeFormlyModule } from "../formly/ige-formly.module";
     CodelistPresenterModule,
     FormlyModule,
     IgeFormlyModule,
+    SharedModule,
+    MatDatepickerModule,
   ],
 })
 export class SettingsModule {}

@@ -11,7 +11,7 @@ import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
 import { SessionStore } from "../../../store/session.store";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -35,7 +35,7 @@ export class SavePlugin extends SaveBase {
     public formStateService: FormStateService,
     public documentService: DocumentService,
     sessionStore: SessionStore,
-    messageService: MessageService
+    messageService: FormMessageService
   ) {
     super(sessionStore, messageService);
   }

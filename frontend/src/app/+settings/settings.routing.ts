@@ -5,6 +5,7 @@ import { CodelistsComponent } from "./codelists/codelists.component";
 import { CatalogManagementComponent } from "./catalog-management/catalog-management.component";
 import { AuthGuard } from "../security/auth.guard";
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
+import { MessagesManagementComponent } from "./messages-management/messages-management.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -43,6 +44,13 @@ export const routing = RouterModule.forChild([
         component: IBusManagementComponent,
         data: {
           title: "iBus-Verwaltung",
+        },
+      },
+      {
+        path: "messages",
+        component: MessagesManagementComponent,
+        data: {
+          title: "Benachrichtigungen",
         },
       },
     ],

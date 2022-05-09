@@ -14,7 +14,7 @@ import {
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { filter, switchMap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
@@ -51,7 +51,7 @@ export class CopyCutPastePlugin extends Plugin {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private modalService: ModalService,
-    private messageService: MessageService,
+    private messageService: FormMessageService,
     private dialog: MatDialog
   ) {
     super();

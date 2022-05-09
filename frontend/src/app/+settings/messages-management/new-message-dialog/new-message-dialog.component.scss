@@ -1,0 +1,17 @@
+mat-dialog-content {
+  width: 450px;
+
+  .no-selection-text {
+    padding-bottom: 6px;
+  }
+}
+
+.mat-dialog-title {
+  cursor: move;
+}
+
+:host {
+  ::ng-deep .label-wrapper {
+    padding-top: 0.8em !important;
+  }
+}

@@ -1,6 +1,9 @@
 <div fxFlex fxLayout="column" *transloco="let t; read: 'dashboard'">
     <div class="welcome">
         <div>{{ t("welcome") }}</div>
+        <div *ngFor="let message of messages$ | async" class="message">
+            <span>{{ message.text }}</span>
+        </div>
     </div>
 
     <div class="dashboard-content">

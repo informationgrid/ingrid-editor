@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -33,7 +33,7 @@ export class FormMessageComponent implements OnInit {
   private defaultDuration = 3000;
 
   constructor(
-    private messageService: MessageService,
+    private messageService: FormMessageService,
     private cdr: ChangeDetectorRef
   ) {}
 

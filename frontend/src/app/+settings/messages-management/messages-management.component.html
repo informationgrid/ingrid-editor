@@ -1,0 +1,76 @@
+<page-template label="Benachrichtigungen">
+    <div left-side>
+        Auf dieser Seite können die Benachrichtigungen an alle Nutzer verwaltet
+        werden
+    </div>
+
+    <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
+        <ige-add-button (add)="showAddMessageDialog()"></ige-add-button>
+    </div>
+
+    <div main-content>
+        <ige-card-box fxFlex label="Benachrichtigungen">
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                matSort
+                class="width-100"
+            >
+                <ng-container matColumnDef="text">
+                    <th mat-header-cell *matHeaderCellDef>Text</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.message.text }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="_expires">
+                    <th mat-header-cell *matHeaderCellDef>Gültig bis</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element._expires | date: "dd.MM.yyyy" }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="_actions_">
+                    <th mat-header-cell *matHeaderCellDef>Aktion</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button
+                            type="button"
+                            mat-icon-button
+                            class="menu-button"
+                            [matMenuTriggerFor]="tableRowAction"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
+                        <mat-menu #tableRowAction="matMenu">
+                            <!--                        <button
+                                                        type="button"
+                                                        mat-menu-item
+                                                        (click)="editMessage(element._id)"
+                                                    >
+                                                        Bearbeiten
+                                                    </button>-->
+                            <button
+                                type="button"
+                                mat-menu-item
+                                (click)="removeMessage(element._id)"
+                            >
+                                Löschen
+                            </button>
+                        </mat-menu>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+            </table>
+        </ige-card-box>
+
+        <!--        <div class="scrollable">
+                    <formly-form
+                        [form]="form"
+                        [model]="model"
+                        [fields]="fields"
+                    ></formly-form>
+                </div>-->
+    </div>
+</page-template>

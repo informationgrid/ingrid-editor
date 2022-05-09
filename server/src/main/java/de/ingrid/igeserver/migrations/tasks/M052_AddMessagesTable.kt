@@ -2,16 +2,13 @@ package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M026_AddUserGroupTable : MigrationBase("0.26") {
-
-    private var log = logger()
+class M052_AddMessagesTable : MigrationBase("0.52") {
 
     @Autowired
     lateinit var entityManager: EntityManager
@@ -20,19 +17,15 @@ class M026_AddUserGroupTable : MigrationBase("0.26") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
-        create table user_group (
-            user_info_id int not null
-                constraint user_group_user_info_id_fk
-                    references user_info,
-            group_id int not null
-                constraint user_group_permission_group_id_fk
-                    references permission_group,
-            constraint user_group_pk
-                primary key (user_info_id, group_id)
-        );
-
-        alter table permission_group drop column type;
-        alter table permission_group drop column identifier;
+        CREATE SEQUENCE messages_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+        CREATE TABLE messages (
+            "id" integer DEFAULT nextval('messages_id_seq') NOT NULL,
+            "catalog_id" integer,
+            "message" jsonb NOT NULL,
+            "expires" timestamptz,
+            CONSTRAINT "messages_pkey" PRIMARY KEY ("id"),
+            CONSTRAINT "messages_catalog_id_fkey" FOREIGN KEY (catalog_id) REFERENCES catalog (id) ON DELETE CASCADE NOT DEFERRABLE
+        ) WITH (oids = false);
     """.trimIndent()
 
     override fun exec() {

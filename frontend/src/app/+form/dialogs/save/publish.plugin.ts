@@ -20,7 +20,7 @@ import {
   DocEventsService,
 } from "../../../services/event/doc-events.service";
 import { SessionStore } from "../../../store/session.store";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -48,7 +48,7 @@ export class PublishPlugin extends SaveBase {
     public formStateService: FormStateService,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
-    messageService: MessageService,
+    messageService: FormMessageService,
     sessionStore: SessionStore
   ) {
     super(sessionStore, messageService);

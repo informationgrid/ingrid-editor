@@ -1,12 +1,12 @@
 import { TestBed } from "@angular/core/testing";
 
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 
 describe("FormMessageService", () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it("should be created", () => {
-    const service: MessageService = TestBed.get(MessageService);
+    const service: FormMessageService = TestBed.get(FormMessageService);
     expect(service).toBeTruthy();
   });
 });

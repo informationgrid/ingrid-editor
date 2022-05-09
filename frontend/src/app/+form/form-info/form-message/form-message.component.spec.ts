@@ -5,7 +5,7 @@ import {
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { MatIconModule } from "@angular/material/icon";
 import { fakeAsync, tick } from "@angular/core/testing";
-import { MessageService } from "../../../services/message.service";
+import { FormMessageService } from "../../../services/form-message.service";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatButtonModule } from "@angular/material/button";
 
@@ -42,7 +42,7 @@ describe("FormMessageComponent", () => {
   });
 
   it("should show info message", () => {
-    const service = spectator.inject(MessageService);
+    const service = spectator.inject(FormMessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -54,7 +54,7 @@ describe("FormMessageComponent", () => {
   });
 
   it("should hide an info message after 3s", fakeAsync(() => {
-    const service = spectator.inject(MessageService);
+    const service = spectator.inject(FormMessageService);
     service.message$.next(INFO_MESSAGE);
 
     spectator.detectChanges();
@@ -66,7 +66,7 @@ describe("FormMessageComponent", () => {
   }));
 
   it("should show an error message", () => {
-    const service = spectator.inject(MessageService);
+    const service = spectator.inject(FormMessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();
@@ -78,7 +78,7 @@ describe("FormMessageComponent", () => {
   });
 
   it("should not hide an error message after 3s", fakeAsync(() => {
-    const service = spectator.inject(MessageService);
+    const service = spectator.inject(FormMessageService);
     service.message$.next(ERROR_MESSAGE);
 
     spectator.detectChanges();

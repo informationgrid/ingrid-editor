@@ -5,7 +5,7 @@ import {
 } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { SessionQuery } from "../store/session.query";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
@@ -14,6 +14,8 @@ import {
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
 import { map } from "rxjs/operators";
+import { MessageService } from "../services/messages/message.service";
+import { Message } from "../services/messages/message";
 
 @Component({
   templateUrl: "./dashboard.component.html",
@@ -27,14 +29,17 @@ export class DashboardComponent implements OnInit {
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = new Subject<number[]>();
+  messages$: BehaviorSubject<Message[]>;
 
   constructor(
     configService: ConfigService,
     private router: Router,
     private dialog: MatDialog,
     private docService: DocumentService,
-    private sessionQuery: SessionQuery
+    private sessionQuery: SessionQuery,
+    private messageService: MessageService
   ) {
+    this.messages$ = this.messageService.messages$;
     this.configuration = configService.getConfiguration();
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
@@ -47,6 +52,7 @@ export class DashboardComponent implements OnInit {
     );
     this.fetchStatistic();
     this.fetchData();
+    this.messageService.loadStoredMessages();
   }
 
   fetchStatistic() {

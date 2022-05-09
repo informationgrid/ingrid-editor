@@ -5,7 +5,7 @@ import { Subject } from "rxjs";
 @Injectable({
   providedIn: "root",
 })
-export class MessageService {
+export class FormMessageService {
   message$ = new Subject<FormMessageType>();
   clearMessages$ = new EventEmitter<boolean>();
 

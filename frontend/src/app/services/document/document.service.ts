@@ -19,7 +19,7 @@ import {
 } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { applyTransaction, HashMap, transaction } from "@datorama/akita";
-import { MessageService } from "../message.service";
+import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
@@ -64,7 +64,7 @@ export class DocumentService {
     private configService: ConfigService,
     private modalService: ModalService,
     private dataService: DocumentDataService,
-    private messageService: MessageService,
+    private messageService: FormMessageService,
     private profileService: ProfileService,
     private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,

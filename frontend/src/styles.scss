@@ -404,6 +404,12 @@ formly-field {
   }
 }
 
+formly-form:last-of-type(formly-field)
+  > formly-field:last-of-type(mat-divider) {
+  border-top-color: #fff !important;
+  height: 0;
+}
+
 /* Split gutter style */
 .as-split-gutter-icon {
   background-image: url("./assets/more_vert-24px.svg") !important;

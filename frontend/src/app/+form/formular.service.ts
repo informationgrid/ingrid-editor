@@ -8,7 +8,7 @@ import { TreeQuery } from "../store/tree/tree.query";
 import { TreeStore } from "../store/tree/tree.store";
 import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { MessageService } from "../services/message.service";
+import { FormMessageService } from "../services/form-message.service";
 import { ProfileQuery } from "../store/profile/profile.query";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
@@ -28,7 +28,7 @@ export class FormularService {
     private dialog: MatDialog,
     private profiles: ProfileService,
     private documentService: DocumentService,
-    private formMessageService: MessageService,
+    private formMessageService: FormMessageService,
     private treeQuery: TreeQuery,
     private treeStore: TreeStore,
     private sessionStore: SessionStore,
