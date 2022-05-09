@@ -151,12 +151,16 @@ data class UVPModel(
     
     fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<AddressShort> {
+    fun getUvpAddressParents(): List<AddressShort> = getUvpAddressParents(pointOfContact!!.parent)
+    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = getUvpAddressParents(pointOfContact!!.id)
+    
+    private fun getUvpAddressParents(parent: Int): List<AddressShort> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getParentAddresses(pointOfContact!!.id)
+        return pointOfContact!!.getParentAddresses(parent)
             .map { convertToReadableAddressFromJson(it.data) }
     }
+    
 
     private fun convertToReadableAddressFromJson(address: ObjectNode): AddressShort {
         val organization = address.get("organization")
