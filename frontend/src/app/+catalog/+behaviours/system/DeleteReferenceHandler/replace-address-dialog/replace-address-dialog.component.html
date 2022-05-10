@@ -7,46 +7,42 @@
             <span class="text">Adresse ersetzen</span>
         </h2>
     </div>
-    <mat-dialog-content>
-        <div class="slider">
-            <div
-                #slideContainer
-                class="slide-container"
-                [class.animate]="true"
-                [style.transform]="'translateX(-' + page * 100 + '%)'"
-            >
-                <div *ngIf="showInfo" class="slide">
-                    <p>
-                        Das Dokument wird bereits von mindestens einem Dokument
-                        referenziert. Möchten Sie die Adresse ersetzen?
-                    </p>
-                </div>
-                <div class="slide">
-                    <p>
-                        Hier können Sie eine neue Adresse auswählen, die in
-                        allen Datensätzen verwendet werden soll, die aktuell auf
-                        die gerade geöffnete Adresse verweisen. Es ist nur
-                        möglich bereits veröffentlichte Adressen auszuwählen.
-                    </p>
-                    <ige-tree
-                        style="width: 300px"
-                        [forAddresses]="true"
-                        [disabledCondition]="disableTreeNode"
-                        (activate)="selectedAddress = $event"
-                    ></ige-tree>
-                </div>
-                <div class="slide">
-                    <div fxLayoutAlign="center center" fxLayout="column">
-                        <div class="section-title">
-                            Die Adresse wurde erfolgreich ersetzt.
-                        </div>
-                        <mat-icon class="big-icon success-color"
-                            >check_circle_outline
-                        </mat-icon>
+    <mat-dialog-content class="hide-tab-header">
+        <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
+            <mat-tab *ngIf="showInfo">
+                <p>
+                    Das Dokument wird bereits von mindestens einem Dokument
+                    referenziert. Möchten Sie die Adresse ersetzen?
+                </p>
+            </mat-tab>
+            <mat-tab>
+                <p>
+                    Hier können Sie eine neue Adresse auswählen, die in allen
+                    Datensätzen verwendet werden soll, die aktuell auf die
+                    gerade geöffnete Adresse verweisen. Es ist nur möglich
+                    bereits veröffentlichte Adressen auszuwählen.
+                </p>
+                <ige-tree
+                    [forAddresses]="true"
+                    [disabledCondition]="disableTreeNode"
+                    (activate)="selectedAddress = $event"
+                ></ige-tree>
+            </mat-tab>
+            <mat-tab>
+                <div
+                    class="padding"
+                    fxLayoutAlign="center center"
+                    fxLayout="column"
+                >
+                    <div class="section-title">
+                        Die Adresse wurde erfolgreich ersetzt.
                     </div>
+                    <mat-icon class="big-icon success-color"
+                        >check_circle_outline
+                    </mat-icon>
                 </div>
-            </div>
-        </div>
+            </mat-tab>
+        </mat-tab-group>
     </mat-dialog-content>
     <mat-dialog-actions>
         <button
