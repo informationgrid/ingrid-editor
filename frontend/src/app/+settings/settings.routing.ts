@@ -51,6 +51,8 @@ export const routing = RouterModule.forChild([
         component: MessagesManagementComponent,
         data: {
           title: "Benachrichtigungen",
+          roles: ["admin"],
+          permission: "manage_messages",
         },
       },
     ],

@@ -244,7 +244,17 @@ class CatalogService @Autowired constructor(
         val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
         val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
 
-        val permissions = if (isCatAdmin || isSuperAdmin) {
+        val permissions = if (isSuperAdmin) {
+            listOf(
+                Permissions.manage_messages.name,
+                Permissions.manage_catalog.name,
+                Permissions.manage_users.name,
+                Permissions.can_export.name,
+                Permissions.can_import.name,
+                Permissions.can_create_dataset.name,
+                Permissions.can_create_address.name,
+            )
+        } else if (isCatAdmin) {
             listOf(
                 Permissions.manage_catalog.name,
                 Permissions.manage_users.name,

@@ -81,11 +81,6 @@ export class ConfigService {
             isRouterLink: true,
             link: "/settings/ibus",
           },
-          {
-            label: "Benachrichtigungen",
-            isRouterLink: true,
-            link: "/settings/messages",
-          },
         ],
       },
       {
