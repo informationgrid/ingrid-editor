@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter } from "rxjs/operators";
+import { delay, filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -23,6 +23,7 @@ export class BehaviourItemComponent implements OnInit {
     form.valueChanges
       .pipe(
         untilDestroyed(this),
+        delay(0), // add tiny delay to get updated form state
         filter(() => form.dirty && form.valid)
       )
       .subscribe(() => this.update.next());
