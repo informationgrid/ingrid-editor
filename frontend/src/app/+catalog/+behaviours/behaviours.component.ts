@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import {
   BehaviourFormatBackend,
   BehaviourService,
@@ -9,7 +9,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Plugin } from "./plugin";
 import { FormlyFormBuilder } from "@ngx-formly/core";
 import { FormPluginToken } from "../../tokens/plugin.token";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 
 @UntilDestroy()
 @Component({

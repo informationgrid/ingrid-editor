@@ -8,15 +8,21 @@ import {
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { filter, map, mergeMap, take } from "rxjs/operators";
 
 export class UvpShared extends BaseDoctype {
+  protected uvpNumberCodelistId: number;
+
   constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
     private configService: ConfigService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private behaviourService?: BehaviourService
   ) {
     super(codelistService, codelistQuery);
+    if (behaviourService) this.setUvpCodelistId();
   }
 
   dateTooBigValidator = {
@@ -308,6 +314,17 @@ export class UvpShared extends BaseDoctype {
       message: "Das Datum muss vor dem Beginn der ersten Auslegung sein.",
       errorPath: "receiptDate",
     };
+  }
+
+  setUvpCodelistId() {
+    this.behaviourService.theSystemBehaviours$
+      .pipe(
+        mergeMap((x) => x),
+        filter((behaviour) => behaviour.id === "plugin.uvp.uvp-number"),
+        take(1),
+        map((behaviour) => behaviour?.data["uvpCodelist"] ?? 9000)
+      )
+      .subscribe((id) => (this.uvpNumberCodelistId = id));
   }
 
   private convertToIsoDate(date: Date | string) {

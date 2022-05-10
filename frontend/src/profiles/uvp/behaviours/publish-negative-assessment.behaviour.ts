@@ -12,7 +12,6 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
 
   constructor() {
     super();
-    console.log("contruct PublishNegativeAssessmentBehaviour");
 
     this.fields.push({
       key: "onlyWithSpatial",

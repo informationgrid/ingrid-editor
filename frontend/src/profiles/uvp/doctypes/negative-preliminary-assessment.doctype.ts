@@ -7,6 +7,7 @@ import { ConfigService } from "../../../app/services/config/config.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { UvpShared } from "./uvp-shared";
 import { map } from "rxjs/operators";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 
 @Injectable({
   providedIn: "root",
@@ -50,10 +51,11 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,
               showSearch: true,
-              options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
-                map((list) => this.sortUVPNumber(list))
-              ),
-              codelistId: 9000,
+              options: this.getCodelistForSelect(
+                this.uvpNumberCodelistId,
+                "eiaNumbers"
+              ).pipe(map((list) => this.sortUVPNumber(list))),
+              codelistId: this.uvpNumberCodelistId,
               asSelect: true,
             }),
             this.addDatepicker("decisionDate", "Datum der Entscheidung", {
@@ -79,8 +81,15 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
     configService: ConfigService,
-    uploadService: UploadService
+    uploadService: UploadService,
+    behaviourService: BehaviourService
   ) {
-    super(codelistService, codelistQuery, configService, uploadService);
+    super(
+      codelistService,
+      codelistQuery,
+      configService,
+      uploadService,
+      behaviourService
+    );
   }
 }

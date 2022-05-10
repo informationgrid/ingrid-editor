@@ -32,10 +32,11 @@ export class LineAndSpatialShared extends UvpShared {
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,
               showSearch: true,
-              options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
-                map((list) => this.sortUVPNumber(list))
-              ),
-              codelistId: 9000,
+              options: this.getCodelistForSelect(
+                this.uvpNumberCodelistId,
+                "eiaNumbers"
+              ).pipe(map((list) => this.sortUVPNumber(list))),
+              codelistId: this.uvpNumberCodelistId,
               asSelect: true,
             }),
             {

@@ -7,6 +7,7 @@ import { UvpShared } from "./uvp-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 
 @Injectable({
   providedIn: "root",
@@ -47,10 +48,11 @@ export class ApprovalProcedureDoctype extends UvpShared {
             this.addRepeatList("eiaNumbers", "UVP-Nummern", {
               required: true,
               showSearch: true,
-              options: this.getCodelistForSelect(9000, "eiaNumbers").pipe(
-                map((list) => this.sortUVPNumber(list))
-              ),
-              codelistId: 9000,
+              options: this.getCodelistForSelect(
+                this.uvpNumberCodelistId,
+                "eiaNumbers"
+              ).pipe(map((list) => this.sortUVPNumber(list))),
+              codelistId: this.uvpNumberCodelistId,
               asSelect: true,
             }),
             this.addRadioboxes("prelimAssessment", "Vorprüfung durchgeführt", {
@@ -87,8 +89,15 @@ export class ApprovalProcedureDoctype extends UvpShared {
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
     configService: ConfigService,
-    uploadService: UploadService
+    uploadService: UploadService,
+    behaviourService: BehaviourService
   ) {
-    super(codelistService, codelistQuery, configService, uploadService);
+    super(
+      codelistService,
+      codelistQuery,
+      configService,
+      uploadService,
+      behaviourService
+    );
   }
 }

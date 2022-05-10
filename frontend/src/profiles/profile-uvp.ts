@@ -14,6 +14,7 @@ import { filter, map, take } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
 import { NavigationEnd, Router } from "@angular/router";
+import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 
 @Component({
   template: "",
@@ -61,12 +62,19 @@ class UVPComponent {
     behaviourService: BehaviourService,
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype
   ) {
-    const behaviour = new PublishNegativeAssessmentBehaviour();
-    behaviourService.addSystemBehaviourFromProfile(behaviour);
+    const publishNegativeAssessmentBehaviour =
+      new PublishNegativeAssessmentBehaviour();
+    const uvpNumberPlugin = new UvpNumberBehaviour();
+    behaviourService.addSystemBehaviourFromProfile(
+      publishNegativeAssessmentBehaviour
+    );
+    behaviourService.addSystemBehaviourFromProfile(uvpNumberPlugin);
 
     behaviourService.theSystemBehaviours$
       .pipe(
-        map((plugins) => this.getActiveState(plugins, behaviour.id)),
+        map((plugins) =>
+          this.getActiveState(plugins, publishNegativeAssessmentBehaviour.id)
+        ),
         filter((isActive) => isActive)
       )
       .subscribe(() => (negativeAssessmentDoctype.forPublish = true));
@@ -92,19 +100,6 @@ class UVPComponent {
 
 @NgModule({
   declarations: [UVPComponent],
-  // imports: [
-  //   RouterModule.forRoot([
-  //     {
-  //       path: "xxx",
-  //       loadChildren: () =>
-  //         import("./uvp/reports/uvp-reports.module").then((m) => m.UvpSharedModule),
-  //       //canActivate: [AuthGuard],
-  //       data: {
-  //         icon: "Uebersicht",
-  //       },
-  //     },
-  //   ]),
-  // ],
 })
 export class ProfilePack {
   static getMyComponent() {
