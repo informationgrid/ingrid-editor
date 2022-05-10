@@ -14,10 +14,18 @@
                     <from>${((StepPublicDisclosure) step).getDisclosureDate().getStart()}</from>
                     <to>${((StepPublicDisclosure) step).getDisclosureDate().getEnd()}</to>
                 </datePeriod>
-                @template.uvp.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs())
-                @template.uvp.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs())
-                @template.uvp.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs())
-                @template.uvp.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs())
+                @if(((StepPublicDisclosure) step).isPublishable("announcementDocs"))
+                    @template.uvp.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs())
+                @endif
+                @if(((StepPublicDisclosure) step).isPublishable("applicationDocs"))
+                    @template.uvp.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs())
+                @endif
+                @if(((StepPublicDisclosure) step).isPublishable("reportsRecommendationDocs"))
+                    @template.uvp.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs())
+                @endif
+                @if(((StepPublicDisclosure) step).isPublishable("furtherDocs"))
+                    @template.uvp.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs())
+                @endif
             </step>
         @elseif (step instanceof StepPublicHearing)
             <step type="phase2">

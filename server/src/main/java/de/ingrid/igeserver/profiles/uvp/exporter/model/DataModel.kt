@@ -79,10 +79,27 @@ data class StepPublicDisclosure(
     val type: String,
     val disclosureDate: RangeModel,
     val announcementDocs: List<Document>?,
+    val announcementDocsPublishDuringDisclosure: Boolean = true,
     val applicationDocs: List<Document>?,
+    val applicationDocsPublishDuringDisclosure: Boolean = true,
     val reportsRecommendationDocs: List<Document>?,
-    val furtherDocs: List<Document>?
-) : Step
+    val reportsRecommendationDocsPublishDuringDisclosure: Boolean = true,
+    val furtherDocs: List<Document>?,
+    val furtherDocsPublishDuringDisclosure: Boolean = true
+) : Step {
+    fun isPublishable(tableName: String): Boolean {
+        val today = Date().toInstant().toString()
+        val startDate = disclosureDate.start ?: today
+        return when (tableName) {
+            "announcementDocs" -> !announcementDocsPublishDuringDisclosure || startDate <= today
+            "applicationDocs" -> !applicationDocsPublishDuringDisclosure || startDate <= today
+            "reportsRecommendationDocs" -> !reportsRecommendationDocsPublishDuringDisclosure || startDate <= today
+            "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
+            else -> true
+        }
+        
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class StepPublicHearing(
