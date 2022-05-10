@@ -355,10 +355,20 @@ describe('uvp documents', () => {
       }
     ];
     DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, spacial);
-    cy.reload();
-    cy.wait(1700);
+    cy.pageReload('mat-tree mat-tree-node', docTitle);
+
     Tree.openNode([docTitle]);
     DocumentPage.choosePublishOption(PublishOptions.ConfirmPublish, true);
     BasePage.checkErrorDialogMessage('Es trat ein Fehler bei der JSON-Schema Validierung auf');
+  });
+  it('should add a maximum one spatial reference (#3747) using UI', () => {
+    const docTitle = 'A_mit_2_Raumbezug_UI' + Utils.randomString();
+    DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, null);
+
+    cy.pageReload('ige-document-list-item');
+
+    Tree.openNode([docTitle]);
+    enterMcloudDocTestData.setSpatialBbox('add spatial reference uvp', 'Berlin', false);
+    cy.get('[data-cy="spatialButton"]').should('not.exist');
   });
 });
