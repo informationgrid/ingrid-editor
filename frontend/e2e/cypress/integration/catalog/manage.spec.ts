@@ -59,6 +59,7 @@ describe('Catalog management', () => {
 
       // refresh page
       ManageCatalogPage.visit();
+      cy.wait(1000);
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
       ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
