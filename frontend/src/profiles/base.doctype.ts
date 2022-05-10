@@ -123,6 +123,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldGroup) {
         this.addContextHelp(field.fieldGroup);
       }
+      if (field.fieldArray?.fieldGroup) {
+        this.addContextHelp(field.fieldArray.fieldGroup);
+      }
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.templateOptions.docType = this.id;
 

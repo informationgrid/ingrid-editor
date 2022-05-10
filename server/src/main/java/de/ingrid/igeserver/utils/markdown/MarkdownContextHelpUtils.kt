@@ -102,19 +102,22 @@ class MarkdownContextHelpUtils {
             val profileResource = File(profileDir.path)
 
             profileResource.walk()
-                    .maxDepth(1)
-                    .drop(1)
-                    .filter { it.isDirectory }
-                    .forEach { profilePath ->
-                        val from = getLanguageHelpFiles(profilePath, profilePath.name)
-                        result.putAll(from)
-                    }
+                .maxDepth(1)
+                .drop(1)
+                .filter { it.isDirectory }
+                .forEach { profilePath ->
+                    val from = getLanguageHelpFiles(profilePath, profilePath.name)
+                    result.putAll(from)
+                }
 
 
             return result
         }
 
-    private fun getLanguageHelpFiles(sourcePath: File, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
+    private fun getLanguageHelpFiles(
+        sourcePath: File,
+        profile: String
+    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
 
         val result = mutableMapOf<MarkdownContextHelpItemKey, MarkdownContextHelpItem>()
 
@@ -124,49 +127,58 @@ class MarkdownContextHelpUtils {
 
         // get other languages
         sourcePath.walk().maxDepth(1)
-                .drop(1)
-                .filter { it.isDirectory }
+            .drop(1)
+            .filter { it.isDirectory }
 //                .filter { "override" != it.name }
-                .forEach { langPath ->
-                    val localeHelpFiles = getHelpFilesFromPath(langPath, langPath.name, profile)
-                    result.putAll(localeHelpFiles)
-                }
+            .forEach { langPath ->
+                val localeHelpFiles = getHelpFilesFromPath(langPath, langPath.name, profile)
+                result.putAll(localeHelpFiles)
+            }
 
         return result
     }
 
-    private fun getHelpFilesFromPath(sourcePath: File, language: String, profile: String): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
+    private fun getHelpFilesFromPath(
+        sourcePath: File,
+        language: String,
+        profile: String
+    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
 
         return sourcePath.walk().maxDepth(1)
-                .filter { it.isFile }
-                .map { readMarkDownFile(it, language, profile) }
-                .filter { it != null }
-                .map { it!!.first to it.second }
-                .toMap()
+            .filter { it.isFile }
+            .flatMap { readMarkDownFile(it, language, profile) }
+            .map { it!!.first to it.second }
+            .toMap()
 
     }
 
-    private fun readMarkDownFile(path: File, language: String, profile: String): Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>? {
-
-        var result: Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>? = null
+    private fun readMarkDownFile(
+        path: File,
+        language: String,
+        profile: String
+    ): List<Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>?> {
+        val result = mutableListOf<Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>>()
         val content = File(path.toURI()).readText()
         val data = parseYaml(content)
 
         val fieldId: String? = data["id"]?.get(0)
-        val docType: String? = data["docType"]?.get(0)
+        val docTypes: List<String> = data["docType"] ?: emptyList()
         val title: String? = data["title"]?.get(0)
 
-        if (fieldId != null) {
-            val itemKey = MarkdownContextHelpItemKey(
-                    fieldId, docType!!, language, profile)
+        docTypes.forEach { docType ->
 
-            val helpItem = MarkdownContextHelpItem(path.toPath())
-            helpItem.title = title
-            result = Pair(itemKey, helpItem)
+            if (fieldId != null) {
+                val itemKey = MarkdownContextHelpItemKey(
+                    fieldId, docType, language, profile
+                )
+
+                val helpItem = MarkdownContextHelpItem(path.toPath())
+                helpItem.title = title
+                result.add(Pair(itemKey, helpItem))
+            }
         }
 
         return result
-
     }
 
     private fun parseYaml(content: String): Map<String, MutableList<String>> {
