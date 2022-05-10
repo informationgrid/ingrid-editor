@@ -322,7 +322,7 @@ export class UvpShared extends BaseDoctype {
         mergeMap((x) => x),
         filter((behaviour) => behaviour.id === "plugin.uvp.uvp-number"),
         take(1),
-        map((behaviour) => behaviour?.data["uvpCodelist"] ?? 9000)
+        map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000)
       )
       .subscribe((id) => (this.uvpNumberCodelistId = id));
   }
