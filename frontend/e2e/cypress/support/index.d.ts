@@ -17,6 +17,8 @@ declare namespace Cypress {
 
     hasErrorDialog(content?: string): void;
 
+    pageReload(selector: string, content?: string): void;
+
     fieldIsValid(fieldClass: string): void;
 
     fieldIsInvalid(fieldClass: string, content?: string): void;

@@ -94,6 +94,16 @@ Cypress.Commands.add('hasErrorDialog', content => {
   }
 });
 
+// Reload the current page and wait for a selector or content to appear
+Cypress.Commands.add('pageReload', (selector, content) => {
+  cy.reload();
+  cy.get(selector, { timeout: 10000 }).should('exist');
+
+  if (content) {
+    cy.get(selector).should('contain.text', content, { timeout: 10000 });
+  }
+});
+
 Cypress.Commands.add('fieldIsValid', (fieldClass, content) => {
   cy.get('.' + fieldClass + ' mat-form-field.ng-invalid').should('not.exist');
 });
