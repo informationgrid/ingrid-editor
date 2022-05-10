@@ -26,8 +26,7 @@ describe('Tree', () => {
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene']);
     Tree.selectNodeAndCheckPath('Ordner 2. Ebene', ['Daten', 'Testdokumente']);
 
-    cy.reload();
-    cy.wait(800);
+    cy.pageReload('mat-tree');
     // when 'Ordner 2. Ebene is visible, the other folders are expanded
     Tree.containsNodeWithFolderTitle('Ordner 2. Ebene');
   });
