@@ -475,9 +475,12 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun deleteRecursively(catalogId: String, id: String) {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, null)
-
+    fun deleteDocument(principal: Principal, catalogId: String, id: String) {
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        deleteRecursively(catalogId, id, filterContext)
+    }
+    
+    private fun deleteRecursively(catalogId: String, id: String, filterContext: Context) {
         // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
@@ -492,7 +495,7 @@ class DocumentService @Autowired constructor(
         //       it somehow
 
         findChildrenDocs(catalogId, id.toInt(), isAddress(wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.id.toString())
+            deleteRecursively(catalogId, it.id.toString(), filterContext)
         }
 
         if (generalProperties.markInsteadOfDelete) {

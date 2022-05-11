@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -92,7 +91,7 @@ class DatasetsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         for (id in ids) {
             // TODO: remove references to document!?
-            documentService.deleteRecursively(catalogId, id)
+            documentService.deleteDocument(principal, catalogId, id)
         }
         return ResponseEntity.noContent().build()
     }
