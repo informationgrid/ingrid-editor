@@ -16,9 +16,9 @@
     "cypress": "9.6.1",
     "gremlins.js": "^2.2.0",
     "mocha": "^9.1.3",
-    "mochawesome": "^7.1.2",
+    "mochawesome": "^7.1.3",
     "mochawesome-merge": "^4.2.1",
-    "mochawesome-report-generator": "^6.1.1",
+    "mochawesome-report-generator": "^6.2.0",
     "smtp-tester": "^1.2.0",
     "typescript": "^3.8.3"
   },
