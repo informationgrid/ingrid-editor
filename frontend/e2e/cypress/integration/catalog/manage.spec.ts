@@ -58,8 +58,8 @@ describe('Catalog management', () => {
       const lastDocCreateDate = new Date();
 
       // refresh page
+      // we cannot add custom command pageReload because we are waiting for specific number to show up after parsing to int
       ManageCatalogPage.visit();
-      cy.wait(1000);
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
       ManageCatalogPage.getDateOfChangesInCatalog('Test').should(

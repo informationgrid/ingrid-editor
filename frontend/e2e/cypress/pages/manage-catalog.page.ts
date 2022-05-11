@@ -22,9 +22,11 @@ export class ManageCatalogPage {
   }
 
   static getNumberOfDatasetsInCatalog(catalogTitle: string) {
+    // not() command to wait for the spinner to disappear
     return cy
       .contains('.mat-card .mat-card-title', new RegExp('^' + catalogTitle + '$'))
       .parent()
+      .not('mat-spinner', { timeout: 10000 })
       .find('.content')
       .then($node => {
         // extract number from string like '12 Datensätze'
