@@ -7,8 +7,6 @@ import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 import { ResearchPage } from '../../../pages/research.page';
-import { DashboardPage } from '../../../pages/dashboard.page';
-import doc = Mocha.reporters.doc;
 import { BasePage } from '../../../pages/base.page';
 
 describe('uvp documents', () => {
@@ -317,6 +315,18 @@ describe('uvp documents', () => {
           expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
         }
       );
+    });
+  });
+
+  it('should save metrics to file', () => {
+    Menu.switchTo('REPORTS');
+    uvpPage.goToTabmenu(UVPreports.Report);
+    uvpPage.getAllValues().then(arr1 => {
+      uvpPage.downloadReport();
+      uvpPage.getReportFromFile().then(arr2 => {
+        // compare the content of the two arrays
+        expect(arr2).to.deep.eq(arr1);
+      });
     });
   });
 

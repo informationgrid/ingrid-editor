@@ -90,19 +90,42 @@ export class uvpPage {
     cy.wait(3000);
   }
 
+  static getMetricsFromReportPage(): Chainable<string[]> {
+    return cy.get('.mat-column-value[role="cell"]').then(element => {
+      let arr: string[] = [];
+      element.each((index, el) => {
+        arr.push(el.innerText.trim());
+      });
+      return arr;
+    });
+  }
+
+  static getAllValues(): Chainable<string[]> {
+    return cy
+      .get('[role="cell"]')
+      .not('.mat-column-type')
+      .then(element => {
+        let arr: string[] = [];
+        element.each((index, el) => {
+          arr.push(el.innerText.trim());
+        });
+        console.log(arr);
+        return arr;
+      });
+  }
+
   static getReportFromFile(): Chainable<String[]> {
-    let res_arr: String[] = [];
     return cy.readFile('cypress/downloads/report.csv').then(content => {
       let raw_content = content.split('\n');
       // delete string with column names
       raw_content.shift();
-      // separate elements of single records
-      let new_arr = raw_content.map(function (el: string) {
-        return el.split(';');
-      });
-      new_arr.pop();
-      console.log(new_arr);
-      return;
+      // separate elements of single records and flatten arrays with content of lines in one single array
+      return raw_content
+        .map(function (el: string) {
+          return el.split(';').map(elem => elem.trim());
+        })
+        .flat()
+        .filter((elem: any) => elem !== '');
     });
   }
 }
