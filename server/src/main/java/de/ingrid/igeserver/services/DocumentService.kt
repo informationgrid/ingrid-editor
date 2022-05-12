@@ -503,11 +503,11 @@ class DocumentService @Autowired constructor(
 
             // remove the wrapper
             docWrapperRepo.deleteById(id)
-        }
 
-        // always remove ACL from document
-        // if only marked for deletion, then we need to create ACL again after an undelete
-        aclService.removeAclForDocument(id)
+            // remove ACL from document, which works now since reference is by database ID instead of UUID
+            // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique
+            aclService.removeAclForDocument(id)
+        }
 
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
