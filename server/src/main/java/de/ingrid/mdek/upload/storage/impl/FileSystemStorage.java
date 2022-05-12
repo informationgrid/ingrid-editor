@@ -70,10 +70,10 @@ import java.util.zip.ZipInputStream;
  */
 public class FileSystemStorage implements Storage {
 
-    private static final String ARCHIVE_PATH = "_archive_";
-    private static final String TRASH_PATH = "_trash_";
-    private static final String UNSAVED_PATH = "_unsaved_";
-    private static final String UNPUBLISHED_PATH = "_unpublished_";
+    public static final String ARCHIVE_PATH = "_archive_";
+    public static final String TRASH_PATH = "_trash_";
+    public static final String UNSAVED_PATH = "_unsaved_";
+    public static final String UNPUBLISHED_PATH = "_unpublished_";
 
     private static final String UNKNOWN_MIME_TYPE = "";
 
@@ -563,7 +563,7 @@ public class FileSystemStorage implements Storage {
         deleteEmptyDirs(trashPath, archivePath, unsavedPath, unpublishedPath);
     }
 
-    private void deleteEmptyDirs(Path trashPath, Path archivePath, Path unsavedPath, Path unpublishedPath) throws IOException {
+    public void deleteEmptyDirs(Path trashPath, Path archivePath, Path unsavedPath, Path unpublishedPath) throws IOException {
         boolean hasEmptyDirs = true;
         while (hasEmptyDirs) {
             // collect empty directories
@@ -595,7 +595,7 @@ public class FileSystemStorage implements Storage {
         }
     }
 
-    private void deleteTrashFiles(Path trashPath) throws IOException {
+    public void deleteTrashFiles(Path trashPath) throws IOException {
         if(this.trashRetentionTime > 0) {
             try (Stream<Path> stream = Files.walk(trashPath)) {
                 final List<Path> oldFiles = stream
@@ -608,7 +608,7 @@ public class FileSystemStorage implements Storage {
         }
     }
 
-    private void deleteUnsavedFiles(Path unsavedPath) throws IOException {
+    public void deleteUnsavedFiles(Path unsavedPath) throws IOException {
         if(this.unsavedRetentionTime > 0) {
             try (Stream<Path> stream = Files.walk(unsavedPath)) {
                 final List<Path> oldFiles = stream
