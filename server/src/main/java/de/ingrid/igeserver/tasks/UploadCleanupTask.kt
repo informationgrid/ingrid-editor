@@ -3,9 +3,6 @@ package de.ingrid.igeserver.tasks
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
@@ -22,8 +19,6 @@ import javax.persistence.EntityManager
 @Component
 class UploadCleanupTask(
     val fileSystemStorage: FileSystemStorage,
-    val catalogRepo: CatalogRepository,
-    val documentWrapperRepo: DocumentWrapperRepository,
     val entityManager: EntityManager
 ) {
     val log = logger()
@@ -98,12 +93,13 @@ class UploadCleanupTask(
             .filter { isExpired(it, today) }
             .forEach {
                 log.info("Archive file ${it.uri} from ${uploads.docUuid}")
-                // fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, it.uri)
+                fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, it.uri)
             }
     }
 
     private fun isExpired(upload: UploadInfo, today: LocalDate) =
-        upload.expiredDate != null && LocalDate.parse(upload.expiredDate, DateTimeFormatter.ISO_DATE_TIME).isBefore(today)
+        upload.expiredDate != null && LocalDate.parse(upload.expiredDate, DateTimeFormatter.ISO_DATE_TIME)
+            .isBefore(today)
 
     private fun getPublishedDocumentsByCatalog(): List<PublishedUploads> {
         val result = queryDocs(sqlSteps, "step")
@@ -157,14 +153,6 @@ class UploadCleanupTask(
         docs.catalogId
     }
 
-    private fun getPublishedDocumentsFromCatalog(catalogIdentifier: String): PublishedDocs {
-        val publishedDocs = documentWrapperRepo
-            .findAllByCatalog_IdentifierAndCategory(catalogIdentifier, DocumentCategory.DATA.value)
-            .mapNotNull { it.published }
-
-        return PublishedDocs(catalogIdentifier, publishedDocs)
-    }
-
 }
 
 private data class PublishedDocs(val catalogId: String, val docs: List<Document>)
@@ -178,7 +166,10 @@ private data class PublishedUploads(val catalogId: String, val docUuid: String, 
             else {
                 if (found.expiredDate != null) {
                     val date1 = LocalDate.parse(found.expiredDate, DateTimeFormatter.ISO_DATE_TIME)
-                    val date2 = if (doc.expiredDate == null) null else LocalDate.parse(doc.expiredDate, DateTimeFormatter.ISO_DATE_TIME)
+                    val date2 = if (doc.expiredDate == null) null else LocalDate.parse(
+                        doc.expiredDate,
+                        DateTimeFormatter.ISO_DATE_TIME
+                    )
                     if (date2 == null || date2.isAfter(date1)) {
                         response.remove(found)
                         response.add(doc)
