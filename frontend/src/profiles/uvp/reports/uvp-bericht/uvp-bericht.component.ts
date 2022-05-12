@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { FormControl } from "@angular/forms";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { saveAs } from "file-saver";
@@ -47,10 +47,17 @@ export class UvpBerichtComponent implements AfterViewInit {
   displayedColumnsMiscellaneous = ["type", "value"];
 
   constructor(private uvpResearchService: UvpResearchService) {
-    this.initData();
-    this.facetForm.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
-      .subscribe(() => this.getReport(this.facetForm.value));
+    this.uvpResearchService.initialized$
+      .pipe(
+        untilDestroyed(this),
+        filter((x) => x)
+      )
+      .subscribe(() => {
+        this.initData();
+        this.facetForm.valueChanges
+          .pipe(untilDestroyed(this), debounceTime(300))
+          .subscribe(() => this.getReport(this.facetForm.value));
+      });
   }
 
   ngAfterViewInit(): void {

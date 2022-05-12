@@ -27,7 +27,7 @@ data class AddressModel(
     @JsonProperty("_created") val created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("_modified") val modified: OffsetDateTime,
-    @JsonProperty("_parent") val parent: Int,
+    @JsonProperty("_parent") val parent: Int?,
 ) {
 
     companion object {

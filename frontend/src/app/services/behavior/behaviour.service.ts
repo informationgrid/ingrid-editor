@@ -9,7 +9,7 @@ import { SessionQuery } from "../../store/session.query";
 import { PluginToken } from "../../tokens/plugin.token";
 import { ConfigService } from "../config/config.service";
 import { Behaviour } from "./behaviour";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, filter, mergeMap, take, tap } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 export interface BehaviourFormatBackend {
@@ -112,6 +112,14 @@ export class BehaviourService {
   addSystemBehaviourFromProfile(plugin: Plugin) {
     this.applyActiveStates([plugin]);
     this.systemBehaviours.push(plugin);
+  }
+
+  getBehaviour(id: string) {
+    return this.theSystemBehaviours$.pipe(
+      mergeMap((x) => x),
+      filter((behaviour) => behaviour.id === id),
+      take(1)
+    );
   }
 
   private updateState(behaviours: BehaviourFormatBackend[]) {

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { ResearchResponse } from "../../../../app/+research/research.service";
+import { BehaviorSubject, Observable } from "rxjs";
+import { filter, map, switchMap } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import {
   ConfigService,
@@ -10,6 +9,7 @@ import {
 import { CodelistService } from "../../../../app/services/codelist/codelist.service";
 import { CodelistQuery } from "../../../../app/store/codelist/codelist.query";
 import { Codelist } from "../../../../app/store/codelist/codelist.model";
+import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 
 export class UvpReport {
   eiaStatistic: any;
@@ -25,17 +25,18 @@ export class UvpResearchService {
   private configuration: Configuration;
   private eiaNumbersCodelist: Codelist;
 
+  initialized$ = new BehaviorSubject(false);
+
   constructor(
     private http: HttpClient,
     configService: ConfigService,
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
+    private behaviourService: BehaviourService
   ) {
     this.configuration = configService.getConfiguration();
-    this.codelistService.byId("9000");
-    this.codelistQuery.selectEntity("9000").subscribe((codelist) => {
-      this.eiaNumbersCodelist = codelist;
-    });
+
+    this.initUvpNumber();
   }
 
   getUvpReport(fromDate: string, toDate: string): Observable<UvpReport> {
@@ -102,5 +103,18 @@ export class UvpResearchService {
       });
     }
     return result;
+  }
+
+  private initUvpNumber() {
+    this.behaviourService
+      .getBehaviour("plugin.uvp.uvp-number")
+      .pipe(
+        map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000),
+        switchMap((id) => this.codelistQuery.selectEntity(id))
+      )
+      .subscribe((id) => {
+        this.eiaNumbersCodelist = id;
+        this.initialized$.next(true);
+      });
   }
 }

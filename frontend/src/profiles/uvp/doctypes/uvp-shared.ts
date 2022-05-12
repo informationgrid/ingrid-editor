@@ -317,13 +317,9 @@ export class UvpShared extends BaseDoctype {
   }
 
   setUvpCodelistId() {
-    this.behaviourService.theSystemBehaviours$
-      .pipe(
-        mergeMap((x) => x),
-        filter((behaviour) => behaviour.id === "plugin.uvp.uvp-number"),
-        take(1),
-        map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000)
-      )
+    this.behaviourService
+      .getBehaviour("plugin.uvp.uvp-number")
+      .pipe(map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000))
       .subscribe((id) => (this.uvpNumberCodelistId = id));
   }
 
