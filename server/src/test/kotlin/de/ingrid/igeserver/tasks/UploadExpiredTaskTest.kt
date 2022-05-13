@@ -11,13 +11,13 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.EntityManager
 
-class PublishedUploadsTest : FunSpec({
+class UploadExpiredTaskTest : FunSpec({
     val tomorrow = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
     val yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
 
     val fileSystemStorage = mockk<FileSystemStorage>(relaxed = true)
     val entityManager = mockk<EntityManager>()
-    val task = UploadCleanupTask(fileSystemStorage, entityManager)
+    val task = UploadExpiredTask(fileSystemStorage, entityManager)
 
     fun init(docs: String) {
         clearAllMocks()
@@ -40,17 +40,16 @@ class PublishedUploadsTest : FunSpec({
 
     test("empty list") {
         init("[]")
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
         }
-//        PublishedUploads("test-cat", "123", emptyList()).getDocsByLatestExpiryDate().isEmpty()
     }
 
     test("one item with expire = null") {
         init("""[{"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -59,7 +58,7 @@ class PublishedUploadsTest : FunSpec({
 
     test("one item not yet expired") {
         init("""[{"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -68,7 +67,7 @@ class PublishedUploadsTest : FunSpec({
 
     test("one item expired") {
         init("""[{"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.cleanup()
+        task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.archive("test-cat", "123", "abc")
@@ -81,7 +80,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -94,7 +93,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -107,7 +106,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.archive("test-cat", "123", "def")
@@ -120,7 +119,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.archive("test-cat", "123", "def")
@@ -133,7 +132,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.archive("test-cat", "123", "abc")
@@ -147,7 +146,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -160,7 +159,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -173,7 +172,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -186,7 +185,7 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 0) {
             fileSystemStorage.archive(any(), any(), any())
@@ -199,10 +198,49 @@ class PublishedUploadsTest : FunSpec({
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
-        task.cleanup()
+        task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.archive("test-cat", "123", "abc")
+        }
+    }
+
+    test("archive file is not restored when still expired") {
+        init(
+            """[{"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+        )
+        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        
+        task.start()
+
+        verify(exactly = 0) {
+            fileSystemStorage.restore(any(), any(), any())
+        }
+    }
+
+    test("archive file is restored when not yet expired") {
+        init(
+            """[{"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+        )
+        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        
+        task.start()
+
+        verify(exactly = 1) {
+            fileSystemStorage.restore("test-cat", "123", "abc")
+        }
+    }
+
+    test("archive file is restored when expired = null") {
+        init(
+            """[{"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+        )
+        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        
+        task.start()
+
+        verify(exactly = 1) {
+            fileSystemStorage.restore("test-cat", "123", "abc")
         }
     }
 })

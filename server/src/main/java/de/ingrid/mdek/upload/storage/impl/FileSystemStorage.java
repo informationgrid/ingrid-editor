@@ -423,6 +423,11 @@ public class FileSystemStorage implements Storage {
         this.getArchivePath(catalog, path, "", this.docsDir).toFile().mkdirs();
         Files.move(realPath, archivePath, DEFAULT_COPY_OPTIONS);
     }
+    
+    public boolean isArchived(final String catalog, final String path, final String file) {
+        // check if file exists
+        return this.getArchivePath(catalog, path, "", this.docsDir).toFile().exists();
+    }
 
     @Override
     public void restore(final String catalog, final String path, final String file) throws IOException {
