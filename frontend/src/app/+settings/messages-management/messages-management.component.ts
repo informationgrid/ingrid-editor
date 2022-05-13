@@ -66,7 +66,7 @@ export class MessagesManagementComponent implements OnInit {
         this.messages = messages;
         this.model = messages.map((m) => ({
           text: m.message.text,
-          expiryDate: m._expires,
+          validUntil: m._validUntil,
         }));
         this.dataSource.data = messages;
       });

@@ -73,7 +73,7 @@ class UploadExpiredTask(
 
     private fun restoreUvpFiles(uploads: PublishedUploads) {
         val today = LocalDate.now()
-        uploads.getDocsByLatestExpiryDate()
+        uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
             .filter { fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
             .forEach {
@@ -84,7 +84,7 @@ class UploadExpiredTask(
 
     private fun archiveExpiredUvpFiles(uploads: PublishedUploads) {
         val today = LocalDate.now()
-        uploads.getDocsByLatestExpiryDate()
+        uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
             .filter { !fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
             .forEach {archiveFile(it, uploads)}
@@ -142,8 +142,8 @@ class UploadExpiredTask(
     }
 
     private fun mapToUploadInfo(it: JsonNode): UploadInfo {
-        val expiryDateField = it.get("expiryDate")
-        val expiredDate = if (expiryDateField == null || expiryDateField.isNull) null else expiryDateField.asText()
+        val validUntilDateField = it.get("validUntil")
+        val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
         return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
     }
 
@@ -161,7 +161,7 @@ class UploadExpiredTask(
     private data class UploadInfo(val uri: String, val expiredDate: String?)
 
     private data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
-        fun getDocsByLatestExpiryDate(): List<UploadInfo> {
+        fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
             val response = mutableListOf<UploadInfo>()
             docs.forEach { doc ->
                 val found = response.find { it.uri == doc.uri }

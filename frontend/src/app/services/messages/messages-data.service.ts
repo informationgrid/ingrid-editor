@@ -26,12 +26,12 @@ export class MessagesDataService {
 
   createMessage(
     message: Message,
-    expiryDate: Date,
+    validUntil: Date,
     forCurrentCatalog: boolean
   ) {
     return this.http.post(this.configuration.backendUrl + "messages", {
       message,
-      expiryDate,
+      validUntil: validUntil,
       forCurrentCatalog,
     });
   }

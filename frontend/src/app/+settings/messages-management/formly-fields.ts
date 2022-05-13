@@ -18,7 +18,7 @@ export const messagesFields: FormlyFieldConfig[] = [
           },
         },
         {
-          key: "expiryDate",
+          key: "validUntil",
           type: "datepicker",
           label: "Gültig bis",
           width: "100px",

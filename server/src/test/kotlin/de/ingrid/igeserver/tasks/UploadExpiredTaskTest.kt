@@ -48,7 +48,7 @@ class UploadExpiredTaskTest : FunSpec({
     }
 
     test("one item with expire = null") {
-        init("""[{"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+        init("""[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""")
         task.start()
 
         verify(exactly = 0) {
@@ -57,7 +57,7 @@ class UploadExpiredTaskTest : FunSpec({
     }
 
     test("one item not yet expired") {
-        init("""[{"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+        init("""[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
         task.start()
 
         verify(exactly = 0) {
@@ -66,7 +66,7 @@ class UploadExpiredTaskTest : FunSpec({
     }
 
     test("one item expired") {
-        init("""[{"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+        init("""[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
         task.start()
 
         verify(exactly = 1) {
@@ -77,8 +77,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two different items with expire = null") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
         task.start()
 
@@ -90,8 +90,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two different items with expire = null AND not yet expired") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
         task.start()
 
@@ -103,8 +103,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two different items with expire = null AND expired") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
         task.start()
 
@@ -116,8 +116,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two different items with not yet expire AND expired") {
         init(
             """[
-            {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
         task.start()
 
@@ -129,8 +129,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two different items with expired AND expired") {
         init(
             """[
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
         )
         task.start()
 
@@ -143,8 +143,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two same items with expire = null") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         task.start()
 
@@ -156,8 +156,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two same items with expire = null AND not yet expired") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         task.start()
 
@@ -169,8 +169,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two same items with expire = null AND expired") {
         init(
             """[
-            {"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         task.start()
 
@@ -182,8 +182,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two same items with not yet expire AND expired") {
         init(
             """[
-            {"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         task.start()
 
@@ -195,8 +195,8 @@ class UploadExpiredTaskTest : FunSpec({
     test("two same items with expired AND expired") {
         init(
             """[
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         task.start()
 
@@ -207,7 +207,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is not restored when still expired") {
         init(
-            """[{"expiryDate": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
         
@@ -220,7 +220,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is restored when not yet expired") {
         init(
-            """[{"expiryDate": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
         
@@ -233,7 +233,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is restored when expired = null") {
         init(
-            """[{"expiryDate": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
         

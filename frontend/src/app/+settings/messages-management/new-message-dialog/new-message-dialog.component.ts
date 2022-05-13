@@ -24,10 +24,10 @@ export class NewMessageDialogComponent implements OnInit {
   createMessage() {
     this.form.disable();
     const message = { text: this.form.get("text").value };
-    const expiryDate = this.form.get("date").value;
+    const validUntil = this.form.get("date").value;
 
     this.messageService
-      .createMessage(message, expiryDate, false)
+      .createMessage(message, validUntil, false)
       .subscribe(() => this.dialogRef.close());
   }
 }
