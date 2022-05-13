@@ -620,27 +620,12 @@ class DocumentService @Autowired constructor(
 
     fun getDocumentStatistic(catalogId: String): StatisticResponse {
 
-        // TODO: filter by not marked deleted
-
-        val allData = docWrapperRepo.findAllByCatalog_IdentifierAndCategory(catalogId, DocumentCategory.DATA.value)
         val allDataDrafts = docWrapperRepo.findAllDrafts(catalogId)
         val allDataPublished = docWrapperRepo.findAllPublished(catalogId)
-        val statsPerType = mutableMapOf<String, StatisticResponse>()
-
-        documentTypes.forEach { type ->
-            statsPerType[type.className] = StatisticResponse(
-                totalNum = allData.filter { it.type == type.className }.size,
-                numDrafts = allDataDrafts.filter { it.type == type.className }.size,
-                numPublished = allDataPublished.filter { it.type == type.className }.size,
-                statsPerType = null
-            )
-        }
 
         return StatisticResponse(
-            totalNum = allData.size,
             numDrafts = allDataDrafts.size,
             numPublished = allDataPublished.size,
-            statsPerType = statsPerType
         )
     }
 

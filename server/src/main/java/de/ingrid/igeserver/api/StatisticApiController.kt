@@ -1,9 +1,10 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.ResearchQuery
-import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -57,7 +58,7 @@ class StatisticApiController @Autowired constructor(
                 )
 
                 val statsType = statsPerType[hit._type]!!
-                statsType.totalNum++
+                statsType.totalNum = statsType.totalNum!! + 1
                 if (hit._state === "PW" || hit._state === "P") {
                     allDataPublished++
                     statsType.numPublished++

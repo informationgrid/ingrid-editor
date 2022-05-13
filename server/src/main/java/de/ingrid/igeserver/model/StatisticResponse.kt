@@ -1,3 +1,4 @@
 package de.ingrid.igeserver.model
 
-data class StatisticResponse(var totalNum: Int, var numPublished: Int, var numDrafts: Int, val statsPerType: Map<String,StatisticResponse>?)
+// TODO: getStatistic and StatisticSearch should get different response
+data class StatisticResponse(var totalNum: Int? = null, var numPublished: Int, var numDrafts: Int, val statsPerType: Map<String,StatisticResponse>? = null)

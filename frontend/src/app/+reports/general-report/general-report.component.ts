@@ -57,13 +57,6 @@ export class GeneralReportComponent implements OnInit {
       .subscribe(() => this.updateFilter());
   }
 
-  fetchStatistic() {
-    this.docService.getStatistic().subscribe((response) => {
-      // this.chartDataPublished.next([response.numDrafts, response.numPublished]);
-      this.prepareTableData(response);
-    });
-  }
-
   updateFilter() {
     return this.researchService
       .searchStatistic({
