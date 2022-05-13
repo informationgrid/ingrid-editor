@@ -10,6 +10,9 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.RangeModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.mdek.upload.Config
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -122,10 +125,21 @@ data class StepDecisionOfAdmission(
 ) : Step
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Document(val title: String, val expiryDate: Date?) {
+data class Document(val title: String, val validUntil: Date?) {
     lateinit var link: String
     private fun setDownloadURL(value: DownloadUrl) {
-        link = if (value.asLink) value.uri else "https://external-download-url/todo/${value.uri}"
+        link = if (value.asLink) value.uri else "${config?.uploadExternalUrl}${value.uri}"
+    }
+
+    /**
+     * Document is not expired when validUntil date is not set or date is before today 
+     */
+    fun isNotExpired() = validUntil == null || !LocalDate.now().isAfter(LocalDate.ofInstant(validUntil.toInstant(), ZoneId.systemDefault()))
+
+    companion object {
+        val config: Config? by lazy {
+            SpringContext.getBean(Config::class.java)
+        }
     }
 }
 

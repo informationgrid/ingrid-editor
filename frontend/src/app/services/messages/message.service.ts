@@ -45,12 +45,12 @@ export class MessageService {
 
   createMessage(
     message: Message,
-    expiryDate: Date,
+    validUntil: Date,
     forCurrentCatalog: boolean
   ): Observable<any> {
     return this.dataService.createMessage(
       message,
-      expiryDate,
+      validUntil,
       forCurrentCatalog
     );
   }

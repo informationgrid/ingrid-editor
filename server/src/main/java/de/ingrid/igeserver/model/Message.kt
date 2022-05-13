@@ -9,6 +9,6 @@ data class Message(
 
 data class MessageCreationRequest(
     var message: Message,
-    var expiryDate: String?,
+    var validUntil: String?,
     var forCurrentCatalog: Boolean,
 )

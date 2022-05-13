@@ -210,6 +210,15 @@ public interface Storage {
     void discardUnpublished(String catalog, String datasetID) throws IOException;
 
     /**
+     * Remove all files in published state
+     * 
+     * @param catalog
+     * @param datasetID
+     * @throws IOException
+     */
+    void discardPublished(String catalog, String datasetID) throws IOException;
+
+    /**
      * copy files from unpublished state and published state from source dataset to target dataset in unpublished state
      *
      * @param sourceDatasetID The UUID of the source dataset

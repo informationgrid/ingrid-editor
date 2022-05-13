@@ -1,12 +1,10 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.model.Message
 import de.ingrid.igeserver.model.MessageCreationRequest
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.MessageService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -42,7 +40,7 @@ class MessagesApiController : MessagesApi {
     override fun createMessage(principal: Principal, messageRequest: MessageCreationRequest): ResponseEntity<Void> {
 
         val catalogId = if (messageRequest.forCurrentCatalog) catalogService.getCurrentCatalogForPrincipal(principal) else null
-        val expires = if (messageRequest.expiryDate.isNullOrEmpty()) null else OffsetDateTime.parse(messageRequest.expiryDate)
+        val expires = if (messageRequest.validUntil.isNullOrEmpty()) null else OffsetDateTime.parse(messageRequest.validUntil)
 
         this.messageService.save(messageRequest.message, expires, catalogId)
         return ResponseEntity.ok().build()

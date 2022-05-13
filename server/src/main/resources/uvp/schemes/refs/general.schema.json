@@ -30,7 +30,7 @@
         "downloadURL": {
           "$ref": "#/definitions/DownloadURL"
         },
-        "expiryDate":  {
+        "validUntil":  {
           "type": ["string", "null"]
         }
       },

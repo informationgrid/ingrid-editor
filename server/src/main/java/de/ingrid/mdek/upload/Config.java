@@ -24,16 +24,13 @@ package de.ingrid.mdek.upload;
 
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import de.ingrid.mdek.upload.storage.validate.ValidatorFactory;
-import net.weta.components.communication.configuration.XPathService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +40,7 @@ import java.util.Map;
 public class Config {
 
     @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog( Config.class );
+    private static final Log log = LogFactory.getLog(Config.class);
 
     /**
      * MAIL
@@ -90,10 +87,12 @@ public class Config {
     @Value("${upload.tempdir:}")
     public String uploadTempDir;
 
+    @Value("${upload.external.url:/documents/}")
+    public String uploadExternalUrl;
+
     @Value("${upload.validators:}")
     public List<String> uploadValidators;
 
-//    @TypeTransformers(de.ingrid.mdek.upload.storage.validate.config.StringToValidatorTransformer.class)
     public Map<String, Validator> uploadValidatorMap;
 
     @Autowired
@@ -111,24 +110,5 @@ public class Config {
 
     @Value("${upload.unsaved.retentionTime:24}")
     public int uploadUnsavedRetentionTime;
-
-    /**
-     * VARIOUS
-     */
-    @Value("${installation.standalone:false}")
-    public boolean noPortal;
-
-    @Value("${mdek.directLink:}")
-    public String mdekDirectLink;
-
-    private final XPathService getCommunicationTemplate() throws Exception {
-
-        // open template xml or communication file
-        final XPathService communication = new XPathService();
-        final InputStream inputStream = Config.class.getResourceAsStream( "/communication-template.xml" );
-        communication.registerDocument( inputStream );
-
-        return communication;
-    }
 
 }

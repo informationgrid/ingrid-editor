@@ -74,7 +74,7 @@ export class UvpShared extends BaseDoctype {
       },
     },
     {
-      key: "expiryDate",
+      key: "validUntil",
       type: "datepicker",
       label: "Gültig bis",
       width: "100px",
