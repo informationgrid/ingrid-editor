@@ -10,6 +10,7 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.RangeModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.mdek.upload.Config
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -125,7 +126,13 @@ data class StepDecisionOfAdmission(
 data class Document(val title: String, val expiryDate: Date?) {
     lateinit var link: String
     private fun setDownloadURL(value: DownloadUrl) {
-        link = if (value.asLink) value.uri else "https://external-download-url/todo/${value.uri}"
+        link = if (value.asLink) value.uri else "${config?.uploadExternalUrl}${value.uri}"
+    }
+
+    companion object {
+        val config: Config? by lazy {
+            SpringContext.getBean(Config::class.java)
+        }
     }
 }
 
