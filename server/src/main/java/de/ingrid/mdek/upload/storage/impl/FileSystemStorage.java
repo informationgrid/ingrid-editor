@@ -426,7 +426,7 @@ public class FileSystemStorage implements Storage {
     
     public boolean isArchived(final String catalog, final String path, final String file) {
         // check if file exists
-        return this.getArchivePath(catalog, path, "", this.docsDir).toFile().exists();
+        return this.getArchivePath(catalog, path, file, this.docsDir).toFile().exists();
     }
 
     @Override
