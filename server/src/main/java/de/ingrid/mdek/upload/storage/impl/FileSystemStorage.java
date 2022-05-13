@@ -957,26 +957,7 @@ public class FileSystemStorage implements Storage {
      */
     Path getArchivePath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, ARCHIVE_PATH,
-            this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
-    }
-
-    /**
-     * Get the archive path of a requested path
-     *
-     * @param file
-     * @param basePath
-     * @return Path
-     */
-    private Path getArchivePath(final String file, final String basePath) {
-        final Path strippedPath = Paths.get(this.stripPath(this.sanitize(file, ILLEGAL_PATH_CHARS)));
-        if (strippedPath.getNameCount() < 2) {
-            throw new IllegalArgumentException("Illegal path: "+file);
-        }
-        final int nameCount = strippedPath.getNameCount();
-        final boolean isArchivePath = ARCHIVE_PATH.equals(strippedPath.getName(0).toString());
-        return FileSystems.getDefault().getPath(basePath,
-                !isArchivePath ? ARCHIVE_PATH : "",
-                strippedPath.subpath(0, nameCount).toString());
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
     /**
