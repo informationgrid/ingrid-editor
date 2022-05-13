@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
@@ -103,8 +105,7 @@ class UploadExpiredTask(
     }
 
     private fun isExpired(upload: UploadInfo, today: LocalDate) =
-        upload.expiredDate != null && LocalDate.parse(upload.expiredDate, DateTimeFormatter.ISO_DATE_TIME)
-            .isBefore(today)
+        upload.validUntil != null && today.isAfter(OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate())
 
     private fun getPublishedDocumentsByCatalog(docId: Int?): List<PublishedUploads> {
         val result = queryDocs(sqlSteps, "step", docId)
@@ -158,7 +159,7 @@ class UploadExpiredTask(
     }
 
 
-    private data class UploadInfo(val uri: String, val expiredDate: String?)
+    private data class UploadInfo(val uri: String, val validUntil: String?)
 
     private data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
         fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
@@ -167,10 +168,10 @@ class UploadExpiredTask(
                 val found = response.find { it.uri == doc.uri }
                 if (found == null) response.add(doc)
                 else {
-                    if (found.expiredDate != null) {
-                        val date1 = LocalDate.parse(found.expiredDate, DateTimeFormatter.ISO_DATE_TIME)
-                        val date2 = if (doc.expiredDate == null) null else LocalDate.parse(
-                            doc.expiredDate,
+                    if (found.validUntil != null) {
+                        val date1 = LocalDate.parse(found.validUntil, DateTimeFormatter.ISO_DATE_TIME)
+                        val date2 = if (doc.validUntil == null) null else LocalDate.parse(
+                            doc.validUntil,
                             DateTimeFormatter.ISO_DATE_TIME
                         )
                         if (date2 == null || date2.isAfter(date1)) {
