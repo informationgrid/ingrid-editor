@@ -5,15 +5,18 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import io.kotest.core.spec.style.FunSpec
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.hibernate.query.NativeQuery
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.EntityManager
 
 class UploadExpiredTaskTest : FunSpec({
-    val tomorrow = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
-    val yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)
+    val tomorrow = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+    val yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME).toString()
 
     val fileSystemStorage = mockk<FileSystemStorage>(relaxed = true)
     val entityManager = mockk<EntityManager>()
@@ -210,7 +213,7 @@ class UploadExpiredTaskTest : FunSpec({
             """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
-        
+
         task.start()
 
         verify(exactly = 0) {
@@ -223,7 +226,7 @@ class UploadExpiredTaskTest : FunSpec({
             """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
-        
+
         task.start()
 
         verify(exactly = 1) {
@@ -236,7 +239,7 @@ class UploadExpiredTaskTest : FunSpec({
             """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
-        
+
         task.start()
 
         verify(exactly = 1) {
