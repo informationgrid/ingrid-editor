@@ -84,10 +84,10 @@
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           }
+        },
+        "furtherDocsPublishDuringDisclosure": {
+          "type": ["null", "boolean"]
         }
-      },
-      "furtherDocsPublishDuringDisclosure": {
-        "type": ["null", "boolean"]
       },
       "required": [
         "disclosureDate",
