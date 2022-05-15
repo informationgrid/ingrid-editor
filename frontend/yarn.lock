@@ -2303,17 +2303,17 @@
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.3.5.tgz#bb7dde18fb30919c49c4a25635b94381d19b7622"
   integrity sha512-OaMZR0rO0ljBHamLwzddfZX03ijtpheUpjH5dNzMNyNrrpKgS4/3jTQ1wvs2j3zzKfKjOS12WG0905QFJYWG6g==
 
-"@ngx-formly/core@5.10.31":
-  version "5.10.31"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.10.31.tgz#f5b4caba637bb7648b853e56352cf3c0c1a8b0bf"
-  integrity sha512-qOn+5KH8nhTzsneWkdB640RZAPpHMoCkBwbM0ReQFlW0ZQdjw/jxppIaFM+Ser069WFAwmc5+pyy90h9vUp6uA==
+"@ngx-formly/core@5.12.1":
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.12.1.tgz#1ab07809a5e626ff67ebb9938068b92579a66310"
+  integrity sha512-nZfwfXGM+ZtMr3qBtQSQU70cEU+sASfu60qC8vqieFqWD4lVl3ZB4W3HISR3r+sAxZ8zsK+f1pRxnNUjl5+SOA==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@5.10.31":
-  version "5.10.31"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.10.31.tgz#842e8f37e5e2d5fe9593392f199828a2ddd07334"
-  integrity sha512-3kSQlvpSZyoyXb6UAkiFtDFGHaVxaUAg44tNNGUAsvNho3xvzCSc/7ehxKobZTZdwO6S5jxm5TGQALzg2DXhpg==
+"@ngx-formly/material@5.12.1":
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.12.1.tgz#083a5f558d8f6c7571871563c36d0732a0bb65ee"
+  integrity sha512-4xoZ8R3hNAX6kfKzOnAg8sFn2aMVFgPwAfmmVcKl2AMdai85i+WS9kYS3DRaQWILmwpzU8tNmddGz1bID6Aoyg==
   dependencies:
     tslib "^1.9.0"
 
