@@ -402,10 +402,11 @@ describe('Research Page', () => {
     // expect to get 0 results
     ResearchPage.checkNoSearchResults();
     // stretch the interval to cover the date in question
-    ResearchPage.setDate('end', '30.07.2021');
+    ResearchPage.setDate('start', '15.05.2022');
+    ResearchPage.setDate('end', '16.05.2022');
     ResearchPage.waitForSearch();
     // expect the document to be returned
-    ResearchPage.getSearchResultCount().should('equal', 2);
+    ResearchPage.getSearchResultCount().should('equal', 1);
   });
 
   it('should do time-related search together with search for unpublished documents (#3040)', () => {
