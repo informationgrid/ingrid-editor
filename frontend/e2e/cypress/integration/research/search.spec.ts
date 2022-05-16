@@ -402,8 +402,8 @@ describe('Research Page', () => {
     // expect to get 0 results
     ResearchPage.checkNoSearchResults();
     // stretch the interval to cover the date in question
-    ResearchPage.setDate('start', '15.05.2022');
-    ResearchPage.setDate('end', '16.05.2022');
+    ResearchPage.setDate('start', '15.05.2016');
+    ResearchPage.setDate('end', '16.05.2016');
     ResearchPage.waitForSearch();
     // expect the document to be returned
     ResearchPage.getSearchResultCount().should('equal', 1);
