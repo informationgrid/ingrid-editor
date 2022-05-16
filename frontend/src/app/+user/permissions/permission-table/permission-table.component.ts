@@ -53,7 +53,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.value = data;
+          this.val = [...this.val, data];
+          this.addDocInfoToPermission(data);
+          this.onChange(this.val);
         }
       });
   }
@@ -76,24 +78,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   set value(val: TreePermission[]) {
     this.val = val ?? [];
-    this.val.forEach((doc) => {
-      if (!this.breadcrumb[doc.id]) {
-        this.documentService
-          .getPath(doc.id)
-          .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
-      }
-
-      this.getDocument(doc.id).then((igeDoc) => {
-        doc.hasWritePermission = igeDoc.hasWritePermission;
-        doc.hasOnlySubtreeWritePermission =
-          igeDoc.hasOnlySubtreeWritePermission;
-        doc.isFolder = igeDoc._type === "FOLDER";
-        doc.title = igeDoc.title;
-
-        // downgrade permission if rights are not sufficient
-        this.adjustPermission(doc);
-      });
-    });
+    this.val.forEach((doc) => this.addDocInfoToPermission(doc));
 
     if (this.onChange) {
       this.onChange(val);
@@ -101,6 +86,24 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (this.onTouch) {
       this.onTouch(val);
     }
+  }
+
+  private addDocInfoToPermission(doc: TreePermission) {
+    if (!this.breadcrumb[doc.id]) {
+      this.documentService
+        .getPath(doc.id)
+        .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
+    }
+
+    this.getDocument(doc.id).then((igeDoc) => {
+      doc.hasWritePermission = igeDoc.hasWritePermission;
+      doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
+      doc.isFolder = igeDoc._type === "FOLDER";
+      doc.title = igeDoc.title;
+
+      // downgrade permission if rights are not sufficient
+      this.adjustPermission(doc);
+    });
   }
 
   getDocument(id: string): Promise<IgeDocument> {

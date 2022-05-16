@@ -71,14 +71,11 @@ export class PermissionAddDialogComponent implements OnInit {
         (confirmed) => (confirmed ? this.addPermission(option) : undefined)
       );
     } else {
-      this.dialogRef.close([
-        ...this.val,
-        {
-          id: idToAdd,
-          title: entity.title,
-          permission: option,
-        },
-      ]);
+      this.dialogRef.close({
+        id: idToAdd,
+        title: entity.title,
+        permission: option,
+      });
     }
   }
 
