@@ -3,8 +3,6 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
@@ -43,12 +41,25 @@ data class UVPModel(
     }
 
     val parentUuid: String? = data._parent
-    val pointOfContact: AddressModel?
-        get() {
-            return data.pointOfContact
-                ?.firstOrNull()
-                ?.ref
-        }
+    var pointOfContact: AddressModel? = null
+
+    init {
+        pointOfContact = determinePointOfContact()
+    }
+
+    private fun determinePointOfContact(): AddressModel? {
+
+        val ref = data.pointOfContact
+            ?.firstOrNull()
+            ?.ref ?: return null
+
+        val nonHiddenAddress = ref.getParentAddresses(ref.id)
+
+        return if (nonHiddenAddress.size > 0) {
+            nonHiddenAddress.last()
+        } else null
+
+    }
 
     fun getSpatial(): String? {
         return data.spatials
@@ -151,41 +162,39 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<AddressShort> =
+    fun getUvpAddressParents(): List<AddressModel> =
         if (pointOfContact!!.parent == null) emptyList() else getUvpAddressParents(pointOfContact!!.parent!!)
 
-    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = getUvpAddressParents(pointOfContact!!.id)
+    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
+        if (pointOfContact == null) emptyList() else getUvpAddressParents(pointOfContact!!.id).map { getAddressShort(it) }
 
-    private fun getUvpAddressParents(parent: Int): List<AddressShort> {
+    private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
         return pointOfContact!!.getParentAddresses(parent)
-            .map { convertToReadableAddressFromJson(it.data) }
     }
 
 
-    private fun convertToReadableAddressFromJson(address: ObjectNode): AddressShort {
-        val organization = address.get("organization")
-        return if (organization == null) {
-            AddressShort(address.get("_uuid").textValue(), getPersonStringFromJson(address))
+    fun getAddressShort(address: AddressModel): AddressShort {
+        return if (address.organization == null) {
+            AddressShort(address.uuid, getPersonStringFromJson(address))
         } else {
-            AddressShort(address.get("_uuid").textValue(), organization.textValue())
+            AddressShort(address.uuid, address.organization)
         }
     }
 
-    private fun getPersonStringFromJson(address: ObjectNode): String {
-        val mapper = jacksonObjectMapper()
+    private fun getPersonStringFromJson(address: AddressModel): String {
         return listOfNotNull(
             getCodelistValue(
                 "4300",
-                mapper.convertValue(address.get("salutation"), KeyValueModel::class.java)
+                address.salutation
             ),
             getCodelistValue(
                 "4305",
-                mapper.convertValue(address.get("academicTitle"), KeyValueModel::class.java)
+                address.academicTitle
             ),
-            address.get("firstName").textValue(),
-            address.get("lastName").textValue()
+            address.firstName,
+            address.lastName
         ).joinToString(" ")
     }
 

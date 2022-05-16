@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
@@ -21,7 +22,8 @@ data class AddressModel(
     val lastName: String?,
     val organization: String?,
     val title: String?,
-    val contact: List<ContactModel>?,
+    val contact: List<ContactModel>,
+    val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("_created") val created: OffsetDateTime,
@@ -43,25 +45,38 @@ data class AddressModel(
         }*/
     }
     
-    fun getParentAddresses(parentId: Int): MutableList<Document> {
+    fun getParentAddresses(parentId: Int?): MutableList<AddressModel> {
+        if (parentId == null) return mutableListOf()
+        
         val parent = documentService!!.getWrapperByDocumentId(parentId)
         val publishedParent = parent.published
         if (publishedParent == null || publishedParent.type == "FOLDER") {
-            return emptyList<Document>().toMutableList()
+            return emptyList<AddressModel>().toMutableList()
         }
+        
+        val convertedParent = addInternalFields(publishedParent, parent)
 
         return if (parent.parent != null) {
             val otherParent = getParentAddresses(parent.parent!!.id!!)
-            val hideAddress = isAddressHidden(publishedParent)
-            if (!hideAddress) otherParent.add(publishedParent)
+            if (convertedParent.hideAddress != true) otherParent.add(convertedParent)
             otherParent
         } else {
-            emptyList<Document>().toMutableList()
+            mutableListOf(convertedParent)
         }
     }
 
-    private fun isAddressHidden(publishedParent: Document) =
-        publishedParent.data.get("hideAddress")?.booleanValue() ?: false
+    private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
+
+        val visibleAddress = publishedParent.data.apply {
+            put("_id", wrapper.id)
+            put("_uuid", publishedParent.uuid)
+            put("_created", publishedParent.created.toString())
+            put("_modified", publishedParent.modified.toString())
+            put("_parent", wrapper.parent?.id)
+        }
+
+        return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
+    }
 
     private fun getAddressInformationFromParent(parentId: Int?): Address {
         val emptyAddress = Address(false, "", "", "", "", "", null, null)

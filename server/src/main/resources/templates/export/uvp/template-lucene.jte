@@ -3,6 +3,7 @@
 @import gg.jte.support.ForSupport
 @import java.time.format.DateTimeFormatter
 @import java.util.Map
+@import java.util.Objects
 
 @param Map<String, Object> map
 
@@ -89,36 +90,38 @@
     "t01_object.mod_time": "${page.get_modified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
     "t01_object.obj_class": "${page.getDocumentType()}",
     "t01_object.obj_id": "${page.getUuid()}",
-    @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
-        "t021_communication.comm_type": "${entry.get().getType().getValue()}",
-        "t021_communication.comm_value": "${entry.get().getConnection()}",
-        "t021_communication.commtype_key": "${entry.get().getType().getKey()}",
-        "t021_communication.descr": "",
-        "t021_communication.line": "${entry.getIndex() + 1}",
-    @endfor
-    "t02_address.address_key": "",
-    "t02_address.address_value": "${page.getPointOfContact().getTitle()}",
-    "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
-    "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
-    "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
-    "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
-    "t02_address.create_time": "${page.getPointOfContact().getCreated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
-    "t02_address.descr": "",
-    "t02_address.firstname": "${page.getPointOfContact().getFirstName()}",
-    "t02_address.lastname": "${page.getPointOfContact().getLastName()}",
-    "t02_address.institution": "${page.getPointOfContact().getOrganization()}",
-    "t02_address.job": "",
-    "t02_address.mod_time": "${page.getPointOfContact().getModified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
-    "t02_address.mod_uuid": "",
-    "t02_address.org_adr_id": "",
-    "t02_address.postbox": "${page.getPointOfContact().getAddress().getPoBox()}",
-    "t02_address.postbox_pc": "${page.getPointOfContact().getAddress().getZipPoBox()}",
-    "t02_address.postcode": "${page.getPointOfContact().getAddress().getZipCode()}",
-    "t02_address.responsible_uuid": "",
-    "t02_address.street": "${page.getPointOfContact().getAddress().getStreet()}",
-    "t02_address.title": "",
-    "t02_address.title_key": "",
-    "t02_address.typ": "2",
+    @if(page.getPointOfContact() != null)
+        @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
+            "t021_communication.comm_type": "${entry.get().getType().getValue()}",
+            "t021_communication.comm_value": "${entry.get().getConnection()}",
+            "t021_communication.commtype_key": "${entry.get().getType().getKey()}",
+            "t021_communication.descr": "",
+            "t021_communication.line": "${entry.getIndex() + 1}",
+        @endfor
+        "t02_address.address_key": "",
+        "t02_address.address_value": "${page.getPointOfContact().getTitle()}",
+        "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
+        "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
+        "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
+        "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
+        "t02_address.create_time": "${page.getPointOfContact().getCreated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
+        "t02_address.descr": "",
+        "t02_address.firstname": "${page.getPointOfContact().getFirstName()}",
+        "t02_address.lastname": "${page.getPointOfContact().getLastName()}",
+        "t02_address.institution": "${page.getPointOfContact().getOrganization()}",
+        "t02_address.job": "",
+        "t02_address.mod_time": "${page.getPointOfContact().getModified().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)}",
+        "t02_address.mod_uuid": "",
+        "t02_address.org_adr_id": "",
+        "t02_address.postbox": "${page.getPointOfContact().getAddress().getPoBox()}",
+        "t02_address.postbox_pc": "${page.getPointOfContact().getAddress().getZipPoBox()}",
+        "t02_address.postcode": "${page.getPointOfContact().getAddress().getZipCode()}",
+        "t02_address.responsible_uuid": "",
+        "t02_address.street": "${page.getPointOfContact().getAddress().getStreet()}",
+        "t02_address.title": "",
+        "t02_address.title_key": "",
+        "t02_address.typ": "2",
+    @endif
     "t03_catalogue.cat_name": "${catalog.name}",
     "t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
     "t03_catalogue.cat_uuid": "",

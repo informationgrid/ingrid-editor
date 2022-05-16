@@ -28,8 +28,8 @@
             <mail>${address.getEmail()}</mail>
             <url>${address.getHomepage()}</url>
             @for(var parent : page.getUvpAddressParents())
-                <parent id="${parent.getUuid()}">
-                    <name>${parent.getTitle()}</name>
+                <parent id="${page.getAddressShort(parent).getUuid()}">
+                    <name>${page.getAddressShort(parent).getTitle()}</name>
                 </parent>
             @endfor
         </address>
