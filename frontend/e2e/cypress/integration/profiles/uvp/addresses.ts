@@ -150,49 +150,6 @@ describe('uvp addresses', () => {
     );
   });
 
-  it('should add a maximum one spatial reference (#3747) using JSON schema', () => {
-    const docTitle = 'A_mit_2_Raumbezug_Json' + Utils.randomString();
-    const spacial = [
-      {
-        value: {
-          lat1: 49.006168881770996,
-          lon1: 8.49272668361664,
-          lat2: 49.006207590084536,
-          lon2: 8.492801785469057
-        },
-        title:
-          'Grötzingen, Eisenbahnstraße, Südlich der Pfinz, Grötzingen, Karlsruhe, Baden-Württemberg, 76229, Germany',
-        type: 'free'
-      },
-      {
-        value: {
-          lat1: 49.516185347498016,
-          lon1: 8.47526013851166,
-          lat2: 49.5163420713738,
-          lon2: 8.475399613380434
-        },
-        title: 'J, Luzenberg, Waldhof, Mannheim, Baden-Württemberg, 68305, Germany',
-        type: 'free'
-      }
-    ];
-    DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, spacial);
-    cy.pageReload('mat-tree mat-tree-node', docTitle);
-
-    Tree.openNode([docTitle]);
-    DocumentPage.choosePublishOption(PublishOptions.ConfirmPublish, true);
-    BasePage.checkErrorDialogMessage('Es trat ein Fehler bei der JSON-Schema Validierung auf');
-  });
-  it('should add a maximum one spatial reference (#3747) using UI', () => {
-    const docTitle = 'A_mit_2_Raumbezug_UI' + Utils.randomString();
-    DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, null);
-
-    cy.pageReload('ige-document-list-item');
-
-    Tree.openNode([docTitle]);
-    enterMcloudDocTestData.setSpatialBbox('add spatial reference uvp', 'Berlin', false);
-    cy.get('[data-cy="spatialButton"]').should('not.exist');
-  });
-
   it('should not download file before corresponding document has been published (#3831)', () => {
     const fileName = 'research(5).csv';
 
