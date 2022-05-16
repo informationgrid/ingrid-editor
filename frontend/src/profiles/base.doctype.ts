@@ -99,7 +99,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   init(help: string[]) {
     this.helpIds = help;
-    this.isInitialized().then(() => {
+    return this.isInitialized().then(() => {
       this.fields.push(...this.documentFields());
       this.hasOptionalFields = this.hasOptionals(this.fields);
       this.addCodelistDefaultValues(this.fields);

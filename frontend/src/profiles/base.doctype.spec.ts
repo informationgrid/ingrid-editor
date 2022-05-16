@@ -28,10 +28,10 @@ describe("Document Type", () => {
   let initialFieldLength = 0;
   let doctype;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     doctype = new DummyDocType(null, null);
     initialFieldLength = doctype.fields.length;
-    doctype.init(helpIds);
+    await doctype.init(helpIds);
   });
 
   it("should add context help info to fields correctly", () => {
