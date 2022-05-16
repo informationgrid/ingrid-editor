@@ -9,7 +9,7 @@ import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { filter, map, mergeMap, take } from "rxjs/operators";
+import { map } from "rxjs/operators";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: number;
@@ -22,7 +22,10 @@ export class UvpShared extends BaseDoctype {
     private behaviourService?: BehaviourService
   ) {
     super(codelistService, codelistQuery);
-    if (behaviourService) this.setUvpCodelistId();
+  }
+
+  isInitialized(): Promise<void> {
+    return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
   }
 
   dateTooBigValidator = {
@@ -317,10 +320,11 @@ export class UvpShared extends BaseDoctype {
   }
 
   setUvpCodelistId() {
-    this.behaviourService
+    return this.behaviourService
       .getBehaviour("plugin.uvp.uvp-number")
       .pipe(map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000))
-      .subscribe((id) => (this.uvpNumberCodelistId = id));
+      .toPromise()
+      .then((id) => (this.uvpNumberCodelistId = id));
   }
 
   private convertToIsoDate(date: Date | string) {

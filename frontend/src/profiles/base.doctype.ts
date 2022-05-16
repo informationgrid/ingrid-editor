@@ -99,12 +99,18 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   init(help: string[]) {
     this.helpIds = help;
-    this.fields.push(...this.documentFields());
-    this.hasOptionalFields = this.hasOptionals(this.fields);
-    this.addCodelistDefaultValues(this.fields);
-    this.addContextHelp(this.fields);
-    this.getFieldMap(this.fields);
-    console.debug(`Document type ${this.id} initialized`);
+    this.isInitialized().then(() => {
+      this.fields.push(...this.documentFields());
+      this.hasOptionalFields = this.hasOptionals(this.fields);
+      this.addCodelistDefaultValues(this.fields);
+      this.addContextHelp(this.fields);
+      this.getFieldMap(this.fields);
+      console.debug(`Document type ${this.id} initialized`);
+    });
+  }
+
+  isInitialized() {
+    return Promise.resolve();
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
