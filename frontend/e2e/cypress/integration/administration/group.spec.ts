@@ -272,7 +272,7 @@ describe('Group', () => {
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure it's not possible for meta data admin to assign full access to document
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -286,7 +286,7 @@ describe('Group', () => {
         cy.get('[mattooltip="Schreibrecht"]').should('not.exist');
       });
     // change access right in meta data admin's assigned group
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
@@ -294,7 +294,7 @@ describe('Group', () => {
     UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure access right can now be changed by meta data admin
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -312,7 +312,7 @@ describe('Group', () => {
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure meta data admin does not see group
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);

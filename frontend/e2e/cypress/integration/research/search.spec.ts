@@ -218,7 +218,7 @@ describe('Research Page', () => {
       'save description to test existence and extended scope'
     );
     // log in as different user and trigger saved search
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta1-without-groups');
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
@@ -239,7 +239,7 @@ describe('Research Page', () => {
       'to test that global search can not be deleted'
     );
     // log in as different user
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta1-without-groups');
     // make sure global search can not be deleted
     ResearchPage.visit();

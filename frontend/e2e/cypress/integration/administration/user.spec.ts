@@ -418,7 +418,7 @@ describe('User', () => {
     // get number of the users
     // logout from admin and login as catalog admin
     // get number of users and compare the two numbers
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     cy.get('.page-title')
@@ -428,7 +428,7 @@ describe('User', () => {
         let txt = $text.text();
         let regex = /\d+/g;
         let matches = txt.match(regex);
-        cy.kcLogout();
+        cy.logoutClearCookies();
         cy.kcLogin('eins');
         AdminUserPage.visit();
         cy.intercept('GET', '/api/users').as('usersCall');
@@ -491,7 +491,7 @@ describe('User', () => {
 
   it('should show limited range of users to catalog admin (#3538)', () => {
     // log in as cat admin
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('zwei');
     // reload with changed user loginn
     AdminUserPage.visit();
@@ -513,11 +513,11 @@ describe('User', () => {
     AdminUserPage.selectUser('autornew2');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
       // log in as a user to update last login information
-      cy.kcLogout();
+      cy.logoutClearCookies();
       cy.kcLogin('autornew2');
       DocumentPage.visit();
       // log in as admin and make sure "last logged in" contains right information
-      cy.kcLogout();
+      cy.logoutClearCookies();
       cy.kcLogin('super-admin');
       AdminUserPage.visit();
       AdminUserPage.selectUser('autornew2');

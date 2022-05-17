@@ -121,6 +121,6 @@ Cypress.Commands.add('containsFormErrors', count => {
 });
 
 Cypress.Commands.add('logoutClearCookies', count => {
-  cy.kcLogout();
+  cy.logoutClearCookies();
   cy.clearCookies();
 });

@@ -85,7 +85,7 @@ describe('Read Only Documents', () => {
 
   it('should not be able to edit fields in read only document #3512', function () {
     // logout
-    cy.kcLogout();
+    cy.logoutClearCookies();
 
     // login as super admin
     cy.kcLogin('super-admin');
@@ -101,7 +101,7 @@ describe('Read Only Documents', () => {
     AdminUserPage.saveUser();
 
     // logout from super user and login as meta2
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
     // try to copy a document to the read-only folder

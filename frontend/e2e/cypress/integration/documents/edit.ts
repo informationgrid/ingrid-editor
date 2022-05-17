@@ -79,7 +79,7 @@ describe('edit documents', function () {
       AdminUserPage.addGroupToUser('test_gruppe_5');
       AdminUserPage.saveUser();
       // log in as user that is assigned read-only access
-      cy.kcLogout();
+      cy.logoutClearCookies();
       cy.kcLogin('author-without-groups');
       // open document
       DocumentPage.visit();

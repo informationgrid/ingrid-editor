@@ -373,7 +373,7 @@ export class AdminUserPage extends BasePage {
         let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
         let psw = bodyArray[1].split('\n')[0].trim();
 
-        cy.kcLogout();
+        cy.logoutClearCookies();
 
         // Here we have to reload otherwise the because logout does not redirect to login page
         cy.reload();

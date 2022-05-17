@@ -69,7 +69,7 @@ describe('Load addresses', () => {
     AddressPage.openActionMenu();
     AddressPage.openReplaceAddressDialog();
     AddressPage.closeReplaceAddressDialog();
-    cy.kcLogout();
+    cy.logoutClearCookies();
 
     cy.kcLogin('eins');
     AddressPage.visit();
@@ -77,18 +77,18 @@ describe('Load addresses', () => {
     AddressPage.openActionMenu();
     AddressPage.openReplaceAddressDialog();
     AddressPage.closeReplaceAddressDialog();
-    cy.kcLogout();
+    cy.logoutClearCookies();
 
     cy.kcLogin('meta2-with-groups');
     AddressPage.visit();
     Tree.openNode(['test_z, test_z']);
     cy.get('[data-cy="more-actions"]').should('not.exist');
-    cy.kcLogout();
+    cy.logoutClearCookies();
 
     cy.kcLogin('author-with-groups');
     AddressPage.visit();
     Tree.openNode(['Ordner 2. Ebene']);
     cy.get('[data-cy="more-actions"]').should('not.exist');
-    cy.kcLogout();
+    cy.logoutClearCookies();
   });
 });

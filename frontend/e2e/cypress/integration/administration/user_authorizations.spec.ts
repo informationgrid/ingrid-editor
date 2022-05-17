@@ -201,7 +201,7 @@ describe('Meta data administrator with a group', () => {
 
   it('meta data admin with groups should not be able to edit/move/delete an address of his assigned groups if access is read-only', () => {
     // log in as user who created the group
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
 
     // set access right to read-only
@@ -213,7 +213,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
 
     // try to edit
@@ -230,7 +230,7 @@ describe('Meta data administrator with a group', () => {
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
 
     // set access right back to 'write'
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -246,7 +246,7 @@ describe('Meta data administrator with a group', () => {
     const documentToMove = 'Aquitanien, Adresse';
 
     // log in as user who created the group
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
 
     // set access to read-only
@@ -258,7 +258,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
 
     // try to move a folder to the read-only folder
@@ -291,7 +291,7 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.closeErrorBox();
 
     // set access right back to 'write'
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -322,7 +322,7 @@ describe('Meta data administrator with a group', () => {
     let tempLocalAddressFolder = 'temporaryAddressFolder' + Utils.randomString();
     let groupName = 'gruppe_mit_ortsrechten';
     // log in as ige
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     // create address
     AddressPage.visit();
@@ -335,7 +335,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.addNestedDocumentToGroup(['Testadressen', tempLocalAddressFolder], 'Adressen');
     UserAuthorizationPage.setButtonSubfoldersOnly(tempLocalAddressFolder, 'Adressen');
     AdminGroupPage.saveGroup();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2-with-groups');
     AddressPage.visit();
@@ -347,7 +347,7 @@ describe('Meta data administrator with a group', () => {
     let tempLocalFile = 'temporaryFolder' + Utils.randomString();
     let groupName = 'test_gruppe_1';
     // log in as ige
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     // create folder
     DocumentPage.visit();
@@ -360,7 +360,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempLocalFile], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
     AdminGroupPage.saveGroup();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
@@ -393,7 +393,7 @@ describe('Meta data administrator with a group', () => {
     let tempFolderToRelocate = 'temporaryFolderToRelocate' + Utils.randomString();
     let groupName = 'test_gruppe_1';
     // log in as ige
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     // create folder
     DocumentPage.visit();
@@ -406,7 +406,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempFolderToRelocate], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempFolderToRelocate, 'Daten');
     AdminGroupPage.saveGroup();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // log in as metadata admin and try to change title
     cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
@@ -518,7 +518,7 @@ describe('Meta data administrator with a group', () => {
     AddressPage.visit();
     Tree.openNode(['test_c, test_c']);
     // log in as ige
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
@@ -526,7 +526,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.deleteDocumentFromGroup('test_c, test_c', 'Adressen');
     AdminGroupPage.saveGroup();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // log in as metadata admin and try find document
     cy.kcLogin('meta2-with-groups');
     AddressPage.visit();
@@ -535,7 +535,7 @@ describe('Meta data administrator with a group', () => {
 
   it('if metadata admin deletes one of his assigned groups, he should not be able to see the documents of this group', () => {
     // -1- create new document
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     const documentName = 'newDocumentToDelete' + Utils.randomString();
     const newGroup = 'new_group_to_delete' + Utils.randomString();
@@ -553,7 +553,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.selectUser('MetaAdmin mitGruppen');
     AdminUserPage.addGroupToUser(newGroup);
     AdminUserPage.saveUser();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // -5- check existence of document
     cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
@@ -561,14 +561,14 @@ describe('Meta data administrator with a group', () => {
     UserAuthorizationPage.verifyDocumentTitle(documentName);
 
     // -6- delete the group
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(newGroup);
     AdminGroupPage.deleteGroupOfOtherUsers(newGroup);
     // -7- make sure the document is no longer existent
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
     DocumentPage.visit();
     cy.contains('mat-tree.mat-tree', documentName).should('not.exist');
@@ -615,7 +615,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.addGroupToUser(' gruppe_nur_Adressen ');
     AdminUserPage.saveUser();
     // log in as another metadata admin
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta1-without-groups');
 
     // make sure user created by previous metadata admin is not visible
@@ -639,7 +639,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.addNewUser(user, true);
 
     // log in as another metadata admin
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta1-without-groups');
 
     // make sure user created by previous metadata admin is not visible
@@ -733,7 +733,7 @@ describe('Catalogue admin', () => {
     AdminUserPage.addGroupToUser('test_gruppe_4');
     AdminUserPage.saveUser();
     // log in as the other user
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('author-with-groups');
 
     // make sure data documents are only listed once
@@ -836,7 +836,7 @@ describe('Catalogue admin', () => {
     // get number of the groups
     // logout from admin and login as catalog admin
     // get number of groups and compare the two numbers
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
@@ -847,7 +847,7 @@ describe('Catalogue admin', () => {
         let txt = $text.text();
         let regex = /\d+/g;
         let matches = txt.match(regex);
-        cy.kcLogout();
+        cy.logoutClearCookies();
         cy.kcLogin('eins');
         AdminUserPage.visit();
         AdminGroupPage.goToTabmenu(UserAndRights.Group);
@@ -869,12 +869,12 @@ describe('Catalogue admin', () => {
     AdminUserPage.selectUser(userLogin);
     AdminUserPage.changeUserRole('Autor', true);
     // login with new role and check if the new author does not have admin rights
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('drei');
     DocumentPage.visit();
     UserAuthorizationPage.checkUsersTabExist(false);
     DocumentPage.checkEmptyDocumentTree();
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // change the role back again to catalog admin
     cy.kcLogin('eins');
     AdminUserPage.visit();
@@ -890,12 +890,12 @@ describe('Catalogue admin', () => {
     AdminUserPage.selectUser('autornew');
     AdminUserPage.changeUserRole('Metadaten-Administrator', true);
     // login with new role and check if the new author does not have admin rights
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin(userLogin);
     AdminUserPage.visit();
     // check if the user able to access users page and select a user
     AdminUserPage.selectUser('metanew');
-    cy.kcLogout();
+    cy.logoutClearCookies();
     // change the role back again to catalog admin
     cy.kcLogin('eins');
     AdminUserPage.visit();

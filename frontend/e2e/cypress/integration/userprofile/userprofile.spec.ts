@@ -27,10 +27,10 @@ describe('Profile', () => {
     ProfilePage.changePassword('ige2', 'mdek', 'ige2');
 
     // login again with new password using new fixture file
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('catalog-profile-test-with-new-pass');
     ProfilePage.visit();
-    cy.kcLogout();
+    cy.logoutClearCookies();
   });
 
   it('should update autor password', () => {
@@ -40,12 +40,12 @@ describe('Profile', () => {
     ProfilePage.changePassword('autornew', 'autornew', 'autornewpass');
 
     // login again with new password using new fixture file
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('author-profile-test-with-new-pass');
     ProfilePage.visit();
     // reset the password
     ProfilePage.changePassword('autornew', 'autornew', 'autornew');
-    cy.kcLogout();
+    cy.logoutClearCookies();
   });
 
   it('should update meta admin password', () => {
@@ -55,10 +55,10 @@ describe('Profile', () => {
     ProfilePage.changePassword('meta3', 'meta3', 'meta3new');
 
     // login again with new password using new fixture file
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta3-profile-test-with-new-pass');
     ProfilePage.visit();
-    cy.kcLogout();
+    cy.logoutClearCookies();
   });
 
   it('should update user email', () => {

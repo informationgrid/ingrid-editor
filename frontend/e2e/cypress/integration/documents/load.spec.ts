@@ -68,7 +68,7 @@ describe('Load documents', () => {
     enterMcloudDocTestData.setAddress('Limousin, Adresse');
     DocumentPage.saveDocument();
     // visit new catalog and make sure recently added address is not among the suggestions
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('ige3');
     DocumentPage.visit();
     // add an address to a document so that afterwards the 'last used addresses' field contains this address
@@ -101,7 +101,7 @@ describe('Load documents', () => {
       Utils.getFormattedDate(new Date()) + ' von ' + 'Andre Wallat'
     );
     // log in as different user
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('meta2-with-groups');
 
     // check header
@@ -132,7 +132,7 @@ describe('Load documents', () => {
     );
 
     // log in as different user
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('eins');
 
     // check header

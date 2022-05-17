@@ -50,7 +50,7 @@ describe('mCLOUD documents', function () {
       enterMcloudDocTestData.setAddress('Normandie, Adresse');
       DocumentPage.saveDocument();
       // log in as user with limited access rights and check access
-      cy.kcLogout();
+      cy.logoutClearCookies();
       cy.kcLogin('meta2-with-groups');
       DocumentPage.visit();
       // open folder containing document in question

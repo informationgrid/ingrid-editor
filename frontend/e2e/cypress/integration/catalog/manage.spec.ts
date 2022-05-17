@@ -140,7 +140,7 @@ describe('Catalog management', () => {
   // make sure we use the correct catalog for the other tests
   // send an API call to set current catalog to 'test'
   after(() => {
-    cy.kcLogout();
+    cy.logoutClearCookies();
     cy.kcLogin('super-admin').as('tokens');
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
