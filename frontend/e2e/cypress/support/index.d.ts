@@ -26,5 +26,7 @@ declare namespace Cypress {
     containsFormErrors(count: number): void;
 
     drag(value: string, options?: { position?: Position; force?: boolean }): Chainable<Element>;
+
+    logoutClearCookies(): void;
   }
 }

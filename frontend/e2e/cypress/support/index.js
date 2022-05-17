@@ -119,3 +119,8 @@ Cypress.Commands.add('fieldIsInvalid', (fieldClass, content) => {
 Cypress.Commands.add('containsFormErrors', count => {
   cy.get('.mat-error:not(.invisible)').should('have.length', count);
 });
+
+Cypress.Commands.add('logoutClearCookies', count => {
+  cy.kcLogout();
+  cy.clearCookies();
+});
