@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.checkForRootPermissions
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
@@ -96,6 +97,9 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         val sids = sidRetrievalStrategy.getSids(authentication)
         val requiredPermission = resolvePermission(permission)
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
+
+        if (checkForRootPermissions(sids, requiredPermission)) return true;
+
         var acl: Acl? = null
         try {
 

@@ -18,7 +18,12 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
+import org.springframework.security.acls.model.Sid
+import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -38,6 +43,8 @@ class DatasetsApiController @Autowired constructor(
 ) : DatasetsApi {
 
     private val log = logger()
+
+    private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
 
     /**
      * Create dataset.
@@ -269,8 +276,13 @@ class DatasetsApiController @Autowired constructor(
     ): ResponseEntity<List<JsonNode>> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val isCatAdmin = authUtils.isAdmin(principal)
-        val children = if (!isCatAdmin && parentId == null) {
+        val isSuperOrCatAdmin = authUtils.isAdmin(principal)
+        val hasRootRead = checkForRootPermissions(sidRetrievalStrategy.getSids(principal as Authentication), listOf(BasePermission.READ))
+
+        val children = if (
+            parentId == null && !isSuperOrCatAdmin && !hasRootRead
+        ) {
+            // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.groups
                 ?.filter { it.catalog?.identifier == catalogId }

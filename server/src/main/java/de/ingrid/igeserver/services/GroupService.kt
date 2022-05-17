@@ -125,7 +125,7 @@ class GroupService @Autowired constructor(
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("id").asInt())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, if (it.get("id").isNull) null else it.get("id").asInt())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
             } catch (ex: org.springframework.security.acls.model.NotFoundException) {

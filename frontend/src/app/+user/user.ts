@@ -38,6 +38,7 @@ export class BackendUser extends User {
 }
 
 export class Permissions {
+  rootPermission?: "READ" | "WRITE";
   documents: TreePermission[] = [];
   addresses: TreePermission[] = [];
 }

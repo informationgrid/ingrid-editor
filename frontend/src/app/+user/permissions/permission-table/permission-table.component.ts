@@ -89,6 +89,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   private addDocInfoToPermission(doc: TreePermission) {
+    // if root permission skip
+    if (doc.id == null) return;
+
     if (!this.breadcrumb[doc.id]) {
       this.documentService
         .getPath(doc.id)
@@ -142,5 +145,19 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (!doc.hasWritePermission && !doc.hasOnlySubtreeWritePermission) {
       doc.permission = PermissionLevel.READ;
     }
+  }
+
+  addRootPermission(permission: PermissionLevel) {
+    this.value = [
+      ...this.val,
+      {
+        id: null,
+        permission,
+        hasOnlySubtreeWritePermission: false,
+        hasWritePermission: true,
+        isFolder: false,
+        title: this.forAddress ? "Alle Adressen" : "Alle Datensätze",
+      },
+    ];
   }
 }

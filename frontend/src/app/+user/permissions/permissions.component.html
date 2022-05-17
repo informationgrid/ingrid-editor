@@ -1,4 +1,14 @@
 <div [formGroup]="formGroup" style="max-height: unset">
+    <mat-slide-toggle
+        (click)="toggleRootPermission()"
+        [formControl]="rootPermissionRead"
+        >Read</mat-slide-toggle
+    >
+    <mat-slide-toggle
+        (click)="toggleRootPermission()"
+        [formControl]="rootPermissionWrite"
+        >Write</mat-slide-toggle
+    >
     <permission-table
         formControlName="documents"
         label="Berechtigungen Daten"
