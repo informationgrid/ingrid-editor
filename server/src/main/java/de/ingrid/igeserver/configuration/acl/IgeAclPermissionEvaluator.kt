@@ -6,10 +6,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
-import org.springframework.security.acls.domain.BasePermission
-import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl
-import org.springframework.security.acls.domain.PermissionFactory
-import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
+import org.springframework.security.acls.domain.*
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import java.io.Serializable
@@ -98,7 +95,12 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         val requiredPermission = resolvePermission(permission)
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
 
-        if (checkForRootPermissions(sids, requiredPermission)) return true;
+        if (checkForRootPermissions(sids, requiredPermission)) {
+            if (domainObject is DocumentWrapper) {
+                domainObject.hasWritePermission = sids.any { (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_write_root" }
+            }
+            return true
+        };
 
         var acl: Acl? = null
         try {
