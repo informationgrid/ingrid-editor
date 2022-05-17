@@ -174,7 +174,7 @@ class DocumentService @Autowired constructor(
     /**
      *  Get a list of all IDs hierarchically below a given id
      */
-    fun getAllDescendantIds(catalogId: String, id: Int): List<Int> {
+    fun getAllDescendantIds(catalogId: String, id: Int?): List<Int> {
         val docs = this.findChildren(catalogId, id)
         return if (docs.hits.isEmpty()) {
             emptyList()

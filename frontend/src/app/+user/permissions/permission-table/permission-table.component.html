@@ -1,9 +1,13 @@
 <div class="table-title">{{ label }}</div>
-<table mat-table [dataSource]="val" class="width-100">
+<table mat-table [dataSource]="val" class="dark width-100">
     <ng-container matColumnDef="type-icon">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element" class="thin-column">
-            <mat-icon [svgIcon]="getIcon(element)"></mat-icon>
+            <mat-icon
+                *ngIf="element.id"
+                [svgIcon]="getIcon(element)"
+            ></mat-icon>
+            <mat-icon *ngIf="!element.id"></mat-icon>
         </td>
     </ng-container>
     <!-- Title/path -->
@@ -89,13 +93,22 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.root-permission]="row.id == null"
+    ></tr>
 </table>
 <div class="permission-table-footer">
-    <ige-add-button
-        [showLabel]="false"
-        (add)="this.callAddPermissionDialog()"
-    ></ige-add-button>
+    <div class="add-permission-button">
+        <button
+            type="button"
+            mat-stroked-button
+            (click)="this.callAddPermissionDialog()"
+        >
+            Hinzufügen
+        </button>
+    </div>
     <div class="legend">
         <mat-icon>visibility</mat-icon>
         <span> Leserecht,</span>

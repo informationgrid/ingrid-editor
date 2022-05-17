@@ -14,25 +14,6 @@
   overflow: hidden;
 }
 
-.no-fields-selected-notice {
-  display: flex;
-  align-items: center;
-  background-color: $ige-mark-color;
-  color: $ige-primary;
-  padding: 0 15px;
-  margin-bottom: 5px;
-  min-height: 40px;
-
-  span {
-    padding: 10px 0;
-  }
-
-  .infoIcon {
-    background-color: white;
-    margin-right: 15px;
-  }
-}
-
 .list-item {
   height: 36px;
   padding: 0 10px 0 15px;

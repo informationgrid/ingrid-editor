@@ -71,6 +71,17 @@ td mat-button:first-of-type {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+
+    span {
+      padding-left: 4px;
+    }
+  }
 }
 
 .table-title {
@@ -80,4 +91,16 @@ td mat-button:first-of-type {
 
 .mat-column-permission {
   white-space: nowrap;
+}
+
+.add-permission-button {
+  color: $ige-secondary;
+  padding-right: 24px;
+}
+
+.root-permission {
+  background: $error-background;
+  &:hover {
+    background: darken($error-background, 5%) !important;
+  }
 }

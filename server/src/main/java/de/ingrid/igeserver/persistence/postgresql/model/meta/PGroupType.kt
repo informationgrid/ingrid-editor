@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 
 @Component
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PermissionsData(
-    @JsonIgnoreProperties
-    val pages: JsonNode? = null,
-    @JsonIgnoreProperties
-    val actions: JsonNode? = null,
+    val rootPermission: RootPermissionType? = null,
     var documents: List<JsonNode>? = null,
     var addresses: List<JsonNode>? = null
 )
+
+enum class RootPermissionType {
+    READ, WRITE
+}

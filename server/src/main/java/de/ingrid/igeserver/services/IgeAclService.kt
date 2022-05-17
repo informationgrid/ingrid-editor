@@ -7,6 +7,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
 import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
@@ -26,6 +27,9 @@ class IgeAclService @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository
 ) {
 
+    private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
+
+
     fun hasRightsForGroup(authentication: Authentication, group: Group): Boolean {
         if (hasAdminRole(authentication)) {
             return true
@@ -43,7 +47,11 @@ class IgeAclService @Autowired constructor(
                 isAllowed = when (permissionLevel) {
                     "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
                     "readTree" -> isAllowed(acl, BasePermission.READ, sids)
-                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids) || isAllowed(acl, BasePermission.WRITE, sids)
+                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids) || isAllowed(
+                        acl,
+                        BasePermission.WRITE,
+                        sids
+                    )
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
@@ -60,6 +68,10 @@ class IgeAclService @Autowired constructor(
         } else if (id == null) {
             return PermissionInfo()
         }
+        val sids = sidRetrievalStrategy.getSids(authentication)
+        val hasRootWrite =
+            checkForRootPermissions(sids, listOf(BasePermission.WRITE))
+        val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
 
         return try {
 
@@ -69,8 +81,8 @@ class IgeAclService @Autowired constructor(
             val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
             PermissionInfo(
-                isAllowed(acl, BasePermission.READ, sids),
-                isAllowed(acl, BasePermission.WRITE, sids),
+                isAllowed(acl, BasePermission.READ, sids) || hasRootRead || hasRootWrite,
+                isAllowed(acl, BasePermission.WRITE, sids) || hasRootWrite,
                 isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
             )
         } catch (nfe: NotFoundException) {
@@ -157,4 +169,15 @@ class IgeAclService @Autowired constructor(
         return roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
 
+}
+
+fun checkForRootPermissions(
+    sids: List<Sid>,
+    requiredPermissions: List<Permission?>
+): Boolean {
+    if (requiredPermissions.any { it == BasePermission.WRITE }) return sids.any { (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_write_root" }
+    if (requiredPermissions.any { it == BasePermission.READ }) return sids.any {
+        (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_write_root" || (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_read_root"
+    }
+    return false
 }

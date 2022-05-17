@@ -1,6 +1,5 @@
-import { Component, forwardRef, OnInit } from "@angular/core";
+import { Component, forwardRef, Input, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { PagePermission } from "./page-permission";
 import {
   ControlValueAccessor,
   FormBuilder,
@@ -26,13 +25,18 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
-  pagePermissions: PagePermission[];
-  formGroup: FormGroup;
+  @Input() showRootWriteSlider: boolean = false;
+  @Input() showRootReadSlider: boolean = false;
 
-  constructor(private router: Router, private fb: FormBuilder) {}
+  formGroup: FormGroup;
+  rootPermissionRead = this.fb.control([]);
+  rootPermissionWrite = this.fb.control([]);
+
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
+      rootPermission: this.fb.control([]),
       documents: this.fb.control([]),
       addresses: this.fb.control([]),
     });
@@ -40,10 +44,6 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
     this.formGroup.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => this.onChange && this.onChange(value));
-
-    this.pagePermissions = this.router.config
-      .filter((route) => route.data)
-      .map((route) => new PagePermission(route.path, route.data.title));
   }
 
   registerOnChange(fn: any): void {
@@ -58,6 +58,21 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
     if (obj) {
       this.formGroup.reset();
       this.formGroup.patchValue(obj);
+
+      this.rootPermissionRead.setValue(
+        obj.rootPermission == "READ" || obj.rootPermission == "WRITE"
+      );
+      this.rootPermissionWrite.setValue(obj.rootPermission == "WRITE");
     }
+  }
+
+  toggleRootPermission() {
+    const read = this.rootPermissionRead.value;
+    const write = this.rootPermissionWrite.value;
+    this.formGroup.patchValue({
+      rootPermission: write ? "WRITE" : read ? "READ" : null,
+    });
+    console.log(this.formGroup.value);
+    this.onChange(this.formGroup.value);
   }
 }

@@ -2,6 +2,7 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
@@ -15,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
 import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Service
 class MyAuthenticationProvider @Autowired constructor(
@@ -48,10 +48,27 @@ class MyAuthenticationProvider @Autowired constructor(
         var userDb = userRepository.findByUserId(username)
         userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
 
-        // add groups
-        userDb?.groups
-            ?.map { it.name }
-            ?.forEach { grantedAuthorities.add(SimpleGrantedAuthority("GROUP_$it")) }
+        val currentCatalogId = userDb?.curCatalog?.id
+        if (currentCatalogId != null) {
+            val groups = userDb?.groups?.filter { it.catalog?.id == currentCatalogId } ?: ArrayList()
+
+            // add groups
+            groups
+                .map { it.name }
+                .forEach { grantedAuthorities.add(SimpleGrantedAuthority("GROUP_$it")) }
+
+
+            if (groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }) {
+                grantedAuthorities.add(
+                    SimpleGrantedAuthority("SPECIAL_write_root")
+                )
+            } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {
+                grantedAuthorities.add(
+                    SimpleGrantedAuthority("SPECIAL_read_root")
+                )
+            }
+        }
+
 
         // add roles
         val role = userDb?.role?.name

@@ -39,6 +39,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
   searchQuery: string;
 
   userInfo$ = this.configService.$userInfo;
+  userHasRootReadPermission: boolean = false;
+  userHasRootWritePermission: boolean = false;
 
   form: FormGroup;
 
@@ -92,9 +94,13 @@ export class GroupComponent implements OnInit, AfterViewInit {
         }
       });
 
-    this.userInfo$
-      .pipe(untilDestroyed(this))
-      .subscribe((info) => (this.userGroupNames = info.groups));
+    this.userInfo$.pipe(untilDestroyed(this)).subscribe((info) => {
+      this.userGroupNames = info.groups;
+      this.userHasRootWritePermission =
+        this.configService.hasPermission("can_write_root");
+      this.userHasRootReadPermission =
+        this.configService.hasPermission("can_read_root");
+    });
   }
 
   openAddGroupDialog() {
