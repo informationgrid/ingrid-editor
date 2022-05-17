@@ -7,7 +7,8 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:runFull": "node scripts/cypress.js",
-    "mailserver": "node scripts/startMailserver.js"
+    "mailserver": "node scripts/startMailserver.js",
+    "stop-only": "stop-only"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +31,8 @@
     "cypress-keycloak-commands": "^1.2.0",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
-    "prettier": "2.5.1"
+    "prettier": "2.5.1",
+    "stop-only": "^3.1.2"
   },
   "husky": {
     "hooks": {
@@ -38,7 +40,7 @@
     }
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown",
-    "*.{js,css,md}": "prettier --write"
+    "*.{ts,js,md}": "prettier --check",
+    "*.spec.ts": "yarn stop-only --folder"
   }
 }

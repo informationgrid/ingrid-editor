@@ -1,3 +1,5 @@
 #!/bin/sh
 cd frontend
 yarn lint-staged
+cd e2e
+yarn lint-staged
