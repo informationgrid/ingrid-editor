@@ -85,7 +85,7 @@ describe('Behaviours', () => {
       cy.get('[data-cy=toolbar_publish_now]').should('exist');
     });
 
-    it('should show and hide the new document button', () => {
+    xit('should show and hide the new document button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewDoc).should('exist');
 
@@ -102,7 +102,7 @@ describe('Behaviours', () => {
       cy.get('[data-cy=toolbar_NEW_DOC]').should('exist');
     });
 
-    it('should show and hide the save button', () => {
+    xit('should show and hide the save button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Save).should('exist');
 
@@ -119,7 +119,7 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.Save).should('exist');
     });
 
-    it('should show and hide the create folder button', () => {
+    xit('should show and hide the create folder button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
 
@@ -136,7 +136,7 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.NewFolder).should('exist');
     });
 
-    it('should show and hide the copy/cut button', () => {
+    xit('should show and hide the copy/cut button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Copy).should('exist');
 
@@ -153,7 +153,7 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.Copy).should('exist');
     });
 
-    it('should show and hide the delete doc/folder button', () => {
+    xit('should show and hide the delete doc/folder button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
 
@@ -170,7 +170,7 @@ describe('Behaviours', () => {
       cy.get(DocumentPage.Toolbar.Delete).should('exist');
     });
 
-    it('should show and hide the history buttons', () => {
+    xit('should show and hide the history buttons', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get(DocumentPage.Toolbar.Previous).should('exist');
       cy.get(DocumentPage.Toolbar.Next).should('exist');
