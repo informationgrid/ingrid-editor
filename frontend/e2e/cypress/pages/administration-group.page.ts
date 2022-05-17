@@ -133,11 +133,7 @@ export class AdminGroupPage extends BasePage {
 
   static openAddDocumentsDialog(docType: string) {
     const documentType = new RegExp(docType);
-    cy.contains('permission-table', documentType)
-      .find('ige-add-button')
-      .within(() => {
-        cy.get('button').click();
-      });
+    cy.contains('permission-table', documentType).find('[data-cy=add-permission]').click();
   }
 
   static addNestedDocumentToGroup(arrayPath: string[], docType: string) {
