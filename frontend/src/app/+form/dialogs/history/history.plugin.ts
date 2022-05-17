@@ -19,9 +19,12 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class HistoryPlugin extends Plugin {
   id = "plugin.history";
-  _name = "History Plugin";
+  name = "History Plugin";
+  description =
+    "Fügt Buttons hinzu, um zum vorherigen und nächsten Datensatz zu springen.";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   private stack: DocumentAbstract[] = [];
 
@@ -48,10 +51,6 @@ export class HistoryPlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery
   ) {
     super();
-  }
-
-  get name() {
-    return this._name;
   }
 
   register() {

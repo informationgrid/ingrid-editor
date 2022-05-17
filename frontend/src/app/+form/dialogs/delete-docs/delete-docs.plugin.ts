@@ -19,15 +19,14 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
   id = "plugin.deleteDocs";
-  _name = "Delete Docs Plugin";
+  name = "Delete Docs Plugin";
+  description =
+    "Fügt einen Button hinzu, um den geöffneten Datensatz zu löschen.";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   private tree: TreeQuery | AddressTreeQuery;
-
-  get name() {
-    return this._name;
-  }
 
   constructor(
     private formToolbarService: FormToolbarService,

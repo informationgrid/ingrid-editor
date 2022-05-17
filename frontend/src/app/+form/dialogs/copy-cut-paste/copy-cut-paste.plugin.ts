@@ -26,19 +26,14 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
   id = "plugin.copy.cut.paste";
-  _name = "Copy Cut Paste";
+  name = "Copy Cut Paste";
+  description =
+    "Ein Button für das Kopieren und Ausschneiden sowie das Einfügen von Datensätzen.";
   group = "Toolbar";
   defaultActive = true;
-
-  description = `
-    Diese Regeln beschreiben das Kopieren, Ausschneiden und Einfügen von Datensätzen.
-  `;
+  hide = true;
 
   private query: TreeQuery | AddressTreeQuery;
-
-  get name() {
-    return this._name;
-  }
 
   isAdmin = this.config.isAdmin();
 

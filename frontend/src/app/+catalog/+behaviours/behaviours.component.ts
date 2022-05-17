@@ -20,6 +20,7 @@ import { ActivatedRoute } from "@angular/router";
 export class BehavioursComponent implements OnInit {
   type: string;
 
+  private readonly formPlugins: Plugin[];
   plugins: any;
   // plugins: { [x: string]: Plugin[] };
 
@@ -31,10 +32,12 @@ export class BehavioursComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private builder: FormlyFormBuilder,
-    @Inject(FormPluginToken) private formPlugins: Plugin[],
+    @Inject(FormPluginToken) formPluginsDef: Plugin[],
     private route: ActivatedRoute,
     private behaviourService: BehaviourService
-  ) {}
+  ) {
+    this.formPlugins = formPluginsDef.filter((plugin) => !plugin.hide);
+  }
 
   ngOnInit() {
     this.type = this.route.snapshot.paramMap.get("type");

@@ -16,9 +16,11 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class CreateDocumentPlugin extends Plugin {
   id = "plugin.newDoc";
-  _name = "Neues Dokument Plugin";
+  name = "Neues Dokument Plugin";
+  description = "Ermöglicht das Anlegen eines neuen Dokuments";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   isAdmin = this.config.isAdmin();
 
@@ -33,10 +35,6 @@ export class CreateDocumentPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-  }
-
-  get name() {
-    return this._name;
   }
 
   register() {

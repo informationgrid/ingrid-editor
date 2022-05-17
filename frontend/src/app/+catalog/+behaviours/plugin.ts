@@ -20,6 +20,7 @@ export abstract class Plugin {
   description: string;
   isActive: boolean;
   defaultActive: boolean;
+  hide = false;
   _state?: string;
   forAddress = false;
   subscriptions: Subscription[] = [];

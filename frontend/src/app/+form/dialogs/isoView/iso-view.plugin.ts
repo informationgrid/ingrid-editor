@@ -8,7 +8,8 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class IsoViewPlugin extends Plugin {
   id = "plugin.isoView";
-  _name = "Iso View Plugin";
+  name = "Iso View Plugin";
+  description = "";
   defaultActive = true;
 
   constructor(
@@ -17,10 +18,6 @@ export class IsoViewPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-  }
-
-  get name() {
-    return this._name;
   }
 
   register() {
@@ -40,14 +37,6 @@ export class IsoViewPlugin extends Plugin {
     const toolbarEventSubscription = this.docEvents
       .onEvent("ISO")
       .subscribe(() => this.showISODialog());
-
-    /*
-    this.formService.selectedDocuments$.subscribe( data => {
-      this.formToolbarService.setButtonState(
-        'toolBtnIso',
-        data.length === 1 && data[0]._type.startsWith('ISO') );
-    } );
-*/
 
     this.subscriptions.push(toolbarEventSubscription);
   }

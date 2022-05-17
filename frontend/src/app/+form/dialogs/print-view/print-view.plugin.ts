@@ -16,9 +16,12 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class PrintViewPlugin extends Plugin {
   id = "plugin.printView";
-  _name = "Print View Plugin";
+  name = "Print View Plugin";
+  description =
+    "Fügt einen Button hinzu, um sich eine Vorschau anzeigen zu lassen.";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   private treeQuery: TreeQuery | AddressTreeQuery;
 
@@ -30,10 +33,6 @@ export class PrintViewPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-  }
-
-  get name() {
-    return this._name;
   }
 
   register() {

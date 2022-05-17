@@ -25,19 +25,18 @@ import { FormMessageService } from "../../../services/form-message.service";
 @Injectable()
 export class PublishPlugin extends SaveBase {
   id = "plugin.publish";
-  _name = "Publish Plugin";
+  name = "Publish Plugin";
+  description =
+    "Fügt einen Button zum Veröffentlichen eines Datensatzes hinzu.";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   eventPublishId = "PUBLISH";
   eventRevertId = "REVERT";
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
   private tree: TreeQuery | AddressTreeQuery;
-
-  get name() {
-    return this._name;
-  }
 
   constructor(
     public formToolbarService: FormToolbarService,

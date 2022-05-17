@@ -16,14 +16,12 @@ import { FormMessageService } from "../../../services/form-message.service";
 @Injectable()
 export class SavePlugin extends SaveBase {
   id = "plugin.save";
-  _name = "Save Plugin";
+  name = "Save Plugin";
+  description = "Einblenden eines Buttons zum Speichern eines Datensatzes";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
   private tree: TreeQuery | AddressTreeQuery;
-
-  get name() {
-    return this._name;
-  }
 
   constructor(
     public formToolbarService: FormToolbarService,

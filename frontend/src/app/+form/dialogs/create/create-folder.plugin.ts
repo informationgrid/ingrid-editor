@@ -17,17 +17,15 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
   id = "plugin.folder";
-  _name = "Folder Plugin";
+  name = "Folder Plugin";
+  description = "Ermöglicht das Anlegen von Ordnern.";
   group = "Toolbar";
   defaultActive = true;
+  hide = true;
 
   eventCreateFolderId = "CREATE_FOLDER";
 
   private isAdmin = this.config.isAdmin();
-
-  get name() {
-    return this._name;
-  }
 
   constructor(
     private config: ConfigService,

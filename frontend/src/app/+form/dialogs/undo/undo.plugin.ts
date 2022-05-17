@@ -7,7 +7,9 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 @Injectable()
 export class UndoPlugin extends Plugin {
   id = "plugin.undo";
-  _name = "Undo Plugin";
+  name = "Undo Plugin";
+  description =
+    "Hiermit können die letzten Änderungen im Dokument rückgängig gemacht werden.";
   group = "Toolbar";
   defaultActive = true;
 
@@ -18,10 +20,6 @@ export class UndoPlugin extends Plugin {
   private history: any[] = [];
   private redoHistory: any[] = [];
   private actionTriggered = false;
-
-  get name() {
-    return this._name;
-  }
 
   constructor(
     private formToolbarService: FormToolbarService,
