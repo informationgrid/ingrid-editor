@@ -1,14 +1,14 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
   OnInit,
   Output,
-  ChangeDetectorRef,
 } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { catchError, debounceTime, finalize, map } from "rxjs/operators";
+import { debounceTime, finalize, map } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";

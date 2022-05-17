@@ -48,19 +48,6 @@
   font-size: 14px;
 }
 
-:host ::ng-deep .quicksearch-auto {
-  padding: 12px;
-
-  mat-option {
-    padding: 0 !important;
-  }
-
-  mat-option,
-  ::ng-deep .doc-item {
-    height: 40px !important;
-  }
-}
-
 .search {
   padding-top: 6px;
 

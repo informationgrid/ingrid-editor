@@ -851,6 +851,60 @@ ige-sidebar
   border: none;
 }
 
+.quicksearch-auto-tree {
+  padding: 12px;
+
+  mat-option {
+    padding: 0 !important;
+  }
+
+  mat-option,
+  .doc-item {
+    height: 40px !important;
+  }
+}
+.quicksearch-auto {
+  max-height: unset !important;
+  width: 510px !important;
+  padding: 24px 24px 12px;
+
+  &.option-no-padding mat-option {
+    padding: 0 !important;
+  }
+
+  &.option-no-padding mat-option,
+  &.option-no-padding .doc-item {
+    height: 40px !important;
+
+    &.multiline {
+      height: auto !important;
+      white-space: normal;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      align-items: flex-start !important;
+    }
+  }
+
+  &.mat-autocomplete-hidden {
+    display: none !important;
+  }
+
+  .doc-item {
+    .mat-icon {
+      margin-top: -2px !important;
+    }
+
+    .mat-line {
+      line-height: 22px !important;
+    }
+  }
+
+  .show-all-link + .spacing,
+  .mat-option + .spacing {
+    padding-bottom: 35px;
+  }
+}
+
 /* DRAG N DROP ANIMIATION */
 /* Animate items as they're being sorted. */
 .cdk-drop-list-dragging .cdk-drag {
