@@ -79,7 +79,6 @@
             [formControl]="query"
             [matAutocomplete]="searchAuto"
             (click)="query.value?.length || search('')"
-            onChange="{this.handleChange.bind(this)}"
         />
 
         <mat-spinner
