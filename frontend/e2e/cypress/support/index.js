@@ -120,7 +120,7 @@ Cypress.Commands.add('containsFormErrors', count => {
   cy.get('.mat-error:not(.invisible)').should('have.length', count);
 });
 
-Cypress.Commands.add('logoutClearCookies', count => {
-  cy.logoutClearCookies();
+Cypress.Commands.add('logoutClearCookies', () => {
+  cy.kcLogout();
   cy.clearCookies();
 });

@@ -389,7 +389,7 @@ describe('Meta data administrator with a group', () => {
     cy.contains('mat-dialog-content mat-tree-node', rootFolder_2).should('not.exist');
   });
 
-  it('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
+  it.only('when "nur Unterordner" is activated, the overarching folder should not be able to be relocated', () => {
     let tempFolderToRelocate = 'temporaryFolderToRelocate' + Utils.randomString();
     let groupName = 'test_gruppe_1';
     // log in as ige
