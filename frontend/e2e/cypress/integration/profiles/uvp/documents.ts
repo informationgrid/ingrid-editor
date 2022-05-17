@@ -16,7 +16,7 @@ describe('uvp documents', () => {
     DocumentPage.visit();
   });
 
-  it.only('create a minimal publishable document of type "Linienbestimmung" and publish it', () => {
+  it('create a minimal publishable document of type "Linienbestimmung" and publish it', () => {
     Tree.openNode(['Plan_L']);
 
     // add description
