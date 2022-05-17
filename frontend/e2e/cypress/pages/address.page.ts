@@ -180,6 +180,18 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy="confirm-dialog-confirm"]').click();
     cy.wait('@deleteRequest', { timeout: 10000 });
   }
+
+  static openReplaceAddressDialog() {
+    cy.get('[data-cy=action-replace-address]').click();
+  }
+
+  static closeReplaceAddressDialog() {
+    cy.get('ige-replace-address-dialog  .mat-dialog-title button').click();
+  }
+
+  static openActionMenu() {
+    cy.get('[data-cy="more-actions"]').click();
+  }
 }
 
 export enum addressType {

@@ -63,4 +63,32 @@ describe('Load addresses', () => {
       cy.contains('ige-header-title-row', item.text(), { timeout: 8000 });
     });
   });
+
+  it('should "Adresse ersetzen" option exists only for catalog administrators and super users #3811', () => {
+    Tree.openNode(['Neue Testadressen']);
+    AddressPage.openActionMenu();
+    AddressPage.openReplaceAddressDialog();
+    AddressPage.closeReplaceAddressDialog();
+    cy.kcLogout();
+
+    cy.kcLogin('eins');
+    AddressPage.visit();
+    Tree.openNode(['Neue Testadressen']);
+    AddressPage.openActionMenu();
+    AddressPage.openReplaceAddressDialog();
+    AddressPage.closeReplaceAddressDialog();
+    cy.kcLogout();
+
+    cy.kcLogin('meta2-with-groups');
+    AddressPage.visit();
+    Tree.openNode(['test_z, test_z']);
+    cy.get('[data-cy="more-actions"]').should('not.exist');
+    cy.kcLogout();
+
+    cy.kcLogin('author-with-groups');
+    AddressPage.visit();
+    Tree.openNode(['Ordner 2. Ebene']);
+    cy.get('[data-cy="more-actions"]').should('not.exist');
+    cy.kcLogout();
+  });
 });
