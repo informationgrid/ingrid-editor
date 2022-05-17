@@ -135,6 +135,10 @@
                 </mat-form-field>
 
                 <ige-permissions
+                    [showRootReadSlider]="
+                        userHasRootReadPermission || userHasRootWritePermission
+                    "
+                    [showRootWriteSlider]="userHasRootWritePermission"
                     formControlName="permissions"
                 ></ige-permissions>
                 <div>

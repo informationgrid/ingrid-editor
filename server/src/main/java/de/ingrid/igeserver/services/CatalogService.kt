@@ -7,7 +7,10 @@ import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.repository.*
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.RoleRepository
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -239,6 +242,29 @@ class CatalogService @Autowired constructor(
         userRepo.save(user)
     }
 
+    val catAdminPermisssions = listOf(
+        Permissions.manage_catalog.name,
+        Permissions.manage_users.name,
+        Permissions.can_write_root.name,
+        Permissions.can_read_root.name,
+        Permissions.can_export.name,
+        Permissions.can_import.name,
+        Permissions.can_create_dataset.name,
+        Permissions.can_create_address.name,
+    )
+
+    val superAdminPermissions = listOf(
+        Permissions.manage_messages.name,
+        Permissions.manage_catalog.name,
+        Permissions.manage_users.name,
+        Permissions.can_write_root.name,
+        Permissions.can_read_root.name,
+        Permissions.can_export.name,
+        Permissions.can_import.name,
+        Permissions.can_create_dataset.name,
+        Permissions.can_create_address.name,
+    )
+
     fun getPermissions(principal: Authentication): List<String> {
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
         val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
@@ -246,37 +272,16 @@ class CatalogService @Autowired constructor(
         val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
 
         val permissions = if (isSuperAdmin) {
-            listOf(
-                Permissions.manage_messages.name,
-                Permissions.manage_catalog.name,
-                Permissions.manage_users.name,
-                Permissions.can_export.name,
-                Permissions.can_import.name,
-                Permissions.can_create_dataset.name,
-                Permissions.can_create_address.name,
-            )
+            superAdminPermissions
         } else if (isCatAdmin) {
-            listOf(
-                Permissions.manage_catalog.name,
-                Permissions.manage_users.name,
-                Permissions.can_export.name,
-                Permissions.can_import.name,
-                Permissions.can_create_dataset.name,
-                Permissions.can_create_address.name,
-            )
+            catAdminPermisssions
         } else if (isMdAdmin) {
-            listOf(
-                Permissions.manage_users.name,
-                Permissions.can_export.name,
-                Permissions.can_import.name,
-                Permissions.can_create_dataset.name,
-                Permissions.can_create_address.name,
-            )
+            listOf(Permissions.manage_users.name) + determineNonAdminUserPermissions(principal)
         } else {
             determineNonAdminUserPermissions(principal)
         }
 
-        return if(user != null && user.catalogs.size > 0){
+        return if (user != null && user.catalogs.size > 0) {
             val catalog = getCatalogById(getCurrentCatalogForPrincipal(principal))
             val catalogProfile = getCatalogProfile(catalog.type)
             catalogProfile.profileSpecificPermissions(permissions, principal)
@@ -290,25 +295,37 @@ class CatalogService @Autowired constructor(
         val userPermissions = mutableSetOf(Permissions.can_export.name)
 
         val userName = authUtils.getUsernameFromPrincipal(principal)
-        val userGroups = this.getUser(userName)?.groups
-        userGroups?.forEach { group ->
+        val catalogIdentifier = getCurrentCatalogForPrincipal(principal)
 
-            if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
+        this.getUser(userName)
+            ?.groups
+            ?.filter { it.catalog?.identifier == catalogIdentifier }
+            ?.forEach { group -> userPermissions += getPermissionsFromGroup(group) }
+        return userPermissions.toMutableList()
+    }
+
+    private fun getPermissionsFromGroup(
+        group: Group,
+    ): MutableSet<String> {
+        val userPermissions = mutableSetOf<String>()
+        if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
+            userPermissions.add(Permissions.can_write_root.name)
+            userPermissions.add(Permissions.can_create_dataset.name)
+            userPermissions.add(Permissions.can_create_address.name)
+            userPermissions.add(Permissions.can_import.name)
+        } else {
+            if (group.permissions?.rootPermission == RootPermissionType.READ) userPermissions.add(Permissions.can_read_root.name)
+
+            if (containsAnyGroupWritePermission(group.permissions?.documents)) {
                 userPermissions.add(Permissions.can_create_dataset.name)
+                userPermissions.add(Permissions.can_import.name)
+            }
+            if (containsAnyGroupWritePermission(group.permissions?.addresses)) {
                 userPermissions.add(Permissions.can_create_address.name)
                 userPermissions.add(Permissions.can_import.name)
-            } else {
-                if (containsAnyGroupWritePermission(group.permissions?.documents)) {
-                    userPermissions.add(Permissions.can_create_dataset.name)
-                    userPermissions.add(Permissions.can_import.name)
-                }
-                if (containsAnyGroupWritePermission(group.permissions?.addresses)) {
-                    userPermissions.add(Permissions.can_create_address.name)
-                    userPermissions.add(Permissions.can_import.name)
-                }
             }
         }
-        return userPermissions.toMutableList()
+        return userPermissions
     }
 
     private fun containsAnyGroupWritePermission(groupEntries: List<JsonNode>?) =
@@ -338,7 +355,12 @@ class CatalogService @Autowired constructor(
         return user
     }
 
-    fun updateCatalogConfig(identifier: String, name: String? = null, description: String? = null, config: CatalogConfig) {
+    fun updateCatalogConfig(
+        identifier: String,
+        name: String? = null,
+        description: String? = null,
+        config: CatalogConfig
+    ) {
         val catalog = catalogRepo.findByIdentifier(identifier)
         catalog.apply {
             if (name != null) this.name = name

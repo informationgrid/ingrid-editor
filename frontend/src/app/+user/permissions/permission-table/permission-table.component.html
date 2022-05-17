@@ -100,7 +100,7 @@
     ></tr>
 </table>
 <div class="permission-table-footer">
-    <div class="add-permission-buttons">
+    <div class="add-permission-button">
         <button
             type="button"
             mat-stroked-button
@@ -108,21 +108,6 @@
         >
             Hinzufügen
         </button>
-        <button
-            type="button"
-            mat-stroked-button
-            [mat-menu-trigger-for]="addPermissionMenu"
-        >
-            <mat-icon>keyboard_arrow_down</mat-icon>
-        </button>
-        <mat-menu #addPermissionMenu>
-            <button
-                mat-menu-item
-                (click)="addRootPermission(permissionLevel.READ)"
-            >
-                {{ "forAddress ? 'für all Adressen' : 'für alle Datensätze'" }}
-            </button>
-        </mat-menu>
     </div>
     <div class="legend">
         <mat-icon>visibility</mat-icon>

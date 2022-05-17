@@ -1,14 +1,33 @@
 <div [formGroup]="formGroup" style="max-height: unset">
-    <mat-slide-toggle
-        (click)="toggleRootPermission()"
-        [formControl]="rootPermissionRead"
-        >Read</mat-slide-toggle
+    <div class="permission-sliders">
+        <mat-slide-toggle
+            *ngIf="showRootReadSlider"
+            (change)="toggleRootPermission()"
+            [formControl]="rootPermissionRead"
+            >Allgemeines Leserecht
+        </mat-slide-toggle>
+        <mat-slide-toggle
+            *ngIf="showRootWriteSlider"
+            (change)="toggleRootPermission()"
+            [formControl]="rootPermissionWrite"
+            >Allgemeines Schreibrecht
+        </mat-slide-toggle>
+    </div>
+    <div
+        *ngIf="this.rootPermissionRead.value || this.rootPermissionWrite.value"
+        class="no-fields-selected-notice"
     >
-    <mat-slide-toggle
-        (click)="toggleRootPermission()"
-        [formControl]="rootPermissionWrite"
-        >Write</mat-slide-toggle
-    >
+        <div class="infoIcon">
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+            ></mat-icon>
+        </div>
+        <span>
+            Die aktivierten allgemeinen Berechtigungen überschreiben die
+            Tabellenrechte.</span
+        >
+    </div>
     <permission-table
         formControlName="documents"
         label="Berechtigungen Daten"

@@ -93,24 +93,9 @@ td mat-button:first-of-type {
   white-space: nowrap;
 }
 
-.add-permission-buttons {
+.add-permission-button {
   color: $ige-secondary;
-  white-space: nowrap;
   padding-right: 24px;
-
-  button:first-child {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  button:nth-child(2) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    min-width: 36px;
-    padding: 0;
-    border-left-style: none;
-    margin-left: -1px;
-  }
 }
 
 .root-permission {

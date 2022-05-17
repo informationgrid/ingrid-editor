@@ -1,4 +1,4 @@
-import { Component, forwardRef, OnInit } from "@angular/core";
+import { Component, forwardRef, Input, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import {
   ControlValueAccessor,
@@ -25,11 +25,14 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
+  @Input() showRootWriteSlider: boolean = false;
+  @Input() showRootReadSlider: boolean = false;
+
   formGroup: FormGroup;
   rootPermissionRead = this.fb.control([]);
   rootPermissionWrite = this.fb.control([]);
 
-  constructor(private router: Router, private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
@@ -69,6 +72,7 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
     this.formGroup.patchValue({
       rootPermission: write ? "WRITE" : read ? "READ" : null,
     });
+    console.log(this.formGroup.value);
     this.onChange(this.formGroup.value);
   }
 }
