@@ -961,3 +961,12 @@ mat-icon.wide-icon-26px {
     justify-content: space-between;
   }
 }
+
+.spinner-adjustment-mat-input {
+  position: absolute !important;
+  top: 50% !important;
+  left: 98% !important;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}

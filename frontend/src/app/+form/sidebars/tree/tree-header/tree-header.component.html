@@ -71,6 +71,7 @@
         <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix
             >search
         </mat-icon>
+
         <input
             matInput
             placeholder="Suchen"
@@ -78,22 +79,31 @@
             [formControl]="query"
             [matAutocomplete]="searchAuto"
             (click)="query.value?.length || search('')"
+            onChange="{this.handleChange.bind(this)}"
         />
+
+        <mat-spinner
+            *ngIf="isSearching"
+            [diameter]="18"
+            class="spinner-adjustment-mat-input"
+        ></mat-spinner>
         <button
             *ngIf="query.value?.length > 0"
             mat-icon-button
             matSuffix
             class="close"
-            (click)="query.reset('')"
+            (click)="resetForm()"
             data-cy="clear-tree-search-field"
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
+
         <mat-autocomplete
             #searchAuto="matAutocomplete"
             class="quicksearch-auto dense"
         >
             <mat-option
+                [isLoading]="isSearching"
                 *ngFor="let doc of searchResult | async"
                 (onSelectionChange)="loadResultDocument(doc)"
             >

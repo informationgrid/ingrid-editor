@@ -1,10 +1,16 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ChangeDetectorRef,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, finalize, map } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -22,16 +28,24 @@ export class QuickSearchComponent implements OnInit {
   numAddresses: number;
 
   query = new FormControl("");
+  isSearching = false;
+  addressSub;
+  documentSub;
 
   constructor(
     private documentService: DocumentService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.query.valueChanges
       .pipe(untilDestroyed(this), debounceTime(300))
       .subscribe((query) => this.search(query));
+  }
+  private isLoading() {
+    this.isSearching = true;
+    this.cdr.detectChanges();
   }
 
   search(value: string) {
@@ -40,15 +54,31 @@ export class QuickSearchComponent implements OnInit {
       this.addresses = [];
       return;
     }
-
-    this.documentService.find(value, 5).subscribe((result) => {
-      this.docs = this.highlightResult(result.hits, value);
-      this.numDocs = result.totalHits;
-    });
-    this.documentService.find(value, 5, true).subscribe((result) => {
-      this.addresses = this.highlightResult(result.hits, value);
-      this.numAddresses = result.totalHits;
-    });
+    this.isLoading();
+    this.documentSub = this.documentService
+      .find(value, 5)
+      .pipe(
+        finalize(() => {
+          this.isSearching = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe((result) => {
+        this.docs = this.highlightResult(result.hits, value);
+        this.numDocs = result.totalHits;
+      });
+    this.addressSub = this.documentService
+      .find(value, 5, true)
+      .pipe(
+        finalize(() => {
+          this.isSearching = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe((result) => {
+        this.addresses = this.highlightResult(result.hits, value);
+        this.numAddresses = result.totalHits;
+      });
   }
 
   openResearchPage(event: Event, inAddresses?: boolean) {
@@ -64,6 +94,11 @@ export class QuickSearchComponent implements OnInit {
     ]);
   }
 
+  resetForm() {
+    this.query.reset("");
+    this.addressSub.unsubscribe();
+    this.documentSub.unsubscribe();
+  }
   private highlightResult(
     hits: DocumentAbstract[],
     textHighlight: string

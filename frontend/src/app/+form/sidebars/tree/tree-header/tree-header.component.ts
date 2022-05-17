@@ -1,7 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ChangeDetectorRef,
+} from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { debounceTime, map } from "rxjs/operators";
+import { catchError, debounceTime, finalize, map } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -30,11 +37,11 @@ export class TreeHeaderComponent implements OnInit {
   @Output() edit = new EventEmitter<boolean>();
   @Output() toggleAllSelection = new EventEmitter<boolean>();
   @Output() toggleView = new EventEmitter<boolean>();
-
+  @Output() isSearching = false;
   searchResult = new Subject<TreeNode[]>();
   query = new FormControl("");
-
-  constructor(private db: DynamicDatabase) {}
+  treeSubscribe;
+  constructor(private db: DynamicDatabase, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component
@@ -47,16 +54,30 @@ export class TreeHeaderComponent implements OnInit {
     this.reload.emit();
   }
 
+  private isLoading() {
+    this.isSearching = true;
+    this.cdr.detectChanges();
+  }
+
   search(value: string) {
     if (!value || value.length === 0) {
       this.searchResult.next(this.emptySearchResults ?? []);
       return;
     }
+    this.isLoading();
 
-    this.db
+    this.treeSubscribe = this.db
       .search(value, this.isAddress)
-      .pipe(map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)))
-      .subscribe((result) => this.searchResult.next(this.filterResult(result)));
+      .pipe(
+        map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)),
+        finalize(() => {
+          this.isSearching = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe((result) => {
+        this.searchResult.next(this.filterResult(result));
+      });
   }
 
   loadResultDocument(doc: TreeNode) {
@@ -74,6 +95,10 @@ export class TreeHeaderComponent implements OnInit {
     this.edit.next(true);
   }
 
+  resetForm() {
+    this.query.reset("");
+    this.treeSubscribe.unsubscribe();
+  }
   deactivateMultiSelection() {
     this.multiSelectionModeEnabled = false;
     this.edit.next(false);

@@ -7,12 +7,17 @@
             [formControl]="query"
             [matAutocomplete]="auto"
         />
+        <mat-spinner
+            *ngIf="isSearching"
+            [diameter]="20"
+            class="spinner-adjustment-mat-input"
+        ></mat-spinner>
         <button
             *ngIf="query.value?.length > 0"
             mat-icon-button
             matSuffix
             class="field-close"
-            (click)="query.reset('')"
+            (click)="resetForm()"
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
