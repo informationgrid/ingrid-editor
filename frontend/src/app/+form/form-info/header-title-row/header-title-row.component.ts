@@ -53,6 +53,7 @@ export class HeaderTitleRowComponent implements OnInit {
   moreActions = [
     {
       title: "Adresse ersetzen",
+      name: "replace-address",
       action: () =>
         this.docEventsService.sendEvent({
           type: "REPLACE_ADDRESS",

@@ -49,6 +49,7 @@
     </button>
     <button
         *ngIf="showMoreActions"
+        data-cy="more-actions"
         mat-icon-button
         class="menu dark menu-button"
         [matMenuTriggerFor]="moreActionsMenu"
@@ -56,6 +57,7 @@
         <mat-icon svgIcon="Mehr"></mat-icon>
         <mat-menu #moreActionsMenu="matMenu">
             <button
+                [attr.data-cy]="'action-' + action.name"
                 mat-menu-item
                 *ngFor="let action of moreActions"
                 (click)="action.action()"
