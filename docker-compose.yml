@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
     environment:
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-      - KEYCLOAK_URL=http://keycloak:8080/auth
+      - KEYCLOAK_URL=http://keycloak:8080
       - KEYCLOAK_CLIENT_SECRET=600be265-6f32-4cc9-808e-c8a0a1b2ceaf
     ports:
       - 80:80

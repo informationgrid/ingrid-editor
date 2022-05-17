@@ -16,13 +16,13 @@ If we want to run our tests locally then we have to fulfill the following precon
   {
     "baseUrl": "http://localhost:8550",
     "env": {
-      "auth_base_url": "https://keycloak.informationgrid.eu/auth"
+      "auth_base_url": "https://keycloak.informationgrid.eu"
     }
   }
   ```
 - edit `server/src/develop/resources/application-default.properties`:
   ```properties
-  keycloak.auth-server-url=https://keycloak.informationgrid.eu/auth
+  keycloak.auth-server-url=https://keycloak.informationgrid.eu
   ```
 - use the test database
 
