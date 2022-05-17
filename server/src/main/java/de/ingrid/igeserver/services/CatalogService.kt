@@ -5,6 +5,7 @@ import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -286,31 +287,34 @@ class CatalogService @Autowired constructor(
 
     private fun determineNonAdminUserPermissions(principal: Authentication): MutableList<String> {
         // anyone can export
-        val userPermissions = mutableListOf(Permissions.can_export.name)
+        val userPermissions = mutableSetOf(Permissions.can_export.name)
 
         val userName = authUtils.getUsernameFromPrincipal(principal)
         val userGroups = this.getUser(userName)?.groups
-        var can_import = false;
         userGroups?.forEach { group ->
-            if (containsAnyWritePermission(group.permissions?.documents)) {
+
+            if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
                 userPermissions.add(Permissions.can_create_dataset.name)
-                can_import = true;
-            }
-            if (containsAnyWritePermission(group.permissions?.addresses)) {
                 userPermissions.add(Permissions.can_create_address.name)
-                can_import = true;
+                userPermissions.add(Permissions.can_import.name)
+            } else {
+                if (containsAnyGroupWritePermission(group.permissions?.documents)) {
+                    userPermissions.add(Permissions.can_create_dataset.name)
+                    userPermissions.add(Permissions.can_import.name)
+                }
+                if (containsAnyGroupWritePermission(group.permissions?.addresses)) {
+                    userPermissions.add(Permissions.can_create_address.name)
+                    userPermissions.add(Permissions.can_import.name)
+                }
             }
         }
-        if (can_import) {
-            userPermissions.add(Permissions.can_import.name)
-        }
-        return userPermissions
+        return userPermissions.toMutableList()
     }
 
-    private fun containsAnyWritePermission(groupEntries: List<JsonNode>?) =
+    private fun containsAnyGroupWritePermission(groupEntries: List<JsonNode>?) =
         groupEntries?.any { entry ->
             entry["isFolder"].asBoolean() && entry["permission"].asText().contains("writeTree")
-        } == true
+        } ?: false
 
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
