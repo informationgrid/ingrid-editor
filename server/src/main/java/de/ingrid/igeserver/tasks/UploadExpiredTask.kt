@@ -59,7 +59,12 @@ class UploadExpiredTask(
     }
     
     fun start(docId: Int? = null) {
-        val docs = getPublishedDocumentsByCatalog(docId)
+        val docs = try {
+            getPublishedDocumentsByCatalog(docId)
+        } catch (e: Exception) {
+            log.error("Error getting published documents, which can be normal if database is empty: ${e.message}")
+            emptyList()
+        }
 
         docs.forEach {
             // remove expired documents
