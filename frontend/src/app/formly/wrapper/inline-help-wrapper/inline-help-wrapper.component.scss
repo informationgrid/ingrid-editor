@@ -1,6 +1,6 @@
 @import "src/variables";
 
-::ng-deep ige-inline-help-wrapper {
+:host ::ng-deep ige-inline-help-wrapper {
   display: flex;
   align-items: center;
 

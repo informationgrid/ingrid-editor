@@ -48,7 +48,7 @@
   font-size: 14px;
 }
 
-::ng-deep .quicksearch-auto {
+:host ::ng-deep .quicksearch-auto {
   padding: 12px;
 
   mat-option {

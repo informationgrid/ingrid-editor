@@ -79,7 +79,7 @@
   }
 }
 
-::ng-deep .publish-menu {
+:host ::ng-deep .publish-menu {
   max-width: 500px;
 }
 

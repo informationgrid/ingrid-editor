@@ -68,7 +68,7 @@
   }
 }
 
-::ng-deep .mat-form-field-flex {
+:host ::ng-deep .mat-form-field-flex {
   align-items: center;
 
   .mat-form-field-prefix,

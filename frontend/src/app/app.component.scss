@@ -19,7 +19,7 @@
   height: 100%;
 }
 
-::ng-deep mat-drawer-content.mat-drawer-content {
+:host ::ng-deep mat-drawer-content.mat-drawer-content {
   display: flex;
   flex-direction: column;
   flex: 1;

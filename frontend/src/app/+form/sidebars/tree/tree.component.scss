@@ -7,7 +7,7 @@
   max-width: 100%;
 }
 
-::ng-deep .mat-tree {
+:host ::ng-deep .mat-tree {
   background-color: #ffffff;
   overflow: auto;
 }

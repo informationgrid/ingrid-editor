@@ -1,6 +1,6 @@
 @import "src/variables";
 
-::ng-deep .mat-drawer {
+:host ::ng-deep .mat-drawer {
   border: 0;
 }
 

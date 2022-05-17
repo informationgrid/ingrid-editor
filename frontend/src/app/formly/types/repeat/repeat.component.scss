@@ -15,7 +15,7 @@
   background-color: #ffffff;
 }
 
-::ng-deep ige-repeat {
+:host ::ng-deep ige-repeat {
   .mat-icon-button[disabled][disabled] {
     opacity: 0;
   }

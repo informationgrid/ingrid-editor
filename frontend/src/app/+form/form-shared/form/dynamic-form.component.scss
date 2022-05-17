@@ -19,7 +19,7 @@
   transition: all 0.5s 2s linear;
 }
 
-::ng-deep .as-split-gutter {
+:host ::ng-deep .as-split-gutter {
   background-color: $ige-background-bar !important;
 }
 

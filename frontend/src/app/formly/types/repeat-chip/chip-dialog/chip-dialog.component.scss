@@ -4,7 +4,7 @@
 .mat-dialog-title {
   cursor: move;
 }
-::ng-deep ige-chip-dialog {
+:host ::ng-deep ige-chip-dialog {
   .mat-list-base .mat-list-item {
     .mat-list-item-content-reverse {
       flex-direction: row;

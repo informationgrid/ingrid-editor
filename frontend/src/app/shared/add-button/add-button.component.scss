@@ -27,6 +27,6 @@ button {
   }
 }
 
-::ng-deep ige-repeat > div + ige-add-button .wrapper {
+:host ::ng-deep ige-repeat > div + ige-add-button .wrapper {
   padding-top: 0 !important;
 }

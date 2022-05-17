@@ -71,7 +71,7 @@
   }
 }
 
-::ng-deep .quicksearch-auto {
+:host ::ng-deep .quicksearch-auto {
   max-height: unset !important;
   width: 510px !important;
   padding: 24px 24px 12px;
