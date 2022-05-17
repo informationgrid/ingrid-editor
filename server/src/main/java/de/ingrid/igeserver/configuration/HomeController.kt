@@ -21,7 +21,7 @@ class HomeController {
 
     @GetMapping(value = ["/swagger"])
     fun swagger(): RedirectView {
-        return RedirectView("swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config")
+        return RedirectView("swagger-ui/index.html?configUrl=/v3/api-docs")
     }
 
     @GetMapping(value = ["/accessDenied"])
