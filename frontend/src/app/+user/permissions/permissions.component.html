@@ -1,13 +1,15 @@
-<div [formGroup]="formGroup" style="max-height: unset">
-    <div class="permission-sliders">
+<div [formGroup]="formGroup" fxLayout="column" style="max-height: unset">
+    <div fxFlex fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="end end">
         <mat-slide-toggle
             *ngIf="showRootReadSlider"
+            labelPosition="before"
             (change)="toggleRootPermission()"
             [formControl]="rootPermissionRead"
             >Allgemeines Leserecht
         </mat-slide-toggle>
         <mat-slide-toggle
             *ngIf="showRootWriteSlider"
+            labelPosition="before"
             (change)="toggleRootPermission()"
             [formControl]="rootPermissionWrite"
             >Allgemeines Schreibrecht
