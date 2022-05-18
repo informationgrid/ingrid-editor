@@ -47,7 +47,7 @@
     "angular-split": "^13.1.0",
     "cronstrue": "^1.123.0",
     "keycloak-angular": "^9.1.0",
-    "keycloak-js": "^16.1.1",
+    "keycloak-js": "^18.0.0",
     "leaflet": "^1.7.1",
     "mat-table-exporter": "^10.2.4",
     "material-components-web": "14.0.0",

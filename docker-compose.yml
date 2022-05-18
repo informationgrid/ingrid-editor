@@ -2,27 +2,10 @@ version: '3'
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak
+    image: docker-registry.wemove.com/keycloak:18.0.0-dev
     restart: unless-stopped
-    environment:
-      - PROXY_ADDRESS_FORWARDING=true
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - MAIL_SMTP=mailrelay
-      - MAIL_FROM=keycloak@wemove.com
-      #- IGE_CLIENT_ID=ige-ng
-      - IGE_FRONTEND_URL=http://192.168.0.228
-      - IGE_SUPER_USER_LOGIN=ige
-      - IGE_SUPER_USER_PASSWORD=ige
-      - IGE_SUPER_USER_FIRSTNAME=Max
-      - IGE_SUPER_USER_LASTNAME=Muster
-      - IGE_SUPER_USER_EMAIL=max.muster@test.com
     ports:
-      #- 127.0.0.1:18100:8443
       - 8080:8080
-    volumes:
-      #- ./realm-export.json:/tmp/realm-export.json
-      - ./keycloak-db:/opt/jboss/keycloak/standalone/data
     networks:
       - ige-ng-network
 
