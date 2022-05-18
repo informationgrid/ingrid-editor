@@ -48,7 +48,7 @@ describe('Group', () => {
     cy.get('textarea').click();
 
     cy.get('mat-error').should('have.length', 1);
-    cy.get('mat-error').contains('Es gibt bereits eine Gruppe mit diesem Namen').should('be.visible');
+    cy.get('mat-error').scrollIntoView().contains('Es gibt bereits eine Gruppe mit diesem Namen').should('be.visible');
     cy.get('[data-cy=toolbar_save_group]').should('be.disabled');
   });
 

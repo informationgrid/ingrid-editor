@@ -68,7 +68,7 @@ describe('Behaviours', () => {
       cy.get('as-split-area'[2]).should('not.exist');
     });
 
-    it('should show and hide the publish button', () => {
+    xit('should show and hide the publish button', () => {
       Menu.switchTo('DOCUMENTS');
       cy.get('[data-cy=toolbar_publish_now]').should('exist');
 
