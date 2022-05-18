@@ -82,12 +82,11 @@ describe('uvp reports', () => {
     uvpPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
       // create new document of type "negative Vorprüfung"
       DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(docTitle_2);
-      cy.reload();
-      cy.wait(2000);
+      cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       cy.get(
         `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.averageProcessLength}) :nth-child(2)`
       ).then(node => {
-        expect(parseInt(node.text().trim())).not.to.be.equal(oldValue);
+        expect(node.text().trim()).not.to.be.equal(oldValue);
       });
     });
   });
@@ -101,7 +100,7 @@ describe('uvp reports', () => {
     uvpPage.getUVPmetrics(UVPmetrics.positiveAudit).then(oldValue => {
       // create new document of type "negative Vorprüfung"
       DocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle);
-      cy.reload();
+      cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.positiveAudit}) :nth-child(2)`).then(
         node => {
           expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);

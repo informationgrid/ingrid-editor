@@ -59,12 +59,12 @@ export class uvpPage {
       });
   }
 
-  static getUVPmetrics(category: UVPmetrics): Chainable<number> {
+  static getUVPmetrics(category: UVPmetrics): Chainable<any> {
     return cy
       .get('[label="Kennzahlen"] .mat-column-value')
       .eq(category)
       .then(value => {
-        return parseInt(value.text().trim());
+        return category === UVPmetrics.averageProcessLength ? value.text().trim() : parseInt(value.text().trim());
       });
   }
 
@@ -126,6 +126,12 @@ export class uvpPage {
         })
         .flat()
         .filter((elem: any) => elem !== '');
+    });
+  }
+
+  static tryToAccessFile(id: string, fileName: string, statusCode: 200 | 403) {
+    cy.request({ method: 'GET', url: `/documents-uvp/${id}/${fileName}`, failOnStatusCode: false }).then(response => {
+      expect(response.status).to.equal(statusCode);
     });
   }
 }

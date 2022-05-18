@@ -23,7 +23,7 @@ describe('uvp uploads', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // try to access file attached to unpublished document
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
       // publish document
       DocumentPage.publishNow();
       // make sure download is possible
