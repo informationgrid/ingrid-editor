@@ -3,7 +3,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { UserAndRights } from '../../pages/base.page';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { Address, AddressPage } from '../../pages/address.page';
-import { DashboardPage } from '../../pages/dashboard.page';
+import { DashboardPage, Shortcuts } from '../../pages/dashboard.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { AdminGroupPage } from '../../pages/administration-group.page';
@@ -63,15 +63,16 @@ describe('Meta data administrator without groups', () => {
   it('metadata admin without groups should not be able to create documents', () => {
     // data documents
     DocumentPage.visit();
-    cy.get(DocumentPage.Toolbar.NewFolder).click();
-    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
-    DocumentPage.CreateDialog.cancel();
-    cy.get(DocumentPage.Toolbar.NewDoc).click();
-    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
+    cy.get(DocumentPage.Toolbar.NewFolder).should('be.disabled');
+    cy.get(DocumentPage.Toolbar.NewDoc).should('be.disabled');
     // addresses
     AddressPage.visit();
-    cy.get(DocumentPage.Toolbar.NewFolder).click();
-    cy.get('.error-box').contains('Sie haben keine Schreibrechte auf den Zielordner');
+    cy.get(DocumentPage.Toolbar.NewFolder).should('be.disabled');
+    cy.get(DocumentPage.Toolbar.NewDoc).should('be.disabled');
+    DashboardPage.visit();
+    cy.contains('.shortcut button', Shortcuts.NewFolder).should('be.disabled');
+    cy.contains('.shortcut button', Shortcuts.NewAddress).should('be.disabled');
+    cy.contains('.shortcut button', Shortcuts.NewDataset).should('be.disabled');
   });
 
   it('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
