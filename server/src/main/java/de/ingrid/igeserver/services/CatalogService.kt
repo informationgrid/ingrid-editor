@@ -243,6 +243,7 @@ class CatalogService @Autowired constructor(
     }
 
     val catAdminPermisssions = listOf(
+        Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
         Permissions.manage_users.name,
         Permissions.can_write_root.name,
