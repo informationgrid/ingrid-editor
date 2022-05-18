@@ -72,7 +72,7 @@ export class DocumentPage extends BasePage {
   static visit() {
     cy.intercept({ method: 'GET', url: '/api/tree/children', times: 1 }).as('treeCall');
     cy.visit('form');
-    cy.wait('@treeCall', { timeout: 10000 });
+    cy.wait('@treeCall', { timeout: 15000 });
   }
 
   static visitSingleDoc() {
