@@ -20,6 +20,7 @@ export abstract class OrganisationDoctype extends AddressShared {
       this.addSection("Organisationsdaten", [
         {
           wrappers: ["panel"],
+          key: "organization",
           templateOptions: {
             externalLabel: "Bezeichnung",
             required: true,
