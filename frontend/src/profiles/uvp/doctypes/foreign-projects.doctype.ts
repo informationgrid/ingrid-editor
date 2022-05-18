@@ -31,17 +31,17 @@ export class ForeignProjectsDoctype extends UvpShared {
           limitTypes: ["free"],
           max: 1,
         }),
-        {
-          key: "processingSteps",
-          type: "uvpPhases",
-          fieldArray: {
-            fieldGroup: [
-              this.addPublicDisclosure(),
-              this.addDecisionOfAdmission(),
-            ],
-          },
-        },
       ]),
+      {
+        key: "processingSteps",
+        type: "uvpPhases",
+        fieldArray: {
+          fieldGroup: [
+            this.addPublicDisclosure(),
+            this.addDecisionOfAdmission(),
+          ],
+        },
+      },
     ];
 
   constructor(

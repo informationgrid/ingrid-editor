@@ -68,18 +68,18 @@ export class ApprovalProcedureDoctype extends UvpShared {
                 },
               ],
             }),
-            {
-              key: "processingSteps",
-              type: "uvpPhases",
-              fieldArray: {
-                fieldGroup: [
-                  this.addPublicDisclosure(),
-                  this.addPublicHearing(),
-                  this.addDecisionOfAdmission(),
-                ],
-              },
-            },
           ]),
+          {
+            key: "processingSteps",
+            type: "uvpPhases",
+            fieldArray: {
+              fieldGroup: [
+                this.addPublicDisclosure(),
+                this.addPublicHearing(),
+                this.addDecisionOfAdmission(),
+              ],
+            },
+          },
         ],
       },
     ];

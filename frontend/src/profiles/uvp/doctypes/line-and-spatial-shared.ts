@@ -39,18 +39,18 @@ export class LineAndSpatialShared extends UvpShared {
               codelistId: this.uvpNumberCodelistId,
               asSelect: true,
             }),
-            {
-              key: "processingSteps",
-              type: "uvpPhases",
-              fieldArray: {
-                fieldGroup: [
-                  this.addPublicDisclosure(),
-                  this.addPublicHearing(),
-                  this.addDecisionOfAdmission(),
-                ],
-              },
-            },
           ]),
+          {
+            key: "processingSteps",
+            type: "uvpPhases",
+            fieldArray: {
+              fieldGroup: [
+                this.addPublicDisclosure(),
+                this.addPublicHearing(),
+                this.addDecisionOfAdmission(),
+              ],
+            },
+          },
         ],
       },
     ];
