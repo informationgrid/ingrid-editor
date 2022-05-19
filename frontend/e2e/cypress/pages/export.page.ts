@@ -2,7 +2,7 @@ export class ExportPage {
   static visit() {
     cy.intercept('GET', 'api/tree/children').as('treeCallAddress');
     cy.visit('importExport/export');
-    cy.wait('@treeCallAddress');
+    cy.wait('@treeCallAddress', { timeout: 10000 });
     cy.get('.mat-tab-links a').contains('Export').click();
   }
 

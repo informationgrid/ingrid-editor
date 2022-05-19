@@ -280,7 +280,7 @@ export class ResearchPage {
 
   static waitForSearch() {
     // wait a bit for search to be started and only wait for spinner is gone
-    cy.wait(900);
+    cy.wait(1500);
     cy.get('.mat-spinner').should('not.exist');
   }
 }

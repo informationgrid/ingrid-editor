@@ -260,6 +260,9 @@ describe('General create documents/folders', () => {
       // reload and make sure of ordering
       cy.reload();
       cy.get(addressSelector, { timeout: 10000 }).should('exist');
+      // with slow connection, it happened that name of address was undefined for a moment -> check that address cards are ready
+      cy.contains('ige-address-card', address1, { timeout: 8000 }).should('exist');
+      cy.contains('ige-address-card', address2, { timeout: 8000 }).should('exist');
 
       DocumentPage.checkOfExistingItem(addressSelector + ' .address-card-wrapper', address2, 0);
       DocumentPage.checkOfExistingItem(addressSelector + ' .address-card-wrapper', address1, 1);
