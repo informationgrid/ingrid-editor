@@ -318,8 +318,7 @@ describe('Upload Tests', () => {
     // check existence of download table entry
     cy.contains('[data-cy="Downloads-table"] mat-row', upload);
     // delete
-    cy.get('[data-cy="Downloads-table"] mat-row [svgicon="Mehr"]').click();
-    cy.contains('.mat-menu-panel button', 'Löschen').click();
+    DocumentPage.editRowInDownloadTable('Downloads-table', upload, 'Löschen');
     // check that download table has disappeared
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     DocumentPage.saveDocument();

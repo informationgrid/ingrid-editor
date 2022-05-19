@@ -130,7 +130,7 @@ export class uvpPage {
   }
 
   static tryToAccessFile(id: string, fileName: string, statusCode: 200 | 403) {
-    cy.request({ method: 'GET', url: `/documents-uvp/${id}/${fileName}`, failOnStatusCode: false }).then(response => {
+    cy.request({ method: 'HEAD', url: `/documents-uvp/${id}/${fileName}`, failOnStatusCode: false }).then(response => {
       expect(response.status).to.equal(statusCode);
     });
   }

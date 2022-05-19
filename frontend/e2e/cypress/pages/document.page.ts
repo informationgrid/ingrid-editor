@@ -862,6 +862,18 @@ export class DocumentPage extends BasePage {
         return el.text().trim();
       });
   }
+
+  static editRowInDownloadTable(tableName: string, fileName: string, editAction: 'Löschen' | 'Bearbeiten') {
+    cy.contains(`[data-cy=${tableName}] mat-row`, fileName).within(_ => {
+      cy.get('[svgicon="Mehr"]').click();
+    });
+    cy.contains('.mat-menu-panel button', editAction).click();
+  }
+
+  static editDownloadTableEntry(field: fieldsForDownloadEntry, value: string) {
+    cy.get('ige-form-dialog mat-form-field input').eq(field).type(value);
+    cy.contains('button', 'Ok').click();
+  }
 }
 
 export enum PublishOptions {
@@ -878,4 +890,10 @@ export enum headerElements {
   ID,
   CreationDate,
   EditDate
+}
+
+export enum fieldsForDownloadEntry {
+  Title = 0,
+  Link,
+  ValidUntil
 }
