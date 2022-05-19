@@ -170,7 +170,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       const index = this.data?.findIndex((node) => node._id === doc.id);
 
       // in case we save unsaved changes before leaving the page
-      if (index === undefined) {
+      if (index === undefined || index === -1) {
         return;
       }
 
@@ -178,16 +178,14 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       const wasExpanded = this.data[index].isExpanded;
       this.collapseNode(this.data[index], index);
 
-      if (index !== -1) {
-        const level = this.data[index].level;
-        this.data.splice(index, 1);
-        const updatedNode = this._database.mapDocumentsToTreeNodes(
-          [doc],
-          level
-        )[0];
-        this.insertNodeInTree(updatedNode, updatedNode.parent);
-        if (wasExpanded) this.expandNode(updatedNode);
-      }
+      const level = this.data[index].level;
+      this.data.splice(index, 1);
+      const updatedNode = this._database.mapDocumentsToTreeNodes(
+        [doc],
+        level
+      )[0];
+      this.insertNodeInTree(updatedNode, updatedNode.parent);
+      if (wasExpanded) this.expandNode(updatedNode);
     });
   }
 
