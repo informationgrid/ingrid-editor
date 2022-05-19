@@ -50,10 +50,10 @@ export class PersonDoctype extends AddressShared {
         },
         {
           wrappers: ["panel"],
-          key: "name",
           templateOptions: {
             externalLabel: "Name",
             required: true,
+            contextHelpId: "name",
           },
           fieldGroup: [
             {

@@ -133,6 +133,7 @@ export class FormFieldHelper {
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers,
       templateOptions: {
+        externalLabel: label,
         label: options?.fieldLabel,
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,

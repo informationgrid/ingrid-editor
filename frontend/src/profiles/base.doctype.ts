@@ -140,6 +140,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         } else if (!field.templateOptions.hasInlineContextHelp) {
           field.templateOptions.hasContextHelp = true;
         }
+      } else if (
+        field.templateOptions?.contextHelpId &&
+        this.helpIds.indexOf(field.templateOptions.contextHelpId)
+      ) {
+        field.templateOptions.hasContextHelp = true;
       }
     });
   }

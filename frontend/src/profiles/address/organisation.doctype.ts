@@ -18,26 +18,11 @@ export abstract class OrganisationDoctype extends AddressShared {
   documentFields() {
     return <FormlyFieldConfig[]>[
       this.addSection("Organisationsdaten", [
-        {
-          wrappers: ["panel"],
-          key: "organization",
-          templateOptions: {
-            externalLabel: "Bezeichnung",
-            required: true,
-          },
-          fieldGroup: [
-            {
-              fieldGroupClassName: "",
-              fieldGroup: [
-                this.addInput("organization", null, {
-                  fieldLabel: "Bezeichnung",
-                  required: true,
-                  className: "width-100 organization",
-                }),
-              ],
-            },
-          ],
-        },
+        this.addInput("organization", "Bezeichnung", {
+          required: true,
+          className: "width-100 organization",
+          wrappers: ["panel", "form-field"],
+        }),
       ]),
       this.addSection("Kommunikation", [
         this.addContact(),

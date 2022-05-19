@@ -43,7 +43,7 @@ export class OneColumnWrapperComponent
     this.contextHelpService.showContextHelp(
       this.profile,
       this.docType,
-      this.fieldId,
+      this.fieldId || this.field.templateOptions.contextHelpId,
       this.to.externalLabel,
       infoElement
     );
