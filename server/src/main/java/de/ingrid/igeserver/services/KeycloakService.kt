@@ -404,7 +404,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun filterRoles(roles: List<String>): List<String> {
-        val ignoreRoles = listOf("ige-user", "ige-user-manager", "offline_access", "uma_authorization")
+        val ignoreRoles = listOf("default-roles-ingrid", "ige-user", "ige-user-manager", "offline_access", "uma_authorization")
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
