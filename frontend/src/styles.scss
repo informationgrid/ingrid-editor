@@ -27,6 +27,7 @@ a {
 
   &:hover {
     text-decoration: none;
+    color: lighten($ige-secondary, 20%);
   }
 }
 
@@ -116,6 +117,16 @@ h1 {
 .link-text {
   a:hover {
     color: $ige-primary;
+  }
+}
+
+.clickable-text {
+  cursor: pointer;
+  color: $ige-secondary;
+  //font-weight: 500;
+
+  &:hover {
+    color: lighten($ige-secondary, 20%);
   }
 }
 
