@@ -107,7 +107,7 @@ class IndexingTask @Autowired constructor(
             val exporter = try {
                 indexService.getExporter(category, format)
             } catch (ex: ConfigurationException) {
-                log.warn("No exporter defined for '${format}' and category '${category.value}'")
+                log.debug("No exporter defined for '${format}' and category '${category.value}'")
                 return@categoryLoop
             }
 
