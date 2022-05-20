@@ -65,13 +65,9 @@ export class UvpShared extends BaseDoctype {
         },
         formatter: (link: any, form: FormGroup) => {
           if (link.asLink) {
-            return `<a href="#" target="_blank" class="no-text-transform">${link.value}</a>`;
+            return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
           } else {
-            return `<a href="${
-              this.configService.getConfiguration().backendUrl
-            }upload/${form.root.get("_uuid").value}/${
-              link.uri
-            }" class="no-text-transform">${link.uri}</a>`;
+            return `<span class="clickable-text">${link.uri}</span>`;
           }
         },
       },
