@@ -1,18 +1,10 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
-import { MatSelectionListChange } from "@angular/material/list";
-import { LeafletAreaSelect } from "../../leaflet-area-select";
-import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
+import { LatLng, LatLngBounds, Layer, Map, Rectangle } from "leaflet";
+import "@geoman-io/leaflet-geoman-free";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
 
@@ -22,7 +14,7 @@ import { LeafletService } from "../../leaflet.service";
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
 })
-export class FreeSpatialComponent implements OnInit, OnDestroy {
+export class FreeSpatialComponent implements OnInit {
   @Input() map: Map;
   @Input() initial: SpatialBoundingBox;
   @Input() hideTitle: boolean;
@@ -34,8 +26,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   showNoResult = false;
   showWelcome = true;
 
-  private areaSelect: LeafletAreaSelect = null;
-  drawnBBox: any;
+  drawnBBox: Layer;
   spatialSelection: NominatimResult = null;
 
   constructor(
@@ -54,15 +45,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       this.leafletService.zoomToInitialBox(this.map);
     }
 
-    // avoid wrong change detection
-    setTimeout(() => this.setupAreaSelect());
-  }
-
-  ngOnDestroy() {
-    if (this.areaSelect) {
-      this.areaSelect.clearAllEventListeners();
-      this.areaSelect.remove();
-    }
+    this.addDrawControls();
   }
 
   searchLocation(query: string) {
@@ -113,18 +96,17 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     );
     this.drawBoundingBox(bounds);
 
-    this.map.fitBounds(bounds).once("zoomend", () => {
-      setTimeout(() => this.updateAreaSelectPosition(), 10);
-    });
-    setTimeout(() => this.updateAreaSelectPosition(), 270);
+    this.map.fitBounds(bounds);
   }
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = new Rectangle(latLonBounds, {
-      color: "#ff7800",
-      weight: 1,
-    }).addTo(this.map);
+    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map);
+
+    this.drawnBBox.on("pm:edit", (e) =>
+      // @ts-ignore
+      this.updateSelectedArea(e.layer.getBounds())
+    );
   }
 
   private removeDrawnBoundingBox() {
@@ -135,19 +117,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupAreaSelect() {
-    const box = this.drawnBBox ? this.drawnBBox._path.getBBox() : null;
-    if (box) {
-      this.areaSelect = new LeafletAreaSelect(box);
-    } else {
-      this.areaSelect = new LeafletAreaSelect({ width: 50, height: 50 });
-    }
-    this.areaSelect.on("change", () => this.updateSelectedArea());
-    this.areaSelect.addTo(this.map);
-  }
-
-  private updateSelectedArea() {
-    const bounds = this.areaSelect.getBounds();
+  private updateSelectedArea(bounds: LatLngBounds) {
     this.result.next({
       lat1: bounds.getSouthWest().lat,
       lon1: bounds.getSouthWest().lng,
@@ -156,10 +126,32 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateAreaSelectPosition() {
-    if (this.drawnBBox) {
-      const box = this.drawnBBox._path.getBBox();
-      this.areaSelect.setDimensions(box);
-    }
+  private addDrawControls() {
+    this.map.pm.addControls({
+      position: "topleft",
+      drawCircle: false,
+      drawMarker: false,
+      drawPolygon: false,
+      drawText: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
+      cutPolygon: false,
+      rotateMode: false,
+    });
+    this.map.pm.setLang("de");
+
+    this.map.on("pm:drawstart", () => {
+      this.removeDrawnBoundingBox();
+    });
+
+    this.map.on("pm:create", (createEvent) => {
+      this.drawnBBox = createEvent.layer;
+      // @ts-ignore
+      this.updateSelectedArea(createEvent.layer.getBounds());
+      createEvent.layer.on("pm:edit", (editEvent) => {
+        // @ts-ignore
+        this.updateSelectedArea(editEvent.layer.getBounds());
+      });
+    });
   }
 }
