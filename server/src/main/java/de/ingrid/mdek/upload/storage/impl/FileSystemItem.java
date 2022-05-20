@@ -167,8 +167,10 @@ public class FileSystemItem implements StorageItem {
         Path realPath = storage.getRealPath(catalog, document, relativePath, storage.getDocsDir());
         if (this.state == Scope.UNSAVED) realPath = storage.getUnsavedPath(catalog, user, document, relativePath, storage.getDocsDir());
         else if (this.state == Scope.UNPUBLISHED) realPath = storage.getUnpublishedPath(catalog, document, relativePath, storage.getDocsDir());
-        else if (this.state == Scope.ARCHIVED) realPath = storage.getArchivePath(catalog, document, relativePath, storage.getDocsDir());
-        else if (this.state == Scope.TRASH) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir());
+        else if (this.state == Scope.ARCHIVED) realPath = storage.getArchivePath(catalog, document, relativePath, storage.getDocsDir(), Scope.PUBLISHED);
+        else if (this.state == Scope.ARCHIVED_UNPUBLISHED) realPath = storage.getArchivePath(catalog, document, relativePath, storage.getDocsDir(), Scope.UNPUBLISHED);
+        else if (this.state == Scope.TRASH) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir(), Scope.PUBLISHED);
+        else if (this.state == Scope.TRASH_UNPUBLISHED) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir(), Scope.UNPUBLISHED);
         return realPath;
     }
 
