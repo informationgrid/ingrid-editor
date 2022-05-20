@@ -130,7 +130,11 @@ export class uvpPage {
   }
 
   static tryToAccessFile(id: string, fileName: string, statusCode: 200 | 403) {
-    cy.request({ method: 'HEAD', url: `/documents-uvp/${id}/${fileName}`, failOnStatusCode: false }).then(response => {
+    cy.request({
+      method: 'HEAD',
+      url: `${Cypress.config('baseUrl')}/documents-uvp/${id}/${fileName}`,
+      failOnStatusCode: false
+    }).then(response => {
       expect(response.status).to.equal(statusCode);
     });
   }

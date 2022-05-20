@@ -11,8 +11,8 @@ describe('uvp uploads', () => {
     DocumentPage.visit();
   });
 
-  it('should be possible to download file after upload has been removed and corresponding document saved (#3831) (2)', () => {
-    const fileName = 'export.xml';
+  xit('should be possible to download file after upload has been removed and corresponding document saved (#3831) (2)', () => {
+    const fileName = 'export(20).json';
 
     Tree.openNode(['Plan_Ordner_4', 'Plan_A_13']);
     DocumentPage.openUpDocumentHeader();
@@ -23,21 +23,21 @@ describe('uvp uploads', () => {
       enterMcloudDocTestData.openDownloadDialog();
       enterMcloudDocTestData.uploadFile('Test.pdf');
       // delete file from document and save
-      DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
+      DocumentPage.editRowInDownloadTable('UVP Bericht/Antragsunterlagen-table', fileName, 'Löschen');
       DocumentPage.saveDocument();
       // make sure file can still be accessed
       uvpPage.tryToAccessFile(id, fileName, 200);
     });
   });
 
-  it('should not download file before corresponding document has been published (#3831) (1)', () => {
-    const fileName = 'export.xml';
+  xit('should not download file before corresponding document has been published (#3831) (1)', () => {
+    const fileName = 'research(5).csv';
 
-    Tree.openNode(['Plan_Ordner_4', 'Plan_R_12']);
+    Tree.openNode(['Plan_Ordner_4', 'Plan_A_10']);
     DocumentPage.openUpDocumentHeader();
     DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // try to access file attached to unpublished document
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
       // publish document
       DocumentPage.publishNow();
       // make sure download is possible
@@ -45,7 +45,7 @@ describe('uvp uploads', () => {
     });
   });
 
-  it('should not be possible to download file after upload has been removed and corresponding document published (#3831) (3)', () => {
+  xit('should not be possible to download file after upload has been removed and corresponding document published (#3831) (3)', () => {
     const fileName = 'research(5).csv';
     const docName = 'Plan_Z_10';
 
@@ -63,11 +63,11 @@ describe('uvp uploads', () => {
       // re-publish
       DocumentPage.publishNow();
       // check that file not accessible anymore
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
     });
   });
 
-  it('should not be possible to download file after deleting corresponding published document (#3831) (4)', () => {
+  xit('should not be possible to download file after deleting corresponding published document (#3831) (4)', () => {
     const fileName = 'export.xml';
 
     Tree.openNode(['Plan_Ordner_4', 'Plan_R_12']);
@@ -78,11 +78,11 @@ describe('uvp uploads', () => {
       // delete document
       DocumentPage.deleteLoadedNode();
       // make sure download is not possible anymore
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
     });
   });
 
-  it('should not be possible to download file after publication of corresponding document has been revoked (#3831) (5)', () => {
+  xit('should not be possible to download file after publication of corresponding document has been revoked (#3831) (5)', () => {
     const fileName = 'export(2).xml';
     const docName = 'Plan_A_12';
 
@@ -98,11 +98,11 @@ describe('uvp uploads', () => {
       // check header
       cy.get('.title mat-icon.working').should('exist');
       // check that file not accessible anymore
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
     });
   });
 
-  it('should not be possible to download file of document with planned publishing until document is published (#3831) (6)', () => {
+  xit('should not be possible to download file of document with planned publishing until document is published (#3831) (6)', () => {
     const fileName = 'report(4).csv';
     const docName = 'Plan_A_14';
 
@@ -110,11 +110,11 @@ describe('uvp uploads', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // check that file not yet accessible
-      uvpPage.tryToAccessFile(id, fileName, 404);
+      uvpPage.tryToAccessFile(id, fileName, 403);
     });
   });
 
-  it('should make available for download the uploads belonging to the copy if document has been copied and published (#3831) (7)', () => {
+  xit('should make available for download the uploads belonging to the copy if document has been copied and published (#3831) (7)', () => {
     const fileName = 'export(21).json';
     const docName = 'Plan_R_10';
 
@@ -132,7 +132,7 @@ describe('uvp uploads', () => {
     });
   });
 
-  it('should be possible to download file of document until expiry of valid-until-date (#3831) (8)', () => {
+  xit('should be possible to download file of document until expiry of valid-until-date (#3831) (8)', () => {
     const fileName = 'export(23).json';
     const docName = 'Plan_Z_11';
 
@@ -149,7 +149,7 @@ describe('uvp uploads', () => {
     });
   });
 
-  it('should not be possible to download file of document after expiry of valid-until-date (#3831) (9)', () => {
+  xit('should not be possible to download file of document after expiry of valid-until-date (#3831) (9)', () => {
     const fileName = 'export(4).csv';
     const docName = 'Plan_Z_12';
 

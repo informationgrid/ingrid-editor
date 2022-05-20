@@ -864,7 +864,7 @@ export class DocumentPage extends BasePage {
   }
 
   static editRowInDownloadTable(tableName: string, fileName: string, editAction: 'Löschen' | 'Bearbeiten') {
-    cy.contains(`[data-cy=${tableName}] mat-row`, fileName).within(_ => {
+    cy.contains(`[data-cy="${tableName}"] mat-row`, fileName).within(_ => {
       cy.get('[svgicon="Mehr"]').click();
     });
     cy.contains('.mat-menu-panel button', editAction).click();

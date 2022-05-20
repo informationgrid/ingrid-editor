@@ -68,7 +68,7 @@ export class CopyCutUtils {
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
-        cy.get('#sidebar div.label:contains(' + targetNodePath[i + 1] + ')', { timeout: 500 });
+        cy.get('#sidebar div.label:contains(' + targetNodePath[i + 1] + ')', { timeout: 5000 });
       }
     });
 
