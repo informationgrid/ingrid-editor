@@ -1054,3 +1054,41 @@ mat-icon.wide-icon-26px {
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
 }
+
+.info-menu {
+  &.mat-menu-panel {
+    max-width: 350px;
+  }
+
+  .mat-card-title {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .mat-menu-item {
+    font-size: 16px;
+    color: $ige-text-color;
+    height: 44px;
+  }
+
+  a.mat-menu-item {
+    text-transform: unset;
+  }
+
+  .category-item {
+    color: $ige-hint-color;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .category-item ~ .category-item {
+    padding-top: 16px;
+  }
+
+  .versioninfo {
+    color: $ige-hint-color;
+    font-size: 14px;
+    line-height: 18px;
+    padding: 16px;
+  }
+}
