@@ -220,7 +220,7 @@ export class CodelistService {
     });
   }
 
-  observe(codelistId: string) {
+  observe(codelistId: string): Observable<SelectOptionUi[]> {
     const alreadyInQueue = this.queue.some((item) => item === codelistId);
     const alreadyInStore =
       this.codelistQuery.getCatalogCodelist(codelistId) ||

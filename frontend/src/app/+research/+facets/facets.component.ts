@@ -19,8 +19,13 @@ import {
   FormGroup,
   NG_VALUE_ACCESSOR,
 } from "@angular/forms";
-import { BehaviorSubject } from "rxjs";
-import { filter, take } from "rxjs/operators";
+import { BehaviorSubject, Observable } from "rxjs";
+import { filter, map, take, tap } from "rxjs/operators";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../services/codelist/codelist.service";
+import { BehaviourService } from "../../services/behavior/behaviour.service";
 
 export interface FacetUpdate {
   model: any;
@@ -74,6 +79,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   leafletReference: L.Map;
   notExpanded: any = {};
   location: SpatialLocation;
+
+  codelistOptions: { [x: string]: Observable<SelectOptionUi[]> } = {};
+
   private _forAddresses = false;
   private allFacets: Facets;
   private boxes: Rectangle[];
@@ -93,7 +101,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private leafletService: LeafletService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public codelistService: CodelistService,
+    private behaviourService: BehaviourService
   ) {}
 
   ngOnInit(): void {
@@ -163,8 +173,36 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           return prev;
         }, {});
         this.form.addControl(group.id, this.fb.group(groupControls));
+
+        this.handleCodelistForSelect(group);
       }
     });
+  }
+
+  private handleCodelistForSelect(group: FacetGroup) {
+    let codelistId = group.filter[0].codelistId;
+    if (codelistId) {
+      this.codelistOptions[group.id] = this.codelistService.observe(codelistId);
+    } else {
+      let behaviourId = group.filter[0].codelistIdFromBehaviour;
+      if (behaviourId) {
+        const behaviourAndField = behaviourId.split("::");
+        this.behaviourService
+          .getBehaviour(behaviourAndField[0])
+          .pipe(
+            map(
+              (behaviour) =>
+                behaviour?.data?.[behaviourAndField[1]] ?? behaviourAndField[2]
+            )
+          )
+          .subscribe(
+            (id) =>
+              (this.codelistOptions[group.id] = this.codelistService
+                .observe(id)
+                .pipe(tap((val) => console.log("HEY", val))))
+          );
+      }
+    }
   }
 
   showSpatialDialog(location: SpatialLocation = null) {

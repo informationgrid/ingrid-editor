@@ -148,15 +148,32 @@
         >
             <mat-form-field appearance="outline">
                 <mat-select
-                    formControlName="selectProcedureType"
-                    *transloco="let t; read: 'procedureType'"
+                    [formControlName]="group.filter[0].id"
+                    *transloco="let t; read: group.id"
                 >
                     <mat-option value="">- keine Auswahl -</mat-option>
-                    <mat-option
-                        *ngFor="let value of group.filter[0].parameters"
-                        [value]="value"
-                        >{{ t(value) }}</mat-option
+                    <ng-container
+                        *ngIf="
+                            group.filter[0].codelistId ||
+                                group.filter[0].codelistIdFromBehaviour;
+                            else selectWithParameters
+                        "
                     >
+                        <mat-option
+                            *ngFor="
+                                let item of codelistOptions[group.id] | async
+                            "
+                            [value]="item.value"
+                            >{{ item.label }}</mat-option
+                        >
+                    </ng-container>
+                    <ng-template #selectWithParameters>
+                        <mat-option
+                            *ngFor="let value of group.filter[0].parameters"
+                            [value]="value"
+                            >{{ t(value) }}</mat-option
+                        >
+                    </ng-template>
                 </mat-select>
             </mat-form-field>
         </div>

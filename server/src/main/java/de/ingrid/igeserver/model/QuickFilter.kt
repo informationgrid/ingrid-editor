@@ -10,6 +10,11 @@ abstract class QuickFilter {
     @get:JsonIgnore
     abstract val filter: String
 
+    open val codelistId: String? = null
+    
+    // in case the codelist ID is catalog specific stored in a behaviour
+    // format: <behaviourId>::<field>::<defaultValue>
+    open val codelistIdFromBehaviour: String? = null
 
     open fun filter(parameter: List<*>? = null): String = this.filter
 

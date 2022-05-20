@@ -19,6 +19,8 @@ export interface QuickFilter {
   label: string;
   implicitFilter: string[];
   parameters: any[];
+  codelistId?: string;
+  codelistIdFromBehaviour?: string;
 }
 
 export interface Facets {
