@@ -31,7 +31,13 @@ export interface FacetGroup {
   label: string;
   filter: QuickFilter[];
   combine: "AND" | "OR";
-  viewComponent: "CHECKBOX" | "RADIO" | "DOC_ADDRESS" | "SPATIAL" | "TIMESPAN";
+  viewComponent:
+    | "CHECKBOX"
+    | "RADIO"
+    | "DOC_ADDRESS"
+    | "SPATIAL"
+    | "TIMESPAN"
+    | "SELECT";
 }
 
 export class ResearchResponse {

@@ -139,5 +139,26 @@
                 </mat-form-field>
             </div>
         </div>
+
+        <div
+            *ngIf="group.viewComponent === 'SELECT'"
+            [class.invisible]="notExpanded[group.id]"
+            fxLayout="column"
+            fxLayoutGap="10px"
+        >
+            <mat-form-field appearance="outline">
+                <mat-select
+                    formControlName="selectProcedureType"
+                    *transloco="let t; read: 'procedureType'"
+                >
+                    <mat-option value="">- keine Auswahl -</mat-option>
+                    <mat-option
+                        *ngFor="let value of group.filter[0].parameters"
+                        [value]="value"
+                        >{{ t(value) }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+        </div>
     </div>
 </div>

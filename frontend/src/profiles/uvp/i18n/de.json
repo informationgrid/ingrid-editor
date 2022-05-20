@@ -7,5 +7,12 @@
   "dashboard": {
     "welcome": "Willkommen im UVP Editor",
     "application": "UVP"
+  },
+  "procedureType": {
+    "UvpSpatialPlanningProcedureDoc": "Raumbezugsverfahren",
+    "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
+    "UvpLineDeterminationDoc": "Linienbestimmung",
+    "UvpForeignProjectDoc": "Ausländische Vorhaben",
+    "UvpApprovalProcedureDoc": "Zulassungsverfahren"
   }
 }

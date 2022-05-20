@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.model
 
 enum class ViewComponent {
-    CHECKBOX, RADIO, SPATIAL, TIMESPAN
+    CHECKBOX, RADIO, SPATIAL, TIMESPAN, SELECT
 }
 
 enum class Operator {

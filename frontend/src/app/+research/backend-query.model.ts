@@ -85,6 +85,8 @@ export class BackendQuery {
       case "SPATIAL":
         const spatial = groupValue[facetGroup.filter[0].id].value;
         return [spatial.lat1, spatial.lon1, spatial.lat2, spatial.lon2];
+      case "SELECT":
+        return [groupValue[activeItemsFromGroup[0]]];
       default:
         return groupValue[activeItemsFromGroup[0]].value;
     }
