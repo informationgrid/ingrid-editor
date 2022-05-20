@@ -129,13 +129,17 @@ export class uvpPage {
     });
   }
 
-  static tryToAccessFile(id: string, fileName: string, statusCode: 200 | 403) {
+  static tryToAccessFile(id: string, fileName: string, status: 'success' | 'failure') {
     cy.request({
       method: 'HEAD',
       url: `${Cypress.config('baseUrl')}/documents-uvp/${id}/${fileName}`,
       failOnStatusCode: false
     }).then(response => {
-      expect(response.status).to.equal(statusCode);
+      if (status === 'success') {
+        expect(response.status).to.equal(200);
+      } else {
+        expect(response.status).to.be.within(403, 404);
+      }
     });
   }
 }
