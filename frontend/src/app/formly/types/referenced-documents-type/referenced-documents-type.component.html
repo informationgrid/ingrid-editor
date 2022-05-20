@@ -1,5 +1,5 @@
 <button
-    mat-button
+    mat-stroked-button
     class="toggle-ref-docs-btn"
     (click)="toggleList()"
     color="primary"
@@ -9,18 +9,19 @@
 
 <ng-container *ngIf="showReferences">
     <mat-paginator
-        *ngIf="totalHits > 0; else emptyRefs"
+        *ngIf="totalHits > pageSize"
         [length]="totalHits"
         [pageSize]="pageSize"
         [hidePageSize]="true"
         (page)="switchPage($event)"
     ></mat-paginator>
 
-    <ng-template #emptyRefs>
-        <p>Es existieren keine Referenzen auf diese Adresse</p>
-    </ng-template>
+    <p *ngIf="totalHits === 0">
+        Es existieren keine Referenzen auf diese Adresse
+    </p>
 
     <ige-document-list-item
+        #list
         [docs]="docs"
         [removeSelectionAfter]="true"
         (select)="openReference($event)"

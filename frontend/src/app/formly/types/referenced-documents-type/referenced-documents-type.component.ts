@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
 import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
@@ -7,6 +7,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { PageEvent } from "@angular/material/paginator";
+import { DocEventsService } from "../../../services/event/doc-events.service";
+import { merge } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -18,6 +20,14 @@ export class ReferencedDocumentsTypeComponent
   extends FieldType
   implements OnInit
 {
+  private referencesElement: ElementRef<HTMLElement>;
+
+  @ViewChild("list", { read: ElementRef }) set listElement(
+    content: ElementRef<HTMLElement>
+  ) {
+    if (content) this.referencesElement = content;
+  }
+
   pageSize = 10;
 
   docs: DocumentAbstract[];
@@ -42,46 +52,57 @@ export class ReferencedDocumentsTypeComponent
   constructor(
     private router: Router,
     private researchService: ResearchService,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private docEvents: DocEventsService
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.form.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        map((value) => value._uuid),
-        distinctUntilChanged(),
-        tap((uuid) => (this.currentUuid = uuid)),
-        filter(() => this.showReferences)
-      )
-      .subscribe((uuid) => this.searchReferences(uuid));
+    const loadEvent = this.docEvents.afterLoadAndSet$(true).pipe(
+      untilDestroyed(this),
+      map((value) => value._uuid),
+      distinctUntilChanged(),
+      tap((uuid) => (this.currentUuid = uuid))
+    );
 
-    this.documentService.reload$
+    const reloadEvent = this.documentService.reload$.pipe(
+      untilDestroyed(this),
+      map((item) => item.uuid)
+    );
+
+    merge(loadEvent, reloadEvent)
       .pipe(
         untilDestroyed(this),
         filter(() => this.showReferences),
-        map((item) => item.uuid)
+        distinctUntilChanged(),
+        tap(() => (this.docs = []))
       )
-      .subscribe((uuid) => this.searchReferences(uuid));
+      .subscribe((uuid) => this.searchReferences(uuid).subscribe());
+
+    this.currentUuid = this.form.value._uuid;
   }
 
   searchReferences(uuid: string, page = 1) {
-    this.researchService
+    return this.researchService
       .searchBySQL(this.prepareSQL(uuid), page, this.pageSize)
       .pipe(
         tap((response) => (this.totalHits = response.totalHits)),
         map((response) =>
           this.documentService.mapToDocumentAbstracts(response.hits)
-        )
-      )
-      .subscribe((docs) => (this.docs = docs));
+        ),
+        tap((docs) => (this.docs = docs))
+      );
   }
 
   toggleList() {
     this.showReferences = !this.showReferences;
-    this.searchReferences(this.currentUuid);
+    if (this.showReferences) {
+      this.docs = [];
+      this.searchReferences(this.currentUuid).subscribe(() =>
+        setTimeout(() => this.referencesElement.nativeElement.scrollIntoView())
+      );
+    }
   }
 
   openReference(doc: DocumentAbstract) {
@@ -95,6 +116,9 @@ export class ReferencedDocumentsTypeComponent
   }
 
   switchPage(pageEvent: PageEvent) {
-    this.searchReferences(this.currentUuid, pageEvent.pageIndex + 1);
+    this.searchReferences(
+      this.currentUuid,
+      pageEvent.pageIndex + 1
+    ).subscribe();
   }
 }
