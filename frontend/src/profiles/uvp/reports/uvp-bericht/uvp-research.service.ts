@@ -107,7 +107,7 @@ export class UvpResearchService {
 
   private initUvpNumber() {
     this.behaviourService
-      .getBehaviour("plugin.uvp.uvp-number")
+      .getBehaviour("plugin.uvp.eia-number")
       .pipe(
         map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000),
         switchMap((id) => this.codelistQuery.selectEntity(id)),

@@ -317,7 +317,7 @@ export class UvpShared extends BaseDoctype {
 
   setUvpCodelistId() {
     return this.behaviourService
-      .getBehaviour("plugin.uvp.uvp-number")
+      .getBehaviour("plugin.uvp.eia-number")
       .pipe(map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000))
       .toPromise()
       .then((id) => (this.uvpNumberCodelistId = id));

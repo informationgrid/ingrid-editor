@@ -2,7 +2,7 @@ import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 
 export class UvpNumberBehaviour extends Plugin {
-  id = "plugin.uvp.uvp-number";
+  id = "plugin.uvp.eia-number";
   name = "UVP Nummer (Codelist-Kategorie)";
   description =
     "Auswahl der Codeliste für die Anzeige der UVP-Nummern. Bitte nach Änderung der Option die Seite neu laden.";
