@@ -20,7 +20,11 @@
 .result-wrapper {
   display: flex;
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
+
+  .list-wrapper {
+    overflow: auto;
+  }
 }
 
 .mat-form-field {

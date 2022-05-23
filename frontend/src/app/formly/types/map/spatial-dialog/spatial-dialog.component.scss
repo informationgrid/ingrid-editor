@@ -6,11 +6,17 @@
   .mat-dialog-content {
     display: flex;
     flex-direction: column;
-    max-height: none;
   }
 
   .spatial-wrapper {
     flex: 1;
     overflow: hidden;
   }
+}
+
+.map {
+  min-height: 400px;
+  height: 100%;
+  width: 100%;
+  min-width: 400px;
 }

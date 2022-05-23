@@ -165,7 +165,6 @@ export class LeafletTypeComponent
         disableClose: true,
         maxWidth: 1260,
         minWidth: 600,
-        // minHeight: '85vh',
         data: {
           ...this.locations[locationIndex],
           limitTypes: this.to.limitTypes,
