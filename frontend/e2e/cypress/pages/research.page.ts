@@ -89,7 +89,7 @@ export class ResearchPage {
 
   //check first radio button, only if a list with suggestions is offered
   static chooseFirstLocationSuggestionByRadioButton(): void {
-    cy.get('mat-list.mat-list-base mat-list-item:nth-child(1)').click();
+    cy.get('mat-list.mat-list-base mat-list-item:nth-child(1) mat-radio-button ').click();
   }
 
   static createSpatialReference(location?: string, title?: string): void {
