@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
@@ -9,6 +10,7 @@ import de.ingrid.igeserver.model.ExportMethod
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -18,12 +20,11 @@ import java.io.ByteArrayOutputStream
 @Service
 class ExportService @Autowired constructor(val exporterFactory: ExporterFactory) {
 
+    private val log = logger()
+    
     @Autowired
     @Lazy
     private lateinit var documentService: DocumentService
-
-    @Autowired(required = false)
-    private lateinit var postProcessors: Array<ExportPostProcessors>
 
     fun getExporter(category: DocumentCategory, format: String): IgeExporter =
         exporterFactory.getExporter(category, format)
@@ -82,12 +83,19 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         doc: DocumentWrapper,
         catalogId: String
     ): String {
-        val docOptions = UpdateReferenceOptions(!options.useDraft, true)
-        val docVersion = documentService.getLatestDocument(doc, docOptions, catalogId = catalogId)
-
-        val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-        val result = exporter.run(docVersion, catalogId)
-        return if (result is ObjectNode) result.toPrettyString() else result as String
+        return try {
+            val docOptions = UpdateReferenceOptions(!options.useDraft, true)
+            val docVersion = documentService.getLatestDocument(doc, docOptions, catalogId = catalogId)
+            val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
+            val result = exporter.run(docVersion, catalogId)
+            if (result is ObjectNode) result.toPrettyString() else result as String
+        } catch (ex: NotFoundException) {
+            if (options.useDraft) {
+                throw ex
+            }
+            log.info("No published version of ${doc.uuid} found. Will not be exported.")
+            ""
+        }
     }
 
     private fun handleWithSubDocuments(

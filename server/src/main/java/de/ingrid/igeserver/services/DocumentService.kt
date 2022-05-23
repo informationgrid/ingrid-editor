@@ -336,15 +336,14 @@ class DocumentService @Autowired constructor(
     // TODO: refactor since removeInternalFields does almost the same, find out difference and why
     fun removeInternalFieldsForImport(json: ObjectNode) {
         listOf(
-            FIELD_ID,
+//            FIELD_ID,
             FIELD_VERSION,
 //            FIELD_CREATED,
 //            FIELD_MODIFIED,
             FIELD_STATE,
             FIELD_HAS_CHILDREN,
             "hasWritePermission",
-            "hasOnlySubtreeWritePermission",
-            "_wrapperId"
+            "hasOnlySubtreeWritePermission"
         ).forEach { json.remove(it) }
     }
 
