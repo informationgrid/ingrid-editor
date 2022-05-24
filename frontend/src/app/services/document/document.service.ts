@@ -264,6 +264,7 @@ export class DocumentService {
       tap((doc) =>
         this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
       ),
+      tap((doc) => store.upsert(doc[0].id, doc[0])),
       tap(() =>
         this.messageService.sendInfo(
           "Die Veröffentlichung wurde zurückgezogen."
