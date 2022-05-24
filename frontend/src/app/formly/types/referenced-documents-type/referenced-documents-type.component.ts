@@ -41,7 +41,7 @@ export class ReferencedDocumentsTypeComponent
                      WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
                      ELSE document_wrapper.draft = document1.id
                      END
-                 WHERE jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceField>')
+                 WHERE document_wrapper.deleted = 0 AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceField>')
                    AND EXISTS(SELECT
                               FROM jsonb_array_elements(data -> '<referenceField>') as s
                               WHERE (s -> 'ref') = '"<uuid>"')`;
@@ -75,7 +75,6 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         untilDestroyed(this),
         filter(() => this.showReferences),
-        distinctUntilChanged(),
         tap(() => (this.docs = []))
       )
       .subscribe((uuid) => this.searchReferences(uuid).subscribe());
