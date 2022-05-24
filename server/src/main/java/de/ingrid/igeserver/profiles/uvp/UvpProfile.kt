@@ -8,6 +8,7 @@ import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
+import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
 import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
@@ -69,6 +70,12 @@ class UvpProfile @Autowired constructor(
             FacetGroup(
                 "eiaNumber", "UVP Nummer", arrayOf(
                     EIANumber()
+                ),
+                viewComponent = ViewComponent.SELECT
+            ),
+            FacetGroup(
+                "processStep", "Verfahrensschritt", arrayOf(
+                    ProcessStep()
                 ),
                 viewComponent = ViewComponent.SELECT
             )

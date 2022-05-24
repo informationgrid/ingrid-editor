@@ -14,5 +14,10 @@
     "UvpLineDeterminationDoc": "Linienbestimmung",
     "UvpForeignProjectDoc": "Ausländische Vorhaben",
     "UvpApprovalProcedureDoc": "Zulassungsverfahren"
+  },
+  "processStep": {
+    "publicDisclosure": "Öffentliche Auslegung",
+    "decisionOfAdmission": "Entscheidung über die Zulassung",
+    "publicHearing": "Erörterungstermin"
   }
 }
