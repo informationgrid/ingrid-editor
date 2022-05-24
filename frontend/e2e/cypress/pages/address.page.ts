@@ -192,6 +192,13 @@ export class AddressPage extends DocumentPage {
   static openActionMenu() {
     cy.get('[data-cy="more-actions"]').click();
   }
+
+  static submitReplaceAddress() {
+    cy.get('[data-cy="dialog-replace-address"]').click();
+  }
+  static openReferencedDocumentsSection() {
+    cy.get('[data-cy="Zugeordnete Datensätze"] button').click();
+  }
 }
 
 export enum addressType {

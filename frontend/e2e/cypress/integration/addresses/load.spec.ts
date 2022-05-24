@@ -91,4 +91,33 @@ describe('Load addresses', () => {
     cy.get('[data-cy="more-actions"]').should('not.exist');
     cy.logoutClearCookies();
   });
+
+  it('should replace address contains referenced documents with another address #3811', () => {
+    // open second address and make sure that it does contains any referenced documents
+    Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
+    AddressPage.openReferencedDocumentsSection();
+    cy.get('[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type p').contains(
+      'Es existieren keine Referenzen auf diese Adresse'
+    );
+
+    // open the first address and check for referenced documents
+    Tree.openNode(['Folder_for_replace_address_test', 'first-address-with-reference-data']);
+    cy.get(
+      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
+    ).contains('document_for_replace_address');
+
+    // replace the first address with the second
+    AddressPage.openActionMenu();
+    AddressPage.openReplaceAddressDialog();
+    Tree.openNodeInsideDialog(['Folder_for_replace_address_test', 'second-empty-address']);
+    AddressPage.submitReplaceAddress();
+    cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
+    cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
+
+    // make sure the documents changed
+    Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
+    cy.get(
+      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
+    ).contains('document_for_replace_address');
+  });
 });
