@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.tasks
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -83,18 +85,28 @@ class PostMigrationTask(
 
     private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
+
+
         val auth = SecurityContextHolder.getContext().authentication
 
         // root Addresses which aren't organizations are free addresses
-        documentService.findChildrenDocs(
+        val freeAddresses = documentService.findChildrenDocs(
             catalogIdentifier,
             null,
             isAddress = true
-        ).hits.filter { "UvpAddressDoc" == it.type!! }.forEach {
+        ).hits.filter { "UvpAddressDoc" == it.type!! }
+
+        if (freeAddresses.isEmpty()) return;
+
+        val rootFolderId = createFreeAddressFolder(catalogIdentifier)
+        freeAddresses.forEach {
             val doc = documentService.getLatestDocument(it, resolveLinks = false)
             val organization = doc.data.get("organization").asText()
+
             if (organization.isNullOrEmpty()) {
                 // free address without organization. no action needed
+                it.path = listOf(rootFolderId.toString())
+                it.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
                 return
             } else {
                 //{"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
@@ -104,7 +116,13 @@ class PostMigrationTask(
                     .putNull("_parent")
                     .put("title", organization)
                     .put("organization", organization)
-                val organizationDoc = documentService.createDocument(auth as Principal, catalogIdentifier, organizationData, null, address = true)
+                val organizationDoc = documentService.createDocument(
+                    auth as Principal,
+                    catalogIdentifier,
+                    organizationData,
+                    rootFolderId,
+                    address = true
+                )
                 val parentId = organizationDoc.get("_id").asInt()
 
                 it.path = listOf(parentId.toString())
@@ -116,14 +134,50 @@ class PostMigrationTask(
         }
     }
 
+    private fun createFreeAddressFolder(catalogIdentifier: String): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        val folderData = jacksonObjectMapper().createObjectNode()
+            .put("_type", "FOLDER")
+            .putNull("_parent")
+            .put("title", "Freie Adressen")
+        val folderDoc =
+            documentService.createDocument(auth as Principal, catalogIdentifier, folderData, null, true)
+        documentService.docWrapperRepo.flush()
+        return folderDoc.get("_id").asInt()
+    }
+
     private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
         documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
-            log.info("Migrate document: ${doc.id}")
+            log.debug("Migrate document: ${doc.id}")
             migratePath(doc)
         }
 
+        removeOldStructure(catalogIdentifier)
+        // save all groups again to update transferred rights
+        saveAllGroupsOfCatalog(catalogIdentifier)
     }
+
+    private fun removeOldStructure(catalogIdentifier: String) {
+        listOf(
+            "Ausländische Vorhaben",
+            "Vorgelagerte Verfahren",
+            "Zulassungsverfahren",
+            "Vorprüfungen, negativ"
+        ).forEach { title ->
+            val oldldBaseFolder = documentService.findChildren(
+                catalogIdentifier,
+                null
+            ).hits.find { documentService.getLatestDocument(it, resolveLinks = false).title == title }
+            val auth = SecurityContextHolder.getContext().authentication
+            if (oldldBaseFolder != null) documentService.deleteDocument(
+                auth as Principal,
+                catalogIdentifier,
+                oldldBaseFolder.id!!.toString()
+            )
+        }
+    }
+
 
     private fun migratePath(doc: DocumentWrapper) {
         val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
@@ -139,13 +193,27 @@ class PostMigrationTask(
 
 
         if (doc.type == "FOLDER") {
-            // make sure not folders with the same name are not saved more than once
+            // make sure folders with the same name and path are not saved more than once
             val folderWithSameNameAndPath = documentService.findChildren(
                 doc.catalog!!.identifier,
                 newPath.lastOrNull(),
-            ).hits.find { documentService.getLatestDocument(it, resolveLinks = false).title == documentService.getLatestDocument(doc, resolveLinks = false).title }
+            ).hits.find {
+                documentService.getLatestDocument(
+                    it,
+                    resolveLinks = false
+                ).title == documentService.getLatestDocument(doc, resolveLinks = false).title
+            }
 
             if (folderWithSameNameAndPath != null) {
+                if (doc == folderWithSameNameAndPath) {
+                    // already transferred via parent node. only adjust path
+                    doc.path = newPath.map { it.toString() }
+                    documentService.docWrapperRepo.saveAndFlush(doc)
+                    return
+                } else {
+                    // doc gets replaced by folderWithSameNameAndPath so adjust permission in groups
+                    transferRights(doc, folderWithSameNameAndPath)
+                }
                 return
             }
         }
@@ -154,7 +222,46 @@ class PostMigrationTask(
         doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
         // save
         documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
-        documentService.docWrapperRepo.save(doc)
+        documentService.docWrapperRepo.saveAndFlush(doc)
+    }
+
+    private fun transferRights(sourceDoc: DocumentWrapper, targetDoc: DocumentWrapper) {
+        groupService
+            .getAll(sourceDoc.catalog!!.identifier)
+            .forEach { group ->
+                // if targetDoc already in group only remove sourceDoc. else replace
+                val initialDocs = group.permissions?.documents ?: emptyList()
+                val initialAdr = group.permissions?.addresses ?: emptyList()
+
+                if (initialDocs.any { it.get("id").asInt() == sourceDoc.id!! } || initialAdr.any {
+                        it.get("id").asInt() == sourceDoc.id!!
+                    }) {
+                    group.permissions?.apply {
+                        documents =
+                            if (initialDocs.any { it.get("id").asInt() == targetDoc.id!! })
+                                removeIDinPermissions(sourceDoc.id!!, initialDocs)
+                            else
+                                replaceIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialDocs)
+                        addresses =
+                            if (initialAdr.any { it.get("id").asInt() == targetDoc.id!! })
+                                removeIDinPermissions(sourceDoc.id!!, initialAdr)
+                            else
+                                replaceIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialAdr)
+                    }
+                }
+
+            }
+    }
+
+    private fun replaceIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
+        return permissions.map {
+            val docId = it.get("id").asInt()
+            return@map (it as ObjectNode).put("id", if (docId == sourceId) targetId else docId)
+        }
+    }
+
+    private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> {
+        return permissions.filter { it.get("id").asInt() != sourceId }
     }
 
     private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
