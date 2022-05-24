@@ -113,6 +113,9 @@ describe('Load addresses', () => {
     AddressPage.submitReplaceAddress();
     cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
     cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
+    cy.get('[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type p').contains(
+      'Es existieren keine Referenzen auf diese Adresse'
+    );
 
     // make sure the documents changed
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
