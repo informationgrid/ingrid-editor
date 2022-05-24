@@ -49,7 +49,7 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
 
     override fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = XMLStringOutput()
-        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc), output)
+        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
@@ -97,13 +97,13 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         return exportedObject.toString()
     }
 
-    private fun getMapFromObject(json: Document): Map<String, Any> {
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java),
-                "docInfo" to DocInfo(json.catalog?.identifier!!, json.uuid, config.uploadExternalUrl)
+                "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl)
             )
         )
 
