@@ -1,7 +1,12 @@
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPNumber
+@import de.ingrid.igeserver.profiles.uvp.exporter.DocInfo
+@import java.util.Map
 
-@param UVPModel page
+@param Map<String, Object> map
+
+!{var page = ((UVPModel)map.get("model"));}
+!{var docInfo = ((DocInfo)map.get("docInfo"));}
 
 @template.uvp.template-idf(content = @`
     @template.uvp.shared-general(page = page)
@@ -14,6 +19,6 @@
     <datePeriod type="uvpNegativeApprovalDate">
         <from>${page.getData().getDecisionDate()}</from>
     </datePeriod>
-    @template.uvp.shared-docs(type = "uvpNegativeRelevantDocs", docs = page.getData().getUvpNegativeDecisionDocs())
-    @template.uvp.shared-steps(page = page)
+    @template.uvp.shared-docs(type = "uvpNegativeRelevantDocs", docs = page.getData().getUvpNegativeDecisionDocs(), docInfo = docInfo)
+    @template.uvp.shared-steps(page = page, docInfo = docInfo)
 `)

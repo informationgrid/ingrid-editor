@@ -8,12 +8,14 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.StringReader
@@ -29,7 +31,7 @@ import javax.xml.transform.stream.StreamSource
 
 @Service
 @Profile("uvp")
-class IDFExporter : IgeExporter {
+class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
 
     val log = logger()
 
@@ -47,7 +49,7 @@ class IDFExporter : IgeExporter {
 
     override fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = XMLStringOutput()
-        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc)["model"], output)
+        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
@@ -98,7 +100,12 @@ class IDFExporter : IgeExporter {
     private fun getMapFromObject(json: Document): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
-        return mapOf("model" to mapper.convertValue(json, UVPModel::class.java))
+        return mapOf(
+            "map" to mapOf(
+                "model" to mapper.convertValue(json, UVPModel::class.java),
+                "docInfo" to DocInfo(json.catalog?.identifier!!, json.uuid, config.uploadExternalUrl)
+            )
+        )
 
     }
 }
@@ -114,3 +121,5 @@ private class XMLStringOutput : StringOutput() {
         )
     }
 }
+
+data class DocInfo(val catalogId: String, val uuid: String, val externalUrl: String)

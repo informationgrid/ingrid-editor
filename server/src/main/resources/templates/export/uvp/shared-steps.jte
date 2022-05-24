@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.profiles.uvp.exporter.DocInfo
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.*
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.Step
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicDisclosure
@@ -5,6 +6,7 @@
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepDecisionOfAdmission
 
 @param UVPModel page
+@param DocInfo docInfo
 
 <steps>
     @for(Step step : page.getSteps())
@@ -15,16 +17,16 @@
                     <to>${((StepPublicDisclosure) step).getDisclosureDate().getEnd()}</to>
                 </datePeriod>
                 @if(((StepPublicDisclosure) step).isPublishable("announcementDocs"))
-                    @template.uvp.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs())
+                    @template.uvp.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("applicationDocs"))
-                    @template.uvp.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs())
+                    @template.uvp.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("reportsRecommendationDocs"))
-                    @template.uvp.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs())
+                    @template.uvp.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("furtherDocs"))
-                    @template.uvp.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs())
+                    @template.uvp.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
                 @endif
             </step>
         @elseif (step instanceof StepPublicHearing)
@@ -33,15 +35,15 @@
                     <from>${((StepPublicHearing) step).getPublicHearingDate().getStart()}</from>
                     <to>${((StepPublicHearing) step).getPublicHearingDate().getEnd()}</to>
                 </datePeriod>
-                @template.uvp.shared-docs(type = "considerationDocs", docs = ((StepPublicHearing) step).getConsiderationDocs())
+                @template.uvp.shared-docs(type = "considerationDocs", docs = ((StepPublicHearing) step).getConsiderationDocs(), docInfo = docInfo)
             </step>
         @elseif (step instanceof StepDecisionOfAdmission)
             <step type="phase3">
                 <date>
                     <from>${((StepDecisionOfAdmission) step).getDecisionDate()}</from>
                 </date>
-                @template.uvp.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs())
-                @template.uvp.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs())
+                @template.uvp.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs(), docInfo = docInfo)
+                @template.uvp.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs(), docInfo = docInfo)
             </step>
         @endif
     @endfor

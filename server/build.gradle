@@ -202,6 +202,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 jte {
     sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates", "export")
     contentType = ContentType.Plain
+    trimControlStructures = true
     precompile()
     generate()
 }
