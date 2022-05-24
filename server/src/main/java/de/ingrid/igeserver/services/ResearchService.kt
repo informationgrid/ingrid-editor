@@ -86,7 +86,8 @@ class ResearchService {
         } else {
             val withWildcard = "%" + query.term + "%"
             // third parameter is for uuid search and so must not contain wildcard
-            listOf(withWildcard, withWildcard, query.term)
+            if (checkForTitleSearch(query.clauses)) listOf(withWildcard)
+            else listOf(withWildcard, withWildcard, query.term)
         }
 
         val clauseParameters = query.clauses?.clauses
@@ -123,8 +124,7 @@ class ResearchService {
         val deletedFilter = "document_wrapper.deleted = 0 AND "
         val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
 
-        val termSearch =
-            if (query.term.isNullOrEmpty()) "" else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ? )"
+        val termSearch = convertSearchTerm(query)
 
         val filter = convertQuery(query.clauses)
 
@@ -137,6 +137,30 @@ class ResearchService {
         } else {
             "WHERE $catalogAndPermissionFilter AND $filter AND $termSearch"
         }
+    }
+
+    private fun convertSearchTerm(query: ResearchQuery): String {
+        if (query.term.isNullOrEmpty()) return ""
+
+        val searchOnlyInTitle = checkForTitleSearch(query.clauses)
+        return if (searchOnlyInTitle) "title ILIKE ?"
+        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ? )"
+    }
+
+    private fun checkForTitleSearch(clauses: BoolFilter?): Boolean {
+        if (clauses == null) {
+            return false
+        }
+
+        val filterString: List<Boolean> = if (clauses.clauses != null && clauses.clauses.isNotEmpty()) {
+            clauses.clauses.map { checkForTitleSearch(it) }
+        } else if (clauses.isFacet) {
+            clauses.value
+                ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
+                ?.map { it?.isFieldQuery ?: false } ?: listOf()
+        } else listOf(false)
+
+        return filterString.any { it }
     }
 
     private fun createCatalogFilter(catalogId: String): String {
@@ -165,6 +189,7 @@ class ResearchService {
         } else if (boolFilter.isFacet) {
             boolFilter.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
+                ?.filter { it?.isFieldQuery == false }
                 ?.map { it?.filter(boolFilter.parameter) }
         } else {
             boolFilter.value
@@ -262,7 +287,12 @@ class ResearchService {
         else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
         else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
 
-    fun querySql(principal: Principal, catalogId: String, sqlQuery: String, paging: ResearchPaging = ResearchPaging()): ResearchResponse {
+    fun querySql(
+        principal: Principal,
+        catalogId: String,
+        sqlQuery: String,
+        paging: ResearchPaging = ResearchPaging()
+    ): ResearchResponse {
 
         val isAdmin = authUtils.isAdmin(principal)
         var finalQuery = ""

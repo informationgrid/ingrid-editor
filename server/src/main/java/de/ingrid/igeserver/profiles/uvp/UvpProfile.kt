@@ -8,6 +8,7 @@ import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
+import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
@@ -41,7 +42,8 @@ class UvpProfile @Autowired constructor(
             FacetGroup(
                 "state", "Allgemein", arrayOf(
                     Published(),
-                    ExceptFolders()
+                    ExceptFolders(),
+                    TitleSearch()
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
                 combine = Operator.AND

@@ -10,6 +10,9 @@ abstract class QuickFilter {
     @get:JsonIgnore
     abstract val filter: String
 
+    @get:JsonIgnore
+    open val isFieldQuery: Boolean = false
+
     open val codelistId: String? = null
     
     // in case the codelist ID is catalog specific stored in a behaviour
