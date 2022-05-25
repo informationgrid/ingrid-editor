@@ -13,6 +13,7 @@ import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -26,7 +27,8 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private snack: MatSnackBar
   ) {
     super();
   }
@@ -47,6 +49,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
             type: data.type,
             ref: address,
           });
+          this.removeDuplicates();
           this.updateFormControl(this.addresses);
         }
       );
@@ -61,10 +64,29 @@ export class AddressTypeComponent extends FieldType implements OnInit {
             type: data.type,
             ref: address,
           });
+          this.removeDuplicates();
           this.updateFormControl(this.addresses);
         }
       );
     });
+  }
+
+  private removeDuplicates() {
+    const unique = this.addresses.filter(
+      (value, index, self) =>
+        index ===
+        self.findIndex((item) => {
+          const sameType =
+            item.type.key === value.type.key ||
+            item.type.value === value.type.value;
+          const sameUuid = item.ref._uuid === value.ref._uuid;
+          return sameType && sameUuid;
+        })
+    );
+    if (unique.length !== this.addresses.length) {
+      this.snack.open("Die Adresse ist bereits vorhanden");
+    }
+    this.addresses = unique;
   }
 
   private callEditDialog(address?: AddressRef) {
