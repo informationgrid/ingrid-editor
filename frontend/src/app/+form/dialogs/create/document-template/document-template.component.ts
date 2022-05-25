@@ -5,6 +5,7 @@ import { FormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
+import { types } from "util";
 
 @Component({
   selector: "ige-document-template",
@@ -16,7 +17,6 @@ export class DocumentTemplateComponent implements OnInit {
   @Input() isFolder = true;
 
   @Output() create = new EventEmitter();
-
   documentTypes: DocumentAbstract[];
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null
@@ -37,8 +37,14 @@ export class DocumentTemplateComponent implements OnInit {
       .pipe(
         filter((types) => types.length > 0),
         map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => this.setDocType(types[0])),
-        tap((types) => this.initialActiveDocumentType.next(types[0])),
+        tap((types) =>
+          this.setDocType(this.selectDocType("Zulassungsverfahren", types))
+        ),
+        tap((types) =>
+          this.initialActiveDocumentType.next(
+            this.selectDocType("Zulassungsverfahren", types)
+          )
+        ),
         take(1)
       )
       .subscribe((result) => (this.documentTypes = result));
@@ -58,6 +64,11 @@ export class DocumentTemplateComponent implements OnInit {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
+  selectDocType(name: string, docTypes: DocumentAbstract[]) {
+    return (
+      docTypes.find((t) => t.title == "Zulassungsverfahren") || docTypes[0]
+    );
+  }
   setDocType(docType: DocumentAbstract) {
     this.form.get("choice").setValue(docType.id);
   }
