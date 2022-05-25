@@ -68,7 +68,6 @@ describe('uvp uploads', () => {
       uvpPage.tryToAccessFile(id, fileName, 'success');
       // delete file from document and save
       DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
-      DocumentPage.saveDocument();
       // re-publish
       DocumentPage.publishNow();
       // check that file not accessible anymore
