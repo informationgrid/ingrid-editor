@@ -24,6 +24,8 @@ package de.ingrid.mdek.upload.storage;
 
 import de.ingrid.mdek.upload.ConflictException;
 import de.ingrid.mdek.upload.ValidationException;
+import de.ingrid.mdek.upload.storage.impl.FileSystemItem;
+import de.ingrid.mdek.upload.storage.impl.Scope;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,8 +126,16 @@ public interface Storage {
      * @param file The file
      * @throws IOException
      */
-    void delete(String catalog, String userID, String datasetID, String file) throws IOException;
+    void deleteUnsavedFile(String catalog, String userID, String datasetID, String file) throws IOException;
 
+    /**
+     * Delete an unreferenced file
+     * @param catalog
+     * @param file
+     * @throws IOException
+     */
+    void delete(final String catalog, final FileSystemItem file) throws IOException;
+    
     /**
      * Archive a file
      *
@@ -235,4 +245,6 @@ public interface Storage {
      * @throws IOException
      */
     void discardUnsaved(String catalog, String userID, String datasetID) throws IOException;
+    
+    List<FileSystemItem> list(String catalog, Scope scope) throws IOException;
 }

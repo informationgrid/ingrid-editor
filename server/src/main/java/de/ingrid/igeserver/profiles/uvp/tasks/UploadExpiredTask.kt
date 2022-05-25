@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.tasks
+package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
@@ -26,32 +26,6 @@ class UploadExpiredTask(
     @PostConstruct
     fun init() = start()
 
-    val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
-        FROM catalog,
-             document_wrapper dw,
-             document doc,
-             jsonb_array_elements(doc.data -> 'processingSteps') elems
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-    """.trimIndent()
-
-    val sqlNegativeDecisionDocs = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
-        FROM catalog,
-             document_wrapper dw,
-             document doc
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-          AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
-    """.trimIndent()
-
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun scheduleStart() {
         log.info("Starting Upload-Expired - Task")
@@ -72,9 +46,6 @@ class UploadExpiredTask(
 
             // restore expired documents
             restoreUvpFiles(it)
-
-            // remove unreferenced documents
-//            deleteUnreferencedUvpFilesFromCatalog(it)
         }
     }
 
@@ -129,30 +100,6 @@ class UploadExpiredTask(
         return stepUrls + negativeUrls
     }
 
-    private fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> {
-        return (getUrlsFromJsonFieldTable(json, "applicationDocs")
-                + getUrlsFromJsonFieldTable(json, "announcementDocs")
-                + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs")
-                + getUrlsFromJsonFieldTable(json, "furtherDocs")
-                + getUrlsFromJsonFieldTable(json, "considerationDocs")
-                + getUrlsFromJsonFieldTable(json, "approvalDocs")
-                + getUrlsFromJsonFieldTable(json, "decisionDocs")
-                )
-    }
-
-    private fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> {
-        return json.get(tableField)
-            ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
-            ?.map { mapToUploadInfo(it) }
-            ?: emptyList()
-    }
-
-    private fun mapToUploadInfo(it: JsonNode): UploadInfo {
-        val validUntilDateField = it.get("validUntil")
-        val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-        return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
-    }
-
     private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?): List<Array<Any>> {
         val query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         
@@ -163,8 +110,6 @@ class UploadExpiredTask(
             .resultList as List<Array<Any>>
     }
 
-
-    private data class UploadInfo(val uri: String, val validUntil: String?)
 
     private data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
         fun getDocsByLatestValidUntilDate(): List<UploadInfo> {

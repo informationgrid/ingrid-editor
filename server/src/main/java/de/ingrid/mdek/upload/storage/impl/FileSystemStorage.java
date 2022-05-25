@@ -415,9 +415,18 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void delete(final String catalog, final String userID, final String path, final String file) throws IOException {
+    public void deleteUnsavedFile(final String catalog, final String userID, final String path, final String file) throws IOException {
         final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
         Files.deleteIfExists(realPath);
+    }
+
+    public void delete(final String catalog, final FileSystemItem file) throws IOException {
+        // no path since unreferenced file is not known by any user anymore
+        final Path trashPath = this.getTrashPath(catalog, "", file.getFile(), this.docsDir, Scope.PUBLISHED);
+        // ensure directory without file
+        this.getTrashPath(catalog, "", "", this.docsDir, Scope.PUBLISHED).toFile().mkdirs();
+        // get the real location of the file
+        Files.move(file.getRealPath(), trashPath, DEFAULT_COPY_OPTIONS);
     }
 
     @Override
@@ -845,6 +854,12 @@ public class FileSystemStorage implements Storage {
                 throw new UncheckedIOException(ex);
             }
         });
+    }
+
+    @Override
+    public List<FileSystemItem> list(String catalog, Scope scope) throws IOException {
+//        exists(catalog, "", "", "")
+        return listFiles(catalog, "", "", this.docsDir, scope);
     }
 
     /**
