@@ -309,6 +309,10 @@ public class FileSystemStorage implements Storage {
         if(realPath.toFile().exists()){
             return Files.newInputStream(realPath);
         }
+        realPath = this.getArchivePath(catalog, path, file, this.docsDir, Scope.UNPUBLISHED);
+        if(realPath.toFile().exists()){
+            return Files.newInputStream(realPath);
+        }
         realPath = this.getRealPath(catalog, path, file, this.docsDir);
         return Files.newInputStream(realPath);
     }
