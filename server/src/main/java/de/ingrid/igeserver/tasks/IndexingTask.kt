@@ -12,6 +12,7 @@ import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
+import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexConfigOptions
@@ -472,7 +473,7 @@ class IndexingTask @Autowired constructor(
                 indexManager.delete(info, id, true)
             }
         } catch (ex: NoNodeAvailableException) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+            throw NoElasticsearchConnectionException.withReason(ex.message ?: "No connection to Elasticsearch")
         }
     }
 
