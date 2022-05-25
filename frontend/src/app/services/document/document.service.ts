@@ -168,9 +168,9 @@ export class DocumentService {
     path?: string[],
     noVisualUpdates = false
   ): Observable<IgeDocument> {
-    this.preSaveActions(data, isAddress);
+    const doc = this.preSaveActions(data, isAddress);
 
-    return this.dataService.save(data, isAddress).pipe(
+    return this.dataService.save(doc, isAddress).pipe(
       filter(() => !noVisualUpdates),
       tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
       tap((json) => this.postSaveActions(json, isNewDoc, path, isAddress)),
@@ -178,7 +178,7 @@ export class DocumentService {
     );
   }
 
-  private preSaveActions(data: IgeDocument, isAddress: boolean) {
+  private preSaveActions(data: IgeDocument, isAddress: boolean): IgeDocument {
     if (isAddress && data._type !== "FOLDER") {
       // recreate address title, as it can not be changed manually for addresses
       data.title = this.createAddressTitle(data);
@@ -186,6 +186,15 @@ export class DocumentService {
 
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
+
+    return DocumentService.trimObject(data);
+  }
+
+  private static trimObject(obj: IgeDocument): IgeDocument {
+    const trimmed = JSON.stringify(obj, (key, value) => {
+      return typeof value === "string" ? value.trim() : value;
+    });
+    return JSON.parse(trimmed);
   }
 
   postSaveActions(
@@ -235,9 +244,9 @@ export class DocumentService {
     isAddress: boolean,
     publishDate: Date = null
   ): Observable<any> {
-    this.preSaveActions(data, isAddress);
+    const doc = this.preSaveActions(data, isAddress);
 
-    return this.dataService.publish(data, publishDate).pipe(
+    return this.dataService.publish(doc, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
       filter((response) => response),
       tap(() => {
