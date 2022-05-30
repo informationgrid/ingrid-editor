@@ -93,6 +93,7 @@ class UVPComponent {
         ),
       data: {
         title: "UVP Bericht",
+        permission: "can_create_uvp_report",
       },
     });
   }
