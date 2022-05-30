@@ -15,6 +15,13 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
 import { Router } from "@angular/router";
 import { UpdateType } from "../../../models/update-type.enum";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { FormUtils } from "../../form.utils";
+import { ConfigService } from "../../../services/config/config.service";
+import { DocumentService } from "../../../services/document/document.service";
+import { FormStateService } from "../../form-state.service";
+import { ModalService } from "../../../services/modal/modal.service";
+import { FormMessageService } from "../../../services/form-message.service";
+import { MatDialog } from "@angular/material/dialog";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -44,11 +51,14 @@ export class HistoryPlugin extends Plugin {
   constructor(
     private router: Router,
     private formToolbarService: FormToolbarService,
-    private docEvents: DocEventsService,
     private docTreeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
     private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private docEvents: DocEventsService,
+    private documentService: DocumentService,
+    private formStateService: FormStateService,
+    private addressTreeQuery: AddressTreeQuery,
+    private dialog: MatDialog
   ) {
     super();
   }
@@ -215,7 +225,17 @@ export class HistoryPlugin extends Plugin {
     return this.pointer > 0;
   }
 
-  private gotoNode(item: DocumentAbstract) {
+  private async gotoNode(item: DocumentAbstract) {
+    let handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
+
+    if (!handled) {
+      return;
+    }
     this.treeStore.update({
       explicitActiveNode: new ShortTreeNode(<string>item.id, item.title),
     });
