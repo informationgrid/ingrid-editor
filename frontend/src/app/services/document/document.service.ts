@@ -535,7 +535,7 @@ export class DocumentService {
       } else if (address.lastName) {
         return address.lastName;
       } else {
-        return address.organization;
+        return address.organization ?? "";
       }
     }
   }
