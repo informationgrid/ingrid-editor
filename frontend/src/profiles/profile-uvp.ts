@@ -47,6 +47,10 @@ class UVPComponent {
       organisation,
     ]);
 
+    profileService.setDefaultDataDoctype(approvalProcedureDoctype);
+    // this is for addresses later
+    //   profileService.setDefautAddressDoctype(organisation);
+
     this.modifyFormHeader(profileService);
 
     this.addUVPReportTab(reportsService);

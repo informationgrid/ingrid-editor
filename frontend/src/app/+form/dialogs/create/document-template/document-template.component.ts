@@ -6,6 +6,7 @@ import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { types } from "util";
+import { ProfileService } from "../../../../services/profile.service";
 
 @Component({
   selector: "ige-document-template",
@@ -22,7 +23,10 @@ export class DocumentTemplateComponent implements OnInit {
     null
   );
 
-  constructor(private profileQuery: ProfileQuery) {}
+  constructor(
+    private profileQuery: ProfileQuery,
+    private profileService: ProfileService
+  ) {}
 
   ngOnInit(): void {
     if (this.isFolder) {
@@ -37,17 +41,19 @@ export class DocumentTemplateComponent implements OnInit {
       .pipe(
         filter((types) => types.length > 0),
         map((types) => this.prepareDocumentTypes(types)),
-        tap((types) =>
-          this.setDocType(this.selectDocType("Zulassungsverfahren", types))
-        ),
-        tap((types) =>
-          this.initialActiveDocumentType.next(
-            this.selectDocType("Zulassungsverfahren", types)
-          )
-        ),
+        tap((types) => {
+          const initialType =
+            types.find(
+              (t) => t.id == this.profileService.getDefaultDataDoctype()?.id
+            ) || types[0];
+          this.setDocType(initialType);
+          this.initialActiveDocumentType.next(initialType);
+        }),
         take(1)
       )
-      .subscribe((result) => (this.documentTypes = result));
+      .subscribe((result) => {
+        this.documentTypes = result;
+      });
   }
 
   private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {
@@ -64,11 +70,6 @@ export class DocumentTemplateComponent implements OnInit {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  selectDocType(name: string, docTypes: DocumentAbstract[]) {
-    return (
-      docTypes.find((t) => t.title == "Zulassungsverfahren") || docTypes[0]
-    );
-  }
   setDocType(docType: DocumentAbstract) {
     this.form.get("choice").setValue(docType.id);
   }

@@ -14,6 +14,7 @@ import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
 })
 export class ProfileService {
   private doctypes: Doctype[] = [];
+  private defaultDataDocType?: Doctype = null;
 
   constructor(
     private configService: ConfigService,
@@ -104,6 +105,14 @@ export class ProfileService {
         tap(() => this.finishProfileInitialization())
       )
       .subscribe();
+  }
+
+  setDefaultDataDoctype(doctype: Doctype) {
+    this.defaultDataDocType = doctype;
+  }
+
+  getDefaultDataDoctype() {
+    return this.defaultDataDocType;
   }
 
   private initDocumentTypes(results: string[][]) {
