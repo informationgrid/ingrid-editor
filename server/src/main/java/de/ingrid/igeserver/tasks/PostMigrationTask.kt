@@ -281,6 +281,7 @@ class PostMigrationTask(
                     .put("title", title)
                 val folderDoc =
                     documentService.createDocument(auth as Principal, catalogIdentifier, folderData, parentId)
+                documentService.docWrapperRepo.flush()
 
                 parentId = folderDoc.get("_id").asInt()
 

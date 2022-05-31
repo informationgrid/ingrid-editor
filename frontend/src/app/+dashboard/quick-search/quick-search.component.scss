@@ -50,6 +50,8 @@
   }
 
   ::ng-deep .mat-form-field-infix {
+    display: flex;
+    align-items: center;
     height: 42px;
     margin: 0;
     padding: 0;

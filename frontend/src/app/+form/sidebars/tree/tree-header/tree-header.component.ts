@@ -6,9 +6,9 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { debounceTime, finalize, map } from "rxjs/operators";
+import { debounceTime, finalize, first, map, take, tap } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -37,10 +37,9 @@ export class TreeHeaderComponent implements OnInit {
   @Output() edit = new EventEmitter<boolean>();
   @Output() toggleAllSelection = new EventEmitter<boolean>();
   @Output() toggleView = new EventEmitter<boolean>();
-  @Output() isSearching = false;
   searchResult = new Subject<TreeNode[]>();
   query = new FormControl("");
-  treeSubscribe;
+  searchSub: Subscription;
   constructor(private db: DynamicDatabase, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -54,30 +53,19 @@ export class TreeHeaderComponent implements OnInit {
     this.reload.emit();
   }
 
-  private isLoading() {
-    this.isSearching = true;
-    this.cdr.detectChanges();
-  }
-
   search(value: string) {
     if (!value || value.length === 0) {
       this.searchResult.next(this.emptySearchResults ?? []);
       return;
     }
-    this.isLoading();
-
-    this.treeSubscribe = this.db
+    this.searchSub?.unsubscribe();
+    this.searchSub = this.db
       .search(value, this.isAddress)
-      .pipe(
-        map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)),
-        finalize(() => {
-          this.isSearching = false;
-          this.cdr.markForCheck();
-        })
-      )
+      .pipe(map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)))
       .subscribe((result) => {
         this.searchResult.next(this.filterResult(result));
       });
+    this.cdr.detectChanges();
   }
 
   loadResultDocument(doc: TreeNode) {
@@ -97,7 +85,7 @@ export class TreeHeaderComponent implements OnInit {
 
   resetForm() {
     this.query.reset("");
-    this.treeSubscribe.unsubscribe();
+    this.searchSub.unsubscribe();
   }
   deactivateMultiSelection() {
     this.multiSelectionModeEnabled = false;

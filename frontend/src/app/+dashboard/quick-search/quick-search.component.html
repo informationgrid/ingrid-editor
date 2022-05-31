@@ -8,16 +8,15 @@
             [matAutocomplete]="auto"
         />
         <mat-spinner
-            *ngIf="isSearching"
+            *ngIf="searchSub && !searchSub.closed"
             [diameter]="20"
-            class="spinner-adjustment-mat-input"
         ></mat-spinner>
         <button
             *ngIf="query.value?.length > 0"
             mat-icon-button
             matSuffix
             class="field-close"
-            (click)="resetForm()"
+            (click)="resetSearch()"
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
