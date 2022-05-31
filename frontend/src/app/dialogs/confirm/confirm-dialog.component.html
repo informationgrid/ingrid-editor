@@ -7,7 +7,8 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <p>{{ data.message }}</p>
+    <p *ngIf="!data.preformatted">{{ data.message }}</p>
+    <pre *ngIf="data.preformatted">{{ data.message }}</pre>
     <ul *ngIf="data.list">
         <li *ngFor="let item of data.list">{{ item }}</li>
     </ul>
