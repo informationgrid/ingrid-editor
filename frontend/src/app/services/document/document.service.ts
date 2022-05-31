@@ -530,8 +530,10 @@ export class DocumentService {
     if (this.alternateAddressTitle) {
       return this.alternateAddressTitle(address);
     } else {
-      if (address.firstName) {
+      if (address.firstName && address.lastName) {
         return address.lastName + ", " + address.firstName;
+      } else if (address.lastName) {
+        return address.lastName;
       } else {
         return address.organization;
       }
