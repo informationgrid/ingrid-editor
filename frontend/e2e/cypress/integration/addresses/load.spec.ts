@@ -2,6 +2,8 @@ import { DocumentPage, SEPARATOR } from '../../pages/document.page';
 import { AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
+import { BasePage } from '../../pages/base.page';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
 describe('Load addresses', () => {
   beforeEach(() => {
@@ -122,5 +124,21 @@ describe('Load addresses', () => {
     cy.get(
       '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
     ).contains('document_for_replace_address');
+  });
+
+  it('Meta admin should not be allowed to delete Address if it is still referenced in data records #3811', () => {
+    cy.logoutClearCookies();
+    cy.kcLogin('meta2-with-groups');
+    DocumentPage.visit();
+    let addressName = 'address_with_reference_meta';
+    Tree.openNode(['Folder1 For Meta2 ', 'Sub Folder', 'document1_meta2']);
+    enterMcloudDocTestData.setAddress(addressName);
+    DocumentPage.saveDocument();
+    AddressPage.visit();
+    Tree.openNode(['Ordner_2.Ebene_C', addressName]);
+    AddressPage.deleteLoadedNode(true);
+    BasePage.checkErrorDialogMessage(
+      'Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.'
+    );
   });
 });

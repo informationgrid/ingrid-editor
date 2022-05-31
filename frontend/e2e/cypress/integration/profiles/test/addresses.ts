@@ -97,4 +97,29 @@ describe('addresses inside test catalogue', () => {
     Tree.openNode([addressData.title]);
     cy.get(DocumentPage.title).should('have.text', addressData.title);
   });
+
+  it('Should allow catalog admin to delete address with references after replacing it with another #3811', () => {
+    Menu.switchTo('ADDRESSES');
+    Tree.openNode(['address_with_reference_to_delete_catalog_admin']);
+    AddressPage.deleteLoadedNode(true);
+    cy.get('ige-replace-address-dialog').contains(
+      'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
+    );
+    cy.get('[data-cy=dialog-choose-address]').click();
+    Tree.openNodeInsideDialog(['address_to _be_replaced_catalog_admin']);
+    AddressPage.submitReplaceAddress();
+
+    cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
+    cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
+
+    cy.get('[data-cy=confirm-dialog-confirm]').click();
+    cy.wait(300);
+    // make sure the documents changed
+
+    Tree.openNode(['address_to _be_replaced_catalog_admin']);
+    AddressPage.openReferencedDocumentsSection();
+    cy.get(
+      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
+    ).contains('document_for_replace_address');
+  });
 });
