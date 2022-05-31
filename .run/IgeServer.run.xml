@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="IgeServer" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="IGE-NG.server.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="de.ingrid.igeserver.IgeServer" />
+    <option name="ACTIVE_PROFILES" value="mcloud,test,uvp,dev" />
     <option name="ENABLE_JMX_AGENT" value="false" />
-    <option name="ACTIVE_PROFILES" value="mcloud,test,dev" />
-    <option name="ALTERNATIVE_JRE_PATH" />
+    <module name="IGE-NG.server.main" />
     <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="de.ingrid.igeserver.IgeServer" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
