@@ -7,6 +7,7 @@ import { filter, map, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
+import { ProfileService } from "../../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -32,7 +33,8 @@ export class AddressTemplateComponent implements OnInit {
 
   constructor(
     private profileQuery: ProfileQuery,
-    private docBehaviours: DocBehavioursService
+    private docBehaviours: DocBehavioursService,
+    private profileService: ProfileService
   ) {}
 
   ngOnInit(): void {}
@@ -56,8 +58,12 @@ export class AddressTemplateComponent implements OnInit {
   private setInitialTypeFirstTime(types: DocumentAbstract[]) {
     // only set it first time
     if (!this.form.get("choice").value) {
-      this.setDocType(types[0]);
-      this.initialActiveDocumentType.next(types[0]);
+      const initialType =
+        types.find(
+          (t) => t.id == this.profileService.getDefaultAddressType()?.id
+        ) || types[0];
+      this.setDocType(initialType);
+      this.initialActiveDocumentType.next(initialType);
     }
   }
 
