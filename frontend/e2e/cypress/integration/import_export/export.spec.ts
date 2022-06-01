@@ -8,40 +8,6 @@ describe('Export', () => {
     ExportPage.visit();
   });
 
-  it('should export a single published document with options "Nur diesen Datensatz", "IGE" ', () => {
-    Tree.openNode(['TestDocResearch4'], false);
-    ExportPage.continue();
-    // TODO select "Nur diesen Datensatz"
-    //  --------------
-    // move back and forth and click on cancel to check the steps functionality
-    ExportPage.back();
-    ExportPage.continue();
-    ExportPage.cancel();
-    // click on the node again
-    Tree.openNode(['TestDocResearch4'], false);
-    ExportPage.continue();
-    // go to preview step
-    ExportPage.continue();
-    ExportPage.preview();
-    ExportPage.closePreview();
-    ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
-  });
-
-  it('should export a single published document with options "Nur diesen Datensatz","IGE" and "Auch Entwürfe exportieren" ', () => {
-    Tree.openNode(['TestDocResearch4'], false);
-    ExportPage.continue();
-    // TODO select "Nur diesen Datensatz"
-    //  --------------
-    ExportPage.checkDraftOption();
-    //go to preview step
-    ExportPage.continue();
-    ExportPage.preview();
-    ExportPage.closePreview();
-    ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
-  });
-
   it('should export a completed document with option "mCLOUD Portal" ', () => {
     Tree.openNode(['TestDocResearch4'], false);
     ExportPage.continue();
