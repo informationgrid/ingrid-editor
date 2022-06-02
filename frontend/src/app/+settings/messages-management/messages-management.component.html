@@ -5,7 +5,10 @@
     </div>
 
     <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
-        <ige-add-button (add)="showAddMessageDialog()"></ige-add-button>
+        <ige-add-button
+            buttonType="flat"
+            (add)="showAddMessageDialog()"
+        ></ige-add-button>
     </div>
 
     <div main-content>
