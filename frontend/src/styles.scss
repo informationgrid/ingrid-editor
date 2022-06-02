@@ -542,6 +542,11 @@ ige-form-label + * {
   }
 }
 
+
+.mat-form-field {
+  line-height: 1.25 !important;
+}
+
 .mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
 }
