@@ -6,7 +6,7 @@ profile: uvp
 
 ---
 
-Bezeichnung der Institution. Hier soll die vollständige, offizielle Bezeichnung der Institution eingetragen werden. Eine Institution ist eine offizielle, selbständige organisatorische Einheit. Dies kann z. B. eine Behörde, ein Amt oder eine Firma sein. Um die zuständigen Personen zu präzisieren, können der Institution Einheiten und Personen zugeordnet werden, die dann detaillierte Angaben zu der Einheit und der Person enthalten. Einer Institution kann auch eine Person direkt zugeordnet werden. Eine Institution kann auch alleine, ohne zugeordnete Personen oder Einheiten in den Adressverweisen der Objekte eingetragen werden.
+Bezeichnung der Organisation. Hier soll die vollständige, offizielle Bezeichnung der Organisation eingetragen werden. Eine Organisation ist eine offizielle, selbständige organisatorische Einheit. Dies kann z. B. eine Behörde, ein Amt oder eine Firma sein. Um die zuständigen Untereinheiten, Abteilungen oder Personen zu präzisieren, können der (übergeordneten) Organisation weitere Organisationen und Personen untergeordnet werden, die dann detaillierte Angaben zu der Unterorganisation, Abteilung, Einheit oder Person enthalten. Einer Organisation kann auch eine Person direkt zugeordnet werden. Eine Organisation kann auch alleine, ohne zugeordnete Personen oder untergeordnete Organisationen, in den Adressverweisen der Objekte eingetragen werden.
 
 ## Beispiel:
 
