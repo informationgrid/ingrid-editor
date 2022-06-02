@@ -1,6 +1,6 @@
 <div *ngIf="doc._pendingDate" class="publish-pending-info">
     <div *transloco="let t; read: 'publish'">
-        {{ t('formWithPronoun') }} wird am
+        {{ t("formWithPronoun") }} wird am
         {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
     </div>
     <div *transloco="let t; read: 'dashboard'">
@@ -11,7 +11,7 @@
             class="mat-stroked-button"
             (click)="stopPublish()"
         >
-            Veröffentlichung abbrechen und {{ t('formSingular') }} bearbeiten
+            Veröffentlichung abbrechen und {{ t("formSingular") }} bearbeiten
         </button>
     </div>
 </div>

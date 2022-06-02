@@ -25,11 +25,13 @@
     <div class="circle-wrapper">
         <mat-icon svgIcon="image-banner-dataset"></mat-icon>
     </div>
-    <h2 *transloco="let t; read: 'dashboard'">Kein Ordner oder {{ address ? "Adresse" : t('formSingular') }} vorhanden</h2>
+    <h2 *transloco="let t; read: 'dashboard'">
+        Kein Ordner oder {{ address ? "Adresse" : t("formSingular") }} vorhanden
+    </h2>
     <p *transloco="let t; read: 'dashboard'">
         Legen Sie einen neuen Ordner oder
-        {{ address ? "Adresse" : t('formSingular') }} an oder importieren Sie
-        {{ address ? "Adressen" : t('form') }}.
+        {{ address ? "Adresse" : t("formSingular") }} an oder importieren Sie
+        {{ address ? "Adressen" : t("form") }}.
     </p>
     <p>
         Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in

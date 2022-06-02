@@ -1,4 +1,5 @@
-<div class="text-center shortcut" *transloco="let t; read: 'dashboard'">{{ t('form') }}>
+<div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
+    {{ t("form") }}>
     <button
         mat-button
         (click)="createNewFolder()"
@@ -19,7 +20,7 @@
             class="material-icons-outlined"
             svgIcon="Neuer-Datensatz"
         ></mat-icon>
-        <span>{{ isAddress ? "Neue Adresse" : t('newDocument') }}</span>
+        <span>{{ isAddress ? "Neue Adresse" : t("newDocument") }}</span>
     </button>
 </div>
 
@@ -49,7 +50,7 @@
     <h2>Dieser Ordner ist noch leer</h2>
     <p *transloco="let t; read: 'dashboard'">
         Legen Sie einen neuen Unterordner oder
-        {{ isAddress ? "Adresse" : t('formSingular') }} an.
+        {{ isAddress ? "Adresse" : t("formSingular") }} an.
     </p>
     <p>
         Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
