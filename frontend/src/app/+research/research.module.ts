@@ -42,6 +42,7 @@ import { SharedModule } from "../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { TabSearchComponent } from "./+tab-search/tab-search.component";
     SharedModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    TranslocoModule,
   ],
   providers: [
     {

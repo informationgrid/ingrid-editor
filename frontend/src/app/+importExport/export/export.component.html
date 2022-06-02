@@ -1,4 +1,4 @@
-<page-template label="Export">
+<page-template label="Export" *transloco="let t; read: 'export'">
     <div left-side>Hier können Sie ein oder mehrere Dateien exportieren.</div>
 
     <section main-header fxLayoutAlign="center center">
@@ -19,7 +19,7 @@
     <section main-content fxFlex>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="datasetSelected">
-                <ng-template matStepLabel>Datensatz wählen</ng-template>
+                <ng-template matStepLabel>{{t('formSingular')}}</ng-template>
                 <ige-tree
                     #treeComponent
                     (selected)="selectDatasets($event)"
@@ -55,7 +55,7 @@
                             name="exportOption"
                             value="dataset"
                             checked
-                            >nur diesen Datensatz
+                            >nur {{t('formWithPronoun')}}
                         </mat-radio-button>
                         <mat-radio-button
                             name="exportOption"
@@ -65,11 +65,11 @@
                         <mat-radio-button
                             name="exportOption"
                             value="datasetAndBelow"
-                            >dieser und alle untergeordneten
+                            >{{t('adjustedPronoun')}} und alle untergeordneten
                         </mat-radio-button>
                     </mat-radio-group>
 
-                    <div class="section-title space">Datensätze</div>
+                    <div class="section-title space">{{t('form')}}</div>
                     <mat-checkbox
                         formControlName="drafts"
                         style="margin-top: 12px; display: block"

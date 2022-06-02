@@ -1,6 +1,6 @@
-<h1 class="text-center">Daten</h1>
+<h1 class="text-center" *transloco="let t; read: 'dashboard'">{{ t('form') }}</h1>
 
-<div class="text-center shortcut">
+<div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
     <button
         mat-button
         (click)="createNewFolder()"
@@ -21,7 +21,7 @@
             class="material-icons-outlined"
             svgIcon="Neuer-Datensatz"
         ></mat-icon>
-        <span>Neuer Datensatz</span>
+        <span>{{ t('newDocument') }}</span>
     </button>
     <button
         mat-button
@@ -30,6 +30,6 @@
         [disabled]="!canImport"
     >
         <mat-icon>import_export</mat-icon>
-        <span>Datensatz Import</span>
+        <span>{{ t('importDocument') }}</span>
     </button>
 </div>

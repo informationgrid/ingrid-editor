@@ -1,4 +1,4 @@
-<div [formGroup]="formGroup" fxLayout="column" style="max-height: unset">
+<div [formGroup]="formGroup" fxLayout="column" style="max-height: unset" *transloco="let t; read: 'group'">
     <div fxFlex fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="end end">
         <mat-slide-toggle
             *ngIf="showRootReadSlider"
@@ -32,7 +32,7 @@
     </div>
     <permission-table
         formControlName="documents"
-        label="Berechtigungen Daten"
+        label="Berechtigungen {{ t('form') }}"
     ></permission-table>
     <permission-table
         formControlName="addresses"

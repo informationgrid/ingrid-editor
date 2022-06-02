@@ -22,6 +22,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { combineLatest, Subject } from "rxjs";
+import { TranslocoService } from "@ngneat/transloco";
 
 export interface CreateOptions {
   parent: string;
@@ -59,6 +60,7 @@ export class CreateNodeComponent implements OnInit {
     private fb: FormBuilder,
     private documentService: DocumentService,
     private docBehaviours: DocBehavioursService,
+    private translocoService: TranslocoService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions
   ) {
@@ -69,9 +71,9 @@ export class CreateNodeComponent implements OnInit {
       : DOCUMENT_ROOT_NODE.title;
 
     if (!this.isFolder) {
-      this.title = this.forAddress
-        ? "Neue Adresse anlegen"
-        : "Neuen Datensatz anlegen";
+      this.title = this.translocoService.translate(
+        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
+      );
     }
   }
 

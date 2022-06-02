@@ -22,6 +22,7 @@ import { PageTemplateModule } from "../shared/page-template/page-template.module
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { UploadModule } from "../shared/upload/upload.module";
 import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   imports: [
@@ -45,6 +46,7 @@ import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.modul
     FormSharedModule,
     UploadModule,
     BreadcrumbModule,
+    TranslocoModule,
   ],
   declarations: [OverviewComponent, ImportComponent, ExportComponent],
   providers: [ImportExportService],

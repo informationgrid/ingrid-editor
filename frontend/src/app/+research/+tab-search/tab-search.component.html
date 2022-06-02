@@ -1,4 +1,4 @@
-<page-template label="Erweiterte Suche" [formGroup]="form">
+<page-template label="Erweiterte Suche" [formGroup]="form" *transloco="let t; read: 'menu'">
     <ige-facets
         left-side
         formControlName="facets"
@@ -16,7 +16,7 @@
             >
                 <span matPrefix class="prefix">Suche nach:</span>
                 <mat-select formControlName="type">
-                    <mat-option value="selectDocuments">Dokumente</mat-option>
+                    <mat-option value="selectDocuments">{{ t('form') }}</mat-option>
                     <mat-option value="selectAddresses">Adressen</mat-option>
                 </mat-select>
             </mat-form-field>

@@ -49,6 +49,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { PublishPendingComponent } from "../form-info/publish-pending/publish-pending.component";
 import { CreateNodeModule } from "../dialogs/create/create-node.module";
 import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
     MatDatepickerModule,
     CreateNodeModule,
     BreadcrumbModule,
+    TranslocoModule,
   ],
   providers: [
     FormToolbarService,
