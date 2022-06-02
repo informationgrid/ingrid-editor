@@ -1,6 +1,7 @@
 @import "src/variables";
 
-:host ::ng-deep ige-inline-help-wrapper {
+// top level deep selector acceptable as ige-inline-help-wrapper is unique
+::ng-deep ige-inline-help-wrapper {
   display: flex;
   align-items: center;
 
