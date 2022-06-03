@@ -38,10 +38,12 @@
     <permission-table
         formControlName="documents"
         label="Berechtigungen {{ t('form') }}"
+        data-cy="Berechtigungen Daten"
     ></permission-table>
     <permission-table
         formControlName="addresses"
         label="Berechtigungen Adressen"
+        data-cy="Berechtigungen Adressen"
         [forAddress]="true"
     ></permission-table>
 </div>
