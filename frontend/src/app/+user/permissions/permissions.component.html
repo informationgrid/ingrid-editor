@@ -1,4 +1,9 @@
-<div [formGroup]="formGroup" fxLayout="column" style="max-height: unset" *transloco="let t; read: 'group'">
+<div
+    [formGroup]="formGroup"
+    fxLayout="column"
+    style="max-height: unset"
+    *transloco="let t; read: 'group'"
+>
     <div fxFlex fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="end end">
         <mat-slide-toggle
             *ngIf="showRootReadSlider"
