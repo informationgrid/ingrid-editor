@@ -10,7 +10,7 @@
             "
             (click)="!disableRoot && onSelect(null)"
             *transloco="let t; read: 'menu'"
-            >{{ t("form") }}</span
+            >{{ rootName === "Daten" ? t("form") : "Adressen" }}</span
         >
         <ng-container *ngIf="path.length > 0 || !hideLastSeparator">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
