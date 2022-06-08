@@ -1,9 +1,9 @@
 <div *ngIf="doc._pendingDate" class="publish-pending-info">
-    <div>
-        Dieser Datensatz wird am
+    <div *transloco="let t; read: 'publish'">
+        {{ t("formWithPronoun") }} wird am
         {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
     </div>
-    <div>
+    <div *transloco="let t; read: 'dashboard'">
         <button
             *ngIf="doc.hasWritePermission"
             mat-button
@@ -11,7 +11,7 @@
             class="mat-stroked-button"
             (click)="stopPublish()"
         >
-            Veröffentlichung abbrechen und Datensatz bearbeiten
+            Veröffentlichung abbrechen und {{ t("formSingular") }} bearbeiten
         </button>
     </div>
 </div>

@@ -1,17 +1,34 @@
 <div class="wrapper">
     <button
+        *ngIf="buttonType == 'flat'"
+        type="button"
+        color="primary"
+        mat-flat-button
+        class="button-square-icon"
+        [class.padding-btn]="showLabel"
+        [class.error-outline]="showRequiredError"
+        (click)="add.next()"
+    >
+        <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+    </button>
+    <button
+        *ngIf="buttonType == 'stroked'"
         type="button"
         mat-stroked-button
         class="button-square-icon"
-        [class.error-outline]="showRequiredError"
         [class.padding-btn]="showLabel"
+        [class.error-outline]="showRequiredError"
         (click)="add.next()"
     >
-        <mat-icon>add</mat-icon>
-        <span *ngIf="showLabel" class="btn-title">Hinzufügen</span>
+        <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
     </button>
 
     <mat-error *ngIf="showRequiredError" class="error"
         >Bitte erstellen Sie mindestens einen Eintrag</mat-error
     >
+
+    <ng-template #buttonContent>
+        <mat-icon>add</mat-icon>
+        <span *ngIf="showLabel" class="btn-title">Hinzufügen</span>
+    </ng-template>
 </div>

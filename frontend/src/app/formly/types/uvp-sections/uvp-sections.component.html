@@ -12,10 +12,10 @@
                 class="menu dark menu-button"
                 [class.elevated]="markSection[i]"
                 mat-icon-button
-                (mouseenter)="markSection[i] = true"
-                (mouseleave)="markSection[i] = false"
                 [matMenuTriggerFor]="sectionMenu"
             >
+                <!--                (mouseenter)="markSection[i] = true"-->
+                <!--                (mouseleave)="markSection[i] = false"-->
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #sectionMenu="matMenu">

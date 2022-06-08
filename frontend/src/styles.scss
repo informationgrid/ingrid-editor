@@ -176,7 +176,7 @@ h1 {
 
 .btn-title {
   padding: 0 4px 0 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   vertical-align: middle;
 }
@@ -542,6 +542,10 @@ ige-form-label + * {
   }
 }
 
+.mat-form-field {
+  line-height: 1.25 !important;
+}
+
 .mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
 }
@@ -844,6 +848,8 @@ mat-selection-list.with-menu .mat-list-text {
     }
 
     .mat-form-field-infix {
+      display: flex;
+      align-items: center;
       padding: 0;
 
       input {
@@ -1044,15 +1050,6 @@ mat-icon.wide-icon-26px {
   .mat-slide-toggle-label {
     justify-content: space-between;
   }
-}
-
-.spinner-adjustment-mat-input {
-  position: absolute !important;
-  top: 50% !important;
-  left: 98% !important;
-  -moz-transform: translateX(-50%) translateY(-50%);
-  -webkit-transform: translateX(-50%) translateY(-50%);
-  transform: translateX(-50%) translateY(-50%);
 }
 
 .info-menu {

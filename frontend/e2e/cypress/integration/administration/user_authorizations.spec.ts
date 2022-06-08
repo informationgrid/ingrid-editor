@@ -713,13 +713,13 @@ describe('Catalogue admin', () => {
     AdminGroupPage.selectGroup('test_gruppe_5');
     // grant authorization for an address
     AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
-    cy.get('permission-table[label="Berechtigungen Adressen"]').should('contain', 'test_j, test_j');
+    cy.get('permission-table[data-cy="Berechtigungen Adressen"]').should('contain', 'test_j, test_j');
     // try to grant authorizations for addresses twice
     AdminGroupPage.tryIllegitimateAddToGroup('test_j, test_j', 'Adressen');
     cy.contains('button', 'Abbrechen').click();
     // grant authorization for a piece of data
     AdminGroupPage.addDocumentToGroup('TestDocResearch4', 'Daten');
-    cy.get('permission-table[label="Berechtigungen Daten"]').should('contain', 'TestDocResearch4');
+    cy.get('permission-table[data-cy="Berechtigungen Daten"]').should('contain', 'TestDocResearch4');
     // try to grant authorization for data twice
     AdminGroupPage.tryIllegitimateAddToGroup('TestDocResearch4', 'Daten');
   });

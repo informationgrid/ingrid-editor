@@ -1,6 +1,5 @@
 import { BasePage } from './base.page';
 import { Tree } from './tree.partial';
-import Doc = Mocha.reporters.Doc;
 import Chainable = Cypress.Chainable;
 
 export const SEPARATOR = 'chevron_right';
@@ -681,7 +680,7 @@ export class DocumentPage extends BasePage {
     this.choosePublishOption(inDialog ? PublishOptions.PlanPublishInDialog : PublishOptions.PlanPublish, inDialog);
     this.fillInPublishingDate(date);
     cy.contains('button', 'Ok').click();
-    cy.contains('ige-publish-pending', 'Datensatz wird am ' + date.toString() + ' veröffentlicht');
+    cy.contains('ige-publish-pending', new RegExp(`(Datensatz|Vorhaben) wird am ${date.toString()} veröffentlicht`));
   }
 
   static choosePublishOption(option: PublishOptions, inDialog: boolean = false) {
@@ -810,7 +809,7 @@ export class DocumentPage extends BasePage {
   }
 
   static clickSpatialEntry(spatialName: string) {
-    cy.get('ige-formly--type mat-list div.mat-line').contains(spatialName).click({ force: true });
+    cy.get('ige-formly-leaflet-type mat-list div.mat-line').contains(spatialName).click({ force: true });
   }
 
   static jumpFromDocumentToAddress(addressTitle: string, id?: number) {

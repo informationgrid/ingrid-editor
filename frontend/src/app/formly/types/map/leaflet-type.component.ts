@@ -25,7 +25,7 @@ import { ConfigService } from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-formly--type",
+  selector: "ige-formly-leaflet-type",
   templateUrl: "leaflet-type.component.html",
   styleUrls: ["leaflet-type.component.scss"],
 })

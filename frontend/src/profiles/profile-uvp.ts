@@ -47,6 +47,10 @@ class UVPComponent {
       organisation,
     ]);
 
+    profileService.setDefaultDataDoctype(approvalProcedureDoctype);
+    // this is for addresses later
+    //   profileService.setDefautAddressDoctype(organisation);
+
     this.modifyFormHeader(profileService);
 
     this.addUVPReportTab(reportsService);
@@ -93,6 +97,7 @@ class UVPComponent {
         ),
       data: {
         title: "UVP Bericht",
+        permission: "can_create_uvp_report",
       },
     });
   }

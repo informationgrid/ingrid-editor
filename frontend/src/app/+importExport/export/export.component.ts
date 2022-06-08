@@ -125,6 +125,7 @@ export class ExportComponent implements OnInit {
         title: "Vorschau",
         message: this.exportResult,
         buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
+        preformatted: true,
       } as ConfirmDialogData,
     });
   }

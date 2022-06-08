@@ -1,5 +1,10 @@
 <div class="table-title">{{ label }}</div>
-<table mat-table [dataSource]="val" class="dark width-100">
+<table
+    mat-table
+    [dataSource]="val"
+    class="dark width-100"
+    *transloco="let t; read: 'menu'"
+>
     <ng-container matColumnDef="type-icon">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element" class="thin-column">
@@ -19,7 +24,7 @@
                 <ige-breadcrumb
                     class="no-padding disabled"
                     [path]="breadcrumb[element.id]"
-                    [rootName]="forAddress ? 'Adressen' : 'Daten'"
+                    [rootName]="forAddress ? 'Adressen' : t('form')"
                     [simplePath]="true"
                 ></ige-breadcrumb>
             </div>

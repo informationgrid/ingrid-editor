@@ -15,6 +15,29 @@
   },
   "dashboard": {
     "welcome": "Guten Tag! Willkommen zurück.",
-    "application": "INGRID"
+    "application": "INGRID",
+    "newDocument": "Neuer Datensatz",
+    "importDocument": "Datensatz importieren",
+    "form": "Daten",
+    "formSingular": "Datensatz"
+  },
+  "toolbar": {
+    "newDocument": "Neuen Datensatz anlegen",
+    "newAddress": "Neue Adresse anlegen"
+  },
+  "reports": {
+    "form": "Daten"
+  },
+  "group": {
+    "form": "Daten"
+  },
+  "export": {
+    "formWithPronoun": "diesen Datensatz",
+    "adjustedPronoun": "dieser",
+    "form": "Daten",
+    "formSingular": "Datensatz"
+  },
+  "publish": {
+    "formWithPronoun": "Dieser Datensatz"
   }
 }

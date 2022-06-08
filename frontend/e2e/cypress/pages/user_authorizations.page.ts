@@ -39,7 +39,7 @@ export class UserAuthorizationPage extends BasePage {
   }
 
   static changeAccessRightFromWriteToRead(objectTitle: string, objectType: string) {
-    cy.get('[label="Berechtigungen ' + objectType + '"]')
+    cy.get('[data-cy="Berechtigungen ' + objectType + '"]')
       .contains(objectTitle)
       .parent()
       .parent()
@@ -52,7 +52,7 @@ export class UserAuthorizationPage extends BasePage {
 
   // TODO: don't use tooltips for selectors (check whole file!), since they can change easily
   static changeAccessRightFromReadToWrite(objectTitle: string, objectType: string) {
-    cy.get('[label="Berechtigungen ' + objectType + '"]')
+    cy.get('[data-cy="Berechtigungen ' + objectType + '"]')
       .contains(objectTitle)
       .parent()
       .parent()
@@ -72,7 +72,7 @@ export class UserAuthorizationPage extends BasePage {
   }
 
   static setButtonSubfoldersOnly(objectTitle: string, objectType: string) {
-    cy.get('[label="Berechtigungen ' + objectType + '"]')
+    cy.get('[data-cy="Berechtigungen ' + objectType + '"]')
       .contains(objectTitle)
       .parent()
       .parent()

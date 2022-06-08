@@ -11,6 +11,7 @@ import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Injectable()
@@ -32,7 +33,8 @@ export class CreateDocumentPlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private translocoService: TranslocoService
   ) {
     super();
   }
@@ -49,24 +51,30 @@ export class CreateDocumentPlugin extends Plugin {
   }
 
   private initializeButton() {
-    const buttons = [
-      {
-        id: "toolBtnNew",
-        tooltip: "Neuen Datensatz erstellen",
-        matSvgVariable: "Neuer-Datensatz",
-        eventId: "NEW_DOC",
-        pos: 1,
-        active: true,
-      },
-    ];
-    buttons.forEach((button) => this.toolbarService.addButton(button));
+    this.translocoService
+      .selectTranslate(
+        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
+      )
+      .subscribe((tooltipText) => {
+        const buttons = [
+          {
+            id: "toolBtnNew",
+            tooltip: tooltipText,
+            matSvgVariable: "Neuer-Datensatz",
+            eventId: "NEW_DOC",
+            pos: 1,
+            active: true,
+          },
+        ];
+        buttons.forEach((button) => this.toolbarService.addButton(button));
 
-    if (!this.isAdmin) {
-      const buttonEnabled = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset"
-      );
-      this.toolbarService.setButtonState("toolBtnNew", buttonEnabled);
-    }
+        if (!this.isAdmin) {
+          const buttonEnabled = this.config.hasPermission(
+            this.forAddress ? "can_create_address" : "can_create_dataset"
+          );
+          this.toolbarService.setButtonState("toolBtnNew", buttonEnabled);
+        }
+      });
   }
 
   async newDoc() {

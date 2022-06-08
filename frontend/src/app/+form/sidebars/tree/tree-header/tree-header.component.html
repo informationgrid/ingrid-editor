@@ -82,9 +82,8 @@
         />
 
         <mat-spinner
-            *ngIf="isSearching"
+            *ngIf="this.searchSub && !this.searchSub.closed"
             [diameter]="18"
-            class="spinner-adjustment-mat-input"
         ></mat-spinner>
         <button
             *ngIf="query.value?.length > 0"
@@ -102,7 +101,6 @@
             class="quicksearch-auto-tree dense"
         >
             <mat-option
-                [isLoading]="isSearching"
                 *ngFor="let doc of searchResult | async"
                 (onSelectionChange)="loadResultDocument(doc)"
             >

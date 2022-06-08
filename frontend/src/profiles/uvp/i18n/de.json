@@ -6,7 +6,30 @@
   },
   "dashboard": {
     "welcome": "Willkommen im UVP Editor",
-    "application": "UVP"
+    "application": "UVP",
+    "newDocument": "Neues Vorhaben",
+    "importDocument": "Vorhaben importieren",
+    "form": "Vorhaben",
+    "formSingular": "Vorhaben"
+  },
+  "reports": {
+    "form": "Vorhaben"
+  },
+  "group": {
+    "form": "Vorhaben"
+  },
+  "export": {
+    "formWithPronoun": "dieses Vorhaben",
+    "adjustedPronoun": "dieses",
+    "form": "Vorhaben",
+    "formSingular": "Vorhaben"
+  },
+  "toolbar": {
+    "newDocument": "Neues Vorhaben anlegen",
+    "newAddress": "Neue Adresse anlegen"
+  },
+  "publish": {
+    "formWithPronoun": "Dieses Vorhaben"
   },
   "procedureType": {
     "UvpSpatialPlanningProcedureDoc": "Raumbezugsverfahren",

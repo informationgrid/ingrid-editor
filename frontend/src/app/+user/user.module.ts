@@ -42,6 +42,7 @@ import { RouterModule } from "@angular/router";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.modul
     SharedPipesModule,
     DragDropModule,
     BreadcrumbModule,
+    TranslocoModule,
   ],
   declarations: [
     UserComponent,

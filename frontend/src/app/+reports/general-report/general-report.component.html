@@ -1,4 +1,8 @@
-<page-template-no-header label="Statistik" class="white">
+<page-template-no-header
+    label="Statistik"
+    class="white"
+    *transloco="let t; read: 'reports'"
+>
     <div left-side [formGroup]="form">
         <mat-button-toggle-group
             value="selectDocuments"
@@ -7,7 +11,7 @@
             formControlName="type"
         >
             <mat-button-toggle value="selectDocuments"
-                >Daten
+                >{{ t("form") }}
             </mat-button-toggle>
             <mat-button-toggle value="selectAddresses"
                 >Adressen
@@ -28,7 +32,7 @@
                 showPercentages="true"
             ></ige-chart>
         </div>
-        <ige-card-box fxFlex label="Datensätze">
+        <ige-card-box fxFlex label="{{ t('form') }}">
             <table
                 mat-table
                 [dataSource]="dataSource"

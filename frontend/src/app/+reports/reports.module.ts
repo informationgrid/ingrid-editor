@@ -13,6 +13,7 @@ import { GermanDateAdapter } from "../services/german-date.adapter";
 import { ReactiveFormsModule } from "@angular/forms";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { LazyReportsRouting } from "./lazy-reports.routing";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   declarations: [ReportsComponent, GeneralReportComponent],
@@ -27,6 +28,7 @@ import { LazyReportsRouting } from "./lazy-reports.routing";
     MatSortModule,
     MatButtonToggleModule,
     ReactiveFormsModule,
+    TranslocoModule,
   ],
   providers: [
     {

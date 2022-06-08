@@ -7,6 +7,7 @@ export interface ConfirmDialogData {
   list?: string[];
   confirmText?: string;
   buttons?: ConfirmDialogButton[];
+  preformatted?: boolean;
 }
 
 export interface ConfirmDialogButton {
