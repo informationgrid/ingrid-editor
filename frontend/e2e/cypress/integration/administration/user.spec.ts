@@ -4,6 +4,7 @@ import { BasePage, UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
+import { AdminGroupPage } from '../../pages/administration-group.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -533,5 +534,83 @@ describe('User', () => {
         });
       });
     });
+  });
+
+  it('Author can be granted universal read access by adding to group universal rights #3267', () => {
+    const groupName = 'test_gruppe_3';
+    const authorName = 'author-with-groups';
+
+    // activate universal read access in group
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht');
+    AdminGroupPage.saveGroup();
+    // log in as author
+    cy.logoutClearCookies();
+    cy.kcLogin(authorName);
+    // check read access data
+    DocumentPage.visit();
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 50);
+    // check read access addresses
+    Menu.switchTo('ADDRESSES');
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 10);
+    // login as ige and withdraw access
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
+    AdminGroupPage.saveGroup();
+  });
+
+  it('Author can be granted universal read + write access by adding to group universal rights #3267', () => {
+    const groupName = 'test_gruppe_3';
+    const authorName = 'author-with-groups';
+
+    // activate universal access in group
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
+    AdminGroupPage.saveGroup();
+    // log in as author
+    cy.logoutClearCookies();
+    cy.kcLogin(authorName);
+    // check read access data
+    DocumentPage.visit();
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('not.have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 50);
+    // check read access addresses
+    Menu.switchTo('ADDRESSES');
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('not.have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 10);
+    // login as ige and withdraw access
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
+    // revoke read access that was automatically granted with right access
+    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
+    AdminGroupPage.saveGroup();
   });
 });

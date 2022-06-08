@@ -70,7 +70,7 @@ export class AdminGroupPage extends BasePage {
   static selectGroup(name: string) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table').contains(name).click();
-    // cy.get('#formRoles').should('be.visible');
+    cy.contains('.user-title', name, { timeout: 8000 }).should('exist');
   }
 
   static clearSearch() {
@@ -168,6 +168,13 @@ export class AdminGroupPage extends BasePage {
     cy.get('.more-info div[fxlayout="row"]:nth-child(' + key + ')').within(() => {
       cy.get('div').eq(1).should('have.text', value);
     });
+  }
+
+  static grantOrRevokeUniversalRights(access: 'Leserecht' | 'Schreibrecht', revoke = false) {
+    cy.contains('ige-permissions label', access, { timeout: 8000 }).click();
+    cy.wait(500)
+      .contains('ige-permissions mat-slide-toggle', access)
+      .should(`${revoke ? 'not.' : ''}have.class`, 'mat-checked');
   }
 }
 
