@@ -278,7 +278,7 @@ describe('Group', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(group2);
     // check that access right cannot be changed
-    cy.get('[label="Berechtigungen Daten"]')
+    cy.get('[data-cy="Berechtigungen Daten"]')
       .contains(documentName)
       .parent()
       .parent()

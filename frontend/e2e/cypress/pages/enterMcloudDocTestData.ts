@@ -132,7 +132,7 @@ export class enterMcloudDocTestData {
 
   static openSpatialMenuDoc(spatialName: string) {
     DocumentPage.clickSpatialEntry(spatialName);
-    cy.get('ige-formly--type mat-list')
+    cy.get('ige-formly-leaflet-type mat-list')
       .find('.mat-list-item-content:contains(' + spatialName + ') [data-mat-icon-name=Mehr]')
       .click();
   }
