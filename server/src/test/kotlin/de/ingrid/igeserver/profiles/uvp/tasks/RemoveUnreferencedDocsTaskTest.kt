@@ -23,12 +23,28 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
     val catalogRepo = mockk<CatalogRepository>()
     val task = RemoveUnreferencedDocsTask(fileSystemStorage, entityManager, catalogRepo)
 
-    fun init(docs: String) {
+    fun init(
+        applicationDocs: String,
+        announcementDocs: String = "null",
+        reportsRecommendationDocs: String = "null",
+        furtherDocs: String = "null",
+        considerationDocs: String = "null",
+        approvalDocs: String = "null",
+        decisionDocs: String = "null",
+        negativeDocs: String = "null"
+    ) {
         clearAllMocks()
-        every { catalogRepo.findAllByType("uvp") } returns listOf(Catalog().apply { 
+        every { catalogRepo.findAllByType("uvp") } returns listOf(Catalog().apply {
             identifier = "test-cat"
         })
-        val input = jacksonObjectMapper().readValue("""{"applicationDocs": ${docs}}""", JsonNode::class.java)
+        val input = jacksonObjectMapper().readValue(
+            """{"applicationDocs": $applicationDocs, "announcementDocs": $announcementDocs, "reportsRecommendationDocs": $reportsRecommendationDocs, 
+                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }""".trimMargin(),
+            JsonNode::class.java
+        )
+        val inputNegative = jacksonObjectMapper().readValue(
+            """{"uvpNegativeDecisionDocs": $negativeDocs}""".trimMargin(), JsonNode::class.java
+        )
 
         every {
             entityManager.createNativeQuery(sqlSteps).unwrap(NativeQuery::class.java)
@@ -41,7 +57,7 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
                 .addScalar("uuid")
                 .addScalar("catalogId")
                 .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE).resultList
-        } returns emptyList()
+        } returns listOf(arrayOf("123", "test-cat", inputNegative))
     }
 
     test("no uvp catalog") {
@@ -64,7 +80,7 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
 
     test("referenced document should not be deleted") {
         init("""[{"downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(FileSystemItem(fileSystemStorage, "test-cat", "", "", "", "abc", "", 0, null, false, Scope.PUBLISHED))
+        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(fakeFile(fileSystemStorage, "abc"))
         task.start()
 
         verify(exactly = 0) {
@@ -73,12 +89,47 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
     }
 
     test("not referenced document should be deleted") {
-        init("[]")
-        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(FileSystemItem(fileSystemStorage, "test-cat", "", "", "", "abc", "", 0, null, false, Scope.PUBLISHED))
+        init("[]", negativeDocs = """[{"downloadURL": { "asLink": false, "uri": "negative"}}]""")
+        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(
+            fakeFile(fileSystemStorage, "abc"),
+            fakeFile(fileSystemStorage, "negative")
+        )
         task.start()
 
         verify(exactly = 1) {
             fileSystemStorage.delete("test-cat", any())
         }
     }
+
+    test("referenced document in all tables should not be deleted") {
+        init(
+            """[{"downloadURL": { "asLink": false, "uri": "a"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "b"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "c"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "d"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "e"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "f"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "g"}}]""",
+            """[{"downloadURL": { "asLink": false, "uri": "h"}}]""",
+        )
+        val files = listOf(
+            fakeFile(fileSystemStorage, "a"),
+            fakeFile(fileSystemStorage, "b"),
+            fakeFile(fileSystemStorage, "c"),
+            fakeFile(fileSystemStorage, "d"),
+            fakeFile(fileSystemStorage, "e"),
+            fakeFile(fileSystemStorage, "f"),
+            fakeFile(fileSystemStorage, "g"),
+            fakeFile(fileSystemStorage, "h"),
+        )
+        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns files
+        task.start()
+
+        verify(exactly = 0) {
+            fileSystemStorage.delete("test-cat", any())
+        }
+    }
 })
+
+private fun fakeFile(fileSystemStorage: FileSystemStorage, file: String) =
+    FileSystemItem(fileSystemStorage, "test-cat", "", "", "123", file, "", 0, null, false, Scope.PUBLISHED)

@@ -39,15 +39,20 @@ class RemoveUnreferencedDocsTask(val storage: FileSystemStorage,
     
     private fun cleanupFilesForCatalogId(identifier: String) {
         val docs = queryDocs(sqlSteps, "step")
+        val negativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs")
+
         val uploads = docs.map {DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(it[2] as JsonNode))}
+        val uploadsNegative = negativeDocs.map {DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs"))}
+        val allUploads = uploads + uploadsNegative
+        
         val publishedFiles: List<FileSystemItem> = this.storage.list(identifier, Scope.PUBLISHED)
-        val draftFiles: List<FileSystemItem> = this.storage.list(identifier, Scope.PUBLISHED)
+        val draftFiles: List<FileSystemItem> = this.storage.list(identifier, Scope.UNPUBLISHED)
 
         val referencedFiles = mutableListOf<FileSystemItem>()
         
         val allFiles = publishedFiles + draftFiles
         allFiles.forEach { file ->
-            uploads
+            allUploads
                 .filter { it.catalogId == identifier }
                 .filter { file.path.startsWith(it.uuid) }
                 .filter { it.urls.any { url -> url.uri == file.file} }
