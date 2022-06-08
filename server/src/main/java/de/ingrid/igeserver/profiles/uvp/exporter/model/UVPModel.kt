@@ -53,7 +53,7 @@ data class UVPModel(
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val nonHiddenAddress = ref.getParentAddresses(ref.id)
+        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id)
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
@@ -171,7 +171,7 @@ data class UVPModel(
     private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getParentAddresses(parent)
+        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent)
     }
 
 

@@ -44,24 +44,31 @@ data class AddressModel(
             address = getAddressInformationFromParent(parent)
         }*/
     }
-    
-    fun getParentAddresses(parentId: Int?): MutableList<AddressModel> {
-        if (parentId == null) return mutableListOf()
-        
-        val parent = documentService!!.getWrapperByDocumentId(parentId)
-        val publishedParent = parent.published
-        if (publishedParent == null || publishedParent.type == "FOLDER") {
+
+    /**
+     *  Get all ancestors of address including itself.
+     *  Addresses with the flag hideAddress are ignored,
+     *  but only if they have a parent themselves.
+     *  @return List of ancestors
+     */
+    fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<AddressModel> {
+        if (id == null) return mutableListOf()
+
+        val doc = documentService!!.getWrapperByDocumentId(id)
+        val publishedDoc = doc.published
+        if (publishedDoc == null || publishedDoc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()
         }
-        
-        val convertedParent = addInternalFields(publishedParent, parent)
 
-        return if (parent.parent != null) {
-            val otherParent = getParentAddresses(parent.parent!!.id!!)
-            if (convertedParent.hideAddress != true) otherParent.add(convertedParent)
-            otherParent
+        val convertedDoc = addInternalFields(publishedDoc, doc)
+
+        return if (doc.parent != null) {
+            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!)
+            // ignore hideAddress if address has no ancestors
+            if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
+            ancestors
         } else {
-            mutableListOf(convertedParent)
+            mutableListOf(convertedDoc)
         }
     }
 
