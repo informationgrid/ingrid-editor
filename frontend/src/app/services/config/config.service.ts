@@ -58,7 +58,7 @@ export class ConfigService {
     featureFlags: {},
     menuGroups: [
       {
-        title: "Einstellungen",
+        title: "Verwaltung",
         adminOnly: true,
         entries: [
           {
@@ -77,7 +77,7 @@ export class ConfigService {
             link: "/settings/catalog",
           },
           {
-            label: "iBus",
+            label: "iBus-Verwaltung",
             isRouterLink: true,
             link: "/settings/ibus",
           },

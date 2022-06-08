@@ -36,7 +36,7 @@ export const routing = RouterModule.forChild([
         path: "catalog",
         component: CatalogManagementComponent,
         data: {
-          title: "Katalog-Verwaltung",
+          title: "Katalogverwaltung",
         },
       },
       {
