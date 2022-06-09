@@ -543,6 +543,7 @@ describe('User', () => {
     // activate universal read access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
+    cy.contains('.user-title', groupName, { timeout: 8000 }).should('exist');
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht');
     AdminGroupPage.saveGroup();
     // log in as author
@@ -570,6 +571,7 @@ describe('User', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
+    cy.contains('.user-title', groupName, { timeout: 8000 }).should('exist');
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
     AdminGroupPage.saveGroup();
   });
@@ -581,6 +583,7 @@ describe('User', () => {
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
+    cy.contains('.user-title', groupName, { timeout: 8000 }).should('exist');
     AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
     AdminGroupPage.saveGroup();
     // log in as author
@@ -608,6 +611,7 @@ describe('User', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroup(groupName);
+    cy.contains('.user-title', groupName, { timeout: 8000 }).should('exist');
     AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
     // revoke read access that was automatically granted with right access
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
