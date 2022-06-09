@@ -10,6 +10,7 @@ export interface PasteDialogOptions {
   contentText: string;
   disabledCondition: any;
   forAddress: boolean;
+  typeToInsert: string;
 }
 
 @Component({

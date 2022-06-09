@@ -11,6 +11,7 @@
     <ige-destination-selection
         [disableRoot]="!isAdmin"
         [forAddress]="data.forAddress"
+        [typeToInsert]="data.typeToInsert"
         (choice)="handleSelected($event)"
     ></ige-destination-selection>
 </mat-dialog-content>
