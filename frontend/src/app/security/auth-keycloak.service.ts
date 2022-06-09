@@ -7,7 +7,7 @@ export class AuthKeycloakService extends AuthenticationService {
   }
 
   refreshToken() {
-    this.keycloak.updateToken(60).catch((error) => {
+    this.keycloak.updateToken().catch((error) => {
       console.error("Token could not be updated");
     });
   }
