@@ -58,7 +58,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.timer$ = timer(0, this.oneSecondInMilliseconds)
       .pipe(
         scan((acc) => --acc, duration),
-        takeWhile((x) => x >= 0)
+        takeWhile((x) => x >= -10)
       )
       .subscribe((time) => {
         if (time % 60 == 0 || time < 300) {
@@ -92,6 +92,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       );
       this.modalService.showIgeError(error);
       setTimeout(() => this.keycloak.logout(), 5000);
+      this.timer$.unsubscribe();
     }
   }
 

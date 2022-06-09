@@ -6,6 +6,7 @@ import { AuthenticationService } from "./authentication.service";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { User } from "../+user/user";
+import { ModalService } from "../services/modal/modal.service";
 
 @Injectable({
   providedIn: "root",
@@ -13,10 +14,14 @@ import { User } from "../+user/user";
 export class AuthenticationFactory {
   auth: AuthenticationService;
 
-  constructor(private keycloak: KeycloakService, private http: HttpClient) {}
+  constructor(
+    private keycloak: KeycloakService,
+    private http: HttpClient,
+    private modalService: ModalService
+  ) {}
 
   initWithKeycloak() {
-    this.auth = new AuthKeycloakService(this.keycloak);
+    this.auth = new AuthKeycloakService(this.keycloak, this.modalService);
   }
 
   initWithoutKeycloak() {
