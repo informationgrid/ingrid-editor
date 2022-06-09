@@ -3,10 +3,12 @@ package de.ingrid.igeserver.tasks
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+@Profile("codelist-repo")
 @Component
 class CodelistTask(val codeListService: CodeListService) {
     val log = logger()
