@@ -125,6 +125,7 @@ describe('uvp documents', () => {
     DocumentPage.choosePublishOption(PublishOptions.ConfirmPublish, true);
     BasePage.checkErrorDialogMessage('Es trat ein Fehler bei der JSON-Schema Validierung auf');
   });
+
   it('should add a maximum one spatial reference (#3747) using UI', () => {
     const docTitle = 'A_mit_2_Raumbezug_UI' + Utils.randomString();
     DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, null);
@@ -134,5 +135,15 @@ describe('uvp documents', () => {
     Tree.openNode([docTitle]);
     enterMcloudDocTestData.setSpatialBbox('add spatial reference uvp', 'Berlin', false);
     cy.get('[data-cy="spatialButton"]').should('not.exist');
+  });
+
+  it('should search for uvp documents according to uvp document type parameter', () => {
+    Menu.switchTo('RESEARCH');
+    uvpPage.setSearchParameter('Verfahrenstyp', 'Zulassungsverfahren');
+    ResearchPage.waitForSearch();
+    // make sure search returns only documents of the right type
+    cy.get('tbody tr').each(el => {
+      cy.wrap(el).find('mat-icon').invoke('attr', 'data-mat-icon-name').should('eq', 'zulassungsverfahren');
+    });
   });
 });
