@@ -37,23 +37,23 @@ class RemoveUnreferencedDocsTask(val storage: FileSystemStorage,
     }
     
     
-    private fun cleanupFilesForCatalogId(identifier: String) {
-        val docs = queryDocs(sqlSteps, "step")
-        val negativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs")
+    private fun cleanupFilesForCatalogId(catalogId: String) {
+        val docs = queryDocs(sqlStepsWithDrafts, "step")
+        val negativeDocs = queryDocs(sqlNegativeDecisionDocsWithDraft, "negativeDocs")
 
         val uploads = docs.map {DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(it[2] as JsonNode))}
         val uploadsNegative = negativeDocs.map {DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs"))}
         val allUploads = uploads + uploadsNegative
         
-        val publishedFiles: List<FileSystemItem> = this.storage.list(identifier, Scope.PUBLISHED)
-        val draftFiles: List<FileSystemItem> = this.storage.list(identifier, Scope.UNPUBLISHED)
+        val publishedFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.PUBLISHED)
+        val draftFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.UNPUBLISHED)
 
         val referencedFiles = mutableListOf<FileSystemItem>()
         
         val allFiles = publishedFiles + draftFiles
         allFiles.forEach { file ->
             allUploads
-                .filter { it.catalogId == identifier }
+                .filter { it.catalogId == catalogId }
                 .filter { file.path.startsWith(it.uuid) }
                 .filter { it.urls.any { url -> url.uri == file.file} }
                 .forEach { _ -> referencedFiles.add(file)}
@@ -61,11 +61,11 @@ class RemoveUnreferencedDocsTask(val storage: FileSystemStorage,
         
         val unreferencedFiles = allFiles.filter { file -> referencedFiles.none { ref -> ref.file == file.file } }
         
-        log.debug("referenced files in catalog $identifier: ${referencedFiles.size}")
-        log.debug("unreferenced files in catalog $identifier: ${unreferencedFiles.size}")
+        log.debug("referenced files in catalog $catalogId: ${referencedFiles.size}")
+        log.debug("unreferenced files in catalog $catalogId: ${unreferencedFiles.size}")
         
         
-        unreferencedFiles.forEach { storage.delete(identifier, it) }
+        unreferencedFiles.forEach { storage.delete(catalogId, it) }
     }
 
     private fun queryDocs(query: String, jsonbField: String): List<Array<Any>> {

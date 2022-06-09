@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 
 data class UploadInfo(val uri: String, val validUntil: String?)
 
-val sqlSteps = """
+val sqlStepsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
         FROM catalog,
              document_wrapper dw,
@@ -17,7 +17,20 @@ val sqlSteps = """
           AND dw.published = doc.id
     """.trimIndent()
 
-val sqlNegativeDecisionDocs = """
+val sqlStepsWithDrafts = """
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        FROM catalog,
+             document_wrapper dw,
+             document doc,
+             jsonb_array_elements(doc.data -> 'processingSteps') elems
+        WHERE dw.catalog_id = catalog.id
+          AND catalog.type = 'uvp'
+          AND dw.deleted = 0
+          AND dw.category = 'data'
+          AND (dw.published = doc.id OR dw.draft = doc.id)
+    """.trimIndent()
+
+val sqlNegativeDecisionDocsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
         FROM catalog,
              document_wrapper dw,
@@ -27,6 +40,19 @@ val sqlNegativeDecisionDocs = """
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.published = doc.id
+          AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
+    """.trimIndent()
+
+val sqlNegativeDecisionDocsWithDraft = """
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        FROM catalog,
+             document_wrapper dw,
+             document doc
+        WHERE dw.catalog_id = catalog.id
+          AND catalog.type = 'uvp'
+          AND dw.deleted = 0
+          AND dw.category = 'data'
+          AND (dw.published = doc.id OR dw.draft = doc.id)
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 

@@ -84,8 +84,8 @@ class UploadExpiredTask(
         upload.validUntil != null && today.isAfter(OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate())
 
     private fun getPublishedDocumentsByCatalog(docId: Int?): List<PublishedUploads> {
-        val result = queryDocs(sqlSteps, "step", docId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", docId)
+        val result = queryDocs(sqlStepsPublished, "step", docId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId)
 
         val stepUrls =
             result.map { PublishedUploads(it[1].toString(), it[0].toString(), getUrlsFromJsonField(it[2] as JsonNode)) }

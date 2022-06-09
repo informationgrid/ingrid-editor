@@ -47,13 +47,13 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
         )
 
         every {
-            entityManager.createNativeQuery(sqlSteps).unwrap(NativeQuery::class.java)
+            entityManager.createNativeQuery(sqlStepsWithDrafts).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
                 .addScalar("step", JsonNodeBinaryType.INSTANCE).resultList
         } returns listOf(arrayOf("123", "test-cat", input))
         every {
-            entityManager.createNativeQuery(sqlNegativeDecisionDocs).unwrap(NativeQuery::class.java)
+            entityManager.createNativeQuery(sqlNegativeDecisionDocsWithDraft).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
                 .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE).resultList
@@ -112,16 +112,9 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
             """[{"downloadURL": { "asLink": false, "uri": "g"}}]""",
             """[{"downloadURL": { "asLink": false, "uri": "h"}}]""",
         )
-        val files = listOf(
-            fakeFile(fileSystemStorage, "a"),
-            fakeFile(fileSystemStorage, "b"),
-            fakeFile(fileSystemStorage, "c"),
-            fakeFile(fileSystemStorage, "d"),
-            fakeFile(fileSystemStorage, "e"),
-            fakeFile(fileSystemStorage, "f"),
-            fakeFile(fileSystemStorage, "g"),
-            fakeFile(fileSystemStorage, "h"),
-        )
+        var fileName = 'a'
+        val files = (1..8).map { fakeFile(fileSystemStorage, (fileName++).toString()) }
+        
         every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns files
         task.start()
 

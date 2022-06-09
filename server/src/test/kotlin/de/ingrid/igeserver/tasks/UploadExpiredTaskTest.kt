@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
-import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocs
-import de.ingrid.igeserver.profiles.uvp.tasks.sqlSteps
+import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
+import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
@@ -31,13 +31,13 @@ class UploadExpiredTaskTest : FunSpec({
 
 //        every { fileSystemStorage.docsDir } returns ""
         every {
-            entityManager.createNativeQuery(sqlSteps).unwrap(NativeQuery::class.java)
+            entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
                 .addScalar("step", JsonNodeBinaryType.INSTANCE).resultList
         } returns listOf(arrayOf("123", "test-cat", input))
         every {
-            entityManager.createNativeQuery(sqlNegativeDecisionDocs).unwrap(NativeQuery::class.java)
+            entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
                 .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE).resultList
