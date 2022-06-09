@@ -226,7 +226,7 @@ class DatasetsApiController @Autowired constructor(
     private fun handleMove(catalogId: String, id: Int, options: CopyOptions) {
 
         if (id == options.destId) {
-            throw ConflictException.withReason("Cannot move '$id' to itself")
+            throw ConflictException.withReason("Es ist nicht möglich, ein Dokument/einen Ordner in sich selbst zu verschieben")
         }
         validateCopyOperation(catalogId, id, options.destId)
 
