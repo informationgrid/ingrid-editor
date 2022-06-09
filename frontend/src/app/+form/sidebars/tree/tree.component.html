@@ -87,7 +87,8 @@
                     [svgIcon]="node.iconClass"
                     [ngClass]="['document-icon', getStateClass(node)]"
                 ></mat-icon>
-                <span>{{ node.title }}</span>
+                <!-- TODO: replace with matTooltip and matTooltipShowDelay when https://github.com/angular/components/pull/24652 is merged -->
+                <span title="{{ node.title }}">{{ node.title }}</span>
             </div>
         </div>
     </mat-tree-node>
