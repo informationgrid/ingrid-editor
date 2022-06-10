@@ -95,9 +95,12 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         val requiredPermission = resolvePermission(permission)
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
 
+
+        // root permission handling
         if (checkForRootPermissions(sids, requiredPermission)) {
             if (domainObject is DocumentWrapper) {
-                domainObject.hasWritePermission = sids.any { (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_write_root" }
+                addWritePermissionInfo(domainObject, this.aclService.readAclById(oid, sids), sids)
+                domainObject.hasWritePermission = domainObject.hasWritePermission || sids.any { (it as? GrantedAuthoritySid)?.grantedAuthority == "SPECIAL_write_root" }
             }
             return true
         };
