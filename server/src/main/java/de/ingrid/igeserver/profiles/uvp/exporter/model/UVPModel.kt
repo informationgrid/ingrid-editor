@@ -144,9 +144,9 @@ data class UVPModel(
         return data.uvpNumbers
     }
 
-    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")
+    val formatterNoSeparator: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")
     val modified: String
         get() {
             return _modified.format(formatterOnlyDate)
