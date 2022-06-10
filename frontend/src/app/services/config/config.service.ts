@@ -106,6 +106,7 @@ export class ConfigService {
 
   private dataService: ConfigDataService;
   private isAdministrator = false;
+  private _hasRootWritePermission = false;
 
   constructor(private http: HttpClient, private snackbar: MatSnackBar) {
     this.dataService = new ConfigDataService(http);
@@ -132,6 +133,9 @@ export class ConfigService {
       this.isAdministrator =
         userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
 
+      this._hasRootWritePermission =
+        userInfo.permissions.indexOf("can_write_root") !== -1;
+
       this.$userInfo.next(userInfo);
       return userInfo;
     });
@@ -143,6 +147,10 @@ export class ConfigService {
 
   isAdmin(): boolean {
     return this.isAdministrator;
+  }
+
+  hasWriteRootPermission(): boolean {
+    return this._hasRootWritePermission;
   }
 
   hasFlags(flags: string | string[]) {

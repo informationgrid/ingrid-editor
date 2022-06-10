@@ -21,7 +21,7 @@ export class PasteDialogComponent implements OnInit {
   selection: string = null;
   path: string[];
   query: TreeQuery | AddressTreeQuery;
-  isAdmin = this.config.isAdmin();
+  hasWriteRootPermission = this.config.hasWriteRootPermission();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions,

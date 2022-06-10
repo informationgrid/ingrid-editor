@@ -100,7 +100,7 @@ export class TreeComponent implements OnInit {
 
   dragManager: DragNDropUtils;
   isDragging = false;
-  isAdmin = this.configService.isAdmin();
+  hasWriteToRootPermission = this.configService.hasWriteRootPermission();
 
   constructor(
     private database: DynamicDatabase,

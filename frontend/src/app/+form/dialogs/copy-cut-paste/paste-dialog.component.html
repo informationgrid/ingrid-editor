@@ -9,7 +9,7 @@
 
 <mat-dialog-content class="hide-tab-header create-dlg-content">
     <ige-destination-selection
-        [disableRoot]="!isAdmin"
+        [disableRoot]="!hasWriteRootPermission"
         [forAddress]="data.forAddress"
         [typeToInsert]="data.typeToInsert"
         (choice)="handleSelected($event)"
@@ -22,7 +22,7 @@
         mat-stroked-button
         color="primary"
         data-cy="create-applyLocation"
-        [disabled]="!isAdmin && selection === null"
+        [disabled]="!hasWriteRootPermission && selection === null"
         [mat-dialog-close]="{ selection: selection, path: path }"
     >
         {{ data.buttonText }}

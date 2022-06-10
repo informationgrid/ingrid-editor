@@ -45,7 +45,7 @@ export class CreateNodeComponent implements OnInit {
   isFolder = true;
   formGroup: FormGroup;
   jumpedTreeNodeId: string = null;
-  isAdmin = this.config.isAdmin();
+  isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: string = null;
   pathWithWritePermission = false;
   private query: TreeQuery | AddressTreeQuery;
