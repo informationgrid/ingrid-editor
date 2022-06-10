@@ -2,7 +2,7 @@ export class ProfilePage {
   static visit() {
     cy.intercept('GET', 'api/info/currentUser').as('getUser');
     cy.visit('profile');
-    cy.wait('@getUser');
+    cy.wait('@getUser', { timeout: 9000 });
   }
 
   static loginUsingLoginPage(username: string, password: string) {
