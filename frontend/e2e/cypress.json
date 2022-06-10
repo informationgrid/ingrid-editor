@@ -4,9 +4,7 @@
   "ignoreTestFiles": "**/*.local.ts",
   "reporterOptions": {
     "reportDir": "./cypress/mochawesome-reports",
-    "files": [
-      "./cypress/mochawesome-reports"
-    ],
+    "files": ["./cypress/mochawesome-reports"],
     "overwrite": false,
     "html": false,
     "json": true,
