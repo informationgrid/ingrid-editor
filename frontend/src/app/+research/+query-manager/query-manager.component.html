@@ -32,7 +32,7 @@
                     <span [title]="query.modified | date: 'long'">{{
                         query.modified | dateAgo: "DE"
                     }}</span>
-                    <ng-container *ngIf="type.canDelete">
+                    <ng-container *ngIf="query.canDelete; else placeholder">
                         <button
                             mat-icon-button
                             class="menu-button"
@@ -50,6 +50,9 @@
                             </button>
                         </mat-menu>
                     </ng-container>
+                    <ng-template #placeholder
+                        ><span style="width: 66px"></span
+                    ></ng-template>
                     <mat-divider></mat-divider>
                 </mat-list-option>
             </mat-selection-list>

@@ -3,8 +3,13 @@ export interface Query {
   id?: string;
   name: string;
   description: string;
-  isCatalogQuery?: boolean;
+  isCatalogQuery: boolean;
   modified?: any;
+  userId?: string;
+}
+
+export interface QueryUI extends Query {
+  canDelete: boolean;
 }
 
 export interface SqlQuery extends Query {

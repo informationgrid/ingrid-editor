@@ -19,7 +19,7 @@ class QueryService @Autowired constructor(
 
         val catRef = this.catalog.findByIdentifier(catalogId)
         return query.findAllByCatalog(catRef)
-            .filter { it.systemQuery || it.user?.userId == userId }
+            .filter { it.global || it.user?.userId == userId }
 
     }
 
