@@ -403,6 +403,7 @@ class DatasetsApiController @Autowired constructor(
         id: Int,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
+        val permissionInfo = aclService.getPermissionInfo(principal as Authentication, id)
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -415,8 +416,8 @@ class DatasetsApiController @Autowired constructor(
             doc.data.put(FIELD_PARENT, wrapper.parent?.id)
             doc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
             doc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-            doc.hasWritePermission = wrapper.hasWritePermission
-            doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+            doc.hasWritePermission = permissionInfo.canWrite
+            doc.hasOnlySubtreeWritePermission = permissionInfo.canOnlyWriteSubtree
             val jsonDoc = documentService.convertToJsonNode(doc)
             return ResponseEntity.ok(jsonDoc)
         } catch (ex: AccessDeniedException) {
