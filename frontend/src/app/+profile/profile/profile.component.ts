@@ -65,9 +65,9 @@ export class ProfileComponent implements OnInit {
         data: (<ConfirmDialogData>{
           title: "Passwort ändern",
           message:
-            "Sie werden zur Login-Seite umgeleitet, wo Sie aufgefordert werden, sich mit ihrem alten Passwort " +
-            "anzumelden. Danach werden Sie dazu aufgefordert, ein neues Passwort zu vergeben. " +
-            "Möchten Sie das Passwort jetzt ändern?",
+            "Sie werden zur Login-Seite umgeleitet, wo Sie aufgefordert werden, Ihr neues Passwort zu vergeben. " +
+            "Eventuell müssen Sie sich mit ihrem alten Passwort anmelden, um die Änderung vorzunehmen. " +
+            "Möchten Sie Ihr Passwort jetzt ändern?",
           buttons: [
             { text: "Abbrechen" },
             {
