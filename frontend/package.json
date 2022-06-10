@@ -18,8 +18,7 @@
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer",
-    "prepare": "cd .. && husky install frontend/.husky",
-    "stop-only": "stop-only"
+    "prepare": "cd .. && husky install frontend/.husky"
   },
   "private": true,
   "dependencies": {

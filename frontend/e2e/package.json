@@ -28,8 +28,5 @@
     "cypress-file-upload": "^5.0.8",
     "cypress-intellij-reporter": "^0.0.7",
     "cypress-keycloak-commands": "^1.2.0"
-  },
-  "lint-staged": {
-    "*.{ts,js,md}": "prettier --check"
   }
 }
