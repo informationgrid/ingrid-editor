@@ -76,6 +76,7 @@ import {
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
+import { ValidUntilDialogComponent } from "./types/table/valid-until-dialog/valid-until-dialog.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -254,6 +255,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectTypeComponent,
     UvpSectionsComponent,
     ReferencedDocumentsTypeComponent,
+    ValidUntilDialogComponent,
   ],
   exports: [
     ReactiveFormsModule,

@@ -17,6 +17,7 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "./upload-files-dialog/upload-files-dialog.component";
+import { ValidUntilDialogComponent } from "./valid-until-dialog/valid-until-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -300,5 +301,17 @@ export class TableTypeComponent
         );
       }
     }
+  }
+
+  setValidUntil() {
+    this.dialog
+      .open(ValidUntilDialogComponent)
+      .afterClosed()
+      .pipe(filter((result) => result !== undefined))
+      .subscribe((date) => {
+        const dateObj = date === null ? null : new Date(date);
+        this.selection.selected.forEach((row) => (row.validUntil = dateObj));
+        this.updateTableDataToForm(this.dataSource.data);
+      });
   }
 }

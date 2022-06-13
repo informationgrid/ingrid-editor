@@ -61,6 +61,17 @@
             <mat-icon svgIcon="outline-delete-24px"></mat-icon>
             Löschen
         </button>
+
+        <button
+            *ngIf="to.batchValidUntil"
+            type="button"
+            mat-button
+            (click)="setValidUntil()"
+            [disabled]="selection.isEmpty()"
+        >
+            <mat-icon>today</mat-icon>
+            Gültig bis ändern
+        </button>
     </div>
 
     <ige-form-error

@@ -104,11 +104,13 @@ export class UvpShared extends BaseDoctype {
           this.addTable("announcementDocs", "Auslegungsinformationen", {
             required: true,
             columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
           }),
           this.addPublishConditionCheckbox("announcementDocs"),
           this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
             required: true,
             columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
           }),
           this.addPublishConditionCheckbox("applicationDocs"),
           this.addTable(
@@ -117,12 +119,14 @@ export class UvpShared extends BaseDoctype {
             {
               required: false,
               columns: this.columnsForDocumentTable,
+              batchValidUntil: "validUntil",
             }
           ),
           this.addPublishConditionCheckbox("reportsRecommendationDocs"),
           this.addTable("furtherDocs", "Weitere Unterlagen", {
             required: false,
             columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
           }),
           this.addPublishConditionCheckbox("furtherDocs"),
         ]),
@@ -157,6 +161,7 @@ export class UvpShared extends BaseDoctype {
             {
               required: true,
               columns: this.columnsForDocumentTable,
+              batchValidUntil: "validUntil",
             }
           ),
         ]),
@@ -184,10 +189,12 @@ export class UvpShared extends BaseDoctype {
           this.addTable("approvalDocs", "Auslegungsinformationen", {
             required: true,
             columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
           }),
           this.addTable("decisionDocs", "Entscheidung", {
             required: true,
             columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
           }),
         ]),
       ],
