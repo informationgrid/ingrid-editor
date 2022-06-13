@@ -190,7 +190,7 @@ export class ResearchPage {
         cy.get('.mat-checkbox-inner-container input').check({ force: true });
       });
     }
-    cy.intercept('POST', /api\/search\?/).as('saveChanges');
+    cy.intercept('POST', /api\/search/).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
     cy.wait('@saveChanges', { timeout: 7000 }).its('response.body.name').should('eq', title);
   }
