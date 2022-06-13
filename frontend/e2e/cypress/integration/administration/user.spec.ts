@@ -5,6 +5,7 @@ import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
 import { AdminGroupPage } from '../../pages/administration-group.page';
+import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -544,6 +545,7 @@ describe('User', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht');
+    UserAuthorizationPage.changeAccessRightFromWriteToRead('Neue Testdokumente', 'Daten');
     AdminGroupPage.saveGroup();
     // log in as author
     cy.logoutClearCookies();
@@ -571,6 +573,7 @@ describe('User', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
+    UserAuthorizationPage.changeAccessRightFromReadToWrite('Neue Testdokumente', 'Daten');
     AdminGroupPage.saveGroup();
   });
 
