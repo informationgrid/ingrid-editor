@@ -42,7 +42,10 @@ import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import {
+  MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MatTooltipModule,
+} from "@angular/material/tooltip";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { SectionWrapper } from "./formly/wrapper/section-wrapper.component";
@@ -241,6 +244,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: { duration: 2000 },
+    },
+    {
+      provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+      useValue: { disableTooltipInteractivity: true },
     },
 
     // WebSocket
