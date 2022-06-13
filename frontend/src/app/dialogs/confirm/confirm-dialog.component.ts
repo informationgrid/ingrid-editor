@@ -6,6 +6,7 @@ export interface ConfirmDialogData {
   message: string;
   list?: string[];
   confirmText?: string;
+  confirmButtonText?: string;
   buttons?: ConfirmDialogButton[];
   preformatted?: boolean;
 }
@@ -30,10 +31,8 @@ export interface ConfirmDialogButton {
 })
 export class ConfirmDialogComponent {
   textConfirmed: string;
-  leftAlignedButtons: ConfirmDialogButton[] = [{ text: "Abbrechen" }];
-  rightAlignedButtons: ConfirmDialogButton[] = [
-    { text: "Ok", id: "ok", emphasize: true },
-  ];
+  leftAlignedButtons: ConfirmDialogButton[];
+  rightAlignedButtons: ConfirmDialogButton[];
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
@@ -46,6 +45,12 @@ export class ConfirmDialogComponent {
       this.rightAlignedButtons = data.buttons.filter(
         (button) => button.alignRight
       );
+    } else {
+      // default buttons
+      this.leftAlignedButtons = [{ text: "Abbrechen" }];
+      this.rightAlignedButtons = [
+        { text: data.confirmButtonText ?? "Ok", id: "ok", emphasize: true },
+      ];
     }
   }
 
