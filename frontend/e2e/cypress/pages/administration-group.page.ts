@@ -72,6 +72,13 @@ export class AdminGroupPage extends BasePage {
     cy.get('groups-table').contains(name).click();
   }
 
+  static selectGroupAndWait(name: string) {
+    this.selectGroup(name);
+    cy.contains('.user-title', name, { timeout: 8000 }).should('exist');
+    // wait for filling form and end of animation (slider)
+    cy.wait(300);
+  }
+
   static clearSearch() {
     cy.get('[data-cy=search]').clear();
   }
