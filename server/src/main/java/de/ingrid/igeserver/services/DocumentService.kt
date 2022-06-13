@@ -504,7 +504,7 @@ class DocumentService @Autowired constructor(
             docRepo.deleteAllByUuid(id)
 
             // remove the wrapper
-            docWrapperRepo.deleteById(id)
+            docWrapperRepo.deleteById(id.toInt())
 
             // remove ACL from document, which works now since reference is by database ID instead of UUID
             // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique

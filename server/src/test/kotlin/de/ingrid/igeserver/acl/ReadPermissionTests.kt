@@ -98,17 +98,20 @@ class ReadPermissionTests : AnnotationSpec() {
 
     @Test(expected = AccessDeniedException::class)
     fun deleteNotAllowedToDocumentInGroup() {
-        docWrapperRepo.deleteById(rootUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
+        docWrapperRepo.deleteById(doc.id!!)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun deleteNotAllowedToSubDocumentInGroup() {
-        docWrapperRepo.deleteById(childUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
+        docWrapperRepo.deleteById(doc.id!!)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun deleteNotAllowedToDocumentNotInGroup() {
-        docWrapperRepo.deleteById(excludedUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
+        docWrapperRepo.deleteById(doc.id!!)
     }
 
 
