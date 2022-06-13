@@ -716,7 +716,7 @@ export class DocumentService {
     ids.forEach((id) => {
       const parentId = store.getValue().entities[id]._parent;
 
-      store.update(id, { _parent: parent });
+      store.update(id, { _parent: parent, isRoot: parent === null });
 
       // update children information of parent of each moved dataset
       const entities = store.getValue().entities;
