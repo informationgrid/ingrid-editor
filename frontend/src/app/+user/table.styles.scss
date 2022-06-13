@@ -40,6 +40,12 @@ table {
       padding: 0 12px;
     }
   }
+
+  .mat-header-cell:first-of-type {
+    ::ng-deep .mat-sort-header-content {
+      padding-left: 0 !important;
+    }
+  }
 }
 
 .mat-row .menu-button {
@@ -72,4 +78,14 @@ table {
 .section-title {
   font-weight: 500;
   padding: 10px 5px 10px 24px;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    color: $ige-secondary;
+    margin-left: 5px;
+  }
 }
