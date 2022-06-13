@@ -38,7 +38,7 @@ class PlannedPublishTask(val documentService: DocumentService, val catalogServic
                 "Task",
                 listOf(
                     SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_GROUP_MANAGER"), // needed for ACL changes
+                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
                 )
             )
         SecurityContextHolder.getContext().authentication = auth

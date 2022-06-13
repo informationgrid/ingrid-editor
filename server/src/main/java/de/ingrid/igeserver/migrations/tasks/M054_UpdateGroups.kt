@@ -65,7 +65,7 @@ class M054_UpdateGroups : MigrationBase("0.54") {
                 "Task",
                 listOf(
                     SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_GROUP_MANAGER"), // needed for ACL changes
+                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
                 )
             )
         SecurityContextHolder.getContext().authentication = auth

@@ -57,7 +57,7 @@ open class ACLContext {
 
     @Bean
     open fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
-        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_GROUP_MANAGER"))
+        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
     }
 
     @Bean
