@@ -359,7 +359,7 @@ export class TreeComponent implements OnInit {
     const isExpanded = this.treeControl.isExpanded(parentNode);
     this.database
       .getChildren(parentNodeId, true, this.forAddresses)
-      .subscribe((children) => {
+      .subscribe(() => {
         if (isExpanded) {
           this.treeControl.collapse(parentNode);
         }
@@ -534,7 +534,6 @@ export class TreeComponent implements OnInit {
 
   private async moveNodes(srcDocIds: string[], destination: string) {
     const id = <string>srcDocIds[0];
-    const uuid = this.dataSource.getNode(id)._uuid;
 
     const treeNodes = srcDocIds.map((docId) =>
       this.dataSource.data.find((item) => item._id === docId)
