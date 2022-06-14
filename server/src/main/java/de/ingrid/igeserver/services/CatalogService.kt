@@ -172,7 +172,7 @@ class CatalogService @Autowired constructor(
 
     fun createUser(catalogId: String, userModel: User): UserInfo {
 
-        // TODO merge existing user who is allready in different catalog
+        // TODO merge existing user who is already in different catalog
         val user = convertUser(catalogId, userModel)
         user.data?.creationDate = Date()
         user.data?.modificationDate = Date()
@@ -193,7 +193,6 @@ class CatalogService @Autowired constructor(
                     modificationDate = Date()
                 )
             }
-            data?.organisation = user.organisation
             data?.modificationDate = user.modificationDate
 
             groups = mergeGroups(catalogId, groups, user)
@@ -352,7 +351,8 @@ class CatalogService @Autowired constructor(
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)
         user.role = igeUser.role?.name ?: ""
-        user.organisation = igeUser.data?.organisation ?: ""
+        // if not already set with keycloak check in legacy field of UserInfoData
+        user.organisation = if (user.organisation != "") user.organisation else igeUser.data?.organisation ?: ""
         return user
     }
 

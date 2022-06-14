@@ -195,6 +195,9 @@ class KeycloakService : UserManagementService {
             firstName = user.firstName ?: "",
             lastName = user.lastName ?: "",
             email = user.email ?: "",
+            phoneNumber = user.attributes?.get("phoneNumber")?.get(0)?.toString() ?: "",
+            organisation = user.attributes?.get("institution")?.get(0)?.toString() ?: "",
+            department = user.attributes?.get("department")?.get(0)?.toString() ?: "",
             latestLogin = null,
 //            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
         )
@@ -418,6 +421,10 @@ class KeycloakService : UserManagementService {
     private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
 
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
+        userRep.attributes = userRep.attributes ?: mutableMapOf()
+        userRep.attributes["phoneNumber"] = listOf( user.phoneNumber)
+        userRep.attributes["institution"] = listOf( user.organisation)
+        userRep.attributes["department"] = listOf( user.department)
 
         return userRep.apply {
             username = user.login.lowercase()

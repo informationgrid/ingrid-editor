@@ -94,6 +94,24 @@ export const getUserFormFields = (
       },
     },
     {
+      key: "department",
+      type: "input",
+      wrappers: ["panel", "form-field"],
+      templateOptions: {
+        externalLabel: "Abteilung",
+        appearance: "outline",
+      },
+    },
+    {
+      key: "phoneNumber",
+      type: "input",
+      wrappers: ["panel", "form-field"],
+      templateOptions: {
+        externalLabel: "Telefonnummer",
+        appearance: "outline",
+      },
+    },
+    {
       key: "groups",
       type: "repeatList",
       wrappers: ["panel"],

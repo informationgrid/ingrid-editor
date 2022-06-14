@@ -12,6 +12,8 @@ data class User(
     var email: String = "",
     var role: String = "",
     var organisation: String = "",
+    var phoneNumber: String = "",
+    var department: String = "",
     var groups: List<Int> = emptyList(),
     var creationDate: Date = Date(0),
     var modificationDate: Date = Date(0),

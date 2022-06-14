@@ -78,6 +78,8 @@ export const getNewUserFormFields = (
       templateOptions: {
         externalLabel: "E-Mail",
         appearance: "outline",
+        description:
+          'An die angegebene Email-Adresse wird bei Klick auf "Anlegen" eine automatische Email mit dem Passwort versendet.',
         required: true,
       },
       validators: {
