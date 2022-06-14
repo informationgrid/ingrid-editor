@@ -6,7 +6,7 @@ export class ResearchPage {
   static visit(): void {
     cy.intercept({ method: 'POST', url: '/api/search/query', times: 1 }).as('searchOnVisit');
     cy.visit('research');
-    cy.wait('@searchOnVisit', { timeout: 10000 });
+    cy.wait('@searchOnVisit', { timeout: 20000 });
   }
 
   static search(query: string): void {
