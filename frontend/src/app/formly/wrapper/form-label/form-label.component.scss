@@ -29,7 +29,8 @@
 :host-context(.hasContextHelp) {
   &:hover {
     .contextHelpIcon {
-      display: inline-block;
+      position: absolute;
+      display: block;
     }
 
     label {
