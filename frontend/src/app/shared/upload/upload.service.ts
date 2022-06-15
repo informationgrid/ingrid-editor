@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
 import { KeycloakService } from "keycloak-angular";
 import { Observable } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { IgeError } from "../../models/ige-error";
 
 export type ExtractOption = "RENAME" | "REPLACE";
 
@@ -84,9 +86,9 @@ export class UploadService {
 
     let start = uri.lastIndexOf("/") + 1;
     const filename = uri.substring(start);
-    this.getFile(docUuid, uri).subscribe((data) =>
-      this.handleDownloadProcess(data, filename)
-    );
+    this.getFile(docUuid, uri)
+      .pipe(catchError((error) => this.handleDownloadError(error)))
+      .subscribe((data) => this.handleDownloadProcess(data, filename));
   }
 
   private handleDownloadProcess(data: Blob, filename: string) {
@@ -102,5 +104,13 @@ export class UploadService {
     return this.http.get<Blob>(`${this.backendUrl}upload/${docUuid}/${uri}`, {
       responseType: "blob" as "json",
     });
+  }
+
+  private handleDownloadError(error: HttpErrorResponse): Observable<Blob> {
+    const message =
+      error.status === 404
+        ? "Die Datei konnte nicht gefunden werden"
+        : error.message;
+    throw new IgeError(message);
   }
 }

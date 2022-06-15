@@ -10,6 +10,9 @@
             labelPosition="before"
             (change)="toggleRootPermission()"
             [formControl]="rootPermissionRead"
+            title="Wenn aktiviert, können alle {{
+                t('form')
+            }} und Adressen gelesen werden."
             >Allgemeines Leserecht
         </mat-slide-toggle>
         <mat-slide-toggle
@@ -17,6 +20,9 @@
             labelPosition="before"
             (change)="toggleRootPermission()"
             [formControl]="rootPermissionWrite"
+            title="Wenn aktiviert, können alle {{
+                t('form')
+            }} und Adressen gelesen und bearbeitet werden."
             >Allgemeines Schreibrecht
         </mat-slide-toggle>
     </div>
@@ -31,9 +37,13 @@
             ></mat-icon>
         </div>
         <span>
-            Die aktivierten allgemeinen Berechtigungen überschreiben die
-            Tabellenrechte.</span
-        >
+            Allgemeine Berechtigung aktiviert.
+            {{
+                this.rootPermissionWrite.value
+                    ? " Das allgemeine Schreibrecht überschreibt die Tabellenrechte."
+                    : ""
+            }}
+        </span>
     </div>
     <permission-table
         formControlName="documents"

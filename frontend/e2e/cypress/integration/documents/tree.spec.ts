@@ -1,11 +1,11 @@
 import { DocumentPage } from '../../pages/document.page';
-import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { CopyCutUtils, CopyOption } from '../../pages/copy-cut-utils';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { AddressPage } from '../../pages/address.page';
 import { BasePage } from '../../pages/base.page';
 
-describe('Tree', () => {
+describe('mCLOUD: Tree', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
@@ -538,5 +538,28 @@ describe('Tree', () => {
       // expect the error
       BasePage.checkErrorDialogMessage('Cannot copy');
     });
+  });
+});
+
+describe('Tree', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('ige3').as('tokens');
+  });
+
+  it('should not be possible to move folder under an address #3925', () => {
+    const testFolder = 'Ordner_Ebene_2A';
+
+    AddressPage.visit();
+    Tree.openNode(['Neue Testadressen', testFolder]);
+    // open dialog
+    cy.get('[data-cy=toolbar_COPY]').click();
+    cy.get(CopyOption.COPY_WITH_TREE).click();
+    // check that single addresses (i.e. items that don't have class 'folder') are disabled
+    cy.get('mat-dialog-content mat-tree-node')
+      .not('.folder')
+      .each(item => {
+        cy.wrap(item).should('have.class', 'disabled');
+      });
   });
 });

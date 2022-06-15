@@ -3,7 +3,8 @@ export interface BackendStoreQuery {
   readonly name: string;
   readonly category: "facet" | "sql";
   readonly description: string;
-  readonly isSystemQuery?: boolean;
+  readonly global: boolean;
+  readonly userId?: string;
   readonly modified?: any;
   readonly settings: {
     readonly term?: string;

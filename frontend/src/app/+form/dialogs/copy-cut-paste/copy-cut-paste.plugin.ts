@@ -225,6 +225,7 @@ export class CopyCutPastePlugin extends Plugin {
           titleText: title,
           buttonText: "Einfügen",
           forAddress: this.forAddress,
+          typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
       })
       .afterClosed()
@@ -245,6 +246,13 @@ export class CopyCutPastePlugin extends Plugin {
     );
     console.log("Filtered datasets without children", filtered);
     return filtered;
+  }
+
+  private getSelectedDatasetDocType() {
+    return this.query
+      .getActive()
+      .map((doc) => doc._type)
+      .pop();
   }
 
   unregister() {

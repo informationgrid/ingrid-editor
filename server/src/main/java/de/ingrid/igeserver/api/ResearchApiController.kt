@@ -32,9 +32,9 @@ class ResearchApiController @Autowired constructor(
         return ResponseEntity.ok(queries)
     }
 
-    override fun save(principal: Principal, query: Query, forCatalog: Boolean): ResponseEntity<Query> {
+    override fun save(principal: Principal, query: Query): ResponseEntity<Query> {
 
-        val userId = if (forCatalog) null else authUtils.getUsernameFromPrincipal(principal)
+        val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val result = queryService.saveQuery(userId, catalogId, query)

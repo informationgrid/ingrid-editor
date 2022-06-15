@@ -16,6 +16,12 @@ import { Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
+import { saveAs } from "file-saver";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "user-table",
@@ -54,7 +60,7 @@ export class UserTableComponent
   dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
 
-  constructor(public userService: UserService) {
+  constructor(public userService: UserService, public dialog: MatDialog) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
@@ -104,5 +110,32 @@ export class UserTableComponent
   select(element) {
     this.selection.select(element);
     this.onUserSelect.emit(element);
+  }
+
+  exportTable() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        hasBackdrop: true,
+        data: <ConfirmDialogData>{
+          title: "Exportieren",
+          message:
+            "Möchten Sie die Nutzerdaten aus der Tabelle als csv-Datei herunterladen?",
+          confirmButtonText: "Herunterladen",
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) this.downloadTable();
+      });
+  }
+  downloadTable() {
+    let fileText = "Vorname;Nachname;Email;Organisation\n";
+    this.dataSource.filteredData.forEach((row) => {
+      fileText += `${row.firstName};${row.lastName};${row.email};${row.organisation}\n`;
+    });
+    const blob = new Blob([fileText], {
+      type: "text/plain;charset=utf-8",
+    });
+    saveAs(blob, "users.csv");
   }
 }

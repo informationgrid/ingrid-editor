@@ -53,7 +53,7 @@ data class UVPModel(
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val nonHiddenAddress = ref.getParentAddresses(ref.id)
+        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id)
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
@@ -144,9 +144,9 @@ data class UVPModel(
         return data.uvpNumbers
     }
 
-    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val formatterNoSeparator = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")
+    val formatterNoSeparator: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSS")
     val modified: String
         get() {
             return _modified.format(formatterOnlyDate)
@@ -171,7 +171,7 @@ data class UVPModel(
     private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getParentAddresses(parent)
+        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent)
     }
 
 

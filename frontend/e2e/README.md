@@ -49,9 +49,13 @@ npm run cypress:run -- --record --spec "cypress/integration/documents/type/mclou
 
 # Tests Convention
 
-- For each topic write a spec-file.
+- For each topic write a spec-file, called `<name>.spec.ts`
+- general tests must be written in root structure
+- profile specific tests must be written inside `profile-folder`, e.g. `profile/uvp/export.spec.ts`
 - Multiple describe blocks can be defined within a spec-file for better organization.
-
+- naming convention for users
+  - `<catalog-type>-<user-role>[-<purpose>]`
+  - e.g. `test-catalog`, `test-author-noGroups`, `uvp-meta`
 
 # Email - Test
 
@@ -65,7 +69,6 @@ The "cromeWebSecurity" options in the `cypress.json` is set to false, since in t
 To test locally the email receiving functions set the spring.mail.host address (inside `\conf\application-postgresql.properties` of the container) to the ip-address of your own machine (on Windows run `ipconfig` from the console).
 In case you wish to change the server's port, act similarly and set the same port number inside of the /plugins/index.js file.
 
-
 # Monkey Testing - gremlins.js
 
 Monkey Testing is used to check the robustness of web applications by unleashing a horde of undisciplined gremlins.
@@ -73,7 +76,7 @@ Gremlins.js is a monkey testing libary written in Javascript for Node.js and the
 
 At the moment we only have dumb monkeys, which try to crash our application with random inputs.
 Also their attacks are not repeatable, but in the future they will (it's possible).
-Finally we will implement smart monkeys, which have basic informations about our application and then they will attack specific._
+Finally we will implement smart monkeys, which have basic informations about our application and then they will attack specific.\_
 
 ## How to start the tests and what is the message of the test results:
 

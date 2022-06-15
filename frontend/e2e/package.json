@@ -7,8 +7,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:runFull": "node scripts/cypress.js",
-    "mailserver": "node scripts/startMailserver.js",
-    "stop-only": "stop-only"
+    "mailserver": "node scripts/startMailserver.js"
   },
   "keywords": [],
   "author": "",
@@ -28,19 +27,6 @@
     "@testing-library/cypress": "^8.0.2",
     "cypress-file-upload": "^5.0.8",
     "cypress-intellij-reporter": "^0.0.7",
-    "cypress-keycloak-commands": "^1.2.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.5.4",
-    "prettier": "2.5.1",
-    "stop-only": "^3.1.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,js,md}": "prettier --check",
-    "*.spec.ts": "yarn stop-only --folder"
+    "cypress-keycloak-commands": "^1.2.0"
   }
 }

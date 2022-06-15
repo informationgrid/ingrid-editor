@@ -1,53 +1,57 @@
 {
-  "_export_date" : "2022-01-12T16:15:49.322435+01:00",
-  "_version" : "0.0.2",
-  "resources" : [ {
-    "title" : "Datum_Ebene_4_4",
-    "_uuid" : "bc4e0d68-3023-444c-9e31-df858baceeef",
-    "_type" : "mCloudDoc",
-    "_id" : "44",
-    "accessRights" : null,
-    "events" : [ ],
-    "origin" : null,
-    "_parent" : "36",
-    "license" : null,
-    "keywords" : [ ],
-    "mfundFKZ" : null,
-    "temporal" : {
-      "rangeType" : null,
-      "timeSpanDate" : null
-    },
-    "addresses" : [ {
-      "ref" : {
-        "title" : "Schlesien, Adresse",
-        "hasWritePermission" : true,
-        "hasOnlySubtreeWritePermission" : false,
-        "_uuid" : "98764b77-5cc4-404f-be1f-a999999a617c",
-        "_type" : "McloudAddressDoc",
-        "_version" : 1,
-        "_created" : "2021-08-26T13:59:46.1496+02:00",
-        "_modified" : "2021-12-15T15:26:22.054598+01:00",
-        "_state" : "W",
-        "_id" : "993",
-        "_parent" : "8",
-        "address" : {
-          "zip-po-box" : null,
-          "zip-code" : null,
-          "city" : null,
-          "po-box" : null,
-          "street" : null
-        },
-        "contact" : [ ],
-        "organization" : "Schlesien, Adresse"
+  "_export_date": "2022-01-12T16:15:49.322435+01:00",
+  "_version": "0.0.2",
+  "resources": [
+    {
+      "title": "Datum_Ebene_4_4",
+      "_uuid": "bc4e0d68-3023-444c-9e31-df858baceeef",
+      "_type": "mCloudDoc",
+      "_id": "44",
+      "accessRights": null,
+      "events": [],
+      "origin": null,
+      "_parent": "36",
+      "license": null,
+      "keywords": [],
+      "mfundFKZ": null,
+      "temporal": {
+        "rangeType": null,
+        "timeSpanDate": null
       },
-      "type" : "10"
-    } ],
-    "distributions" : null,
-    "description" : null,
-    "periodicity" : null,
-    "mfundProject" : null,
-    "mCloudCategories" : [ ],
-    "spatial" : null,
-    "DCATThemes" : [ ]
-  } ]
+      "addresses": [
+        {
+          "ref": {
+            "title": "Schlesien, Adresse",
+            "hasWritePermission": true,
+            "hasOnlySubtreeWritePermission": false,
+            "_uuid": "98764b77-5cc4-404f-be1f-a999999a617c",
+            "_type": "McloudAddressDoc",
+            "_version": 1,
+            "_created": "2021-08-26T13:59:46.1496+02:00",
+            "_modified": "2021-12-15T15:26:22.054598+01:00",
+            "_state": "W",
+            "_id": "993",
+            "_parent": "8",
+            "address": {
+              "zip-po-box": null,
+              "zip-code": null,
+              "city": null,
+              "po-box": null,
+              "street": null
+            },
+            "contact": [],
+            "organization": "Schlesien, Adresse"
+          },
+          "type": "10"
+        }
+      ],
+      "distributions": null,
+      "description": null,
+      "periodicity": null,
+      "mfundProject": null,
+      "mCloudCategories": [],
+      "spatial": null,
+      "DCATThemes": []
+    }
+  ]
 }

@@ -6,11 +6,11 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { FacetQuery, Query, SqlQuery } from "../../store/query/query.model";
+import { Query, QueryUI } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
 import { MatSelectionList } from "@angular/material/list";
-import { filter } from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import { logAction } from "@datorama/akita";
 import { Router } from "@angular/router";
 
@@ -20,15 +20,18 @@ import { Router } from "@angular/router";
   styleUrls: ["./query-manager.component.scss"],
 })
 export class QueryManagerComponent implements OnInit {
-  // @Output() selection = new EventEmitter<string>();
-
-  userQueries = this.queryQuery.userQueries$;
-  catalogQueries = this.queryQuery.catalogQueries$;
+  userQueries: Observable<QueryUI[]> = this.queryQuery.userQueries$.pipe(
+    map((queries: QueryUI[]) =>
+      QueryManagerComponent.addAllowDeleteInfo(queries)
+    )
+  );
+  catalogQueries = this.queryQuery.catalogQueries$.pipe(
+    map((queries: QueryUI[]) => this.addDeleteInfo(queries))
+  );
 
   queryTypes: {
     label: string;
-    queries: Observable<Query[]>;
-    canDelete: boolean;
+    queries: Observable<QueryUI[]>;
   }[];
 
   constructor(
@@ -36,18 +39,16 @@ export class QueryManagerComponent implements OnInit {
     private queryQuery: QueryQuery,
     private dialog: MatDialog,
     private researchService: ResearchService,
-    configService: ConfigService
+    private configService: ConfigService
   ) {
     this.queryTypes = [
       {
         label: "Globale Suchanfragen",
         queries: this.catalogQueries,
-        canDelete: configService.isAdmin(),
       },
       {
         label: "Ihre Suchanfragen",
         queries: this.userQueries,
-        canDelete: true,
       },
     ];
   }
@@ -100,5 +101,24 @@ export class QueryManagerComponent implements OnInit {
 
   getIdentifier(index, item: Query) {
     return item.id;
+  }
+
+  private addDeleteInfo(queries: QueryUI[]): QueryUI[] {
+    let currentUserId = this.configService.$userInfo.value.userId;
+    return queries.map((q) => {
+      return {
+        ...q,
+        canDelete: this.configService.isAdmin() || q.userId === currentUserId,
+      };
+    });
+  }
+
+  private static addAllowDeleteInfo(queries: QueryUI[]): QueryUI[] {
+    return queries.map((q: QueryUI) => {
+      return {
+        ...q,
+        canDelete: true,
+      };
+    });
   }
 }

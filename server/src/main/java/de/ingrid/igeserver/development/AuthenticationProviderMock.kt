@@ -36,12 +36,9 @@ class AuthenticationProviderMock : AuthenticationProvider {
         val roles = if (role == null) {
             emptyList()
         } else {
-            // add special role for administrators to allow group acl management
-            if (role == "cat-admin" || role == "md-admin" || role == "ige-super-admin") {
-                listOf(SimpleGrantedAuthority("ROLE_$role"), SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_GROUP_MANAGER"))
-            } else {
-                listOf(SimpleGrantedAuthority(role))
-            }
+            // add acl access role for everyone
+            listOf(SimpleGrantedAuthority("ROLE_$role"), SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
+
         }
         return UsernamePasswordAuthenticationToken(user, "", groups + roles )
     }

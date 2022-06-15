@@ -142,6 +142,13 @@ export class uvpPage {
       }
     });
   }
+
+  static setSearchParameter(parameter: 'Verfahrenstyp' | 'UVP Nummer' | 'Verfahrensschritt', value: string) {
+    cy.get(`[data-cy="${parameter}"] mat-select`).click();
+    cy.contains('.mat-select-panel mat-option', value).click();
+    cy.get(`[data-cy="${parameter}"] mat-select`).should('contain', value);
+    cy.get(`[data-cy="${parameter}"] mat-select`).invoke('attr', 'aria-expanded').should('eq', 'false');
+  }
 }
 
 export enum AddressDetails {

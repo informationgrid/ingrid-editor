@@ -22,7 +22,7 @@
         <span
             [matTooltip]="
                 item.disabled && !item.hasOnlySubtreeWritePermission
-                    ? 'Sie haben keine Schreibberechtigung auf diesen Ordner'
+                    ? 'Sie haben keine Leseberechtigung auf diesen Ordner'
                     : ''
             "
             data-cy="{{ item.disabled ? 'yes' : 'no' }}"

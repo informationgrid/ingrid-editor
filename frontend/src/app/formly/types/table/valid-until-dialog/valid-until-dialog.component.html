@@ -1,0 +1,40 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Gültig bis Datum setzen</span>
+    </h2>
+</div>
+<mat-dialog-content>
+    <p>
+        Setzen Sie hier das "Gültig bis"-Datum für alle ausgewählten Zeilen der
+        Tabelle.
+    </p>
+    <div>
+        <div fxFlex></div>
+        <mat-form-field appearance="outline" class="width-date-medium">
+            <mat-label>Gültig bis</mat-label>
+            <input
+                matInput
+                (dateChange)="updateDate($event.value)"
+                [matDatepicker]="picker"
+            />
+            <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker [opened]="true"></mat-datepicker>
+        </mat-form-field>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button color="primary" [mat-dialog-close]="undefined">
+        Abbrechen
+    </button>
+    <div fxFlex></div>
+    <button color="primary" mat-flat-button [mat-dialog-close]="getDate()">
+        Setzen
+    </button>
+</mat-dialog-actions>

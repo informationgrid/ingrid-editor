@@ -36,6 +36,9 @@ class Query {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var user: UserInfo? = null
+    
+    val userId: String?
+        get() { return user?.userId }
 
     @Column(nullable = false)
     var name: String? = null
@@ -57,9 +60,7 @@ class Query {
     @JsonProperty("settings")
     var data: JsonNode? = null
 
-    @Transient
-    @JsonProperty("isSystemQuery")
-    var systemQuery: Boolean = false
-        get() = user == null
+    @Column
+    var global: Boolean = false
 
 }

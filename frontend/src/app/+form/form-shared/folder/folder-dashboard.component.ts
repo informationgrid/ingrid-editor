@@ -49,12 +49,6 @@ export class FolderDashboardComponent {
 
   updateChildren(model) {
     const query = this.isAddress ? this.addressTreeQuery : this.treeQuery;
-
-    if (!model._hasChildren) {
-      this.numChildren = 0;
-      return;
-    }
-
     // TODO switch to user specific query
 
     // wait for store changes to get children of node
@@ -63,6 +57,10 @@ export class FolderDashboardComponent {
       .pipe(untilDestroyed(this))
       .subscribe(() => {
         const childrenFromStore = query.getChildren(model._id);
+        if (childrenFromStore.length === 0 && model._hasChildren) {
+          // load children, as they are not in store yet
+          this.docService.getChildren(model._id, this.isAddress).subscribe();
+        }
         this.numChildren = childrenFromStore.length;
         const latestChildren = childrenFromStore
           .sort(

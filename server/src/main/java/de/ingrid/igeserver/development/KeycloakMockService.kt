@@ -62,6 +62,8 @@ class KeycloakMockService : UserManagementService {
         "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com",
         "",
         "",
+        "",
+        "",
         emptyList(),
         Date(0),
         Date(0),

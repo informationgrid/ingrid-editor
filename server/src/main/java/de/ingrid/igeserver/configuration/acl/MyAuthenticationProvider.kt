@@ -73,17 +73,14 @@ class MyAuthenticationProvider @Autowired constructor(
         // add roles
         val role = userDb?.role?.name
         if (role != null) {
-            // add special role for administrators to allow group acl management
-            if (role == "cat-admin" || role == "md-admin" || role == "ige-super-admin") {
+            // add acl access role for everyone
                 grantedAuthorities.addAll(
                     listOf(
                         SimpleGrantedAuthority(role),
-                        SimpleGrantedAuthority("ROLE_GROUP_MANAGER")
+                        SimpleGrantedAuthority("ROLE_ACL_ACCESS")
                     )
                 )
-            } else {
-                grantedAuthorities.addAll(listOf(SimpleGrantedAuthority(role)))
-            }
+
         }
 
         return KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)

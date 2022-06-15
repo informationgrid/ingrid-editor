@@ -10,6 +10,7 @@ import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -108,19 +109,22 @@ class WriteSubTreePermissionTests : AnnotationSpec() {
     @Test(expected = AccessDeniedException::class)
     @Transactional
     fun deleteNotAllowedToRootDocumentInGroup() {
-        docWrapperRepo.deleteById(rootUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
+        docWrapperRepo.deleteById(doc.id!!)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = EmptyResultDataAccessException::class)
     @Transactional
     fun deleteAllowedToSubDocumentInGroup() {
-        docWrapperRepo.deleteById(childUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
+        docWrapperRepo.deleteById(doc.id!!)
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
     }
 
     @Test(expected = AccessDeniedException::class)
     fun deleteNotAllowedToDocumentNotInGroup() {
-        docWrapperRepo.deleteById(excludedUuid)
+        val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
+        docWrapperRepo.deleteById(doc.id!!)
     }
 
 

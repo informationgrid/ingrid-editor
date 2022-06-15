@@ -180,6 +180,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         columns: options?.columns,
+        batchValidUntil: options?.batchValidUntil,
       },
       validators: options?.validators,
     };

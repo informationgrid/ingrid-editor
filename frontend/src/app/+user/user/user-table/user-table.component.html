@@ -73,12 +73,21 @@
 <div *ngIf="isLoading" class="table-spinner">
     <mat-spinner> </mat-spinner>
 </div>
-<mat-paginator
-    [class.hide]="simple && dataSource.data?.length < 10"
-    [pageSize]="10"
-    [hidePageSize]="true"
-    showFirstLastButtons
-></mat-paginator>
+<div class="table-footer">
+    <button
+        *ngIf="dataSource.data?.length"
+        mat-flat-button
+        (click)="exportTable()"
+    >
+        CSV
+    </button>
+    <mat-paginator
+        [class.hide]="simple && dataSource.data?.length < 10"
+        [pageSize]="10"
+        [hidePageSize]="true"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>
 <div *ngIf="!simple" class="legend">
     <mat-icon svgIcon="author"></mat-icon>
     <span> Autor,</span>

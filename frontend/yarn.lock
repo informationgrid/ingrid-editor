@@ -1512,13 +1512,12 @@
   resolved "https://nexus.informationgrid.eu/repository/npm-group/@flowjs/flow.js/-/flow.js-2.14.1.tgz#267d9f9d0958f32267ea5815c2a7cc09b9219304"
   integrity sha512-99DWlPnksOOS8uHfo+bhSjvs8d2MfLTB/22JBDC2ONwz/OCdP+gL/iiM4puMSTE2wH4A2/+J0eMc7pKwusXunw==
 
-"@flowjs/ngx-flow@^0.4.6":
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/@flowjs/ngx-flow/-/ngx-flow-0.4.6.tgz#ed11b6a7d2079cb2a7f8dca75fc0e8d082477a86"
-  integrity sha512-HJ7RKxINAdnTdVAVbkjseMi2Z9soQcVbPk8Ki4tjUHZkOKJE1TCvFCXSqmXt34noqaS4vNv5t/xmsPbqZoHCew==
+"@flowjs/ngx-flow@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@flowjs/ngx-flow/-/ngx-flow-0.5.0.tgz#6d3c3e163d5df0ff6b3912d34892e8a32dcdf5b2"
+  integrity sha512-D1mD0uaey3eQAGfGvjlvNn1UTU1VnfQfqqtK66COaFmWKx5rqpV02e4LOwi3O7R6u6z9Jm2Siwlne/YJzt9zzQ==
   dependencies:
-    "@types/flowjs" "2.13.3"
-    tslib "^1.9.0"
+    tslib "^2.2.0"
 
 "@gar/promisify@^1.0.1":
   version "1.1.2"
@@ -2315,17 +2314,17 @@
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.3.5.tgz#bb7dde18fb30919c49c4a25635b94381d19b7622"
   integrity sha512-OaMZR0rO0ljBHamLwzddfZX03ijtpheUpjH5dNzMNyNrrpKgS4/3jTQ1wvs2j3zzKfKjOS12WG0905QFJYWG6g==
 
-"@ngx-formly/core@5.12.1":
-  version "5.12.1"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.12.1.tgz#1ab07809a5e626ff67ebb9938068b92579a66310"
-  integrity sha512-nZfwfXGM+ZtMr3qBtQSQU70cEU+sASfu60qC8vqieFqWD4lVl3ZB4W3HISR3r+sAxZ8zsK+f1pRxnNUjl5+SOA==
+"@ngx-formly/core@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/core/-/core-5.12.4.tgz#60dbda56c2f2c99021d392679ce6f36ffd64e746"
+  integrity sha512-+1xLjNYn/XQAWdcBBLMh+ZAYYQqWoQUMaH5BF7j+099kYDKvzQ70BrYcOtehC/Q7puSeFSKTsQtiKPweZYbI+w==
   dependencies:
     tslib "^1.7.1"
 
-"@ngx-formly/material@5.12.1":
-  version "5.12.1"
-  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.12.1.tgz#083a5f558d8f6c7571871563c36d0732a0bb65ee"
-  integrity sha512-4xoZ8R3hNAX6kfKzOnAg8sFn2aMVFgPwAfmmVcKl2AMdai85i+WS9kYS3DRaQWILmwpzU8tNmddGz1bID6Aoyg==
+"@ngx-formly/material@5.12.4":
+  version "5.12.4"
+  resolved "https://registry.yarnpkg.com/@ngx-formly/material/-/material-5.12.4.tgz#f9e77b1c6525c849b1cdd407e5a6d8b844112f68"
+  integrity sha512-vr3h9dU5WRLS6azoRcA/NNaQQ/RKkUAbk5p5L7kSuuKH5PfqXKEptD/vjvUncrMQ9rJmLCwvqw7ambFp38qcZw==
   dependencies:
     tslib "^1.9.0"
 
@@ -2731,10 +2730,10 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/flowjs@2.13.3":
-  version "2.13.3"
-  resolved "https://registry.yarnpkg.com/@types/flowjs/-/flowjs-2.13.3.tgz#4f1ba77d9259f4be83ecaa985db96fa758b2fd22"
-  integrity sha512-VeWuL+Whk6lUSWX/g0LzLNyZywyTB5wZ2L6mPvD8/u5pgLF2HwyV7nZ1UArOifalJ5UE1CcJbPLKS+jc5+Z2ig==
+"@types/flowjs@~2.13.8":
+  version "2.13.8"
+  resolved "https://registry.yarnpkg.com/@types/flowjs/-/flowjs-2.13.8.tgz#613c725ff839ed63d6981a94ad8d3cb69cc9b07e"
+  integrity sha512-CnKmtFoWXqXxCNWBj0I81lOXni7n3RNaze7yH9gN8gcnOVz0z+SMslxrW1intDO223sG5iCPnVd1ILvWHHlhvA==
 
 "@types/geojson@*":
   version "7946.0.7"
@@ -5667,10 +5666,10 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-husky@^7.0.4:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-7.0.4.tgz#242048245dc49c8fb1bf0cc7cfb98dd722531535"
-  integrity sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==
+husky@^8.0.0:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.1.tgz#511cb3e57de3e3190514ae49ed50f6bc3f50b3e9"
+  integrity sha512-xs7/chUH/CKdOCs7Zy0Aev9e/dKOMZf3K1Az1nar3tzlv0jfqnYtu235bstsWTmXOR0EfINrPa97yy4Lz6RiKw==
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
   version "0.4.24"
@@ -6360,12 +6359,12 @@ karma@~6.3.4:
     ua-parser-js "^0.7.28"
     yargs "^16.1.1"
 
-keycloak-angular@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/keycloak-angular/-/keycloak-angular-9.1.0.tgz#d51f3a36101bc1f309c082ab71434fb352951607"
-  integrity sha512-ATxVOfxMaBHMOIdGIXDXqQwVhKl0CqCBwg7BabwWToA41jJdV/pBR+QeF3XkBEuvowXfr3bAW2aOfNSXLUJUeg==
+keycloak-angular@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/keycloak-angular/-/keycloak-angular-10.0.0.tgz#a8534d69d4846965607d0401f3eb546fad816eb9"
+  integrity sha512-zDvSYZZLJrOrlbHDexe6EI8irCsRA8oklJvWQK9uyJMGYvBwqlCIDv5L4PhuyuNrlTZ/v7F0hDncBy0LfLx1zQ==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.3.0"
 
 keycloak-js@^18.0.0:
   version "18.0.0"
@@ -8738,7 +8737,7 @@ shallow-clone@^3.0.0:
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"
-  integrity sha1-RKrGW2lbAzmJaMOfNj/uXer98eo=
+  integrity sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg==
   dependencies:
     shebang-regex "^1.0.0"
 
@@ -8752,7 +8751,7 @@ shebang-command@^2.0.0:
 shebang-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
-  integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
+  integrity sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==
 
 shebang-regex@^3.0.0:
   version "3.0.0"
@@ -9199,7 +9198,7 @@ strip-ansi@^7.0.0, strip-ansi@^7.0.1:
 strip-eof@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/strip-eof/-/strip-eof-1.0.0.tgz#bb43ff5598a6eb05d89b59fcd129c983313606bf"
-  integrity sha1-u0P/VZim6wXYm1n80SnJgzE2Br8=
+  integrity sha512-7FCwGGmx8mD5xQd3RPUvnSpUXHM3BWuzjtpD4TXsfcZ9EL4azvVVUscFYwD9nx8Kh+uCBC00XBtAykoMHwTh8Q==
 
 strip-final-newline@^2.0.0:
   version "2.0.0"

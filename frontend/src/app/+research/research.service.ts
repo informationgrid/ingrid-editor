@@ -174,7 +174,7 @@ export class ResearchService {
     const preparedQuery = this.prepareQuery(model, dialogOptions, asSql);
     return this.http
       .post<BackendStoreQuery>(
-        `${this.configuration.backendUrl}search?forCatalog=${dialogOptions.forCatalog}`,
+        `${this.configuration.backendUrl}search`,
         this.convertToBackendQuery(preparedQuery)
       )
       .pipe(
@@ -190,7 +190,8 @@ export class ResearchService {
       name: query.name,
       description: query.description,
       modified: query.modified,
-      isCatalogQuery: query.isSystemQuery,
+      isCatalogQuery: query.global,
+      userId: query.userId,
     };
 
     if (query.category === "facet") {
@@ -214,6 +215,7 @@ export class ResearchService {
       name: query.name,
       category: query.type,
       description: query.description,
+      global: query.isCatalogQuery,
       settings: this.createSettings(query),
     };
   }
@@ -283,20 +285,21 @@ export class ResearchService {
     response: SaveQueryDialogResponse,
     asSql: boolean
   ): SqlQuery | FacetQuery {
-    let base = {
+    let base: Partial<Query> = {
       id: null,
       name: response.name,
       description: response.description,
+      isCatalogQuery: response.forCatalog,
     };
 
     if (asSql) {
-      return {
+      return <SqlQuery>{
         ...base,
         sql: model.ui.sql.query,
         type: "sql",
       };
     } else {
-      return {
+      return <FacetQuery>{
         ...base,
         type: "facet",
         model: model,

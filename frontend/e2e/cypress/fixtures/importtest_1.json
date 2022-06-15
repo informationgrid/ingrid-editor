@@ -1,46 +1,51 @@
 {
-  "_export_date" : "2022-01-06T17:31:55.668378+01:00",
-  "_version" : "0.0.2",
-  "resources" : [ {
-    "title" : "document_import_12",
-    "_type" : "mCloudDoc",
-    "accessRights" : null,
-    "events" : [ ],
-    "origin" : null,
-    "keywords" : [ ],
-    "mfundFKZ" : null,
-    "temporal" : {
-      "rangeType" : null,
-      "timeSpanDate" : null
-    },
-    "addresses" : [ {
-      "ref" : {
-        "title" : "Aquitanien, Adresse",
-        "hasWritePermission" : true,
-        "hasOnlySubtreeWritePermission" : false,
-        "_uuid" : "93374b77-5cc4-404f-be1f-a478458a617c",
-        "_type" : "McloudAddressDoc",
-        "_version" : 1,
-        "_created" : "2021-08-26T13:51:33.333215+02:00",
-        "_modified" : "2021-12-15T15:23:26.868866+01:00",
-        "_state" : "W",
-        "_id" : "73",
-        "_parent" : "10",
-        "address" : {
-          "zip-po-box" : null,
-          "zip-code" : null,
-          "city" : null,
-          "po-box" : null,
-          "street" : null
-        },
-        "contact" : [ ],
-        "organization" : "Aquitanien, Adresse"
+  "_export_date": "2022-01-06T17:31:55.668378+01:00",
+  "_version": "0.0.2",
+  "resources": [
+    {
+      "title": "document_import_12",
+      "_type": "mCloudDoc",
+      "accessRights": null,
+      "events": [],
+      "origin": null,
+      "keywords": [],
+      "mfundFKZ": null,
+      "temporal": {
+        "rangeType": null,
+        "timeSpanDate": null
       },
-      "type" : "10"
-    } ],
-    "periodicity" : null,
-    "mfundProject" : null,
-    "mCloudCategories" : [ ],
-    "DCATThemes" : [ ]
-  } ]
+      "addresses": [
+        {
+          "ref": {
+            "title": "Aquitanien, Adresse",
+            "hasWritePermission": true,
+
+            "hasOnlySubtreeWritePermission": false,
+            "_uuid": "93374b77-5cc4-404f-be1f-a478458a617c",
+            "_type": "McloudAddressDoc",
+            "_version": 1,
+            "_created": "2021-08-26T13:51:33.333215+02:00",
+            "_modified": "2021-12-15T15:23:26.868866+01:00",
+            "_state": "W",
+            "_id": "73",
+            "_parent": "10",
+            "address": {
+              "zip-po-box": null,
+              "zip-code": null,
+              "city": null,
+              "po-box": null,
+              "street": null
+            },
+            "contact": [],
+            "organization": "Aquitanien, Adresse"
+          },
+          "type": "10"
+        }
+      ],
+      "periodicity": null,
+      "mfundProject": null,
+      "mCloudCategories": [],
+      "DCATThemes": []
+    }
+  ]
 }

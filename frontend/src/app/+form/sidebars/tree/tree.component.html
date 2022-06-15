@@ -1,7 +1,7 @@
 <div class="header-wrapper" *transloco="let t; read: 'menu'">
     <ige-tree-header
         *ngIf="showHeader"
-        [class.invisible]="isDragging && isAdmin"
+        [class.invisible]="isDragging && hasWriteToRootPermission"
         (reload)="reloadTree(true).subscribe()"
         [isAddress]="forAddresses"
         [showOptions]="showHeaderOptions"
@@ -19,7 +19,7 @@
     ></ige-tree-header>
 
     <div
-        *ngIf="isDragging && isAdmin"
+        *ngIf="isDragging && hasWriteToRootPermission"
         class="drop-root"
         [class.hover]="dragManager.dragNodeExpandOverNode === null"
         (dragover)="dragManager.handleDragOver($event, null)"
@@ -35,7 +35,12 @@
 </div>
 
 <!-- TODO: trackBy does not update isExpanded Flag: see https://github.com/angular/components/issues/15872 [trackBy]="trackByNodeId"-->
-<mat-tree #treeComponent [dataSource]="dataSource" [treeControl]="treeControl">
+<mat-tree
+    #treeComponent
+    [dataSource]="dataSource"
+    [treeControl]="treeControl"
+    *transloco="let t"
+>
     <!-- cdkDropList (cdkDropListDropped)="drop($event)">-->
 
     <!-- This is the tree node template for leaf nodes -->
@@ -86,8 +91,11 @@
                 <mat-icon
                     [svgIcon]="node.iconClass"
                     [ngClass]="['document-icon', getStateClass(node)]"
+                    [matTooltipShowDelay]="1000"
+                    [matTooltip]="t('procedureType.' + node.type)"
                 ></mat-icon>
-                <span>{{ node.title }}</span>
+                <!-- TODO: replace with matTooltip and matTooltipShowDelay when https://github.com/angular/components/pull/24652 is merged -->
+                <span title="{{ node.title }}">{{ node.title }}</span>
             </div>
         </div>
     </mat-tree-node>

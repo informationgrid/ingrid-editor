@@ -3,5 +3,5 @@ build
 coverage
 node_modules
 .gradle
-e2e
+e2e/node_modules
 .angular

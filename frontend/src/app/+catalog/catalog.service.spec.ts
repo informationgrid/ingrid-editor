@@ -32,7 +32,7 @@ describe("CatalogService", () => {
             null,
             [
               {
-                title: "Einstellungen",
+                title: "Verwaltung",
                 adminOnly: true,
                 entries: [
                   {

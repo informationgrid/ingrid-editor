@@ -120,7 +120,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           take(1)
         )
         .subscribe(() => {
-          this.form.setValue(value, { emitEvent: false });
+          // reset form and remove spatial before updating form
+          // we cannot use setValue on form in case the query doesn't contain all fields
+          // which would lead to an error. So we clear the form and set only the supplied values
+          this.form.reset();
+          this.updateLocation(null);
+          this.form.patchValue(value);
           if (value.spatial) {
             this.updateSpatialFromModel(value.spatial[this.getSpatialKey()]);
           }

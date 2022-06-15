@@ -145,6 +145,7 @@
             [class.invisible]="notExpanded[group.id]"
             fxLayout="column"
             fxLayoutGap="10px"
+            [attr.data-cy]="group.label"
         >
             <mat-form-field appearance="outline">
                 <mat-select

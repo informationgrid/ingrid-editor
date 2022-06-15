@@ -42,7 +42,7 @@ describe('Group', () => {
     cy.get('button').contains('Abbrechen').click();
 
     // check titles are unique
-    AdminGroupPage.selectGroup(groupName2);
+    AdminGroupPage.selectGroupAndWait(groupName2);
     AdminGroupPage.updateGroup({ name: groupName }, false);
     // clicking another field is needed to activate the error-message
     cy.get('textarea').click();
@@ -57,7 +57,7 @@ describe('Group', () => {
     const modifiedGroupName = 'Foodgroup';
     const description = 'Eine Essensgruppe?';
 
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
 
     // modify groupname, add description and save
     cy.get('#formRoles [formcontrolname=name]').clear().type(modifiedGroupName);
@@ -82,16 +82,13 @@ describe('Group', () => {
     const groupName2 = 'test_gruppe_2';
     const description = 'Irgendeine Änderung';
 
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
 
     cy.get('textarea').click().clear().type(description);
 
     AdminGroupPage.selectGroup(groupName2);
     cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
-    // close error box
-    cy.findByText('Verwerfen').click();
-    // make sure error box is not there anymore
-    cy.get('mat-dialog-container').should('not.exist');
+    AdminUserPage.discardChanges();
   });
 
   it('should change a selected group after discard changes', () => {
@@ -100,7 +97,7 @@ describe('Group', () => {
     const description = 'Irgendeine Änderung';
 
     // change something (name) and try to click on another user --> discard dialog appears
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
 
     cy.get('textarea').click().clear().type(description);
     AdminGroupPage.selectGroup(groupName2);
@@ -108,7 +105,7 @@ describe('Group', () => {
 
     cy.get('groups-table .selected').contains(groupName2);
     // check entry is not reverted to the previous value
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     cy.get('textarea').invoke('text').should('not.equal', description);
   });
 
@@ -117,7 +114,7 @@ describe('Group', () => {
     const groupName2 = 'test_gruppe_2';
     const description = 'Noch eine Änderung';
 
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     // check group is selected
     cy.get('groups-table .selected').contains(groupName);
 
@@ -147,7 +144,7 @@ describe('Group', () => {
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     cy.get('.page-title').contains('Gruppen');
 
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
 
     // delete the group which we connected
     cy.get('#formRoles [data-mat-icon-name=Mehr]').click();
@@ -173,7 +170,7 @@ describe('Group', () => {
     const group = 'test_gruppe_1';
     const description = 'eine Beschreibung';
 
-    AdminGroupPage.selectGroup(group);
+    AdminGroupPage.selectGroupAndWait(group);
     cy.get('[data-cy=toolbar_save_group]').should('be.disabled');
 
     cy.get('textarea').click().clear().type(description);
@@ -182,7 +179,7 @@ describe('Group', () => {
 
   it('should remove a document from a group as soon as deleting action is performed (#3469)', () => {
     // delete address from group
-    AdminGroupPage.selectGroup('test_gruppe_2');
+    AdminGroupPage.selectGroupAndWait('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
     // make sure address is visually removed from group without prompt to affirm intention to delete document
     cy.get('mat-dialog-container').should('not.exist');
@@ -200,7 +197,7 @@ describe('Group', () => {
     AdminUserPage.saveUser();
     // jump from group to user
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(group);
+    AdminGroupPage.selectGroupAndWait(group);
     cy.contains('.user-title', group, { timeout: 10000 });
     AdminUserPage.selectAssociatedUser(user);
     // make sure group is associated to user
@@ -210,7 +207,7 @@ describe('Group', () => {
 
   it('should show warning message when user try to delete a group that is assigned to other users', () => {
     let groupName = 'gruppe_mit_datenrechten';
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.deleteGroup(groupName, false);
     cy.get('mat-dialog-content').contains(
       `Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Nutzer verwendet`
@@ -221,7 +218,7 @@ describe('Group', () => {
     const groupName = 'group_10';
     const docName = 'Datum_Ebene_2_3';
     const docPath = 'Daten/Neue Testdokumente';
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     cy.contains('permission-table .mat-row', docName).within(_ => {
       cy.get('ige-breadcrumb').invoke('text').should('equal', docPath);
     });
@@ -230,7 +227,7 @@ describe('Group', () => {
   it('should show correct information in group header', () => {
     /* 1. last-edited-date */
     // change an existing group and make sure the "last-edited" date is updated
-    AdminGroupPage.selectGroup('leere_Gruppe');
+    AdminGroupPage.selectGroupAndWait('leere_Gruppe');
     // edit group
     AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
     AdminGroupPage.saveGroup();
@@ -248,7 +245,7 @@ describe('Group', () => {
     // create group and make sure the created-date is correct
     const groupName = 'group' + Utils.randomString();
     AdminGroupPage.addNewGroup(groupName);
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.openUpGroupHeader();
     AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, dateOfToday);
   });
@@ -262,12 +259,12 @@ describe('Group', () => {
 
     DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
     // add read access to document of an assigned group of meta data admin
-    AdminGroupPage.selectGroup(group1);
+    AdminGroupPage.selectGroupAndWait(group1);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // add read access for document to one of meta admin's groups (= those visible to him)
-    AdminGroupPage.selectGroup(group2);
+    AdminGroupPage.selectGroupAndWait(group2);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.saveGroup();
@@ -276,7 +273,7 @@ describe('Group', () => {
     cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(group2);
+    AdminGroupPage.selectGroupAndWait(group2);
     // check that access right cannot be changed
     cy.get('[data-cy="Berechtigungen Daten"]')
       .contains(documentName)
@@ -290,7 +287,7 @@ describe('Group', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(group1);
+    AdminGroupPage.selectGroupAndWait(group1);
     UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure access right can now be changed by meta data admin
@@ -298,7 +295,7 @@ describe('Group', () => {
     cy.kcLogin('meta2-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroup(group2);
+    AdminGroupPage.selectGroupAndWait(group2);
     UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
   });
 
@@ -308,7 +305,7 @@ describe('Group', () => {
 
     DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
     // add document to empty group that belongs to metadata admin
-    AdminGroupPage.selectGroup(groupName);
+    AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure meta data admin does not see group

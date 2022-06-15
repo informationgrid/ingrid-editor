@@ -1,8 +1,7 @@
 export class ProfilePage {
   static visit() {
-    cy.intercept('GET', 'api/info/currentUser').as('getUser');
     cy.visit('profile');
-    cy.wait('@getUser');
+    cy.get('ige-profile').contains('Persönliche Daten', { timeout: 9000 });
   }
 
   static loginUsingLoginPage(username: string, password: string) {

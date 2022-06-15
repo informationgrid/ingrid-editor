@@ -6,7 +6,7 @@ export class ResearchPage {
   static visit(): void {
     cy.intercept({ method: 'POST', url: '/api/search/query', times: 1 }).as('searchOnVisit');
     cy.visit('research');
-    cy.wait('@searchOnVisit', { timeout: 10000 });
+    cy.wait('@searchOnVisit', { timeout: 20000 });
   }
 
   static search(query: string): void {
@@ -190,7 +190,7 @@ export class ResearchPage {
         cy.get('.mat-checkbox-inner-container input').check({ force: true });
       });
     }
-    cy.intercept('POST', /api\/search\?/).as('saveChanges');
+    cy.intercept({ method: 'POST', url: '/api/search', times: 1 }).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
     cy.wait('@saveChanges', { timeout: 7000 }).its('response.body.name').should('eq', title);
   }

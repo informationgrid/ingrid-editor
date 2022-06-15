@@ -63,15 +63,16 @@ class IgeAclService @Autowired constructor(
     }
 
     fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {
-        if (hasAdminRole(authentication)) {
-            return PermissionInfo(true, true, false)
-        } else if (id == null) {
-            return PermissionInfo()
-        }
         val sids = sidRetrievalStrategy.getSids(authentication)
         val hasRootWrite =
             checkForRootPermissions(sids, listOf(BasePermission.WRITE))
         val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
+
+        if (hasAdminRole(authentication)) {
+            return PermissionInfo(true, true, false)
+        } else if (id == null) {
+            return PermissionInfo(hasRootRead || hasRootWrite, hasRootWrite, false)
+        }
 
         return try {
 

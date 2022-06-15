@@ -28,8 +28,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun save(
         principal: Principal,
-        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query,
-        @Parameter(description = "Should this query be seen by all users of the catalog") @RequestParam forCatalog: Boolean = false
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query
     ): ResponseEntity<Query>
 
     @Operation

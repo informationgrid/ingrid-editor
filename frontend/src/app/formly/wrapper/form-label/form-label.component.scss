@@ -14,6 +14,10 @@
   width: 160px;
 }
 
+:host-context(ige-user-manager) .label-wrapper {
+  width: 150px;
+}
+
 :host-context(ige-form-wrapper) .label-wrapper {
   width: 272px;
 }
@@ -25,7 +29,8 @@
 :host-context(.hasContextHelp) {
   &:hover {
     .contextHelpIcon {
-      display: inline-block;
+      position: absolute;
+      display: block;
     }
 
     label {
