@@ -125,7 +125,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           // which would lead to an error. So we clear the form and set only the supplied values
           this.form.reset();
           this.updateLocation(null);
-          this.form.patchValue(value, { emitEvent: false });
+          this.form.patchValue(value);
           if (value.spatial) {
             this.updateSpatialFromModel(value.spatial[this.getSpatialKey()]);
           }
