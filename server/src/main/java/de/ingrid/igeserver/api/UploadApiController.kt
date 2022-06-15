@@ -178,7 +178,7 @@ class UploadApiController @Autowired constructor(
                     output.flush()
                 }
             } catch (ex: IOException) {
-                throw UncheckedIOException(ex)
+                throw NotFoundException.withMissingResource(file, "file")
             }
         }
 
