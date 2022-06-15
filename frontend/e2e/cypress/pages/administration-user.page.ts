@@ -135,7 +135,7 @@ export class AdminUserPage extends BasePage {
     cy.wait(200);
     cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
     cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
-    cy.contains('mat-option', groupName).click();
+    cy.get('mat-option').contains(groupName).click({ force: true });
     cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
 
