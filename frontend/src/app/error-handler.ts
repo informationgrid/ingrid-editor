@@ -59,6 +59,10 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.";
       case "CATALOG_NOT_FOUND":
         return `Dem Nutzer "${error.data.user}" ist kein Katalog zugewiesen`;
+      case "CONFLICT_WHEN_MOVING":
+        return `Es ist nicht möglich, ein Dokument/einen Ordner in sich selbst zu verschieben`;
+      case "CONFLICT_WHEN_COPYING":
+        return `Kopieren von Dokumentenbäumen unter sich selbst ist nicht möglich`;
       default:
         return null;
     }
