@@ -26,7 +26,7 @@ export class BasePage {
     cy.get('[data-cy=spatial-dialog-type] .mat-select-value-text').should('have.text', label);
   }
 
-  static checkErrorDialogMessage(message: string) {
+  static checkErrorDialogMessage(message: string | RegExp) {
     cy.get('[data-cy=error-dialog-content]').contains(message);
   }
 }

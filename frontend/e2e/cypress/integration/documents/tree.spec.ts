@@ -536,7 +536,7 @@ describe('mCLOUD: Tree', () => {
       Tree.openNode(['Neue Testdokumente', title]);
       CopyCutUtils.move(['Neue Testdokumente', title, title2]);
       // expect the error
-      BasePage.checkErrorDialogMessage('Cannot copy');
+      BasePage.checkErrorDialogMessage(/Kopieren .* unter sich selbst .* nicht möglich/);
     });
   });
 });
