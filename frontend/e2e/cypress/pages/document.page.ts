@@ -873,6 +873,10 @@ export class DocumentPage extends BasePage {
     cy.get('ige-form-dialog mat-form-field input').eq(field).type(value);
     cy.contains('button', 'Ok').click();
   }
+
+  static checkEntryOfField(identifier: string, fieldType: string, value: string) {
+    cy.get(`${identifier} ${fieldType}`).should('have.value', value);
+  }
 }
 
 export enum PublishOptions {

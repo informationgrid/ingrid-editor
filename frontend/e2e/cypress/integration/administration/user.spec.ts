@@ -6,6 +6,8 @@ import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
 import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
+import { Tree } from '../../pages/tree.partial';
+import { CopyCutUtils } from '../../pages/copy-cut-utils';
 
 describe('User', () => {
   beforeEach(() => {
@@ -589,7 +591,7 @@ describe('User', () => {
     // log in as author
     cy.logoutClearCookies();
     cy.kcLogin(authorName);
-    // check read access data
+    // check write access data
     DocumentPage.visit();
     cy.get('mat-tree mat-tree-node')
       .each(item => {
@@ -597,7 +599,12 @@ describe('User', () => {
       })
       .its('length')
       .should('be.greaterThan', 50);
-    // check read access addresses
+    // check document can be edited
+    Tree.openNode(['Doc_h']);
+    DocumentPage.addDescription('some description');
+    DocumentPage.saveDocument();
+    DocumentPage.checkEntryOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
+    // check write access addresses
     Menu.switchTo('ADDRESSES');
     cy.get('mat-tree mat-tree-node')
       .each(item => {
@@ -605,6 +612,76 @@ describe('User', () => {
       })
       .its('length')
       .should('be.greaterThan', 10);
+    // login as ige and withdraw access
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
+    // revoke read access that was automatically granted with right access
+    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
+    AdminGroupPage.saveGroup();
+  });
+
+  it('Author can create root document/move and copy document to root when granted universal read + write access #3267', () => {
+    const groupName = 'test_gruppe_3';
+    const authorName = 'author-with-groups';
+
+    // activate universal access in group
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
+    AdminGroupPage.saveGroup();
+    // log in as author
+    cy.logoutClearCookies();
+    cy.kcLogin(authorName);
+
+    // create root document
+    DocumentPage.visit();
+    DocumentPage.createDocument('newRootDoc');
+
+    // move to root
+    Tree.openNode(['Folder_g', 'Folder_g_1']);
+    CopyCutUtils.move();
+    Tree.openNode(['Folder_g_1']);
+
+    // copy to root
+    Tree.openNode(['Folder_j', 'Doc_j_1']);
+    CopyCutUtils.copyObject();
+    Tree.openNode(['Doc_j_1']);
+
+    // login as ige and withdraw access
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
+    // revoke read access that was automatically granted with right access
+    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
+    AdminGroupPage.saveGroup();
+  });
+
+  it('Author should be able to delete any document when granted universal read + write access #3267', () => {
+    const groupName = 'test_gruppe_3';
+    const authorName = 'author-with-groups';
+
+    // activate universal access in group
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
+    AdminGroupPage.saveGroup();
+    // log in as author
+    cy.logoutClearCookies();
+    cy.kcLogin(authorName);
+
+    // delete document
+    DocumentPage.visit();
+    Tree.openNode(['Doc_m']);
+    DocumentPage.deleteLoadedNode();
+    cy.contains('ige-tree mat-tree-node', 'Doc_m').should('not.exist');
+
     // login as ige and withdraw access
     cy.logoutClearCookies();
     cy.kcLogin('super-admin');
