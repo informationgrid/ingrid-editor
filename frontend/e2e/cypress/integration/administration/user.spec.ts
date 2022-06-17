@@ -8,6 +8,7 @@ import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { ResearchPage } from '../../pages/research.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -692,5 +693,15 @@ describe('User', () => {
     // revoke read access that was automatically granted with right access
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
     AdminGroupPage.saveGroup();
+  });
+
+  it('should download user data as CSV file #3943', () => {
+    AdminUserPage.getUserData().then(arr1 => {
+      AdminUserPage.downloadCSVFile();
+      AdminUserPage.getUserDataFromCSV().then(arr2 => {
+        // compare the content of the two arrays
+        expect(arr2).to.have.members(arr1);
+      });
+    });
   });
 });
