@@ -9,6 +9,25 @@ import { Menu } from '../../pages/menu';
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogout();
+    cy.kcLogin('ige3');
+  });
+
+  it('should display folder content correctly after saving the folder #3944', function () {
+    DocumentPage.visit();
+    // open folder and check for the content
+    cy.visit('/form;id=a7bf5a24-921c-4910-b868-bd01c322a4a6');
+    cy.contains('ige-folder-dashboard mat-card mat-card-title', 'Zuletzt bearbeitet im Ordner');
+    cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
+
+    // save the folder and check again
+    DocumentPage.saveDocument();
+    cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
+  });
+});
+
+describe('mCloud Load documents', () => {
+  beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('super-admin');
   });
 
