@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.session.SessionRegistryImpl
@@ -29,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Profile("!dev")
 @KeycloakConfiguration
-internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
+internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
 
     val log = logger()
 
@@ -63,7 +62,7 @@ internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
     @Autowired
-    open fun configureGlobal(auth: AuthenticationManagerBuilder) {
+    fun configureGlobal(auth: AuthenticationManagerBuilder) {
         // check out: https://www.thomasvitale.com/spring-security-keycloak/
         val grantedAuthorityMapper = SimpleAuthorityMapper()
         grantedAuthorityMapper.setPrefix("ROLE_")
@@ -89,7 +88,7 @@ internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
      * @return the modified firewall
      */
     @Bean
-    open fun allowUrlEncodedSlashHttpFirewall(): HttpFirewall {
+    fun allowUrlEncodedSlashHttpFirewall(): HttpFirewall {
         val firewall = StrictHttpFirewall()
         firewall.setAllowUrlEncodedSlash(true)
         firewall.setAllowSemicolon(true)
@@ -100,10 +99,6 @@ internal open class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
     @ConditionalOnMissingBean(HttpSessionManager::class)
     override fun httpSessionManager(): HttpSessionManager {
         return HttpSessionManager()
-    }
-
-    override fun configure(web: WebSecurity) {
-        web.ignoring().antMatchers("/assets/icons/IGE-NG_apple-touch-icon.png")
     }
 
     /**
