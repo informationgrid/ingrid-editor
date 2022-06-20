@@ -73,7 +73,7 @@ describe('Load addresses', () => {
     AddressPage.closeReplaceAddressDialog();
     cy.logoutClearCookies();
 
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
     AddressPage.visit();
     Tree.openNode(['Neue Testadressen']);
     AddressPage.openActionMenu();

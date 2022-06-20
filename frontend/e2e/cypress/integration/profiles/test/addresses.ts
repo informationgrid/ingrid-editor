@@ -9,7 +9,7 @@ import { Menu } from '../../../pages/menu';
 describe('addresses inside test catalogue', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3').as('tokens');
+    cy.kcLogin('test-catalog-general-test').as('tokens');
     DocumentPage.visit();
   });
 

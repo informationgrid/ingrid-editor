@@ -697,7 +697,7 @@ describe('Meta data administrator with a group', () => {
 describe('Catalogue admin', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
   });
 
   // eigentlich egal, welcher User -> nur Recht, Gruppen Dokumente zuzuweisen nötig
@@ -844,7 +844,7 @@ describe('Catalogue admin', () => {
         let regex = /\d+/g;
         let matches = txt.match(regex);
         cy.logoutClearCookies();
-        cy.kcLogin('eins');
+        cy.kcLogin('mcloud-catalog-authorization');
         AdminUserPage.visit();
         AdminGroupPage.goToTabmenu(UserAndRights.Group);
         cy.get('.page-title')
@@ -866,13 +866,13 @@ describe('Catalogue admin', () => {
     AdminUserPage.changeUserRole('Autor', true);
     // login with new role and check if the new author does not have admin rights
     cy.logoutClearCookies();
-    cy.kcLogin('drei');
+    cy.kcLogin('mcloud-catalog-user-profile');
     DocumentPage.visit();
     UserAuthorizationPage.checkUsersTabExist(false);
     DocumentPage.checkEmptyDocumentTree();
     cy.logoutClearCookies();
     // change the role back again to catalog admin
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
     AdminUserPage.visit();
     AdminUserPage.selectUser(userLogin);
     AdminUserPage.changeUserRole('Katalog-Administrator', true);
@@ -893,7 +893,7 @@ describe('Catalogue admin', () => {
     AdminUserPage.selectUser('metanew');
     cy.logoutClearCookies();
     // change the role back again to catalog admin
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
     AdminUserPage.visit();
     AdminUserPage.selectUser('autornew');
     AdminUserPage.changeUserRole('Autor', true);

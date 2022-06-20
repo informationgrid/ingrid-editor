@@ -15,7 +15,7 @@ describe('Profile', () => {
   it('should update user first and last name', () => {
     let firstName = 'TestUpdated';
     let lastName = 'VerantwortlicherUpdated';
-    cy.kcLogin('drei').as('tokens');
+    cy.kcLogin('mcloud-catalog-user-profile').as('tokens');
     ProfilePage.visit();
     ProfilePage.changeUserFirstLastName(firstName, lastName, true);
   });
@@ -62,7 +62,7 @@ describe('Profile', () => {
   });
 
   it('should update user email', () => {
-    cy.kcLogin('drei').as('tokens');
+    cy.kcLogin('mcloud-catalog-user-profile').as('tokens');
     ProfilePage.visit();
     let invalidEmail = 'katalogadmintest@###something.com';
     let validEmail = 'katalogadmintest@123omething.com';
@@ -74,7 +74,7 @@ describe('Profile', () => {
   });
 
   it('should not update user email with already exist one', () => {
-    cy.kcLogin('drei').as('tokens');
+    cy.kcLogin('mcloud-catalog-user-profile').as('tokens');
     ProfilePage.visit();
     let existEmail = 'andre.wallat@wemove.com';
     ProfilePage.changeUserEmail(existEmail, false);

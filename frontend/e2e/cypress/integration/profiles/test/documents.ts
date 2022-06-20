@@ -12,7 +12,7 @@ import { BasePage } from '../../../pages/base.page';
 describe('test catalog addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3').as('tokens');
+    cy.kcLogin('test-catalog-general-test').as('tokens');
     DocumentPage.visit();
   });
 

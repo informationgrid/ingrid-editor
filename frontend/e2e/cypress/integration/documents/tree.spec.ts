@@ -544,7 +544,7 @@ describe('mCLOUD: Tree', () => {
 describe('Tree', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3').as('tokens');
+    cy.kcLogin('test-catalog-general-test').as('tokens');
   });
 
   it('should not be possible to move folder under an address #3925', () => {

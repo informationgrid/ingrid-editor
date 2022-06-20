@@ -9,7 +9,7 @@ import { Menu } from '../../pages/menu';
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3');
+    cy.kcLogin('test-catalog-general-test');
   });
 
   it('should display folder content correctly after saving the folder #3944', function () {
@@ -88,7 +88,7 @@ describe('mCloud Load documents', () => {
     DocumentPage.saveDocument();
     // visit new catalog and make sure recently added address is not among the suggestions
     cy.logoutClearCookies();
-    cy.kcLogin('ige3');
+    cy.kcLogin('test-catalog-general-test');
     DocumentPage.visit();
     // add an address to a document so that afterwards the 'last used addresses' field contains this address
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
@@ -152,7 +152,7 @@ describe('mCloud Load documents', () => {
 
     // log in as different user
     cy.logoutClearCookies();
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
 
     // check header
     DocumentPage.visit();

@@ -434,7 +434,7 @@ describe('User', () => {
         let regex = /\d+/g;
         let matches = txt.match(regex);
         cy.logoutClearCookies();
-        cy.kcLogin('eins');
+        cy.kcLogin('mcloud-catalog-authorization');
         AdminUserPage.visit();
         cy.intercept('GET', '/api/users').as('usersCall');
         cy.wait('@usersCall');
@@ -497,7 +497,7 @@ describe('User', () => {
   it('should show limited range of users to catalog admin (#3538)', () => {
     // log in as cat admin
     cy.logoutClearCookies();
-    cy.kcLogin('zwei');
+    cy.kcLogin('mcloud-catalog-switch-catalog');
     // reload with changed user loginn
     AdminUserPage.visit();
     AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
