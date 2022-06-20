@@ -55,7 +55,7 @@ npm run cypress:run -- --record --spec "cypress/integration/documents/type/mclou
 - Multiple describe blocks can be defined within a spec-file for better organization.
 - naming convention for users
   - `<catalog-type>-<user-role>[-<purpose>]`
-  - e.g. `test-catalog`, `test-author-noGroups`, `uvp-meta`
+  - e.g. `test-catalog`, `test-author-no-groups`, `uvp-meta`
 
 # Email - Test
 
