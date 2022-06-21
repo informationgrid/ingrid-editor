@@ -1,9 +1,12 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.FileInfo
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.mdek.upload.ConflictException
 import de.ingrid.mdek.upload.UploadResponse
+import de.ingrid.mdek.upload.storage.ConflictHandling
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.StorageItem
 import org.apache.commons.io.IOUtils
@@ -16,16 +19,13 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.IOException
-import java.io.UncheckedIOException
+import java.net.URLDecoder
 import java.security.Principal
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import de.ingrid.igeserver.model.FileInfo
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.storage.ConflictHandling
-import java.net.URLDecoder
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -157,11 +157,25 @@ class UploadApiController @Autowired constructor(
 
     }
 
-    override fun getFile(
+    data class StorageParameters(
+        val catalog: String,
+        val userID: String,
+        val datasetID: String,
+        val file: String
+    )
+
+    private val downloadHashCache = Collections.synchronizedMap(object : LinkedHashMap<String, StorageParameters>() {
+        val maxSize = 15
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, StorageParameters>?): Boolean {
+            return size > maxSize
+        }
+    })
+
+    override fun getFileDownloadHash(
         request: HttpServletRequest,
         principal: Principal,
         docUuid: String
-    ): ResponseEntity<StreamingResponseBody> {
+    ): ResponseEntity<String> {
         val requestURI = request.requestURI
 
         val idx = requestURI.indexOf(docUuid)
@@ -170,22 +184,42 @@ class UploadApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkReadPermission(catalogId, docUuid, principal as Authentication)
 
+        val info = StorageParameters(catalogId, principal.getName(), docUuid, file)
+        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()){
+            throw NotFoundException.withMissingResource(info.file, "file")
+        }
+
+        val hash = UUID.randomUUID().toString()
+        downloadHashCache[hash] = info
+        return ResponseEntity<String>(hash, HttpStatus.OK)
+    }
+
+    override fun getFileByHash(
+        request: HttpServletRequest,
+        hash: String
+    ): ResponseEntity<StreamingResponseBody> {
+        val params = downloadHashCache[hash] ?: throw NotFoundException.withMissingHash(hash)
+        downloadHashCache.remove(hash)
+
         // read file
         val fileStream = StreamingResponseBody { output ->
             try {
-                this.storage.read(catalogId, principal.getName(), docUuid, file).use { data ->
+                this.storage.read(params.catalog, params.userID, params.datasetID, params.file).use { data ->
                     IOUtils.copy(data, output)
                     output.flush()
                 }
             } catch (ex: IOException) {
-                throw NotFoundException.withMissingResource(file, "file")
+                throw NotFoundException.withMissingResource(params.file, "file")
             }
         }
 
         // build response
         val response = Response.ok(fileStream, MediaType.APPLICATION_OCTET_STREAM)
-        response.header("Content-Disposition", "attachment; filename=\"$file\"")
-        response.header("Content-Length", storage.getInfo(catalogId, principal.getName(), docUuid, file).size)
+        response.header("Content-Disposition", "attachment; filename=\"${params.file}\"")
+        response.header(
+            "Content-Length",
+            storage.getInfo(params.catalog, params.userID, params.datasetID, params.file).size
+        )
         return ResponseEntity<StreamingResponseBody>(fileStream, HttpStatus.OK)
     }
 
