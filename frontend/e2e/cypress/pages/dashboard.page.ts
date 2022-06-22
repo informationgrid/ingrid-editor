@@ -50,6 +50,11 @@ export class DashboardPage {
     cy.contains('.shortcut button', option, { timeout: 10000 }).click();
   }
 
+  static verifyCreateBoxTitle(text: CreateBoxHeadings) {
+    cy.get('mat-dialog-container').should('exist');
+    cy.get('div.mat-dialog-title').should('contain', text);
+  }
+
   static draftedDocuments = '.box.working .count';
   static publishedDocuments = '.box .count';
   static totalDisplay = '.circular-chart .text';
@@ -59,5 +64,13 @@ export enum Shortcuts {
   NewFolder = 'Neuer Ordner',
   NewAddress = 'Neue Adresse',
   NewDataset = 'Neuer Datensatz',
-  ImportDataset = 'Datensatz importieren'
+  NewSubfolder = 'Neuer Unterordner',
+  ImportDataset = 'Datensatz importieren',
+  ImportAddress = 'Adressen Import'
+}
+
+export enum CreateBoxHeadings {
+  NewFolder = 'Neuen Ordner anlegen',
+  NewAddress = 'Neue Adresse anlegen',
+  NewDataset = 'Neuen Datensatz anlegen'
 }

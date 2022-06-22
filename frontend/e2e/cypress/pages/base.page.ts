@@ -29,6 +29,11 @@ export class BasePage {
   static checkErrorDialogMessage(message: string | RegExp) {
     cy.get('[data-cy=error-dialog-content]').contains(message);
   }
+
+  static closeDialog() {
+    cy.get('[data-cy=dlg-close]').click();
+    cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
+  }
 }
 
 export enum CatalogsTabmenu {
