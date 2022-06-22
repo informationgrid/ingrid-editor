@@ -100,13 +100,13 @@ export class McloudDoctype extends BaseDoctype {
                   if (link.asLink) {
                     return `
                          <a  href="${link.value}" target="_blank" class="no-text-transform icon-in-table">
-                         <img class="mat-icon "  src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
+                         <img  width="14"  height="14" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl
                     }upload/${form.get("_uuid").value}/${
                       link.uri
-                    }" class="no-text-transform icon-in-table">  <img class="mat-icon "  src="assets/icons/download.svg"  alt="link"> ${
+                    }" class="no-text-transform icon-in-table">  <img  width="14"  height="14" src="assets/icons/download.svg"  alt="link"> ${
                       link.uri
                     }</a>`;
                   }
