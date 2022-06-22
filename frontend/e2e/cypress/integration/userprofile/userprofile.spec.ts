@@ -21,10 +21,14 @@ describe('Profile', () => {
   });
 
   it('should update catalog admin password', () => {
-    cy.kcLogin('catalog-profile-test').as('tokens');
+    cy.kcLogin('mcloud-catalog-check-metadata').as('tokens');
     ProfilePage.visit();
     // change user password with new password
-    ProfilePage.changePassword('ige2', 'mdek', 'ige2');
+    ProfilePage.changePassword(
+      'mcloud-catalog-check-metadata',
+      'mcloud-catalog-check-metadata',
+      'new-mcloud-catalog-check-metadata'
+    );
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();

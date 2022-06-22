@@ -265,8 +265,8 @@ describe('User', () => {
     AdminUserPage.searchForUser('wemove digital solutions');
     AdminUserPage.searchForUser('wemove digital solutions', 'Katalog Admin1', false);
 
-    AdminUserPage.searchForUser('ige2');
-    AdminUserPage.searchForUser('ige2', 'eins', false);
+    AdminUserPage.searchForUser('mcloud-catalog-check-metadata');
+    AdminUserPage.searchForUser('mcloud-catalog-check-metadata', 'mcloud-catalog-authorization', false);
   });
 
   it('should find a user using her first- and lastname as search terms (#2596)', () => {

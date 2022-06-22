@@ -861,7 +861,7 @@ describe('Catalogue admin', () => {
   it('downgrade catalog user and make sure of the lost rights', () => {
     // change catalog admin role to author
     AdminUserPage.visit();
-    let userLogin = 'drei';
+    let userLogin = 'mcloud-catalog-user-profile';
     AdminUserPage.selectUser(userLogin);
     AdminUserPage.changeUserRole('Autor', true);
     // login with new role and check if the new author does not have admin rights
