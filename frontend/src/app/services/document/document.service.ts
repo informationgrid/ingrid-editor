@@ -450,9 +450,6 @@ export class DocumentService {
             // path: path
           },
         });
-      }),
-      catchError((error) => {
-        throw error;
       })
     );
   }
