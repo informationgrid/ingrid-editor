@@ -438,7 +438,7 @@ class KeycloakService : UserManagementService {
     private val letters = ('a'..'z')
     private val capitalLetters = ('A'..'Z')
     private val digits = ('0'..'9')
-    private val specialChars = listOf('!', '@', '#', '$', '%', '*', '+', '=', ':', ';', '<', '>', ',', '.', '?')
+    private val specialChars = listOf('!', '#', '$', '%', '*', '+', '=', ':', ';', '<', '>', ',', '.', '?')
     private val allChars = letters + capitalLetters + digits + specialChars
     private val passwordLength = 16
     private fun generatePassword(): String {
