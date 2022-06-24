@@ -321,8 +321,8 @@ export class AdminUserPage extends BasePage {
   }
 
   static getUserData(): Chainable<string[]> {
-    return cy.get('@usersCall').then(requ => {
-      let arr = requ.response.body.map(elem =>
+    return cy.get('@usersCall').then((requ: any) => {
+      let arr = requ.response.body.map((elem: any) =>
         [elem.firstName, elem.lastName, elem.email, elem.organisation].join(';')
       );
       console.log(arr);
@@ -397,7 +397,7 @@ export class AdminUserPage extends BasePage {
         expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
 
         // Extract the password
-        let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
+        let bodyArray = body.split('Passwort: ');
         let psw = bodyArray[1].split('\n')[0].trim();
 
         cy.logoutClearCookies();
