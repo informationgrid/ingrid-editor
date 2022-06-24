@@ -134,6 +134,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
     "/manage/user",
     "/manage/group",
     "/research",
+    "/reports/uvp-upload-check",
   ];
   private handlers: Map<Route, DetachedRouteHandle> = new Map();
 

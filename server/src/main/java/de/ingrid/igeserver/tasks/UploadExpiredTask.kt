@@ -1,17 +1,14 @@
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import de.ingrid.igeserver.profiles.uvp.UploadUtils
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import org.apache.logging.log4j.kotlin.logger
-import org.hibernate.query.NativeQuery
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 
@@ -19,10 +16,11 @@ import javax.persistence.EntityManager
 @Component
 class UploadExpiredTask(
     val fileSystemStorage: FileSystemStorage,
-    val entityManager: EntityManager
+    val entityManager: EntityManager,
+    val uploadUtils: UploadUtils
 ) {
     val log = logger()
-    
+
     @PostConstruct
     fun init() = start()
 
@@ -57,10 +55,10 @@ class UploadExpiredTask(
         log.info("Starting Upload-Expired - Task")
         start(null)
     }
-    
+
     fun start(docId: Int? = null) {
         val docs = try {
-            getPublishedDocumentsByCatalog(docId)
+            uploadUtils.getPublishedDocumentsByCatalog(docId)
         } catch (e: Exception) {
             log.error("Error getting published documents, which can be normal if database is empty: ${e.message}")
             emptyList()
@@ -78,7 +76,7 @@ class UploadExpiredTask(
         }
     }
 
-    private fun restoreUvpFiles(uploads: PublishedUploads) {
+    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads) {
         val today = LocalDate.now()
         uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
@@ -89,17 +87,17 @@ class UploadExpiredTask(
             }
     }
 
-    private fun archiveExpiredUvpFiles(uploads: PublishedUploads) {
+    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads) {
         val today = LocalDate.now()
         uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
             .filter { !fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .forEach {archiveFile(it, uploads)}
+            .forEach { archiveFile(it, uploads) }
     }
 
     private fun archiveFile(
-        uploadInfo: UploadInfo,
-        uploads: PublishedUploads
+        uploadInfo: UploadUtils.UploadInfo,
+        uploads: UploadUtils.PublishedUploads
     ) {
         try {
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
@@ -109,84 +107,9 @@ class UploadExpiredTask(
         }
     }
 
-    private fun isExpired(upload: UploadInfo, today: LocalDate) =
-        upload.validUntil != null && today.isAfter(OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate())
+    private fun isExpired(upload: UploadUtils.UploadInfo, today: LocalDate) =
+        upload.validUntil != null && today.isAfter(
+            OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
+        )
 
-    private fun getPublishedDocumentsByCatalog(docId: Int?): List<PublishedUploads> {
-        val result = queryDocs(sqlSteps, "step", docId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", docId)
-
-        val stepUrls =
-            result.map { PublishedUploads(it[1].toString(), it[0].toString(), getUrlsFromJsonField(it[2] as JsonNode)) }
-        val negativeUrls = resultNegativeDocs.map {
-            PublishedUploads(
-                it[1].toString(),
-                it[0].toString(),
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs")
-            )
-        }
-
-        return stepUrls + negativeUrls
-    }
-
-    private fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> {
-        return (getUrlsFromJsonFieldTable(json, "applicationDocs")
-                + getUrlsFromJsonFieldTable(json, "announcementDocs")
-                + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs")
-                + getUrlsFromJsonFieldTable(json, "furtherDocs")
-                + getUrlsFromJsonFieldTable(json, "considerationDocs")
-                + getUrlsFromJsonFieldTable(json, "approvalDocs")
-                + getUrlsFromJsonFieldTable(json, "decisionDocs")
-                )
-    }
-
-    private fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> {
-        return json.get(tableField)
-            ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
-            ?.map { mapToUploadInfo(it) }
-            ?: emptyList()
-    }
-
-    private fun mapToUploadInfo(it: JsonNode): UploadInfo {
-        val validUntilDateField = it.get("validUntil")
-        val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-        return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
-    }
-
-    private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?): List<Array<Any>> {
-        val query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
-        
-        return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
-            .addScalar("uuid")
-            .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
-            .resultList as List<Array<Any>>
-    }
-
-
-    private data class UploadInfo(val uri: String, val validUntil: String?)
-
-    private data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
-        fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
-            val response = mutableListOf<UploadInfo>()
-            docs.forEach { doc ->
-                val found = response.find { it.uri == doc.uri }
-                if (found == null) response.add(doc)
-                else {
-                    if (found.validUntil != null) {
-                        val date1 = LocalDate.parse(found.validUntil, DateTimeFormatter.ISO_DATE_TIME)
-                        val date2 = if (doc.validUntil == null) null else LocalDate.parse(
-                            doc.validUntil,
-                            DateTimeFormatter.ISO_DATE_TIME
-                        )
-                        if (date2 == null || date2.isAfter(date1)) {
-                            response.remove(found)
-                            response.add(doc)
-                        }
-                    }
-                }
-            }
-            return response
-        }
-    }
 }
