@@ -1,11 +1,12 @@
 import { DocumentPage, SEPARATOR } from '../../pages/document.page';
-import { AddressPage, ROOT } from '../../pages/address.page';
+import { Address, AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
-import { BasePage } from '../../pages/base.page';
+import { BasePage, CatalogsTabmenu } from '../../pages/base.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { BehavioursPage } from '../../pages/behaviours.page';
 
-describe('Load addresses', () => {
+describe('mCLOUD: Load addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin');
@@ -140,5 +141,38 @@ describe('Load addresses', () => {
     BasePage.checkErrorDialogMessage(
       'Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.'
     );
+  });
+});
+
+describe('Load addresses', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    DocumentPage.visit();
+  });
+
+  it('should test sorting of the tree inside catalogue of type test', () => {
+    const firstDoc = 'Datum_Ebene_4_1';
+    const lastDoc = 'Datum_Ebene_4_2';
+
+    Menu.switchTo('DOCUMENTS');
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
+    cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
+    Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
+    cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
+    // check order of documents
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(firstDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(lastDoc);
+    // change sorting of the tree
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
+    // check new order of the tree
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
+    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
+    // toggle button to original state
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
   });
 });
