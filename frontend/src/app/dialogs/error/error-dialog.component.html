@@ -8,31 +8,104 @@
 </div>
 <mat-dialog-content data-cy="error-dialog-content">
     <ng-container *ngIf="errors.length === 1">
-        <div>{{ errors[0].message }}</div>
-        <ul *ngIf="errors[0].detail || errors[0].stacktrace">
-            <li>
-                {{ errors[0].detail }}
-                <pre *ngIf="errors[0].stacktrace">{{
-                    errors[0].stacktrace
-                }}</pre>
+        <div *ngIf="errors[0].unhandledException == true">
+            {{ generalErrorMessage }}
+        </div>
+        <pre>{{ errors[0].message }}</pre>
+        <button
+            mat-button
+            (click)="errors[0].showDetails = !errors[0].showDetails"
+            data-cy="show-details-error-dialog-close"
+        >
+            Einzelheiten
+        </button>
+        <div *ngIf="errors[0].detail || errors[0].stacktrace">
+            <mat-card *ngIf="errors[0].showDetails" class="hover-elevate">
+                <mat-card-header>
+                    <div fxFlex></div>
+                    <div>
+                        <button
+                            [cdkCopyToClipboard]="
+                                errors[0].detail + errors[0].stacktrace
+                            "
+                            mat-icon-button=""
+                            title="Copy Error"
+                        >
+                            <mat-icon class="mat-icon">content_copy</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-header>
+
+                <mat-card-content>
+                    <ng-container>
+                        <pre *ngIf="errors[0].detail">
+                        {{ errors[0].detail }}
+                        </pre>
+
+                        <pre *ngIf="errors[0].stacktrace">{{
+                            errors[0].stacktrace
+                        }}</pre>
+                    </ng-container>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="errors.length > 1">
+        <ul>
+            <li *ngFor="let error of errors">
+                <div *ngIf="error.unhandledException == true">
+                    {{ generalErrorMessage }}
+                </div>
+                <pre>{{ error.message }}</pre>
+
+                <button
+                    mat-button
+                    (click)="error.showDetails = !error.showDetails"
+                    data-cy="show-details-error-dialog-close"
+                >
+                    Einzelheiten
+                </button>
+                <div *ngIf="error.detail || error.stacktrace">
+                    <mat-card *ngIf="error.showDetails" class="hover-elevate">
+                        <mat-card-header>
+                            <div fxFlex></div>
+                            <div>
+                                <button
+                                    [cdkCopyToClipboard]="
+                                        error.detail + error.stacktrace
+                                    "
+                                    mat-icon-button=""
+                                    title="Copy Error"
+                                >
+                                    <mat-icon class="mat-icon"
+                                        >content_copy</mat-icon
+                                    >
+                                </button>
+                            </div>
+                        </mat-card-header>
+
+                        <mat-card-content>
+                            <ng-container>
+                                <pre *ngIf="error.detail">
+                        {{ error.detail }}
+                        </pre
+                                >
+
+                                <pre *ngIf="error.stacktrace">{{
+                                    error.stacktrace
+                                }}</pre>
+                            </ng-container>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
             </li>
         </ul>
     </ng-container>
-
-    <ul *ngIf="errors.length > 1">
-        <li *ngFor="let error of errors">
-            {{ error.message }}
-            <ul *ngIf="error.detail || error.stacktrace">
-                <li>
-                    {{ error.detail }}
-                    <pre *ngIf="error.stacktrace">{{ error.stacktrace }}</pre>
-                </li>
-            </ul>
-        </li>
-    </ul>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button (click)="close()" data-cy="error-dialog-close">
         Schließen
     </button>
+    <div fxFlex></div>
+    <a mat-button color="primary" href="mailto:{{ supportEmail }}">Bericht</a>
 </mat-dialog-actions>

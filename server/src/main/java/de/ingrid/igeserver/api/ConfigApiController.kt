@@ -22,6 +22,9 @@ class ConfigApiController : ConfigApi {
     @Value("\${frontend.keycloak.resource}")
     lateinit var keycloakClientId: String
 
+    @Value("\${frontend.support-email}")
+    lateinit var supportEmail: String
+
     @Value("\${frontend.keycloak.enable}")
     var keycloakEnabled: Boolean = true
 
@@ -35,7 +38,8 @@ class ConfigApiController : ConfigApi {
                 keycloakUrl = keycloakUrl,
                 keycloakRealm = keycloakRealm,
                 keycloakClientId = keycloakClientId,
-                keycloakEnabled = keycloakEnabled
+                keycloakEnabled = keycloakEnabled,
+                supportEmail = supportEmail
             )
         )
 

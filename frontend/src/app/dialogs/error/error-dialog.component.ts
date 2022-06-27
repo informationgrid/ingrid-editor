@@ -1,6 +1,10 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
+import {
+  ConfigService,
+  Configuration,
+} from "../../services/config/config.service";
 
 @Component({
   selector: "error-dialog",
@@ -9,11 +13,15 @@ import { IgeError } from "../../models/ige-error";
 })
 export class ErrorDialogComponent {
   errors: IgeError[];
-
+  panelOpenState = false;
+  generalErrorMessage = "Sorry, something went wrong!";
+  public supportEmail: string;
   constructor(
     @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
-    private dlgRef: MatDialogRef<ErrorDialogComponent>
+    private dlgRef: MatDialogRef<ErrorDialogComponent>,
+    configService: ConfigService
   ) {
+    this.supportEmail = configService.getConfiguration().supportEmail;
     console.log("Data:", data);
     if (data instanceof Array) {
       this.errors = data;

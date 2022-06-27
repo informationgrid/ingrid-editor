@@ -30,6 +30,7 @@ describe("CatalogService", () => {
             "/api",
             null,
             null,
+            null,
             [
               {
                 title: "Verwaltung",

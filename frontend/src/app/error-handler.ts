@@ -18,15 +18,19 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error) {
     console.log("HANDLE ERROR", error);
-
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
       if (error.error?.errorCode) {
         const e = new IgeError();
+        const message = GlobalErrorHandler.translateMessage(error.error);
+        const unHandledException = message != null ? false : true;
         e.setMessage(
           GlobalErrorHandler.translateMessage(error.error) ??
-            error.error.errorText
+            error.error.errorText,
+          null,
+          error.error?.stacktrace,
+          unHandledException
         );
         this.modalService.showIgeError(e);
       } else {

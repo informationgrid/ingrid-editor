@@ -6,6 +6,8 @@ export class IgeError {
   stacktrace?: any;
   detail?: string;
   actions?: any[];
+  unhandledException?: boolean;
+  showDetails?: boolean;
 
   constructor(error?: HttpErrorResponse | string) {
     if (error instanceof HttpErrorResponse) {
@@ -21,8 +23,16 @@ export class IgeError {
     }
   }
 
-  setMessage(message: string, detail?: string) {
+  setMessage(
+    message: string,
+    detail?: string,
+    stacktrace: string = null,
+    unhandledException: boolean = false
+  ) {
+    this.unhandledException = unhandledException;
     this.message = message;
+    this.showDetails = false;
     this.detail = detail;
+    this.stacktrace = stacktrace;
   }
 }

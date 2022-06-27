@@ -83,6 +83,7 @@ import { TranslocoRootModule } from "./transloco-root.module";
 import { ReplaceAddressDialogComponent } from "./+catalog/+behaviours/system/DeleteReferenceHandler/replace-address-dialog/replace-address-dialog.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { SharedModule } from "./shared/shared.module";
+import { ClipboardModule } from "@angular/cdk/clipboard";
 
 registerLocaleData(de);
 
@@ -193,6 +194,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     FormFieldsModule,
     TranslocoRootModule,
     SharedModule,
+    ClipboardModule,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap
@@ -265,7 +267,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     // PLUGINS
     pluginProvider,
   ], // additional providers
-
   bootstrap: [AppComponent],
 })
 export class AppModule {}
