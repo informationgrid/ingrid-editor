@@ -497,6 +497,16 @@ svg {
   }
 }
 
+.icon-in-table {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  img {
+    padding: 3px;
+  }
+  word-break: break-all;
+}
+
 .gray {
   &:hover .coloring {
     fill: darken($ige-comment-color, 5%);

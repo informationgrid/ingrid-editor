@@ -103,7 +103,7 @@ class PostMigrationTask(
             val doc = documentService.getLatestDocument(it, resolveLinks = false)
             val organization = doc.data.get("organization").asText()
 
-            if (organization.isNullOrEmpty()) {
+            if (organization.isNullOrEmpty() || organization == "null") {
                 // free address without organization. no action needed
                 it.path = listOf(rootFolderId.toString())
                 it.parent = documentService.docWrapperRepo.findById(rootFolderId).get()

@@ -536,7 +536,7 @@ describe('mCLOUD: Tree', () => {
       Tree.openNode(['Neue Testdokumente', title]);
       CopyCutUtils.move(['Neue Testdokumente', title, title2]);
       // expect the error
-      BasePage.checkErrorDialogMessage('Cannot copy');
+      BasePage.checkErrorDialogMessage(/Kopieren .* unter sich selbst .* nicht möglich/);
     });
   });
 });
@@ -544,7 +544,7 @@ describe('mCLOUD: Tree', () => {
 describe('Tree', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3').as('tokens');
+    cy.kcLogin('test-catalog-general-test').as('tokens');
   });
 
   it('should not be possible to move folder under an address #3925', () => {

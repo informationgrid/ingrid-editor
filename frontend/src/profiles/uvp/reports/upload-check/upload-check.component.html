@@ -1,0 +1,36 @@
+<div fxFlex fxLayout="column" fxLayoutGap="20px">
+    <p>
+        Hier werden alle Uploads in allen Katalogen geprüft, ob diese auf dem
+        Dateisystem existieren.
+    </p>
+    <div fxFlex fxLayoutGap="20px">
+        <button mat-flat-button color="primary" (click)="start()">
+            Uploads prüfen
+        </button>
+        <mat-checkbox
+            (change)="filter($event.checked)"
+            [checked]="onlyShowErrors"
+            >Nur Fehler anzeigen
+        </mat-checkbox>
+    </div>
+
+    <div *ngFor="let catalogItem of resultsFiltered | keyvalue">
+        {{ catalogItem.key }}
+        <ul>
+            <li *ngFor="let docItem of catalogItem.value | keyvalue">
+                <a [routerLink]="['/form', { id: docItem.key }]"
+                    >{{ docItem.key }} ({{ docItem.value[0].state }})</a
+                >
+
+                <ul>
+                    <li
+                        *ngFor="let item of docItem.value"
+                        [class]="item.valid ? 'success-color' : 'error-color'"
+                    >
+                        {{ item.url }}
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

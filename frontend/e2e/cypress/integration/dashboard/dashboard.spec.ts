@@ -1,9 +1,11 @@
-import { DashboardPage, Shortcuts } from '../../pages/dashboard.page';
+import { CreateBoxHeadings, DashboardPage, Shortcuts } from '../../pages/dashboard.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
+import { AdminUserPage } from '../../pages/administration-user.page';
+import { BasePage } from '../../pages/base.page';
 
 describe('Dashboard', () => {
   beforeEach(() => {
@@ -129,6 +131,64 @@ describe('Dashboard', () => {
       AddressPage.CreateDialog.fillOrganizationType(new Address(instituteName, '', ''));
       DocumentPage.CreateDialog.execute();
       cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instituteName);
+    });
+
+    it('should have working action buttons on all dashboards #3960', () => {
+      // dashboard page (check import button)
+      DashboardPage.startShortcutAction(Shortcuts.ImportDataset);
+      cy.url().should('include', '/importExport/import');
+
+      // form page
+      Menu.switchTo('DOCUMENTS');
+      // new dataset
+      DashboardPage.startShortcutAction(Shortcuts.NewDataset);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewDataset);
+      BasePage.closeDialog();
+      // new folder
+      DashboardPage.startShortcutAction(Shortcuts.NewFolder);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewFolder);
+      BasePage.closeDialog();
+      // import
+      DashboardPage.startShortcutAction(Shortcuts.ImportDataset);
+      cy.url().should('include', '/importExport/import');
+
+      // address page
+      Menu.switchTo('ADDRESSES');
+      // new address
+      DashboardPage.startShortcutAction(Shortcuts.NewAddress);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewAddress);
+      BasePage.closeDialog();
+      // new folder
+      DashboardPage.startShortcutAction(Shortcuts.NewFolder);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewFolder);
+      BasePage.closeDialog();
+      // import
+      DashboardPage.startShortcutAction(Shortcuts.ImportAddress);
+      cy.url().should('include', '/importExport/import');
+    });
+
+    it('should have working action buttons in folder view #3960', () => {
+      Menu.switchTo('DOCUMENTS');
+      Tree.openNode(['Folder_d']);
+      // new dataset
+      DashboardPage.startShortcutAction(Shortcuts.NewDataset);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewDataset);
+      BasePage.closeDialog();
+      // new folder
+      DashboardPage.startShortcutAction(Shortcuts.NewSubfolder);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewFolder);
+      BasePage.closeDialog();
+
+      Menu.switchTo('ADDRESSES');
+      Tree.openNode(['Folder_A']);
+      // new dataset
+      DashboardPage.startShortcutAction(Shortcuts.NewAddress);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewAddress);
+      BasePage.closeDialog();
+      // new folder
+      DashboardPage.startShortcutAction(Shortcuts.NewSubfolder);
+      DashboardPage.verifyCreateBoxTitle(CreateBoxHeadings.NewFolder);
+      BasePage.closeDialog();
     });
   });
 });

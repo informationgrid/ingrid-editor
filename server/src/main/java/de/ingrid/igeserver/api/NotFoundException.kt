@@ -13,6 +13,7 @@ open class NotFoundException: ClientException {
 
         private const val ERROR_CODE_MISSING_RESOURCE = "RESOURCE_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_RESOURCE = "Resource of type '\${resourceType}' with id '\${resourceId}' is missing."
+        private const val ERROR_TEXT_MISSING_HASH = "No Resource of found for hash '\${resourceId}'."
 
         private const val ERROR_CODE_MISSING_USER_CATALOG = "CATALOG_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_USER_CATALOG = "The user '\${user}' is not assigned to any catalog."
@@ -22,13 +23,21 @@ open class NotFoundException: ClientException {
 
         private const val ERROR_CODE_MISSING_PROFILE = "PROFILE_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_PROFILE = "Profile with ID '\${id}' was not found. Has the profile been activated?"
-        
+
         /**
          * Factory method for missing resource
          */
         fun withMissingResource(resourceId: String, resourceType: String?, cause: Throwable? = null) : NotFoundException {
             return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_RESOURCE, ERROR_TEXT_MISSING_RESOURCE,
                     mapOf("resourceId" to resourceId, "resourceType" to resourceType), cause)
+        }
+
+        /**
+         * Factory method for missing hash
+         */
+        fun withMissingHash(hash: String, cause: Throwable? = null) : NotFoundException {
+            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_RESOURCE, ERROR_TEXT_MISSING_HASH,
+                mapOf("hash" to hash), cause)
         }
 
         /**

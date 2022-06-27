@@ -1,9 +1,9 @@
 package de.ingrid.igeserver.profiles.uvp.types
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -44,16 +44,25 @@ abstract class UvpBaseType @Autowired constructor() : EntityType() {
             "applicationDocs",
             "announcementDocs"
         )
-        doc.data.get("processingSteps")?.forEach { step ->
-            fileFields.forEach { field ->
-                step.get(field)?.forEach { file ->
-                    val url = file.get("downloadURL")
-                    if(!url.get("asLink").asBoolean()) {
-                        uploads.add(url.get("uri").textValue())
-                    }
-                }
-            }
+
+        // special case as negative decision docs are not part of any processingSteps
+        if (doc.data.get("uvpNegativeDecisionDocs") != null) {
+            uploads.addAll(getUploadsFromFileList(doc.data.get("uvpNegativeDecisionDocs")))
         }
+
+        uploads.addAll(
+            doc.data.get("processingSteps")?.flatMap { step ->
+                fileFields.flatMap { fileField ->
+                    getUploadsFromFileList(step.get(fileField))
+                }
+            } ?: emptyList())
         return uploads
+    }
+
+    private fun getUploadsFromFileList(fileList: JsonNode?): List<String> {
+        return fileList
+            ?.filter { it.get("downloadURL")?.get("asLink")?.asBoolean()?.not() ?: true }
+            ?.map { it.get("downloadURL").get("uri").textValue() }
+            ?: emptyList()
     }
 }

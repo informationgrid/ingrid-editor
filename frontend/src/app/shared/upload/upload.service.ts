@@ -91,22 +91,22 @@ export class UploadService {
       .subscribe((data) => this.handleDownloadProcess(data, filename));
   }
 
-  private handleDownloadProcess(data: Blob, filename: string) {
+  private handleDownloadProcess(hash: String, filename: string) {
     const downloadLink = document.createElement("a");
-    downloadLink.href = window.URL.createObjectURL(new Blob([data]));
+    downloadLink.href = `${this.backendUrl}upload/download/${hash}`;
     downloadLink.setAttribute("download", filename);
     document.body.appendChild(downloadLink);
     downloadLink.click();
     downloadLink.remove();
   }
 
-  private getFile(docUuid: string, uri: string): Observable<Blob> {
-    return this.http.get<Blob>(`${this.backendUrl}upload/${docUuid}/${uri}`, {
-      responseType: "blob" as "json",
+  private getFile(docUuid: string, uri: string): Observable<String> {
+    return this.http.get(`${this.backendUrl}upload/${docUuid}/${uri}`, {
+      responseType: "text",
     });
   }
 
-  private handleDownloadError(error: HttpErrorResponse): Observable<Blob> {
+  private handleDownloadError(error: HttpErrorResponse): Observable<String> {
     const message =
       error.status === 404
         ? "Die Datei konnte nicht gefunden werden"

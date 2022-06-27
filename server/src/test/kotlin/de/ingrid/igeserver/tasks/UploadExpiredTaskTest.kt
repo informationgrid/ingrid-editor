@@ -6,6 +6,7 @@ import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
+import de.ingrid.igeserver.profiles.uvp.UploadUtils
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
@@ -23,7 +24,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     val fileSystemStorage = mockk<FileSystemStorage>(relaxed = true)
     val entityManager = mockk<EntityManager>()
-    val task = UploadExpiredTask(fileSystemStorage, entityManager)
+    val task = UploadExpiredTask(fileSystemStorage, entityManager, UploadUtils(entityManager))
 
     fun init(docs: String) {
         clearAllMocks()

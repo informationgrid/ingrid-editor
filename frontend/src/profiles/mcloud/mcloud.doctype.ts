@@ -98,13 +98,17 @@ export class McloudDoctype extends BaseDoctype {
                 },
                 formatter: (link: any, form: FormGroup) => {
                   if (link.asLink) {
-                    return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+                    return `
+                         <a  href="${link.value}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="14"  height="14" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl
                     }upload/${form.get("_uuid").value}/${
                       link.uri
-                    }" class="no-text-transform">${link.uri}</a>`;
+                    }" class="no-text-transform icon-in-table">  <img  width="14"  height="14" src="assets/icons/download.svg"  alt="link"> ${
+                      link.uri
+                    }</a>`;
                   }
                 },
               },

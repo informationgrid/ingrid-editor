@@ -4,7 +4,7 @@ import { DashboardPage } from '../../pages/dashboard.page';
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('ige3').as('tokens');
+    cy.kcLogin('test-catalog-general-test').as('tokens');
     NotificationPage.visit();
   });
 

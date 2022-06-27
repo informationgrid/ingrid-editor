@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "dashboard-docs-header",
@@ -10,17 +11,19 @@ export class DashboardDocsHeaderComponent implements OnInit {
   @Input() canCreateDatasets: boolean;
   @Input() canImport: boolean;
 
-  constructor(private docEvents: DocEventsService) {}
+  constructor(private docEvents: DocEventsService, private router: Router) {}
 
   ngOnInit(): void {}
 
   createNewFolder() {
-    this.docEvents.onEvent("CREATE_FOLDER");
+    this.docEvents.sendEvent({ type: "CREATE_FOLDER" });
   }
 
   createNewDataset() {
-    this.docEvents.onEvent("NEW_DOC");
+    this.docEvents.sendEvent({ type: "NEW_DOC" });
   }
 
-  importDataset() {}
+  importDataset() {
+    this.router.navigate(["/importExport/import"]);
+  }
 }

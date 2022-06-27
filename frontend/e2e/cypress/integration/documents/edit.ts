@@ -4,8 +4,9 @@ import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
 import { Utils } from '../../pages/utils';
 import { AdminUserPage } from '../../pages/administration-user.page';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
-describe('edit documents', function () {
+describe('mCLOUD: edit documents', function () {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
@@ -88,5 +89,44 @@ describe('edit documents', function () {
       cy.get('ige-publish-pending').should('exist');
       cy.get('.publish-pending-info button').should('not.exist');
     });
+  });
+});
+
+describe('edit documents', function () {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    DocumentPage.visit();
+  });
+
+  xit('Should create minimal publishable document', () => {
+    const docName = 'Testdokument_2';
+    Tree.openNode(['Testdokumente', docName]);
+    DocumentPage.fillInField('[data-cy="Textfeld"]', 'input', 'some text');
+    DocumentPage.fillInField('[data-cy="Textfeld Max Länge"]', 'input', '5');
+    DocumentPage.fillInField('[data-cy="Textarea"]', 'textarea', 'some more text');
+    DocumentPage.chooseSelect('[data-cy="Selectbox"]', 'mat-select', 'Fachaufgabe');
+    DocumentPage.chooseSelect('[data-cy="Selectbox mit leerer Option"]', 'mat-select', 'Fachaufgabe');
+    DocumentPage.fillInField('[data-cy="Combobox/Autocomplete"]', 'input', 'Andere offene Lizenz');
+    DocumentPage.fillInField('[data-cy="Date"]', 'input', '02.12.2021');
+    DocumentPage.fillInField('[data-cy="Date-Range"]', 'input[formcontrolname="start"]', '12.12.2021');
+    DocumentPage.fillInField('[data-cy="Date-Range"]', 'input[formcontrolname="end"]', '24.12.2021');
+    DocumentPage.checkOption('[Data-cy="Checkbox"]');
+    AddressPage.addAddressToTestDocument(['address_for_export'], 'Ansprechpartner');
+    DocumentPage.setChips('DE_42/83 / GK_3');
+    DocumentPage.fillInFieldWithEnter('[data-cy="Chips (Input)"]', 'input', 'chips', 'mat-chip .label');
+    DocumentPage.fillInField('[data-cy="Multi-Repeat"]', 'formly-field-mat-input input', 'chips');
+    DocumentPage.fillInField('[data-cy="Multi-Repeat"]', 'formly-field-mat-datepicker input', '12.11.2020');
+    // upload file
+    enterMcloudDocTestData.openDownloadDialog();
+    enterMcloudDocTestData.uploadFile('importtest_3.json');
+    DocumentPage.fillInFieldWithEnter('[data-cy="Mehrfacheingabe (Simple)"]', 'input', 'stuff', '.list-item');
+    DocumentPage.addList('[data-cy="Image List"]', 'image title');
+    DocumentPage.addList('[data-cy="Link List"]', 'sometitle', true);
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information', 'Bonn', false);
+
+    // publish
+    DocumentPage.publishNow();
   });
 });

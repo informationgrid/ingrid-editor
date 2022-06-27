@@ -59,12 +59,22 @@ export class FreeSpatialComponent implements OnInit {
     this.nominatimService
       .search(query)
       .subscribe((response: NominatimResult[]) => {
+        response = response
+          .filter((item) => item.type !== "city")
+          .map((item) => FreeSpatialComponent.addTypeToDisplayName(item));
         this.nominatimResult = response;
         console.log("Nominatim:", response);
         this.showNoResult = response.length === 0;
         // @ts-ignore
         setTimeout(() => (<Map>this.map)._onResize());
       });
+  }
+
+  private static addTypeToDisplayName(item: NominatimResult): NominatimResult {
+    if (item.type) {
+      item.display_name += ` (${item.type})`;
+    }
+    return item;
   }
 
   handleSelection(item: NominatimResult) {

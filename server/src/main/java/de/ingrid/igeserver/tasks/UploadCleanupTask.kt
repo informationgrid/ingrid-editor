@@ -24,7 +24,7 @@ class UploadCleanupTask(
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun cleanup() {
-        log.debug("Starting Upload-Cleanup - Task")
+        log.info("Starting Upload-Cleanup - Task")
         val docsDir = fileSystemStorage.docsDir
 
         val trashPath = Paths.get(docsDir, FileSystemStorage.TRASH_PATH)

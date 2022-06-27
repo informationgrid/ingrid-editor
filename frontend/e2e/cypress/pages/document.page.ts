@@ -873,6 +873,55 @@ export class DocumentPage extends BasePage {
     cy.get('ige-form-dialog mat-form-field input').eq(field).type(value);
     cy.contains('button', 'Ok').click();
   }
+
+  static checkEntryOfField(identifier: string, fieldType: string, value: string) {
+    cy.get(`${identifier} ${fieldType}`).should('have.value', value);
+  }
+
+  static fillInField(identifier: string, fieldType: string, value: string) {
+    cy.get(`${identifier} ${fieldType}`).type(value);
+    cy.get(`${identifier} ${fieldType}`).should('have.value', value);
+  }
+
+  static fillInFieldWithEnter(identifier: string, fieldType: string, value: string, newPosition: string) {
+    cy.get(`${identifier} ${fieldType}`).type(value + '{enter}');
+    cy.get(`${identifier} ${newPosition}`).should('contain', value);
+  }
+
+  static chooseSelect(identifier: string, fieldType: string, value: string) {
+    cy.get(`${identifier} ${fieldType}`).click();
+    cy.get('mat-option').contains(value).click({ force: true });
+    cy.get(`${identifier} ${fieldType}`).should('have.text', value);
+  }
+
+  static checkOption(identifier: string) {
+    cy.get(`${identifier} mat-checkbox input`).check({ force: true });
+    cy.get(`${identifier} mat-checkbox`).should('have.class', 'mat-checkbox-checked');
+  }
+
+  static setChips(optionText: string, isFirstCategory: boolean = true) {
+    if (!isFirstCategory) {
+      cy.get('[data-cy="Chips (Dialog)"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+    } else {
+      cy.get('[data-cy="Chips (Dialog)"]').contains('Hinzufügen').click();
+    }
+
+    cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
+    cy.get('[data-cy="chip-dialog-confirm"]').click();
+    cy.contains('[data-cy="Chips (Dialog)"] .mat-chip', optionText);
+  }
+
+  static addList(identifier: string, title: string, linklist: boolean = false) {
+    cy.get(`${identifier} button`).click();
+    cy.get(`ige-form-dialog input[aria-required="true"]`).type(title);
+    //cy.get(`${identifier} ${fieldType}`).should('contain', title);
+    if (linklist) {
+      cy.get('ige-form-dialog mat-select').eq(0).invoke('show').click();
+      cy.contains('mat-option', 'Externer Link').click();
+      cy.get('.mat-select-panel-wrap').should('not.exist', { timeout: 10000 });
+    }
+    cy.get('[data-cy="form-dialog-confirm"]').click();
+  }
 }
 
 export enum PublishOptions {

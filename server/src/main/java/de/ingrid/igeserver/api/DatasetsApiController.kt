@@ -226,7 +226,7 @@ class DatasetsApiController @Autowired constructor(
     private fun handleMove(catalogId: String, id: Int, options: CopyOptions) {
 
         if (id == options.destId) {
-            throw ConflictException.withReason("Es ist nicht möglich, ein Dokument/einen Ordner in sich selbst zu verschieben")
+            throw ConflictException.withMoveConflict("Cannot move '$id' to itself")
         }
         validateCopyOperation(catalogId, id, options.destId)
 
@@ -264,7 +264,7 @@ class DatasetsApiController @Autowired constructor(
         // check destination is not part of source
         val descIds = documentService.getAllDescendantIds(catalogId, sourceId)
         if (descIds.contains(destinationId) || sourceId == destinationId) {
-            throw ConflictException.withReason("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
+            throw ConflictException.withCopyConflict("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
         }
     }
 

@@ -23,7 +23,7 @@
         ></mat-icon>
         <span>Neue Adresse</span>
     </button>
-    <button mat-button [disabled]="!canImport">
+    <button mat-button [disabled]="!canImport" (click)="importDataset()">
         <mat-icon>import_export</mat-icon>
         <span>Adressen Import</span>
     </button>

@@ -97,11 +97,11 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                     val md5 = _plugDescription.hashCode().toString()
                     val plugId = _plugDescription.plugId
 
-                    LOG.info("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
+                    LOG.debug("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
                     val containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
                     if (!containsPlugDescription) {
                         if (LOG.isInfoEnabled()) {
-                            LOG.info("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
+                            LOG.debug("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
                         }
                         _plugDescription.md5Hash = md5
 //                        injectMetadatas(_plugDescription)

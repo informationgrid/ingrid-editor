@@ -54,6 +54,8 @@ class UVPComponent {
     this.modifyFormHeader(profileService);
 
     this.addUVPReportTab(reportsService);
+
+    this.addUVPUploadCheckReportTab(reportsService);
   }
 
   private modifyFormHeader(service: ProfileService) {
@@ -97,6 +99,20 @@ class UVPComponent {
         ),
       data: {
         title: "UVP Bericht",
+        permission: "can_create_uvp_report",
+      },
+    });
+  }
+
+  private addUVPUploadCheckReportTab(reportsService: ReportsService) {
+    reportsService.addRoute({
+      path: "uvp-upload-check",
+      loadChildren: () =>
+        import("./uvp/reports/upload-check.module").then(
+          (m) => m.UploadCheckModule
+        ),
+      data: {
+        title: "UVP Upload Check",
         permission: "can_create_uvp_report",
       },
     });

@@ -9,6 +9,25 @@ import { Menu } from '../../pages/menu';
 describe('Load documents', () => {
   beforeEach(() => {
     cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test');
+  });
+
+  it('should display folder content correctly after saving the folder #3944', function () {
+    DocumentPage.visit();
+    // open folder and check for the content
+    cy.visit('/form;id=a7bf5a24-921c-4910-b868-bd01c322a4a6');
+    cy.contains('ige-folder-dashboard mat-card mat-card-title', 'Zuletzt bearbeitet im Ordner');
+    cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
+
+    // save the folder and check again
+    DocumentPage.saveDocument();
+    cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
+  });
+});
+
+describe('mCloud Load documents', () => {
+  beforeEach(() => {
+    cy.kcLogout();
     cy.kcLogin('super-admin');
   });
 
@@ -69,7 +88,7 @@ describe('Load documents', () => {
     DocumentPage.saveDocument();
     // visit new catalog and make sure recently added address is not among the suggestions
     cy.logoutClearCookies();
-    cy.kcLogin('ige3');
+    cy.kcLogin('test-catalog-general-test');
     DocumentPage.visit();
     // add an address to a document so that afterwards the 'last used addresses' field contains this address
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
@@ -133,7 +152,7 @@ describe('Load documents', () => {
 
     // log in as different user
     cy.logoutClearCookies();
-    cy.kcLogin('eins');
+    cy.kcLogin('mcloud-catalog-authorization');
 
     // check header
     DocumentPage.visit();

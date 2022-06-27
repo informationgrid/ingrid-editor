@@ -7,6 +7,8 @@ export interface NominatimResult {
   boundingbox: string[];
   lat: string;
   lon: string;
+  class: string;
+  type: string;
 }
 
 @Injectable({
@@ -18,8 +20,8 @@ export class NominatimService {
 
   constructor(private http: HttpClient) {}
 
-  search(query: string): Observable<any> {
-    return this.http.get(
+  search(query: string): Observable<NominatimResult[]> {
+    return this.http.get<NominatimResult[]>(
       this.url +
         "/search/" +
         query +

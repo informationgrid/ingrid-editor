@@ -320,6 +320,33 @@ export class AdminUserPage extends BasePage {
       });
   }
 
+  static getUserData(): Chainable<string[]> {
+    return cy.get('@usersCall').then((requ: any) => {
+      let arr = requ.response.body.map((elem: any) =>
+        [elem.firstName, elem.lastName, elem.email, elem.organisation].join(';')
+      );
+      console.log(arr);
+      return arr;
+    });
+  }
+
+  static getUserDataFromCSV(): Chainable<String[]> {
+    return cy.readFile('cypress/downloads/users.csv').then(content => {
+      // separate individual records
+      let data = content.split('\n');
+      // delete string with column names and remove empty string at the end
+      data.shift();
+      data.pop();
+      return data;
+    });
+  }
+
+  static downloadCSVFile(): void {
+    cy.contains('.table-footer button', 'CSV').click();
+    cy.contains('mat-dialog-actions button', 'Herunterladen').click();
+    cy.get('mat-dialog-container').should('not.exist');
+  }
+
   static createNewUser(userLogIn: string, userEmail: string, userRole: string) {
     // create user
     cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
@@ -370,7 +397,7 @@ export class AdminUserPage extends BasePage {
         expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
 
         // Extract the password
-        let bodyArray = body.split('Ihr Passwort für den IGE-NG lautet:');
+        let bodyArray = body.split('Passwort: ');
         let psw = bodyArray[1].split('\n')[0].trim();
 
         cy.logoutClearCookies();

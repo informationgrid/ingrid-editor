@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Inject,
   OnDestroy,
@@ -69,7 +70,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     private configService: ConfigService,
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
-    private dlgRef: MatDialogRef<ChooseAddressDialogComponent>
+    private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +86,10 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         tap(
           (items) => (this.referenceTypes = this.prepareReferenceTypes(items))
         ),
-        tap((items) => (this.typeSelectionEnabled = items.length > 1)),
+        tap((items) => {
+          this.typeSelectionEnabled = items.length > 1;
+          this.cdr.markForCheck();
+        }),
         tap(() => (this.placeholder = "Bitte wählen ..."))
       )
       .subscribe();
