@@ -53,11 +53,14 @@ class RemoveUnreferencedDocsTask(
 
         val unreferencedFiles = allFiles.filter { file -> referencedFiles.none { ref -> ref.file == file.file } }
 
-        log.debug("${unreferencedFiles.size} of ${referencedFiles.size} files are unreferenced in catalog: $catalogId")
+        log.debug("${referencedFiles.size} files with references and ${unreferencedFiles.size} are not referenced in catalog '$catalogId'")
 
         if (unreferencedFiles.isNotEmpty()) {
-            log.info("Deleting ${unreferencedFiles.size} unreferenced files ...")
-            unreferencedFiles.forEach { storage.delete(catalogId, it) }
+            log.info("Moving ${unreferencedFiles.size} unreferenced files from $catalogId to trash ...")
+            unreferencedFiles.forEach { 
+                log.info("File: ${it.path}/${it.file}")
+                storage.delete(catalogId, it) 
+            }
         }
     }
 

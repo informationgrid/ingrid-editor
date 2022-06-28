@@ -57,12 +57,7 @@ class UploadExpiredTask(
         return uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
             .filter { fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .map {
-                log.info("Restore file ${it.uri} from ${uploads.docUuid}")
-                fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, it.uri)
-                1
-            }
-            .count()
+            .fold(0) { sum, element -> if (restoreFile(element, uploads)) sum + 1 else sum }
     }
 
     private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
@@ -70,19 +65,34 @@ class UploadExpiredTask(
         return uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
             .filter { !fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .map { archiveFile(it, uploads); 1 }
-            .count()
+            .fold(0) { sum, element -> if (archiveFile(element, uploads)) sum + 1 else sum }
     }
 
     private fun archiveFile(
         uploadInfo: UploadUtils.UploadInfo,
         uploads: UploadUtils.PublishedUploads
-    ) {
-        try {
+    ): Boolean {
+        return try {
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
             fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
+            true
         } catch (ex: Exception) {
             log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
+            false
+        }
+    }
+    
+    private fun restoreFile(
+        uploadInfo: UploadUtils.UploadInfo,
+        uploads: UploadUtils.PublishedUploads
+    ): Boolean {
+        return try {
+            log.info("Restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
+            fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
+            true
+        } catch (ex: Exception) {
+            log.error("Could not restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
+            false
         }
     }
 
