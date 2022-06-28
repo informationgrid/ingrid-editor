@@ -14,13 +14,11 @@ class CodelistTask(val codeListService: CodeListService) {
     val log = logger()
 
     @PostConstruct
-    fun onStartup() {
-        codelistTask()
-    }
+    fun onStartup() = codelistTask()
 
     @Scheduled(cron = "\${cron.codelist.expression}")
     fun codelistTask() {
-        log.debug("Starting Codelist - Task")
+        log.info("Starting Task: Codelist")
         val lastModifiedTimestamp = codeListService.lastModifiedTimestamp
         val codeLists = codeListService.updateFromServer(lastModifiedTimestamp)
         logResult(codeLists)

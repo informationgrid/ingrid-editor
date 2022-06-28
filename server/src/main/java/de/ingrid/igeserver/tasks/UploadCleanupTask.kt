@@ -24,7 +24,7 @@ class UploadCleanupTask(
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun cleanup() {
-        log.info("Starting Upload-Cleanup - Task")
+        log.info("Starting Task: Upload-Cleanup")
         val docsDir = fileSystemStorage.docsDir
 
         val trashPath = Paths.get(docsDir, FileSystemStorage.TRASH_PATH)
@@ -40,6 +40,7 @@ class UploadCleanupTask(
 
         // run as long as there are empty directories
         fileSystemStorage.deleteEmptyDirs(trashPath, archivePath, unsavedPath, unpublishedPath)
+        log.debug("Task finished: Upload-Cleanup")
     }
 
 }

@@ -25,9 +25,10 @@ class RemoveUnreferencedDocsTask(
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun start() {
-        log.info("Starting task: Remove-Unreferenced-Docs")
+        log.info("Starting Task: Remove-Unreferenced-Docs")
         val uvpCatalogs = catalogRepo.findAllByType("uvp")
         uvpCatalogs.forEach { cleanupFilesForCatalogId(it.identifier) }
+        log.debug("Task finished: Remove-Unreferenced-Docs")
     }
 
     private fun cleanupFilesForCatalogId(catalogId: String) {
@@ -52,7 +53,7 @@ class RemoveUnreferencedDocsTask(
 
         val unreferencedFiles = allFiles.filter { file -> referencedFiles.none { ref -> ref.file == file.file } }
 
-        log.debug("${referencedFiles.size} referenced and ${unreferencedFiles.size} files in catalog: $catalogId")
+        log.debug("${unreferencedFiles.size} of ${referencedFiles.size} files are unreferenced in catalog: $catalogId")
 
         if (unreferencedFiles.isNotEmpty()) {
             log.info("Deleting ${unreferencedFiles.size} unreferenced files ...")

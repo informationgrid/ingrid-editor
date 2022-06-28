@@ -49,6 +49,7 @@ class UploadExpiredTask(
         }
 
         log.info("Archived: ${count.archived}; Restored: ${count.restored}")
+        log.debug("Task finished: Upload-Expired")
     }
 
     private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads): Int {

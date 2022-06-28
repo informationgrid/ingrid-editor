@@ -66,7 +66,6 @@ class IndexingTask @Autowired constructor(
     private val indexThroughIBus: Boolean
 ) : SchedulingConfigurer, DisposableBean {
 
-
     val log = logger()
     val executor = Executors.newSingleThreadScheduledExecutor()
     private val scheduler: TaskScheduler = initScheduler()
@@ -94,7 +93,7 @@ class IndexingTask @Autowired constructor(
      * Indexing of all published documents into an Elasticsearch index.
      */
     fun startIndexing(catalogId: String, format: String) {
-        log.debug("Starting Indexing - Task for $catalogId")
+        log.info("Starting Task: Indexing for $catalogId")
 
         val message = IndexMessage()
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
@@ -146,7 +145,7 @@ class IndexingTask @Autowired constructor(
 
             // post phase
             indexPostPhase(elasticsearchAlias, info.first, info.second, category.value)
-
+            log.debug("Task finished: Indexing for $catalogId")
         }
 
         // make sure to write everything to elasticsearch

@@ -24,10 +24,11 @@ class PlannedPublishTask(val documentService: DocumentService, val catalogServic
 
     @Scheduled(cron = "\${cron.publish.expression}")
     fun plannedPublishTask() {
-        log.debug("Starting planned publishing task")
+        log.info("Starting Task: Planned-Publish")
         val principal = getAuthentication()
 
         catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
+        log.debug("Task finished: Planned-Publish")
     }
 
 
