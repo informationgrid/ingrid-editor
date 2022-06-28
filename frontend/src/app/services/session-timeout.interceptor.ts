@@ -13,6 +13,7 @@ import { IgeError } from "../models/ige-error";
 import { ApiService } from "./ApiService";
 import { KeycloakEventType, KeycloakService } from "keycloak-angular";
 import { StorageService } from "../../storage.service";
+import { AuthenticationFactory } from "../security/auth.factory";
 
 @Injectable({
   providedIn: "root",
@@ -26,6 +27,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     private modalService: ModalService,
     private apiService: ApiService,
     private keycloak: KeycloakService,
+    private authFactory: AuthenticationFactory,
     private storageService: StorageService
   ) {
     this.initListener();
@@ -91,7 +93,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
       );
       this.modalService.showIgeError(error);
-      setTimeout(() => this.keycloak.logout(), 5000);
+      setTimeout(() => this.authFactory.get().logout(), 5000);
       this.timer$.unsubscribe();
     }
   }
@@ -105,8 +107,8 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       .subscribe((data) => {
         console.debug("Token in LocalStorage has changed", data);
         if (!data.value) {
-          this.keycloak.logout();
           this.storageService.clear("ige-refresh-token");
+          this.authFactory.get().logout();
           return;
         }
         this.keycloak.getKeycloakInstance().refreshToken = data.value;
