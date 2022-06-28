@@ -1,0 +1,95 @@
+<page-template label="URL-Pflege">
+    <div left-side></div>
+    <div main-header>
+        <div>
+            <ng-container *ngIf="liveLog | async as log">
+                {{ log.body }}
+                <!--<span *ngIf="log.endTime"
+                >Letzte Indizierung erfolgte am
+                    {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
+                >
+                <span *ngIf="!log.endTime"
+                >Laufende Indizierung seit:
+                    {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                >-->
+                <button
+                    mat-icon-button
+                    class="dark menu-button"
+                    [class.expanded]="showMore"
+                    (click)="showMore = !showMore"
+                >
+                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                </button>
+            </ng-container>
+        </div>
+
+        <div fxFlex></div>
+
+        <div>
+            <button mat-flat-button color="primary" (click)="start()">
+                Prüfung starten
+            </button>
+        </div>
+    </div>
+
+    <div main-content fxLayout="column" fxLayoutGap="36px">
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            matSort
+            class="width-100 no-action-column"
+        >
+            <ng-container matColumnDef="_select_" class="thin-column">
+                <th mat-header-cell *matHeaderCellDef>Alle</th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(element) : null"
+                        [checked]="selection.isSelected(element)"
+                    >
+                        <!--[aria-label]="checkboxLabel(row)"-->
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Status
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.status }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let element">
+                    <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
+                    {{ element.type }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Name/URL
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <div>{{ element.title }}</div>
+                    <div>{{ element.url }}</div>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Beschreibung
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.description }}
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                (click)="selection.toggle(row)"
+            ></tr>
+        </table>
+    </div>
+</page-template>

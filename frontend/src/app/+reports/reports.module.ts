@@ -14,9 +14,11 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { LazyReportsRouting } from "./lazy-reports.routing";
 import { TranslocoModule } from "@ngneat/transloco";
+import { UrlCheckComponent } from "./url-check/url-check.component";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @NgModule({
-  declarations: [ReportsComponent, GeneralReportComponent],
+  declarations: [ReportsComponent, GeneralReportComponent, UrlCheckComponent],
   imports: [
     CommonModule,
     LazyReportsRouting,
@@ -29,6 +31,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatButtonToggleModule,
     ReactiveFormsModule,
     TranslocoModule,
+    MatCheckboxModule,
   ],
   providers: [
     {
