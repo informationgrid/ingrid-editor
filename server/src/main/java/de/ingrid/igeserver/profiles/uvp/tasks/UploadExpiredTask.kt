@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.tasks
+package de.ingrid.igeserver.profiles.uvp.tasks
 
 import de.ingrid.igeserver.profiles.uvp.UploadUtils
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 
 @Profile("uvp")
@@ -21,42 +20,15 @@ class UploadExpiredTask(
 ) {
     val log = logger()
 
-    @PostConstruct
-    fun init() = start()
-
-    val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
-        FROM catalog,
-             document_wrapper dw,
-             document doc,
-             jsonb_array_elements(doc.data -> 'processingSteps') elems
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-    """.trimIndent()
-
-    val sqlNegativeDecisionDocs = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
-        FROM catalog,
-             document_wrapper dw,
-             document doc
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-          AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
-    """.trimIndent()
+    data class Counter(var archived: Int, var restored: Int)
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun scheduleStart() {
-        log.info("Starting Upload-Expired - Task")
         start(null)
     }
 
     fun start(docId: Int? = null) {
+        log.info("Starting Task: Upload-Expired")
         val docs = try {
             uploadUtils.getPublishedDocumentsByCatalog(docId)
         } catch (e: Exception) {
@@ -64,35 +36,41 @@ class UploadExpiredTask(
             emptyList()
         }
 
+        val count = Counter(0, 0)
         docs.forEach {
             // remove expired documents
-            archiveExpiredUvpFiles(it)
+            val countArchived = archiveExpiredUvpFiles(it)
 
             // restore expired documents
-            restoreUvpFiles(it)
+            val countRestored = restoreUvpFiles(it)
 
-            // remove unreferenced documents
-//            deleteUnreferencedUvpFilesFromCatalog(it)
+            count.archived += countArchived
+            count.restored += countRestored
         }
+
+        log.info("Archived: ${count.archived}; Restored: ${count.restored}")
     }
 
-    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads) {
+    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
         val today = LocalDate.now()
-        uploads.getDocsByLatestValidUntilDate()
+        return uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
             .filter { fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .forEach {
+            .map {
                 log.info("Restore file ${it.uri} from ${uploads.docUuid}")
                 fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, it.uri)
+                1
             }
+            .count()
     }
 
-    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads) {
+    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
         val today = LocalDate.now()
-        uploads.getDocsByLatestValidUntilDate()
+        return uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
             .filter { !fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .forEach { archiveFile(it, uploads) }
+            .map { archiveFile(it, uploads); 1 }
+            .count()
     }
 
     private fun archiveFile(
@@ -103,7 +81,7 @@ class UploadExpiredTask(
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
             fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
         } catch (ex: Exception) {
-            log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
+            log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
         }
     }
 
@@ -111,5 +89,4 @@ class UploadExpiredTask(
         upload.validUntil != null && today.isAfter(
             OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
         )
-
 }

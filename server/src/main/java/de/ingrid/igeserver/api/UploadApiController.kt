@@ -229,7 +229,7 @@ class UploadApiController @Autowired constructor(
 
         val userID = principal.getName()
 
-        this.storage.delete(catalogId, userID, docUuid, file)
+        this.storage.deleteUnsavedFile(catalogId, userID, docUuid, file)
 
         return ResponseEntity.ok().build()
     }
