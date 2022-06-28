@@ -1,7 +1,5 @@
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Message
 import de.ingrid.igeserver.repository.MessageRepository
 import org.springframework.beans.factory.annotation.Autowired
