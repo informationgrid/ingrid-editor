@@ -185,7 +185,7 @@ ige-root .mat-card {
 }
 
 /* Table */
-.mat-table {
+.mat-table:not(.no-action-column) {
   .mat-header-cell:last-of-type,
   .mat-cell:last-of-type {
     padding-right: 12px;
