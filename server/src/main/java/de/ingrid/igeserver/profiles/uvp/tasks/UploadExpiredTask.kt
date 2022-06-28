@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 
 @Profile("uvp")
@@ -21,16 +20,15 @@ class UploadExpiredTask(
 ) {
     val log = logger()
 
-    @PostConstruct
-    fun init() = start()
+    data class Counter(var archived: Int, var restored: Int)
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun scheduleStart() {
-        log.info("Starting Upload-Expired - Task")
         start(null)
     }
 
     fun start(docId: Int? = null) {
+        log.info("Starting Task: Upload-Expired")
         val docs = try {
             uploadUtils.getPublishedDocumentsByCatalog(docId)
         } catch (e: Exception) {
@@ -38,32 +36,41 @@ class UploadExpiredTask(
             emptyList()
         }
 
+        val count = Counter(0, 0)
         docs.forEach {
             // remove expired documents
-            archiveExpiredUvpFiles(it)
+            val countArchived = archiveExpiredUvpFiles(it)
 
             // restore expired documents
-            restoreUvpFiles(it)
+            val countRestored = restoreUvpFiles(it)
+
+            count.archived += countArchived
+            count.restored += countRestored
         }
+
+        log.info("Archived: ${count.archived}; Restored: ${count.restored}")
     }
 
-    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads) {
+    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
         val today = LocalDate.now()
-        uploads.getDocsByLatestValidUntilDate()
+        return uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
             .filter { fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .forEach {
+            .map {
                 log.info("Restore file ${it.uri} from ${uploads.docUuid}")
                 fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, it.uri)
+                1
             }
+            .count()
     }
 
-    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads) {
+    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
         val today = LocalDate.now()
-        uploads.getDocsByLatestValidUntilDate()
+        return uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
             .filter { !fileSystemStorage.isArchived(uploads.catalogId, uploads.docUuid, it.uri) }
-            .forEach { archiveFile(it, uploads) }
+            .map { archiveFile(it, uploads); 1 }
+            .count()
     }
 
     private fun archiveFile(
@@ -74,7 +81,7 @@ class UploadExpiredTask(
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
             fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
         } catch (ex: Exception) {
-            log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
+            log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
         }
     }
 
@@ -82,56 +89,4 @@ class UploadExpiredTask(
         upload.validUntil != null && today.isAfter(
             OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
         )
-    
-    private fun getPublishedDocumentsByCatalog(docId: Int?): List<PublishedUploads> {
-        val result = queryDocs(sqlStepsPublished, "step", docId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId)
-
-        val stepUrls =
-            result.map { PublishedUploads(it[1].toString(), it[0].toString(), getUrlsFromJsonField(it[2] as JsonNode)) }
-        val negativeUrls = resultNegativeDocs.map {
-            PublishedUploads(
-                it[1].toString(),
-                it[0].toString(),
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs")
-            )
-        }
-
-        return stepUrls + negativeUrls
-    }
-
-    private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?): List<Array<Any>> {
-        val query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
-        
-        return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
-            .addScalar("uuid")
-            .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
-            .resultList as List<Array<Any>>
-    }
-
-
-    private data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
-        fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
-            val response = mutableListOf<UploadInfo>()
-            docs.forEach { doc ->
-                val found = response.find { it.uri == doc.uri }
-                if (found == null) response.add(doc)
-                else {
-                    if (found.validUntil != null) {
-                        val date1 = LocalDate.parse(found.validUntil, DateTimeFormatter.ISO_DATE_TIME)
-                        val date2 = if (doc.validUntil == null) null else LocalDate.parse(
-                            doc.validUntil,
-                            DateTimeFormatter.ISO_DATE_TIME
-                        )
-                        if (date2 == null || date2.isAfter(date1)) {
-                            response.remove(found)
-                            response.add(doc)
-                        }
-                    }
-                }
-            }
-            return response
-        }
-    }
 }
