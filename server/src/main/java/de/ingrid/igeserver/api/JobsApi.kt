@@ -7,7 +7,6 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
@@ -29,17 +28,25 @@ interface JobsApi {
         principal: Principal
     ): ResponseEntity<Job>
 
-    @PostMapping(
-        value = ["/jobs/{id}"],
+    @GetMapping(
+        value = ["/jobs/{id}/is-running"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun command(
+    fun isRunning(
         principal: Principal,
-        @Parameter(description = "The unique id of the job.", required = true) @PathVariable("id") id: String,
+        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
+    ): ResponseEntity<Boolean>
+    
+    @PostMapping(
+        value = ["/jobs/url-check"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun urlCheckTask(
+        principal: Principal,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
             required = true
         ) command: JobCommand
-    ): ResponseEntity<Group>
+    ): ResponseEntity<Unit>
 }
 

@@ -1,26 +1,44 @@
 package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.tasks.quartz.URLChecker
+import de.ingrid.igeserver.model.JobCommand
+import org.apache.logging.log4j.kotlin.logger
+import org.quartz.Job
 import org.quartz.JobBuilder
+import org.quartz.JobDataMap
 import org.quartz.JobKey
+import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
+import java.util.*
 
 @Service
 class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean) {
+    val log = logger()
 
-    val scheduler = factory.scheduler
+    private val scheduler = factory.scheduler
 
-    @PostConstruct
-    fun init() = create()
+    fun start(jobKey: JobKey, jobDataMap: JobDataMap?) {
+        val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
+        if (isRunning) {
+            log.info("Job is already running. Skip execution")
+            return
+        }
+        
+        val jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup())
+        log.info("jobs before trigger: ${jobKeys.size}")
+        scheduler.triggerJob(jobKey, jobDataMap)
 
-    fun start(jobKey: JobKey) {
-        scheduler.triggerJob(jobKey)
+        val jobKeysAfterTrigger = scheduler.getJobKeys(GroupMatcher.anyGroup())
+        log.info("jobs after trigger: ${jobKeysAfterTrigger.size}")
+
+        Thread.sleep(6000)
+        val jobKeysAfterJobIsDone = scheduler.getJobKeys(GroupMatcher.anyGroup())
+        log.info("jobs after job is done: ${jobKeysAfterJobIsDone.size}")
+
     }
 
-    fun stop(jobId: String) {
+    fun pause(jobId: String) {
 
     }
 
@@ -28,14 +46,18 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     }
 
+    fun cancel(jobId: String) {
+
+    }
+
     fun getJobInfo(jobId: String) {
 
     }
 
-    private fun create() {
-        val detail = JobBuilder.newJob().ofType(URLChecker::class.java)
-            .withIdentity(URLChecker.jobKey)
-            .withDescription("Checking URLs for reachability")
+    private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
+        val detail = JobBuilder.newJob().ofType(jobClass)
+            .withIdentity(jobKey)
+//            .withDescription("Checking URLs for reachability")
             .storeDurably()
             .build()
 
@@ -52,9 +74,40 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
         scheduler.start()*/
     }
 
-    fun getJobKeyFromId(id: String): JobKey {
+    fun getJobKeyFromId(id: String, catalogId: String): JobKey {
         id.split(":").apply {
-            return JobKey.jobKey(this[1], this[0])
+            return JobKey.jobKey(this[1] + catalogId, this[0])
         }
+    }
+
+    fun handleJobWithCommand(
+        command: JobCommand,
+        jobClass: Class<out Job>,
+        jobKey: JobKey,
+        jobDataMap: JobDataMap? = null
+    ) {
+
+        when (command) {
+            JobCommand.start -> {
+                if (scheduler.checkExists(jobKey).not()) {
+                    createJob(jobClass, jobKey)
+                }
+                start(jobKey, jobDataMap)
+            }
+            JobCommand.stop -> stop(jobKey)
+            JobCommand.resume -> TODO()
+        }
+    }
+
+    private fun stop(jobKey: JobKey) {
+        with(scheduler) { 
+            pauseJob(jobKey)
+            deleteJob(jobKey)
+        }
+    }
+
+    fun isRunning(id: String, catalogId: String): Boolean {
+        val jobKey = JobKey.jobKey(id, catalogId)
+        return scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
     }
 }
