@@ -874,8 +874,13 @@ export class DocumentPage extends BasePage {
     cy.contains('button', 'Ok').click();
   }
 
-  static checkEntryOfField(identifier: string, fieldType: string, value: string) {
+  static checkValueOfField(identifier: string, fieldType: string, value: string) {
     cy.get(`${identifier} ${fieldType}`).should('have.value', value);
+  }
+
+  static checkContentOfField(identifier: string, fieldType: string, value: string) {
+    //cy.contains(`${identifier} ${fieldType}`, value);
+    cy.get(`${identifier} ${fieldType}`).should('contain.text', value);
   }
 
   static fillInField(identifier: string, fieldType: string, value: string) {

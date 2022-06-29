@@ -31,6 +31,17 @@ describe('uvp documents', () => {
     uvpPage.setUVPnumber('UVPG-1.1.1');
     // publish
     DocumentPage.publishNow();
+
+    // check content of fields
+    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkContentOfField(
+      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      'ige-address-card',
+      'Ansprechpartner Adresse, Organisation_6'
+    );
+    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '02.12.2021');
+    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
   });
 
   it('create a minimal publishable document of type "Zulassungsverfahren" and publish it', () => {
@@ -50,6 +61,18 @@ describe('uvp documents', () => {
     uvpPage.IsPreliminaryAssessment('Ja');
     // publish
     DocumentPage.publishNow();
+
+    // check content of fields
+    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkContentOfField(
+      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      'ige-address-card',
+      'Ansprechpartner Adresse, Organisation_7'
+    );
+    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '03.12.2021');
+    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
+    cy.get('[data-cy="Vorprüfung durchgeführt"] mat-radio-button').should('have.class', 'mat-radio-checked');
   });
 
   it('create a minimal publishable document of type "Raumordnungsverfahren" and publish it', () => {
@@ -67,6 +90,17 @@ describe('uvp documents', () => {
     uvpPage.setUVPnumber('UVPG-1.1.1');
     // publish
     DocumentPage.publishNow();
+
+    // check content of fields
+    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some other description');
+    DocumentPage.checkContentOfField(
+      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      'ige-address-card',
+      'Ansprechpartner Adresse, Organisation_8'
+    );
+    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '04.12.2021');
+    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('.spatial-title', '', 'Bonn');
   });
 
   it('create a minimal publishable document of type "Ausländisches Vorhaben" and publish it', () => {
@@ -80,6 +114,15 @@ describe('uvp documents', () => {
     enterMcloudDocTestData.setSpatialBbox('information about location', 'Olpe', false);
     // publish
     DocumentPage.publishNow();
+
+    // check content of fields
+    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some more description');
+    DocumentPage.checkContentOfField(
+      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      'ige-address-card',
+      'Ansprechpartner Adresse, Organisation_9'
+    );
+    DocumentPage.checkContentOfField('.spatial-title', '', 'Olpe');
   });
 
   it('create a minimal publishable document of type "Negative Vorprüfung" and publish it', () => {
@@ -91,6 +134,14 @@ describe('uvp documents', () => {
     uvpPage.setDecisionDate('06.12.2021');
     // publish
     DocumentPage.publishNow();
+
+    // check content of fields
+    DocumentPage.checkContentOfField(
+      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      'ige-address-card',
+      'Ansprechpartner Adresse, Organisation_10'
+    );
+    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '06.12.2021');
   });
 
   it('should add a maximum one spatial reference (#3747) using JSON schema', () => {

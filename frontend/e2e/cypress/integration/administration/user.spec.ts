@@ -604,7 +604,7 @@ describe('User', () => {
     Tree.openNode(['Doc_h']);
     DocumentPage.addDescription('some description');
     DocumentPage.saveDocument();
-    DocumentPage.checkEntryOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkValueOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
     // check write access addresses
     Menu.switchTo('ADDRESSES');
     cy.get('mat-tree mat-tree-node')
