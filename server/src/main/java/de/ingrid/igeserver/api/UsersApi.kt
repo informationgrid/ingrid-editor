@@ -234,4 +234,23 @@ interface UsersApi {
         ) @PathVariable("id") id: String
     ): ResponseEntity<Void>
 
+    @PostMapping(
+        value = ["/externalUsers/resetPassword/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Sends an email to a user for changing its password"
+        )]
+    )
+    fun resetPassword(
+        principal: Principal,
+        @Parameter(
+            description = "The user login of which the password shall be reset.",
+            required = true
+        ) @PathVariable("id") id: String
+    ): ResponseEntity<Void>
+
 }

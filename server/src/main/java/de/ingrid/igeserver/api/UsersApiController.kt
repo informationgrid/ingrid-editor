@@ -3,8 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
@@ -354,6 +352,23 @@ open class UsersApiController : UsersApi {
         keycloakService.requestPasswordChange(principal, id)
         return ResponseEntity.ok().build()
 
+    }
+
+    override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
+        keycloakService.getClient(principal).use { client ->
+
+            val user = keycloakService.getUser(client, id)
+            val password = keycloakService.resetPassword(principal, id)
+            logger.debug("Reset password for user $id to $password")
+            if (!developmentMode) email.sendWelcomeEmailWithPassword(
+                user.email,
+                user.firstName,
+                user.lastName,
+                password,
+                user.login
+            )
+            return ResponseEntity.ok().build()
+        }
     }
 
 

@@ -330,6 +330,26 @@ class KeycloakService : UserManagementService {
 
     }
 
+    override fun resetPassword(principal: Principal?, id: String): String {
+        val password = generatePassword()
+
+        initClient(principal).use { client ->
+            val kcUser = getKeycloakUser(client, id)
+            kcUser.apply {
+                    requiredActions = listOf("UPDATE_PASSWORD")
+                    credentials = listOf(CredentialRepresentation().apply {
+                        type = CredentialRepresentation.PASSWORD
+                        isTemporary = true
+                        value = password
+                    })
+                }
+
+            val userResource = client.realm().users().get(kcUser.id)
+            updateKeycloakUser(userResource, kcUser)
+        }
+        return password
+    }
+
     override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
 
         initClient(principal).use { client ->

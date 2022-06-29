@@ -164,4 +164,8 @@ export class UserService {
   updatePassword(): Promise<void> {
     return this.keycloakService.updatePassword();
   }
+
+  resetPassword(login: string) {
+    return this.dataService.resetPassword(login);
+  }
 }

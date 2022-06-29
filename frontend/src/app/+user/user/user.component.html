@@ -110,6 +110,12 @@
                         >
                             Löschen
                         </button>
+                        <button
+                            mat-menu-item
+                            (click)="resetPassword(selectedUser.login)"
+                        >
+                            Passwort zurücksetzen
+                        </button>
                     </mat-menu>
                 </div>
                 <user-header-more

@@ -7,7 +7,10 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <p *ngIf="!data.preformatted">{{ data.message }}</p>
+    <p
+        *ngIf="!data.preformatted"
+        [innerHTML]="data.message?.replace('\n', '<br />')"
+    ></p>
     <pre *ngIf="data.preformatted">{{ data.message }}</pre>
     <ul *ngIf="data.list">
         <li *ngFor="let item of data.list">{{ item }}</li>
