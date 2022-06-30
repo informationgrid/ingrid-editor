@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
+import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.quartz.URLChecker
@@ -28,6 +29,13 @@ class JobsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isRunning = scheduler.isRunning(id, catalogId)
         return ResponseEntity.ok(isRunning)
+    }
+
+    override fun getInfo(principal: Principal, id: String): ResponseEntity<JobInfo> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val isRunning = scheduler.isRunning(id, catalogId)
+        val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap
+        return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
     }
 
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {

@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
+import de.ingrid.igeserver.model.JobInfo
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
@@ -36,6 +37,15 @@ interface JobsApi {
         principal: Principal,
         @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
     ): ResponseEntity<Boolean>
+
+    @GetMapping(
+        value = ["/jobs/{id}/info"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun getInfo(
+        principal: Principal,
+        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
+    ): ResponseEntity<JobInfo>
     
     @PostMapping(
         value = ["/jobs/url-check"],

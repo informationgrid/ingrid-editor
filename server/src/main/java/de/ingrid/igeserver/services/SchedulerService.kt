@@ -2,10 +2,7 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.Job
-import org.quartz.JobBuilder
-import org.quartz.JobDataMap
-import org.quartz.JobKey
+import org.quartz.*
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
@@ -109,5 +106,10 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
     fun isRunning(id: String, catalogId: String): Boolean {
         val jobKey = JobKey.jobKey(id, catalogId)
         return scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
+    }
+
+    fun getJobDetail(id: String, catalogId: String): JobDetail? {
+        val jobKey = JobKey.jobKey(id, catalogId)
+        return scheduler.getJobDetail(jobKey)
     }
 }

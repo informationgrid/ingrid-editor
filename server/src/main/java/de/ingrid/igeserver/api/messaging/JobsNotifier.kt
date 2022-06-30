@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import java.util.*
 
-data class UrlMessage(val numUrls: Int = 0, val progress: Int = 0) : Message()
+data class UrlMessage(var numUrls: Int = 0, var progress: Int = 0) : Message()
 
 @Service
 class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
@@ -18,7 +18,10 @@ class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate
         msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message)
     }
     fun endMessage(message: UrlMessage) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message.apply { this.endTime = Date() })
+        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message.apply { 
+            this.endTime = Date()
+            this.progress = 100
+        })
     }
 
 }
