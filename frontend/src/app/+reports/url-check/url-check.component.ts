@@ -5,7 +5,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
-import { Observable } from "rxjs";
+import { merge, Observable, Subject } from "rxjs";
 
 @Component({
   selector: "ige-url-check",
@@ -15,12 +15,18 @@ import { Observable } from "rxjs";
 export class UrlCheckComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
-  liveLog: Observable<UrlLogResult> = this.rxStompService
-    .watch("/topic/jobs")
-    .pipe(
-      map((msg) => JSON.parse(msg.body)),
-      tap((data) => (this.isRunning = !data.endTime))
-    );
+  lastResult = new Subject();
+  liveLog: Observable<UrlLogResult> = merge(
+    this.rxStompService
+      .watch("/topic/jobs")
+      .pipe(map((msg) => JSON.parse(msg.body)))
+  ).pipe(
+    tap((data: UrlLogResult) => {
+      if (data.progress === 100)
+        setTimeout(() => (this.isRunning = false), 300);
+      else this.isRunning = true;
+    })
+  );
   dataSource = new MatTableDataSource([]);
   displayedColumns = ["_select_", "status", "type", "name", "description"];
   showMore = false;
@@ -33,9 +39,10 @@ export class UrlCheckComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.urlCheckService
-      .isRunning()
-      .subscribe((value) => console.log("Is Running: " + value));
+    this.urlCheckService.getJobInfo().subscribe((value) => {
+      this.isRunning = value.isRunning;
+    });
+
     this.dataSource.data = [
       {
         status: "200",

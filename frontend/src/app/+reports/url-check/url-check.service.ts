@@ -4,7 +4,9 @@ import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
 import { BaseLogResult } from "../../shared/base-log-result";
 
-export interface UrlLogResult extends BaseLogResult {}
+export interface UrlLogResult extends BaseLogResult {
+  progress: number;
+}
 
 @Injectable({
   providedIn: "root",
@@ -29,9 +31,13 @@ export class UrlCheckService {
     );
   }
 
-  isRunning(): Observable<boolean> {
+  /*isRunning(): Observable<boolean> {
     return this.http.get<boolean>(
       this.backendURL + "jobs/url-check/is-running"
     );
+  }*/
+
+  getJobInfo() {
+    return this.http.get<any>(this.backendURL + "jobs/url-check/info");
   }
 }

@@ -16,6 +16,7 @@ import { LazyReportsRouting } from "./lazy-reports.routing";
 import { TranslocoModule } from "@ngneat/transloco";
 import { UrlCheckComponent } from "./url-check/url-check.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [ReportsComponent, GeneralReportComponent, UrlCheckComponent],
@@ -32,6 +33,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     ReactiveFormsModule,
     TranslocoModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

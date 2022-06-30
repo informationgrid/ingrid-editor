@@ -1,17 +1,23 @@
 <page-template label="URL-Pflege">
     <div left-side></div>
     <div main-header>
-        <div>
+        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
             <ng-container *ngIf="liveLog | async as log">
-                {{ log.message }}
-                <span *ngIf="log.endTime"
+                <span *ngIf="!isRunning; else running"
                     >Letzte Prüfung erfolgte am
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
-                <span *ngIf="!log.endTime"
-                    >Laufende Prüfung seit:
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
-                >
+                <ng-template #running>
+                    <mat-progress-spinner
+                        [value]="log.progress"
+                        diameter="16"
+                        [matTooltip]="log.progress + '%'"
+                    ></mat-progress-spinner>
+                    <span>
+                        Laufende Prüfung seit:
+                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                    >
+                </ng-template>
                 <button
                     mat-icon-button
                     class="dark menu-button"
@@ -22,8 +28,6 @@
                 </button>
             </ng-container>
         </div>
-
-        <div fxFlex></div>
 
         <div>
             <button
@@ -39,6 +43,14 @@
                     Prüfung stoppen
                 </button>
             </ng-template>
+        </div>
+    </div>
+
+    <div status class="status" [class.hide]="!showMore">
+        <div *ngIf="liveLog | async as log">
+            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Analysierte URLs: ???</div>
         </div>
     </div>
 
