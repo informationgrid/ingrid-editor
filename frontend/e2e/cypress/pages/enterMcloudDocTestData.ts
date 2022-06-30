@@ -305,6 +305,7 @@ export class enterMcloudDocTestData {
 
   static assertFileUpload() {
     cy.contains('button', 'Übernehmen').click();
+    cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
 
   static unzipArchiveAfterUpload() {

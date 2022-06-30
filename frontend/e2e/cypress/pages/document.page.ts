@@ -884,8 +884,26 @@ export class DocumentPage extends BasePage {
   }
 
   static fillInField(identifier: string, fieldType: string, value: string) {
-    cy.get(`${identifier} ${fieldType}`).type(value);
+    cy.get(`${identifier} ${fieldType}`).clear().type(value);
     cy.get(`${identifier} ${fieldType}`).should('have.value', value);
+  }
+
+  static addTableEntry(section: 0 | 1 | 2, name: string, option: 'Dateien hochladen' | 'Link angeben') {
+    cy.get('.steps')
+      .eq(section)
+      .within(_ => {
+        cy.contains('ige-table-type', name).within(_ => {
+          cy.contains('button', option).click();
+        });
+      });
+  }
+
+  static checkTableEntry(section: 0 | 1 | 2, label: string, name: string) {
+    cy.get('.steps')
+      .eq(section)
+      .within(_ => {
+        cy.contains(`[data-cy="${label}-table"] mat-row`, name);
+      });
   }
 
   static fillInFieldWithEnter(identifier: string, fieldType: string, value: string, newPosition: string) {

@@ -51,6 +51,13 @@ export class uvpPage {
     cy.get('[data-cy="Adresse"] input').eq(addressElement).should('have.value', value);
   }
 
+  static addProcedureSteps(content: 'Öffentliche Auslegung' | 'Erörterungstermin' | 'Entscheidung über die Zulassung') {
+    cy.contains('ige-uvp-sections button', 'Hinzufügen').click();
+    // click the right kind of information (content)
+    cy.contains('.mat-menu-panel button', content).click();
+    cy.contains('ige-section-wrapper', content).should('exist');
+  }
+
   static verifyUVPmetrics(category: UVPmetrics, value: string) {
     cy.get('[label="Kennzahlen"] .mat-column-value')
       .eq(category)

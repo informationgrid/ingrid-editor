@@ -34,6 +34,11 @@ export class BasePage {
     cy.get('[data-cy=dlg-close]').click();
     cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
+
+  static closeDialogAndAdoptChoices() {
+    cy.contains('button', /Anlegen|Übernehmen/i).click();
+    cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
+  }
 }
 
 export enum CatalogsTabmenu {
