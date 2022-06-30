@@ -177,9 +177,8 @@ class CatalogService @Autowired constructor(
         user.data?.creationDate = Date()
         user.data?.modificationDate = Date()
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
-        val createdUser = userRepo.save(user)
 
-        return createdUser
+        return userRepo.save(user)
 
     }
 
