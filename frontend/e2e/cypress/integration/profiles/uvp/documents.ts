@@ -1,11 +1,9 @@
 import { DocumentPage, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Utils } from '../../../pages/utils';
-import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
 import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
-import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 import { ResearchPage } from '../../../pages/research.page';
 import { BasePage } from '../../../pages/base.page';
 
@@ -157,7 +155,7 @@ describe('uvp documents', () => {
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
     DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Test.pdf');
+    enterMcloudDocTestData.uploadFile('Test.pdf', true);
     DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
@@ -166,14 +164,14 @@ describe('uvp documents', () => {
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_1.json');
+    enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_5.json');
+    enterMcloudDocTestData.uploadFile('importtest_5.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_4.json');
+    enterMcloudDocTestData.uploadFile('importtest_4.json', true);
 
     DocumentPage.saveDocument();
 
@@ -217,7 +215,7 @@ describe('uvp documents', () => {
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
     DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Test.pdf');
+    enterMcloudDocTestData.uploadFile('Test.pdf', true);
     DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
@@ -226,14 +224,14 @@ describe('uvp documents', () => {
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_1.json');
+    enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_4.json');
+    enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_5.json');
+    enterMcloudDocTestData.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
@@ -277,7 +275,7 @@ describe('uvp documents', () => {
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
     DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Test.pdf');
+    enterMcloudDocTestData.uploadFile('Test.pdf', true);
     DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
@@ -286,14 +284,14 @@ describe('uvp documents', () => {
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_1.json');
+    enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_4.json');
+    enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_5.json');
+    enterMcloudDocTestData.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
@@ -337,7 +335,7 @@ describe('uvp documents', () => {
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
     DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_2.json');
+    enterMcloudDocTestData.uploadFile('importtest_2.json', true);
     DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
@@ -345,9 +343,9 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_4.json');
+    enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(1, 'Entscheidung', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('importtest_5.json');
+    enterMcloudDocTestData.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
