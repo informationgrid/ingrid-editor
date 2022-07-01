@@ -281,6 +281,7 @@ export class enterMcloudDocTestData {
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
     cy.get('.upload-content').should('contain', filePath);
+    cy.get('[svgicon="Entfernen"]').should('exist');
   }
 
   static addFileWithRename(filePath: string, newName: string) {
