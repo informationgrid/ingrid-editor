@@ -23,7 +23,11 @@ import { IgeError } from "../../../models/ige-error";
 export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
-    tap((users) => (this.externalUsers = users))
+    tap((users) => (this.externalUsers = users)),
+    tap(
+      (users) =>
+        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users))
+    )
   );
   externalUsers: BackendUser[];
   form: FormGroup;
@@ -57,7 +61,6 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       role: "",
     };
     this.importExternal = false;
-    this.formlyFieldConfig = this.userService.getNewUserFormFields();
 
     this.form = new FormGroup({
       role: new FormControl("", Validators.required),

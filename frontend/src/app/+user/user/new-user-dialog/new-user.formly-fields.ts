@@ -1,10 +1,10 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable, of } from "rxjs";
+import { of } from "rxjs";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 
 export const getNewUserFormFields = (
   roles: SelectOptionUi[],
-  logins: Observable<SelectOptionUi[]>
+  logins: SelectOptionUi[]
 ): FormlyFieldConfig[] => {
   return [
     {
