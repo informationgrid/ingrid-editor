@@ -24,6 +24,7 @@ import { ProfileService } from "./services/profile.service";
 export class AppComponent implements OnInit {
   sessionRefresher$ = new Subject();
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
+  showTestBadge: boolean;
 
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
@@ -53,6 +54,9 @@ export class AppComponent implements OnInit {
       this.favIcon.href = "/assets/profiles/mcloud/assets/icons/favicon.ico";
       titleService.setTitle("mCLOUD Editor");
     }
+
+    this.showTestBadge =
+      this.configService.getConfiguration().featureFlags?.showTestBadge;
   }
 
   private loadIcons() {

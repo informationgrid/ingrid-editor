@@ -1107,3 +1107,24 @@ mat-icon.wide-icon-26px {
     padding: 16px;
   }
 }
+
+.test-instance {
+  position: fixed;
+  top: auto;
+  bottom: 50px;
+  left: -80px;
+  z-index: 40;
+  width: 300px;
+  background: red;
+  color: #fff;
+  text-align: center;
+  line-height: 50px;
+  letter-spacing: 1px;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+
+  &:hover {
+    display: none;
+  }
+}
