@@ -107,7 +107,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     this.form.enable();
     const errorText: string = error.error?.errorText;
     if (error.status === 409) {
-      if (errorText.includes("User already Exists with login")) {
+      if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
         this.modalService.showJavascriptError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login
