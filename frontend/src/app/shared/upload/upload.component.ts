@@ -150,6 +150,7 @@ export class UploadComponent implements OnInit {
     this._errors[transfer.id] = null;
     transfer.success = true;
     this.errors.next(this._errors);
+    this.complete.next();
   }
 
   setAdditionalUploadParameter(params: any) {
