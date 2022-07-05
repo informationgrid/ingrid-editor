@@ -7,7 +7,6 @@ export function IpValidator(control: FormControl): ValidationErrors {
 }
 
 export function EmailValidator(control: FormControl): ValidationErrors {
-  console.log(".");
   return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
 }
 
