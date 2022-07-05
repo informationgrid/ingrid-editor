@@ -1,12 +1,27 @@
 import { Injectable } from "@angular/core";
 import { FormGroup } from "@angular/forms";
+import { SessionStore } from "../store/session.store";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { transaction } from "@datorama/akita";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormStateService {
   private form: FormGroup;
-  private textareaElementsHeights: any = {};
+  private textareaElementsRows: any = {};
+  private readonly fontSize = 16;
+
+  private resizeObserver = new ResizeObserver((entries) =>
+    this.storeTextareaElementsHeight(entries)
+  );
+
+  constructor(private sessionStore: SessionStore) {
+    // get text area height state from browser store
+    this.textareaElementsRows = {
+      ...this.sessionStore.getValue().ui.textAreaHeights,
+    };
+  }
 
   updateForm(form: FormGroup) {
     this.form = form;
@@ -16,33 +31,65 @@ export class FormStateService {
     return this.form;
   }
 
-  getTextareaElements(selector: string) {
-    let textareaElements = document.querySelectorAll(selector);
-    return textareaElements;
+  // restore height of all textareas if found in memory for the new document type
+  restoreAndObserveTextareaHeights(fields: FormlyFieldConfig[]) {
+    this.restoreTextAreaHeigths(fields);
+    this.observeTextareaHeights();
+  }
+
+  unobserveTextareaHeights() {
+    FormStateService.getTextareaElements().forEach((element) =>
+      this.resizeObserver.unobserve(element)
+    );
   }
 
   // save current height of all textareas of current document type from the DOM
-  storeTextareaElementsHeights() {
-    // get and store textareaElements heights
-    let textareaElements = this.getTextareaElements(
-      "form formly-field-mat-textarea textarea"
-    );
-    textareaElements.forEach((textarea: HTMLElement) => {
-      this.textareaElementsHeights[textarea.id] = textarea.style.height;
+  @transaction()
+  private storeTextareaElementsHeight(entries: ResizeObserverEntry[]) {
+    entries.forEach((entry) => {
+      // get and store textareaElements heights
+      let height = (<HTMLTextAreaElement>entry.target).offsetHeight;
+      let styleHeight = (<HTMLTextAreaElement>entry.target).style.height;
+      if (styleHeight !== "") {
+        this.textareaElementsRows[entry.target.id] = Math.floor(
+          height / this.fontSize
+        );
+
+        this.sessionStore.update((state) => ({
+          ui: {
+            ...state.ui,
+            textAreaHeights: this.textareaElementsRows,
+          },
+        }));
+      }
     });
   }
 
-  // restore height of all textareas if found in memory for the new document type
-  restoreTextareaElementsHeights() {
+  private observeTextareaHeights() {
     setTimeout(() => {
-      let textareaElements = this.getTextareaElements(
-        "form formly-field-mat-textarea textarea"
+      FormStateService.getTextareaElements().forEach((element) =>
+        this.resizeObserver.observe(element)
       );
-      textareaElements.forEach((textarea: HTMLElement) => {
-        if (this.textareaElementsHeights[textarea.id] != undefined) {
-          textarea.style.height = this.textareaElementsHeights[textarea.id];
-        }
-      });
-    }, 100);
+    }, 500);
+  }
+
+  private restoreTextAreaHeigths(fields: FormlyFieldConfig[]) {
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.restoreTextAreaHeigths(field.fieldGroup);
+        return;
+      }
+
+      if (
+        field.type === "textarea" &&
+        this.textareaElementsRows[field.id] !== undefined
+      ) {
+        field.templateOptions.rows = this.textareaElementsRows[field.id];
+      }
+    });
+  }
+
+  private static getTextareaElements(): NodeListOf<HTMLTextAreaElement> {
+    return document.querySelectorAll("form formly-field-mat-textarea textarea");
   }
 }

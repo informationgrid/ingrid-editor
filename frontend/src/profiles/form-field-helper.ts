@@ -24,11 +24,19 @@ export class FormFieldHelper {
     };
   }
 
-  addTextArea(id, label, options?) {
+  /**
+   * Add a text area with the id `elementIdPrefix + id`
+   * @param id
+   * @param label
+   * @param elementIdPrefix is needed here to remember text area height correctly
+   * @param options
+   */
+  addTextArea(id, label, elementIdPrefix, options?): FormlyFieldConfig {
     return {
       key: id,
       type: "textarea",
       className: id,
+      id: elementIdPrefix + id,
       wrappers: ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,

@@ -33,7 +33,9 @@ export class McloudDoctype extends BaseDoctype {
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addSection("Allgemeines", [
-        this.addTextArea("description", "Beschreibung", { required: true }),
+        this.addTextArea("description", "Beschreibung", this.id, {
+          required: true,
+        }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
           allowedTypes: ["10"],
@@ -57,7 +59,7 @@ export class McloudDoctype extends BaseDoctype {
         this.addRepeatChip("keywords", "Schlagworte"),
       ]),
       this.addSection("mCLOUD", [
-        this.addTextArea("accessRights", "Nutzungshinweise"),
+        this.addTextArea("accessRights", "Nutzungshinweise", this.id),
         this.addRepeatChip("mCloudCategories", "mCLOUD Kategorie", {
           required: true,
           useDialog: true,
@@ -153,7 +155,7 @@ export class McloudDoctype extends BaseDoctype {
           required: true,
           options: this.getCodelistForSelect(6500, "license"),
         }),
-        this.addTextArea("origin", "Quellenvermerk"),
+        this.addTextArea("origin", "Quellenvermerk", this.id),
         this.addGroup(null, "mFUND", [
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",

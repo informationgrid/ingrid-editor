@@ -332,12 +332,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       // switch to the right profile depending on the data
       if (needsProfileSwitch) {
-        this.formStateService.storeTextareaElementsHeights();
+        this.formStateService.unobserveTextareaHeights();
 
         // switch to the right profile depending on the data
         this.fields = this.switchProfile(profile);
 
-        this.formStateService.restoreTextareaElementsHeights();
+        this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
         this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields =
