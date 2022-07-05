@@ -34,7 +34,11 @@
         Schließen
     </button>
     <div fxFlex></div>
-    <a mat-stroked-button color="primary" href="mailto:{{ supportEmail }}"
+    <a
+        *ngIf="errors[0].unhandledException"
+        mat-stroked-button
+        color="primary"
+        href="mailto:{{ supportEmail }}"
         >Bericht senden</a
     >
 </mat-dialog-actions>
