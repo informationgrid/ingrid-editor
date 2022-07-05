@@ -11,7 +11,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
 
@@ -34,6 +34,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   noAvailableUsers = true;
   importExternal: boolean;
   formlyFieldConfig: FormlyFieldConfig[];
+  options: FormlyFormOptions = {};
   model: FrontendUser;
   loginValue = "";
 
@@ -63,11 +64,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     this.importExternal = false;
 
     this.form = new FormGroup({
-      role: new FormControl("", Validators.required),
       login: new FormControl("", Validators.required),
-      firstName: new FormControl("", Validators.required),
-      lastName: new FormControl("", Validators.required),
-      email: new FormControl("", Validators.required),
     });
     this.form
       .get("login")
