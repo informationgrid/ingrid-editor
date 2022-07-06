@@ -455,18 +455,22 @@ class KeycloakService : UserManagementService {
 
     }
 
-    private val letters = ('a'..'z')
-    private val capitalLetters = ('A'..'Z')
-    private val digits = ('0'..'9')
-    private val specialChars = listOf('!', '#', '$', '%', '*', '+', '=', ':', ';', '<', '>', ',', '.', '?')
+    // reduced char set for more readable passwords (should only be used for one-time passwords)
+    private val letters = listOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+    private val capitalLetters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+    private val digits = ('1'..'9')
+    private val specialChars = listOf('!', '#', '$', '%', '*', '+', '=', '.', '?')
     private val allChars = letters + capitalLetters + digits + specialChars
     private val passwordLength = 16
     private fun generatePassword(): String {
         // make sure one of each char Type is present
         val oneOfEach = listOf(letters.random(), capitalLetters.random(), digits.random(), specialChars.random())
-        var password = List(passwordLength - oneOfEach.size) { allChars.random() } + oneOfEach
+        var password = List(passwordLength - oneOfEach.size - 1) { allChars.random() } + oneOfEach
         // shuffle to randomize oneOfEach position
         password = password.shuffled()
+        // make sure first char is a letter
+        password = listOf(letters.random()) + password
+
         return password.joinToString("")
     }
 }
