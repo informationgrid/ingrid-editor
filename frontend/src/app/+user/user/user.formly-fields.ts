@@ -80,9 +80,6 @@ export const getUserFormFields = (
         appearance: "outline",
         required: true,
       },
-      modelOptions: {
-        updateOn: "blur",
-      },
       validators: {
         validation: ["email"],
       },

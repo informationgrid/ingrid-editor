@@ -82,9 +82,6 @@ export const getNewUserFormFields = (
           'An die angegebene Email-Adresse wird bei Klick auf "Anlegen" eine automatische Email mit dem Passwort versendet.',
         required: true,
       },
-      modelOptions: {
-        updateOn: "blur",
-      },
       validators: {
         validation: ["email"],
       },
