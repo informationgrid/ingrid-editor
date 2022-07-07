@@ -230,7 +230,14 @@ export class UserComponent
       (err: any) => {
         this.hideLoading();
         this.userService.selectedUser$.next(null);
-        throw err;
+        if (err.error.errorText.includes("Conflicting email address")) {
+          let igeError = new IgeError(
+            "Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus."
+          );
+          throw igeError;
+        } else {
+          throw err;
+        }
       }
     );
   }

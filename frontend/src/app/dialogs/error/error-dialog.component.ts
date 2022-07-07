@@ -14,7 +14,7 @@ import {
 export class ErrorDialogComponent {
   errors: IgeError[];
   panelOpenState = false;
-  generalErrorMessage = "Sorry, something went wrong!";
+  generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen.!";
   public supportEmail: string;
   constructor(
     @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
