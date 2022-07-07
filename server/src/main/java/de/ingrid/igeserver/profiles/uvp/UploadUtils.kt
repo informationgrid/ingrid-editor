@@ -75,29 +75,36 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraft, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
+
+    fun getURLsFromCatalog(catalogId: String): List<PublishedUploads> {
+        val result = queryDocs(sqlSteps, "step", null, catalogId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", null, catalogId)
+        return mapQueryResults(result, resultNegativeDocs, true)
+    }
     
-    private fun mapQueryResults(result: List<Array<Any>>, resultNegativeDocs: List<Array<Any>>): List<PublishedUploads> {
+    private fun mapQueryResults(result: List<Array<Any>>, resultNegativeDocs: List<Array<Any>>, onlyLinks: Boolean = false): List<PublishedUploads> {
         val stepUrls =
             result.map {
                 PublishedUploads(
                     it[1].toString(),
                     it[0].toString(),
-                    getUrlsFromJsonField(it[2] as JsonNode)
+                    getUrlsFromJsonField(it[2] as JsonNode, onlyLinks)
                 )
             }
         val negativeUrls = resultNegativeDocs.map {
             PublishedUploads(
                 it[1].toString(),
                 it[0].toString(),
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs")
+                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs", onlyLinks)
             )
         }
 
         return stepUrls + negativeUrls
     }
 
-    private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?): List<Array<Any>> {
-        val query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
+    private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?, catalogId: String? = null): List<Array<Any>> {
+        var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
+        if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
 
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
@@ -106,32 +113,32 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
             .resultList as List<Array<Any>>
     }
 
-    private fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> {
-        return (getUrlsFromJsonFieldTable(json, "applicationDocs")
-                + getUrlsFromJsonFieldTable(json, "announcementDocs")
-                + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs")
-                + getUrlsFromJsonFieldTable(json, "furtherDocs")
-                + getUrlsFromJsonFieldTable(json, "considerationDocs")
-                + getUrlsFromJsonFieldTable(json, "approvalDocs")
-                + getUrlsFromJsonFieldTable(json, "decisionDocs")
+    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): List<UploadInfo> {
+        return (getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks)
+                + getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
                 )
     }
 
-    private fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> {
+    private fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String, onlyLinks: Boolean = false): List<UploadInfo> {
         return json.get(tableField)
-            ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
-            ?.map { mapToUploadInfo(it) }
+            ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
+            ?.map { mapToUploadInfo(tableField, it) }
             ?: emptyList()
     }
 
-    private fun mapToUploadInfo(it: JsonNode): UploadInfo {
+    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo {
         val validUntilDateField = it.get("validUntil")
         val expiredDate =
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-        return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
+        return UploadInfo(field, it.get("downloadURL").get("uri").textValue(), expiredDate)
     }
 
-    data class UploadInfo(val uri: String, val validUntil: String?)
+    data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)
 
     data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
         fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
