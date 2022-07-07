@@ -39,6 +39,7 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
+import * as path from "path";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -790,8 +791,12 @@ export class DocumentService {
         new ShortTreeNode(
           pathItem.id.toString(),
           pathItem.title,
-          pathItem.permission.canOnlyWriteSubtree,
-          !pathItem.permission.canWrite
+          {
+            canRead: !pathItem.permissions?.canRead,
+            canWrite: pathItem.permissions?.canWrite,
+            canOnlyWriteSubtree: pathItem.permissions?.canOnlyWriteSubtree,
+          },
+          !pathItem.permissions?.canWrite
         )
     );
   }
@@ -823,7 +828,11 @@ export class DocumentService {
     return new ShortTreeNode(
       entity.id.toString(),
       entity.title,
-      entity.hasOnlySubtreeWritePermission,
+      {
+        canRead: undefined,
+        canWrite: entity.hasWritePermission,
+        canOnlyWriteSubtree: entity.hasOnlySubtreeWritePermission,
+      },
       !entity.hasWritePermission
     );
   }
