@@ -5,7 +5,7 @@ export class ShortTreeNode {
   constructor(
     public id: string,
     public title: string,
-    public permissions: NodePermission = {
+    public permission: NodePermission = {
       canRead: true,
       canWrite: true,
       canOnlyWriteSubtree: false,

@@ -89,7 +89,7 @@ export class CreateNodeComponent implements OnInit {
     this.pathWithWritePermission =
       value.length === 0
         ? this.isAdmin
-        : value[value.length - 1].permissions.canOnlyWriteSubtree ||
+        : value[value.length - 1].permission.canOnlyWriteSubtree ||
           !value[value.length - 1].disabled;
   }
 

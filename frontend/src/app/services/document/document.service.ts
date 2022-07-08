@@ -791,12 +791,8 @@ export class DocumentService {
         new ShortTreeNode(
           pathItem.id.toString(),
           pathItem.title,
-          {
-            canRead: !pathItem.permissions?.canRead,
-            canWrite: pathItem.permissions?.canWrite,
-            canOnlyWriteSubtree: pathItem.permissions?.canOnlyWriteSubtree,
-          },
-          !pathItem.permissions?.canWrite
+          pathItem.permission,
+          !pathItem.permission.canWrite
         )
     );
   }
@@ -829,7 +825,7 @@ export class DocumentService {
       entity.id.toString(),
       entity.title,
       {
-        canRead: undefined,
+        canRead: true,
         canWrite: entity.hasWritePermission,
         canOnlyWriteSubtree: entity.hasOnlySubtreeWritePermission,
       },
