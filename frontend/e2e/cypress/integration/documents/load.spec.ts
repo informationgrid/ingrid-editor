@@ -121,7 +121,7 @@ describe('mCloud Load documents', () => {
     );
     // log in as different user
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
 
     // check header
     DocumentPage.visit();

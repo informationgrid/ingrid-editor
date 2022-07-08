@@ -82,13 +82,13 @@ describe('mCLOUD: Load addresses', () => {
     AddressPage.closeReplaceAddressDialog();
     cy.logoutClearCookies();
 
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AddressPage.visit();
     Tree.openNode(['test_z, test_z']);
     cy.get('[data-cy="more-actions"]').should('not.exist');
     cy.logoutClearCookies();
 
-    cy.kcLogin('author-with-groups');
+    cy.kcLogin('mcloud-author-with-group');
     AddressPage.visit();
     Tree.openNode(['Ordner 2. Ebene']);
     cy.get('[data-cy="more-actions"]').should('not.exist');
@@ -129,7 +129,7 @@ describe('mCLOUD: Load addresses', () => {
 
   it('Meta admin should not be allowed to delete Address if it is still referenced in data records #3811', () => {
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     let addressName = 'address_with_reference_meta';
     Tree.openNode(['Folder1 For Meta2 ', 'Sub Folder', 'document1_meta2']);

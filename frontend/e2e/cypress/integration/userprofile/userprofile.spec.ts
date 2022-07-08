@@ -6,10 +6,16 @@ describe('Profile', () => {
   });
 
   it('should check metadata administrator information', () => {
-    cy.kcLogin('meta2-with-groups').as('tokens');
+    cy.kcLogin('mcloud-meta-with-groups').as('tokens');
     ProfilePage.visit();
     let groups = ['test_gruppe_1', 'gruppe_mit_ortsrechten'];
-    ProfilePage.checkUserInformation('MetaAdmin', 'mitGruppen', 'meta2', 'Metadaten-Administrator', groups);
+    ProfilePage.checkUserInformation(
+      'MetaAdmin',
+      'mitGruppen',
+      'mcloud-meta-with-groups',
+      'Metadaten-Administrator',
+      groups
+    );
   });
 
   it('should update user first and last name', () => {
@@ -38,17 +44,17 @@ describe('Profile', () => {
   });
 
   it('should update autor password', () => {
-    cy.kcLogin('author-profile-test').as('tokens');
+    cy.kcLogin('mclould-author-profile').as('tokens');
     ProfilePage.visit();
     // change user password with new password
-    ProfilePage.changePassword('autornew', 'autornew', 'autornewpass');
+    ProfilePage.changePassword('mclould-author-profile', 'mclould-author-profile', 'autornewpass');
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();
-    cy.kcLogin('author-profile-test-with-new-pass');
+    cy.kcLogin('mclould-author-profile-with-new-pass');
     ProfilePage.visit();
     // reset the password
-    ProfilePage.changePassword('autornew', 'autornew', 'autornew');
+    ProfilePage.changePassword('mclould-author-profile', 'mclould-author-profile', 'mclould-author-profile');
     cy.logoutClearCookies();
   });
 
@@ -56,7 +62,7 @@ describe('Profile', () => {
     cy.kcLogin('meta3-profile-test').as('tokens');
     ProfilePage.visit();
     // change user password with new password
-    ProfilePage.changePassword('meta3', 'meta3', 'meta3new');
+    ProfilePage.changePassword('mcloud-meta-profile', 'mcloud-meta-profile', 'meta3new');
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();
@@ -87,7 +93,7 @@ describe('Profile', () => {
   });
 
   it('author should be able to update name and email (#3576)', () => {
-    cy.kcLogin('author-without-groups').as('tokens');
+    cy.kcLogin('mcloud-author-without-group').as('tokens');
     let newEmail = 'autortest@123omething.com';
     let newFirstName = 'testAutor';
     let newLastName = 'Autor2';

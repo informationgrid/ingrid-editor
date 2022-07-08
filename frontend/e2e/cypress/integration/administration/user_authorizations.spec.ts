@@ -15,7 +15,7 @@ import { Menu } from '../../pages/menu';
 describe('Meta data administrator without groups', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
   });
 
   it('meta data administrator without groups should see neither documents nor addresses (#2635)', () => {
@@ -124,7 +124,7 @@ describe('Meta data administrator without groups', () => {
 describe('Meta data administrator with a group', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
   });
 
   it('meta data administrator with group should be able to see the addresses of his group and search for it', () => {
@@ -214,7 +214,7 @@ describe('Meta data administrator with a group', () => {
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
 
     // try to edit
     AddressPage.visit();
@@ -257,7 +257,7 @@ describe('Meta data administrator with a group', () => {
 
     // log in as a user who is responsible of 'gruppe_mit_ortsrechten'
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
 
     // try to move a folder to the read-only folder
     AddressPage.visit();
@@ -334,7 +334,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
     cy.logoutClearCookies();
     // log in as metadata admin and try to change title
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AddressPage.visit();
     Tree.openNode([tempLocalAddressFolder]);
     cy.get(DocumentPage.Toolbar['Delete']).should('be.disabled');
@@ -359,7 +359,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
     cy.logoutClearCookies();
     // log in as metadata admin and try to change title
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     Tree.openNode([tempLocalFile]);
     cy.get('.title .label').should('not.have.class', 'editable');
@@ -405,7 +405,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
     cy.logoutClearCookies();
     // log in as metadata admin and try to change title
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     Tree.openNode([tempFolderToRelocate]);
     UserAuthorizationPage.verifyDocumentTitle(tempFolderToRelocate);
@@ -525,7 +525,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.saveGroup();
     cy.logoutClearCookies();
     // log in as metadata admin and try find document
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AddressPage.visit();
     cy.get('ige-sidebar').should('not.contain', 'test_c, test_c');
   });
@@ -552,7 +552,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.saveUser();
     cy.logoutClearCookies();
     // -5- check existence of document
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     Tree.openNode([documentName]);
     UserAuthorizationPage.verifyDocumentTitle(documentName);
@@ -566,7 +566,7 @@ describe('Meta data administrator with a group', () => {
     AdminGroupPage.deleteGroupOfOtherUsers(newGroup);
     // -7- make sure the document is no longer existent
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     cy.contains('mat-tree.mat-tree', documentName).should('not.exist');
   });
@@ -613,7 +613,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.saveUser();
     // log in as another metadata admin
     cy.logoutClearCookies();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
 
     // make sure user created by previous metadata admin is not visible
     AdminUserPage.visit();
@@ -637,7 +637,7 @@ describe('Meta data administrator with a group', () => {
 
     // log in as another metadata admin
     cy.logoutClearCookies();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
 
     // make sure user created by previous metadata admin is not visible
     AdminUserPage.visit();
@@ -731,7 +731,7 @@ describe('Catalogue admin', () => {
     AdminUserPage.saveUser();
     // log in as the other user
     cy.logoutClearCookies();
-    cy.kcLogin('author-with-groups');
+    cy.kcLogin('mcloud-author-with-group');
 
     // make sure data documents are only listed once
     DocumentPage.visit();
@@ -881,9 +881,9 @@ describe('Catalogue admin', () => {
   it('upgrade author user and make sure of the added rights', () => {
     // change catalog admin role to author
     AdminUserPage.visit();
-    let userLogin = 'author-profile-test';
+    let userLogin = 'mclould-author-profile';
     // select unused author to upgrade
-    AdminUserPage.selectUser('autornew');
+    AdminUserPage.selectUser('mclould-author-profile');
     AdminUserPage.changeUserRole('Metadaten-Administrator', true);
     // login with new role and check if the new author does not have admin rights
     cy.logoutClearCookies();
@@ -895,7 +895,7 @@ describe('Catalogue admin', () => {
     // change the role back again to catalog admin
     cy.kcLogin('mcloud-catalog-authorization');
     AdminUserPage.visit();
-    AdminUserPage.selectUser('autornew');
+    AdminUserPage.selectUser('mclould-author-profile');
     AdminUserPage.changeUserRole('Autor', true);
   });
 });

@@ -270,7 +270,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure it's not possible for meta data admin to assign full access to document
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroupAndWait(group2);
@@ -292,7 +292,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure access right can now be changed by meta data admin
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroupAndWait(group2);
@@ -310,7 +310,7 @@ describe('Group', () => {
     AdminGroupPage.saveGroup();
     // make sure meta data admin does not see group
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     cy.contains('groups-table tr', groupName).should('not.exist');

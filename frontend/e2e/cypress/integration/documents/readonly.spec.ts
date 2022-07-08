@@ -12,7 +12,7 @@ import { AddressPage } from '../../pages/address.page';
 describe('Read Only Documents', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
   });
 
   // tested in dashboard
@@ -102,7 +102,7 @@ describe('Read Only Documents', () => {
 
     // logout from super user and login as meta2
     cy.logoutClearCookies();
-    cy.kcLogin('meta2-with-groups');
+    cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
     // try to copy a document to the read-only folder
     Tree.openNode([documentName]);

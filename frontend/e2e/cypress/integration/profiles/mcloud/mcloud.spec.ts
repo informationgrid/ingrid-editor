@@ -52,7 +52,7 @@ describe('mCLOUD documents', function () {
       DocumentPage.saveDocument();
       // log in as user with limited access rights and check access
       cy.logoutClearCookies();
-      cy.kcLogin('meta2-with-groups');
+      cy.kcLogin('mcloud-meta-with-groups');
       DocumentPage.visit();
       // open folder containing document in question
       Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D']);

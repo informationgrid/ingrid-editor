@@ -227,7 +227,7 @@ describe('User', () => {
   });
 
   it('should show login and creation information', () => {
-    const loginEntry = 'meta';
+    const loginEntry = 'mcloud-meta-without-groups';
     const username = 'Meta Admin';
 
     AdminUserPage.selectUser(username);
@@ -515,17 +515,17 @@ describe('User', () => {
   it('should update user information (#2972)', () => {
     const dateOfToday = Utils.getFormattedDate(new Date());
 
-    AdminUserPage.selectUser('autornew2');
+    AdminUserPage.selectUser('mcloud-author-last-login');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
       // log in as a user to update last login information
       cy.logoutClearCookies();
-      cy.kcLogin('autornew2');
+      cy.kcLogin('mcloud-author-last-login');
       DocumentPage.visit();
       // log in as admin and make sure "last logged in" contains right information
       cy.logoutClearCookies();
       cy.kcLogin('super-admin');
       AdminUserPage.visit();
-      AdminUserPage.selectUser('autornew2');
+      AdminUserPage.selectUser('mcloud-author-last-login');
       // make sure last-login-date is not identical to old login-date, but identical to current date
       AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(newLoginDate => {
         cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('equal', dateOfToday);
@@ -542,7 +542,7 @@ describe('User', () => {
 
   it('Author can be granted universal read access by adding to group universal rights #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal read access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -582,7 +582,7 @@ describe('User', () => {
 
   it('Author can be granted universal read + write access by adding to group universal rights #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -627,7 +627,7 @@ describe('User', () => {
 
   it('Author can create root document/move and copy document to root when granted universal read + write access #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -666,7 +666,7 @@ describe('User', () => {
 
   it('Author should be able to delete any document when granted universal read + write access #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);

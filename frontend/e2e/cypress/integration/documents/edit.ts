@@ -81,7 +81,7 @@ describe('mCLOUD: edit documents', function () {
       AdminUserPage.saveUser();
       // log in as user that is assigned read-only access
       cy.logoutClearCookies();
-      cy.kcLogin('author-without-groups');
+      cy.kcLogin('mcloud-author-without-group');
       // open document
       DocumentPage.visit();
       Tree.openNode(['Datum_Ebene_2_3']);
