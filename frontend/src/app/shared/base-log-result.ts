@@ -3,4 +3,5 @@ export interface BaseLogResult {
   endTime: Date;
   message: string;
   errors: string[];
+  report: any[];
 }

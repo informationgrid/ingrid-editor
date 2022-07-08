@@ -5,7 +5,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
-import { merge, Observable, Subject } from "rxjs";
+import { merge, Observable } from "rxjs";
 
 @Component({
   selector: "ige-url-check",
@@ -15,22 +15,17 @@ import { merge, Observable, Subject } from "rxjs";
 export class UrlCheckComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
-  lastResult = new Subject();
   liveLog: Observable<UrlLogResult> = merge(
+    this.urlCheckService.getJobInfo().pipe(map((value) => value.info)),
     this.rxStompService
       .watch("/topic/jobs")
       .pipe(map((msg) => JSON.parse(msg.body)))
-  ).pipe(
-    tap((data: UrlLogResult) => {
-      if (data.progress === 100)
-        setTimeout(() => (this.isRunning = false), 300);
-      else this.isRunning = true;
-    })
-  );
+  ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
+
   dataSource = new MatTableDataSource([]);
-  displayedColumns = ["_select_", "status", "type", "name", "description"];
+  displayedColumns = ["_select_", "status", "url", "datasets"];
   showMore = false;
-  selection = new SelectionModel<any>(true, []);
+  selection = new SelectionModel<any>(false, []);
   isRunning = false;
 
   constructor(
@@ -41,34 +36,8 @@ export class UrlCheckComponent implements OnInit {
   ngOnInit(): void {
     this.urlCheckService.getJobInfo().subscribe((value) => {
       this.isRunning = value.isRunning;
+      console.log(value);
     });
-
-    this.dataSource.data = [
-      {
-        status: "200",
-        type: "UvpSpatialPlanningProcedureDoc",
-        uuid: "13141-4242-242-2453",
-        title: "Test-Datensatz",
-        url: "https://vcdsvd.fef/fefzzz",
-        description: "Testbeschreibung",
-      },
-      {
-        status: "404",
-        type: "UvpSpatialPlanningProcedureDoc",
-        uuid: "13141-4242-242-2453",
-        title: "Test-Datensatz 2",
-        url: "https://vcdsvd.fef/fefyyy",
-        description: "Testbeschreibung 2",
-      },
-      {
-        status: "401",
-        type: "UvpSpatialPlanningProcedureDoc",
-        uuid: "13141-4242-242-2453",
-        title: "Test-Datensatz 3",
-        url: "https://vcdsvd.fef/fefxxx",
-        description: "Testbeschreibung 3",
-      },
-    ];
   }
 
   ngAfterViewInit(): void {
@@ -82,5 +51,12 @@ export class UrlCheckComponent implements OnInit {
 
   stop() {
     this.urlCheckService.stop().subscribe(() => (this.isRunning = false));
+  }
+
+  private handleReport(data: UrlLogResult) {
+    if (data?.endTime) {
+      setTimeout(() => (this.isRunning = false), 300);
+      this.dataSource.data = data.report;
+    } else this.isRunning = true;
   }
 }

@@ -50,11 +50,16 @@
         <div *ngIf="liveLog | async as log">
             <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Analysierte URLs: ???</div>
+            <div>Analysierte URLs: {{ log.report.length }}</div>
         </div>
     </div>
 
-    <div main-content fxLayout="column" fxLayoutGap="36px">
+    <div
+        *ngIf="dataSource.data?.length > 0; else noData"
+        main-content
+        fxLayout="column"
+        fxLayoutGap="36px"
+    >
         <table
             mat-table
             [dataSource]="dataSource"
@@ -81,19 +86,9 @@
                     {{ element.status }}
                 </td>
             </ng-container>
-            <ng-container matColumnDef="type">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
+            <ng-container matColumnDef="url">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>URL</th>
                 <td mat-cell *matCellDef="let element">
-                    <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
-                    {{ element.type }}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    Name/URL
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <div>{{ element.title }}</div>
                     <div>
                         <a
                             class="no-text-transform"
@@ -104,12 +99,15 @@
                     </div>
                 </td>
             </ng-container>
-            <ng-container matColumnDef="description">
+            <ng-container matColumnDef="datasets">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    Beschreibung
+                    Datensätze
                 </th>
                 <td mat-cell *matCellDef="let element">
-                    {{ element.description }}
+                    <div *ngFor="let doc of element.datasets">
+                        <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
+                        {{ doc.title }} ({{ doc.field }})
+                    </div>
                 </td>
             </ng-container>
 
@@ -120,5 +118,39 @@
                 (click)="selection.toggle(row)"
             ></tr>
         </table>
+
+        <div>
+            <div class="section-title">
+                Markierte URL in allen Datensätze durch folgende URL ersetzen:
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="12px">
+                <mat-form-field appearance="outline" fxFlex class="white-bg">
+                    <input
+                        matInput
+                        placeholder="URL"
+                        [disabled]="selection.isEmpty()"
+                    />
+                    <mat-hint *ngIf="selection.isEmpty()"
+                        >Bitte wählen Sie zuerst eine URL aus</mat-hint
+                    >
+                </mat-form-field>
+                <div style="padding-top: 7px">
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        [disabled]="selection.isEmpty()"
+                    >
+                        Ersetzen
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <ng-template #noData>
+        <div *ngIf="!isRunning" main-content>
+            Es gibt keine Ergebnisse. Bitte starten Sie die Prüfung.
+        </div>
+    </ng-template>
 </page-template>

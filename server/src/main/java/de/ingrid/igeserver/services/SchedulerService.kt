@@ -98,7 +98,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     private fun stop(jobKey: JobKey) {
         with(scheduler) { 
-            pauseJob(jobKey)
+            interrupt(jobKey)
             deleteJob(jobKey)
         }
     }

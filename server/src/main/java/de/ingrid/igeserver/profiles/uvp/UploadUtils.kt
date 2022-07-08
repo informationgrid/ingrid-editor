@@ -13,7 +13,7 @@ import javax.persistence.EntityManager
 class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
 
     val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -26,7 +26,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
 
     val sqlNegativeDecisionDocs = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
@@ -39,7 +39,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
     
     val sqlStepsDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -52,7 +52,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
 
     val sqlNegativeDecisionDocsDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
@@ -88,14 +88,18 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
                 PublishedUploads(
                     it[1].toString(),
                     it[0].toString(),
-                    getUrlsFromJsonField(it[2] as JsonNode, onlyLinks)
+                    getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
+                    it[3].toString(),
+                    it[4].toString()
                 )
             }
         val negativeUrls = resultNegativeDocs.map {
             PublishedUploads(
                 it[1].toString(),
                 it[0].toString(),
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs", onlyLinks)
+                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs", onlyLinks),
+                it[3].toString(),
+                it[4].toString()
             )
         }
 
@@ -110,6 +114,8 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
             .addScalar("uuid")
             .addScalar("catalogId")
             .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
+            .addScalar("title")
+            .addScalar("type")
             .resultList as List<Array<Any>>
     }
 
@@ -140,7 +146,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
 
     data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)
 
-    data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>) {
+    data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>, val title: String = "", val type: String = "") {
         fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
             val response = mutableListOf<UploadInfo>()
             docs.forEach { doc ->
