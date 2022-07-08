@@ -24,7 +24,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       if (error.error?.errorCode) {
         const e = new IgeError();
         const message = GlobalErrorHandler.translateMessage(error.error);
-        const unHandledException = message != null ? false : true;
+        const unHandledException = message == null;
         e.setMessage(
           GlobalErrorHandler.translateMessage(error.error) ??
             error.error.errorText,
@@ -41,6 +41,10 @@ export class GlobalErrorHandler implements ErrorHandler {
         );
         this.modalService.showIgeError(e);
       }
+    } else if (error instanceof TypeError) {
+      const e = new IgeError(error.message);
+      e.stacktrace = error.stack;
+      this.modalService.showIgeError(e);
     } else if (error.errorCode) {
       const e = new IgeError();
       e.setMessage(error.errorText);

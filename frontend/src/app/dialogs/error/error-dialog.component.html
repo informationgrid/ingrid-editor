@@ -39,7 +39,7 @@
                 <mat-card-content>
                     <ng-container>
                         <pre *ngIf="errors[0].detail">
-                        {{ errors[0].detail }}
+                        {{ errors[0].detail?.trim() }}
                         </pre>
 
                         <pre *ngIf="errors[0].stacktrace">{{
