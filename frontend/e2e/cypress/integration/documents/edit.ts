@@ -75,7 +75,7 @@ describe('mCLOUD: edit documents', function () {
     it('should not be possible to stop planned publishing if user has read-only access (#3562)', () => {
       // assign groups with read-only access to document
       Menu.switchTo('USERS');
-      AdminUserPage.selectUser('autor');
+      AdminUserPage.selectUser('mcloud-author-without-group');
       AdminUserPage.addGroupToUser('group_10');
       AdminUserPage.addGroupToUser('test_gruppe_5');
       AdminUserPage.saveUser();

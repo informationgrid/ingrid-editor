@@ -59,14 +59,14 @@ describe('Profile', () => {
   });
 
   it('should update meta admin password', () => {
-    cy.kcLogin('meta3-profile-test').as('tokens');
+    cy.kcLogin('mcloud-meta-profile').as('tokens');
     ProfilePage.visit();
     // change user password with new password
     ProfilePage.changePassword('mcloud-meta-profile', 'mcloud-meta-profile', 'meta3new');
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();
-    cy.kcLogin('meta3-profile-test-with-new-pass');
+    cy.kcLogin('mcloud-meta-profile-with-new-pass');
     ProfilePage.visit();
     cy.logoutClearCookies();
   });
