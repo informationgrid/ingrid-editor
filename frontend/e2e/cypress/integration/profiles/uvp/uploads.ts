@@ -205,4 +205,19 @@ describe('uvp uploads', () => {
       uvpPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
+
+  it('should upload all document types within Öffentliche Auslegung', () => {
+    DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI('Plan_R_All_Document_Types');
+    cy.pageReload('dashboard-docs-header');
+    Tree.openNode(['Plan_R_All_Document_Types']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Auslegungsinformationen.pdf');
+    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
+    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Berichte und Empfehlungen.pdf');
+    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Weitere Unterlagen.pdf');
+  });
 });
