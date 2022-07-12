@@ -22,6 +22,7 @@ export abstract class OrganisationDoctype extends AddressShared {
           required: true,
           className: "width-100 organization",
           wrappers: ["panel", "form-field"],
+          fieldLabel: "Bezeichnung",
         }),
       ]),
       this.addSection("Kommunikation", [

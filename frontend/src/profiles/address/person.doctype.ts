@@ -60,9 +60,11 @@ export class PersonDoctype extends AddressShared {
               fieldGroupClassName: "display-flex",
               fieldGroup: [
                 this.addInput("firstName", "Vorname", {
+                  fieldLabel: "Vorname",
                   className: "flex-1 firstName",
                 }),
                 this.addInput("lastName", "Nachname", {
+                  fieldLabel: "Nachname",
                   className: "flex-1 lastName",
                   required: true,
                 }),
