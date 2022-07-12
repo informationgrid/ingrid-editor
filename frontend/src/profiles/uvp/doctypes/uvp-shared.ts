@@ -63,9 +63,9 @@ export class UvpShared extends BaseDoctype {
         onClick: (docUuid, uri, $event) => {
           this.uploadService.downloadFile(docUuid, uri, $event);
         },
-        formatter: (link: any, form: FormGroup) => {
+        formatter: (link: any) => {
           if (link.asLink) {
-            return `<a href="${link.value}" target="_blank" class="no-text-transform">${link.value}</a>`;
+            return `<a href="${link.uri}" target="_blank" class="no-text-transform">${link.uri}</a>`;
           } else {
             return `<span class="clickable-text">${link.uri}</span>`;
           }
