@@ -2,15 +2,17 @@ package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import de.ingrid.igeserver.utils.DocumentLinks
+import de.ingrid.igeserver.utils.ReferenceHandler
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.persistence.EntityManager
 
 @Service
-class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
+class UvpReferenceHandler @Autowired constructor(val entityManager: EntityManager): ReferenceHandler {
+
+    override fun getProfile() = UvpProfile.id
 
     val sqlSteps = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -37,7 +39,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
           AND dw.published = doc.id
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
-    
+
     val sqlStepsDraft = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
@@ -64,28 +66,28 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
-    fun getPublishedDocumentsByCatalog(docId: Int? = null): List<PublishedUploads> {
+    fun getPublishedDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
         val result = queryDocs(sqlSteps, "step", docId)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    fun getDraftDocumentsByCatalog(docId: Int? = null): List<PublishedUploads> {
+    fun getDraftDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
         val result = queryDocs(sqlStepsDraft, "step", docId)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraft, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    fun getURLsFromCatalog(catalogId: String): List<PublishedUploads> {
+    override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
         val result = queryDocs(sqlSteps, "step", null, catalogId)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", null, catalogId)
         return mapQueryResults(result, resultNegativeDocs, true)
     }
-    
-    private fun mapQueryResults(result: List<Array<Any>>, resultNegativeDocs: List<Array<Any>>, onlyLinks: Boolean = false): List<PublishedUploads> {
+
+    private fun mapQueryResults(result: List<Array<Any>>, resultNegativeDocs: List<Array<Any>>, onlyLinks: Boolean = false): List<DocumentLinks> {
         val stepUrls =
             result.map {
-                PublishedUploads(
+                DocumentLinks(
                     it[1].toString(),
                     it[0].toString(),
                     getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
@@ -94,7 +96,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
                 )
             }
         val negativeUrls = resultNegativeDocs.map {
-            PublishedUploads(
+            DocumentLinks(
                 it[1].toString(),
                 it[0].toString(),
                 getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs", onlyLinks),
@@ -146,27 +148,4 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
 
     data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)
 
-    data class PublishedUploads(val catalogId: String, val docUuid: String, val docs: List<UploadInfo>, val title: String = "", val type: String = "") {
-        fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
-            val response = mutableListOf<UploadInfo>()
-            docs.forEach { doc ->
-                val found = response.find { it.uri == doc.uri }
-                if (found == null) response.add(doc)
-                else {
-                    if (found.validUntil != null) {
-                        val date1 = LocalDate.parse(found.validUntil, DateTimeFormatter.ISO_DATE_TIME)
-                        val date2 = if (doc.validUntil == null) null else LocalDate.parse(
-                            doc.validUntil,
-                            DateTimeFormatter.ISO_DATE_TIME
-                        )
-                        if (date2 == null || date2.isAfter(date1)) {
-                            response.remove(found)
-                            response.add(doc)
-                        }
-                    }
-                }
-            }
-            return response
-        }
-    }
 }

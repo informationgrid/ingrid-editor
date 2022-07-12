@@ -1,10 +1,13 @@
 package de.ingrid.igeserver.tasks.quartz
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.UrlMessage
 import de.ingrid.igeserver.api.messaging.UrlReport
-import de.ingrid.igeserver.profiles.uvp.UploadUtils
+import de.ingrid.igeserver.utils.DocumentLinks
+import de.ingrid.igeserver.utils.ReferenceHandler
+import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +20,8 @@ import java.time.Duration
 
 @Component
 @PersistJobDataAfterExecution
-class URLChecker @Autowired constructor(val notifier: JobsNotifier, val uploadUtils: UploadUtils) : InterruptableJob {
+class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenceHandlerFactory: ReferenceHandlerFactory) :
+    InterruptableJob {
 
     companion object {
         val jobKey: JobKey = JobKey.jobKey("url-check", "system")
@@ -31,19 +35,16 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val uploadUt
         .connectTimeout(Duration.ofSeconds(10))
         .build()
 
-    override fun execute(context: JobExecutionContext?) {
+
+    override fun execute(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
-        currentThread = Thread.currentThread()
 
         val message = UrlMessage()
         notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
 
-        val dataMap: JobDataMap = context?.mergedJobDataMap!!
-        val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
+        val info = prepareJob(context)
 
-        val catalogId: String = dataMap.getString("catalogId")
-
-        val docs = uploadUtils.getURLsFromCatalog(catalogId)
+        val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
 
         val urls = with(convertToUrlList(docs)) {
             forEachIndexed { index, urlReport ->
@@ -53,15 +54,26 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val uploadUt
             this
         }
 
-        log.debug("Task finished: URLChecker for '$catalogId'")
+        finishJob(message, urls, context)
+        log.debug("Task finished: URLChecker for '$info.catalogId'")
+    }
+
+    private fun finishJob(
+        message: UrlMessage,
+        urls: List<UrlReport>,
+        context: JobExecutionContext
+    ) {
         notifier.endMessage(message.apply {
             this.message = "Finished URLChecker"
             this.report = urls
         })
 
+        val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
         persistData["startTime"] = message.startTime
         persistData["endTime"] = message.endTime
         persistData["report"] = message.report
+
+        currentThread = null
     }
 
     override fun interrupt() {
@@ -69,8 +81,25 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val uploadUt
         currentThread?.interrupt()
     }
 
+    private fun prepareJob(context: JobExecutionContext): JobInfo {
+        val dataMap: JobDataMap = context.mergedJobDataMap!!
+
+        val profile = dataMap.getString("profile")
+        val catalogId: String = dataMap.getString("catalogId")
+        val uploadUtils = referenceHandlerFactory.get(profile)
+
+        if (uploadUtils == null) {
+            val msg = "No class defined to get URLs from catalog with profile $profile"
+            log.warn(msg)
+            throw ClientException.withReason(msg)
+        }
+        currentThread = Thread.currentThread()
+
+        return JobInfo(profile, catalogId, uploadUtils)
+    }
+
     private fun convertToUrlList(
-        docs: List<UploadUtils.PublishedUploads>
+        docs: List<DocumentLinks>
     ): List<UrlReport> {
         val urls = mutableMapOf<String, UrlReport>()
         docs.forEach { doc ->
@@ -118,4 +147,6 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val uploadUt
             500
         }
     }
+
+    data class JobInfo (val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler)
 }

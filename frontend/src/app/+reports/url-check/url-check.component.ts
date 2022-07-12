@@ -6,6 +6,7 @@ import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "ige-url-check",
@@ -29,6 +30,7 @@ export class UrlCheckComponent implements OnInit {
   isRunning = false;
 
   constructor(
+    private router: Router,
     private urlCheckService: UrlCheckService,
     private rxStompService: RxStompService
   ) {}
@@ -58,5 +60,9 @@ export class UrlCheckComponent implements OnInit {
       setTimeout(() => (this.isRunning = false), 300);
       this.dataSource.data = data.report;
     } else this.isRunning = true;
+  }
+
+  loadDataset(uuid: string) {
+    this.router.navigate(["form", { id: uuid }]);
   }
 }

@@ -26,14 +26,17 @@ import org.springframework.stereotype.Service
 @Service()
 @Profile("uvp")
 class UvpProfile @Autowired constructor(
-    @JsonIgnore val codelistRepo: CodelistRepository,
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,
     @JsonIgnore val authUtils: AuthUtils
 ) : CatalogProfile {
 
-    override val identifier = "uvp"
+    companion object {
+        const val id = "uvp"
+    }
+
+    override val identifier = id
     override val title = "UVP Katalog"
     override val description = null
     override val indexExportFormatID = "indexUvpIDF"

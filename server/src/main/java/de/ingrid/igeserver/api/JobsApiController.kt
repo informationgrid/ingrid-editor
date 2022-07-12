@@ -40,9 +40,13 @@ class JobsApiController @Autowired constructor(
 
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val profile = catalogService.getCatalogById(catalogId).type
         val jobKey = JobKey.jobKey(URLChecker.jobKey.name, catalogId)
 
-        val jobDataMap = JobDataMap().apply { put("catalogId", catalogId) }
+        val jobDataMap = JobDataMap().apply {
+            put("profile", profile)
+            put("catalogId", catalogId)
+        }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
         return ResponseEntity.ok().build()
     }

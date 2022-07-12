@@ -1,7 +1,8 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
-import de.ingrid.igeserver.profiles.uvp.UploadUtils
+import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -15,22 +16,9 @@ import javax.persistence.EntityManager
 class UploadCheckApiController @Autowired constructor(
     val entityManager: EntityManager,
     val catalogService: CatalogService,
-    val uploadUtils: UploadUtils,
+    val referenceHandler: UvpReferenceHandler,
     val fileStore: FileSystemStorage
 ) : UploadCheckApi {
-
-    val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
-        FROM catalog,
-             document_wrapper dw,
-             document doc,
-             jsonb_array_elements(doc.data -> 'processingSteps') elems
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.draft = doc.id
-    """.trimIndent()
 
     override fun checkUploads(principal: Principal): ResponseEntity<List<UploadCheckReport>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -40,16 +28,16 @@ class UploadCheckApiController @Autowired constructor(
     }
 
     private fun getUploadURLs(catalogId: String): List<UploadCheckReport> {
-        val published = uploadUtils.getPublishedDocumentsByCatalog().flatMap { doc ->
+        val published = referenceHandler.getPublishedDocumentsByCatalog().flatMap { doc ->
             doc.docs.map { checkIfUploadExists(doc, it.uri, "published") }
         }
-        val drafts = uploadUtils.getDraftDocumentsByCatalog().flatMap { doc ->
+        val drafts = referenceHandler.getDraftDocumentsByCatalog().flatMap { doc ->
             doc.docs.map { checkIfUploadExists(doc, it.uri, "draft") }
         }
         return published + drafts
     }
 
-    private fun checkIfUploadExists(doc: UploadUtils.PublishedUploads, uri: String, state: String): UploadCheckReport {
+    private fun checkIfUploadExists(doc: DocumentLinks, uri: String, state: String): UploadCheckReport {
         var exists = fileStore.exists(doc.catalogId,"", doc.docUuid, uri)
         if (!exists) {
             exists = fileStore.isArchived(doc.catalogId, doc.docUuid, uri)
