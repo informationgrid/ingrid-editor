@@ -245,6 +245,7 @@ export class FormFieldHelper {
         externalLabel: label,
         appearance: "outline",
         required: options?.required,
+        allowSingleDate: options?.allowSingleDate,
       },
       hideExpression: options?.hideExpression,
       validators: options?.validators ?? {

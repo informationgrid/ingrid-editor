@@ -155,6 +155,7 @@ export class UvpShared extends BaseDoctype {
           this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
             required: true,
             wrappers: ["panel", "form-field"],
+            allowSingleDate: true,
           }),
           this.addTable(
             "considerationDocs",
