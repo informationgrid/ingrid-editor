@@ -37,8 +37,6 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
         if (this.to.allowSingleDate) {
-          // set end value same as start if only start is set
-          if (value?.start && !value?.end) value.end = value.start;
           // hide second input when start and end are equal
           this.hideSecondInput = value?.start && value?.start - value?.end == 0;
         }
