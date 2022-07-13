@@ -108,7 +108,10 @@ export class UploadFilesDialogComponent implements OnInit {
   ): LinkInfo[] {
     return UploadFilesDialogComponent.flatten(
       response.map((zipFile) =>
-        zipFile.files.map((file) => ({ file: file.file, uri: file.uri }))
+        zipFile.files.map((file) => ({
+          file: file.file,
+          uri: decodeURIComponent(file.uri),
+        }))
       )
     );
   }
