@@ -13,6 +13,7 @@
         </div>
         <pre>{{ errors[0].message }}</pre>
         <button
+            *ngIf="errors[0].detail || errors[0].stacktrace"
             mat-button
             (click)="errors[0].showDetails = !errors[0].showDetails"
             data-cy="show-details-error-dialog-close"
