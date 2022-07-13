@@ -22,9 +22,8 @@
         </button>
         <div *ngIf="errors[0].detail || errors[0].stacktrace">
             <mat-card *ngIf="errors[0].showDetails" class="hover-elevate">
-                <mat-card-header>
-                    <div fxFlex></div>
-                    <div>
+                <mat-card-content>
+                    <div class="clipboard-btn">
                         <button
                             [cdkCopyToClipboard]="
                                 errors[0].detail + errors[0].stacktrace
@@ -35,18 +34,14 @@
                             <mat-icon class="mat-icon">content_copy</mat-icon>
                         </button>
                     </div>
-                </mat-card-header>
-
-                <mat-card-content>
-                    <ng-container>
-                        <pre *ngIf="errors[0].detail">
+                    <pre *ngIf="errors[0].detail">
                         {{ errors[0].detail?.trim() }}
-                        </pre>
+                        </pre
+                    >
 
-                        <pre *ngIf="errors[0].stacktrace">{{
-                            errors[0].stacktrace
-                        }}</pre>
-                    </ng-container>
+                    <pre *ngIf="errors[0].stacktrace">{{
+                        errors[0].stacktrace
+                    }}</pre>
                 </mat-card-content>
             </mat-card>
         </div>
