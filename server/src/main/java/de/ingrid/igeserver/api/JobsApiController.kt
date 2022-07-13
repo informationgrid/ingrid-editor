@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
@@ -38,7 +39,12 @@ class JobsApiController @Autowired constructor(
     override fun getInfo(principal: Principal, id: String): ResponseEntity<JobInfo> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isRunning = scheduler.isRunning(id, catalogId)
-        val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap
+        val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap?.apply {
+            val report = getString("report")
+            if (report != null) {
+                put("report", jacksonObjectMapper().readValue(report, List::class.java))
+            }
+        }
         return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
     }
 

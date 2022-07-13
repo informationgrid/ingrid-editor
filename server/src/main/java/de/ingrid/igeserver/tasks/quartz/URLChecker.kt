@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.tasks.quartz
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.JobsNotifier
@@ -71,7 +72,7 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenc
         val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
         persistData["startTime"] = message.startTime
         persistData["endTime"] = message.endTime
-        persistData["report"] = message.report
+        persistData["report"] = jacksonObjectMapper().writeValueAsString(message.report)
 
         currentThread = null
     }

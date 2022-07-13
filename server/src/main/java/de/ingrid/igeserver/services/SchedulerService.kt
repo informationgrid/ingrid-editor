@@ -3,11 +3,9 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
-import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean) {
@@ -21,18 +19,8 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
             log.info("Job is already running. Skip execution")
             return
         }
-        
-        val jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup())
-        log.info("jobs before trigger: ${jobKeys.size}")
+
         scheduler.triggerJob(jobKey, jobDataMap)
-
-        val jobKeysAfterTrigger = scheduler.getJobKeys(GroupMatcher.anyGroup())
-        log.info("jobs after trigger: ${jobKeysAfterTrigger.size}")
-
-        Thread.sleep(6000)
-        val jobKeysAfterJobIsDone = scheduler.getJobKeys(GroupMatcher.anyGroup())
-        log.info("jobs after job is done: ${jobKeysAfterJobIsDone.size}")
-
     }
 
     fun pause(jobId: String) {
@@ -97,7 +85,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
     }
 
     private fun stop(jobKey: JobKey) {
-        with(scheduler) { 
+        with(scheduler) {
             interrupt(jobKey)
             deleteJob(jobKey)
         }

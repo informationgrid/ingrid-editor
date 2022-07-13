@@ -1,35 +1,32 @@
 <page-template label="URL-Pflege">
     <div left-side></div>
     <div main-header>
-        <div
-            *ngIf="liveLog | async as log"
-            fxFlex
-            fxLayoutAlign="center center"
-            fxLayoutGap="12px"
-        >
-            <span *ngIf="!isRunning; else running"
-                >Letzte Prüfung erfolgte am
-                {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
-            >
-            <ng-template #running>
-                <mat-progress-spinner
-                    [value]="log.progress"
-                    diameter="16"
-                    [matTooltip]="log.progress + '%'"
-                ></mat-progress-spinner>
-                <span>
-                    Laufende Prüfung seit:
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
+            <ng-container *ngIf="liveLog | async as log">
+                <span *ngIf="!isRunning; else running"
+                    >Letzte Prüfung erfolgte am
+                    {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
-            </ng-template>
-            <button
-                mat-icon-button
-                class="dark menu-button"
-                [class.expanded]="showMore"
-                (click)="showMore = !showMore"
-            >
-                <mat-icon class="animated">keyboard_arrow_down</mat-icon>
-            </button>
+                <ng-template #running>
+                    <mat-progress-spinner
+                        [value]="log.progress"
+                        diameter="16"
+                        [matTooltip]="log.progress + '%'"
+                    ></mat-progress-spinner>
+                    <span>
+                        Laufende Prüfung seit:
+                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                    >
+                </ng-template>
+                <button
+                    mat-icon-button
+                    class="dark menu-button"
+                    [class.expanded]="showMore"
+                    (click)="showMore = !showMore"
+                >
+                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                </button>
+            </ng-container>
         </div>
 
         <div class="report-btn">
@@ -53,7 +50,7 @@
         <div *ngIf="liveLog | async as log">
             <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Analysierte URLs: {{ log.report.length }}</div>
+            <div>Analysierte URLs: {{ log.report?.length }}</div>
         </div>
     </div>
 
