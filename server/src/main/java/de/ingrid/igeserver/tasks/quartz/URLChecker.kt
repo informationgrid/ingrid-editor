@@ -86,16 +86,16 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenc
 
         val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
-        val uploadUtils = referenceHandlerFactory.get(profile)
+        val referenceHandler = referenceHandlerFactory.get(profile)
 
-        if (uploadUtils == null) {
+        if (referenceHandler == null) {
             val msg = "No class defined to get URLs from catalog with profile $profile"
             log.warn(msg)
             throw ClientException.withReason(msg)
         }
         currentThread = Thread.currentThread()
 
-        return JobInfo(profile, catalogId, uploadUtils)
+        return JobInfo(profile, catalogId, referenceHandler)
     }
 
     private fun convertToUrlList(

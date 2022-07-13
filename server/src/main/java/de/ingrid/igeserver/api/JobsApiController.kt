@@ -1,15 +1,18 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.quartz.URLChecker
+import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -18,7 +21,8 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class JobsApiController @Autowired constructor(
     val catalogService: CatalogService,
-    val scheduler: SchedulerService
+    val scheduler: SchedulerService,
+    val referenceHandlerFactory: ReferenceHandlerFactory
 ) : JobsApi {
 
     override fun getJobs(principal: Principal): ResponseEntity<Job> {
@@ -48,6 +52,17 @@ class JobsApiController @Autowired constructor(
             put("catalogId", catalogId)
         }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
+        return ResponseEntity.ok().build()
+    }
+
+    @Transactional
+    override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val profile = catalogService.getCatalogById(catalogId).type
+
+        val referenceHandler = referenceHandlerFactory.get(profile) ?: throw ClientException.withReason("No reference handler found for profile $profile")
+        referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
+
         return ResponseEntity.ok().build()
     }
 

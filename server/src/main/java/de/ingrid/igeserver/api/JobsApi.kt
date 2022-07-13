@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.api.messaging.UrlReport
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
@@ -15,8 +16,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
+
+data class UrlReplaceData(val source: UrlReport, val replaceUrl: String)
 
 @Tag(name = "Jobs", description = "the jobs API")
 interface JobsApi {
@@ -46,7 +50,7 @@ interface JobsApi {
         principal: Principal,
         @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
     ): ResponseEntity<JobInfo>
-    
+
     @PostMapping(
         value = ["/jobs/url-check"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
@@ -57,6 +61,17 @@ interface JobsApi {
             value = "command",
             required = true
         ) command: JobCommand
+    ): ResponseEntity<Unit>
+
+    @PostMapping(
+        value = ["/jobs/url-check/replace"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun replaceUrl(
+        principal: Principal,
+        @Parameter(description = "command for the job", required = true) @RequestBody(
+            required = true
+        ) data: UrlReplaceData
     ): ResponseEntity<Unit>
 }
 

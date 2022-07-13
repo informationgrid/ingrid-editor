@@ -3,9 +3,25 @@ import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
 import { BaseLogResult } from "../../shared/base-log-result";
+import { shareReplay } from "rxjs/operators";
+
+interface UrlCheckReportDataset {
+  field: string;
+  title: string;
+  type: string;
+  uuid: string;
+}
+
+export interface UrlCheckReport {
+  url: string;
+  success: boolean;
+  status: number;
+  datasets: UrlCheckReportDataset[];
+}
 
 export interface UrlLogResult extends BaseLogResult {
   progress: number;
+  report: UrlCheckReport[];
 }
 
 @Injectable({
@@ -38,6 +54,15 @@ export class UrlCheckService {
   }*/
 
   getJobInfo() {
-    return this.http.get<any>(this.backendURL + "jobs/url-check/info");
+    return this.http
+      .get<any>(this.backendURL + "jobs/url-check/info")
+      .pipe(shareReplay(1));
+  }
+
+  replaceUrl(source: UrlCheckReport, replaceUrl: string) {
+    return this.http.post<any>(this.backendURL + "jobs/url-check/replace", {
+      source,
+      replaceUrl,
+    });
   }
 }

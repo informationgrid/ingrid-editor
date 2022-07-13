@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import javax.persistence.EntityManager
 
 @Service
-class UvpReferenceHandler @Autowired constructor(val entityManager: EntityManager): ReferenceHandler {
+class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = UvpProfile.id
 
@@ -84,7 +84,11 @@ class UvpReferenceHandler @Autowired constructor(val entityManager: EntityManage
         return mapQueryResults(result, resultNegativeDocs, true)
     }
 
-    private fun mapQueryResults(result: List<Array<Any>>, resultNegativeDocs: List<Array<Any>>, onlyLinks: Boolean = false): List<DocumentLinks> {
+    private fun mapQueryResults(
+        result: List<Array<Any>>,
+        resultNegativeDocs: List<Array<Any>>,
+        onlyLinks: Boolean = false
+    ): List<DocumentLinks> {
         val stepUrls =
             result.map {
                 DocumentLinks(
@@ -108,7 +112,12 @@ class UvpReferenceHandler @Autowired constructor(val entityManager: EntityManage
         return stepUrls + negativeUrls
     }
 
-    private fun queryDocs(sql: String, jsonbField: String, filterByDocId: Int?, catalogId: String? = null): List<Array<Any>> {
+    private fun queryDocs(
+        sql: String,
+        jsonbField: String,
+        filterByDocId: Int?,
+        catalogId: String? = null
+    ): List<Array<Any>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
 
@@ -132,7 +141,11 @@ class UvpReferenceHandler @Autowired constructor(val entityManager: EntityManage
                 )
     }
 
-    private fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String, onlyLinks: Boolean = false): List<UploadInfo> {
+    private fun getUrlsFromJsonFieldTable(
+        json: JsonNode,
+        tableField: String,
+        onlyLinks: Boolean = false
+    ): List<UploadInfo> {
         return json.get(tableField)
             ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
             ?.map { mapToUploadInfo(tableField, it) }

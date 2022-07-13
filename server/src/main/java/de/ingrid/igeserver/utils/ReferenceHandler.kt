@@ -1,12 +1,33 @@
 package de.ingrid.igeserver.utils
 
+import de.ingrid.igeserver.api.messaging.UrlReport
 import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.persistence.EntityManager
 
-interface ReferenceHandler {
-    fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
-    fun getProfile(): String
+abstract class ReferenceHandler(val entityManager: EntityManager) {
+    abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
+
+    abstract fun getProfile(): String
+
+    open fun replaceUrl(catalogId: String, source: UrlReport, replaceUrl: String) {
+        val targetUrl = replaceUrlSql.format(source.url, replaceUrl)
+
+        source.datasets.forEach { doc ->
+            entityManager.createNativeQuery(targetUrl)
+                .setParameter("catalogId", catalogId)
+                .setParameter("uuid", doc.uuid)
+                .executeUpdate()
+        }
+    }
+
+    private val replaceUrlSql = """
+        UPDATE document doc
+        SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
+        FROM document_wrapper dw, catalog cat
+        WHERE dw.published = doc.id AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+    """.trimIndent()
 }
 
 data class DocumentLinks(

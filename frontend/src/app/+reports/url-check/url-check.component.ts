@@ -1,5 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { UrlCheckService, UrlLogResult } from "./url-check.service";
+import {
+  UrlCheckReport,
+  UrlCheckService,
+  UrlLogResult,
+} from "./url-check.service";
 import { RxStompService } from "@stomp/ng2-stompjs";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
@@ -23,10 +27,10 @@ export class UrlCheckComponent implements OnInit {
       .pipe(map((msg) => JSON.parse(msg.body)))
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<UrlCheckReport>([]);
   displayedColumns = ["_select_", "status", "url", "datasets"];
   showMore = false;
-  selection = new SelectionModel<any>(false, []);
+  selection = new SelectionModel<UrlCheckReport>(false, []);
   isRunning = false;
 
   constructor(
@@ -35,12 +39,7 @@ export class UrlCheckComponent implements OnInit {
     private rxStompService: RxStompService
   ) {}
 
-  ngOnInit(): void {
-    this.urlCheckService.getJobInfo().subscribe((value) => {
-      this.isRunning = value.isRunning;
-      console.log(value);
-    });
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
@@ -59,10 +58,16 @@ export class UrlCheckComponent implements OnInit {
     if (data?.endTime) {
       setTimeout(() => (this.isRunning = false), 300);
       this.dataSource.data = data.report;
-    } else this.isRunning = true;
+    } else this.isRunning = data !== null;
   }
 
   loadDataset(uuid: string) {
     this.router.navigate(["form", { id: uuid }]);
+  }
+
+  replaceUrl(url: string) {
+    this.urlCheckService
+      .replaceUrl(this.selection.selected[0], url)
+      .subscribe();
   }
 }
