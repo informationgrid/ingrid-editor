@@ -79,4 +79,11 @@ public interface StorageItem {
      */
     @JsonIgnore
     String getNextName();
+
+    /**
+     * Get the relative Path
+     * @return String
+     */
+    @JsonIgnore
+    String getRelativePath();
 }
