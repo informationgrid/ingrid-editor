@@ -122,7 +122,21 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
             fileSystemStorage.delete("test-cat", any())
         }
     }
+
+    test("referenced document from extracted zip file should not be deleted") {
+        init(
+            """[{"downloadURL": { "asLink": false, "uri": "test-upload/test-upload/obj (10).csv"}}]"""
+        )
+        every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(
+            fakeFile(fileSystemStorage, "obj (10).csv", "123/test-upload/test-upload"),
+        )
+        task.start()
+
+        verify(exactly = 0) {
+            fileSystemStorage.delete("test-cat", any())
+        }
+    }
 })
 
-private fun fakeFile(fileSystemStorage: FileSystemStorage, file: String) =
-    FileSystemItem(fileSystemStorage, "test-cat", "", "", "123", file, "", 0, null, false, Scope.PUBLISHED)
+private fun fakeFile(fileSystemStorage: FileSystemStorage, file: String, path: String = "123") =
+    FileSystemItem(fileSystemStorage, "test-cat", "", "", path, file, "", 0, null, false, Scope.PUBLISHED)
