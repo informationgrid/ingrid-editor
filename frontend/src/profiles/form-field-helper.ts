@@ -124,6 +124,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
+        label: options?.fieldLabel,
         placeholder: options?.placeholder ?? "Bitte wählen",
         appearance: "outline",
         required: options?.required,
