@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController @Autowired constructor(
-    val iBusService: IBusService,
     val settingsService: SettingsService
 ) : ConfigApi {
+
+    @Autowired(required = false)
+    var iBusService: IBusService? = null
 
     @Value("\${keycloak.auth-server-url}")
     lateinit var keycloakUrl: String
@@ -58,7 +60,7 @@ class ConfigApiController @Autowired constructor(
     override fun setIBus(config: List<IBusConfig>): ResponseEntity<Unit> {
 
         settingsService.setIBusConfig(config)
-        iBusService.restartCommunication()
+        iBusService?.restartCommunication()
         return ResponseEntity.ok().build()
 
     }
