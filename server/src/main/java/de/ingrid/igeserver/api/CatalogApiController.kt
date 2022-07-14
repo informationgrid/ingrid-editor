@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.IBusService
 import de.ingrid.igeserver.services.ResearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -22,9 +23,10 @@ import java.util.*
 @RestController
 @RequestMapping("/api")
 class CatalogApiController @Autowired constructor(
-    var catalogService: CatalogService,
-    var documentService: DocumentService,
-    var researchService: ResearchService
+    val catalogService: CatalogService,
+    val documentService: DocumentService,
+    val researchService: ResearchService,
+    val iBusService: IBusService
 ) : CatalogApi {
 
     override fun catalogs(): ResponseEntity<List<Catalog>> {
@@ -50,6 +52,7 @@ class CatalogApiController @Autowired constructor(
     override fun saveCatalogConfig(principal: Principal, @RequestBody data: CatalogConfigRequest): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         catalogService.updateCatalogConfig(catalogId, data.name, data.description, data.config)
+        iBusService.setupConnections()
         return ResponseEntity.ok().build()
     }
 
