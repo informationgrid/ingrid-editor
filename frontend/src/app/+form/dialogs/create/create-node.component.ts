@@ -11,17 +11,13 @@ import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
-import {
-  ADDRESS_ROOT_NODE,
-  DOCUMENT_ROOT_NODE,
-} from "../../../store/document/document.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { combineLatest, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 
 export interface CreateOptions {
@@ -66,9 +62,9 @@ export class CreateNodeComponent implements OnInit {
   ) {
     this.isFolder = data.isFolder;
     this.forAddress = this.data.forAddress;
-    this.rootTreeName = this.forAddress
-      ? ADDRESS_ROOT_NODE.title
-      : DOCUMENT_ROOT_NODE.title;
+    this.rootTreeName = this.translocoService.translate(
+      this.forAddress ? "menu.address" : "menu.form"
+    );
 
     if (!this.isFolder) {
       this.title = this.translocoService.translate(

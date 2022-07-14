@@ -17,20 +17,6 @@ export interface DocumentAbstract {
   isRoot: boolean;
 }
 
-export const ADDRESS_ROOT_NODE: Partial<DocumentAbstract> = {
-  id: null,
-  title: "Adressen",
-  icon: "Ordner",
-  _state: "P",
-};
-
-export const DOCUMENT_ROOT_NODE: Partial<DocumentAbstract> = {
-  id: null,
-  title: "Daten",
-  icon: "Ordner",
-  _state: "P",
-};
-
 /**
  * A factory function that creates Document
  */

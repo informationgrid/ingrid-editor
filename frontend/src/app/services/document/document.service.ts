@@ -12,11 +12,7 @@ import {
 } from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
-import {
-  ADDRESS_ROOT_NODE,
-  DOCUMENT_ROOT_NODE,
-  DocumentAbstract,
-} from "../../store/document/document.model";
+import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { FormMessageService } from "../form-message.service";
@@ -40,6 +36,7 @@ import {
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
 import * as path from "path";
+import { TranslocoService } from "@ngneat/transloco";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -72,6 +69,7 @@ export class DocumentService {
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
     private researchService: ResearchService,
+    private translocoService: TranslocoService,
     private docEvents: DocEventsService
   ) {
     this.configuration = configService.getConfiguration();
@@ -488,9 +486,9 @@ export class DocumentService {
 
       let destinationTitle;
       if (dest === null) {
-        destinationTitle = isAddress
-          ? ADDRESS_ROOT_NODE.title
-          : DOCUMENT_ROOT_NODE.title;
+        destinationTitle = this.translocoService.translate(
+          isAddress ? "menu.address" : "menu.form"
+        );
       } else {
         destinationTitle = store.getValue().entities[dest].title;
       }
