@@ -704,4 +704,27 @@ describe('User', () => {
       });
     });
   });
+
+  it('should auto-complete fields in add-user-dialog for keycloak-registered user (#4032)', () => {
+    let user = {
+      firstName: 'autor',
+      lastName: 'new3',
+      email: 'autornew3@test.com',
+      login: 'author-check-autocomplete'
+    };
+
+    cy.get('[data-cy="toolbar_add_user"]').click();
+    cy.get('[data-cy="Login"] input').click();
+    cy.contains('[role="option"]', user.login).click();
+
+    // check automatically filled fields
+    cy.get('.firstName input').should('have.value', user.firstName);
+    cy.get('.lastName input').should('have.value', user.lastName);
+    cy.get('[data-cy="E-Mail"] input').should('have.value', user.email);
+
+    // role field should not be filled with a value
+    DocumentPage.checkContentOfField('[data-cy="Rolle"]', 'mat-select', '');
+    // the add-button should not be activated
+    cy.contains('button', 'Anlegen').should('be.disabled');
+  });
 });
