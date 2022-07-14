@@ -36,7 +36,9 @@
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
     "UvpLineDeterminationDoc": "Linienbestimmung",
     "UvpForeignProjectDoc": "Ausländische Vorhaben",
-    "UvpApprovalProcedureDoc": "Zulassungsverfahren"
+    "UvpApprovalProcedureDoc": "Zulassungsverfahren",
+    "UvpOrganisationDoc": "Organisation",
+    "UvpAddressDoc": "Person"
   },
   "processStep": {
     "publicDisclosure": "Öffentliche Auslegung",

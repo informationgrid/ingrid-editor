@@ -75,11 +75,19 @@ export class DocumentService {
     this.configuration = configService.getConfiguration();
   }
 
-  find(query: string, size = 10, address = false): Observable<SearchResult> {
+  find(
+    query: string,
+    size = 10,
+    address = false,
+    excludeFolders = false
+  ): Observable<SearchResult> {
     return this.researchService
       .search(
         query,
-        { type: address ? "selectAddresses" : "selectDocuments" },
+        {
+          type: address ? "selectAddresses" : "selectDocuments",
+          ignoreFolders: excludeFolders ? "exceptFolders" : "",
+        },
         null,
         "DESC",
         { page: 1, pageSize: size }
