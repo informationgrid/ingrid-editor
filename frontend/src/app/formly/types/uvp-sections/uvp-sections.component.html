@@ -19,7 +19,11 @@
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #sectionMenu="matMenu">
-                <button mat-menu-item (click)="removeSection(i)">
+                <button
+                    mat-menu-item
+                    (click)="removeSection(i)"
+                    [disabled]="currentField.form?.disabled"
+                >
                     Löschen
                 </button>
             </mat-menu>
