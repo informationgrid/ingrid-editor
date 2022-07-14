@@ -32,6 +32,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.Page
 import org.springframework.scheduling.TaskScheduler
@@ -63,7 +64,8 @@ class IndexingTask @Autowired constructor(
     private val iBusIndexManager: IBusIndexManager,
     private val catalogRepo: CatalogRepository,
     @Value("\${elastic.communication.ibus:true}")
-    private val indexThroughIBus: Boolean
+    private val indexThroughIBus: Boolean,
+    private val appProperties: GeneralProperties
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -351,10 +353,10 @@ class IndexingTask @Autowired constructor(
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
             .field("plugId", "ige-ng")
             .field("indexId", infoId)
-            .field("iPlugName", "IGE-NG")
+            .field("iPlugName", prepareIPlugName(infoId))
             .field("linkedIndex", indexName)
             .field("linkedType", "base")
-            .field("adminUrl", "https://xxx")
+            .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
             .field("plugdescription", settingsService.getPlugDescription())
@@ -365,6 +367,11 @@ class IndexingTask @Autowired constructor(
             .endObject()
             .endObject()
         return Strings.toString(xContentBuilder)
+    }
+
+    private fun prepareIPlugName(infoId: String): String {
+        val splitted = infoId.split(":")
+        return "IGE-NG (${splitted[1]}:${splitted[2]})"
     }
 
     private fun removeOldIndices(newIndex: String) {
