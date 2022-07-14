@@ -18,7 +18,7 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
 
     let user: UserFormData = {
       firstName: 'Son',
@@ -130,7 +130,7 @@ describe('User', () => {
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -156,7 +156,7 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal logins', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     let user: UserFormData = {
       firstName: 'Son',
       lastName: 'Goku',
@@ -177,7 +177,7 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal email addresses', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     let user: UserFormData = {
       firstName: 'Son',
       lastName: 'Goten',
@@ -713,7 +713,7 @@ describe('User', () => {
       login: 'author-check-autocomplete'
     };
 
-    cy.get('[data-cy="toolbar_add_user"]').click();
+    cy.get(AdminUserPage.addUserButton).click();
     cy.get('[data-cy="Login"] input').click();
     cy.contains('[role="option"]', user.login).click();
 

@@ -164,6 +164,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static groupSelectionField = '.mat-select-panel-wrap';
+  static addUserButton = '[data-cy="toolbar_add_user"]';
 
   // TODO: select user by unique property like email!
   static selectUser(name: string) {
