@@ -34,6 +34,7 @@
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn add-button"
+            [disabled]="field.form?.disabled"
             [matMenuTriggerFor]="menu"
         >
             <mat-icon color="white">add</mat-icon>
