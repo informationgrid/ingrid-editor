@@ -243,15 +243,7 @@ export class TableTypeComponent
   }
 
   private addLinkInfoToDatasource(link: any) {
-    const newRow = {
-      title: link.title,
-    };
-    newRow[this.getUploadFieldKey()] = {
-      asLink: true,
-      value: link.url,
-      uri: link.url,
-    };
-    this.dataSource.data.push(newRow);
+    this.dataSource.data.push(link);
   }
 
   private isNotInTable(file: LinkInfo) {
@@ -266,7 +258,15 @@ export class TableTypeComponent
 
   showAddLinkDialog() {
     this.dialog
-      .open(LinkDialogComponent, { maxWidth: 600, hasBackdrop: true })
+      .open(LinkDialogComponent, {
+        maxWidth: 600,
+        hasBackdrop: true,
+        data: {
+          fields: this.to.columns,
+          model: {},
+          newEntry: true,
+        } as FormDialogData,
+      })
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((result) => {
