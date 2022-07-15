@@ -97,7 +97,7 @@ describe('mCloud Load documents', () => {
     // open document, open add-address-dialog and check "last used addresses"-field
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_2']);
     cy.get('[data-cy="Adressen"] button').first().click();
-    cy.get('[data-cy=tree-search-field] input').eq(1).click();
+    cy.get('mat-dialog-content [data-cy=tree-search-field] input').click();
     cy.get('[role="listbox"]').should(list => {
       expect(list).to.contain('Organisation_30, Nachname30, Name30');
       expect(list).to.not.contain('Limousin, Adresse');

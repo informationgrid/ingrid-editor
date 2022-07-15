@@ -109,7 +109,7 @@ describe('uvp addresses', () => {
     const parentAddress = 'Schneider, Fritz';
     Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
-    cy.contains('button', 'Ordner ändern').click();
+    cy.contains('button', 'Zielordner ändern').click();
     cy.contains('mat-dialog-content mat-tree mat-tree-node', parentAddress).should('have.class', 'disabled');
   });
 
@@ -117,7 +117,7 @@ describe('uvp addresses', () => {
     const parentAddress = 'Schneider, Fritz';
     Menu.switchTo('ADDRESSES');
     AddressPage.CreateDialog.open();
-    cy.contains('button', 'Ordner ändern').click();
+    cy.contains('button', 'Zielordner ändern').click();
     cy.contains('mat-dialog-content mat-tree mat-tree-node', parentAddress).should('have.class', 'disabled');
   });
 
