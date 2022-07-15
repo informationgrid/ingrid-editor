@@ -13,6 +13,7 @@ export interface DocumentAbstract {
   _pendingDate: any;
   _uuid: any;
   hasWritePermission?: boolean;
+  hasOnlyReadPermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
   isRoot: boolean;
 }

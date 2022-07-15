@@ -638,6 +638,7 @@ export class DocumentService {
         _modified: doc._modified,
         _pendingDate: doc._pendingDate,
         hasWritePermission: doc.hasWritePermission ?? false,
+        hasOnlyReadPermission: doc.hasOnlyReadPermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
         isRoot: parentId === null,
@@ -831,7 +832,7 @@ export class DocumentService {
       entity.id.toString(),
       entity.title,
       {
-        canRead: true,
+        canRead: entity.hasOnlyReadPermission,
         canWrite: entity.hasWritePermission,
         canOnlyWriteSubtree: entity.hasOnlySubtreeWritePermission,
       },

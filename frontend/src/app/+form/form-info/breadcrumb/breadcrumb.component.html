@@ -21,7 +21,11 @@
     <span *ngFor="let item of path; let last = last">
         <span
             [matTooltip]="
-                item.disabled && !item.hasOnlySubtreeWritePermission
+                item.disabled &&
+                !item.hasOnlySubtreeWritePermission &&
+                item.permission.canRead
+                    ? 'Sie haben keine Schreibberechtigung auf diesen Ordner'
+                    : item.disabled && !item.hasOnlySubtreeWritePermission
                     ? 'Sie haben keine Leseberechtigung auf diesen Ordner'
                     : ''
             "

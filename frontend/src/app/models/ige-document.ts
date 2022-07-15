@@ -36,6 +36,8 @@ export class IgeDocument {
 
   hasWritePermission?: boolean;
 
+  hasOnlyReadPermission?: boolean;
+
   // the date when the document will be published next
   _pendingDate?: string;
 
