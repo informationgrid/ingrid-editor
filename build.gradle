@@ -13,5 +13,5 @@ subprojects {
 }
 
 jgitver {
-    nonQualifierBranches = 'master,develop'
+    nonQualifierBranches = 'main,develop'
 }

@@ -226,7 +226,7 @@ jib {
     // tag for image on master branch will be the version
     // tag for image on any feature branch will have the branch name
     def tag = project.ext.branch_name == "develop" ? "latest" : project.ext.branch_name
-    if (project.ext.branch_name == "master") {
+    if (!project.version.contains("-")) {
         tag = version
     }
     tag = tag.replaceAll("/", "-")
