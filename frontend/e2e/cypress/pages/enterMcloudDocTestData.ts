@@ -274,9 +274,9 @@ export class enterMcloudDocTestData {
     cy.get('mat-dialog-container input').eq(1).type(url);
   }
 
-  static uploadFile(filePath: string, checkExistenceOfContainer: boolean = false) {
+  static uploadFile(filePath: string, checkExistenceOfContainer: boolean = false, submitDialog: boolean = true) {
     this.addFile(filePath);
-    this.assertFileUpload(checkExistenceOfContainer);
+    this.assertFileUpload(checkExistenceOfContainer, submitDialog);
   }
 
   static addFile(filePath: string) {
@@ -307,8 +307,8 @@ export class enterMcloudDocTestData {
     cy.get('.mat-line.mat-error').should('contain', 'Die Datei existiert bereits');
   }
 
-  static assertFileUpload(checkExistenceOfContainer: boolean = false) {
-    cy.contains('button', 'Übernehmen').click();
+  static assertFileUpload(checkExistenceOfContainer: boolean = false, submitDialog: boolean = true) {
+    if (submitDialog) cy.contains('button', 'Übernehmen').click();
     if (checkExistenceOfContainer) cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
 
