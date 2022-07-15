@@ -249,6 +249,8 @@ describe('Upload Tests', () => {
     Tree.openNode(['Testdokumente', 'Leeres mCloud Test Objekt']);
     enterMcloudDocTestData.openAddURLDialog();
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('invalid url', url);
+    // click outside of url text field so that validation is triggered
+    cy.get('mat-dialog-container .mat-select-trigger').click();
     cy.contains('mat-error', 'Verwenden Sie bitte eine gültige URL');
     cy.contains('button', 'Übernehmen').should('be.disabled');
   });
