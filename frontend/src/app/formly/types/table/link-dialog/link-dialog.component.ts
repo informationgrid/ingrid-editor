@@ -37,9 +37,16 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.data = {
+      fields: this.adaptFields(),
+      model: {},
+      newEntry: true,
+    };
+  }
+
+  private adaptFields() {
     // do not modify original data
-    this.data = JSON.parse(JSON.stringify(this.formData));
-    this.data.fields = this.data.fields.map((field) => {
+    return this.formData.fields.map((field) => {
       return field.type === "upload" ? this.useLinkInput(field) : field;
     });
   }
@@ -49,15 +56,18 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
     this.dialogRef.close(value);
   }
 
-  private useLinkInput(field: FormlyFieldConfig) {
-    field.type = "input";
-    field.validators = {
-      url: {
-        expression: (c) => new RegExp(this.URL_REGEXP).test(c.value),
-        message: "Verwenden Sie bitte eine gültige URL",
+  private useLinkInput(field: FormlyFieldConfig): FormlyFieldConfig {
+    return {
+      key: field.key,
+      type: "input",
+      templateOptions: field.templateOptions,
+      validators: {
+        url: {
+          expression: (c) => new RegExp(this.URL_REGEXP).test(c.value),
+          message: "Verwenden Sie bitte eine gültige URL",
+        },
       },
     };
-    return field;
   }
 
   private prepareResult(value: any) {
