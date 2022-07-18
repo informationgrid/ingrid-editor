@@ -32,6 +32,8 @@ class SettingsService @Autowired constructor(val repoSettings: SettingsRepositor
             dataSourceName = "IGE-NG"
             proxyServiceURL = "ige-ng"
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
+            addPartner("st")
+            addProvider("st_mlu")
         }
 
         pd.md5Hash = ""
