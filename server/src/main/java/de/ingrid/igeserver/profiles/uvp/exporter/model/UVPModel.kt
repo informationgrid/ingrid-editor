@@ -144,6 +144,14 @@ data class UVPModel(
         return data.uvpNumbers
     }
 
+    fun getUvpCategories(): List<String> {
+        return data.uvpNumbers.map { it.category }.filter { it.isNotEmpty() }
+    }
+
+    fun getUvpCategoryTypes(): List<String> {
+        return data.uvpNumbers.map { it.type }.filter { it.isNotEmpty() }
+    }
+
     val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formatterNoSeparator: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
