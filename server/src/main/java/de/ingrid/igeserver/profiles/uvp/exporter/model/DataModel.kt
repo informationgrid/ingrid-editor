@@ -29,7 +29,8 @@ data class DataModel(
     var uvpNumbers: List<UVPNumber> = emptyList()
     private fun setEiaNumbers(value: List<KeyValueModel>) {
         uvpNumbers = value.mapNotNull {
-            val entry = codelistHandler?.getCodelistEntry("9000", it.key!!)
+            // FIXME: Change depending on catalog setting, default 9000
+            val entry = codelistHandler?.getCodelistEntry("9005", it.key!!)
             if (entry != null) {
                 val codeValue = entry.fields["de"] ?: "???"
                 val data = jacksonObjectMapper().readTree(entry.data)
@@ -99,7 +100,7 @@ data class StepPublicDisclosure(
             "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
             else -> true
         }
-        
+
     }
 }
 
@@ -127,10 +128,10 @@ data class StepDecisionOfAdmission(
 data class Document(val title: String, val downloadURL: DownloadUrl, val validUntil: Date?) {
 
     /**
-     * Document is not expired when validUntil date is not set or date is before today 
+     * Document is not expired when validUntil date is not set or date is before today
      */
     fun isNotExpired() = validUntil == null || !LocalDate.now().isAfter(LocalDate.ofInstant(validUntil.toInstant(), ZoneId.systemDefault()))
-    
+
 }
 
 data class DownloadUrl(val uri: String, val value: String, val asLink: Boolean)

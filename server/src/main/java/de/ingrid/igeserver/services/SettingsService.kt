@@ -32,6 +32,7 @@ class SettingsService @Autowired constructor(val repoSettings: SettingsRepositor
             dataSourceName = "IGE-NG"
             proxyServiceURL = "ige-ng"
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
+            // TODO implement with values from catalog config
             addPartner("st")
             addProvider("st_mlu")
         }
