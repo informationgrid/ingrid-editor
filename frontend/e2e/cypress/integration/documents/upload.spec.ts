@@ -47,7 +47,7 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.Overwrite);
     cy.contains('button', 'Übernehmen').click();
     // make sure that there is still only one entry in the table
-    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+    enterMcloudDocTestData.checkForOneEntryForTable();
   });
 
   it('should rename uploaded file when uploading file with same name (#3575 (4))', () => {
@@ -91,7 +91,7 @@ describe('Upload Tests', () => {
     cy.contains('button', 'Übernehmen').click();
     // make sure no file name has been changed and no new entry has been added
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+    enterMcloudDocTestData.checkForOneEntryForTable();
     // download old entry
     enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
     enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
@@ -108,7 +108,7 @@ describe('Upload Tests', () => {
     enterMcloudDocTestData.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+    enterMcloudDocTestData.checkForOneEntryForTable();
     // download file
     enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
     enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);

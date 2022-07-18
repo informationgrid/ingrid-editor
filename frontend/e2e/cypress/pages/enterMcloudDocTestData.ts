@@ -348,6 +348,10 @@ export class enterMcloudDocTestData {
   static verifyExistenceOfDownloadedFile(fileName: string) {
     cy.readFile('cypress/downloads/' + fileName, { timeout: 15000 });
   }
+
+  static checkForOneEntryForTable() {
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
+  }
 }
 
 export enum FileHandlingOptions {
