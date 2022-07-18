@@ -36,12 +36,16 @@
     ],
     "uvp_category": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getCategory()}"@if (!uvp.isLast()),@endif
+        @if(!uvp.get().getCategory().equals(""))
+            "${uvp.get().getCategory()}"@if (!uvp.isLast()),@endif
+        @endif
     @endfor
     ],
     "uvp_category_type": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getType()}"@if (!uvp.isLast()),@endif
+        @if(!uvp.get().getType().equals(""))
+            "${uvp.get().getType()}"@if (!uvp.isLast()),@endif
+        @endif
     @endfor
     ],
     "uvp_steps": [
