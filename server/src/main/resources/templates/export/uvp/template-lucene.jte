@@ -27,7 +27,7 @@
     "uvp_address": [
     @for(var address : ForSupport.of(page.getUvpAddressParentsIncludingCurrent()))
         "${address.get().getTitle()}"@if (!address.isLast()),@endif
-    @endfor 
+    @endfor
     ],
     "uvp_number": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
@@ -37,12 +37,12 @@
     "uvp_category": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
         "${uvp.get().getCategory()}"@if (!uvp.isLast()),@endif
-    @endfor 
+    @endfor
     ],
     "uvp_category_type": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
         "${uvp.get().getType()}"@if (!uvp.isLast()),@endif
-    @endfor 
+    @endfor
     ],
     "uvp_steps": [
     @for(var phase : ForSupport.of(page.getStepsAsPhases()))
@@ -55,7 +55,7 @@
     "approval_date": [
     @for(var date : ForSupport.of(page.getDecisionDate()))
         "${date.get()}"@if (!date.isLast()),@endif
-    @endfor 
+    @endfor
     ],
     "location": ["${page.getSpatialTitle()}"],
     "created": "${page.get_created().format(page.getFormatterISO())}",
@@ -63,10 +63,10 @@
     "content": [],
     "areaid": [],
     "partner": [
-        "bund"
+        "st"
     ],
     "provider": [
-        "bu_kug"
+        "st_mlu"
     ],
     "datatype": [
         "default",
