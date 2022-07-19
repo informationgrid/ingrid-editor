@@ -7,6 +7,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { User } from "../+user/user";
 import { ModalService } from "../services/modal/modal.service";
+import { map, switchMap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -38,7 +39,10 @@ export class AuthenticationFactory {
       .createAccountUrl()
       .split("?")[0];
 
-    return this.http.post(url, profile);
+    return this.http.get(url).pipe(
+      map((existingProfile) => ({ ...existingProfile, ...profile })),
+      switchMap((updatedProfile) => this.http.post(url, updatedProfile))
+    );
   }
 
   updatePassword() {
