@@ -29,6 +29,8 @@ data class UVPModel(
 
     var documentType = mapDocumentType()
 
+    val contentField: MutableList<String> = mutableListOf()
+
     private fun mapDocumentType(): String {
         return when (type) {
             "UvpApprovalProcedureDoc" -> "10"
@@ -45,6 +47,12 @@ data class UVPModel(
 
     init {
         pointOfContact = determinePointOfContact()
+    }
+
+    fun handleContent(value: String?): String? {
+        if (value == null) return null
+        contentField.add(value)
+        return value
     }
 
     private fun determinePointOfContact(): AddressModel? {

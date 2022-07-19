@@ -29,27 +29,27 @@
     "lat_center": "${page.getSpatialLatCenter()}",
     "uvp_address": [
     @for(var address : ForSupport.of(page.getUvpAddressParentsIncludingCurrent()))
-        "${address.get().getTitle()}"@if (!address.isLast()),@endif
+        "${page.handleContent(address.get().getTitle())}"@if (!address.isLast()),@endif
     @endfor
     ],
     "uvp_number": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getUvpg()}"@if (!uvp.isLast()),@endif
+        "${page.handleContent(uvp.get().getUvpg())}"@if (!uvp.isLast()),@endif
     @endfor
     ],
     "uvp_category": [
     @for(var uvp : ForSupport.of(page.getUvpCategories()))
-        "${uvp.get()}"@if (!uvp.isLast()),@endif
+        "${page.handleContent(uvp.get())}"@if (!uvp.isLast()),@endif
     @endfor
     ],
     "uvp_category_type": [
     @for(var uvp : ForSupport.of(page.getUvpCategoryTypes()))
-        "${uvp.get()}"@if (!uvp.isLast()),@endif
+        "${page.handleContent(uvp.get())}"@if (!uvp.isLast()),@endif
     @endfor
     ],
     "uvp_steps": [
     @for(var phase : ForSupport.of(page.getStepsAsPhases()))
-        "${phase.get()}"@if (!phase.isLast()),@endif
+        "${page.handleContent(phase.get())}"@if (!phase.isLast()),@endif
     @endfor
     ],
     @if(page.getData().getPrelimAssessment())
@@ -60,10 +60,9 @@
         "${date.get()}"@if (!date.isLast()),@endif
     @endfor
     ],
-    "location": ["${page.getSpatialTitle()}"],
+    "location": ["${page.handleContent(page.getSpatialTitle())}"],
     "created": "${page.get_created().format(page.getFormatterISO())}",
     "modified": "${page.get_modified().format(page.getFormatterISO())}",
-    "content": [],
     "areaid": [],
     "partner": [
         "${partner}"
@@ -90,19 +89,19 @@
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
     "t01_object.mod_time": "${page.get_modified().format(page.getFormatterNoSeparator())}",
-    "t01_object.obj_class": "${page.getDocumentType()}",
-    "t01_object.obj_id": "${page.getUuid()}",
+    "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
+    "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
     @if(page.getPointOfContact() != null)
         @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",
-            "t021_communication.comm_value": "${entry.get().getConnection()}",
+            "t021_communication.comm_value": "${page.handleContent(entry.get().getConnection())}",
             "t021_communication.commtype_key": "${entry.get().getType().getKey()}",
             "t021_communication.descr": "",
             "t021_communication.line": "${entry.getIndex() + 1}",
         @endfor
         "t02_address.address_key": "",
         "t02_address.address_value": "${page.getPointOfContact().getTitle()}",
-        "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
+        "t02_address.adr_id": "${page.handleContent(page.getPointOfContact().getUuid())}",
         "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
         "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
         "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
@@ -132,5 +131,10 @@
     "t03_catalogue.language_code": "Deutsch",
     "t03_catalogue.language_key": "150",
     "t03_catalogue.mod_time": "",
-    "t03_catalogue.mod_uuid": ""
+    "t03_catalogue.mod_uuid": "",
+    "content": [
+    @for(var entry : ForSupport.of(page.getContentField()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ]
 }
