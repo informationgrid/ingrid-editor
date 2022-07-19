@@ -16,6 +16,8 @@ class BehaviourService @Autowired constructor(
         return behaviourRepo.findAllByCatalog_Identifier(catalogId)
     }
 
+    fun get(catalogId: String, behaviourId: String): Behaviour? = get(catalogId).find { it.name == behaviourId }
+
     fun save(catalogId: String, behaviours: List<Behaviour>) {
         val allBehaviours = get(catalogId)
         val catalog = catalogRepo.findByIdentifier(catalogId)

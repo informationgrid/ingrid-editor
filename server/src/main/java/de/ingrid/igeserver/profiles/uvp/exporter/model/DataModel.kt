@@ -8,6 +8,7 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressRefModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.RangeModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.LocalDate
@@ -24,13 +25,14 @@ data class DataModel(
     val decisionDate: String?,
     val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
+    val eiaNumbers: List<KeyValueModel>
 
     ) {
     var uvpNumbers: List<UVPNumber> = emptyList()
-    private fun setEiaNumbers(value: List<KeyValueModel>) {
-        uvpNumbers = value.mapNotNull {
-            // FIXME: Change depending on catalog setting, default 9000
-            val entry = codelistHandler?.getCodelistEntry("9005", it.key!!)
+    fun convertEiaNumbers(catalogId: String) {
+        uvpNumbers = eiaNumbers.mapNotNull {
+            val uvpCodelistId = behaviourService?.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            val entry = codelistHandler?.getCodelistEntry(uvpCodelistId, it.key!!)
             if (entry != null) {
                 val codeValue = entry.fields["de"] ?: "???"
                 val data = jacksonObjectMapper().readTree(entry.data)
@@ -69,6 +71,9 @@ data class DataModel(
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
+        }
+        val behaviourService: BehaviourService? by lazy {
+            SpringContext.getBean(BehaviourService::class.java)
         }
     }
 }
@@ -134,4 +139,5 @@ data class Document(val title: String, val downloadURL: DownloadUrl, val validUn
 
 }
 
-data class DownloadUrl(val uri: String, val value: String, val asLink: Boolean)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DownloadUrl(val uri: String, val asLink: Boolean)

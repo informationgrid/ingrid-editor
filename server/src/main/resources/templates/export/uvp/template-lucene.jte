@@ -10,6 +10,7 @@
 !{var catalog = ((Catalog)map.get("catalog"));}
 !{var partner = ((String)map.get("partner"));}
 !{var provider = ((String)map.get("provider"));}
+!{page.getData().convertEiaNumbers(catalog.identifier);}
 
 {
     "iPlugId": "ige-ng",
