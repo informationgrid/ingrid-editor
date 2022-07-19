@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.uvp.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
@@ -15,13 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class LuceneExporter @Autowired constructor(val catalogRepo: CatalogRepository) {
+class LuceneExporter @Autowired constructor(
+    val catalogRepo: CatalogRepository,
+    val codelistService: CodeListService
+) {
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = XMLStringOutput()
-        val catalog = catalogRepo.findByIdentifier(catalogId);
+        val catalog = catalogRepo.findByIdentifier(catalogId)
         templateEngine.render("uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
         return output.toString()
     }
@@ -32,10 +36,16 @@ class LuceneExporter @Autowired constructor(val catalogRepo: CatalogRepository) 
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java),
-                "catalog" to catalog
+                "catalog" to catalog,
+                "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
+                "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
             )
         )
 
+    }
+
+    private fun mapCodelistValue(codelistId: String, partner: String?): String {
+        return codelistService.getCodeListValue(codelistId, partner, "ident")
     }
 
     private class XMLStringOutput : StringOutput() {

@@ -1,11 +1,11 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.codelists.CodeListService
 import de.ingrid.elasticsearch.IBusIndexManager
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
-import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
@@ -32,7 +32,6 @@ import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.Page
 import org.springframework.scheduling.TaskScheduler
@@ -65,7 +64,8 @@ class IndexingTask @Autowired constructor(
     private val catalogRepo: CatalogRepository,
     @Value("\${elastic.communication.ibus:true}")
     private val indexThroughIBus: Boolean,
-    private val appProperties: GeneralProperties
+    private val appProperties: GeneralProperties,
+    private val codelistService: CodeListService
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -101,6 +101,8 @@ class IndexingTask @Autowired constructor(
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
         val catalog = catalogRepo.findByIdentifier(catalogId)
+        val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident")
+        val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident")
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         categories.forEach categoryLoop@{ category ->
@@ -146,7 +148,8 @@ class IndexingTask @Autowired constructor(
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
             // post phase
-            indexPostPhase(elasticsearchAlias, info.first, info.second, category.value)
+            val plugInfo = IPlugInfo(elasticsearchAlias, info.first, info.second, category.value, partner, provider)
+            indexPostPhase(plugInfo)
             log.debug("Task finished: Indexing for $catalogId")
         }
 
@@ -321,22 +324,22 @@ class IndexingTask @Autowired constructor(
         return Pair(oldIndex, newIndex)
     }
 
-    private fun indexPostPhase(alias: String, oldIndex: String, newIndex: String, category: String) {
+    private fun indexPostPhase(info: IPlugInfo) {
 
         // update central index with iPlug information
-        updateIBusInformation(newIndex, alias, category)
+        updateIBusInformation(info)
 
         // switch alias and delete old index
-        indexManager.switchAlias(alias, oldIndex, newIndex)
-        removeOldIndices(newIndex)
+        indexManager.switchAlias(info.alias, info.oldIndex, info.newIndex)
+        removeOldIndices(info.newIndex)
     }
 
-    private fun updateIBusInformation(newIndex: String, alias: String, category: String) {
+    private fun updateIBusInformation(info: IPlugInfo) {
         if (indexThroughIBus) {
-            val plugIdInfo = "ige-ng:$alias:$category"
+            val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, newIndex, false, null, null)
+                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider)
             )
         }
     }
@@ -347,7 +350,9 @@ class IndexingTask @Autowired constructor(
         indexName: String,
         running: Boolean,
         count: Int?,
-        totalCount: Int?
+        totalCount: Int?,
+        partner: String,
+        provider: String
     ): String? {
 
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
@@ -359,7 +364,7 @@ class IndexingTask @Autowired constructor(
             .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
-            .field("plugdescription", settingsService.getPlugDescription())
+            .field("plugdescription", settingsService.getPlugDescription(partner, provider))
             .startObject("indexingState")
             .field("numProcessed", count)
             .field("totalDocs", totalCount)
@@ -491,4 +496,13 @@ data class IndexConfig(
     val cron: String,
     var future: ScheduledFuture<*>? = null,
     val onStartup: Boolean = false
+)
+
+data class IPlugInfo(
+    val alias: String,
+    val oldIndex: String?,
+    val newIndex: String,
+    val category: String,
+    val partner: String,
+    val provider: String
 )

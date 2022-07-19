@@ -8,6 +8,8 @@
 
 !{var page = ((UVPModel)map.get("model"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
+!{var partner = ((String)map.get("partner"));}
+!{var provider = ((String)map.get("provider"));}
 
 {
     "iPlugId": "ige-ng",
@@ -63,10 +65,10 @@
     "content": [],
     "areaid": [],
     "partner": [
-        "st"
+        "${partner}"
     ],
     "provider": [
-        "st_mlu"
+        "${provider}"
     ],
     "datatype": [
         "default",
