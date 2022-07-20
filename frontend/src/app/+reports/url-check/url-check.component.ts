@@ -11,6 +11,12 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { Router } from "@angular/router";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { ListDatasetsDialogComponent } from "./list-datasets-dialog/list-datasets-dialog.component";
 
 @Component({
   selector: "ige-url-check",
@@ -36,7 +42,8 @@ export class UrlCheckComponent implements OnInit {
   constructor(
     private router: Router,
     private urlCheckService: UrlCheckService,
-    private rxStompService: RxStompService
+    private rxStompService: RxStompService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {}
@@ -62,6 +69,7 @@ export class UrlCheckComponent implements OnInit {
   }
 
   loadDataset(uuid: string) {
+    if (!uuid) return;
     this.router.navigate(["form", { id: uuid }]);
   }
 
@@ -69,5 +77,15 @@ export class UrlCheckComponent implements OnInit {
     this.urlCheckService
       .replaceUrl(this.selection.selected[0], url)
       .subscribe();
+  }
+
+  showDatasets($event: MouseEvent, datasets: any[]) {
+    $event.stopImmediatePropagation();
+    this.dialog
+      .open(ListDatasetsDialogComponent, {
+        data: datasets,
+      })
+      .afterClosed()
+      .subscribe((uuid) => this.loadDataset(uuid));
   }
 }

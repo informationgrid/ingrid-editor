@@ -17,9 +17,10 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { UrlCheckComponent } from "./url-check/url-check.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ListDatasetsDialogComponent } from './url-check/list-datasets-dialog/list-datasets-dialog.component';
 
 @NgModule({
-  declarations: [ReportsComponent, GeneralReportComponent, UrlCheckComponent],
+  declarations: [ReportsComponent, GeneralReportComponent, UrlCheckComponent, ListDatasetsDialogComponent],
   imports: [
     CommonModule,
     LazyReportsRouting,

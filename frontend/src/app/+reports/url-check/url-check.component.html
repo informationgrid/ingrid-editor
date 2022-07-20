@@ -89,7 +89,7 @@
                     <mat-checkbox disabled></mat-checkbox>
                     Alle
                 </th>
-                <td mat-cell *matCellDef="let element" class="check-column">
+                <td mat-cell *matCellDef="let element">
                     <mat-checkbox
                         (click)="$event.stopPropagation()"
                         (change)="$event ? selection.toggle(element) : null"
@@ -119,7 +119,7 @@
                 <td mat-cell *matCellDef="let element">
                     <div>
                         <a
-                            class="link-column no-text-transform"
+                            class="no-text-transform"
                             [href]="element.url"
                             target="_blank"
                             >{{ element.url }}</a
@@ -133,13 +133,30 @@
                 </th>
                 <td mat-cell *matCellDef="let element">
                     <div
-                        *ngFor="let doc of element.datasets"
-                        class="clickable-text"
-                        (click)="loadDataset(doc.uuid)"
+                        *ngIf="
+                            element.datasets.length > 1;
+                            else showSingleDataset
+                        "
                     >
-                        <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
-                        {{ doc.title }} ({{ doc.field }})
+                        <button
+                            mat-stroked-button
+                            color="primary"
+                            (click)="showDatasets($event, element.datasets)"
+                        >
+                            Alle anzeigen
+                        </button>
                     </div>
+                    <ng-template #showSingleDataset>
+                        <div
+                            class="clickable-text"
+                            (click)="loadDataset(element.datasets[0].uuid)"
+                        >
+                            <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
+                            {{ element.datasets[0].title }} ({{
+                                element.datasets[0].field
+                            }})
+                        </div>
+                    </ng-template>
                 </td>
             </ng-container>
 
@@ -152,7 +169,7 @@
         </table>
 
         <div>
-            <div class="section-title">
+            <div>
                 Markierte URL in allen Datensätze durch folgende URL ersetzen:
             </div>
 

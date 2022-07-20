@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import { BaseLogResult } from "../../shared/base-log-result";
 import { shareReplay } from "rxjs/operators";
 
-interface UrlCheckReportDataset {
+export interface UrlCheckReportDataset {
   field: string;
   title: string;
   type: string;
