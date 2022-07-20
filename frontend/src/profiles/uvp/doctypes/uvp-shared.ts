@@ -66,9 +66,9 @@ export class UvpShared extends BaseDoctype {
         formatter: (link: any, form: FormGroup) => {
           if (link.asLink) {
             return `<a  href="${link.value}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="14"  height="14" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
           } else {
-            return `<span class="clickable-text icon-in-table">  <img  width="14"  height="14" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+            return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
         },
       },

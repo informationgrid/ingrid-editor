@@ -499,10 +499,12 @@ svg {
 
 .icon-in-table {
   display: flex;
+  padding-right: 10px;
   flex: 1;
   align-items: flex-start;
   img {
-    padding: 3px;
+    padding-right: 10px;
+    padding-top: 1px;
   }
   word-break: break-all;
   line-height: 20px;
