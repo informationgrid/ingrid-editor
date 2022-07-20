@@ -27,15 +27,15 @@ class SettingsService @Autowired constructor(
         repoSettings.save(configFromDBOrNew)
     }
 
-    fun getPlugDescription(partner: String, provider: String): PlugDescription {
+    fun getPlugDescription(partner: String?, provider: String?): PlugDescription {
         val pd = PlugDescription().apply {
             put("useRemoteElasticsearch", true)
             listOf("default", "dsc_ecs", "metadata", "IDF_1.0").forEach { addDataType(it) }
             dataSourceName = "IGE-NG"
             proxyServiceURL = "ige-ng"
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
-            addPartner(partner)
-            addProvider(provider)
+            if (partner != null) addPartner(partner)
+            if (provider != null) addProvider(provider)
         }
 
         pd.md5Hash = ""

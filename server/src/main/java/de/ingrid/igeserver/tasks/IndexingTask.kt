@@ -351,8 +351,8 @@ class IndexingTask @Autowired constructor(
         running: Boolean,
         count: Int?,
         totalCount: Int?,
-        partner: String,
-        provider: String
+        partner: String?,
+        provider: String?
     ): String? {
 
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
@@ -503,6 +503,6 @@ data class IPlugInfo(
     val oldIndex: String?,
     val newIndex: String,
     val category: String,
-    val partner: String,
-    val provider: String
+    val partner: String?,
+    val provider: String?
 )

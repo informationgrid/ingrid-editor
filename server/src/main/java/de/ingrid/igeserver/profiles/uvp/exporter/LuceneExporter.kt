@@ -45,7 +45,7 @@ class LuceneExporter @Autowired constructor(
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String {
-        return codelistService.getCodeListValue(codelistId, partner, "ident")
+        return codelistService.getCodeListValue(codelistId, partner, "ident") ?: ""
     }
 
     private class XMLStringOutput : StringOutput() {
