@@ -148,16 +148,14 @@ data class UVPModel(
         return codelistHandler?.getCodelistValue(codelistId, entry.key) ?: "???"
     }
 
-    fun getUvpNumbers(): List<UVPNumber> {
-        return data.uvpNumbers
-    }
+    fun getUvpNumbers(): List<UVPNumber> = data.uvpNumbers
 
     fun getUvpCategories(): List<String> {
-        return data.uvpNumbers.map { it.category }.filter { it.isNotEmpty() }
+        return getUvpNumbers().map { it.category }.filter { it.isNotEmpty() }
     }
 
     fun getUvpCategoryTypes(): List<String> {
-        return data.uvpNumbers.map { it.type }.filter { it.isNotEmpty() }
+        return getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
     }
 
     val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")

@@ -25,12 +25,13 @@ data class DataModel(
     val decisionDate: String?,
     val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
-    val eiaNumbers: List<KeyValueModel>
+    val eiaNumbers: List<KeyValueModel>?
 
     ) {
     var uvpNumbers: List<UVPNumber> = emptyList()
+
     fun convertEiaNumbers(catalogId: String) {
-        uvpNumbers = eiaNumbers.mapNotNull {
+        uvpNumbers = eiaNumbers?.mapNotNull {
             val uvpCodelistId = behaviourService?.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
             val entry = codelistHandler?.getCodelistEntry(uvpCodelistId, it.key!!)
             if (entry != null) {
@@ -44,7 +45,7 @@ data class DataModel(
             } else {
                 null
             }
-        }
+        } ?: emptyList()
     }
 
     var steps: List<Step> = emptyList()
