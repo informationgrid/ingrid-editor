@@ -1,5 +1,19 @@
 <page-template label="URL-Pflege">
-    <div left-side></div>
+    <div left-side>
+        <div>
+            Beim Aufruf der URL-Pflege wird eine Prüfung der in allen Objekten
+            vorhandenen URLs durchgeführt. Sie können diese Prüfung später
+            wiederholen, indem Sie auf den Button Prüfung starten klicken.
+        </div>
+
+        <p>
+            Ein oder mehrere URLs können ersetzt werden, indem Sie die zu
+            ersetzenden URLs in der Tabelle markieren und in das Eingabefeld
+            unter der Tabelle eine neue URL eingeben. Mit der Funktion Ersetzen
+            tauschen Sie die URL aus. Anschließend wird automatisch eine erneute
+            Überprüfung ausgeführt.
+        </p>
+    </div>
     <div main-header>
         <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
             <ng-container *ngIf="liveLog | async as log">
@@ -64,26 +78,40 @@
             mat-table
             [dataSource]="dataSource"
             matSort
-            class="width-100 no-action-column"
+            class="width-100 no-action-column big-font"
         >
             <ng-container matColumnDef="_select_" class="thin-column">
-                <th mat-header-cell *matHeaderCellDef>Alle</th>
-                <td mat-cell *matCellDef="let element">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="table-header-check"
+                >
+                    <mat-checkbox disabled></mat-checkbox>
+                    Alle
+                </th>
+                <td mat-cell *matCellDef="let element" class="check-column">
                     <mat-checkbox
                         (click)="$event.stopPropagation()"
                         (change)="$event ? selection.toggle(element) : null"
                         [checked]="selection.isSelected(element)"
-                    >
-                        <!--[aria-label]="checkboxLabel(row)"-->
-                    </mat-checkbox>
+                    ></mat-checkbox>
                 </td>
             </ng-container>
             <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
                     Status
                 </th>
-                <td mat-cell *matCellDef="let element">
-                    {{ element.status }}
+                <td
+                    mat-cell
+                    *matCellDef="let element"
+                    class="error-color status-column"
+                >
+                    <div>
+                        <mat-icon color="warn">error_outline</mat-icon>
+                        <span style="vertical-align: super">{{
+                            element.status
+                        }}</span>
+                    </div>
                 </td>
             </ng-container>
             <ng-container matColumnDef="url">
@@ -91,7 +119,7 @@
                 <td mat-cell *matCellDef="let element">
                     <div>
                         <a
-                            class="no-text-transform"
+                            class="link-column no-text-transform"
                             [href]="element.url"
                             target="_blank"
                             >{{ element.url }}</a
@@ -137,8 +165,8 @@
                         [disabled]="selection.isEmpty()"
                     />
                     <mat-hint *ngIf="selection.isEmpty()"
-                        >Bitte wählen Sie zuerst eine URL aus</mat-hint
-                    >
+                        >Bitte wählen Sie zuerst eine URL aus
+                    </mat-hint>
                 </mat-form-field>
                 <div style="padding-top: 7px">
                     <button

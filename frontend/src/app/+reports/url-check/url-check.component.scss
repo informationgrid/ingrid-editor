@@ -9,3 +9,24 @@ mat-progress-spinner {
 .report-btn {
   padding-left: 24px;
 }
+
+.table-header-check {
+  line-height: 24px;
+}
+
+.check-column {
+  padding-right: 48px;
+  width: 16px;
+}
+
+.status-column {
+  white-space: nowrap;
+
+  .mat-icon {
+    padding-right: 8px;
+  }
+}
+
+.link-column {
+  font-weight: bold;
+}

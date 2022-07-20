@@ -624,7 +624,7 @@ ige-form-label + * {
   color: $ige-check-color;
 }
 
-.error-color {
+.error-color.error-color {
   color: $error-color;
 }
 
@@ -1105,5 +1105,12 @@ mat-icon.wide-icon-26px {
     font-size: 14px;
     line-height: 18px;
     padding: 16px;
+  }
+}
+
+table.big-font {
+  .mat-cell,
+  a {
+    font-size: 16px;
   }
 }
