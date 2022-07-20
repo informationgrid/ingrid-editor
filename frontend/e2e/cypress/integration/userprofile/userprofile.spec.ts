@@ -1,4 +1,5 @@
 import { ProfilePage } from '../../pages/profile.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('Profile', () => {
   beforeEach(() => {
@@ -24,6 +25,41 @@ describe('Profile', () => {
     cy.kcLogin('mcloud-catalog-user-profile').as('tokens');
     ProfilePage.visit();
     ProfilePage.changeUserFirstLastName(firstName, lastName, true);
+  });
+
+  it('should update user first, last name, and email respectively #4088 ', () => {
+    let oldFirstName = 'Test';
+    let oldLastName = 'Verantwortlicher2';
+    let newFirstName = 'newFirstName';
+    let newLastName = 'newLastName';
+    let oldEmail = 'metadatenadmin@something.com';
+    let newEmail = 'newmetadatenadmin1@something.com';
+    cy.kcLogin('mcloud-meta-profile').as('tokens');
+    ProfilePage.visit();
+    // change only the first name, reload and check before and after reload
+    ProfilePage.changeUserFirstName(newFirstName, true);
+    cy.get('div .main-content').contains(oldLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(oldLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    // change only the last name, reload and check before and after reload
+    ProfilePage.changeUserLastName(newLastName, true);
+    cy.get('div .main-content').contains(oldEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    // change only the email , reload and check
+    ProfilePage.changeUserEmail(newEmail, true);
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
+    cy.get('div .main-content').contains(newEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newEmail);
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
   });
 
   it('should update catalog admin password', () => {
@@ -100,5 +136,26 @@ describe('Profile', () => {
     ProfilePage.visit();
     ProfilePage.changeUserFirstLastName(newFirstName, newLastName, true);
     ProfilePage.changeUserEmail(newEmail, true);
+  });
+
+  xit('should check for forget password functionality #4033', () => {
+    cy.visit('');
+    cy.contains('a', 'Passwort vergessen?').click();
+    let userEmail = 'newcatalog@test.com';
+
+    cy.get('.reset-password-field  input ').type(userEmail);
+    cy.contains('button', 'Absenden').click();
+
+    cy.wait(5000);
+    // get email and extract the password
+    cy.task('getLastEmail', userEmail)
+      .its('body')
+      .then(body => {
+        debugger;
+        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+
+        // Extract the password
+        let bodyArray = body.split('Passwort: ');
+      });
   });
 });
