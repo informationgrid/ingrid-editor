@@ -109,7 +109,7 @@
                     <div>
                         <mat-icon color="warn">error_outline</mat-icon>
                         <span style="vertical-align: super">{{
-                            element.status
+                            mapStatus(element.status)
                         }}</span>
                     </div>
                 </td>
@@ -141,7 +141,13 @@
                         <button
                             mat-stroked-button
                             color="primary"
-                            (click)="showDatasets($event, element.datasets)"
+                            (click)="
+                                showDatasets(
+                                    $event,
+                                    element.datasets,
+                                    element.url
+                                )
+                            "
                         >
                             Alle anzeigen
                         </button>

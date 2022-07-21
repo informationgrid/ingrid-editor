@@ -11,12 +11,11 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { Router } from "@angular/router";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { ListDatasetsDialogComponent } from "./list-datasets-dialog/list-datasets-dialog.component";
+import {
+  ListDatasetsDialogComponent,
+  ListDatasetsDialogData,
+} from "./list-datasets-dialog/list-datasets-dialog.component";
 
 @Component({
   selector: "ige-url-check",
@@ -79,13 +78,40 @@ export class UrlCheckComponent implements OnInit {
       .subscribe();
   }
 
-  showDatasets($event: MouseEvent, datasets: any[]) {
+  showDatasets($event: MouseEvent, datasets: any[], url: string) {
     $event.stopImmediatePropagation();
     this.dialog
       .open(ListDatasetsDialogComponent, {
-        data: datasets,
+        data: <ListDatasetsDialogData>{
+          datasets: datasets,
+          link: url,
+        },
       })
       .afterClosed()
       .subscribe((uuid) => this.loadDataset(uuid));
+  }
+
+  mapStatus(status: number): string {
+    console.log(".");
+    switch (status) {
+      case 400:
+        return "BadRequest";
+      case 401:
+        return "Unauthorized";
+      case 403:
+        return "Forbidden";
+      case 404:
+        return "NotFound";
+      case 405:
+        return "MethodNotAllowed";
+      case 429:
+        return "TooManyRequests";
+      case 500:
+        return "InternalServerError";
+      case 503:
+        return "ServiceUnavailable";
+      default:
+        return status.toString();
+    }
   }
 }
