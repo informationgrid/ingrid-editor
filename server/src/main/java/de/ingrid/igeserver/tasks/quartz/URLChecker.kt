@@ -34,6 +34,7 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenc
 
     val httpClient: HttpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
+        .followRedirects(HttpClient.Redirect.NORMAL)
         .build()
 
 
