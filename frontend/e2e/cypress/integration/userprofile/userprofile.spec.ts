@@ -125,7 +125,9 @@ describe('Profile', () => {
     let existEmail = 'andre.wallat@wemove.com';
     ProfilePage.changeUserEmail(existEmail, false);
     cy.get('button[type="submit"]').click();
-    cy.get('mat-dialog-container').contains('Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus.');
+    cy.get('mat-dialog-container').contains(
+      'Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet.'
+    );
   });
 
   it('author should be able to update name and email (#3576)', () => {

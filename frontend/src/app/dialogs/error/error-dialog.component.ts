@@ -13,8 +13,7 @@ import {
 })
 export class ErrorDialogComponent {
   errors: IgeError[];
-  panelOpenState = false;
-  generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen.!";
+  generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen!";
   public supportEmail: string;
   constructor(
     @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
@@ -22,7 +21,6 @@ export class ErrorDialogComponent {
     configService: ConfigService
   ) {
     this.supportEmail = configService.getConfiguration().supportEmail;
-    console.log("Data:", data);
     if (data instanceof Array) {
       this.errors = data;
     } else {

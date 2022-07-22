@@ -100,7 +100,7 @@ export class UserService {
       response.error.errorMessage === "emailExistsMessage"
     ) {
       throw new IgeError(
-        "Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus."
+        "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
       );
     }
 
