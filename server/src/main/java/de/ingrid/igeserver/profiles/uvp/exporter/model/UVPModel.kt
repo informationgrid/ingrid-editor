@@ -95,12 +95,12 @@ data class UVPModel(
 
     fun getSpatialLatCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat1 + (bbox.lon1 - bbox.lat1) / 2
+        return bbox.lat1 + (bbox.lat2 - bbox.lat1) / 2
     }
 
     fun getSpatialLonCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat2 + (bbox.lon2 - bbox.lat2) / 2
+        return bbox.lon1 + (bbox.lon2 - bbox.lon1) / 2
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
