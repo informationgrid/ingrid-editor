@@ -115,9 +115,16 @@ We use the standard of [Keep a Changelog](https://keepachangelog.com/).
 The gradle-changelog-plugin can be used to update the unreleased section to the current version
 and to create a new unreleased section.
 
+```shell
+gradlew patchChangelog
+```
+
 ## Release a new version
 
-TODO
+- Set an annotated tag to the latest commit which represents the release
+  - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
+- push tag (with commit) to remote
+  - if only tag was pushed, build needs to be triggered manually in Jenkins
 
 # Jenkins Setup
 

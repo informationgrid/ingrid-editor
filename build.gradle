@@ -1,11 +1,13 @@
+import org.jetbrains.changelog.ExtensionsKt
+
 plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
-    id "org.jetbrains.changelog" version "1.0.0"
+    id "org.jetbrains.changelog" version "1.1.2"
 }
 
 changelog {
-    version = "${-> project.version}"
-    header = { "[$version] - ${ExtensionsKt.date()}" }
+    version = "1.0.0"
+    header = { "[${-> project.version}] - ${ExtensionsKt.date('yyyy-MM-dd')}" }
 }
 
 subprojects {
