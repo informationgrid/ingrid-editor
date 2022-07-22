@@ -14,7 +14,6 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
     start: new FormControl(null),
     end: new FormControl(null),
   });
-  hideSecondInput = true;
 
   ngOnInit(): void {
     this.rangeFormGroup.setValue(
@@ -36,11 +35,6 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
-        if (this.to.allowSingleDate) {
-          // hide second input when start and end are equal
-          this.hideSecondInput = value?.start && value?.start - value?.end == 0;
-        }
-
         this.rangeFormGroup.setValue(
           value ?? {
             start: null,

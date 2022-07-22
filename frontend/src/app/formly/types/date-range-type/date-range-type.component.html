@@ -2,7 +2,6 @@
     [rangePicker]="picker"
     [formGroup]="rangeFormGroup"
     [disabled]="formControl.disabled"
-    [separator]="hideSecondInput ? '' : '-'"
 >
     <input
         matStartDate
@@ -11,7 +10,6 @@
         (change)="updateFormControl()"
     />
     <input
-        [class.invisible]="hideSecondInput"
         matEndDate
         placeholder="TT.MM.JJJJ"
         formControlName="end"
