@@ -6,11 +6,18 @@
 
 ### Changed
 
+- Add more fields to index to be searched on.
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Partner and provider not added to PlugDescription
+- Fix export of eia numbers
+- Fix changing email and name on profile page
+- Fix handling of eia numbers with no category
 
 ### Security
 
