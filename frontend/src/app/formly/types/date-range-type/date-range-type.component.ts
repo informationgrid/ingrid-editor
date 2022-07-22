@@ -14,7 +14,7 @@ export class DateRangeTypeComponent extends FieldType implements OnInit {
     start: new FormControl(null),
     end: new FormControl(null),
   });
-  hideSecondInput = false;
+  hideSecondInput = true;
 
   ngOnInit(): void {
     this.rangeFormGroup.setValue(
