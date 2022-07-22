@@ -6,11 +6,19 @@
 
 ### Changed
 
-- Add more fields to index to be searched on.
-
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+### Security
+
+## [1.0.1] - 2022-07-22
+
+### Changed
+
+- Add more fields to index to be searched on.
 
 ### Fixed
 
@@ -18,8 +26,6 @@
 - Fix export of eia numbers
 - Fix changing email and name on profile page
 - Fix handling of eia numbers with no category
-
-### Security
 
 ## [1.0.0] - 2022-07-22
 
