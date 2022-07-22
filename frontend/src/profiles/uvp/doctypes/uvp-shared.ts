@@ -50,6 +50,7 @@ export class UvpShared extends BaseDoctype {
       templateOptions: {
         label: "Titel",
         appearance: "outline",
+        required: true,
       },
     },
     {
