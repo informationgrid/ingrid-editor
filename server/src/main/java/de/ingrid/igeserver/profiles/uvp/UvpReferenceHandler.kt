@@ -2,6 +2,8 @@ package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
+import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import org.hibernate.query.NativeQuery
@@ -14,31 +16,6 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
 
     override fun getProfile() = UvpProfile.id
 
-    val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
-        FROM catalog,
-             document_wrapper dw,
-             document doc,
-             jsonb_array_elements(doc.data -> 'processingSteps') elems
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-    """.trimIndent()
-
-    val sqlNegativeDecisionDocs = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
-        FROM catalog,
-             document_wrapper dw,
-             document doc
-        WHERE dw.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.published = doc.id
-          AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
-    """.trimIndent()
 
     val sqlStepsDraft = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -67,8 +44,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     """.trimIndent()
 
     fun getPublishedDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
-        val result = queryDocs(sqlSteps, "step", docId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", docId)
+        val result = queryDocs(sqlStepsPublished, "step", docId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
@@ -79,8 +56,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     }
 
     override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
-        val result = queryDocs(sqlSteps, "step", null, catalogId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocs, "negativeDocs", null, catalogId)
+        val result = queryDocs(sqlStepsPublished, "step", null, catalogId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", null, catalogId)
         return mapQueryResults(result, resultNegativeDocs, true)
     }
 

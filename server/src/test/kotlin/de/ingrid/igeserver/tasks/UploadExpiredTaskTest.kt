@@ -35,13 +35,17 @@ class UploadExpiredTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("step", JsonNodeBinaryType.INSTANCE).resultList
-        } returns listOf(arrayOf("123", "test-cat", input))
+                .addScalar("step", JsonNodeBinaryType.INSTANCE)
+                .addScalar("title")
+                .addScalar("type").resultList
+        } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
         every {
             entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE).resultList
+                .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE)
+                .addScalar("title")
+                .addScalar("type").resultList
         } returns emptyList()
     }
 

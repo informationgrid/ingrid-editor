@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode
 data class UploadInfo(val uri: String, val validUntil: String?)
 
 val sqlStepsPublished = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -18,7 +18,7 @@ val sqlStepsPublished = """
     """.trimIndent()
 
 val sqlStepsWithDrafts = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -31,7 +31,7 @@ val sqlStepsWithDrafts = """
     """.trimIndent()
 
 val sqlNegativeDecisionDocsPublished = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
@@ -44,7 +44,7 @@ val sqlNegativeDecisionDocsPublished = """
     """.trimIndent()
 
 val sqlNegativeDecisionDocsWithDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
