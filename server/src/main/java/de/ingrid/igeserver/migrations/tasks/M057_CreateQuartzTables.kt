@@ -8,7 +8,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 @Service
-class M056_CreateQuartzTables : MigrationBase("0.56") {
+class M057_CreateQuartzTables : MigrationBase("0.57") {
 
     @Autowired
     lateinit var entityManager: EntityManager
