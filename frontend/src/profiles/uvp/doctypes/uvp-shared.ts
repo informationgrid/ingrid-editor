@@ -50,6 +50,7 @@ export class UvpShared extends BaseDoctype {
       templateOptions: {
         label: "Titel",
         appearance: "outline",
+        required: true,
       },
     },
     {
@@ -65,9 +66,10 @@ export class UvpShared extends BaseDoctype {
         },
         formatter: (link: any) => {
           if (link.asLink) {
-            return `<a href="${link.uri}" target="_blank" class="no-text-transform">${link.uri}</a>`;
+            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
           } else {
-            return `<span class="clickable-text">${link.uri}</span>`;
+            return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
         },
       },

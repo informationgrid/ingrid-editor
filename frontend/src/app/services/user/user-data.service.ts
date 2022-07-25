@@ -77,4 +77,11 @@ export class UserDataService {
       null
     );
   }
+
+  resetPassword(login: string) {
+    return this.http.post<void>(
+      this.configuration.backendUrl + "externalUsers/resetPassword/" + login,
+      null
+    );
+  }
 }

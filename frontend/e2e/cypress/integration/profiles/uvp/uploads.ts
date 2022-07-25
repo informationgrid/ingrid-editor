@@ -1,8 +1,11 @@
 import { DocumentPage, fieldsForDownloadEntry, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Tree } from '../../../pages/tree.partial';
 import { uvpPage } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
+import { enterMcloudDocTestData, FileHandlingOptions } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
+import { BehavioursPage } from '../../../pages/behaviours.page';
+import { CatalogsTabmenu } from '../../../pages/base.page';
+import { Menu } from '../../../pages/menu';
 
 describe('uvp uploads', () => {
   beforeEach(() => {
@@ -204,5 +207,138 @@ describe('uvp uploads', () => {
       // check file not accessible anymore
       uvpPage.tryToAccessFile(id, fileName, 'failure');
     });
+  });
+
+  it('should upload all document types within Öffentliche Auslegung #4031', () => {
+    let files = [
+      'Auslegungsinformationen.pdf',
+      'UVP_Bericht_Antragsunterlagen.pdf',
+      'Berichte und Empfehlungen.pdf',
+      'Weitere Unterlagen.pdf'
+    ];
+
+    Tree.openNode(['Plan_R_Dirty_Uploads', 'All_Document_Types']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Auslegungsinformationen.pdf');
+    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
+    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Berichte und Empfehlungen.pdf');
+    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Weitere Unterlagen.pdf');
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
+    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', files[2]);
+    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', files[1]);
+    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+  });
+
+  it('should add multiple procedure steps of type "Öffentliche Auslegung" to document of type "Raumordnungsverfahren" #4031', () => {
+    let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
+    Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Öffentliche_Auslegung']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile(files[0]);
+
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile(files[1]);
+
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(2, 'Weitere Unterlagen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile(files[2]);
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    DocumentPage.checkTableEntry(2, 'Weitere Unterlagen', files[2]);
+    DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', files[1]);
+    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+  });
+
+  it('should upload multiple files at the same time #4031', () => {
+    let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
+    Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Files_Simultaneously']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile(files[0], false, false);
+    enterMcloudDocTestData.uploadFile(files[1], false, false);
+    enterMcloudDocTestData.uploadFile(files[2], false, false);
+    cy.contains('button', 'Übernehmen').click();
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[2]);
+    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[1]);
+    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+  });
+
+  it('should upload multiple zip files with same names of the content, unzip the files, save them and check for the included files #4031', () => {
+    const fileName = 'zip_files_to_save.zip';
+    const fileName_2 = 'zip_files_to_save_2.zip';
+    const fileTitle = 'zip_files_to_save/';
+    const fileTitle_2 = 'zip_files_to_save_2/';
+    const documentType = 'Auslegungsinformationen';
+    const unzippedFiles: string[] = ['test_file_1.PNG', 'test_file_2.PNG', 'test_file_3.PNG', 'test_image_6.PNG'];
+
+    Tree.openNode(['Plan_R_Dirty_Uploads', 'Save_Extracted_Zip_Files']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, documentType, 'Dateien hochladen');
+    // upload the files and save the document
+    enterMcloudDocTestData.uploadFile(fileName, false, false);
+    enterMcloudDocTestData.unzipArchiveAfterUpload();
+    enterMcloudDocTestData.uploadFile(fileName_2, false, false);
+    cy.contains('button', 'Übernehmen').click();
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    // check for every file
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[3]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[2]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[1]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[0]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[3]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[2]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[1]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[0]);
+  });
+
+  it('should upload zip file with special characters, unzip, save it and check for the included files #4031', () => {
+    const fileName = 'files with special_characters $&()...!.zip';
+    const fileTitle = 'files with special_characters $&()...!/';
+    const documentType = 'Auslegungsinformationen';
+    const unzippedFiles: string[] = [
+      'files with special_characters $&...!..pdf',
+      'files with special_characters $&...!.2.pdf',
+      'files with special_characters $&...!.3.pdf'
+    ];
+
+    Tree.openNode(['Plan_R_Dirty_Uploads', 'Zip_File_Special_Characters']);
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile(fileName, false, false);
+    enterMcloudDocTestData.unzipArchiveAfterUpload();
+    cy.contains('button', 'Übernehmen').click();
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[2]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[1]);
+    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[0]);
+  });
+
+  it('should activate publish option in catalog behavior for negative preliminary and upload a file #4031', () => {
+    const fileTitle = 'Test.pdf';
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+    BehavioursPage.setCatalogSetting("'Negative Vorprüfungen' veröffentlichen", true);
+    // used visit to reload the page
+    DocumentPage.visit();
+    Tree.openNode(['Plan_N_With_Upload']);
+    cy.contains('button', 'Dateien hochladen').click();
+    enterMcloudDocTestData.uploadFile(fileTitle);
+    DocumentPage.saveDocument();
+    cy.pageReload('dashboard-docs-header');
+    // check entry in table
+    cy.contains('[data-cy="Ergebnis der UVP-Vorprüfung-table"]', fileTitle);
+    cy.get('[data-cy="Ergebnis der UVP-Vorprüfung-table"] mat-row').should('have.length', 1);
+    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
+    BehavioursPage.setCatalogSetting("'Negative Vorprüfungen' veröffentlichen", false);
   });
 });

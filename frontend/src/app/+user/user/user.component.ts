@@ -19,12 +19,21 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, finalize, map, switchMap, tap } from "rxjs/operators";
+import {
+  catchError,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { IgeError } from "../../models/ige-error";
 
 @UntilDestroy()
 @Component({
@@ -57,6 +66,7 @@ export class UserComponent
     private router: Router,
     public userManagementService: UserManagementService,
     private session: SessionQuery,
+    private toast: MatSnackBar,
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
@@ -220,7 +230,13 @@ export class UserComponent
       (err: any) => {
         this.hideLoading();
         this.userService.selectedUser$.next(null);
-        throw err;
+        if (err.error.errorText.includes("Conflicting email address")) {
+          throw new IgeError(
+            "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
+          );
+        } else {
+          throw err;
+        }
       }
     );
   }
@@ -283,5 +299,40 @@ export class UserComponent
   private hideLoading() {
     this.enableForm();
     this.isLoading = false;
+  }
+
+  resetPassword(login: string) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "Passwort zurücksetzen",
+          message:
+            "Möchten Sie das Passwort für den Nutzer " +
+            login +
+            " zurücksetzen? \n Ein neues Passwort wird generiert und an den Nutzer gesendet.",
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe(() => {
+        this.userService
+          .resetPassword(login)
+          .pipe(
+            catchError((err) => {
+              if (
+                err.error.errorText.includes("Mail server connection failed")
+              ) {
+                throw new IgeError(
+                  "Es gab ein Problem beim Versenden der Email"
+                );
+              } else {
+                throw err;
+              }
+            })
+          )
+          .subscribe(() => {
+            this.toast.open("Passwort wurde zurückgesetzt");
+          });
+      });
   }
 }

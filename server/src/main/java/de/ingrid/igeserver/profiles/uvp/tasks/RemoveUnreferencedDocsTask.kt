@@ -47,8 +47,10 @@ class RemoveUnreferencedDocsTask(
 
         val publishedFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.PUBLISHED)
         val draftFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.UNPUBLISHED)
+        val archivedFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.ARCHIVED)
+        val archivedUnpublishedFiles: List<FileSystemItem> = this.storage.list(catalogId, Scope.ARCHIVED_UNPUBLISHED)
 
-        val allFiles = publishedFiles + draftFiles
+        val allFiles = publishedFiles + draftFiles + archivedFiles + archivedUnpublishedFiles
         val referencedFiles = getReferencedFilesOfCatalog(allFiles, allUploads, catalogId)
 
         val unreferencedFiles = allFiles.filter { file -> referencedFiles.none { ref -> ref.file == file.file } }
@@ -57,9 +59,9 @@ class RemoveUnreferencedDocsTask(
 
         if (unreferencedFiles.isNotEmpty()) {
             log.info("Moving ${unreferencedFiles.size} unreferenced files from $catalogId to trash ...")
-            unreferencedFiles.forEach { 
+            unreferencedFiles.forEach {
                 log.info("File: ${it.path}/${it.file}")
-                storage.delete(catalogId, it) 
+                storage.delete(catalogId, it)
             }
         }
     }
@@ -74,7 +76,7 @@ class RemoveUnreferencedDocsTask(
             allUploads
                 .filter { it.catalogId == catalogId }
                 .filter { file.path.startsWith(it.uuid) }
-                .filter { it.urls.any { url -> url.uri == file.file } }
+                .filter { it.urls.any { url -> it.uuid + FileSystemItem.URI_PATH_SEPARATOR + url.uri == file.relativePath } }
                 .forEach { _ -> referencedFiles.add(file) }
         }
         return referencedFiles

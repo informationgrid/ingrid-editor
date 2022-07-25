@@ -64,19 +64,20 @@ A smtp-server is created through the 'smtp-tester' package to accept connections
 The server is configured in the `/plugins/index.js` file and initiated at the given port.
 By means of cypress tasks the last email can be fetched and the inbox cleaned.
 
-The "cromeWebSecurity" options in the `cypress.json` is set to false, since in the same test it is necessary to log-out and log-in again (e.g. to test an email sent password). Otherwise, a cross-origin error is fired.
+The "cromeWebSecurity" options in the `cypress.json` is set to false, since in the same test it is necessary to log-out and log-in again (e.g. to test an email sent password). Otherwise, a
+cross-origin error is fired.
 
-To test locally the email receiving functions set the spring.mail.host address (inside `\conf\application-postgresql.properties` of the container) to the ip-address of your own machine (on Windows run `ipconfig` from the console).
-In case you wish to change the server's port, act similarly and set the same port number inside of the /plugins/index.js file.
+To test locally the email receiving functions set the spring.mail.host address (inside the docker-compose file) to the ip-address of your own machine (on Windows run `ipconfig` from the console).
+In case you wish to change the server's port, act similarly and set the same port number inside the /plugins/index.js file.
 
 # Monkey Testing - gremlins.js
 
 Monkey Testing is used to check the robustness of web applications by unleashing a horde of undisciplined gremlins.
-Gremlins.js is a monkey testing libary written in Javascript for Node.js and the browser.
+Gremlins.js is a monkey testing library written in Javascript for Node.js and the browser.
 
 At the moment we only have dumb monkeys, which try to crash our application with random inputs.
-Also their attacks are not repeatable, but in the future they will (it's possible).
-Finally we will implement smart monkeys, which have basic informations about our application and then they will attack specific.\_
+Their attacks are not reproducible, but in the future they will (it's possible).
+Finally, we will implement smart monkeys. They have basic information about our application, and will attack defined targets.
 
 ## How to start the tests and what is the message of the test results:
 
@@ -95,7 +96,8 @@ gremlin scroller   scroll to 100 25
 ...
 ```
 
-A horde also contains mogwais, which are harmless gremlins (or, you could say that gremlins are harmful mogwais). Mogwais only monitor the activity of the application and record it on the logger. For instance, the "fps" mogwai monitors the number of frame per second, every 500ms:
+A horde also contains mogwais, which are harmless gremlins (or, you could say that gremlins are harmful mogwais). Mogwais only monitor the activity of the application and record it on the logger. For
+instance, the "fps" mogwai monitors the number of frame per second, every 500ms:
 
 ```
 mogwai  fps  33.21
@@ -114,7 +116,8 @@ mogwai  fps  15.76
 ...
 ```
 
-After 10 errors, a special mogwai stops the test. He's called Gizmo, and he prevents gremlins from breaking applications bad. After all, once gremlins have found the first 10 errors, you already know what you have to do to make your application more robust.
+After 10 errors, a special mogwai stops the test. He's called Gizmo, and he prevents gremlins from breaking applications bad. After all, once gremlins have found the first 10 errors, you already know
+what you have to do to make your application more robust.
 
 If not stopped by Gizmo, the default horde stops after roughly 1 minute. You can also decrease it on strategies:
 `strategies: [strategies.allTogether({ nb: 100000 })]`

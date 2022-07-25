@@ -100,7 +100,7 @@ export class UserService {
       response.error.errorMessage === "emailExistsMessage"
     ) {
       throw new IgeError(
-        "Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus."
+        "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
       );
     }
 
@@ -130,14 +130,12 @@ export class UserService {
     return this.dataService.getExternalUsers();
   }
 
-  private getExternalUsersAsSelectOptions(): Observable<SelectOptionUi[]> {
-    return this.getExternalUsers().pipe(
-      map((users) =>
-        users.map((user) => {
-          return new SelectOption(user.login, user.login);
-        })
-      )
-    );
+  private getExternalUsersAsSelectOptions(
+    users: BackendUser[]
+  ): SelectOptionUi[] {
+    return users.map((user) => {
+      return new SelectOption(user.login, user.login);
+    });
   }
 
   getUserFormFields(
@@ -154,14 +152,18 @@ export class UserService {
     );
   }
 
-  getNewUserFormFields(): FormlyFieldConfig[] {
+  getNewUserFormFields(users: BackendUser[]): FormlyFieldConfig[] {
     return getNewUserFormFields(
       this.availableRoles,
-      this.getExternalUsersAsSelectOptions()
+      this.getExternalUsersAsSelectOptions(users)
     );
   }
 
   updatePassword(): Promise<void> {
     return this.keycloakService.updatePassword();
+  }
+
+  resetPassword(login: string) {
+    return this.dataService.resetPassword(login);
   }
 }

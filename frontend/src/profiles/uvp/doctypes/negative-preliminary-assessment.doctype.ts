@@ -37,9 +37,14 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
         ]
       : <FormlyFieldConfig[]>[
           this.addSection("Allgemeines", [
-            this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
-              required: true,
-            }),
+            this.addTextArea(
+              "description",
+              "Allgemeine Vorhabenbeschreibung",
+              this.id,
+              {
+                required: true,
+              }
+            ),
             this.addPointOfContact(),
           ]),
           this.addSection("Raumbezug", [

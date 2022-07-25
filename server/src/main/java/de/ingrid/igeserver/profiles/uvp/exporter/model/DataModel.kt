@@ -8,6 +8,7 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressRefModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.RangeModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.LocalDate
@@ -24,12 +25,15 @@ data class DataModel(
     val decisionDate: String?,
     val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
+    val eiaNumbers: List<KeyValueModel>?
 
     ) {
     var uvpNumbers: List<UVPNumber> = emptyList()
-    private fun setEiaNumbers(value: List<KeyValueModel>) {
-        uvpNumbers = value.mapNotNull {
-            val entry = codelistHandler?.getCodelistEntry("9000", it.key!!)
+
+    fun convertEiaNumbers(catalogId: String) {
+        uvpNumbers = eiaNumbers?.mapNotNull {
+            val uvpCodelistId = behaviourService?.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            val entry = codelistHandler?.getCodelistEntry(uvpCodelistId, it.key!!)
             if (entry != null) {
                 val codeValue = entry.fields["de"] ?: "???"
                 val data = jacksonObjectMapper().readTree(entry.data)
@@ -41,7 +45,7 @@ data class DataModel(
             } else {
                 null
             }
-        }
+        } ?: emptyList()
     }
 
     var steps: List<Step> = emptyList()
@@ -68,6 +72,9 @@ data class DataModel(
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
+        }
+        val behaviourService: BehaviourService? by lazy {
+            SpringContext.getBean(BehaviourService::class.java)
         }
     }
 }
@@ -99,7 +106,7 @@ data class StepPublicDisclosure(
             "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
             else -> true
         }
-        
+
     }
 }
 
@@ -127,10 +134,10 @@ data class StepDecisionOfAdmission(
 data class Document(val title: String, val downloadURL: DownloadUrl, val validUntil: Date?) {
 
     /**
-     * Document is not expired when validUntil date is not set or date is before today 
+     * Document is not expired when validUntil date is not set or date is before today
      */
     fun isNotExpired() = validUntil == null || !LocalDate.now().isAfter(LocalDate.ofInstant(validUntil.toInstant(), ZoneId.systemDefault()))
-    
+
 }
 
 @JsonIgnoreProperties("value") // field was removed and must be marked ignored now

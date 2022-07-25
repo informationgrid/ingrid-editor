@@ -29,6 +29,8 @@ data class UVPModel(
 
     var documentType = mapDocumentType()
 
+    val contentField: MutableList<String> = mutableListOf()
+
     private fun mapDocumentType(): String {
         return when (type) {
             "UvpApprovalProcedureDoc" -> "10"
@@ -45,6 +47,12 @@ data class UVPModel(
 
     init {
         pointOfContact = determinePointOfContact()
+    }
+
+    fun handleContent(value: String?): String? {
+        if (value == null) return null
+        contentField.add(value)
+        return value
     }
 
     private fun determinePointOfContact(): AddressModel? {
@@ -85,14 +93,14 @@ data class UVPModel(
             ?.value
     }
 
-    fun getSpatialLonCenter(): Float? {
-        val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat1 + (bbox.lon1 - bbox.lat1) / 2
-    }
-
     fun getSpatialLatCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat2 + (bbox.lon2 - bbox.lat2) / 2
+        return bbox.lat1 + (bbox.lat2 - bbox.lat1) / 2
+    }
+
+    fun getSpatialLonCenter(): Float? {
+        val bbox = getSpatialBoundingBox() ?: return null
+        return bbox.lon1 + (bbox.lon2 - bbox.lon1) / 2
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
@@ -140,8 +148,14 @@ data class UVPModel(
         return codelistHandler?.getCodelistValue(codelistId, entry.key) ?: "???"
     }
 
-    fun getUvpNumbers(): List<UVPNumber> {
-        return data.uvpNumbers
+    fun getUvpNumbers(): List<UVPNumber> = data.uvpNumbers
+
+    fun getUvpCategories(): List<String> {
+        return getUvpNumbers().map { it.category }.filter { it.isNotEmpty() }
+    }
+
+    fun getUvpCategoryTypes(): List<String> {
+        return getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
     }
 
     val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")

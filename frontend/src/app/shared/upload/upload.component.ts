@@ -125,6 +125,15 @@ export class UploadComponent implements OnInit {
         throw new IgeError(e);
       }
     });
+
+    this.flow.flowJs.on("filesAdded", (files) => {
+      const allowed = !files.some((file) => file.name.indexOf("%") !== -1);
+      if (allowed) {
+        return true;
+      } else {
+        throw new IgeError("Der Dateiname darf kein '%' enthalten!");
+      }
+    });
   }
 
   isDragged = false;
@@ -150,6 +159,7 @@ export class UploadComponent implements OnInit {
     this._errors[transfer.id] = null;
     transfer.success = true;
     this.errors.next(this._errors);
+    this.complete.next();
   }
 
   setAdditionalUploadParameter(params: any) {

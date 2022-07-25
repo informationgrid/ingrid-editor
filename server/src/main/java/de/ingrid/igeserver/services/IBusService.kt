@@ -8,6 +8,7 @@ import de.ingrid.utils.*
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import de.ingrid.utils.query.IngridQuery
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -17,16 +18,35 @@ import javax.annotation.PostConstruct
 @Profile("ibus & elasticsearch")
 class IBusService @Autowired constructor(val settingsService: SettingsService) : HeartBeatPlug(60000) {
 
+    val log = logger()
+
+    private var iBusClient: BusClient? = null
+
     @PostConstruct
-    fun init() {
-        val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
-        settingsService.getIBusConfig().forEach { this.connectIBus(it) }
-        this.configure(getPlugDescription(iBusUrls))
+    fun init() = setupConnections()
+
+    fun setupConnections() {
+        try {
+            val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
+            iBusClient = this.connectIBus(settingsService.getIBusConfig())
+            this.configure(getPlugDescription(iBusUrls))
+        } catch (e: Exception) {
+            log.error("Could not connect to iBus", e)
+        }
+    }
+
+    fun restartCommunication() {
+        iBusClient?.shutdown()
+        val clientConfig = createClientConfiguration(settingsService.getIBusConfig())
+        iBusClient?.start(clientConfig)
+        val communication = StartCommunication.create(clientConfig)
+        BusClientFactory.createBusClientOverride(communication)
     }
 
     private fun getPlugDescription(urls: List<String>): PlugDescription {
 
-        return settingsService.getPlugDescription().apply {
+        // partner and provider will be written during indexing
+        return settingsService.getPlugDescription("", "").apply {
             urls.forEach { addBusUrl(it) }
         }
 
@@ -52,21 +72,28 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
         TODO("Not yet implemented")
     }
 
-    private fun connectIBus(parameter: IBusConfig): BusClient? {
-        val config = ClientConfiguration().apply {
-            name = "ige-ng"
-            val connection = ClientConnection().apply {
-                serverIp = parameter.ip
-                serverPort = parameter.port
-                serverName = parameter.url
-            }
-            addClientConnection(connection)
-        }
+    private fun connectIBus(configs: List<IBusConfig>): BusClient {
+        val config = createClientConfiguration(configs)
         val communication = StartCommunication.create(config)
         communication.startup()
         val busClient = BusClientFactory.createBusClient(communication)
         busClient.iPlug = this
         return busClient
+    }
+
+    private fun createClientConfiguration(configs: List<IBusConfig>): ClientConfiguration {
+        val config = ClientConfiguration().apply {
+            name = "ige-ng"
+            configs.forEach {
+                val connection = ClientConnection().apply {
+                    serverIp = it.ip
+                    serverPort = it.port
+                    serverName = it.url
+                }
+                addClientConnection(connection)
+            }
+        }
+        return config
     }
 
 }

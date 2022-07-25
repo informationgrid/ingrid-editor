@@ -86,6 +86,10 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
+    override fun resetPassword(principal: Principal?, id: String): String {
+        TODO("Not yet implemented")
+    }
+
     override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
         TODO("Not yet implemented")
     }

@@ -3,6 +3,7 @@ import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Menu } from '../../pages/menu';
+import Doc = Mocha.reporters.Doc;
 
 describe('General create documents/folders', () => {
   beforeEach(() => {
@@ -319,6 +320,23 @@ describe('General create documents/folders', () => {
       DocumentPage.scrollToSection('mCLOUD');
 
       DocumentPage.checkOfExistingItem(downloadSelector, 'youtube', 0);
+    });
+
+    it('should preserve expanded size of text field (#4029)', () => {
+      const docTitle = 'Test mCLOUD Dokument';
+      const resizableElement = 'textarea#mCloudDocdescription';
+
+      Tree.openNode(['Testdokumente', docTitle]);
+
+      // change size of the text box
+      cy.get(resizableElement).invoke('attr', 'style', 'height: 200px');
+      cy.get(resizableElement).invoke('height').should('equal', 200);
+
+      cy.wait(500).reload();
+
+      // make sure that expanded size of text box is preserved after loading page
+      cy.contains(DocumentPage.title, docTitle, { timeout: 12000 });
+      cy.get(resizableElement).invoke('height').should('be.gte', 200);
     });
   });
 });

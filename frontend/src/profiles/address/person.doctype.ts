@@ -28,20 +28,22 @@ export class PersonDoctype extends AddressShared {
             {
               fieldGroupClassName: "display-flex width-50",
               fieldGroup: [
-                this.addAutocomplete("salutation", "Anrede", {
+                this.addAutocomplete("salutation", null, {
                   wrappers: ["form-field"],
                   className: "flex-1",
-                  placeholder: "Anrede",
+                  fieldLabel: "Anrede",
                   highlightMatches: true,
                   hideDeleteButton: true,
+                  placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                 }),
-                this.addAutocomplete("academic-title", "Titel", {
+                this.addAutocomplete("academic-title", null, {
                   wrappers: ["form-field"],
                   className: "flex-1 pad-right",
-                  placeholder: "Titel",
+                  fieldLabel: "Titel",
                   highlightMatches: true,
                   hideDeleteButton: true,
+                  placeholder: "",
                   options: this.getCodelistForSelect(4305, "academic-title"),
                 }),
               ],
@@ -59,10 +61,12 @@ export class PersonDoctype extends AddressShared {
             {
               fieldGroupClassName: "display-flex",
               fieldGroup: [
-                this.addInput("firstName", "Vorname", {
+                this.addInput("firstName", null, {
+                  fieldLabel: "Vorname",
                   className: "flex-1 firstName",
                 }),
-                this.addInput("lastName", "Nachname", {
+                this.addInput("lastName", null, {
+                  fieldLabel: "Nachname",
                   className: "flex-1 lastName",
                   required: true,
                 }),

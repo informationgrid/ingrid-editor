@@ -3,8 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.FindOptions
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
@@ -30,7 +28,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
-open class UsersApiController : UsersApi {
+class UsersApiController : UsersApi {
 
     private val logger = logger()
 
@@ -81,24 +79,33 @@ open class UsersApiController : UsersApi {
 
         val userExists = keycloakService.userExists(principal, user.login)
         if (userExists && newExternalUser) {
-            throw ConflictException.withReason("User already Exists with login ${user.login}")
+            throw ConflictException.withReason("User already exists with login ${user.login}")
         }
+        
+        logger.debug("Create user ${user.login} (exists in keycloak: $userExists)")
+        
         if (userExists) {
             keycloakService.updateUser(principal, user)
             keycloakService.addRoles(principal, user.login, listOf(user.role))
             catalogService.createUser(catalogId, user)
-            if (!developmentMode) email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
+            if (!developmentMode) {
+                logger.info("Send welcome email to existing user '${user.login}' (${user.email})")
+                email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
+            }
 
         } else {
             val password = keycloakService.createUser(principal, user)
             catalogService.createUser(catalogId, user)
-            if (!developmentMode) email.sendWelcomeEmailWithPassword(
-                user.email,
-                user.firstName,
-                user.lastName,
-                password,
-                user.login
-            )
+            if (!developmentMode) {
+                logger.info("Send welcome email to '${user.login}' (${user.email})")
+                email.sendWelcomeEmailWithPassword(
+                    user.email,
+                    user.firstName,
+                    user.lastName,
+                    password,
+                    user.login
+                )
+            }
 
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
@@ -354,6 +361,23 @@ open class UsersApiController : UsersApi {
         keycloakService.requestPasswordChange(principal, id)
         return ResponseEntity.ok().build()
 
+    }
+
+    override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
+        keycloakService.getClient(principal).use { client ->
+
+            val user = keycloakService.getUser(client, id)
+            val password = keycloakService.resetPassword(principal, id)
+            logger.debug("Reset password for user $id to $password")
+            if (!developmentMode) email.sendWelcomeEmailWithPassword(
+                user.email,
+                user.firstName,
+                user.lastName,
+                password,
+                user.login
+            )
+            return ResponseEntity.ok().build()
+        }
     }
 
 

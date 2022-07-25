@@ -2,6 +2,7 @@
   "contextPath": "/",
   "brokerUrl": null,
   "featureFlags": {
+    "showTestBadge": false,
     "AP3": true,
     "AP4": false,
     "NotForDemo": true

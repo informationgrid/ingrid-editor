@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.security.core.Authentication
 import java.io.Closeable
 import java.security.Principal
@@ -28,6 +27,7 @@ interface UserManagementService {
     fun createUser(principal: Principal, user: User): String
     fun updateUser(principal: Principal?, user: User)
     fun requestPasswordChange(principal: Principal?, id: String)
+    fun resetPassword(principal: Principal?, id: String): String
 
     fun removeRoles(principal: Principal?, userId: String, roles: List<String>)
     fun addRoles(principal: Principal?, userLogin: String, roles: List<String>)

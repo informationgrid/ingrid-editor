@@ -3,13 +3,14 @@
     contentColor="#f3f3f3"
     (submit)="submit()"
     (cancel)="cancel()"
-    [disabled]="chosenFiles.length === 0"
+    [disabled]="!uploadComplete"
 >
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
-            (chosenFiles)="chosenFiles = $event"
+            (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"
+            (complete)="handleUploadComplete()"
         ></ige-file-upload>
 
         <mat-slide-toggle

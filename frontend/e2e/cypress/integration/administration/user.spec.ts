@@ -18,7 +18,7 @@ describe('User', () => {
   });
 
   it('should create a new user', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
 
     let user: UserFormData = {
       firstName: 'Son',
@@ -130,7 +130,7 @@ describe('User', () => {
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
     cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
     cy.get('ige-new-user-dialog').should('not.exist');
@@ -156,7 +156,7 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal logins', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     let user: UserFormData = {
       firstName: 'Son',
       lastName: 'Goku',
@@ -177,7 +177,7 @@ describe('User', () => {
   });
 
   it('should not be possible for two users to have equal email addresses', () => {
-    cy.get('button', { timeout: 5000 }).contains('Hinzufügen').click();
+    cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     let user: UserFormData = {
       firstName: 'Son',
       lastName: 'Goten',
@@ -227,7 +227,7 @@ describe('User', () => {
   });
 
   it('should show login and creation information', () => {
-    const loginEntry = 'meta';
+    const loginEntry = 'mcloud-meta-without-groups';
     const username = 'Meta Admin';
 
     AdminUserPage.selectUser(username);
@@ -515,17 +515,17 @@ describe('User', () => {
   it('should update user information (#2972)', () => {
     const dateOfToday = Utils.getFormattedDate(new Date());
 
-    AdminUserPage.selectUser('autornew2');
+    AdminUserPage.selectUser('mcloud-author-last-login');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
       // log in as a user to update last login information
       cy.logoutClearCookies();
-      cy.kcLogin('autornew2');
+      cy.kcLogin('mcloud-author-last-login');
       DocumentPage.visit();
       // log in as admin and make sure "last logged in" contains right information
       cy.logoutClearCookies();
       cy.kcLogin('super-admin');
       AdminUserPage.visit();
-      AdminUserPage.selectUser('autornew2');
+      AdminUserPage.selectUser('mcloud-author-last-login');
       // make sure last-login-date is not identical to old login-date, but identical to current date
       AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(newLoginDate => {
         cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('equal', dateOfToday);
@@ -542,7 +542,7 @@ describe('User', () => {
 
   it('Author can be granted universal read access by adding to group universal rights #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal read access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -582,7 +582,7 @@ describe('User', () => {
 
   it('Author can be granted universal read + write access by adding to group universal rights #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -604,7 +604,7 @@ describe('User', () => {
     Tree.openNode(['Doc_h']);
     DocumentPage.addDescription('some description');
     DocumentPage.saveDocument();
-    DocumentPage.checkEntryOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkValueOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
     // check write access addresses
     Menu.switchTo('ADDRESSES');
     cy.get('mat-tree mat-tree-node')
@@ -627,7 +627,7 @@ describe('User', () => {
 
   it('Author can create root document/move and copy document to root when granted universal read + write access #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -666,7 +666,7 @@ describe('User', () => {
 
   it('Author should be able to delete any document when granted universal read + write access #3267', () => {
     const groupName = 'test_gruppe_3';
-    const authorName = 'author-with-groups';
+    const authorName = 'mcloud-author-with-group';
 
     // activate universal access in group
     AdminUserPage.goToTabmenu(UserAndRights.Group);
@@ -703,5 +703,28 @@ describe('User', () => {
         expect(arr2).to.have.members(arr1);
       });
     });
+  });
+
+  it('should auto-complete fields in add-user-dialog for keycloak-registered user (#4032)', () => {
+    let user = {
+      firstName: 'autor',
+      lastName: 'new3',
+      email: 'autornew3@test.com',
+      login: 'author-check-autocomplete'
+    };
+
+    cy.get(AdminUserPage.addUserButton).click();
+    cy.get('[data-cy="Login"] input').click();
+    cy.contains('[role="option"]', user.login).click();
+
+    // check automatically filled fields
+    cy.get('.firstName input').should('have.value', user.firstName);
+    cy.get('.lastName input').should('have.value', user.lastName);
+    cy.get('[data-cy="E-Mail"] input').should('have.value', user.email);
+
+    // role field should not be filled with a value
+    DocumentPage.checkContentOfField('[data-cy="Rolle"]', 'mat-select', '');
+    // the add-button should not be activated
+    cy.contains('button', 'Anlegen').should('be.disabled');
   });
 });

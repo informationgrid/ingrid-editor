@@ -219,7 +219,7 @@ describe('Research Page', () => {
     );
     // log in as different user and trigger saved search
     cy.logoutClearCookies();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
     ResearchPage.openSavedSearch(
@@ -240,7 +240,7 @@ describe('Research Page', () => {
     );
     // log in as different user
     cy.logoutClearCookies();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
     // make sure global search can not be deleted
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);

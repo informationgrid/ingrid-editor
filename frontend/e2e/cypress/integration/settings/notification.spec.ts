@@ -21,12 +21,12 @@ describe('Catalog management', () => {
     NotificationPage.checkForNotificationInDashboard(message);
 
     cy.logoutClearCookies();
-    cy.kcLogin('meta1-without-groups');
+    cy.kcLogin('mcloud-meta-without-groups');
     DashboardPage.visit();
     NotificationPage.checkForNotificationInDashboard(message);
 
     cy.logoutClearCookies();
-    cy.kcLogin('author-with-groups');
+    cy.kcLogin('mcloud-author-with-group');
     DashboardPage.visit();
     NotificationPage.checkForNotificationInDashboard(message);
 

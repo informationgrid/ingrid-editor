@@ -20,9 +20,14 @@ export class ForeignProjectsDoctype extends UvpShared {
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addSection("Allgemeines", [
-        this.addTextArea("description", "Allgemeine Vorhabenbeschreibung", {
-          required: true,
-        }),
+        this.addTextArea(
+          "description",
+          "Allgemeine Vorhabenbeschreibung",
+          this.id,
+          {
+            required: true,
+          }
+        ),
         this.addPointOfContact(),
       ]),
       this.addSection("Raumbezug", [

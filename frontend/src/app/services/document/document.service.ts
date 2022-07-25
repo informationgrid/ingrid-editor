@@ -12,11 +12,7 @@ import {
 } from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
-import {
-  ADDRESS_ROOT_NODE,
-  DOCUMENT_ROOT_NODE,
-  DocumentAbstract,
-} from "../../store/document/document.model";
+import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { FormMessageService } from "../form-message.service";
@@ -39,6 +35,8 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
+import * as path from "path";
+import { TranslocoService } from "@ngneat/transloco";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -71,16 +69,25 @@ export class DocumentService {
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
     private researchService: ResearchService,
+    private translocoService: TranslocoService,
     private docEvents: DocEventsService
   ) {
     this.configuration = configService.getConfiguration();
   }
 
-  find(query: string, size = 10, address = false): Observable<SearchResult> {
+  find(
+    query: string,
+    size = 10,
+    address = false,
+    excludeFolders = false
+  ): Observable<SearchResult> {
     return this.researchService
       .search(
         query,
-        { type: address ? "selectAddresses" : "selectDocuments" },
+        {
+          type: address ? "selectAddresses" : "selectDocuments",
+          ignoreFolders: excludeFolders ? "exceptFolders" : "",
+        },
         null,
         "DESC",
         { page: 1, pageSize: size }
@@ -487,9 +494,9 @@ export class DocumentService {
 
       let destinationTitle;
       if (dest === null) {
-        destinationTitle = isAddress
-          ? ADDRESS_ROOT_NODE.title
-          : DOCUMENT_ROOT_NODE.title;
+        destinationTitle = this.translocoService.translate(
+          isAddress ? "menu.address" : "menu.form"
+        );
       } else {
         destinationTitle = store.getValue().entities[dest].title;
       }
@@ -631,6 +638,7 @@ export class DocumentService {
         _modified: doc._modified,
         _pendingDate: doc._pendingDate,
         hasWritePermission: doc.hasWritePermission ?? false,
+        hasOnlyReadPermission: doc.hasOnlyReadPermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
         isRoot: parentId === null,
@@ -790,7 +798,7 @@ export class DocumentService {
         new ShortTreeNode(
           pathItem.id.toString(),
           pathItem.title,
-          pathItem.permission.canOnlyWriteSubtree,
+          pathItem.permission,
           !pathItem.permission.canWrite
         )
     );
@@ -823,7 +831,11 @@ export class DocumentService {
     return new ShortTreeNode(
       entity.id.toString(),
       entity.title,
-      entity.hasOnlySubtreeWritePermission,
+      {
+        canRead: entity.hasOnlyReadPermission,
+        canWrite: entity.hasWritePermission,
+        canOnlyWriteSubtree: entity.hasOnlySubtreeWritePermission,
+      },
       !entity.hasWritePermission
     );
   }

@@ -35,6 +35,7 @@ export class UploadFilesDialogComponent implements OnInit {
   targetUrl: string;
   docUuid = null;
   extractZipFiles = false;
+  uploadComplete = false;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -107,7 +108,10 @@ export class UploadFilesDialogComponent implements OnInit {
   ): LinkInfo[] {
     return UploadFilesDialogComponent.flatten(
       response.map((zipFile) =>
-        zipFile.files.map((file) => ({ file: file.file, uri: file.uri }))
+        zipFile.files.map((file) => ({
+          file: file.file,
+          uri: decodeURIComponent(file.uri),
+        }))
       )
     );
   }
@@ -150,5 +154,17 @@ export class UploadFilesDialogComponent implements OnInit {
         );
     }
     throw error;
+  }
+
+  handleUploadComplete() {
+    this.uploadComplete = true;
+  }
+
+  updateChosenFiles($event: TransfersWithErrorInfo[]) {
+    // update completed uploads only for new uploads and ignore if upload only was updated or removed
+    if (this.chosenFiles.length < $event.length || $event.length === 0) {
+      this.uploadComplete = false;
+    }
+    this.chosenFiles = $event;
   }
 }

@@ -7,13 +7,21 @@ import {
   ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
-import { distinctUntilChanged, filter } from "rxjs/operators";
+import { distinctUntilChanged, filter, tap, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import {
+  CreateNodeComponent,
+  CreateOptions,
+} from "../../../+form/dialogs/create/create-node.component";
 
 @UntilDestroy()
 @Component({
@@ -41,8 +49,9 @@ export class AddressTypeComponent extends FieldType implements OnInit {
       .subscribe((value) => (this.addresses = value || []));
   }
 
-  addAddress() {
-    this.callEditDialog().subscribe((data: ChooseAddressResponse) => {
+  async addAddress() {
+    (await this.callEditDialog()).subscribe((data: ChooseAddressResponse) => {
+      if (!data) return;
       this.getAddressFromBackend(data.address.id as string).subscribe(
         (address) => {
           this.addresses.push({
@@ -56,19 +65,22 @@ export class AddressTypeComponent extends FieldType implements OnInit {
     });
   }
 
-  editAddress(addressRef: AddressRef, index: number) {
-    this.callEditDialog(addressRef).subscribe((data: ChooseAddressResponse) => {
-      this.getAddressFromBackend(data.address.id as string).subscribe(
-        (address) => {
-          this.addresses.splice(index, 1, {
-            type: data.type,
-            ref: address,
-          });
-          this.removeDuplicates();
-          this.updateFormControl(this.addresses);
-        }
-      );
-    });
+  async editAddress(addressRef: AddressRef, index: number) {
+    (await this.callEditDialog(addressRef)).subscribe(
+      (data: ChooseAddressResponse) => {
+        if (!data) return;
+        this.getAddressFromBackend(data.address.id as string).subscribe(
+          (address) => {
+            this.addresses.splice(index, 1, {
+              type: data.type,
+              ref: address,
+            });
+            this.removeDuplicates();
+            this.updateFormControl(this.addresses);
+          }
+        );
+      }
+    );
   }
 
   private removeDuplicates() {
@@ -89,18 +101,51 @@ export class AddressTypeComponent extends FieldType implements OnInit {
     this.addresses = unique;
   }
 
-  private callEditDialog(address?: AddressRef) {
-    return this.dialog
-      .open(ChooseAddressDialogComponent, {
-        minWidth: 500,
-        data: <ChooseAddressDialogData>{
-          address: address,
-          allowedTypes: this.to.allowedTypes,
-        },
-        hasBackdrop: true,
-      })
-      .afterClosed()
-      .pipe(filter((data) => data));
+  private async callEditDialog(address?: AddressRef) {
+    const foundAddresses = (
+      await this.documentService.find("", 1, true, true).toPromise()
+    ).totalHits;
+
+    if (foundAddresses) {
+      return this.dialog
+        .open(ChooseAddressDialogComponent, {
+          minWidth: 500,
+          data: <ChooseAddressDialogData>{
+            address: address,
+            allowedTypes: this.to.allowedTypes,
+          },
+          hasBackdrop: true,
+        })
+        .afterClosed()
+        .pipe(filter((data) => data));
+    } else {
+      return this.dialog
+        .open(ConfirmDialogComponent, {
+          hasBackdrop: true,
+          data: <ConfirmDialogData>{
+            message:
+              "Es sind noch keine Adressen vorhanden. Bitte legen Sie eine neue an.",
+            title: "Keine Adressen gefunden",
+            buttons: [
+              { text: "Abbrechen" },
+              {
+                text: "Zum Addressbereich",
+                // text: "Ok",
+                alignRight: true,
+                id: "confirm",
+                emphasize: true,
+              },
+            ],
+          },
+        })
+        .afterClosed()
+        .pipe(
+          filter((response) => response === "confirm"),
+          tap((_) => this.router.navigate(["/address"])),
+          // no address to return
+          map((_) => undefined)
+        );
+    }
   }
 
   removeAddress(address: AddressRef) {

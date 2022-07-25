@@ -7,6 +7,7 @@ export interface SessionState {
   sessionTimeoutIn: number;
   sessionTimeoutDuration: number;
   ui: {
+    textAreaHeights: any;
     sidebarExpanded?: boolean;
     sidebarWidth?: number;
     showJSONView?: boolean;
@@ -35,6 +36,7 @@ export function createInitialState(): SessionState {
     sessionTimeoutIn: 1800,
     sessionTimeoutDuration: 1800,
     ui: {
+      textAreaHeights: {},
       sidebarExpanded: true,
       sidebarWidth: 30,
       showJSONView: false,

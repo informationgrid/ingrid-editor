@@ -42,14 +42,14 @@ export abstract class AddressShared extends BaseDoctype {
   addAddressSection(options: Partial<AddressOptions> = {}): FormlyFieldConfig {
     return this.addGroup(
       "address",
-      "Adresse",
+      "Anschrift",
       [
         {
           key: "inheritAddress",
           type: "toggle",
           defaultValue: options.inheritAddress,
           templateOptions: {
-            label: "Adressdaten aus übergeordneter Adresse übernehmen",
+            label: "Anschrift aus übergeordneter Adresse übernehmen",
           },
           hideExpression: (_, formState) =>
             !options.inheritAddress ||

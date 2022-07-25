@@ -478,7 +478,7 @@ class DocumentService @Autowired constructor(
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         deleteRecursively(catalogId, id, filterContext)
     }
-    
+
     private fun deleteRecursively(catalogId: String, id: String, filterContext: Context) {
         // run pre-delete pipe(s)
         val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
@@ -655,12 +655,12 @@ class DocumentService @Autowired constructor(
             throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
         }
 
-        // TODO: check if isNull function really works or if we need a null comparison
-        val objectNode = if (wrapper.draft == null || onlyPublished) {
+        val objectNode = if (onlyPublished) {
             wrapper.published
-        } else {
-            wrapper.draft
+        } else  {
+            wrapper.draft ?: wrapper.pending ?: wrapper.published
         }
+
 
         if (objectNode == null) {
             throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)

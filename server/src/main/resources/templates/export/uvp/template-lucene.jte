@@ -8,45 +8,48 @@
 
 !{var page = ((UVPModel)map.get("model"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
+!{var partner = ((String)map.get("partner"));}
+!{var provider = ((String)map.get("provider"));}
+!{page.getData().convertEiaNumbers(catalog.identifier);}
 
 {
     "iPlugId": "ige-ng",
     "dataSourceName": "IPlug IGE-NG wemove",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
-    "x1": [${page.getSpatial("lat1")}],
-    "x2": [${page.getSpatial("lon1")}],
-    "y1": [${page.getSpatial("lat2")}],
-    "y2": [${page.getSpatial("lon2")}],
-    "lon_min": "${page.getSpatial("lat1")}",
-    "lon_max": "${page.getSpatial("lon1")}",
-    "lat_min": "${page.getSpatial("lat2")}",
-    "lat_max": "${page.getSpatial("lon2")}",
+    "x1": [${page.getSpatial("lon1")}],
+    "x2": [${page.getSpatial("lon2")}],
+    "y1": [${page.getSpatial("lat1")}],
+    "y2": [${page.getSpatial("lat2")}],
+    "lon_min": "${page.getSpatial("lon1")}",
+    "lon_max": "${page.getSpatial("lon2")}",
+    "lat_min": "${page.getSpatial("lat1")}",
+    "lat_max": "${page.getSpatial("lat2")}",
     "lon_center": "${page.getSpatialLonCenter()}",
     "lat_center": "${page.getSpatialLatCenter()}",
     "uvp_address": [
     @for(var address : ForSupport.of(page.getUvpAddressParentsIncludingCurrent()))
-        "${address.get().getTitle()}"@if (!address.isLast()),@endif
-    @endfor 
+        "${page.handleContent(address.get().getTitle())}"@if (!address.isLast()),@endif
+    @endfor
     ],
     "uvp_number": [
     @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getUvpg()}"@if (!uvp.isLast()),@endif
+        "${page.handleContent(uvp.get().getUvpg())}"@if (!uvp.isLast()),@endif
     @endfor
     ],
     "uvp_category": [
-    @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getCategory()}"@if (!uvp.isLast()),@endif
-    @endfor 
+    @for(var uvp : ForSupport.of(page.getUvpCategories()))
+        "${page.handleContent(uvp.get())}"@if (!uvp.isLast()),@endif
+    @endfor
     ],
     "uvp_category_type": [
-    @for(var uvp : ForSupport.of(page.getUvpNumbers()))
-        "${uvp.get().getType()}"@if (!uvp.isLast()),@endif
-    @endfor 
+    @for(var uvp : ForSupport.of(page.getUvpCategoryTypes()))
+        "${page.handleContent(uvp.get())}"@if (!uvp.isLast()),@endif
+    @endfor
     ],
     "uvp_steps": [
     @for(var phase : ForSupport.of(page.getStepsAsPhases()))
-        "${phase.get()}"@if (!phase.isLast()),@endif
+        "${page.handleContent(phase.get())}"@if (!phase.isLast()),@endif
     @endfor
     ],
     @if(page.getData().getPrelimAssessment())
@@ -55,18 +58,17 @@
     "approval_date": [
     @for(var date : ForSupport.of(page.getDecisionDate()))
         "${date.get()}"@if (!date.isLast()),@endif
-    @endfor 
+    @endfor
     ],
-    "location": ["${page.getSpatialTitle()}"],
+    "location": ["${page.handleContent(page.getSpatialTitle())}"],
     "created": "${page.get_created().format(page.getFormatterISO())}",
     "modified": "${page.get_modified().format(page.getFormatterISO())}",
-    "content": [],
     "areaid": [],
     "partner": [
-        "bund"
+        "${partner}"
     ],
     "provider": [
-        "bu_kug"
+        "${provider}"
     ],
     "datatype": [
         "default",
@@ -87,19 +89,19 @@
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
     "t01_object.mod_time": "${page.get_modified().format(page.getFormatterNoSeparator())}",
-    "t01_object.obj_class": "${page.getDocumentType()}",
-    "t01_object.obj_id": "${page.getUuid()}",
+    "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
+    "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
     @if(page.getPointOfContact() != null)
         @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",
-            "t021_communication.comm_value": "${entry.get().getConnection()}",
+            "t021_communication.comm_value": "${page.handleContent(entry.get().getConnection())}",
             "t021_communication.commtype_key": "${entry.get().getType().getKey()}",
             "t021_communication.descr": "",
             "t021_communication.line": "${entry.getIndex() + 1}",
         @endfor
         "t02_address.address_key": "",
         "t02_address.address_value": "${page.getPointOfContact().getTitle()}",
-        "t02_address.adr_id": "${page.getPointOfContact().getUuid()}",
+        "t02_address.adr_id": "${page.handleContent(page.getPointOfContact().getUuid())}",
         "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
         "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
         "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
@@ -129,5 +131,10 @@
     "t03_catalogue.language_code": "Deutsch",
     "t03_catalogue.language_key": "150",
     "t03_catalogue.mod_time": "",
-    "t03_catalogue.mod_uuid": ""
+    "t03_catalogue.mod_uuid": "",
+    "content": [
+    @for(var entry : ForSupport.of(page.getContentField()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ]
 }

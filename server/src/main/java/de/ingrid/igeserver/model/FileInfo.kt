@@ -1,8 +1,10 @@
 package de.ingrid.igeserver.model
 
+import java.util.*
+
 
 class FileInfo {
-    private val uploadedChunks: MutableSet<Int> = HashSet()
+    private val uploadedChunks: MutableSet<Int> = Collections.synchronizedSet(HashSet())
 
     fun isUploadFinished(flowTotalChunks: Int): Boolean {
         return uploadedChunks.size == flowTotalChunks

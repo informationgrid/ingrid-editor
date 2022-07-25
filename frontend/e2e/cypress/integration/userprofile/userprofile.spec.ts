@@ -1,4 +1,5 @@
 import { ProfilePage } from '../../pages/profile.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('Profile', () => {
   beforeEach(() => {
@@ -6,10 +7,16 @@ describe('Profile', () => {
   });
 
   it('should check metadata administrator information', () => {
-    cy.kcLogin('meta2-with-groups').as('tokens');
+    cy.kcLogin('mcloud-meta-with-groups').as('tokens');
     ProfilePage.visit();
     let groups = ['test_gruppe_1', 'gruppe_mit_ortsrechten'];
-    ProfilePage.checkUserInformation('MetaAdmin', 'mitGruppen', 'meta2', 'Metadaten-Administrator', groups);
+    ProfilePage.checkUserInformation(
+      'MetaAdmin',
+      'mitGruppen',
+      'mcloud-meta-with-groups',
+      'Metadaten-Administrator',
+      groups
+    );
   });
 
   it('should update user first and last name', () => {
@@ -18,6 +25,41 @@ describe('Profile', () => {
     cy.kcLogin('mcloud-catalog-user-profile').as('tokens');
     ProfilePage.visit();
     ProfilePage.changeUserFirstLastName(firstName, lastName, true);
+  });
+
+  it('should update user first, last name, and email respectively #4088 ', () => {
+    let oldFirstName = 'Test';
+    let oldLastName = 'Verantwortlicher2';
+    let newFirstName = 'newFirstName';
+    let newLastName = 'newLastName';
+    let oldEmail = 'metadatenadmin@something.com';
+    let newEmail = 'newmetadatenadmin1@something.com';
+    cy.kcLogin('mcloud-meta-profile').as('tokens');
+    ProfilePage.visit();
+    // change only the first name, reload and check before and after reload
+    ProfilePage.changeUserFirstName(newFirstName, true);
+    cy.get('div .main-content').contains(oldLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(oldLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    // change only the last name, reload and check before and after reload
+    ProfilePage.changeUserLastName(newLastName, true);
+    cy.get('div .main-content').contains(oldEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
+    cy.get('div .main-content').contains(oldEmail);
+    // change only the email , reload and check
+    ProfilePage.changeUserEmail(newEmail, true);
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
+    cy.get('div .main-content').contains(newEmail);
+    cy.pageReload('.info-header-row', 'Persönliche Daten');
+    cy.get('div .main-content').contains(newEmail);
+    cy.get('div .main-content').contains(newFirstName);
+    cy.get('div .main-content').contains(newLastName);
   });
 
   it('should update catalog admin password', () => {
@@ -38,29 +80,29 @@ describe('Profile', () => {
   });
 
   it('should update autor password', () => {
-    cy.kcLogin('author-profile-test').as('tokens');
+    cy.kcLogin('mclould-author-profile').as('tokens');
     ProfilePage.visit();
     // change user password with new password
-    ProfilePage.changePassword('autornew', 'autornew', 'autornewpass');
+    ProfilePage.changePassword('mclould-author-profile', 'mclould-author-profile', 'autornewpass');
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();
-    cy.kcLogin('author-profile-test-with-new-pass');
+    cy.kcLogin('mclould-author-profile-with-new-pass');
     ProfilePage.visit();
     // reset the password
-    ProfilePage.changePassword('autornew', 'autornew', 'autornew');
+    ProfilePage.changePassword('mclould-author-profile', 'mclould-author-profile', 'mclould-author-profile');
     cy.logoutClearCookies();
   });
 
   it('should update meta admin password', () => {
-    cy.kcLogin('meta3-profile-test').as('tokens');
+    cy.kcLogin('mcloud-meta-profile').as('tokens');
     ProfilePage.visit();
     // change user password with new password
-    ProfilePage.changePassword('meta3', 'meta3', 'meta3new');
+    ProfilePage.changePassword('mcloud-meta-profile', 'mcloud-meta-profile', 'meta3new');
 
     // login again with new password using new fixture file
     cy.logoutClearCookies();
-    cy.kcLogin('meta3-profile-test-with-new-pass');
+    cy.kcLogin('mcloud-meta-profile-with-new-pass');
     ProfilePage.visit();
     cy.logoutClearCookies();
   });
@@ -83,16 +125,39 @@ describe('Profile', () => {
     let existEmail = 'andre.wallat@wemove.com';
     ProfilePage.changeUserEmail(existEmail, false);
     cy.get('button[type="submit"]').click();
-    cy.get('mat-dialog-container').contains('Die Email-Adresse ist schon vorhanden. Bitte wählen Sie eine andere aus.');
+    cy.get('mat-dialog-container').contains(
+      'Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet.'
+    );
   });
 
   it('author should be able to update name and email (#3576)', () => {
-    cy.kcLogin('author-without-groups').as('tokens');
+    cy.kcLogin('mcloud-author-without-group').as('tokens');
     let newEmail = 'autortest@123omething.com';
     let newFirstName = 'testAutor';
     let newLastName = 'Autor2';
     ProfilePage.visit();
     ProfilePage.changeUserFirstLastName(newFirstName, newLastName, true);
     ProfilePage.changeUserEmail(newEmail, true);
+  });
+
+  xit('should check for forget password functionality #4033', () => {
+    cy.visit('');
+    cy.contains('a', 'Passwort vergessen?').click();
+    let userEmail = 'newcatalog@test.com';
+
+    cy.get('.reset-password-field  input ').type(userEmail);
+    cy.contains('button', 'Absenden').click();
+
+    cy.wait(5000);
+    // get email and extract the password
+    cy.task('getLastEmail', userEmail)
+      .its('body')
+      .then(body => {
+        debugger;
+        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+
+        // Extract the password
+        let bodyArray = body.split('Passwort: ');
+      });
   });
 });

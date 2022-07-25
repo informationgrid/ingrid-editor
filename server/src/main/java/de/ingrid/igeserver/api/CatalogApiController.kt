@@ -22,9 +22,9 @@ import java.util.*
 @RestController
 @RequestMapping("/api")
 class CatalogApiController @Autowired constructor(
-    var catalogService: CatalogService,
-    var documentService: DocumentService,
-    var researchService: ResearchService
+    val catalogService: CatalogService,
+    val documentService: DocumentService,
+    val researchService: ResearchService,
 ) : CatalogApi {
 
     override fun catalogs(): ResponseEntity<List<Catalog>> {
@@ -47,7 +47,10 @@ class CatalogApiController @Autowired constructor(
         return ResponseEntity.ok(response)
     }
 
-    override fun saveCatalogConfig(principal: Principal, @RequestBody data: CatalogConfigRequest): ResponseEntity<Unit> {
+    override fun saveCatalogConfig(
+        principal: Principal,
+        @RequestBody data: CatalogConfigRequest
+    ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         catalogService.updateCatalogConfig(catalogId, data.name, data.description, data.config)
         return ResponseEntity.ok().build()

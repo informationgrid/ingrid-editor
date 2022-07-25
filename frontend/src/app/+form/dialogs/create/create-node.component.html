@@ -32,7 +32,9 @@
                         ></ige-address-template>
                     </ng-template>
 
-                    <div class="dlg-field-label dlg-create-place">Ordner</div>
+                    <div class="dlg-field-label dlg-create-place">
+                        Zielordner
+                    </div>
                     <ige-breadcrumb
                         [path]="path"
                         [rootName]="rootTreeName"
@@ -47,7 +49,7 @@
                 </div>
             </mat-tab>
 
-            <mat-tab label="Ordner auswählen">
+            <mat-tab label="Zielordner auswählen">
                 <ige-destination-selection
                     [disableRoot]="!isAdmin"
                     [forAddress]="forAddress"
@@ -82,7 +84,7 @@
             data-cy="create-changeLocation"
             (click)="jumpToTree(this.parent)"
         >
-            Ordner ändern
+            Zielordner ändern
         </button>
 
         <button

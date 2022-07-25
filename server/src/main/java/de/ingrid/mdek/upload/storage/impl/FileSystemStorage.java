@@ -76,6 +76,8 @@ public class FileSystemStorage implements Storage {
     public static final String UNSAVED_PATH = "_unsaved_";
     public static final String UNPUBLISHED_PATH = "_unpublished_";
 
+    public static final String EXTRACTED_PREFIX = "_extracted_";
+
     private static final String UNKNOWN_MIME_TYPE = "";
 
     private static final int MAX_FILE_LENGTH = 255;
@@ -507,10 +509,6 @@ public class FileSystemStorage implements Storage {
         }
         final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
 
-        // get the directory name from the archive name
-        final Path dir = this.getExtractPath(realPath);
-        Files.createDirectories(dir);
-
         final int bufferSize = 1024;
         // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided
         // with a non-UTF-8 encoding.
@@ -518,8 +516,16 @@ public class FileSystemStorage implements Storage {
                 new BufferedInputStream(new FileInputStream(realPath.toString()), bufferSize),
                 Charset.forName("Cp437")
         )) {
+            // get the directory name from the archive name
+            Path dir = null;
+
             ZipEntry zipEntry = zis.getNextEntry();
             while(zipEntry != null){
+                if(dir == null) {
+                    dir = this.getExtractPath(realPath);
+                    Files.createDirectories(dir);
+                }
+
                 Path targetFilePath = Paths.get(dir.toString(), this.sanitize(zipEntry.getName(), ILLEGAL_PATH_CHARS));
                 String targetFile = dir.getParent().relativize(targetFilePath).toString();
                 if (zipEntry.isDirectory()) {
@@ -888,6 +894,8 @@ public class FileSystemStorage implements Storage {
         String filename = path.getName(path.getNameCount()-1).toString();
         if (filename.indexOf('.') > 0) {
             filename = filename.substring(0, filename.lastIndexOf('.'));
+        } else {
+            filename = EXTRACTED_PREFIX + filename;
         }
         return Paths.get(path.getParent().toString(), this.sanitize(filename, ILLEGAL_PATH_CHARS));
     }

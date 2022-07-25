@@ -99,7 +99,7 @@ export class AddressPage extends DocumentPage {
   }
 
   static addStreetName(name: string = Utils.randomDoubleDigitString() + '. Street') {
-    cy.get('[data-cy="Adresse"] input').first().type(name);
+    cy.get('[data-cy="Anschrift"] input').first().type(name);
   }
 
   static createAddress(address: Address, targetTreePath?: string[]) {

@@ -11,7 +11,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
 
@@ -23,13 +23,18 @@ import { IgeError } from "../../../models/ige-error";
 export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
-    tap((users) => (this.externalUsers = users))
+    tap((users) => (this.externalUsers = users)),
+    tap(
+      (users) =>
+        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users))
+    )
   );
   externalUsers: BackendUser[];
   form: FormGroup;
   noAvailableUsers = true;
   importExternal: boolean;
   formlyFieldConfig: FormlyFieldConfig[];
+  options: FormlyFormOptions = {};
   model: FrontendUser;
   loginValue = "";
 
@@ -57,14 +62,9 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       role: "",
     };
     this.importExternal = false;
-    this.formlyFieldConfig = this.userService.getNewUserFormFields();
 
     this.form = new FormGroup({
-      role: new FormControl("", Validators.required),
       login: new FormControl("", Validators.required),
-      firstName: new FormControl("", Validators.required),
-      lastName: new FormControl("", Validators.required),
-      email: new FormControl("", Validators.required),
     });
     this.form
       .get("login")
@@ -107,7 +107,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     this.form.enable();
     const errorText: string = error.error?.errorText;
     if (error.status === 409) {
-      if (errorText.includes("User already Exists with login")) {
+      if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
         this.modalService.showJavascriptError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login

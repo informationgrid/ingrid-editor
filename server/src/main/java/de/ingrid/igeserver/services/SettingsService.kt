@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class SettingsService @Autowired constructor(val repoSettings: SettingsRepository) {
+class SettingsService @Autowired constructor(
+    val repoSettings: SettingsRepository
+) {
 
     fun getIBusConfig(): List<IBusConfig> {
         val iBusJson = repoSettings.findByKey("ibus")?.value ?: return emptyList()
@@ -25,13 +27,15 @@ class SettingsService @Autowired constructor(val repoSettings: SettingsRepositor
         repoSettings.save(configFromDBOrNew)
     }
 
-    fun getPlugDescription(): PlugDescription {
+    fun getPlugDescription(partner: String?, provider: String?): PlugDescription {
         val pd = PlugDescription().apply {
             put("useRemoteElasticsearch", true)
             listOf("default", "dsc_ecs", "metadata", "IDF_1.0").forEach { addDataType(it) }
             dataSourceName = "IGE-NG"
             proxyServiceURL = "ige-ng"
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
+            if (partner != null) addPartner(partner)
+            if (provider != null) addProvider(provider)
         }
 
         pd.md5Hash = ""

@@ -25,6 +25,27 @@ export class ProfilePage {
     }
   }
 
+  static changeUserFirstName(firstName: string, submit: boolean = false) {
+    cy.get('[data-cy="change-full-name-id"]').click();
+    cy.get('ige-change-name-dialog').find('input').first().clear().type(firstName);
+    if (submit) {
+      cy.intercept('GET', 'api/info/currentUser').as('getUser');
+      cy.get('ige-change-name-dialog').find('button').contains('Ändern').first().click();
+      cy.wait('@getUser');
+      cy.get('div .main-content').contains(firstName);
+    }
+  }
+
+  static changeUserLastName(lastName: string, submit: boolean = false) {
+    cy.get('[data-cy="change-full-name-id"]').click();
+    cy.get('ige-change-name-dialog').find('input').eq(1).clear().type(lastName);
+    if (submit) {
+      cy.intercept('GET', 'api/info/currentUser').as('getUser');
+      cy.get('ige-change-name-dialog').find('button').contains('Ändern').first().click();
+      cy.wait('@getUser');
+      cy.get('div .main-content').contains(lastName);
+    }
+  }
   static changeUserEmail(email: string, submit: boolean = false) {
     cy.get('[data-cy="change-email-id"]').click();
     cy.get('input[type="email"]').clear().type(email);

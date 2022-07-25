@@ -173,8 +173,8 @@ public class FileSystemItem implements StorageItem {
         else if (this.state == Scope.TRASH_UNPUBLISHED) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir(), Scope.UNPUBLISHED);
         return realPath;
     }
-
-    String getRelativePath() {
+    @Override
+    public String getRelativePath() {
         final FileSystem fileSystem = FileSystems.getDefault();
         final String separator = fileSystem.getSeparator();
 

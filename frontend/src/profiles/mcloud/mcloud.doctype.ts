@@ -33,7 +33,9 @@ export class McloudDoctype extends BaseDoctype {
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addSection("Allgemeines", [
-        this.addTextArea("description", "Beschreibung", { required: true }),
+        this.addTextArea("description", "Beschreibung", this.id, {
+          required: true,
+        }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
           allowedTypes: ["10"],
@@ -57,7 +59,7 @@ export class McloudDoctype extends BaseDoctype {
         this.addRepeatChip("keywords", "Schlagworte"),
       ]),
       this.addSection("mCLOUD", [
-        this.addTextArea("accessRights", "Nutzungshinweise"),
+        this.addTextArea("accessRights", "Nutzungshinweise", this.id),
         this.addRepeatChip("mCloudCategories", "mCLOUD Kategorie", {
           required: true,
           useDialog: true,
@@ -100,13 +102,13 @@ export class McloudDoctype extends BaseDoctype {
                   if (link.asLink) {
                     return `
                          <a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="14"  height="14" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri} </a> `;
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl
                     }upload/${form.get("_uuid").value}/${
                       link.uri
-                    }" class="no-text-transform icon-in-table">  <img  width="14"  height="14" src="assets/icons/download.svg"  alt="link"> ${
+                    }" class="no-text-transform icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${
                       link.uri
                     }</a>`;
                   }
@@ -153,7 +155,7 @@ export class McloudDoctype extends BaseDoctype {
           required: true,
           options: this.getCodelistForSelect(6500, "license"),
         }),
-        this.addTextArea("origin", "Quellenvermerk"),
+        this.addTextArea("origin", "Quellenvermerk", this.id),
         this.addGroup(null, "mFUND", [
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",

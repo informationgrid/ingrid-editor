@@ -25,10 +25,6 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
-import {
-  ADDRESS_ROOT_NODE,
-  DOCUMENT_ROOT_NODE,
-} from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentUtils } from "../../services/document.utils";
@@ -38,6 +34,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -91,16 +88,17 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dialog: MatDialog,
+    private translocoService: TranslocoService,
     private profileService: ProfileService
   ) {}
 
   ngOnInit() {
     if (this.forAddress) {
-      this.rootName = ADDRESS_ROOT_NODE.title;
+      this.rootName = this.translocoService.translate("menu.address");
       this.query = this.addressTreeQuery;
       this.store = this.addressTreeStore;
     } else {
-      this.rootName = DOCUMENT_ROOT_NODE.title;
+      this.rootName = this.translocoService.translate("menu.form");
       this.query = this.treeQuery;
       this.store = this.treeStore;
     }

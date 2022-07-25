@@ -55,9 +55,13 @@ export class enterMcloudDocTestData {
 
   static setAddDownload(titleText: string = 'linkTitel', linkText: string = 'https://docs.cypress.io/api/this') {
     cy.contains('button span', 'Link angeben').click();
-    cy.get('input[formcontrolname="title"]').type(titleText);
-    cy.get('[formcontrolname="url"]').type(linkText);
-    cy.get('input[formcontrolname="title"]').click();
+    cy.get('mat-dialog-container input').eq(0).type(titleText);
+    cy.get('mat-dialog-container input').eq(1).type(linkText);
+    //cy.get('mat-dialog-container input').eq(0).click();
+    cy.get('mat-dialog-container .mat-select-trigger').click();
+    cy.contains('.mat-select-panel mat-option', 'Portal').click();
+    cy.get('.mat-select-panel').should('not.exist');
+    cy.get('mat-dialog-container .mat-select-trigger').should('contain', 'Portal');
     cy.contains('button', 'Übernehmen').click();
     cy.contains('[data-cy="Downloads-table"]', titleText);
   }
@@ -266,14 +270,13 @@ export class enterMcloudDocTestData {
   }
 
   static fillFieldsOfAddURLDialog(title: string, url: string) {
-    cy.get('input[formcontrolname="title"]').type(title);
-    cy.get('[formcontrolname="url"]').type(url);
-    //cy.get('input[formcontrolname="title"]').click();
+    cy.get('mat-dialog-container input').eq(0).type(title);
+    cy.get('mat-dialog-container input').eq(1).type(url);
   }
 
-  static uploadFile(filePath: string) {
+  static uploadFile(filePath: string, checkExistenceOfContainer: boolean = false, submitDialog: boolean = true) {
     this.addFile(filePath);
-    this.assertFileUpload();
+    this.assertFileUpload(checkExistenceOfContainer, submitDialog);
   }
 
   static addFile(filePath: string) {
@@ -281,6 +284,7 @@ export class enterMcloudDocTestData {
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
     cy.get('.upload-content').should('contain', filePath);
+    cy.get('[svgicon="Entfernen"]').should('exist');
   }
 
   static addFileWithRename(filePath: string, newName: string) {
@@ -303,8 +307,9 @@ export class enterMcloudDocTestData {
     cy.get('.mat-line.mat-error').should('contain', 'Die Datei existiert bereits');
   }
 
-  static assertFileUpload() {
-    cy.contains('button', 'Übernehmen').click();
+  static assertFileUpload(checkExistenceOfContainer: boolean = false, submitDialog: boolean = true) {
+    if (submitDialog) cy.contains('button', 'Übernehmen').click();
+    if (checkExistenceOfContainer) cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
 
   static unzipArchiveAfterUpload() {
@@ -342,6 +347,10 @@ export class enterMcloudDocTestData {
 
   static verifyExistenceOfDownloadedFile(fileName: string) {
     cy.readFile('cypress/downloads/' + fileName, { timeout: 15000 });
+  }
+
+  static checkForOneEntryForTable() {
+    cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 1);
   }
 }
 

@@ -106,6 +106,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);
+      if (doc.permission === PermissionLevel.READ)
+        igeDoc.hasOnlyReadPermission = true;
     });
   }
 

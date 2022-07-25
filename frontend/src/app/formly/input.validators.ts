@@ -7,11 +7,7 @@ export function IpValidator(control: FormControl): ValidationErrors {
 }
 
 export function EmailValidator(control: FormControl): ValidationErrors {
-  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(
-    control.value?.trim()
-  )
-    ? null
-    : { email: true };
+  return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
 }
 
 export function EmailInRepeatValidator(control: FormControl): ValidationErrors {

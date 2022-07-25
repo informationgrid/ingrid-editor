@@ -1,12 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
-import {
-  ADDRESS_ROOT_NODE,
-  DOCUMENT_ROOT_NODE,
-  DocumentAbstract,
-} from "../../../../store/document/document.model";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: "ige-destination-selection",
@@ -26,18 +23,24 @@ export class DestinationSelectionComponent implements OnInit {
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
   showOnlyFolders: boolean;
 
-  constructor(private docBehaviours: DocBehavioursService) {}
+  constructor(
+    private docBehaviours: DocBehavioursService,
+    private translocoService: TranslocoService
+  ) {}
 
   @Input() set initialSelectedId(value: string) {
     if (value !== null) this.activeTreeNode.next(value);
   }
 
   ngOnInit(): void {
-    if (this.forAddress) {
-      this.rootNode = ADDRESS_ROOT_NODE;
-    } else {
-      this.rootNode = DOCUMENT_ROOT_NODE;
-    }
+    this.rootNode = {
+      id: null,
+      title: this.translocoService.translate(
+        this.forAddress ? "menu.address" : "menu.form"
+      ),
+      icon: "Ordner",
+      _state: "P",
+    };
 
     this.showOnlyFolders =
       this.docBehaviours.showOnlyFoldersInTreeForDestinationSelection(
