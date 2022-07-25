@@ -10,12 +10,15 @@ interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement caching
     @Cacheable(value = ["user"])
     fun findByUserId(userId: String): UserInfo?
-    
+
+    @Query("SELECT u.userId FROM UserInfo u")
+    fun getAllUserIds(): List<String>
+
     @Query("SELECT u FROM UserInfo u INNER JOIN u.catalogs cat WHERE cat.identifier=?1")
     fun findAllByCatalogId(catalogId: String): List<UserInfo>
 
     fun findByGroups_Id(groups_id: Int): List<UserInfo>
-    
+
     @Modifying
     @Query("DELETE FROM UserInfo u WHERE u.userId=?1")
     fun deleteByUserId(userId: String)

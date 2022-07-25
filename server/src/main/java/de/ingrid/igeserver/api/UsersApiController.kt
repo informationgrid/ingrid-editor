@@ -81,9 +81,9 @@ class UsersApiController : UsersApi {
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already exists with login ${user.login}")
         }
-        
+
         logger.debug("Create user ${user.login} (exists in keycloak: $userExists)")
-        
+
         if (userExists) {
             keycloakService.updateUser(principal, user)
             keycloakService.addRoles(principal, user.login, listOf(user.role))
@@ -350,7 +350,8 @@ class UsersApiController : UsersApi {
         val users = keycloakService.getUsersWithIgeRoles(principal)
 
         // remove users that are already present in this instance
-        val filteredUsers = users.filter { catalogService.getUser(it.login) == null }
+        val allIgeUserIds = catalogService.getAllIgeUserIds()
+        val filteredUsers = users.filter { !allIgeUserIds.contains(it.login) }
 
         return ResponseEntity.ok(filteredUsers)
 

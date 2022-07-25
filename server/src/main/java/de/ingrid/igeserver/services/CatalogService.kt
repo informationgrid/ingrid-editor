@@ -83,6 +83,10 @@ class CatalogService @Autowired constructor(
         return userRepo.findByUserId(userId)
     }
 
+    fun getAllIgeUserIds(): List<String> {
+        return userRepo.getAllUserIds()
+    }
+
     fun getCatalogById(id: String): Catalog {
 
         return catalogRepo.findByIdentifier(id)
