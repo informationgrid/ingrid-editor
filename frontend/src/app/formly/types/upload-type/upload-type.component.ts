@@ -6,7 +6,6 @@ import { IgeDocument } from "../../../models/ige-document";
 import { FormControl, Validators } from "@angular/forms";
 
 interface LinkType {
-  value: string;
   uri: string;
   asLink: boolean;
   documentID: string;
@@ -28,7 +27,6 @@ export class UploadTypeComponent extends FieldType implements OnInit {
 
   private defaultValue: LinkType = {
     asLink: true,
-    value: "",
     uri: "",
     documentID: "",
   };
@@ -61,7 +59,7 @@ export class UploadTypeComponent extends FieldType implements OnInit {
     }
 
     this.control = new FormControl(
-      { value: this.upload.value, disabled: !this.upload.asLink },
+      { value: this.upload.uri, disabled: !this.upload.asLink },
       validators
     );
   }
@@ -73,14 +71,12 @@ export class UploadTypeComponent extends FieldType implements OnInit {
 
     return {
       asLink: true,
-      value: value,
       uri: value,
       documentID: this.model.document._uuid,
     };
   }
 
   updateValue() {
-    this.upload.value = this.control.value;
     this.upload.uri = this.control.value;
     this.formControl.setValue(this.upload);
   }
