@@ -13,6 +13,10 @@ export interface UrlCheckReportDataset {
 }
 
 export interface UrlCheckReport {
+  totalUrls: number;
+  invalidUrls: UrlInfo[];
+}
+export interface UrlInfo {
   url: string;
   success: boolean;
   status: number;
@@ -21,7 +25,7 @@ export interface UrlCheckReport {
 
 export interface UrlLogResult extends BaseLogResult {
   progress: number;
-  report: UrlCheckReport[];
+  report: UrlCheckReport;
 }
 
 @Injectable({

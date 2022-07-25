@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.api.messaging.URLCheckerReport
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
@@ -42,7 +43,7 @@ class JobsApiController @Autowired constructor(
         val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap?.apply {
             val report = getString("report")
             if (report != null) {
-                put("report", jacksonObjectMapper().readValue(report, List::class.java))
+                put("report", jacksonObjectMapper().readValue(report, URLCheckerReport::class.java))
             }
         }
         return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
@@ -66,7 +67,8 @@ class JobsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getCatalogById(catalogId).type
 
-        val referenceHandler = referenceHandlerFactory.get(profile) ?: throw ClientException.withReason("No reference handler found for profile $profile")
+        val referenceHandler = referenceHandlerFactory.get(profile)
+            ?: throw ClientException.withReason("No reference handler found for profile $profile")
         referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
 
         return ResponseEntity.ok().build()

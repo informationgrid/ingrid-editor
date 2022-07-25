@@ -4,6 +4,8 @@
 
 ### Added
 
+- URL Check reporter
+
 ### Changed
 
 ### Deprecated

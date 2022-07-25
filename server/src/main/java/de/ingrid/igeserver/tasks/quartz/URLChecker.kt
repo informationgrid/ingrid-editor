@@ -2,10 +2,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.messaging.DatasetInfo
-import de.ingrid.igeserver.api.messaging.JobsNotifier
-import de.ingrid.igeserver.api.messaging.UrlMessage
-import de.ingrid.igeserver.api.messaging.UrlReport
+import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
@@ -21,7 +18,10 @@ import java.time.Duration
 
 @Component
 @PersistJobDataAfterExecution
-class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenceHandlerFactory: ReferenceHandlerFactory) :
+class URLChecker @Autowired constructor(
+    val notifier: JobsNotifier,
+    val referenceHandlerFactory: ReferenceHandlerFactory
+) :
     InterruptableJob {
 
     companion object {
@@ -67,7 +67,7 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenc
     ) {
         notifier.endMessage(message.apply {
             this.message = "Finished URLChecker"
-            this.report = urls
+            this.report = URLCheckerReport(urls.size, urls.filter { it.success.not() })
         })
 
         val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
@@ -124,31 +124,36 @@ class URLChecker @Autowired constructor(val notifier: JobsNotifier, val referenc
     private fun calcProgress(current: Int, total: Int) = ((current / total.toDouble()) * 100).toInt()
 
     private fun checkAndReportUrl(info: UrlReport) {
-        val status = httpHeadRequestSync(info.url)
-        info.status = status
-
-        when (status) {
-            200 -> info.success = true
-            else -> info.success = false
+        val requestHead = createHttpRequest("HEAD", info.url)
+        var status = httpHeadRequestSync(requestHead)
+        // if server responds with NOT ALLOWED try with GET request
+        if (status == 405) {
+            val requestGet = createHttpRequest("GET", info.url)
+            status = httpHeadRequestSync(requestGet)
         }
-
+        info.status = status
+        info.success = status <= 400
     }
 
-    fun httpHeadRequestSync(url: String): Int {
-        val requestHead = HttpRequest.newBuilder()
-            .method("HEAD", HttpRequest.BodyPublishers.noBody())
-            .uri(URI.create(url))
-            .build()
+
+    fun httpHeadRequestSync(request: HttpRequest): Int {
         return try {
-            val httpResponse = httpClient.send(requestHead, HttpResponse.BodyHandlers.discarding())
-            println("httpResponse statusCode = ${httpResponse.statusCode()}")
-            println(httpResponse.headers().toString())
-            httpResponse.statusCode()
+            httpClient
+                .send(request, HttpResponse.BodyHandlers.discarding())
+                .statusCode()
         } catch (ex: Exception) {
-            log.warn("Error requesting URL '$url': ${ex.message}")
+            log.warn("Error requesting URL '${request.uri()}': ${ex.message}")
             500
         }
     }
 
-    data class JobInfo (val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler)
+    private fun createHttpRequest(method: String, url: String): HttpRequest {
+        val requestHead = HttpRequest.newBuilder()
+            .method(method, HttpRequest.BodyPublishers.noBody())
+            .uri(URI.create(url))
+            .build()
+        return requestHead
+    }
+
+    data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler)
 }

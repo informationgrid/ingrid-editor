@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   UrlCheckReport,
   UrlCheckService,
+  UrlInfo,
   UrlLogResult,
 } from "./url-check.service";
 import { RxStompService } from "@stomp/ng2-stompjs";
@@ -32,7 +33,7 @@ export class UrlCheckComponent implements OnInit {
       .pipe(map((msg) => JSON.parse(msg.body)))
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 
-  dataSource = new MatTableDataSource<UrlCheckReport>([]);
+  dataSource = new MatTableDataSource<UrlInfo>([]);
   displayedColumns = ["_select_", "status", "url", "datasets"];
   showMore = false;
   selection = new SelectionModel<UrlCheckReport>(false, []);
@@ -74,8 +75,8 @@ export class UrlCheckComponent implements OnInit {
   private handleReport(data: UrlLogResult) {
     if (data?.endTime) {
       setTimeout(() => (this.isRunning = false), 300);
-      this.dataSource.data = data.report;
-      this.toggleActionColumn(data.report);
+      this.dataSource.data = data.report.invalidUrls;
+      this.toggleActionColumn(data.report.invalidUrls);
     } else this.isRunning = data !== null;
   }
 
@@ -103,7 +104,7 @@ export class UrlCheckComponent implements OnInit {
       .subscribe((uuid) => this.loadDataset(uuid));
   }
 
-  private toggleActionColumn(report: UrlCheckReport[]) {
+  private toggleActionColumn(report: UrlInfo[]) {
     // remove actions column initially
     this.displayedColumns = this.displayedColumns.filter(
       (item) => item !== "action"

@@ -6,12 +6,14 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import java.util.*
 
+data class URLCheckerReport(val totalUrls: Int, val invalidUrls: List<UrlReport>)
+
 data class UrlReport(val url: String, var success: Boolean, var status: Int, val datasets: MutableList<DatasetInfo>)
 
 data class DatasetInfo(val title: String, val type: String, val uuid: String, val field: String)
 
 data class UrlMessage(var numUrls: Int = 0, var progress: Int = 0) : Message() {
-    var report: List<UrlReport> = emptyList()
+    var report: URLCheckerReport? = null
 }
 
 @Service
@@ -24,7 +26,7 @@ class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate
         msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message)
     }
     fun endMessage(message: UrlMessage) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message.apply { 
+        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message.apply {
             this.endTime = Date()
             this.progress = 100
         })

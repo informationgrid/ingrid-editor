@@ -64,7 +64,7 @@
         <div *ngIf="liveLog | async as log">
             <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Analysierte URLs: {{ log.report?.length }}</div>
+            <div>Analysierte URLs: {{ log.report?.totalUrls }}</div>
         </div>
     </div>
 
