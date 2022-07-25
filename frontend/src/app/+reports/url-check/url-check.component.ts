@@ -38,6 +38,17 @@ export class UrlCheckComponent implements OnInit {
   selection = new SelectionModel<UrlCheckReport>(false, []);
   isRunning = false;
 
+  statusCodeText = {
+    400: "BadRequest",
+    401: "Unauthorized",
+    403: "Forbidden",
+    404: "NotFound",
+    405: "MethodNotAllowed",
+    429: "TooManyRequests",
+    500: "InternalServerError",
+    503: "ServiceUnavailable",
+  };
+
   constructor(
     private router: Router,
     private urlCheckService: UrlCheckService,
@@ -64,6 +75,7 @@ export class UrlCheckComponent implements OnInit {
     if (data?.endTime) {
       setTimeout(() => (this.isRunning = false), 300);
       this.dataSource.data = data.report;
+      this.toggleActionColumn(data.report);
     } else this.isRunning = data !== null;
   }
 
@@ -91,27 +103,13 @@ export class UrlCheckComponent implements OnInit {
       .subscribe((uuid) => this.loadDataset(uuid));
   }
 
-  mapStatus(status: number): string {
-    console.log(".");
-    switch (status) {
-      case 400:
-        return "BadRequest";
-      case 401:
-        return "Unauthorized";
-      case 403:
-        return "Forbidden";
-      case 404:
-        return "NotFound";
-      case 405:
-        return "MethodNotAllowed";
-      case 429:
-        return "TooManyRequests";
-      case 500:
-        return "InternalServerError";
-      case 503:
-        return "ServiceUnavailable";
-      default:
-        return status.toString();
-    }
+  private toggleActionColumn(report: UrlCheckReport[]) {
+    // remove actions column initially
+    this.displayedColumns = this.displayedColumns.filter(
+      (item) => item !== "action"
+    );
+
+    const hasMultipleDatasets = report.some((item) => item.datasets.length > 1);
+    if (hasMultipleDatasets) this.displayedColumns.push("action");
   }
 }

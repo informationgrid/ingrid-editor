@@ -17,10 +17,16 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { UrlCheckComponent } from "./url-check/url-check.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { ListDatasetsDialogComponent } from './url-check/list-datasets-dialog/list-datasets-dialog.component';
+import { ListDatasetsDialogComponent } from "./url-check/list-datasets-dialog/list-datasets-dialog.component";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @NgModule({
-  declarations: [ReportsComponent, GeneralReportComponent, UrlCheckComponent, ListDatasetsDialogComponent],
+  declarations: [
+    ReportsComponent,
+    GeneralReportComponent,
+    UrlCheckComponent,
+    ListDatasetsDialogComponent,
+  ],
   imports: [
     CommonModule,
     LazyReportsRouting,
@@ -35,6 +41,7 @@ import { ListDatasetsDialogComponent } from './url-check/list-datasets-dialog/li
     TranslocoModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   providers: [
     {

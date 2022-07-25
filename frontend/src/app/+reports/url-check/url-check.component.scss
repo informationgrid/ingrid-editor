@@ -1,3 +1,5 @@
+@import "src/variables";
+
 :host {
   overflow: auto;
 }
@@ -8,10 +10,6 @@ mat-progress-spinner {
 
 .report-btn {
   padding-left: 24px;
-}
-
-.table-header-check {
-  line-height: 24px;
 }
 
 td.mat-column-_select_ {
@@ -42,6 +40,13 @@ td.mat-column-_select_ {
   width: 200px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mat-column-action {
+  width: 40px;
+  .mat-icon {
+    color: $ige-secondary;
+  }
 }
 
 .mat-cell {

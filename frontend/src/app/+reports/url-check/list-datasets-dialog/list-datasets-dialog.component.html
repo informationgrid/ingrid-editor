@@ -1,14 +1,23 @@
-<div>
-    Datensätze, die den Link
-    <a class="no-text-transform" href="{{ data.link }}">{{ data.link }}</a>
-    enthalten:
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Datensätze anzeigen</span>
+    </h2>
 </div>
-<mat-action-list>
-    <button
-        mat-list-item
-        *ngFor="let item of data.datasets"
-        (click)="close(item.uuid)"
-    >
-        {{ item.title }}
-    </button>
-</mat-action-list>
+<mat-dialog-content>
+    <div>
+        <a class="no-text-transform" href="{{ data.link }}">{{ data.link }}</a>
+        ist enthalten in {{ data.datasets.length }} Datensätzen:
+    </div>
+    <mat-action-list>
+        <button
+            mat-list-item
+            *ngFor="let item of data.datasets"
+            (click)="close(item.uuid)"
+        >
+            {{ item.title }}
+        </button>
+    </mat-action-list>
+</mat-dialog-content>
