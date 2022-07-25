@@ -75,6 +75,7 @@ export class UserTableComponent
         user.lastName ?? "",
         user.email ?? "",
         user.organisation ?? "",
+        user.department ?? "",
       ]
         .join(" ")
         .trim()

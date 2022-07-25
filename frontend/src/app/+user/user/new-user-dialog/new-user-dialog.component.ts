@@ -59,6 +59,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       login: "",
       modificationDate: undefined,
       organisation: "",
+      department: "",
       role: "",
     };
     this.importExternal = false;

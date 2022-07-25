@@ -12,6 +12,7 @@ export class UserMockService {
       creationDate: new Date(),
       modificationDate: new Date(),
       organisation: "",
+      department: "",
       attributes: [],
     },
   ];
