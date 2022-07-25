@@ -19,6 +19,11 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ListDatasetsDialogComponent } from "./url-check/list-datasets-dialog/list-datasets-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from "@angular/material/paginator";
+import { IgePagingIntl } from "../shared/IgePagingIntl";
 
 @NgModule({
   declarations: [
@@ -42,11 +47,16 @@ import { MatDialogModule } from "@angular/material/dialog";
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   providers: [
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
     },
   ],
 })

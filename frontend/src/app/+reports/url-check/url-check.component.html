@@ -74,102 +74,117 @@
         fxLayout="column"
         fxLayoutGap="36px"
     >
-        <table
-            mat-table
-            [dataSource]="dataSource"
-            matSort
-            class="width-100 no-action-column big-font"
-        >
-            <ng-container matColumnDef="_select_" class="thin-column">
-                <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell *matCellDef="let element">
-                    <mat-checkbox
-                        (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(element) : null"
-                        [checked]="selection.isSelected(element)"
-                    ></mat-checkbox>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    Status
-                </th>
-                <td
-                    mat-cell
-                    *matCellDef="let element"
-                    class="error-color status-column"
-                >
-                    <div>
-                        <mat-icon>error_outline</mat-icon>
-                        <span style="vertical-align: super">{{
-                            statusCodeText[element.status] ?? element.status
-                        }}</span>
-                    </div>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="url">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>URL</th>
-                <td mat-cell *matCellDef="let element">
-                    <div>
-                        <a
-                            class="no-text-transform"
-                            [href]="element.url"
-                            target="_blank"
-                            >{{ element.url }}</a
-                        >
-                    </div>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="datasets">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                    Datensätze
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    <div
-                        *ngIf="
-                            element.datasets.length > 1;
-                            else showSingleDataset
-                        "
+        <div>
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                matSort
+                class="width-100 no-action-column big-font"
+            >
+                <ng-container matColumnDef="_select_" class="thin-column">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let element">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(element) : null"
+                            [checked]="selection.isSelected(element)"
+                        ></mat-checkbox>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Status
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        class="error-color status-column"
                     >
-                        {{ element.datasets.length }} Datensätze
-                    </div>
-                    <ng-template #showSingleDataset>
-                        <div
-                            class="clickable-text"
-                            (click)="loadDataset(element.datasets[0].uuid)"
-                        >
-                            <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
-                            {{ element.datasets[0].title }} ({{
-                                element.datasets[0].field
-                            }})
+                        <div>
+                            <mat-icon>error_outline</mat-icon>
+                            <span style="vertical-align: super">{{
+                                statusCodeText[element.status] ?? element.status
+                            }}</span>
                         </div>
-                    </ng-template>
-                </td>
-            </ng-container>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="url">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        URL
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div>
+                            <a
+                                class="no-text-transform"
+                                [href]="element.url"
+                                target="_blank"
+                                >{{ element.url }}</a
+                            >
+                        </div>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="datasets">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Datensätze
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div
+                            *ngIf="
+                                element.datasets.length > 1;
+                                else showSingleDataset
+                            "
+                        >
+                            {{ element.datasets.length }} Datensätze
+                        </div>
+                        <ng-template #showSingleDataset>
+                            <div
+                                class="clickable-text"
+                                (click)="loadDataset(element.datasets[0].uuid)"
+                            >
+                                <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
+                                {{ element.datasets[0].title }} ({{
+                                    element.datasets[0].field
+                                }})
+                            </div>
+                        </ng-template>
+                    </td>
+                </ng-container>
 
-            <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef>Aktion</th>
-                <td mat-cell *matCellDef="let element">
-                    <button
-                        *ngIf="element.datasets.length > 1"
-                        matTooltip="Datensätze anzeigen"
-                        mat-icon-button
-                        (click)="
-                            showDatasets($event, element.datasets, element.url)
-                        "
-                    >
-                        <mat-icon svgIcon="visibility"></mat-icon>
-                    </button>
-                </td>
-            </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef>Aktion</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button
+                            *ngIf="element.datasets.length > 1"
+                            matTooltip="Datensätze anzeigen"
+                            mat-icon-button
+                            (click)="
+                                showDatasets(
+                                    $event,
+                                    element.datasets,
+                                    element.url
+                                )
+                            "
+                        >
+                            <mat-icon svgIcon="visibility"></mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr
-                mat-row
-                *matRowDef="let row; columns: displayedColumns"
-                (click)="selection.toggle(row)"
-            ></tr>
-        </table>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    (click)="selection.toggle(row)"
+                ></tr>
+            </table>
+
+            <mat-paginator
+                [pageSizeOptions]="[10]"
+                showFirstLastButtons
+                hidePageSize
+            >
+            </mat-paginator>
+        </div>
 
         <div>
             <div>
@@ -193,7 +208,7 @@
                         mat-stroked-button
                         color="primary"
                         [disabled]="selection.isEmpty()"
-                        (click)="replaceUrl(url.value)"
+                        (click)="replaceUrl(url.value.trim())"
                     >
                         Ersetzen
                     </button>

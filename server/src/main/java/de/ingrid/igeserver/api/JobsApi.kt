@@ -72,6 +72,6 @@ interface JobsApi {
         @Parameter(description = "command for the job", required = true) @RequestBody(
             required = true
         ) data: UrlReplaceData
-    ): ResponseEntity<Unit>
+    ): ResponseEntity<Map<String, Any>>
 }
 

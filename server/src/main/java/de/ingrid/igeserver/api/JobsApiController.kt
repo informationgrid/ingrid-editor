@@ -9,6 +9,7 @@ import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.quartz.URLChecker
+import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.quartz.JobDataMap
 import org.quartz.JobKey
@@ -24,7 +25,8 @@ import java.security.Principal
 class JobsApiController @Autowired constructor(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
-    val referenceHandlerFactory: ReferenceHandlerFactory
+    val referenceHandlerFactory: ReferenceHandlerFactory,
+    val urlRequestService: UrlRequestService
 ) : JobsApi {
 
     override fun getJobs(principal: Principal): ResponseEntity<Job> {
@@ -63,15 +65,22 @@ class JobsApiController @Autowired constructor(
     }
 
     @Transactional
-    override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Unit> {
+    override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Map<String, Any>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getCatalogById(catalogId).type
 
         val referenceHandler = referenceHandlerFactory.get(profile)
             ?: throw ClientException.withReason("No reference handler found for profile $profile")
-        referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
+        val docsNumberUpdated = referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
+        val status = urlRequestService.getStatus(data.replaceUrl)
 
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(
+            mapOf(
+                "status" to status,
+                "urlValid" to urlRequestService.isSuccessCode(status),
+                "docsUpdated" to docsNumberUpdated
+            )
+        )
     }
 
 

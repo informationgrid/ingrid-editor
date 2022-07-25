@@ -1,10 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import {
-  UrlCheckReport,
-  UrlCheckService,
-  UrlInfo,
-  UrlLogResult,
-} from "./url-check.service";
+import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
 import { RxStompService } from "@stomp/ng2-stompjs";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
@@ -17,6 +12,9 @@ import {
   ListDatasetsDialogComponent,
   ListDatasetsDialogData,
 } from "./list-datasets-dialog/list-datasets-dialog.component";
+import { MatPaginator } from "@angular/material/paginator";
+import { IgeError } from "../../models/ige-error";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "ige-url-check",
@@ -25,6 +23,13 @@ import {
 })
 export class UrlCheckComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
+
+  @ViewChild(MatPaginator, { static: false })
+  set paginator(value: MatPaginator) {
+    if (this.dataSource) {
+      this.dataSource.paginator = value;
+    }
+  }
 
   liveLog: Observable<UrlLogResult> = merge(
     this.urlCheckService.getJobInfo().pipe(map((value) => value.info)),
@@ -36,7 +41,7 @@ export class UrlCheckComponent implements OnInit {
   dataSource = new MatTableDataSource<UrlInfo>([]);
   displayedColumns = ["_select_", "status", "url", "datasets"];
   showMore = false;
-  selection = new SelectionModel<UrlCheckReport>(false, []);
+  selection = new SelectionModel<UrlInfo>(false, []);
   isRunning = false;
 
   statusCodeText = {
@@ -54,7 +59,8 @@ export class UrlCheckComponent implements OnInit {
     private router: Router,
     private urlCheckService: UrlCheckService,
     private rxStompService: RxStompService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snack: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
@@ -88,7 +94,22 @@ export class UrlCheckComponent implements OnInit {
   replaceUrl(url: string) {
     this.urlCheckService
       .replaceUrl(this.selection.selected[0], url)
-      .subscribe();
+      .pipe(tap((response) => this.updateSelectionInTable(url, response)))
+      .subscribe((response) => this.notifyUser(response));
+  }
+
+  private updateSelectionInTable(url: string, replaceResponse: any) {
+    if (replaceResponse.urlValid) {
+      this.dataSource.data = this.dataSource.data.filter(
+        (item) => item.url !== this.selection.selected[0].url
+      );
+    } else {
+      const entry = this.dataSource.data.find(
+        (item) => item.url === this.selection.selected[0].url
+      );
+      entry.url = url;
+      entry.status = replaceResponse.status;
+    }
   }
 
   showDatasets($event: MouseEvent, datasets: any[], url: string) {
@@ -112,5 +133,17 @@ export class UrlCheckComponent implements OnInit {
 
     const hasMultipleDatasets = report.some((item) => item.datasets.length > 1);
     if (hasMultipleDatasets) this.displayedColumns.push("action");
+  }
+
+  private notifyUser(response: any) {
+    if (response.docsUpdated === 0) {
+      throw new IgeError(
+        "Die zu ersetzende URL konnte nicht gefunden werden. Bitte starten Sie die Prüfung erneut."
+      );
+    } else if (response.urlValid) {
+      this.snack.open("Die URL wurde erfolgreich ersetzt");
+    } else {
+      throw new IgeError("Die Prüfung der URL lieferte einen Fehler");
+    }
   }
 }

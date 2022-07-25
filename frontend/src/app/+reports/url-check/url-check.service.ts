@@ -63,7 +63,7 @@ export class UrlCheckService {
       .pipe(shareReplay(1));
   }
 
-  replaceUrl(source: UrlCheckReport, replaceUrl: string) {
+  replaceUrl(source: UrlInfo, replaceUrl: string) {
     return this.http.post<any>(this.backendURL + "jobs/url-check/replace", {
       source,
       replaceUrl,

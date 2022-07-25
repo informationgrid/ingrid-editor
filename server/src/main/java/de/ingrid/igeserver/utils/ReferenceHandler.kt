@@ -2,32 +2,62 @@ package de.ingrid.igeserver.utils
 
 import de.ingrid.igeserver.api.messaging.UrlReport
 import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
+import org.apache.logging.log4j.kotlin.logger
+import org.hibernate.query.NativeQuery
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.persistence.EntityManager
 
 abstract class ReferenceHandler(val entityManager: EntityManager) {
+
+    val log = logger()
+
     abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
 
     abstract fun getProfile(): String
 
-    open fun replaceUrl(catalogId: String, source: UrlReport, replaceUrl: String) {
-        val targetUrl = replaceUrlSql.format(source.url, replaceUrl)
+    open fun replaceUrl(catalogId: String, source: UrlReport, replaceUrl: String): Int {
+        val query = replaceUrlSql.format(source.url, replaceUrl)
+//        val queryCount = countReplaceUrlSql.format(source.url)
+        var updatedDocs = 0
 
         source.datasets.forEach { doc ->
-            entityManager.createNativeQuery(targetUrl)
+            // there should be something to be updated unless the information is deprecated
+            val count = entityManager.createNativeQuery(countReplaceUrlSql)
+                .unwrap(NativeQuery::class.java)
                 .setParameter("catalogId", catalogId)
                 .setParameter("uuid", doc.uuid)
-                .executeUpdate()
+                .setParameter("uri", source.url)
+                .resultList.size
+
+            log.debug("count: $count")
+
+            if (count > 0) {
+                // result does not really return the updated documents!
+                entityManager.createNativeQuery(query)
+                    .setParameter("catalogId", catalogId)
+                    .setParameter("uuid", doc.uuid)
+                    .executeUpdate()
+
+                updatedDocs += count
+            }
         }
+        log.debug("documents updated with replaced URL: $updatedDocs")
+        return updatedDocs
     }
 
     private val replaceUrlSql = """
         UPDATE document doc
         SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
         FROM document_wrapper dw, catalog cat
-        WHERE dw.published = doc.id AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+        WHERE (dw.published = doc.id OR dw.draft = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
     """.trimIndent()
+
+    private val countReplaceUrlSql = """SELECT doc.id
+        FROM document doc, document_wrapper dw, catalog cat
+        WHERE (dw.published = doc.id OR dw.draft = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+         AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
+     """.trimIndent()
 }
 
 data class DocumentLinks(

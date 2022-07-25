@@ -54,7 +54,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
             .withDescription("Trigger for running URL Checker")
             .withSchedule(SimpleScheduleBuilder.simpleSchedule().repeatForever().withIntervalInSeconds(5).withRepeatCount(3))
             .build()
-        
+
         scheduler.scheduleJob(detail, trigger)
         scheduler.start()*/
     }

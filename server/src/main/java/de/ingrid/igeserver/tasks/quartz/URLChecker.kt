@@ -10,17 +10,13 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.time.Duration
 
 @Component
 @PersistJobDataAfterExecution
 class URLChecker @Autowired constructor(
     val notifier: JobsNotifier,
-    val referenceHandlerFactory: ReferenceHandlerFactory
+    val referenceHandlerFactory: ReferenceHandlerFactory,
+    val urlRequestService: UrlRequestService
 ) :
     InterruptableJob {
 
@@ -31,12 +27,6 @@ class URLChecker @Autowired constructor(
     val log = logger()
 
     var currentThread: Thread? = null
-
-    val httpClient: HttpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .followRedirects(HttpClient.Redirect.NORMAL)
-        .build()
-
 
     override fun execute(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
@@ -124,35 +114,9 @@ class URLChecker @Autowired constructor(
     private fun calcProgress(current: Int, total: Int) = ((current / total.toDouble()) * 100).toInt()
 
     private fun checkAndReportUrl(info: UrlReport) {
-        val requestHead = createHttpRequest("HEAD", info.url)
-        var status = httpHeadRequestSync(requestHead)
-        // if server responds with NOT ALLOWED try with GET request
-        if (status == 405) {
-            val requestGet = createHttpRequest("GET", info.url)
-            status = httpHeadRequestSync(requestGet)
-        }
+        val status = urlRequestService.getStatus(info.url)
         info.status = status
-        info.success = status <= 400
-    }
-
-
-    fun httpHeadRequestSync(request: HttpRequest): Int {
-        return try {
-            httpClient
-                .send(request, HttpResponse.BodyHandlers.discarding())
-                .statusCode()
-        } catch (ex: Exception) {
-            log.warn("Error requesting URL '${request.uri()}': ${ex.message}")
-            500
-        }
-    }
-
-    private fun createHttpRequest(method: String, url: String): HttpRequest {
-        val requestHead = HttpRequest.newBuilder()
-            .method(method, HttpRequest.BodyPublishers.noBody())
-            .uri(URI.create(url))
-            .build()
-        return requestHead
+        info.success = urlRequestService.isSuccessCode(status)
     }
 
     data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler)
