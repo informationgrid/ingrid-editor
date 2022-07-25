@@ -87,7 +87,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
     private fun stop(jobKey: JobKey) {
         with(scheduler) {
             interrupt(jobKey)
-            deleteJob(jobKey)
+//            deleteJob(jobKey)
         }
     }
 
