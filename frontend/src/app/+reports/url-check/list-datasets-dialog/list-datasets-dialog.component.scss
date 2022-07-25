@@ -1,0 +1,9 @@
+@import "src/variables";
+
+mat-dialog-content button {
+  color: $ige-secondary !important;
+}
+
+.mat-dialog-content {
+  padding-bottom: 0 !important;
+}

@@ -39,9 +39,9 @@
         {
             "format": ["{{ model.getCodelistValue(catalogId, "20002", download.type.key, download.type.value) }}"],
             {% if download.link.asLink %}
-                "accessURL": "{{ download.link.value }}",
+                "accessURL": "{{ download.link.uri }}",
             {% else %}
-                "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.value }}",
+                "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.uri }}",
             {% endif %}
             "title": "{{ download.title }}",
             "type": "{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"

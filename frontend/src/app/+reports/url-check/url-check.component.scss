@@ -1,0 +1,54 @@
+@import "src/variables";
+
+:host {
+  overflow: auto;
+}
+
+mat-progress-spinner {
+  display: inline-block;
+}
+
+.report-btn {
+  padding-left: 24px;
+}
+
+td.mat-column-_select_ {
+  width: 16px;
+  .mat-checkbox {
+    padding-right: 24px;
+  }
+}
+
+.mat-column-status {
+  white-space: nowrap;
+
+  .mat-icon {
+    padding-right: 8px;
+  }
+}
+
+.mat-column-url {
+  font-weight: bold;
+  overflow: hidden;
+  width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-datasets {
+  overflow: hidden;
+  width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-action {
+  width: 40px;
+  .mat-icon {
+    color: $ige-secondary;
+  }
+}
+
+.mat-cell {
+  padding-right: 24px;
+}

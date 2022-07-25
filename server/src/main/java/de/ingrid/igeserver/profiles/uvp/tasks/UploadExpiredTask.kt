@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import de.ingrid.igeserver.profiles.uvp.UploadUtils
+import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
+import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
@@ -16,7 +17,7 @@ import javax.persistence.EntityManager
 class UploadExpiredTask(
     val fileSystemStorage: FileSystemStorage,
     val entityManager: EntityManager,
-    val uploadUtils: UploadUtils
+    val referenceHandler: UvpReferenceHandler
 ) {
     val log = logger()
 
@@ -30,7 +31,7 @@ class UploadExpiredTask(
     fun start(docId: Int? = null) {
         log.info("Starting Task: Upload-Expired")
         val docs = try {
-            uploadUtils.getPublishedDocumentsByCatalog(docId)
+            referenceHandler.getPublishedDocumentsByCatalog(docId)
         } catch (e: Exception) {
             log.error("Error getting published documents, which can be normal if database is empty: ${e.message}")
             emptyList()
@@ -52,7 +53,7 @@ class UploadExpiredTask(
         log.debug("Task finished: Upload-Expired")
     }
 
-    private fun restoreUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
+    private fun restoreUvpFiles(uploads: DocumentLinks): Int {
         val today = LocalDate.now()
         return uploads.getDocsByLatestValidUntilDate()
             .filter { !isExpired(it, today) }
@@ -60,7 +61,7 @@ class UploadExpiredTask(
             .fold(0) { sum, element -> if (restoreFile(element, uploads)) sum + 1 else sum }
     }
 
-    private fun archiveExpiredUvpFiles(uploads: UploadUtils.PublishedUploads): Int {
+    private fun archiveExpiredUvpFiles(uploads: DocumentLinks): Int {
         val today = LocalDate.now()
         return uploads.getDocsByLatestValidUntilDate()
             .filter { isExpired(it, today) }
@@ -69,8 +70,8 @@ class UploadExpiredTask(
     }
 
     private fun archiveFile(
-        uploadInfo: UploadUtils.UploadInfo,
-        uploads: UploadUtils.PublishedUploads
+        uploadInfo: UvpReferenceHandler.UploadInfo,
+        uploads: DocumentLinks
     ): Boolean {
         return try {
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
@@ -83,8 +84,8 @@ class UploadExpiredTask(
     }
     
     private fun restoreFile(
-        uploadInfo: UploadUtils.UploadInfo,
-        uploads: UploadUtils.PublishedUploads
+        uploadInfo: UvpReferenceHandler.UploadInfo,
+        uploads: DocumentLinks
     ): Boolean {
         return try {
             log.info("Restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
@@ -96,7 +97,7 @@ class UploadExpiredTask(
         }
     }
 
-    private fun isExpired(upload: UploadUtils.UploadInfo, today: LocalDate) =
+    private fun isExpired(upload: UvpReferenceHandler.UploadInfo, today: LocalDate) =
         upload.validUntil != null && today.isAfter(
             OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
         )

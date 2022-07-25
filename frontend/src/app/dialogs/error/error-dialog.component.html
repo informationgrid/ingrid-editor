@@ -77,7 +77,7 @@
                 <mat-card-content>
                     <ng-container>
                         <pre *ngIf="error.detail">
-                                        {{ error.detail }}
+                                        {{ error.detail?.trim() }}
                                     </pre
                         >
 

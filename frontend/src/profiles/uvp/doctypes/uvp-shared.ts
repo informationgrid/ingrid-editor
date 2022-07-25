@@ -64,10 +64,10 @@ export class UvpShared extends BaseDoctype {
         onClick: (docUuid, uri, $event) => {
           this.uploadService.downloadFile(docUuid, uri, $event);
         },
-        formatter: (link: any, form: FormGroup) => {
+        formatter: (link: any) => {
           if (link.asLink) {
-            return `<a  href="${link.value}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
+            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
           } else {
             return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }

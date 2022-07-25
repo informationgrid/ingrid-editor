@@ -140,5 +140,5 @@ data class Document(val title: String, val downloadURL: DownloadUrl, val validUn
 
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties("value") // field was removed and must be marked ignored now
 data class DownloadUrl(val uri: String, val asLink: Boolean)

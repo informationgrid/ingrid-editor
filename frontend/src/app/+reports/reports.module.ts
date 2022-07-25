@@ -14,9 +14,24 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { LazyReportsRouting } from "./lazy-reports.routing";
 import { TranslocoModule } from "@ngneat/transloco";
+import { UrlCheckComponent } from "./url-check/url-check.component";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ListDatasetsDialogComponent } from "./url-check/list-datasets-dialog/list-datasets-dialog.component";
+import { MatDialogModule } from "@angular/material/dialog";
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from "@angular/material/paginator";
+import { IgePagingIntl } from "../shared/IgePagingIntl";
 
 @NgModule({
-  declarations: [ReportsComponent, GeneralReportComponent],
+  declarations: [
+    ReportsComponent,
+    GeneralReportComponent,
+    UrlCheckComponent,
+    ListDatasetsDialogComponent,
+  ],
   imports: [
     CommonModule,
     LazyReportsRouting,
@@ -29,11 +44,19 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatButtonToggleModule,
     ReactiveFormsModule,
     TranslocoModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatPaginatorModule,
   ],
   providers: [
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
     },
   ],
 })

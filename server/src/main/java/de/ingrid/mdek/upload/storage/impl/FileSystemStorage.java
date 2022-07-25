@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -1074,7 +1075,7 @@ public class FileSystemStorage implements Storage {
         }
         try (TikaInputStream stream = TikaInputStream.get(path)) {
             final Metadata metadata = new Metadata();
-            metadata.set(Metadata.RESOURCE_NAME_KEY, path.toFile().toString());
+            metadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, path.toFile().toString());
             final MediaType mediaType = tika.getDetector().detect(stream, metadata);
             return mediaType.getBaseType().toString();
         }

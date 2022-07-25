@@ -101,8 +101,8 @@ export class McloudDoctype extends BaseDoctype {
                 formatter: (link: any, form: FormGroup) => {
                   if (link.asLink) {
                     return `
-                         <a  href="${link.value}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.value}  </a> `;
+                         <a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri} </a> `;
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl

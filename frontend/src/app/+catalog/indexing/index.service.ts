@@ -7,16 +7,13 @@ import {
 import { Catalog } from "../services/catalog.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs/operators";
+import { BaseLogResult } from "../../shared/base-log-result";
 
-export interface LogResult {
-  startTime: Date;
-  endTime: Date;
+export interface LogResult extends BaseLogResult {
   numDocuments: number;
   numAddresses: number;
   progressDocuments: number;
   progressAddresses: number;
-  message: string;
-  errors: string[];
 }
 
 interface IndexConfig {
