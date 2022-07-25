@@ -15,5 +15,8 @@ subprojects {
 }
 
 jgitver {
-    nonQualifierBranches = 'main,develop'
+    policy {
+        pattern = '([main|develop|support].*)'
+        transformations = ['IGNORE']
+    }
 }
