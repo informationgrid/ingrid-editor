@@ -22,7 +22,12 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   styleUrls: ["./url-check.component.scss"],
 })
 export class UrlCheckComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false })
+  set sort(value: MatSort) {
+    if (this.dataSource) {
+      this.dataSource.sort = value;
+    }
+  }
 
   @ViewChild(MatPaginator, { static: false })
   set paginator(value: MatPaginator) {
@@ -66,9 +71,7 @@ export class UrlCheckComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-  }
+  ngAfterViewInit(): void {}
 
   start() {
     this.isRunning = true;
