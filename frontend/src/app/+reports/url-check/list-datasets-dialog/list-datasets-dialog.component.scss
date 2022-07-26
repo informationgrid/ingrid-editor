@@ -6,4 +6,12 @@ mat-dialog-content button {
 
 .mat-dialog-content {
   padding-bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.mat-action-list {
+  overflow: auto;
+  margin-top: 24px;
 }
