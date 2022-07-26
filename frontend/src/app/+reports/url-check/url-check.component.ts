@@ -54,6 +54,7 @@ export class UrlCheckComponent implements OnInit {
     500: "InternalServerError",
     503: "ServiceUnavailable",
   };
+  analyzedUrls: string;
 
   constructor(
     private router: Router,
@@ -83,7 +84,11 @@ export class UrlCheckComponent implements OnInit {
       setTimeout(() => (this.isRunning = false), 300);
       this.dataSource.data = data.report.invalidUrls;
       this.toggleActionColumn(data.report.invalidUrls);
-    } else this.isRunning = data !== null;
+      this.analyzedUrls = `${data.report.totalUrls}`;
+    } else {
+      this.isRunning = data !== null;
+      this.analyzedUrls = `${data.progress}%`;
+    }
   }
 
   loadDataset(uuid: string) {

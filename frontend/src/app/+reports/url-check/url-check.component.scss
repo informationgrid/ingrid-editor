@@ -12,34 +12,38 @@ mat-progress-spinner {
   padding-left: 24px;
 }
 
-td.mat-column-_select_ {
-  width: 16px;
-  .mat-checkbox {
-    padding-right: 24px;
-  }
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th,
+td {
+  overflow: hidden;
+  width: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-_select_ {
+  width: 48px;
 }
 
 .mat-column-status {
-  white-space: nowrap;
+  width: 190px;
 
   .mat-icon {
     padding-right: 8px;
   }
 }
 
-.mat-column-url {
-  font-weight: bold;
-  overflow: hidden;
-  width: 200px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .mat-column-datasets {
-  overflow: hidden;
-  width: 200px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  .clickable-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: auto;
+  }
 }
 
 .mat-column-action {
@@ -49,6 +53,6 @@ td.mat-column-_select_ {
   }
 }
 
-.mat-cell {
-  padding-right: 24px;
+.status {
+  font-family: monospace;
 }

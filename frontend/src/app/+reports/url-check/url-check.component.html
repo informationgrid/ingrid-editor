@@ -25,7 +25,7 @@
                     <mat-progress-spinner
                         [value]="log.progress"
                         diameter="16"
-                        [matTooltip]="log.progress + '%'"
+                        [matTooltip]="log.progress + '% analysiert'"
                     ></mat-progress-spinner>
                     <span>
                         Laufende Prüfung seit:
@@ -63,8 +63,11 @@
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="liveLog | async as log">
             <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Analysierte URLs: {{ log.report?.totalUrls }}</div>
+            <div>
+                &nbsp;Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+            </div>
+            <br />
+            <div>Analysierte URLs: {{ analyzedUrls }}</div>
         </div>
     </div>
 
@@ -113,14 +116,12 @@
                         URL
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        <div>
-                            <a
-                                class="no-text-transform"
-                                [href]="element.url"
-                                target="_blank"
-                                >{{ element.url }}</a
-                            >
-                        </div>
+                        <a
+                            class="no-text-transform"
+                            [href]="element.url"
+                            target="_blank"
+                            >{{ element.url }}</a
+                        >
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="datasets">
@@ -128,14 +129,14 @@
                         Datensätze
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        <div
+                        <ng-container
                             *ngIf="
                                 element.datasets.length > 1;
                                 else showSingleDataset
                             "
                         >
                             {{ element.datasets.length }} Datensätze
-                        </div>
+                        </ng-container>
                         <ng-template #showSingleDataset>
                             <div
                                 class="clickable-text"
