@@ -2,10 +2,29 @@ version: '3'
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:18.0.0-dev
+    image: docker-registry.wemove.com/keycloak:18.0.2-dev
     restart: unless-stopped
     ports:
       - 8080:8080
+    networks:
+      - ige-ng-network
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.23
+    environment:
+      - cluster.name=ingrid
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+      - "9300:9300"
     networks:
       - ige-ng-network
 
