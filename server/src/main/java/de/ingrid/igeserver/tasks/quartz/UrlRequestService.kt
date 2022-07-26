@@ -7,30 +7,36 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 @Service
 class UrlRequestService {
 
     private val log = logger()
 
-    private val httpClient: HttpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .followRedirects(HttpClient.Redirect.NORMAL)
-        .build()
-
     fun getStatus(url: String): Int {
         val requestHead = createHttpRequest("HEAD", url)
-        var status = httpHeadRequestSync(requestHead)
+        var status = httpRequestSync(requestHead)
         // if server responds with NOT ALLOWED try with GET request
         if (status == 405) {
             val requestGet = createHttpRequest("GET", url)
-            status = httpHeadRequestSync(requestGet)
+            status = httpRequestSync(requestGet)
         }
         log.debug("Status of URL '$url' is $status")
         return status
     }
 
-    private fun httpHeadRequestSync(request: HttpRequest): Int {
+    private fun createHttpClient(executor: ExecutorService) = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .executor(executor)
+        .build()
+
+    private fun httpRequestSync(request: HttpRequest): Int {
+        val executor = Executors.newSingleThreadExecutor()
+        val httpClient = createHttpClient(executor)
+
         return try {
             log.debug("Check URL '${request.uri()}' with method '${request.method()}'")
             httpClient
@@ -39,6 +45,8 @@ class UrlRequestService {
         } catch (ex: Exception) {
             log.warn("Error requesting URL '${request.uri()}': ${ex.message}")
             500
+        } finally {
+            executor.shutdownNow()
         }
     }
 
