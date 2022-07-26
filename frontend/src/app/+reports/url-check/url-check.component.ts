@@ -83,13 +83,17 @@ export class UrlCheckComponent implements OnInit {
   }
 
   private handleReport(data: UrlLogResult) {
+    if (!data) {
+      return;
+    }
+
     if (data?.endTime) {
       setTimeout(() => (this.isRunning = false), 300);
       this.dataSource.data = data.report.invalidUrls;
       this.toggleActionColumn(data.report.invalidUrls);
       this.analyzedUrls = `${data.report.totalUrls}`;
     } else {
-      this.isRunning = data !== null;
+      this.isRunning = true;
       this.analyzedUrls = `${data.progress}%`;
     }
   }
