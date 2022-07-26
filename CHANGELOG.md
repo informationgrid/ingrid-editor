@@ -5,6 +5,7 @@
 ### Added
 
 - URL Check reporter
+- Autosave-Plugin
 
 ### Changed
 
