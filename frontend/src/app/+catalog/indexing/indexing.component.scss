@@ -3,6 +3,10 @@
   flex: 1;
 }
 
+mat-progress-spinner {
+  display: inline-block;
+}
+
 .section {
   background-color: #ffffff;
   padding: 24px;
@@ -33,10 +37,6 @@ section {
   white-space: nowrap;
   margin-bottom: 20px;
   writing-mode: vertical-rl;
-}
-
-.menu-button {
-  margin-left: 10px;
 }
 
 .status {

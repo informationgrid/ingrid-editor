@@ -38,17 +38,17 @@
             Beispiele:
             <mat-chip-list>
                 <mat-chip (click)="cronField.setValue('0 */30 * * * *')"
-                    >Alle 30 Minuten</mat-chip
-                >
+                    >Alle 30 Minuten
+                </mat-chip>
                 <mat-chip (click)="cronField.setValue('0 0 3 * * *')"
-                    >Täglich um 3 Uhr</mat-chip
-                >
+                    >Täglich um 3 Uhr
+                </mat-chip>
                 <mat-chip (click)="cronField.setValue('0 0 23 * * 6,7')"
-                    >23 Uhr am Wochenende</mat-chip
-                >
+                    >23 Uhr am Wochenende
+                </mat-chip>
                 <mat-chip (click)="cronField.setValue('0 0 8,11 * * 1-5')"
-                    >Mo-Fr 8 und 11 Uhr</mat-chip
-                >
+                    >Mo-Fr 8 und 11 Uhr
+                </mat-chip>
             </mat-chip-list>
         </div>
 
@@ -65,22 +65,29 @@
         </p>
     </ng-container>
 
-    <div
-        main-header
-        fxFlex
-        *ngIf="isActivated; else noElasticsearch"
-        fxLayoutAlign="center center"
-    >
-        <div>
+    <div main-header *ngIf="isActivated; else noElasticsearch">
+        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
             <ng-container *ngIf="liveImportMessage | async as log">
                 <span *ngIf="log.endTime"
                     >Letzte Indizierung erfolgte am
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
-                <span *ngIf="!log.endTime"
-                    >Laufende Indizierung seit:
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
-                >
+                <ng-container *ngIf="!log.endTime">
+                    <mat-progress-spinner
+                        [value]="
+                            (log.progressDocuments / log.numDocuments) * 100
+                        "
+                        diameter="16"
+                        [matTooltip]="
+                            (log.progressDocuments / log.numDocuments) * 100 +
+                            '% analysiert'
+                        "
+                    ></mat-progress-spinner>
+                    <span
+                        >Laufende Indizierung seit:
+                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                    >
+                </ng-container>
                 <button
                     mat-icon-button
                     class="dark menu-button"
@@ -91,8 +98,6 @@
                 </button>
             </ng-container>
         </div>
-
-        <div fxFlex></div>
 
         <div>
             <button
