@@ -31,6 +31,10 @@ interface LocationType {
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
+  dialogTitle = this.data?.value
+    ? "Raumbezug bearbeiten"
+    : "Raumbezug hinzufügen";
+
   result: SpatialLocation = {
     value: null,
     title: null,
