@@ -26,6 +26,7 @@ export class CopyCutUtils {
   }
 
   private static handleCopyMove(option: CopyOption, targetNodePath?: string[]) {
+    cy.get('[data-cy=toolbar_COPY]').should('not.have.attr', 'disabled');
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get(option).click();
     if (targetNodePath) {
