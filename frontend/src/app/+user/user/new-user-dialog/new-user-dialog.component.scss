@@ -1,6 +1,16 @@
 mat-dialog-content {
   height: 420px;
-  width: 450px;
+  max-width: 490px;
+
+  display: flex;
+  flex-direction: column;
+
+  .spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+  }
 
   .no-selection-text {
     padding-bottom: 6px;
@@ -9,10 +19,4 @@ mat-dialog-content {
 
 .mat-dialog-title {
   cursor: move;
-}
-
-:host {
-  ::ng-deep .label-wrapper {
-    padding-top: 0.8em !important;
-  }
 }

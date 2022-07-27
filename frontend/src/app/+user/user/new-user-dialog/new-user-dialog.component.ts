@@ -4,7 +4,7 @@ import {
   Component,
   OnInit,
 } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
@@ -21,6 +21,7 @@ import { IgeError } from "../../../models/ige-error";
   styleUrls: ["./new-user-dialog.component.scss"],
 })
 export class NewUserDialogComponent implements OnInit, AfterContentChecked {
+  userSub: Subscription;
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
     tap((users) => (this.externalUsers = users)),
@@ -71,7 +72,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       .get("login")
       .valueChanges.subscribe((value) => this.updateForm(value));
 
-    this.users$.subscribe();
+    this.userSub = this.users$.subscribe();
   }
 
   updateForm(existingLogin) {
