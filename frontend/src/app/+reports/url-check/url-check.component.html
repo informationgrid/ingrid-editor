@@ -7,11 +7,10 @@
         </div>
 
         <p>
-            Ein oder mehrere URLs können ersetzt werden, indem Sie die zu
-            ersetzenden URLs in der Tabelle markieren und in das Eingabefeld
-            unter der Tabelle eine neue URL eingeben. Mit der Funktion Ersetzen
-            tauschen Sie die URL aus. Anschließend wird automatisch eine erneute
-            Überprüfung ausgeführt.
+            Sie können eine URL ersetzen, indem Sie die zu ersetzenden URLs in
+            der Tabelle markieren und in das Eingabefeld unter der Tabelle eine
+            neue URL eingeben. Mit dem Button "Ersetzen" tauschen Sie die URL
+            aus.
         </p>
     </div>
     <div main-header>
@@ -22,11 +21,13 @@
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-template #running>
-                    <mat-progress-spinner
-                        [value]="log.progress"
-                        diameter="16"
-                        [matTooltip]="log.progress + '% analysiert'"
-                    ></mat-progress-spinner>
+                    <span class="spinner-container">
+                        <mat-progress-spinner
+                            [value]="log.progress"
+                            diameter="16"
+                            [matTooltip]="log.progress + '% analysiert'"
+                        ></mat-progress-spinner>
+                    </span>
                     <span>
                         Laufende Prüfung seit:
                         {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
@@ -75,7 +76,7 @@
         *ngIf="dataSource.data?.length > 0; else noData"
         main-content
         fxLayout="column"
-        fxLayoutGap="36px"
+        fxLayoutGap="24px"
     >
         <div>
             <table
@@ -126,8 +127,22 @@
                         >
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="datasets">
+
+                <ng-container matColumnDef="count">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Anzahl
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.count }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="datasets">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header="singleDataset"
+                    >
                         Datensätze
                     </th>
                     <td mat-cell *matCellDef="let element">
@@ -137,7 +152,14 @@
                                 else showSingleDataset
                             "
                         >
-                            {{ element.datasets.length }} Datensätze
+                            <button
+                                *ngIf="element.datasets.length > 1"
+                                matTooltip="Datensätze anzeigen"
+                                mat-icon-button
+                                (click)="showDatasets($event, element)"
+                            >
+                                <mat-icon svgIcon="visibility"></mat-icon>
+                            </button>
                         </ng-container>
                         <ng-template #showSingleDataset>
                             <div
@@ -150,26 +172,6 @@
                                 }})
                             </div>
                         </ng-template>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef>Aktion</th>
-                    <td mat-cell *matCellDef="let element">
-                        <button
-                            *ngIf="element.datasets.length > 1"
-                            matTooltip="Datensätze anzeigen"
-                            mat-icon-button
-                            (click)="
-                                showDatasets(
-                                    $event,
-                                    element.datasets,
-                                    element.url
-                                )
-                            "
-                        >
-                            <mat-icon svgIcon="visibility"></mat-icon>
-                        </button>
                     </td>
                 </ng-container>
 
@@ -189,7 +191,7 @@
             </mat-paginator>
         </div>
 
-        <div>
+        <div fxLayout="column" fxLayoutGap="5px">
             <div>
                 Markierte URL in allen Datensätze durch folgende URL ersetzen:
             </div>

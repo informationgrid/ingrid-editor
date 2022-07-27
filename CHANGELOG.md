@@ -9,11 +9,17 @@
 
 ### Changed
 
+- Increase title column size in database
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Spatial dialog title (#4025)
+- Indexing multiple catalogs at the same time
+- Send correct iPlug/catalog configuration as plugdescription to iBus
 
 ### Security
 

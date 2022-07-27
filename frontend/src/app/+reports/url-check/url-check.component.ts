@@ -44,7 +44,7 @@ export class UrlCheckComponent implements OnInit {
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 
   dataSource = new MatTableDataSource<UrlInfo>([]);
-  displayedColumns = ["_select_", "status", "url", "datasets"];
+  displayedColumns = ["_select_", "status", "url", "count", "datasets"];
   showMore = false;
   selection = new SelectionModel<UrlInfo>(false, []);
   isRunning = false;
@@ -83,19 +83,24 @@ export class UrlCheckComponent implements OnInit {
   }
 
   private handleReport(data: UrlLogResult) {
-    if (!data) {
-      return;
-    }
+    if (!data) return;
 
-    if (data?.endTime) {
-      setTimeout(() => (this.isRunning = false), 300);
-      this.dataSource.data = data.report.invalidUrls;
-      this.toggleActionColumn(data.report.invalidUrls);
-      this.analyzedUrls = `${data.report.totalUrls}`;
-    } else {
-      this.isRunning = true;
-      this.analyzedUrls = `${data.progress}%`;
-    }
+    data?.endTime ? this.setCompletedReport(data) : this.setRunningReport(data);
+  }
+
+  private setRunningReport(data: UrlLogResult) {
+    this.isRunning = true;
+    this.analyzedUrls = `${data.progress}%`;
+  }
+
+  private setCompletedReport(data: UrlLogResult) {
+    setTimeout(() => (this.isRunning = false), 300);
+    this.dataSource.data = data.report.invalidUrls.map((url) => ({
+      ...url,
+      count: url.datasets.length,
+      singleDataset: url.datasets.length === 1 ? url.datasets[0].title : null,
+    }));
+    this.analyzedUrls = `${data.report.totalUrls}`;
   }
 
   loadDataset(uuid: string) {
@@ -124,27 +129,17 @@ export class UrlCheckComponent implements OnInit {
     }
   }
 
-  showDatasets($event: MouseEvent, datasets: any[], url: string) {
+  showDatasets($event: MouseEvent, item: UrlInfo) {
     $event.stopImmediatePropagation();
     this.dialog
       .open(ListDatasetsDialogComponent, {
         data: <ListDatasetsDialogData>{
-          datasets: datasets,
-          link: url,
+          datasets: item.datasets,
+          link: item.url,
         },
       })
       .afterClosed()
       .subscribe((uuid) => this.loadDataset(uuid));
-  }
-
-  private toggleActionColumn(report: UrlInfo[]) {
-    // remove actions column initially
-    this.displayedColumns = this.displayedColumns.filter(
-      (item) => item !== "action"
-    );
-
-    const hasMultipleDatasets = report.some((item) => item.datasets.length > 1);
-    if (hasMultipleDatasets) this.displayedColumns.push("action");
   }
 
   private notifyUser(response: any) {
