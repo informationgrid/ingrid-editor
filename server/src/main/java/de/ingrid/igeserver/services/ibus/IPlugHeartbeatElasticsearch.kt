@@ -79,15 +79,15 @@ class IPlugHeartbeatElasticsearch @Autowired constructor(
     private fun getIPlugInfos(docProducerIndices: List<String>): Map<String, String?> {
         val map: MutableMap<String, String?> = HashMap()
         for (docProdId in docProducerIndices) {
-            map[docProdId] = getHearbeatInfo(docProdId)
+            map[docProdId] = getHearbeatInfo(docProdId, "ige-ng_" + docProdId.split(":")[1])
         }
         return map
     }
 
-    private fun getHearbeatInfo(id: String): String? {
+    private fun getHearbeatInfo(id: String, plugId: String): String? {
         return try {
             val xContentBuilder = XContentFactory.jsonBuilder().startObject()
-                .field("plugId", "ige-ng")
+                .field("plugId", plugId)
                 .field("indexId", id)
                 .field("lastHeartbeat", Date())
                 .endObject()
