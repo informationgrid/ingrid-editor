@@ -6,11 +6,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
 data class IndexMessage(
+    val catalogId: String?,
     var numDocuments: Int = 0,
     var numAddresses: Int = 0,
     var numSkipped: Int = 0,
     var progressDocuments: Int = 0,
-    var progressAddresses: Int = 0
+    var progressAddresses: Int = 0,
 ) : Message()
 
 @Service
@@ -20,7 +21,7 @@ class IndexingNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemp
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"
 
     fun sendMessage(message: IndexMessage) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message)
+        msgTemplate.convertAndSend("$WS_MESSAGE_TRANSFER_DESTINATION/${message.catalogId}", message)
     }
 
     fun addAndSendMessageError(message: IndexMessage, ex: Exception, errorPrefix: String = "") {
