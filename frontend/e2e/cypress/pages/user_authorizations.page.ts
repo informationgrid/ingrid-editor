@@ -65,9 +65,9 @@ export class UserAuthorizationPage extends BasePage {
 
   static checkUsersTabExist(shouldExist: boolean = false) {
     if (shouldExist) {
-      cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Nutzer & Rechte');
+      cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Benutzer & Rechte');
     } else {
-      cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Nutzer & Rechte');
+      cy.get('mat-nav-list').find('.mat-list-item').should('not.contain', 'Benutzer & Rechte');
     }
   }
 

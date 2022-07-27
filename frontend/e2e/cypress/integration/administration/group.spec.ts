@@ -150,7 +150,7 @@ describe('Group', () => {
     cy.get('#formRoles [data-mat-icon-name=Mehr]').click();
     cy.get('button').contains('Löschen').click();
     cy.get('mat-dialog-content')
-      .contains(`Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Nutzer verwendet:`)
+      .contains(`Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Benutzer verwendet:`)
       .should('be.visible');
     cy.get('[data-cy=confirm-dialog-confirm]').click();
 
@@ -210,7 +210,7 @@ describe('Group', () => {
     AdminGroupPage.selectGroupAndWait(groupName);
     AdminGroupPage.deleteGroup(groupName, false);
     cy.get('mat-dialog-content').contains(
-      `Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Nutzer verwendet`
+      `Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Benutzer verwendet`
     );
   });
 

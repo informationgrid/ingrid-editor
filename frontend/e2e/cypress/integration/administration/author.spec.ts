@@ -124,7 +124,7 @@ describe('author with groups', () => {
     cy.get('ige-tree mat-tree-node').should('not.contain', searchTerm_3);
   });
 
-  it('Section "Nutzer und Rechte" should not be visible to an author (#2670)', () => {
+  it('Section "Benutzer und Rechte" should not be visible to an author (#2670)', () => {
     UserAuthorizationPage.checkUsersTabExist(false);
   });
 

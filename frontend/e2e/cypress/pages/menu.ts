@@ -58,7 +58,7 @@ export class Menu {
       case 'REPORTS':
         return;
       case 'USERS':
-        cy.get('.page-title').should('contain', 'Nutzer');
+        cy.get('.page-title').should('contain', 'Benutzer');
         cy.get('#sidebarUser .mat-spinner').should('not.exist');
         return;
       case 'IMPORT':

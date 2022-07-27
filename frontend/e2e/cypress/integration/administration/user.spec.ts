@@ -427,7 +427,7 @@ describe('User', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     cy.get('.page-title')
-      .contains('Nutzer (')
+      .contains('Benutzer (')
       .then($text => {
         // get number of the users super admin
         let txt = $text.text();
@@ -439,7 +439,7 @@ describe('User', () => {
         cy.intercept('GET', '/api/users').as('usersCall');
         cy.wait('@usersCall');
         cy.get('.page-title')
-          .contains('Nutzer (')
+          .contains('Benutzer (')
           .then($txtCatalog => {
             // get number of the users catalog admin
             let txtCatalog = $txtCatalog.text();

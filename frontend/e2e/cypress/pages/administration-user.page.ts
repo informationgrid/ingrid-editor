@@ -168,7 +168,7 @@ export class AdminUserPage extends BasePage {
 
   // TODO: select user by unique property like email!
   static selectUser(name: string) {
-    cy.get('.page-title').contains('Nutzer (');
+    cy.get('.page-title').contains('Benutzer (');
     cy.get('[data-cy=search]').clear({ force: true }).type(name);
     cy.contains('user-table .mat-row', name).click();
     // waiting for form to be shown can lead to error when we test dirty check
@@ -212,7 +212,7 @@ export class AdminUserPage extends BasePage {
       return;
     }
     // when parameter manager is there, the action is not expected to fail
-    cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Nutzer verantwortlich');
+    cy.contains('mat-dialog-container', 'Der Benutzer ist aktuell für folgende Benutzer verantwortlich');
     cy.contains('button', 'Verantwortlichen auswählen').click();
     cy.intercept('GET', '/api/users/admins').as('getAdmins');
     // arrow-select menu needs time to be able to be expanded:
@@ -290,7 +290,7 @@ export class AdminUserPage extends BasePage {
   static getNumberOfUsers(): Chainable<number> {
     return cy
       .get('.user-management-header .page-title')
-      .contains(/Nutzer \([0-9]+\)/)
+      .contains(/Benutzer \([0-9]+\)/)
       .then($node => {
         // extract number from string
         return parseInt(

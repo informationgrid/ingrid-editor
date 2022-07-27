@@ -799,7 +799,7 @@ describe('Catalogue admin', () => {
     cy.get('ige-tree').children().should('have.length', 2);
     //Users and groups should be present
     AdminUserPage.visit();
-    cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Nutzer & Rechte');
+    cy.get('mat-nav-list').find('.mat-list-item').should('contain', 'Benutzer & Rechte');
     AdminUserPage.goToTabmenu(UserAndRights.User);
     AdminUserPage.getNumberOfUsers().should('be.greaterThan', 0);
     AdminUserPage.goToTabmenu(UserAndRights.Group);
