@@ -30,10 +30,14 @@ export class IndexingComponent implements OnInit {
 
   liveImportMessage: Observable<LogResult> = merge(
     this.indexService.lastLog$,
-    this.rxStompService.watch("/topic/indexStatus").pipe(
-      map((msg) => JSON.parse(msg.body)),
-      tap((data) => (this.indexingIsRunning = !data.endTime))
-    )
+    this.rxStompService
+      .watch(
+        `/topic/indexStatus/${this.configService.$userInfo.value.currentCatalog.id}`
+      )
+      .pipe(
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => (this.indexingIsRunning = !data.endTime))
+      )
   );
 
   constructor(

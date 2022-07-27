@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 data class IndexMessage(
+    val catalogId: String?,
     val startTime: Date = Date(),
     var endTime: Date? = null,
     var numDocuments: Int = 0,
@@ -21,11 +22,11 @@ data class IndexMessage(
 @Service
 class IndexingNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
-    
+
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"
 
     fun sendMessage(message: IndexMessage) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION, message)
+        msgTemplate.convertAndSend("$WS_MESSAGE_TRANSFER_DESTINATION/${message.catalogId}", message)
     }
 
     fun addAndSendMessageError(message: IndexMessage, ex: Exception, errorPrefix: String = "") {

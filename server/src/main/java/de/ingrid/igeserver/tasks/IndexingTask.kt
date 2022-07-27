@@ -85,7 +85,7 @@ class IndexingTask @Autowired constructor(
     }
 
     fun indexByScheduler(catalogId: String, format: String) {
-        Timer("ManualIndexing", false).schedule(0) {
+        Timer("ManualIndexing", true).schedule(0) {
             runAsCatalogAdministrator()
             startIndexing(catalogId, format)
         }
@@ -97,7 +97,7 @@ class IndexingTask @Autowired constructor(
     fun startIndexing(catalogId: String, format: String) {
         log.info("Starting Task: Indexing for $catalogId")
 
-        val message = IndexMessage()
+        val message = IndexMessage(catalogId)
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
         val catalog = catalogRepo.findByIdentifier(catalogId)
