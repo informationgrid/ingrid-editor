@@ -112,6 +112,10 @@ class IndexingTask @Autowired constructor(
                 indexService.getExporter(category, format)
             } catch (ex: ConfigurationException) {
                 log.debug("No exporter defined for '${format}' and category '${category.value}'")
+                // add plugdescription for correct usage in iBus, since data and address index have the same
+                // plugId, both need the plugdescription info
+                val plugInfo = IPlugInfo(elasticsearchAlias, null, "none", category.value, partner, provider, catalogId)
+                updateIBusInformation(plugInfo)
                 return@categoryLoop
             }
 
