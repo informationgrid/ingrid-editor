@@ -414,10 +414,6 @@ describe('User', () => {
     cy.get('.user-title').contains(modified + ' ' + 'Admin');
   });
 
-  xit('should show to a user the users she represents (#2671)', () => {
-    //  ("gestelltvertretet")
-  });
-
   it('should show all the users to a catalogue admin (#2671)', () => {
     // login as super admin
     // get number of the users

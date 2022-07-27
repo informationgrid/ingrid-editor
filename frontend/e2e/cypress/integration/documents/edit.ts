@@ -99,7 +99,7 @@ describe('edit documents', function () {
     DocumentPage.visit();
   });
 
-  xit('Should create minimal publishable document', () => {
+  it('Should create minimal publishable document', () => {
     const docName = 'Testdokument_2';
     Tree.openNode(['Testdokumente', docName]);
     DocumentPage.fillInField('[data-cy="Textfeld"]', 'input', 'some text');

@@ -13,13 +13,6 @@ describe('User without authorizations', () => {
     cy.kcLogin('mcloud-author-without-group');
   });
 
-  xit('user without authorization should be able to prompt SQL search by button but should not be shown any results (#3459)', () => {
-    ResearchPage.visit();
-    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
-    cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
-    ResearchPage.getSearchResultCount().should('equal', 0);
-  });
-
   it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
     // Make sure search page shows no data when visiting
     ResearchPage.visit();

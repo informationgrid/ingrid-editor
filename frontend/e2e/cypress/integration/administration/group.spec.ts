@@ -250,8 +250,6 @@ describe('Group', () => {
     AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, dateOfToday);
   });
 
-  xit('should show to a user the  groups of the subusers of the user she represents (#2670)', () => {});
-
   it('if metadata admin gets full access to document, he can immediately grant the same level of access himself (#3460)', () => {
     const documentName = 'exclusive_document';
     const group1 = 'gruppe_mit_ortsrechten'; // assigned group

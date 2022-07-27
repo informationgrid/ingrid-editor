@@ -105,7 +105,7 @@ describe('Meta data administrator without groups', () => {
     cy.get('ige-tree').contains('Leer');
   });
 
-  xit('non-catadmin user should be able to delete a global saved search he created (#3379)', () => {
+  it('non-catadmin user should be able to delete a global saved search he created (#3379)', () => {
     const searchName = 'savedSearchToBeDeleted';
     const searchDescription = 'to test that global search can be deleted';
     ResearchPage.visit();
@@ -494,8 +494,6 @@ describe('Meta data administrator with a group', () => {
     cy.get('[data-cy=Gruppen]').should('contain', groupName);
     AdminUserPage.saveUser();
   });
-
-  xit('meta data admin should have the same access right to documents further down in the tree as the users to which the access rights were granted', () => {});
 
   it('meta data admin should be able to create groups', () => {
     const newGroup = 'some_new_group';
