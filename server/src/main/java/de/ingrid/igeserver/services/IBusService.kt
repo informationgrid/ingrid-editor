@@ -46,7 +46,7 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
     private fun getPlugDescription(urls: List<String>): PlugDescription {
 
         // partner and provider will be written during indexing
-        return settingsService.getPlugDescription("", "").apply {
+        return settingsService.getPlugDescription("", "", "unknown").apply {
             urls.forEach { addBusUrl(it) }
         }
 

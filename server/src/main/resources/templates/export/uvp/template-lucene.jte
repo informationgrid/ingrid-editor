@@ -13,8 +13,8 @@
 !{page.getData().convertEiaNumbers(catalog.identifier);}
 
 {
-    "iPlugId": "ige-ng",
-    "dataSourceName": "IPlug IGE-NG wemove",
+    "iPlugId": "ige-ng_${catalog.identifier}",
+    "dataSourceName": "iPlug IGE-NG (${catalog.identifier})",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": [${page.getSpatial("lon1")}],

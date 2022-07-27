@@ -148,7 +148,7 @@ class IndexingTask @Autowired constructor(
             notify.sendMessage(message.apply { this.message = "Post Phase" })
 
             // post phase
-            val plugInfo = IPlugInfo(elasticsearchAlias, info.first, info.second, category.value, partner, provider)
+            val plugInfo = IPlugInfo(elasticsearchAlias, info.first, info.second, category.value, partner, provider, catalogId)
             indexPostPhase(plugInfo)
             log.debug("Task finished: Indexing for $catalogId")
         }
@@ -339,7 +339,7 @@ class IndexingTask @Autowired constructor(
             val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider)
+                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId)
             )
         }
     }
@@ -352,11 +352,13 @@ class IndexingTask @Autowired constructor(
         count: Int?,
         totalCount: Int?,
         partner: String?,
-        provider: String?
+        provider: String?,
+        catalogId: String?
     ): String? {
 
+        val plugId = "ige-ng_$catalogId"
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
-            .field("plugId", "ige-ng")
+            .field("plugId", plugId)
             .field("indexId", infoId)
             .field("iPlugName", prepareIPlugName(infoId))
             .field("linkedIndex", indexName)
@@ -364,7 +366,7 @@ class IndexingTask @Autowired constructor(
             .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
-            .field("plugdescription", settingsService.getPlugDescription(partner, provider))
+            .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId))
             .startObject("indexingState")
             .field("numProcessed", count)
             .field("totalDocs", totalCount)
@@ -504,5 +506,6 @@ data class IPlugInfo(
     val newIndex: String,
     val category: String,
     val partner: String?,
-    val provider: String?
+    val provider: String?,
+    val catalogId: String
 )
