@@ -73,16 +73,20 @@
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-container *ngIf="!log.endTime">
-                    <mat-progress-spinner
-                        [value]="
-                            (log.progressDocuments / log.numDocuments) * 100
-                        "
-                        diameter="16"
-                        [matTooltip]="
-                            (log.progressDocuments / log.numDocuments) * 100 +
-                            '% analysiert'
-                        "
-                    ></mat-progress-spinner>
+                    <span class="spinner-container">
+                        <mat-progress-spinner
+                            [value]="
+                                (log.progressDocuments / log.numDocuments) * 100
+                            "
+                            diameter="16"
+                            [matTooltip]="
+                                (
+                                    (log.progressDocuments / log.numDocuments) *
+                                    100
+                                ).toFixed(0) + '% analysiert'
+                            "
+                        ></mat-progress-spinner>
+                    </span>
                     <span
                         >Laufende Indizierung seit:
                         {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
@@ -99,7 +103,7 @@
             </ng-container>
         </div>
 
-        <div>
+        <div class="index-btn">
             <button
                 *ngIf="!indexingIsRunning; else indexing"
                 mat-flat-button
