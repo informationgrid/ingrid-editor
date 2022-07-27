@@ -26,6 +26,10 @@
       <AppenderRef ref="LogFile" />
       <AppenderRef ref="Console" />
     </Logger>
+    <Logger name="net.weta.components" level="warn" additivity="false">
+      <AppenderRef ref="LogFile" />
+      <AppenderRef ref="Console" />
+    </Logger>
     <Logger name="org.keycloak" level="info" additivity="false">
       <AppenderRef ref="LogFile" />
       <AppenderRef ref="Console" />

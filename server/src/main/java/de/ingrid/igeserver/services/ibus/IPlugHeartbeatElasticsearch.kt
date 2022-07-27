@@ -64,7 +64,8 @@ class IPlugHeartbeatElasticsearch @Autowired constructor(
     }
 
     override fun run() {
-        try {
+        // heartbeats not supported
+        /*try {
             indexManager.updateHearbeatInformation(getIPlugInfos(docProducerIndices))
             indexManager.flush()
         } catch (e: InterruptedException) {
@@ -73,7 +74,7 @@ class IPlugHeartbeatElasticsearch @Autowired constructor(
             log.error("Error updating Heartbeat information.", e)
         } catch (e: IOException) {
             log.error("Error updating Heartbeat information.", e)
-        }
+        }*/
     }
 
     private fun getIPlugInfos(docProducerIndices: List<String>): Map<String, String?> {
