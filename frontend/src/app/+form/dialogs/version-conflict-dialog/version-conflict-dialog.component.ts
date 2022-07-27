@@ -11,7 +11,7 @@ export class VersionConflictDialogComponent implements OnInit {
   options = [
     { label: "Speichern abbrechen", value: "cancel" },
     {
-      label: "Trotzdem speichern und Änderungen vom anderen Nutzer verwerfen",
+      label: "Trotzdem speichern und Änderungen vom anderen Benutzer verwerfen",
       value: "force",
     },
     { label: "Den Datensatz neu laden", value: "reload" },

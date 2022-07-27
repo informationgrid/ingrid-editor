@@ -21,7 +21,7 @@ export const routing = RouterModule.forChild([
         component: UserComponent,
         canDeactivate: [DeactivateGuard],
         data: {
-          title: "Nutzer",
+          title: "Benutzer",
           tabIdentifier: "manage",
         },
       },

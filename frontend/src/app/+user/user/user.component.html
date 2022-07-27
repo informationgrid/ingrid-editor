@@ -2,7 +2,7 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Nutzer
+                Benutzer
                 {{
                     users && users.length !== undefined
                         ? "(" + users.length + ")"
@@ -22,7 +22,7 @@
                             color="primary"
                             mat-stroked-button
                             data-cy="toolbar_add_user"
-                            matTooltip="Nutzer hinzufügen"
+                            matTooltip="Benutzer hinzufügen"
                             [matTooltipShowDelay]="1000"
                             (click)="showAddUsersDialog()"
                         >

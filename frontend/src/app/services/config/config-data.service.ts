@@ -51,7 +51,7 @@ export class ConfigDataService {
             );
           } else if ((<XMLHttpRequest>e).status === 403) {
             throw new Error(
-              "Sie sind kein IGE-Nutzer. Bitte wenden Sie sich an einen Administrator."
+              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator."
             );
           } else {
             if (e instanceof HttpErrorResponse) {

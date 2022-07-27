@@ -192,10 +192,10 @@ export class GroupComponent implements OnInit, AfterViewInit {
             users.length > 0
               ? `Aktuell ${
                   users.length === 1
-                    ? "ist ein Nutzer"
-                    : "sind " + users.length + " Nutzer"
+                    ? "ist ein Benutzer"
+                    : "sind " + users.length + " Benutzer"
                 } der Gruppe zugeordnet:`
-              : "Es sind aktuell keine Nutzer der Gruppe zugeordnet",
+              : "Es sind aktuell keine Benutzer der Gruppe zugeordnet",
           list: users.map(
             // (user) => `${user.firstName} ${user.lastName} (${user.login})`
             (user) => user.login
@@ -239,7 +239,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
           ? `Möchten Sie die Gruppe "${
               group.name
             }" wirklich löschen? Die Gruppe wird von ${
-              users.length === 1 ? "einem Nutzer" : users.length + " Nutzern"
+              users.length === 1
+                ? "einem Benutzer"
+                : users.length + " Benutzern"
             } verwendet:`
           : `Möchten Sie die Gruppe "${group.name}" wirklich löschen?`,
       list: users.map((user) => user.login),

@@ -16,7 +16,7 @@ export const getUserFormFields = (
       type: "input",
       wrappers: ["panel", "form-field"],
       templateOptions: {
-        externalLabel: "Login",
+        externalLabel: "Benutzername",
         appearance: "outline",
         required: true,
         disabled: true,
@@ -117,7 +117,7 @@ export const getUserFormFields = (
       wrappers: ["panel"],
       templateOptions: {
         selectionEmptyNotice:
-          "Bitte weisen Sie dem Nutzer mindestens eine Gruppe zu.",
+          "Bitte weisen Sie dem Benutzer mindestens eine Gruppe zu.",
         externalLabel: "Gruppen",
         placeholder: "Gruppe wählen...",
         options: groups.map((group) => {

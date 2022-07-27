@@ -307,9 +307,9 @@ export class UserComponent
         data: {
           title: "Passwort zurücksetzen",
           message:
-            "Möchten Sie das Passwort für den Nutzer " +
+            "Möchten Sie das Passwort für den Benutzer " +
             login +
-            " zurücksetzen? \n Ein neues Passwort wird generiert und an den Nutzer gesendet.",
+            " zurücksetzen? \n Ein neues Passwort wird generiert und an den Benutzer gesendet.",
         } as ConfirmDialogData,
       })
       .afterClosed()

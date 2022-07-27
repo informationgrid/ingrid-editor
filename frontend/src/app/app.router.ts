@@ -60,7 +60,7 @@ export const routes: Routes = [
     data: {
       onlyAdmin: true,
       permission: "manage_users",
-      icon: "Nutzer",
+      icon: "Benutzer",
     },
   },
   // TODO: check canActivateChild: [AuthGuard],
