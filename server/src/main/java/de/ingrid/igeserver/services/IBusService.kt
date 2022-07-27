@@ -27,9 +27,9 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
 
     fun setupConnections() {
         try {
-            val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
+//            val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
             iBusClient = this.connectIBus(settingsService.getIBusConfig())
-            this.configure(getPlugDescription(iBusUrls))
+//            this.configure(getPlugDescription(iBusUrls))
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }

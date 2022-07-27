@@ -325,7 +325,9 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
 
     @Throws(IOException::class)
     fun startHeartBeats() {
-        LOG.info("start heart beats")
+        // Heartbeats not supported because iPlug contains a plug description for each catalog
+        return
+        /*LOG.info("start heart beats")
         val iterator: Iterator<HeartBeat> = _heartBeats.values.iterator()
         var index = 0
         while (iterator.hasNext()) {
@@ -335,7 +337,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                 heartBeat.run()
             }
             index++
-        }
+        }*/
     }
 
     fun stopHeartBeats() {
