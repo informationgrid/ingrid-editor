@@ -10,7 +10,8 @@ export class ShortTreeNode {
       canWrite: true,
       canOnlyWriteSubtree: false,
     },
-    public disabled = false
+    public disabled = false,
+    public showDisabledBreadcrumb = permission.canRead || permission.canWrite
   ) {}
 }
 

@@ -1,4 +1,4 @@
-<span *ngIf="path" [class.emphasize]="emphasize">
+<span *ngIf="breadPath" [class.emphasize]="emphasize">
     <span *ngIf="showRoot" class="root">
         <span
             [class.selectable]="selectable && !disableRoot"
@@ -12,14 +12,15 @@
             *transloco="let t; read: 'menu'"
             >{{ rootName }}</span
         >
-        <ng-container *ngIf="path.length > 0 || !hideLastSeparator">
+        <ng-container *ngIf="breadPath.length > 0 || !hideLastSeparator">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>
     </span>
 
-    <span *ngFor="let item of path; let last = last">
+    <span *ngFor="let item of breadPath; let last = last; let i = index">
         <span
+            *ngIf="showBreadcrumbPart[item.id]; else noShow"
             [matTooltip]="
                 item.disabled &&
                 !item.hasOnlySubtreeWritePermission &&
@@ -32,16 +33,28 @@
             data-cy="{{ item.disabled ? 'yes' : 'no' }}"
             [class.selectable]="
                 selectable &&
-                (!item.disabled || item.hasOnlySubtreeWritePermission)
+                (!item.disabled ||
+                    item.permission.hasOnlySubtreeWritePermission ||
+                    item.permission.canRead)
             "
             [class.disabled]="item.disabled"
-            (click)="
-                (!item.disabled || item.hasOnlySubtreeWritePermission) &&
-                    onSelect(item.id)
-            "
+            (click)="collapsePath(breadPath, item)"
             >{{ item.title }}</span
         >
-        <ng-container *ngIf="!last || !hideLastSeparator">
+
+        <ng-template #noShow
+            ><span
+                *ngIf="showCollapsedSymbol(breadPath, item, i)"
+                (click)="unfoldDisabledPath(breadPath)"
+                [class.selectable]="true"
+                >...</span
+            >
+        </ng-template>
+        <ng-container
+            *ngIf="
+                showChevron(breadPath, item, i) && (!last || !hideLastSeparator)
+            "
+        >
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>
