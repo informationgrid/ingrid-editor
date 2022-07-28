@@ -71,6 +71,10 @@ export class GlobalErrorHandler implements ErrorHandler {
         return `Es ist nicht möglich, ein Dokument/einen Ordner in sich selbst zu verschieben`;
       case "CONFLICT_WHEN_COPYING":
         return `Kopieren von Dokumentenbäumen unter sich selbst ist nicht möglich`;
+      case "CONFLICT":
+        return error.errorText === "Conflicting email address"
+          ? "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
+          : null;
       default:
         return null;
     }

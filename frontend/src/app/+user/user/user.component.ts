@@ -221,25 +221,18 @@ export class UserComponent
     user = user ?? this.model;
 
     // send request and handle error
-    this.userService.updateUser(user).subscribe(
-      () => {
+    this.userService
+      .updateUser(user)
+      .pipe(finalize(() => this.hideLoading()))
+      .subscribe(() => {
         this.fetchUsers().subscribe();
         this.form.markAsPristine();
         this.loadUser(user.login);
-      },
-      (err: any) => {
-        this.hideLoading();
-        this.userService.selectedUser$.next(null);
-        if (err.error.errorText.includes("Conflicting email address")) {
-          throw new IgeError(
-            "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
-          );
-        } else {
-          throw err;
-        }
-      }
-    );
+      });
   }
+
+  // on error:
+  // this.userService.selectedUser$.next(null);
 
   getEmailErrorMessage() {
     const email = this.form.get("email");
