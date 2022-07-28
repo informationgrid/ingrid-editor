@@ -126,8 +126,19 @@ If no error messages appears, our application are robust enough.
 
 #### What is missing?
 
-It is not completly finished yet.
+It is not completely finished yet.
 
 - smart gremlins
 - executing code before or after attack
 - modified mogwais for better reenactment
+
+# Migration to Cypress V. 10
+
+There are several breaking changes in the new cypress version.
+
+- Changes to project structure:
+  - The new default spec folder is `cypress/e2e`
+  - The default spec file extension is `[filename].cy.[ext]`
+- Changes to support and configuration files:
+  - The E2E support file has been renamed from: `cypress/support/index.js` to `cypress/support/e2e.js`
+  - The default Cypress config file has been changed from: `cypress.json` to `cypress.config.ts`
