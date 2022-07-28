@@ -345,12 +345,12 @@ class CatalogService @Autowired constructor(
             .filter { user -> catalogUsers.any { it.userId == user.login } }
             .map { user ->
                 val catUser = catalogUsers.find { it.userId == user.login }!!
-                applyIgeUserInfo(user, catUser)
+                applyIgeUserInfo(user, catUser, catalogId)
             }
     }
 
-    fun applyIgeUserInfo(user: User, igeUser: UserInfo): User {
-        user.groups = igeUser.groups.sortedBy { it.name }.map { it.id!! }
+    fun applyIgeUserInfo(user: User, igeUser: UserInfo, catalogId: String): User {
+        user.groups = igeUser.groups.filter{it.catalog?.identifier == catalogId }.sortedBy { it.name }.map { it.id!! }
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)
         user.role = igeUser.role?.name ?: ""
