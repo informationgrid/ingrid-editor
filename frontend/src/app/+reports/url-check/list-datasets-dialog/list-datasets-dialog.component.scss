@@ -14,6 +14,11 @@ mat-dialog-content button {
 .mat-action-list {
   overflow: auto;
   margin-top: 24px;
+
+  .mat-list-item {
+    height: auto;
+    padding: 14px 0;
+  }
 }
 
 .intro {
