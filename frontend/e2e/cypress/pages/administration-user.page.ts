@@ -279,7 +279,7 @@ export class AdminUserPage extends BasePage {
 
   static changeUserRole(newRole: string, confirm: boolean = false) {
     // TODO: replace with BasePage.selectOption()
-    cy.get('[data-cy="Rolle"]').click();
+    cy.get('[data-cy="role"]').click();
     cy.get('mat-option').contains(newRole).click();
     cy.contains('mat-dialog-content', 'Änderung der Rolle ist katalogübergreifend');
     cy.get('[data-cy="confirm-dialog-cancel"]').click();

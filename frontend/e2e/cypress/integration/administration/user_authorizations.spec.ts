@@ -647,7 +647,7 @@ describe('Meta data administrator with a group', () => {
     AdminUserPage.visit();
     // open dialog for creating new user and try to pick role "catalog administrator"
     cy.get('[data-cy="toolbar_add_user"]').click();
-    cy.get('[data-cy="Rolle"]').click();
+    cy.get('[data-cy="role"]').click();
     // make sure option role = catalog administrator is not available
     cy.contains('.mat-option', 'Katalog-Administrator').should('not.exist');
   });

@@ -204,18 +204,18 @@ describe('User', () => {
 
     //Katalog-Admin
     AdminUserPage.selectUser(username);
-    cy.get('[data-cy=Login]').should('not.be.enabled');
-    cy.get('[data-cy=Rolle]').should('not.be.enabled');
+    cy.get('[data-cy=login]').should('not.be.enabled');
+    cy.get('[data-cy=role]').should('not.be.enabled');
 
     //Meta-Admin
     AdminUserPage.selectUser(username2);
-    cy.get('[data-cy=Login]').should('not.be.enabled');
-    cy.get('[data-cy=Rolle]').should('not.be.enabled');
+    cy.get('[data-cy=login]').should('not.be.enabled');
+    cy.get('[data-cy=role]').should('not.be.enabled');
 
     //Autor
     AdminUserPage.selectUser(username3);
-    cy.get('[data-cy=Login]').should('not.be.enabled');
-    cy.get('[data-cy=Rolle]').should('not.be.enabled');
+    cy.get('[data-cy=login]').should('not.be.enabled');
+    cy.get('[data-cy=role]').should('not.be.enabled');
   });
 
   it('should display the organisation name in the user list view', () => {
@@ -710,16 +710,16 @@ describe('User', () => {
     };
 
     cy.get(AdminUserPage.addUserButton).click();
-    cy.get('[data-cy="Login"] input').click();
+    cy.get('[data-cy="login"] input').click();
     cy.contains('[role="option"]', user.login).click();
 
     // check automatically filled fields
     cy.get('.firstName input').should('have.value', user.firstName);
     cy.get('.lastName input').should('have.value', user.lastName);
-    cy.get('[data-cy="E-Mail"] input').should('have.value', user.email);
+    cy.get('[data-cy="email"] input').should('have.value', user.email);
 
     // role field should not be filled with a value
-    DocumentPage.checkContentOfField('[data-cy="Rolle"]', 'mat-select', '');
+    DocumentPage.checkContentOfField('[data-cy="role"]', 'mat-select', '');
     // the add-button should not be activated
     cy.contains('button', 'Anlegen').should('be.disabled');
   });
