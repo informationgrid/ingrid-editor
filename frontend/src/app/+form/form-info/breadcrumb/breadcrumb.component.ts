@@ -9,7 +9,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 export class BreadcrumbComponent implements OnInit {
   breadPath: ShortTreeNode[];
   @Input() set path(path: ShortTreeNode[]) {
-    path.forEach(
+    path?.forEach(
       (item) =>
         (this.showBreadcrumbPart[item.id] =
           item.permission.canRead || item.permission.canWrite)
