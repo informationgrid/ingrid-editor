@@ -3,25 +3,25 @@ import { BasePage } from './base.page';
 
 export class enterMcloudDocTestData {
   static setDescription(text: string) {
-    cy.get('[data-cy=Beschreibung]').find('mat-form-field').type(text);
-    cy.get('[data-cy=Beschreibung] textarea').should('have.value', text);
+    cy.get('[data-cy=description]').find('mat-form-field').type(text);
+    cy.get('[data-cy=description] textarea').should('have.value', text);
   }
 
   static setAddress(addressText: string) {
-    cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
+    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
     DocumentPage.AddAddressDialog.searchAndSelect(addressText);
     cy.get('[data-cy="choose-address-confirm"]').click();
-    cy.get('[data-cy=Adressen]').contains(addressText);
+    cy.get('[data-cy=addresses]').contains(addressText);
   }
 
   static checkAddressSelectable(addressText: string, shouldBeSelectable: boolean) {
-    cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
+    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
     DocumentPage.AddAddressDialog.searchAndSelect(addressText);
     cy.get('[data-cy="choose-address-confirm"]').should(shouldBeSelectable ? 'be.enabled' : 'be.disabled');
   }
 
   static getAddress(address: string) {
-    cy.get('[data-cy=Adressen]').contains('Hinzufügen').click();
+    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
     DocumentPage.AddAddressDialog.search(address);
   }
 
@@ -32,14 +32,14 @@ export class enterMcloudDocTestData {
 
   static setCategory(optionText: string, isFirstCategory: boolean = true) {
     if (!isFirstCategory) {
-      cy.get('[data-cy="mCLOUD Kategorie"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+      cy.get('[data-cy="mCloudCategories"] ige-add-button mat-icon').first().contains('add').click({ force: true });
     } else {
-      cy.get('[data-cy="mCLOUD Kategorie"]').contains('Hinzufügen').click();
+      cy.get('[data-cy="mCloudCategories"]').contains('Hinzufügen').click();
     }
 
     cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
     cy.get('[data-cy="chip-dialog-confirm"]').click();
-    cy.contains('[data-cy="mCLOUD Kategorie"] .mat-chip', optionText);
+    cy.contains('[data-cy="mCloudCategories"] .mat-chip', optionText);
   }
 
   static setOpenDataCategory(optionText: string, isFirstCategory: boolean = true) {
@@ -187,14 +187,14 @@ export class enterMcloudDocTestData {
   }
 
   static setTimeReference(date: Date, choose: string, index: number = 0) {
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').click();
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-repeat mat-select ')
+    cy.get('[data-cy="events"] ige-add-button button').click();
+    cy.get('[data-cy="events"] ige-repeat mat-select ')
       .find('span')
       .eq(index)
 
       .click({ force: true });
     cy.get('.mat-option-text').contains(choose).click();
-    this.selectDate('[data-cy="Zeitbezug der Ressource"]', date, choose, undefined, index);
+    this.selectDate('[data-cy="events"]', date, choose, undefined, index);
   }
 
   static selectDate(area: string, date: Date, choose: string, until?: Date, index: number = 0) {

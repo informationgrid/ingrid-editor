@@ -717,7 +717,7 @@ export class DocumentPage extends BasePage {
   }
 
   static addDescription(text: string) {
-    cy.get('[data-cy="Beschreibung"] textarea').clear().type(text);
+    cy.get('[data-cy="description"] textarea').clear().type(text);
   }
 
   static scrollToSection(section: string) {

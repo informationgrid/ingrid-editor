@@ -110,29 +110,25 @@ describe('mCLOUD documents', function () {
       DocumentPage.saveDocument();
 
       // check if fields contain their values after saving
-      DocumentPage.checkValueOfField('[data-cy="Beschreibung"]', 'textarea', 'some meaningful description');
+      DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some meaningful description');
       DocumentPage.checkContentOfField(
-        '[data-cy="Adressen"]',
+        '[data-cy="addresses"]',
         'ige-address-card',
         'Herausgeber Published Testorganization'
       );
       DocumentPage.checkContentOfField('[data-cy="Schlagworte"]', '.mat-chip', 'schlagwort');
       DocumentPage.checkValueOfField('[data-cy="Nutzungshinweise"]', 'textarea', 'Nutzerhinweise');
-      DocumentPage.checkContentOfField('[data-cy="mCLOUD Kategorie"]', '.mat-chip', 'Bahn');
+      DocumentPage.checkContentOfField('[data-cy="mCloudCategories"]', '.mat-chip', 'Bahn');
       DocumentPage.checkContentOfField('[data-cy="OpenData Kategorie"]', '.mat-chip', 'Verkehr');
       DocumentPage.checkContentOfField('[data-cy="Downloads-table"]', 'mat-cell', 'https://docs.cypress.io/api/this');
       DocumentPage.checkValueOfField('[data-cy="Lizenz"]', 'input', 'Andere offene Lizenz');
       DocumentPage.checkValueOfField('[data-cy="Quellenvermerk"]', 'textarea', 'Meine Quelle');
       cy.get('[data-cy="mFUND"] input').eq(0).should('have.value', 'text1');
       cy.get('[data-cy="mFUND"] input').eq(1).should('have.value', 'text2');
-      DocumentPage.checkValueOfField('[data-cy="Zeitbezug der Ressource"]', 'input', '11.01.2020');
-      DocumentPage.checkContentOfField('[data-cy="Zeitspanne"]', 'mat-select', 'von - bis');
-      DocumentPage.checkValueOfField('[data-cy="Zeitspanne"]', 'input.mat-start-date', '11.01.2020');
-      DocumentPage.checkValueOfField(
-        '[data-cy="Zeitspanne"]',
-        'input.mat-end-date',
-        Utils.getFormattedDate(new Date())
-      );
+      DocumentPage.checkValueOfField('[data-cy="events"]', 'input', '11.01.2020');
+      DocumentPage.checkContentOfField('[data-cy="temporal"]', 'mat-select', 'von - bis');
+      DocumentPage.checkValueOfField('[data-cy="temporal"]', 'input.mat-start-date', '11.01.2020');
+      DocumentPage.checkValueOfField('[data-cy="temporal"]', 'input.mat-end-date', Utils.getFormattedDate(new Date()));
       cy.get('ige-spatial-list').should('exist');
     });
 

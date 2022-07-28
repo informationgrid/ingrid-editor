@@ -150,7 +150,7 @@ describe('General create addresses/folders', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
       AddressPage.publishIsUnsuccessful();
 
-      cy.get('[data-cy="Kontakt"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
+      cy.get('[data-cy="contact"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
     });
 
     it('should withdraw publication of published address', () => {
@@ -297,8 +297,8 @@ describe('General create addresses/folders', () => {
     it('check for ordering and sorting "Kontakt" lists in the address document (organization)', () => {
       let contact1 = 'user@test.com';
       let contact2 = '1243543436';
-      let resourceDateSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
-      let targetSelector = '[data-cy=Kontakt] ige-repeat .cdk-drag:nth-child(1)';
+      let resourceDateSelector = '[data-cy=contact] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
+      let targetSelector = '[data-cy=contact] ige-repeat .cdk-drag:nth-child(1)';
 
       Tree.openNode(['mclould_address']);
 
@@ -308,10 +308,10 @@ describe('General create addresses/folders', () => {
 
       // reload and make sure of ordering
       cy.reload();
-      cy.get('[data-cy=Kontakt]', { timeout: 10000 }).should('exist');
+      cy.get('[data-cy=contact]', { timeout: 10000 }).should('exist');
 
-      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact2, 0, true);
-      DocumentPage.checkOfExistingItem('[data-cy=Kontakt] ige-repeat .mat-input-element', contact1, 1, true);
+      DocumentPage.checkOfExistingItem('[data-cy=contact] ige-repeat .mat-input-element', contact2, 0, true);
+      DocumentPage.checkOfExistingItem('[data-cy=contact] ige-repeat .mat-input-element', contact1, 1, true);
     });
   });
 });

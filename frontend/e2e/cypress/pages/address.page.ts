@@ -70,11 +70,11 @@ export class AddressPage extends DocumentPage {
   // TODO: remove default values and call with specific parameters
   static addContact(chooseContact: string = 'Telefon', connection: string = '123456789', index: number = 0) {
     cy.get('[data-cy=create-action]').should('not.exist');
-    cy.get('[data-cy=Kontakt]').find('ige-add-button').contains('Hinzufügen').click();
+    cy.get('[data-cy=contact]').find('ige-add-button').contains('Hinzufügen').click();
     // TODO: replace with BasePage.selectOption() -> difficult since, there are more than one select boxes
-    cy.get('[data-cy=Kontakt]').find('.mat-select-arrow').eq(index).click();
+    cy.get('[data-cy=contact]').find('.mat-select-arrow').eq(index).click();
     cy.get('mat-option').contains(chooseContact).click();
-    cy.get('[data-cy=Kontakt] ').find('input').eq(index).clear().type(connection);
+    cy.get('[data-cy=contact] ').find('input').eq(index).clear().type(connection);
   }
 
   static addAddressToTestDocument(path: string[], addressType: string) {
@@ -95,11 +95,11 @@ export class AddressPage extends DocumentPage {
   }
 
   static editOrganizationName(name: string = 'Organization' + Utils.randomString()) {
-    cy.get("[data-cy='Bezeichnung'] input").clear().type(name);
+    cy.get("[data-cy='organization'] input").clear().type(name);
   }
 
   static addStreetName(name: string = Utils.randomDoubleDigitString() + '. Street') {
-    cy.get('[data-cy="Anschrift"] input').first().type(name);
+    cy.get('[data-cy="address"] input').first().type(name);
   }
 
   static createAddress(address: Address, targetTreePath?: string[]) {

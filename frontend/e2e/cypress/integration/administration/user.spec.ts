@@ -80,14 +80,14 @@ describe('User', () => {
     AdminUserPage.selectUser('Majid Ercan');
 
     // TODO: use updateUser-function to modify user form (see above)
-    cy.get('[data-cy=E-Mail]  formly-field-mat-input').click().clear();
+    cy.get('[data-cy=email]  formly-field-mat-input').click().clear();
     // clicking another field is needed to activate the error-message
     cy.get('[data-cy=Name] .firstName').click().clear();
     cy.get('mat-error').should('have.length', 1);
     cy.get('[data-cy=Name] .lastName').click().clear();
     cy.get('mat-error').should('have.length', 2);
     // clicking another field is needed to activate the error-message
-    cy.get('[data-cy=E-Mail]  formly-field-mat-input').click();
+    cy.get('[data-cy=email]  formly-field-mat-input').click();
     cy.get('mat-error').should('have.length', 3);
 
     cy.get('mat-error').contains('Dieses Feld muss ausgefüllt sein').should('be.visible');
@@ -317,30 +317,30 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
 
     // check no group connected
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
+    cy.get('[data-cy=groups]').should('not.contain', groupName);
 
     // select group and save
     AdminUserPage.addGroupToUser(groupName);
-    cy.get('[data-cy=Gruppen]').should('contain', groupName);
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
+    cy.get('[data-cy=groups]').should('contain', groupName);
+    cy.get('[data-cy=groups]').should('not.contain', groupName2);
 
     AdminUserPage.addGroupToUser(groupName2);
     AdminUserPage.saveUser();
 
     // check groups were connected
-    cy.get('[data-cy=Gruppen]').should('contain', groupName);
-    cy.get('[data-cy=Gruppen]').should('contain', groupName2);
+    cy.get('[data-cy=groups]').should('contain', groupName);
+    cy.get('[data-cy=groups]').should('contain', groupName2);
 
     // remove group-connection from user
     AdminUserPage.removeGroupFromUser(groupName);
     AdminUserPage.saveUser();
-    cy.get('[data-cy=Gruppen]').should('contain', groupName2);
+    cy.get('[data-cy=groups]').should('contain', groupName2);
     AdminUserPage.removeGroupFromUser(groupName2);
     AdminUserPage.saveUser();
 
     // check groups are not connected anymore
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName2);
+    cy.get('[data-cy=groups]').should('not.contain', groupName);
+    cy.get('[data-cy=groups]').should('not.contain', groupName2);
   });
 
   it('should not be able to add the same group twice to a user (#3047)', () => {
@@ -349,20 +349,20 @@ describe('User', () => {
 
     // I. make sure that same group cannot be added twice consecutively
     AdminUserPage.selectUser(username);
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
+    cy.get('[data-cy=groups]').should('not.contain', groupName);
     AdminUserPage.addGroupToUser(groupName);
-    cy.get('[data-cy=Gruppen]').should('contain', groupName);
+    cy.get('[data-cy=groups]').should('contain', groupName);
     cy.get('.mat-select-panel-wrap').should('not.exist', { timeout: 10000 });
 
     // check if 'Testgruppe' is not selectable a second time
-    cy.get('[data-cy=Gruppen] mat-select').click();
+    cy.get('[data-cy=groups] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', groupName);
 
     AdminUserPage.visit();
     AdminUserPage.selectUser('Test Verantwortlicher2');
-    cy.get('[data-cy=Gruppen]').should('contain', 'gruppe_mit_ortsrechten');
+    cy.get('[data-cy=groups]').should('contain', 'gruppe_mit_ortsrechten');
     // check if 'gruppe_mit_ortsrechten' is not selectable
-    cy.get('[data-cy=Gruppen] mat-select').click();
+    cy.get('[data-cy=groups] mat-select').click();
     cy.get('.mat-option-disabled').should('contain', 'gruppe_mit_ortsrechten');
   });
 
@@ -600,7 +600,7 @@ describe('User', () => {
     Tree.openNode(['Doc_h']);
     DocumentPage.addDescription('some description');
     DocumentPage.saveDocument();
-    DocumentPage.checkValueOfField('[data-cy="Beschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
     // check write access addresses
     Menu.switchTo('ADDRESSES');
     cy.get('mat-tree mat-tree-node')

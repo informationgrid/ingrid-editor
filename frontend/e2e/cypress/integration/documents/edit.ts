@@ -102,8 +102,8 @@ describe('edit documents', function () {
   it('Should create minimal publishable document', () => {
     const docName = 'Testdokument_2';
     Tree.openNode(['Testdokumente', docName]);
-    DocumentPage.fillInField('[data-cy="Textfeld"]', 'input', 'some text');
-    DocumentPage.fillInField('[data-cy="Textfeld Max Länge"]', 'input', '5');
+    DocumentPage.fillInField('[data-cy="text"]', 'input', 'some text');
+    DocumentPage.fillInField('[data-cy="textMaxLength"]', 'input', '5');
     DocumentPage.fillInField('[data-cy="Textarea"]', 'textarea', 'some more text');
     DocumentPage.chooseSelect('[data-cy="Selectbox"]', 'mat-select', 'Fachaufgabe');
     DocumentPage.chooseSelect('[data-cy="Selectbox mit leerer Option"]', 'mat-select', 'Fachaufgabe');

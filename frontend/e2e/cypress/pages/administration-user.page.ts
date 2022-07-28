@@ -118,10 +118,10 @@ export class AdminUserPage extends BasePage {
       cy.get('[data-cy=Name] .firstName input').clear().type(data.firstName);
     }
     if (data.email) {
-      cy.get('[data-cy=E-Mail]  formly-field-mat-input input').clear().type(data.email);
+      cy.get('[data-cy=email]  formly-field-mat-input input').clear().type(data.email);
     }
     if (data.organisation) {
-      cy.get('[data-cy=Organisation] input').clear().type(data.organisation);
+      cy.get('[data-cy=organisation] input').clear().type(data.organisation);
     }
 
     if (save) {
@@ -133,14 +133,14 @@ export class AdminUserPage extends BasePage {
     // TODO: remove wait when we find another way to wait for field to be initialized
     // TODO: replace with BasePage.selectOption()
     cy.wait(200);
-    cy.get('[data-cy=Gruppen] .mat-select-arrow').click({ force: true });
+    cy.get('[data-cy=groups] .mat-select-arrow').click({ force: true });
     cy.get(this.groupSelectionField, { timeout: 10000 }).should('be.visible');
     cy.get('mat-option').contains(groupName).click({ force: true });
     cy.contains('ige-repeat-list', groupName, { timeout: 6000 });
   }
 
   static removeGroupFromUser(groupName: string) {
-    cy.contains('[data-cy=Gruppen] div.clickable', groupName)
+    cy.contains('[data-cy=groups] div.clickable', groupName)
       .should('be.visible')
       .trigger('mouseover')
       /*.parent()
@@ -383,7 +383,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static checkForEmptyGroupDropdown() {
-    cy.get('[data-cy=Gruppen] .no-fields-selected-notice').should('exist');
+    cy.get('[data-cy=groups] .no-fields-selected-notice').should('exist');
   }
 
   static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {

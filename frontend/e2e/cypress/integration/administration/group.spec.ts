@@ -163,7 +163,7 @@ describe('Group', () => {
     AdminUserPage.selectUser(username);
 
     // check if group connection was deleted
-    cy.get('[data-cy=Gruppen]').should('not.contain', groupName);
+    cy.get('[data-cy=groups]').should('not.contain', groupName);
   });
 
   it('should have save button be enabled, when group entries changed (#2569)', () => {

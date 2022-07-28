@@ -6,18 +6,15 @@ import Chainable = Cypress.Chainable;
 
 export class uvpPage {
   static setDescription(text: string) {
-    cy.get('[data-cy="Allgemeine Vorhabenbeschreibung"] textarea').type(text);
-    cy.get('[data-cy="Allgemeine Vorhabenbeschreibung"] textarea').should('have.value', text);
+    cy.get('[data-cy="description"] textarea').type(text);
   }
 
   static setDateOfRequest(date: string) {
     cy.get('[data-cy="Eingang des Antrags"] input').type(date);
-    cy.get('[data-cy="Eingang des Antrags"] input').should('have.value', date);
   }
 
   static setDecisionDate(date: string) {
     cy.get('[data-cy="Datum der Entscheidung"] input').type(date);
-    cy.get('[data-cy="Datum der Entscheidung"] input').should('have.value', date);
   }
 
   static IsPreliminaryAssessment(answer: 'Ja' | 'Nein') {
@@ -28,18 +25,18 @@ export class uvpPage {
   }
 
   static setUVPnumber(UVPnumber: string) {
-    cy.get('[data-cy="UVP-Nummern"] mat-select')
+    cy.get('[data-cy="eiaNumbers"] mat-select')
       .click()
       .type(UVPnumber + '{enter}');
-    cy.get('[data-cy="UVP-Nummern"]').should('contain', UVPnumber);
-    cy.get('[data-cy="UVP-Nummern"] mat-select').invoke('attr', 'aria-expanded').should('eq', 'false');
+    cy.get('[data-cy="eiaNumbers"]').should('contain', UVPnumber);
+    cy.get('[data-cy="eiaNumbers"] mat-select').invoke('attr', 'aria-expanded').should('eq', 'false');
   }
 
   static setAddress(addressText: string) {
-    cy.get('[data-cy="Kontaktdaten der verfahrensführenden Behörde"]').contains('Hinzufügen').click();
+    cy.get('[data-cy="pointOfContact"]').contains('Hinzufügen').click();
     DocumentPage.AddAddressDialog.searchAndSelect(addressText);
     cy.get('[data-cy="choose-address-confirm"]').click();
-    cy.get('[data-cy="Kontaktdaten der verfahrensführenden Behörde"]').contains(addressText);
+    cy.get('[data-cy="pointOfContact"]').contains(addressText);
   }
 
   static addAddressElement(addressElement: AddressDetails, value: string) {

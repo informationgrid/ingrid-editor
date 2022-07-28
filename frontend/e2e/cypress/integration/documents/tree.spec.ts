@@ -17,9 +17,9 @@ describe('mCLOUD: Tree', () => {
   it('should navigate to a section when clicking on form header navigation', () => {
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
 
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button').should('not.be.visible');
+    cy.get('[data-cy="events"] ige-add-button button').should('not.be.visible');
     cy.get('.navigation-header').contains('Zeitbezüge').click();
-    cy.get('[data-cy="Zeitbezug der Ressource"] ige-add-button button', { timeout: 1000 }).should('be.visible');
+    cy.get('[data-cy="events"] ige-add-button button', { timeout: 1000 }).should('be.visible');
   });
 
   it('should expand and select the same node when reloading page', () => {

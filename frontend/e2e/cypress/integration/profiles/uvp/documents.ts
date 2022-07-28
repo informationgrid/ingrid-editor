@@ -31,14 +31,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
     DocumentPage.checkContentOfField(
-      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      '[data-cy="pointOfContact"]',
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_6'
     );
     DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '02.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
   });
 
@@ -61,14 +61,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some description');
+    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
     DocumentPage.checkContentOfField(
-      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      '[data-cy="pointOfContact"]',
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_7'
     );
     DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '03.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
     cy.get('[data-cy="Vorprüfung durchgeführt"] mat-radio-button').should('have.class', 'mat-radio-checked');
   });
@@ -90,14 +90,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some other description');
+    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some other description');
     DocumentPage.checkContentOfField(
-      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      '[data-cy="pointOfContact"]',
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_8'
     );
     DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '04.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="UVP-Nummern"]', '.list-item', 'UVPG-1.1.1');
+    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Bonn');
   });
 
@@ -114,9 +114,9 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="Allgemeine Vorhabenbeschreibung"]', 'textarea', 'some more description');
+    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some more description');
     DocumentPage.checkContentOfField(
-      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      '[data-cy="pointOfContact"]',
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_9'
     );
@@ -135,7 +135,7 @@ describe('uvp documents', () => {
 
     // check content of fields
     DocumentPage.checkContentOfField(
-      '[data-cy="Kontaktdaten der verfahrensführenden Behörde"]',
+      '[data-cy="pointOfContact"]',
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_10'
     );
@@ -146,8 +146,8 @@ describe('uvp documents', () => {
     Tree.openNode(['Plan_L']);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="start"]', '12.12.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.12.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
@@ -176,12 +176,8 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Auslegung"]',
-      'input[formcontrolname="start"]',
-      '12.12.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
@@ -206,8 +202,8 @@ describe('uvp documents', () => {
     Tree.openNode(['Plan_Z']);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="start"]', '01.01.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
@@ -236,12 +232,8 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Auslegung"]',
-      'input[formcontrolname="start"]',
-      '01.01.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
@@ -266,8 +258,8 @@ describe('uvp documents', () => {
     Tree.openNode(['Plan_R']);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
@@ -296,12 +288,8 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Auslegung"]',
-      'input[formcontrolname="start"]',
-      '10.01.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
@@ -326,8 +314,8 @@ describe('uvp documents', () => {
     Tree.openNode(['Plan_A']);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
     enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
@@ -350,12 +338,8 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Auslegung"]',
-      'input[formcontrolname="start"]',
-      '10.01.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Auslegung"]', 'input[formcontrolname="end"]', '24.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'importtest_2.json');

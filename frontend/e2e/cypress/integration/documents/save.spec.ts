@@ -220,7 +220,7 @@ describe('General create documents/folders', () => {
 
     it('check for ordering and sorting mCloud and openData category lists in the mCLOUD document', () => {
       let category1 = 'Straßen';
-      let mCLOUDSelector = '[data-cy="mCLOUD Kategorie"] mat-chip-list ';
+      let mCLOUDSelector = '[data-cy="mCloudCategories"] mat-chip-list ';
       let mCLOUDSelectorSourceNode = mCLOUDSelector + ' .cdk-drag:nth-child(2) ';
       let mCLOUDSelectorTargetNode = mCLOUDSelector + ' .cdk-drag:nth-child(1) ';
       Tree.openNode(['New Folder For New Users', 'New Document']);
@@ -249,7 +249,7 @@ describe('General create documents/folders', () => {
     it('check for ordering and sorting address lists in the mCLOUD document', () => {
       let address1 = 'mclould_address';
       let address2 = 'Published Testorganization';
-      let addressSelector = '[data-cy="Adressen"] .address-cards ';
+      let addressSelector = '[data-cy="addresses"] .address-cards ';
       let addressSelectorSourceNode = addressSelector + ' .cdk-drag:nth-child(1)';
       let addressSelectorTargetNode = addressSelector + ' .cdk-drag:nth-child(2)';
       Tree.openNode(['New Folder For New Users', 'New Document']);
@@ -270,10 +270,8 @@ describe('General create documents/folders', () => {
     });
 
     it('check for ordering and sorting Zeitbezug der Ressource lists in the mCLOUD document', () => {
-      let resourceDateSelectorSourceNode =
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag:nth-child(1) .cdk-drag-handle';
-      let resourceDateSelectorTargetNode =
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
+      let resourceDateSelectorSourceNode = '[data-cy="events"] ige-repeat .cdk-drag:nth-child(1) .cdk-drag-handle';
+      let resourceDateSelectorTargetNode = '[data-cy="events"] ige-repeat .cdk-drag:nth-child(2) .cdk-drag-handle';
 
       Tree.openNode(['New Folder For New Users', 'New Document']);
 
@@ -283,22 +281,12 @@ describe('General create documents/folders', () => {
 
       // // reload and make sure of ordering
       cy.reload();
-      cy.get("[data-cy='Zeitbezug der Ressource']", { timeout: 10000 }).should('exist');
+      cy.get("[data-cy='events']", { timeout: 10000 }).should('exist');
 
       DocumentPage.scrollToSection('Zeitbezüge');
 
-      DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '12.02.2022',
-        0,
-        true
-      );
-      DocumentPage.checkOfExistingItem(
-        '[data-cy="Zeitbezug der Ressource"] ige-repeat .mat-datepicker-input',
-        '10.02.2023',
-        1,
-        true
-      );
+      DocumentPage.checkOfExistingItem('[data-cy="events"] ige-repeat .mat-datepicker-input', '12.02.2022', 0, true);
+      DocumentPage.checkOfExistingItem('[data-cy="events"] ige-repeat .mat-datepicker-input', '10.02.2023', 1, true);
     });
 
     it('check for ordering and sorting Download links in the mCLOUD document', () => {

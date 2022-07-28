@@ -491,7 +491,7 @@ describe('Meta data administrator with a group', () => {
 
     //assign groups to user
     AdminUserPage.addGroupToUser(groupName);
-    cy.get('[data-cy=Gruppen]').should('contain', groupName);
+    cy.get('[data-cy=groups]').should('contain', groupName);
     AdminUserPage.saveUser();
   });
 
