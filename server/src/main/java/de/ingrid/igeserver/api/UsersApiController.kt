@@ -137,7 +137,8 @@ class UsersApiController : UsersApi {
 
             user.latestLogin = this.getMostRecentLoginForUser(userId)
 
-            catalogService.applyIgeUserInfo(user, frontendUser)
+            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
             return ResponseEntity.ok(user)
         }
 
