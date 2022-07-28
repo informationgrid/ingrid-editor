@@ -133,6 +133,7 @@ export class UrlCheckComponent implements OnInit {
     $event.stopImmediatePropagation();
     this.dialog
       .open(ListDatasetsDialogComponent, {
+        maxWidth: 900,
         data: <ListDatasetsDialogData>{
           datasets: item.datasets,
           link: item.url,

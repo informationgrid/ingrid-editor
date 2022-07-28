@@ -15,3 +15,11 @@ mat-dialog-content button {
   overflow: auto;
   margin-top: 24px;
 }
+
+.intro {
+  padding: 0 16px;
+  a {
+    font-size: 16px;
+    word-break: break-word;
+  }
+}

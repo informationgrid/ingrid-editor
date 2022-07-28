@@ -7,19 +7,24 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <div>
-        <a class="no-text-transform" target="_blank" href="{{ data.link }}">{{
-            data.link
-        }}</a>
+    <div class="intro">
+        <div>
+            <a
+                class="no-text-transform"
+                target="_blank"
+                href="{{ data.link }}"
+                >{{ data.link }}</a
+            >
+        </div>
         ist enthalten in {{ data.datasets.length }} Datensätzen:
     </div>
     <mat-action-list>
-        <button
-            mat-list-item
-            *ngFor="let item of data.datasets"
-            (click)="close(item.uuid)"
-        >
-            {{ item.title }}
-        </button>
+        <mat-divider></mat-divider>
+        <ng-container *ngFor="let item of data.datasets">
+            <button mat-list-item (click)="close(item.uuid)">
+                {{ item.title }}
+            </button>
+            <mat-divider></mat-divider>
+        </ng-container>
     </mat-action-list>
 </mat-dialog-content>
