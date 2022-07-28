@@ -4,8 +4,9 @@
 
 ### Added
 
-- URL Check reporter
-- Autosave-Plugin
+- URL Check reporter (#3087)
+- Autosave-Plugin (#2897)
+- Add warning indicator on indexing page (#4128)
 
 ### Changed
 

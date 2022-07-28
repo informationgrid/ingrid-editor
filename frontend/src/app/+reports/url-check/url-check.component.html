@@ -21,7 +21,7 @@
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-template #running>
-                    <span class="spinner-container">
+                    <span fxLayout>
                         <mat-progress-spinner
                             [value]="log.progress"
                             diameter="16"

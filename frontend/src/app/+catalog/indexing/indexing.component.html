@@ -68,12 +68,19 @@
     <div main-header *ngIf="isActivated; else noElasticsearch">
         <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
             <ng-container *ngIf="liveImportMessage | async as log">
+                <mat-icon
+                    *ngIf="log.errors.length > 0"
+                    class="error-color"
+                    matTooltip="Bei der letzten Indizierung trat ein Fehler auf"
+                    >error_outline</mat-icon
+                >
+
                 <span *ngIf="log.endTime"
                     >Letzte Indizierung erfolgte am
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-container *ngIf="!log.endTime">
-                    <span class="spinner-container">
+                    <span fxLayout>
                         <mat-progress-spinner
                             [value]="
                                 (log.progressDocuments / log.numDocuments) * 100
