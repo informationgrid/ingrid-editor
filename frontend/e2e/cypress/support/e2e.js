@@ -10,6 +10,11 @@ Cypress.on('test:after:run', (test, runnable) => {
     let item = runnable;
     const nameParts = [runnable.title];
 
+    const file = test.invocationDetails.relativeFile.split('/');
+    file.shift();
+    file.shift();
+    const specNameWithPath = file.join('/');
+
     // Iterate through all parents and grab the titles
     while (item.parent) {
       nameParts.unshift(item.parent.title);
@@ -33,8 +38,8 @@ Cypress.on('test:after:run', (test, runnable) => {
     const currentTime = new Date().toLocaleString('de', { timeZone: 'Europe/Berlin' });
     const startTimeOfIndividualTest = test.wallClockStartedAt;
 
-    addContext({ test }, `assets/${Cypress.spec.name}/${fullTestName} (failed).png`.replace('  ', ' '));
-    addContext({ test }, `assets/${Cypress.spec.name}.mp4#t=${startTimeOffset}`);
+    addContext({ test }, `assets/${specNameWithPath}/${fullTestName} (failed).png`.replace('  ', ' '));
+    addContext({ test }, `assets/${specNameWithPath}.mp4#t=${startTimeOffset}`);
     addContext(
       { test },
       {
