@@ -115,7 +115,7 @@ export class AdminUserPage extends BasePage {
 
   static updateUser(data: Partial<UserFormData>, save = true) {
     if (data.firstName) {
-      cy.get('[data-cy=Name] .firstName input').clear().type(data.firstName);
+      cy.get('.firstName input').clear().type(data.firstName);
     }
     if (data.email) {
       cy.get('[data-cy=email]  formly-field-mat-input input').clear().type(data.email);

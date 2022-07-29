@@ -924,14 +924,14 @@ export class DocumentPage extends BasePage {
 
   static setChips(optionText: string, isFirstCategory: boolean = true) {
     if (!isFirstCategory) {
-      cy.get('[data-cy="Chips (Dialog)"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+      cy.get('[data-cy="multiChips"] ige-add-button mat-icon').first().contains('add').click({ force: true });
     } else {
-      cy.get('[data-cy="Chips (Dialog)"]').contains('Hinzufügen').click();
+      cy.get('[data-cy="multiChips"]').contains('Hinzufügen').click();
     }
 
     cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
     cy.get('[data-cy="chip-dialog-confirm"]').click();
-    cy.contains('[data-cy="Chips (Dialog)"] .mat-chip', optionText);
+    cy.contains('[data-cy="multiChips"] .mat-chip', optionText);
   }
 
   static addList(identifier: string, title: string, linklist: boolean = false) {

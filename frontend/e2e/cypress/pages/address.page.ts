@@ -78,7 +78,7 @@ export class AddressPage extends DocumentPage {
   }
 
   static addAddressToTestDocument(path: string[], addressType: string) {
-    cy.get('[data-cy=Addresses]').contains('Hinzufügen').click();
+    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
     Tree.openNodeInsideDialog(path);
     cy.get('[data-cy=choose-address-next-step]', { timeout: 15000 }).click();
     this.selectOptionAsync('address-type-select', addressType);
@@ -197,7 +197,7 @@ export class AddressPage extends DocumentPage {
     cy.get('[data-cy="dialog-replace-address"]').click();
   }
   static openReferencedDocumentsSection() {
-    cy.get('[data-cy="Zugeordnete Datensätze"] button').click();
+    cy.get('ige-referenced-documents-type button').click();
   }
 }
 
