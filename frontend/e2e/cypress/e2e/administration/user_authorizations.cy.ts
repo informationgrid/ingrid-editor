@@ -444,12 +444,12 @@ describe('Meta data administrator with a group', () => {
      before the breadcrumb with the path is shown.
     */
     cy.get('.error-box', { timeout: 8000 }).should('not.exist');
-    // make sure the parts of the path that point to not-allowed folders are disabled
+    // make sure the folder newly to be created would be part of a legal path
     cy.get('mat-tab-group .mat-tooltip-trigger')
-      .filter('.disabled')
+      .filter('.selectable')
       .then(items => {
-        expect(items[0]).to.contain.text('Adressen');
-        expect(items[1]).to.contain.text('Neue Testadressen');
+        expect(items[0]).to.contain.text('Ordner_2.Ebene_C');
+        expect(items[1]).to.contain.text('Ordner_3.Ebene_F');
       });
 
     // try to switch to forbidden folder

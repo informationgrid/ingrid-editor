@@ -72,6 +72,7 @@ export class AdminUserPage extends BasePage {
       this.userShouldExist(data.email!);
     }
   }
+
   static confirmAddUserDialog() {
     this.applyDialog();
     cy.get('error-dialog').should('not.exist');
@@ -140,6 +141,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static removeGroupFromUser(groupName: string) {
+    cy.wait(1000);
     cy.contains('[data-cy=groups] div.clickable', groupName)
       .should('be.visible')
       .trigger('mouseover')
@@ -287,6 +289,7 @@ export class AdminUserPage extends BasePage {
       this.saveUser();
     }
   }
+
   static getNumberOfUsers(): Chainable<number> {
     return cy
       .get('.user-management-header .page-title')
@@ -359,6 +362,7 @@ export class AdminUserPage extends BasePage {
     cy.get('button').contains('Anlegen').parent().should('not.have.class', 'mat-button-disabled');
     AdminUserPage.confirmAddUserDialog();
   }
+
   /**
    * Check whether a user can see and access to other users with specific role
    * shouldContain is a boolean to check if the role should be included in the list of users or not

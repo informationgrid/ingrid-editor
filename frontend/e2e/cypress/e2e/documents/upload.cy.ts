@@ -2,7 +2,7 @@ import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { enterMcloudDocTestData, FileHandlingOptions } from '../../pages/enterMcloudDocTestData';
 
-describe('Upload Tests', () => {
+describe('mCLOUD: Upload Tests', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
@@ -348,5 +348,23 @@ describe('Upload Tests', () => {
     // check that after saving table and row are still not there
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     cy.get('.table-batch-edit-row').should('not.exist');
+  });
+});
+
+describe('Upload Tests', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    DocumentPage.visit();
+  });
+
+  it('should not upload a file containing "%"(#4122)', () => {
+    const illegalFileTitle = 'this%file';
+    const fileToBeRenamed = 'Test.pdf';
+
+    Tree.openNode(['Neue Testdokumente', 'Datum_3_1']);
+    enterMcloudDocTestData.openDownloadDialog();
+    cy.get('[type="file"]').attachFile({ filePath: fileToBeRenamed, fileName: illegalFileTitle });
+    cy.get('error-dialog').should('include', /Dateiname darf kein '%' enthalten/);
   });
 });
