@@ -231,7 +231,7 @@ describe('General create documents/folders', () => {
 
       //  check of the order after drag and drop
       let openDataCategory1 = 'Internationale Themen';
-      let openDataSelector = '[data-cy="OpenData Kategorie"] mat-chip-list ';
+      let openDataSelector = '[data-cy="DCATThemes"] mat-chip-list ';
       let openDataSelectorSourceNode = openDataSelector + ' .cdk-drag:nth-child(4)  ';
       let openDataSelectorTargetNode = openDataSelector + ' .cdk-drag:nth-child(1) ';
 

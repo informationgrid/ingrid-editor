@@ -10,18 +10,18 @@ export class uvpPage {
   }
 
   static setDateOfRequest(date: string) {
-    cy.get('[data-cy="Eingang des Antrags"] input').type(date);
+    cy.get('[data-cy="receiptDate"] input').type(date);
   }
 
   static setDecisionDate(date: string) {
-    cy.get('[data-cy="Datum der Entscheidung"] input').type(date);
+    cy.get('[data-cy="decisionDate"] input').type(date);
   }
 
   static IsPreliminaryAssessment(answer: 'Ja' | 'Nein') {
-    cy.contains('[data-cy="Vorprüfung durchgeführt"] mat-radio-button', answer).within(_ =>
+    cy.contains('[data-cy="prelimAssessment"] mat-radio-button', answer).within(_ =>
       cy.get('input').check({ force: true })
     );
-    cy.get('[data-cy="Vorprüfung durchgeführt"] mat-radio-button').should('have.class', 'mat-radio-checked');
+    cy.get('[data-cy="prelimAssessment"] mat-radio-button').should('have.class', 'mat-radio-checked');
   }
 
   static setUVPnumber(UVPnumber: string) {
@@ -45,7 +45,7 @@ export class uvpPage {
   }
 
   static checkAddressElement(addressElement: AddressDetails, value: string) {
-    cy.get('[data-cy="Adresse"] input').eq(addressElement).should('have.value', value);
+    cy.get('[data-cy="address"] input').eq(addressElement).should('have.value', value);
   }
 
   static addProcedureSteps(content: 'Öffentliche Auslegung' | 'Erörterungstermin' | 'Entscheidung über die Zulassung') {

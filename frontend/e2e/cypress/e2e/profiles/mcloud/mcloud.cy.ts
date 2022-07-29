@@ -91,7 +91,7 @@ describe('mCLOUD documents', function () {
 
       enterMcloudDocTestData.setDescription('some meaningful description');
       enterMcloudDocTestData.setAddress(PUBLISHED_ADDRESS);
-      DocumentPage.fillInFieldWithEnter('[data-cy="Schlagworte"]', 'input', 'schlagwort', '.mat-chip');
+      DocumentPage.fillInFieldWithEnter('[data-cy="keywords"]', 'input', 'schlagwort', '.mat-chip');
       enterMcloudDocTestData.setUsageInstructions('Nutzerhinweise');
       enterMcloudDocTestData.setCategory('Bahn');
       enterMcloudDocTestData.setOpenDataCategory('Verkehr');
@@ -105,7 +105,7 @@ describe('mCLOUD documents', function () {
       enterMcloudDocTestData.setPeriodicity('einmalig');
 
       // needed to slow it down
-      cy.get('[data-cy=Periodizität').find('mat-form-field').should('have.text', 'einmalig');
+      cy.get('[data-cy=periodicity').find('mat-form-field').should('have.text', 'einmalig');
 
       DocumentPage.saveDocument();
 
@@ -116,13 +116,13 @@ describe('mCLOUD documents', function () {
         'ige-address-card',
         'Herausgeber Published Testorganization'
       );
-      DocumentPage.checkContentOfField('[data-cy="Schlagworte"]', '.mat-chip', 'schlagwort');
-      DocumentPage.checkValueOfField('[data-cy="Nutzungshinweise"]', 'textarea', 'Nutzerhinweise');
+      DocumentPage.checkContentOfField('[data-cy="keywords"]', '.mat-chip', 'schlagwort');
+      DocumentPage.checkValueOfField('[data-cy="accessRights"]', 'textarea', 'Nutzerhinweise');
       DocumentPage.checkContentOfField('[data-cy="mCloudCategories"]', '.mat-chip', 'Bahn');
-      DocumentPage.checkContentOfField('[data-cy="OpenData Kategorie"]', '.mat-chip', 'Verkehr');
+      DocumentPage.checkContentOfField('[data-cy="DCATThemes"]', '.mat-chip', 'Verkehr');
       DocumentPage.checkContentOfField('[data-cy="Downloads-table"]', 'mat-cell', 'https://docs.cypress.io/api/this');
-      DocumentPage.checkValueOfField('[data-cy="Lizenz"]', 'input', 'Andere offene Lizenz');
-      DocumentPage.checkValueOfField('[data-cy="Quellenvermerk"]', 'textarea', 'Meine Quelle');
+      DocumentPage.checkValueOfField('[data-cy="license"]', 'input', 'Andere offene Lizenz');
+      DocumentPage.checkValueOfField('[data-cy="origin"]', 'textarea', 'Meine Quelle');
       cy.get('[data-cy="mFUND"] input').eq(0).should('have.value', 'text1');
       cy.get('[data-cy="mFUND"] input').eq(1).should('have.value', 'text2');
       DocumentPage.checkValueOfField('[data-cy="events"]', 'input', '11.01.2020');

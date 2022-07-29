@@ -26,8 +26,8 @@ export class enterMcloudDocTestData {
   }
 
   static setUsageInstructions(text: string) {
-    cy.get('[data-cy=Nutzungshinweise]').find('mat-form-field').type(text);
-    cy.get('[data-cy=Nutzungshinweise] textarea').should('have.value', text);
+    cy.get('[data-cy=accessRights]').find('mat-form-field').type(text);
+    cy.get('[data-cy=accessRights] textarea').should('have.value', text);
   }
 
   static setCategory(optionText: string, isFirstCategory: boolean = true) {
@@ -44,13 +44,13 @@ export class enterMcloudDocTestData {
 
   static setOpenDataCategory(optionText: string, isFirstCategory: boolean = true) {
     if (!isFirstCategory) {
-      cy.get('[data-cy="OpenData Kategorie"] ige-add-button mat-icon').first().contains('add').click({ force: true });
+      cy.get('[data-cy="DCATThemes"] ige-add-button mat-icon').first().contains('add').click({ force: true });
     } else {
-      cy.get('[data-cy="OpenData Kategorie"]').contains('Hinzufügen').click();
+      cy.get('[data-cy="DCATThemes"]').contains('Hinzufügen').click();
     }
     cy.get('[data-cy="chip-dialog-option-list"]').contains(optionText).click();
     cy.get('[data-cy="chip-dialog-confirm"]').click();
-    cy.contains('[data-cy="OpenData Kategorie"] .mat-chip', optionText);
+    cy.contains('[data-cy="DCATThemes"] .mat-chip', optionText);
   }
 
   static setAddDownload(titleText: string = 'linkTitel', linkText: string = 'https://docs.cypress.io/api/this') {
@@ -88,15 +88,15 @@ export class enterMcloudDocTestData {
   }
 
   static setLicense(license: string) {
-    cy.get('[data-cy=Lizenz] mat-form-field').click();
-    cy.get('[data-cy=Lizenz] mat-form-field').type(license);
+    cy.get('[data-cy=license] mat-form-field').click();
+    cy.get('[data-cy=license] mat-form-field').type(license);
     cy.get('mat-option').contains(license).click();
-    cy.get('[data-cy="Lizenz"] input').should('have.value', license);
+    cy.get('[data-cy="license"] input').should('have.value', license);
   }
 
   static setSourceNote(text: string) {
-    cy.get('[data-cy=Quellenvermerk]').find('mat-form-field').type(text);
-    cy.get('[data-cy=Quellenvermerk] textarea').should('have.value', text);
+    cy.get('[data-cy=origin]').find('mat-form-field').type(text);
+    cy.get('[data-cy=origin] textarea').should('have.value', text);
   }
 
   static setMfund(projectText: string, fkzText: string) {
@@ -227,14 +227,14 @@ export class enterMcloudDocTestData {
   }
 
   static setPeriodOfTime(choose: string = 'am', date: Date, until?: Date) {
-    cy.get('[data-cy=Zeitspanne]').contains('Wählen').click();
+    cy.get('[data-cy=temporal]').contains('Wählen').click();
     if (choose === '') {
       cy.get('.mat-option-text:empty').parent().click();
     } else {
       cy.get('.mat-option-text').contains(choose).click();
     }
     cy.wait(0);
-    this.selectDate('[data-cy="Zeitspanne"]', date, choose, until);
+    this.selectDate('[data-cy=temporal]', date, choose, until);
   }
 
   static checkPeriodOfTimeSelectedValue(option: string) {
@@ -246,9 +246,9 @@ export class enterMcloudDocTestData {
   }
 
   static setPeriodicity(chooseOption: string) {
-    cy.get('[data-cy=Periodizität').find('mat-form-field').click();
+    cy.get('[data-cy=periodicity').find('mat-form-field').click();
     cy.get('mat-option').contains(chooseOption).click();
-    cy.get('[data-cy="Periodizität"] .mat-select-min-line').should('contain', chooseOption);
+    cy.get('[data-cy="periodicity"] .mat-select-min-line').should('contain', chooseOption);
   }
 
   static enterNecessaryData() {

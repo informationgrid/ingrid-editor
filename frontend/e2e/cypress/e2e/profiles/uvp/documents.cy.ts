@@ -37,7 +37,7 @@ describe('uvp documents', () => {
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_6'
     );
-    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '02.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '02.12.2021');
     DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
   });
@@ -67,10 +67,10 @@ describe('uvp documents', () => {
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_7'
     );
-    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '03.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '03.12.2021');
     DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
-    cy.get('[data-cy="Vorprüfung durchgeführt"] mat-radio-button').should('have.class', 'mat-radio-checked');
+    cy.get('[data-cy="prelimAssessment"] mat-radio-button').should('have.class', 'mat-radio-checked');
   });
 
   it('create a minimal publishable document of type "Raumordnungsverfahren" and publish it', () => {
@@ -96,7 +96,7 @@ describe('uvp documents', () => {
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_8'
     );
-    DocumentPage.checkValueOfField('[data-cy="Eingang des Antrags"]', 'input', '04.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '04.12.2021');
     DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
     DocumentPage.checkContentOfField('.spatial-title', '', 'Bonn');
   });
@@ -139,7 +139,7 @@ describe('uvp documents', () => {
       'ige-address-card',
       'Ansprechpartner Adresse, Organisation_10'
     );
-    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '06.12.2021');
+    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '06.12.2021');
   });
 
   it('should add procedure steps to document of type "Linienbestimmung"', () => {
@@ -161,13 +161,13 @@ describe('uvp documents', () => {
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_5.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
@@ -184,16 +184,12 @@ describe('uvp documents', () => {
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Erörterung"]',
-      'input[formcontrolname="start"]',
-      '12.02.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_5.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_4.json');
   });
@@ -217,13 +213,13 @@ describe('uvp documents', () => {
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
@@ -240,16 +236,12 @@ describe('uvp documents', () => {
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Erörterung"]',
-      'input[formcontrolname="start"]',
-      '12.02.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
   });
@@ -273,13 +265,13 @@ describe('uvp documents', () => {
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
@@ -296,16 +288,12 @@ describe('uvp documents', () => {
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField(
-      '[data-cy="Zeitraum der Erörterung"]',
-      'input[formcontrolname="start"]',
-      '12.02.2021'
-    );
-    DocumentPage.checkValueOfField('[data-cy="Zeitraum der Erörterung"]', 'input[formcontrolname="end"]', '24.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
   });
@@ -329,7 +317,7 @@ describe('uvp documents', () => {
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
     enterMcloudDocTestData.uploadFile('importtest_4.json', true);
     DocumentPage.addTableEntry(1, 'Entscheidung', 'Dateien hochladen');
@@ -346,7 +334,7 @@ describe('uvp documents', () => {
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="Datum der Entscheidung"]', 'input', '20.05.2022');
+    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(1, 'Entscheidung', 'importtest_5.json');
   });
