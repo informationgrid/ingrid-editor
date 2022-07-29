@@ -69,7 +69,7 @@ class IndexService @Autowired constructor(
         val pagedDocs = PageImpl(docsToIndex, Pageable.ofSize(PAGE_SIZE), response.totalHits.toLong())
 
         return if (pagedDocs.isEmpty) {
-            log.warn("No documents found for indexing")
+            log.warn("No documents found in category '$category' for indexing")
             Page.empty()
         } else {
             pagedDocs

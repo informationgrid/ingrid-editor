@@ -141,10 +141,12 @@ class IndexingTask @Autowired constructor(
                     page++
                     // TODO: support profile specific configuration which documents to be published
                     val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
+                    // isLast function sometimes delivers the next to last page without a total count, so we write our own
+                    val isLast = (page*10 + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
                     updateMessageWithDocumentInfo(message, category, docsToPublish)
 
                     exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
-                } while (!docsToPublish.isLast)
+                } while (!isLast)
             } catch (ex: Exception) {
                 notify.addAndSendMessageError(message, ex, "Error during indexing: ")
             }
