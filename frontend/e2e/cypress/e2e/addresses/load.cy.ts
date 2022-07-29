@@ -60,7 +60,7 @@ describe('mCLOUD: Load addresses', () => {
     // open address
     Tree.openNode(['Neue Testadressen', 'Adresse, Venetien']);
     // open up display "zugeordnete Datensätze"
-    cy.get('[data-cy="Zugeordnete Datensätze"] button').click();
+    cy.get('ige-referenced-documents-type button').click();
     cy.get('ige-referenced-documents-type .mat-list-item').each(item => {
       cy.wrap(item).click();
       cy.contains('ige-header-title-row', item.text(), { timeout: 8000 });
@@ -99,15 +99,11 @@ describe('mCLOUD: Load addresses', () => {
     // open second address and make sure that it does contains any referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
     AddressPage.openReferencedDocumentsSection();
-    cy.get('[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type p').contains(
-      'Es existieren keine Referenzen auf diese Adresse'
-    );
+    cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
 
     // open the first address and check for referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'first-address-with-reference-data']);
-    cy.get(
-      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
-    ).contains('document_for_replace_address');
+    cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
 
     // replace the first address with the second
     AddressPage.openActionMenu();
@@ -116,15 +112,11 @@ describe('mCLOUD: Load addresses', () => {
     AddressPage.submitReplaceAddress();
     cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
     cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
-    cy.get('[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type p').contains(
-      'Es existieren keine Referenzen auf diese Adresse'
-    );
+    cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
 
     // make sure the documents changed
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
-    cy.get(
-      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
-    ).contains('document_for_replace_address');
+    cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
   });
 
   it('Meta admin should not be allowed to delete Address if it is still referenced in data records #3811', () => {

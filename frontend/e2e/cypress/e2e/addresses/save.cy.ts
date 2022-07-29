@@ -438,8 +438,6 @@ describe('create/delete/edit addresses', () => {
 
     Tree.openNode(['address_to _be_replaced_catalog_admin']);
     AddressPage.openReferencedDocumentsSection();
-    cy.get(
-      '[data-cy="Zugeordnete Datensätze"] ige-referenced-documents-type mat-selection-list mat-list-option'
-    ).contains('document_for_replace_address');
+    cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
   });
 });

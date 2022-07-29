@@ -82,9 +82,9 @@ describe('User', () => {
     // TODO: use updateUser-function to modify user form (see above)
     cy.get('[data-cy=email]  formly-field-mat-input').click().clear();
     // clicking another field is needed to activate the error-message
-    cy.get('[data-cy=Name] .firstName').click().clear();
+    cy.get('.firstName input').click().clear();
     cy.get('mat-error').should('have.length', 1);
-    cy.get('[data-cy=Name] .lastName').click().clear();
+    cy.get('.lastName input').click().clear();
     cy.get('mat-error').should('have.length', 2);
     // clicking another field is needed to activate the error-message
     cy.get('[data-cy=email]  formly-field-mat-input').click();
@@ -129,7 +129,7 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
 
     // adapt user entry and click on 'Hinzufügen'- button --> discard dialog must appear --> decline
-    cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
+    cy.get('.firstName input').click().clear().type(newEntry);
     cy.get(AdminUserPage.addUserButton, { timeout: 5000 }).click();
     AdminUserPage.cancelChanges();
     // new user dialog may not appear
@@ -148,7 +148,7 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
 
     // adapt user entry
-    cy.get('[data-cy=Name] .firstName').click().clear().type(newEntry);
+    cy.get('.firstName input').click().clear().type(newEntry);
 
     // click on other menu page --> discard dialog must appear --> decline
     Menu.switchTo('ADDRESSES', false);
@@ -373,7 +373,7 @@ describe('User', () => {
     AdminUserPage.selectUser(username);
     cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
 
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    cy.get('.firstName input').click().clear().type(modified);
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
   });
 
@@ -404,7 +404,7 @@ describe('User', () => {
     // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.disabled');
-    cy.get('[data-cy=Name] .firstName').click().clear().type(modified);
+    cy.get('.firstName input').click().clear().type(modified);
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
 
     // when changes are canceled, save-button is enabled
