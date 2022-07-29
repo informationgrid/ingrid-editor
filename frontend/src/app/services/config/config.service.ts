@@ -93,11 +93,13 @@ export class ConfigService {
         title: "Informationen",
         adminOnly: false,
         entries: [
+          /*
+          Help gets set directly in the template
           {
             label: "Hilfe",
             isRouterLink: false,
             link: "#",
-          },
+          },*/
         ],
       },
     ],
