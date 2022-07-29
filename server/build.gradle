@@ -3,8 +3,8 @@ import gg.jte.ContentType
 
 buildscript {
     ext.kotlin_version = '1.7.0' // Required for Kotlin integration
-    ext.spring_boot_version = '2.6.7'
-    ext.hibernate_version = '5.6.7.Final'
+    ext.spring_boot_version = '2.7.2'
+    ext.hibernate_version = '5.6.10.Final'
     ext.jackson_version = '2.13.3'
     ext.kotest_version = '5.3.2' // 5.1.0 needs kotlin-coroutines.version=1.6.0 (manually)
     repositories {
