@@ -2,7 +2,7 @@
     [class.hasContextHelp]="to.hasContextHelp"
     fxLayout="row"
     [class.required]="to.required"
-    [attr.data-cy]="key"
+    [attr.data-cy]="key ?? to.externalLabel"
 >
     <ige-form-label
         [hasContextHelp]="to.hasContextHelp"
