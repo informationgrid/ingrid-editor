@@ -6,6 +6,7 @@ import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.QueryType
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -20,10 +21,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
-import org.springframework.security.acls.model.Sid
 import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -88,8 +87,24 @@ class DatasetsApiController @Autowired constructor(
             val doc = documentService.convertToDocument(data)
             documentService.updateDocument(principal, catalogId, id, doc, publish, publishDate)
         }
+
+        val wrapper = documentService.getWrapperByDocumentId(id)
+        addMetadataToDocument(resultDoc, wrapper)
+
         val node = documentService.convertToJsonNode(resultDoc)
         return ResponseEntity.ok(node)
+    }
+
+    private fun addMetadataToDocument(
+        resultDoc: Document,
+        wrapper: DocumentWrapper
+    ) {
+        resultDoc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
+        resultDoc.data.put(FIELD_PARENT, wrapper.parent?.id)
+        resultDoc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
+        resultDoc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
+        resultDoc.hasWritePermission = wrapper.hasWritePermission
+        resultDoc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
     }
 
     @Transactional
@@ -277,7 +292,10 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isSuperOrCatAdmin = authUtils.isAdmin(principal)
-        val hasRootRead = checkForRootPermissions(sidRetrievalStrategy.getSids(principal as Authentication), listOf(BasePermission.READ))
+        val hasRootRead = checkForRootPermissions(
+            sidRetrievalStrategy.getSids(principal as Authentication),
+            listOf(BasePermission.READ)
+        )
 
         val children = if (
             parentId == null && !isSuperOrCatAdmin && !hasRootRead
@@ -415,12 +433,7 @@ class DatasetsApiController @Autowired constructor(
 
             val doc =
                 documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
-            doc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
-            doc.data.put(FIELD_PARENT, wrapper.parent?.id)
-            doc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
-            doc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-            doc.hasWritePermission = permissionInfo.canWrite
-            doc.hasOnlySubtreeWritePermission = permissionInfo.canOnlyWriteSubtree
+            addMetadataToDocument(doc, wrapper)
             val jsonDoc = documentService.convertToJsonNode(doc)
             return ResponseEntity.ok(jsonDoc)
         } catch (ex: AccessDeniedException) {
