@@ -509,10 +509,10 @@ describe('User', () => {
   });
 
   it('should update user information (#2972)', () => {
-    const dateOfToday = Utils.getFormattedDate(new Date());
+    const dateOfToday = new Date().toLocaleDateString('de', { day: '2-digit', month: 'long', year: 'numeric' });
 
     AdminUserPage.selectUser('mcloud-author-last-login');
-    AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(oldLoginDate => {
+    AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(oldLoginDate => {
       // log in as a user to update last login information
       cy.logoutClearCookies();
       cy.kcLogin('mcloud-author-last-login');
@@ -523,8 +523,8 @@ describe('User', () => {
       AdminUserPage.visit();
       AdminUserPage.selectUser('mcloud-author-last-login');
       // make sure last-login-date is not identical to old login-date, but identical to current date
-      AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, false).then(newLoginDate => {
-        cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('equal', dateOfToday);
+      AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(newLoginDate => {
+        cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('contain', dateOfToday);
       });
       AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(oldEditDate => {
         // change user profile and make sure information is updated accordingly

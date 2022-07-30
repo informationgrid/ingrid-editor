@@ -4,7 +4,7 @@
   "description": "For each spec file only one describe statement, followed by its tests. If another describe statement is needed, it is time to create a new spec file.",
   "main": "index.js",
   "scripts": {
-    "cypress:open": "cypress open",
+    "cypress:open": "cypress open --e2e",
     "cypress:run": "cypress run",
     "cypress:runFull": "node scripts/cypress.js",
     "mailserver": "node scripts/startMailserver.js"

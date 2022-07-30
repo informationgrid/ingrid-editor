@@ -75,6 +75,6 @@ export default defineConfig({
       setupMail(on, config);
     },
     baseUrl: 'http://192.168.0.228',
-    excludeSpecPattern: '**/*.local.ts'
+    excludeSpecPattern: '**/*.local.cy.ts'
   }
 });

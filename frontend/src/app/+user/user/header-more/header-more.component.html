@@ -8,31 +8,37 @@
     <div fxLayout="row">
         <div>Zuletzt eingeloggt am</div>
         <div *ngIf="user.latestLogin">
-            <span [title]="user.latestLogin | date: 'long'">{{
-                user.latestLogin | date: "dd.MM.yyyy"
-            }}</span>
+            <span
+                [title]="user.latestLogin | date: 'long'"
+                data-cy="latest-login"
+                >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
+            >
         </div>
         <div *ngIf="!user.latestLogin">Nie</div>
     </div>
     <div fxLayout="row">
         <div>Erstellt am</div>
         <div *ngIf="user.creationDate">
-            <span [title]="user.creationDate | date: 'long'">{{
-                user.creationDate | date: "dd.MM.yyyy"
-            }}</span>
+            <span
+                [title]="user.creationDate | date: 'long'"
+                data-cy="date-created"
+                >{{ user.creationDate | date: "dd.MM.yyyy" }}</span
+            >
         </div>
     </div>
     <div fxLayout="row">
         <div>Geändert am</div>
         <div *ngIf="user.modificationDate">
-            <span [title]="user.modificationDate | date: 'long'">{{
-                user.modificationDate | date: "dd.MM.yyyy"
-            }}</span>
+            <span
+                [title]="user.modificationDate | date: 'long'"
+                data-cy="date-modified"
+                >{{ user.modificationDate | date: "dd.MM.yyyy" }}</span
+            >
         </div>
     </div>
     <div fxLayout="row">
         <div>ID/login</div>
-        <div>{{ user.login }}</div>
+        <div data-cy="login">{{ user.login }}</div>
     </div>
     <div class="padding-below"></div>
 </div>
