@@ -20,3 +20,14 @@ jgitver {
         transformations = ['IGNORE']
     }
 }
+
+allprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (project.version.contains("-")) return
+            if (details.requested.version.endsWith("-SNAPSHOT")) {
+                throw new GradleException("found snapshot dependency")
+            }
+        }
+    }
+}
