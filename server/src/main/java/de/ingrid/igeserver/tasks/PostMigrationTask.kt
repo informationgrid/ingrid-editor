@@ -148,10 +148,12 @@ class PostMigrationTask(
 
     private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
-            log.debug("Migrate document: ${doc.id}")
-            migratePath(doc)
-        }
+        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true)
+            .sortedBy { it.path.size }
+            .forEach { doc ->
+                log.debug("Update path for document: ${doc.id}")
+                migratePath(doc)
+            }
 
         removeOldStructure(catalogIdentifier)
         // save all groups again to update transferred rights
