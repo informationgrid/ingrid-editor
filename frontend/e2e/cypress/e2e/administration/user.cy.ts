@@ -509,7 +509,7 @@ describe('User', () => {
   });
 
   it('should update user information (#2972)', () => {
-    const dateOfToday = Utils.getFormattedDate(new Date());
+    const dateOfToday = new Date().toLocaleDateString('de', { day: '2-digit', month: 'long', year: 'numeric' });
 
     AdminUserPage.selectUser('mcloud-author-last-login');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(oldLoginDate => {
