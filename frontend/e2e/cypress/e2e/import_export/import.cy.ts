@@ -78,9 +78,9 @@ describe('Import Tests', () => {
 
     ImportPage.jumpToDocument('Datum_Ebene_4_4');
     Tree.checkPath(['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
-    DocumentPage.jumpFromDocumentToAddress('Schlesien, Adresse');
-    cy.get(DocumentPage.title).should('have.text', 'Schlesien, Adresse');
-    Tree.checkPath(['Adressen', 'Testadressen']);
+    DocumentPage.jumpFromDocumentToAddress('Rheinland, Adresse');
+    cy.get(DocumentPage.title).should('have.text', 'Rheinland, Adresse');
+    Tree.checkPath(['Adressen', 'Neue Testadressen', 'Ordner 2. Ebene', 'Ordner_3.Ebene_A', 'Ordner_4.Ebene_A']);
   });
 
   it('should import json document (existing document, existing address) with option "identische Metadaten überschreiben"', () => {

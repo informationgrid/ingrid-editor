@@ -171,7 +171,7 @@ export class AdminUserPage extends BasePage {
   // TODO: select user by unique property like email!
   static selectUser(name: string) {
     cy.get('.page-title').contains('Benutzer (');
-    cy.get('[data-cy=search]').clear({ force: true }).type(name);
+    cy.get('[data-cy=search]').clear().type(name);
     cy.contains('user-table .mat-row', name).click();
     // waiting for form to be shown can lead to error when we test dirty check
     // and a dialog appears which overlays the formUser element
@@ -246,12 +246,14 @@ export class AdminUserPage extends BasePage {
       cy.get('.user-title .menu-button').eq(0).click();
     }
     if (fromTitleAttribute) {
-      return cy
-        .get('[data-cy=headerMoreData] > div:nth-child(' + key + ') span')
-        .invoke('attr', 'title')
-        .then(title => {
-          return title ?? '';
-        });
+      return (
+        cy
+          .get('[data-cy=headerMoreData] > div:nth-child(' + key + ') div:nth-child(2)')
+          /*.invoke('attr', 'title')*/
+          .then(title => {
+            return title.text() ?? '';
+          })
+      );
     } else {
       return cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ') div:nth-child(2)').then(node => {
         return node.text();

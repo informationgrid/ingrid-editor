@@ -509,19 +509,19 @@ describe('User', () => {
   });
 
   it('should update user information (#2972)', () => {
-    const dateOfToday = new Date().toLocaleDateString('de', { day: '2-digit', month: 'long', year: 'numeric' });
+    const dateOfToday = Utils.getFormattedDate(new Date());
 
-    AdminUserPage.selectUser('mcloud-author-last-login');
+    AdminUserPage.selectUser('mcloud-catalog-user-profile');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(oldLoginDate => {
       // log in as a user to update last login information
       cy.logoutClearCookies();
-      cy.kcLogin('mcloud-author-last-login');
+      cy.kcLogin('mcloud-catalog-user-profile');
       DocumentPage.visit();
       // log in as admin and make sure "last logged in" contains right information
       cy.logoutClearCookies();
       cy.kcLogin('super-admin');
       AdminUserPage.visit();
-      AdminUserPage.selectUser('mcloud-author-last-login');
+      AdminUserPage.selectUser('mcloud-catalog-user-profile');
       // make sure last-login-date is not identical to old login-date, but identical to current date
       AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(newLoginDate => {
         cy.wrap(newLoginDate).should('not.eql', oldLoginDate).and('contain', dateOfToday);
@@ -529,6 +529,7 @@ describe('User', () => {
       AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(oldEditDate => {
         // change user profile and make sure information is updated accordingly
         AdminUserPage.updateUser({ organisation: 'someRandomOrganization' });
+        cy.wait(500);
         AdminUserPage.getInfoInHeader(keysInHeader.EditDate, true, true).then(newEditDate => {
           cy.wrap(oldEditDate).should('not.eql', newEditDate);
         });
