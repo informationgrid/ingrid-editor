@@ -1,7 +1,7 @@
 import { BasePage, UserAndRights } from './base.page';
 import { DashboardPage } from './dashboard.page';
-import Chainable = Cypress.Chainable;
 import { ProfilePage } from './profile.page';
+import Chainable = Cypress.Chainable;
 
 export interface UserFormData {
   login: string;
@@ -246,18 +246,12 @@ export class AdminUserPage extends BasePage {
       cy.get('.user-title .menu-button').eq(0).click();
     }
     if (fromTitleAttribute) {
-      return (
-        cy
-          .get('[data-cy=headerMoreData] > div:nth-child(' + key + ') div:nth-child(2)')
-          /*.invoke('attr', 'title')*/
-          .then(title => {
-            return title.text() ?? '';
-          })
-      );
+      return cy
+        .get(`[data-cy=headerMoreData] [data-cy=${key}]`)
+        .invoke('attr', 'title')
+        .then(title => title ?? '');
     } else {
-      return cy.get('[data-cy=headerMoreData] > div:nth-child(' + key + ') div:nth-child(2)').then(node => {
-        return node.text();
-      });
+      return cy.get(`[data-cy=headerMoreData] [data-cy=${key}]`).then(node => node.text());
     }
   }
 
@@ -432,9 +426,8 @@ export class AdminUserPage extends BasePage {
 }
 
 export enum keysInHeader {
-  LastLogin = 1,
-  CreationDate,
-  EditDate,
-  Login,
-  Manager
+  LastLogin = 'latest-login',
+  CreationDate = 'date-created',
+  EditDate = 'date-modified',
+  Login = 'login'
 }

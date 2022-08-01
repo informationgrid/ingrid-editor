@@ -7,14 +7,16 @@
 >
     <div fxLayout="row">
         <div>Zuletzt eingeloggt am</div>
-        <div *ngIf="user.latestLogin">
+        <div *ngIf="user.latestLogin; else neverLoggedIn">
             <span
                 [title]="user.latestLogin | date: 'long'"
                 data-cy="latest-login"
                 >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
             >
         </div>
-        <div *ngIf="!user.latestLogin">Nie</div>
+        <ng-template #neverLoggedIn>
+            <div data-cy="latest-login">Nie</div>
+        </ng-template>
     </div>
     <div fxLayout="row">
         <div>Erstellt am</div>
