@@ -388,7 +388,7 @@ class PostMigrationTask(
     private fun setAuthentication() {
         val auth: Authentication =
             UsernamePasswordAuthenticationToken(
-                "Scheduler",
+                "System",
                 "Task",
                 listOf(
                     SimpleGrantedAuthority("cat-admin"),
