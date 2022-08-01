@@ -69,9 +69,18 @@ if (hasProperty('buildProfile')) {
 
     def unzippedDir = file('build/resources/main').getAbsolutePath()
     task unzip(type:Copy) {
+        dependsOn(configurations.webapp)
         into unzippedDir from zipTree(configurations.webapp.singleFile)
     }
     jar.finalizedBy(unzip)
+
+    bootJar {
+        dependsOn(unzip)
+    }
+
+    bootJarMainClassName {
+        dependsOn(unzip)
+    }
 }
 
 dependencies {
@@ -88,13 +97,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-//    implementation 'org.slf4j:slf4j-simple:1.7.36'
+//    implementation 'org.slf4j:slf4j-nop:1.7.36'
+//    implementation 'org.slf4j:slf4j-api:1.7.36'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -117,7 +127,7 @@ dependencies {
     implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.17.0"
     implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.17.0"
 
-    implementation 'com.auth0:java-jwt:3.19.2'
+//    implementation 'com.auth0:java-jwt:3.19.2'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.9' // Attention: also update SwaggerDocumentationConfig.kt
     implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.9'
 
@@ -177,8 +187,9 @@ springBoot {
     buildInfo()
 }
 
-if (hasProperty('filename')) {
+/*if (hasProperty('filename')) {
     bootJar {
+        dependsOn(unzip)
         archiveFileName=getProperty('filename')
     }
 }
@@ -190,7 +201,7 @@ jar {
     // and adds them to the JAR itself. One can extend this task, to skip certain
     // files or particular types at will
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-}
+}*/
 
 allOpen {
     annotation("javax.persistence.Entity")
