@@ -2,7 +2,7 @@ import java.nio.file.Paths
 import gg.jte.ContentType
 
 buildscript {
-    ext.kotlin_version = '1.7.0' // Required for Kotlin integration
+    ext.kotlin_version = '1.7.10' // Required for Kotlin integration
     ext.spring_boot_version = '2.7.2'
     ext.hibernate_version = '5.6.10.Final'
     ext.jackson_version = '2.13.3'
@@ -38,7 +38,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.hibernate.orm'
 apply plugin: 'kotlin-noarg'
-apply plugin: 'kotlin-kapt'
+//apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-allopen'
 
 repositories {
@@ -94,10 +94,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+//    implementation 'org.slf4j:slf4j-simple:1.7.36'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+//    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Jackson
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
@@ -105,7 +106,7 @@ dependencies {
 //    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.34'
+    implementation 'net.pwall.json:json-kotlin-schema:0.35'
 
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:18.0.2'
@@ -117,13 +118,13 @@ dependencies {
     implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.17.0"
 
     implementation 'com.auth0:java-jwt:3.19.2'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.7' // Attention: also update SwaggerDocumentationConfig.kt
-    implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.7'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9' // Attention: also update SwaggerDocumentationConfig.kt
+    implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.9'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.3.6'
     implementation "org.hibernate:hibernate-core:$hibernate_version"
-    implementation 'com.vladmihalcea:hibernate-types-52:2.14.0'
+    implementation 'com.vladmihalcea:hibernate-types-52:2.16.2'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
     implementation('de.ingrid:ingrid-codelist-service:5.12.0') {
@@ -150,6 +151,7 @@ dependencies {
 
     implementation('de.ingrid:ingrid-ibus-client:5.13.0') {
         exclude group: 'org.apache.logging.log4j'
+        exclude group: 'org.slf4j'
     }
 
     // template engine jte

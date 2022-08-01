@@ -17,7 +17,7 @@ group = 'de.ingrid'
 description = 'IGE-NG Frontend'
 
 node {
-  version = '14.17.1'
+  version = '18.6.0'
   download = true
 }
 
@@ -48,9 +48,8 @@ task testFormatting(type: YarnTask) {
 
 task packageNpmApp(type: Zip) {
   dependsOn bundle
-  baseName 'ige-frontend-app'
-  extension 'jar'
-  destinationDir file("${projectDir}/build/packageApp")
+  archiveFileName = 'ige-frontend-app.jar'
+  destinationDirectory = file("${projectDir}/build/packageApp")
   duplicatesStrategy = DuplicatesStrategy.INCLUDE
   from('build/dist') {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
