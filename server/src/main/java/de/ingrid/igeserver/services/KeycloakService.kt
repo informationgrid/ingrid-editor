@@ -182,7 +182,7 @@ class KeycloakService : UserManagementService {
             return if (userSessions.isEmpty()) {
                 null
             } else {
-                Date(userSessions.last().start)
+                Date(userSessions.first().start)
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
