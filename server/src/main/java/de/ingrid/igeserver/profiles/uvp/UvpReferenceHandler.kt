@@ -98,6 +98,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
 
+        @Suppress("UNCHECKED_CAST")
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")

@@ -21,7 +21,7 @@ class IsoExporter : IgeExporter {
         val md = Metadata()
         md.setUuid(tree.data.path("_id").asText())
 // TODO:       md.language = tree.data.path("metadataLanguage").path("value").asText()
-        md.setCharacterSet(tree.data.path("").asText())
+        md.setCharacterSet()
         md.setParentIdentifier(tree.data.path("_parent").asText(null))
         md.setHierarchyLevel("dataset")
         md.setContact("12345", "pointOfContact")

@@ -66,12 +66,12 @@ public class ValidatorFactory {
             for (final Map.Entry<String, Map<String, Object>> validatorsEntry : config.entrySet()) {
                 final String validatorName = validatorsEntry.getKey();
                 final Map<String, Object> validatorDef = validatorsEntry.getValue();
-                final Validator instance = (Validator) Class.forName(validatorDef.get("impl").toString()).newInstance();
+                final Validator instance = (Validator) Class.forName(validatorDef.get("impl").toString()).getDeclaredConstructor().newInstance();
                 Object properties = validatorDef.get("properties");
                 if (properties instanceof List) {
                     instance.initialize(new HashMap<>());
                 } else {
-                    instance.initialize((Map)properties);
+                    instance.initialize((Map<String, String>)properties);
                 }
                 validatorMap.put(validatorName, instance);
             }

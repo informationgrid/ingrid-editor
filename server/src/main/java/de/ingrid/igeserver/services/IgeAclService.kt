@@ -35,7 +35,7 @@ class IgeAclService @Autowired constructor(
             return true
         }
         val permissionLevels = listOf("writeTree", "readTree", "writeTreeExceptParent")
-        val sids = SidRetrievalStrategyImpl().getSids(authentication)
+        val sids = sidRetrievalStrategy.getSids(authentication)
 
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
@@ -44,6 +44,7 @@ class IgeAclService @Autowired constructor(
                 val acl = this.aclService.readAclById(
                     ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
                 )
+                @Suppress("UNREACHABLE_CODE")
                 isAllowed = when (permissionLevel) {
                     "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
                     "readTree" -> isAllowed(acl, BasePermission.READ, sids)
@@ -79,7 +80,6 @@ class IgeAclService @Autowired constructor(
             val acl = this.aclService.readAclById(
                 ObjectIdentityImpl(DocumentWrapper::class.java, id)
             )
-            val sids = SidRetrievalStrategyImpl().getSids(authentication)
 
             PermissionInfo(
                 isAllowed(acl, BasePermission.READ, sids) || hasRootRead || hasRootWrite,

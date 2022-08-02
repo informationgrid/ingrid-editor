@@ -315,7 +315,7 @@ class DatasetsApiController @Autowired constructor(
                 val latest = documentService.getLatestDocument(doc, resolveLinks = false)
                 latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
                 latest.data.put(FIELD_PARENT, doc.parent?.id)
-                val permissionInfo = aclService.getPermissionInfo(principal as Authentication, doc.id)
+                val permissionInfo = aclService.getPermissionInfo(principal, doc.id)
                 latest.hasWritePermission = permissionInfo.canWrite
                 latest.hasOnlySubtreeWritePermission = permissionInfo.canOnlyWriteSubtree
                 documentService.convertToJsonNode(latest)
@@ -424,7 +424,6 @@ class DatasetsApiController @Autowired constructor(
         id: Int,
         publish: Boolean?
     ): ResponseEntity<JsonNode> {
-        val permissionInfo = aclService.getPermissionInfo(principal as Authentication, id)
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)

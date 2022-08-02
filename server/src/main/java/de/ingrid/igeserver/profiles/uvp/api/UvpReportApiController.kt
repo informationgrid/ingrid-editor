@@ -123,7 +123,7 @@ class UvpReportApiController @Autowired constructor(
 
         val nativeQuery = getQueryWithTimeFilter(PROCEDURE_DATES_SQL, from, to)
 
-        val queryResults = nativeQuery.resultList as List<Array<out Any?>>
+        @Suppress("UNCHECKED_CAST") val queryResults = nativeQuery.resultList as List<Array<out Any?>>
         var totalDuration: Long = 0;
         queryResults.forEach {
             val receiptDate = LocalDateTime.parse(it[0] as String, DateTimeFormatter.ISO_DATE_TIME)

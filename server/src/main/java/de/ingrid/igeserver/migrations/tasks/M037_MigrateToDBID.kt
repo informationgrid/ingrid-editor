@@ -65,7 +65,7 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
 
     private fun migratePermissions() {
 
-        val groups: List<Group> = entityManager.createQuery("SELECT g FROM Group g").resultList as List<Group>
+        @Suppress("UNCHECKED_CAST") val groups: List<Group> = entityManager.createQuery("SELECT g FROM Group g").resultList as List<Group>
         groups.forEach { group ->
             // val catalogIdentifier = group.catalog?.identifier
             val docPermissionChanges = migratePermissionFor(group.permissions?.documents)

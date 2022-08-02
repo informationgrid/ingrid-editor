@@ -84,7 +84,7 @@ data class MCloudModel(
                 if(!codeListEntry?.data.isNullOrEmpty()) {
                     jsonString = codeListEntry?.data.toString();
                 } else if(codeListEntry?.getField("de") != null) {
-                    jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+codeListEntry?.getField("de")+"\"}";
+                    jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+codeListEntry.getField("de")+"\"}";
                 }
             }
             return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)

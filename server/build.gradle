@@ -298,10 +298,11 @@ hibernate {
 }
 
 if (hasProperty('buildDockerImage')) {
-    //tasks.assemble.dependsOn tasks.jibDockerBuild
     tasks.assemble.dependsOn tasks.jib
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+//    options.deprecation = true
+//    options.compilerArgs << "-Xlint:unchecked"
 }

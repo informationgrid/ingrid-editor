@@ -61,7 +61,7 @@ data class Metadata(
         return language!!.codelist!!.content
     }
 
-    fun setCharacterSet(characterSet: String?) {
+    fun setCharacterSet() {
         this.characterSet = CharacterSetCode()
         this.characterSet!!.characterSetCode = CodelistAttributes(
             "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode",
@@ -94,7 +94,7 @@ data class Metadata(
             )
         )
         val ci = ContactInfo()
-        ci.setAddress(ContactType.ADDRESS, "xxx@yyy.zz")
+        ci.setAddress( "xxx@yyy.zz")
         responsibleParty.contactInfo = ci
         contact!!.responsibleParty = responsibleParty
     }

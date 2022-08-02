@@ -124,7 +124,7 @@ data class AddressModel(
     val homepage: String? get() = contactType("4")
 
     private fun contactType(type: String): String? = contact
-        ?.firstOrNull { it.type?.key == type }
+        .firstOrNull { it.type?.key == type }
         ?.connection
 }
 

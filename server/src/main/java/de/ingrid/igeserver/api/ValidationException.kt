@@ -20,8 +20,8 @@ open class ValidationException: ClientException {
             val errorText = getErrorText(ERROR_TEXT_INVALID, mapOf("fieldNames" to fields.joinToString(", ") { it -> it.name }))
             return ValidationException(STATUS_CODE, ERROR_CODE, errorText, mapOf("fields" to fields), cause)
         }
-        
-        fun withReason(reason: String, data: Any?, cause: Throwable? = null) : ValidationException {
+
+        fun withReason(data: Any?, cause: Throwable? = null) : ValidationException {
             return ValidationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
         }
     }

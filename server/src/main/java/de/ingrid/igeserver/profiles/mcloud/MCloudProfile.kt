@@ -364,7 +364,7 @@ class MCloudProfile @Autowired constructor(
 
     }
 
-    private fun toCodelistEntry(id: String, german: String, english: String? = null): JsonNode {
+    private fun toCodelistEntry(id: String, german: String): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
             set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement
 data class ContactInfo(
     @XmlElement(name = "CI_Contact") var ciContact: CIContact? = null,
 ) {
-    fun setAddress(type: ContactType?, value: String?) {
+    fun setAddress(value: String?) {
         val aw = AddressWrapper()
         aw.address = Address()
         aw.address!!.electronicMailAddress = CharacterString(value)
@@ -29,10 +29,10 @@ data class AddressWrapper(
     //        public Address phone;
     @XmlElement(name = "CI_Address") var address: Address? = null //        @XmlElement(name = "CI_Address")
     //        public Address onlineResource;
-    //        
+    //
     //        @XmlElement(name = "CI_Address")
     //        public Address hoursOfService;
-    //        
+    //
     //        @XmlElement(name = "CI_Address")
     //        public Address contactInstructions;
 )

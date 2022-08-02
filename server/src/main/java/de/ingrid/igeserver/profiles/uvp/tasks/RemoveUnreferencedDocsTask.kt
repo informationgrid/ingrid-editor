@@ -84,6 +84,7 @@ class RemoveUnreferencedDocsTask(
 
     private fun queryDocs(query: String, jsonbField: String): List<Array<Any>> {
 
+        @Suppress("UNCHECKED_CAST")
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")

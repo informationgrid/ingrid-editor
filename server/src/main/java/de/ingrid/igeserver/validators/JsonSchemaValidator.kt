@@ -66,7 +66,7 @@ class JsonSchemaValidator @Autowired constructor(
         }
 
         if (!output.valid) {
-            throw ValidationException.withReason("JSON schema validation failed", output.errors)
+            throw ValidationException.withReason(output.errors)
         }
 
         return output

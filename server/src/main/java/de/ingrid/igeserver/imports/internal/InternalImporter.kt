@@ -26,12 +26,12 @@ class InternalImporter : IgeImporter {
 
         var documents = json.get("resources")
         if (version == "0.0.1") {
-           documents = migrateDocumentsFrom(version, documents as ArrayNode)
+           documents = migrateDocumentsFrom(documents as ArrayNode)
         }
         return documents
     }
 
-    private fun migrateDocumentsFrom(version: String, documents: ArrayNode): ArrayNode {
+    private fun migrateDocumentsFrom(documents: ArrayNode): ArrayNode {
 
 
         documents.forEach { document ->

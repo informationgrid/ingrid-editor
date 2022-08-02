@@ -21,13 +21,13 @@ class UploadCheckApiController @Autowired constructor(
 ) : UploadCheckApi {
 
     override fun checkUploads(principal: Principal): ResponseEntity<List<UploadCheckReport>> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = getUploadURLs(catalogId)
+//        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = getUploadURLs()
 
         return ResponseEntity.ok().body(result)
     }
 
-    private fun getUploadURLs(catalogId: String): List<UploadCheckReport> {
+    private fun getUploadURLs(): List<UploadCheckReport> {
         val published = referenceHandler.getPublishedDocumentsByCatalog().flatMap { doc ->
             doc.docs.map { checkIfUploadExists(doc, it.uri, "published") }
         }

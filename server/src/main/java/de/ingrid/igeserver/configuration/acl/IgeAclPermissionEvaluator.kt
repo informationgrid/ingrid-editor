@@ -192,6 +192,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return listOf(permission)
         }
         if (permission is Array<*> && permission.isArrayOf<Permission>()) {
+            @Suppress("UNCHECKED_CAST")
             return permission.asList() as List<Permission>
         }
         if (permission is String) {
