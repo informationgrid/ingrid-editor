@@ -10,8 +10,9 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
+import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class UVPModel(
@@ -24,6 +25,10 @@ data class UVPModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
 ) {
+
+    val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
+    val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
 
     val spatialTitle = data.spatials?.get(0)?.title
 
@@ -130,7 +135,7 @@ data class UVPModel(
         return data.steps
             .filterIsInstance<StepDecisionOfAdmission>()
             .map { OffsetDateTime.parse(it.decisionDate) }
-            .map { it.format(formatterNoSeparator) }
+            .map { formatDate(formatterNoSeparator, it) }
     }
 
     companion object {
@@ -158,17 +163,7 @@ data class UVPModel(
         return getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
     }
 
-    val formatterISO: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private val formatterOnlyDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val formatterNoSeparator: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
-    val modified: String
-        get() {
-            return _modified.format(formatterOnlyDate)
-        }
-
-    fun modifiedAsString(): String {
-        return _modified.format(formatterNoSeparator)
-    }
+    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
     fun getPostBoxString(): String {
         return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${pointOfContact?.address?.city}"

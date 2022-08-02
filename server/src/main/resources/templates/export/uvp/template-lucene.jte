@@ -61,8 +61,8 @@
     @endfor
     ],
     "location": ["${page.handleContent(page.getSpatialTitle())}"],
-    "created": "${page.get_created().format(page.getFormatterISO())}",
-    "modified": "${page.get_modified().format(page.getFormatterISO())}",
+    "created": "${page.formatDate(page.getFormatterISO(), page.get_created())}",
+    "modified": "${page.formatDate(page.getFormatterISO(), page.get_modified())}",
     "areaid": [],
     "partner": [
         "${partner}"
@@ -88,7 +88,7 @@
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    "t01_object.mod_time": "${page.get_modified().format(page.getFormatterNoSeparator())}",
+    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_modified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
     @if(page.getPointOfContact() != null)
@@ -105,13 +105,13 @@
         "t02_address.city": "${page.getPointOfContact().getAddress().getCity()}",
         "t02_address.country_code": "${page.getCodelistValue("6200", page.getPointOfContact().getAddress().getCountry())}",
         "t02_address.country_key": "${page.getPointOfContact().getAddress().getCountryKey()}",
-        "t02_address.create_time": "${page.getPointOfContact().getCreated().format(page.getFormatterNoSeparator())}",
+        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getPointOfContact().getCreated())}",
         "t02_address.descr": "",
         "t02_address.firstname": "${page.getPointOfContact().getFirstName()}",
         "t02_address.lastname": "${page.getPointOfContact().getLastName()}",
         "t02_address.institution": "${page.getPointOfContact().getOrganization()}",
         "t02_address.job": "",
-        "t02_address.mod_time": "${page.getPointOfContact().getModified().format(page.getFormatterNoSeparator())}",
+        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getPointOfContact().getModified())}",
         "t02_address.mod_uuid": "",
         "t02_address.org_adr_id": "",
         "t02_address.postbox": "${page.getPointOfContact().getAddress().getPoBox()}",
