@@ -311,6 +311,7 @@ class PostMigrationTask(
                         JsonNodeFactory.instance.objectNode()
                             .put("id", it)
                             .put("permission", "readTree")
+                            .put("isFolder", false)
                     }
 
 

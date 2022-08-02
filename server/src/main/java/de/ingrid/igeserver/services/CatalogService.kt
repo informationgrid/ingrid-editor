@@ -315,11 +315,11 @@ class CatalogService @Autowired constructor(
         } else {
             if (group.permissions?.rootPermission == RootPermissionType.READ) userPermissions.add(Permissions.can_read_root.name)
 
-            if (containsAnyGroupWritePermission(group.permissions?.documents)) {
+            if (containsAnyFolderWritePermission(group.permissions?.documents ?: emptyList())) {
                 userPermissions.add(Permissions.can_create_dataset.name)
                 userPermissions.add(Permissions.can_import.name)
             }
-            if (containsAnyGroupWritePermission(group.permissions?.addresses)) {
+            if (containsAnyFolderWritePermission(group.permissions?.addresses ?: emptyList())) {
                 userPermissions.add(Permissions.can_create_address.name)
                 userPermissions.add(Permissions.can_import.name)
             }
@@ -327,10 +327,15 @@ class CatalogService @Autowired constructor(
         return userPermissions
     }
 
-    private fun containsAnyGroupWritePermission(groupEntries: List<JsonNode>?) =
-        groupEntries?.any { entry ->
-            entry["isFolder"].asBoolean() && entry["permission"].asText().contains("writeTree")
-        } ?: false
+    private fun containsAnyFolderWritePermission(groupEntries: List<JsonNode>) =
+        groupEntries.any { entry ->
+
+            val isFolder = entry["isFolder"]?.asBoolean() ?: false
+            val hasAnyWritePermission =
+                listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
+
+            return isFolder && hasAnyWritePermission
+        }
 
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
