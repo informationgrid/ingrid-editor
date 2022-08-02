@@ -6,7 +6,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 
 export class FormUtils {
   static addHotkeys(
@@ -27,7 +27,7 @@ export class FormUtils {
   }
 
   static async handleDirtyForm(
-    form: FormGroup,
+    form: UntypedFormGroup,
     documentService: DocumentService,
     dialog: MatDialog,
     isAddress: boolean
@@ -78,7 +78,7 @@ export class FormUtils {
       .toPromise();
   }
 
-  private static getDirtyState(form: FormGroup): Object {
+  private static getDirtyState(form: UntypedFormGroup): Object {
     return Object.keys(form.controls).reduce<Object>(
       (dirtyState, controlKey) => {
         const control = form.controls[controlKey];
@@ -87,7 +87,7 @@ export class FormUtils {
           return dirtyState;
         }
 
-        if (control instanceof FormGroup) {
+        if (control instanceof UntypedFormGroup) {
           return {
             ...dirtyState,
             [controlKey]: FormUtils.getDirtyState(control),

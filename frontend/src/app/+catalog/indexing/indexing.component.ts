@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { RxStompService } from "@stomp/ng2-stompjs";
@@ -19,7 +19,7 @@ import { merge, Observable } from "rxjs";
 export class IndexingComponent implements OnInit {
   @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
 
-  cronField = new FormControl();
+  cronField = new UntypedFormControl();
 
   hint: string;
   valid = true;

@@ -9,9 +9,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { CodelistEntry } from "../../../store/codelist/codelist.model";
 import {
   AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormGroup,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
 } from "@angular/forms";
@@ -26,14 +26,14 @@ export class UpdateCodelistComponent implements OnInit {
   fields: any[];
   isNew = true;
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   private existingIds: string[];
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: { entry: CodelistEntry; ids: string[] },
     private dialogRef: MatDialogRef<UpdateCodelistComponent>,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     this.isNew = data.entry.id === undefined;
     this.fields = Object.keys(data.entry.fields).map((key) => ({
@@ -61,7 +61,7 @@ export class UpdateCodelistComponent implements OnInit {
 
   addEntry() {
     this.fields.push({});
-    (<FormArray>this.formGroup.controls.fields).push(
+    (<UntypedFormArray>this.formGroup.controls.fields).push(
       this.fb.group({ key: [""], value: [""] })
     );
   }
@@ -77,7 +77,7 @@ export class UpdateCodelistComponent implements OnInit {
 
   removeEntry(index: number) {
     this.fields.splice(index, 1);
-    (<FormArray>this.formGroup.controls.fields).removeAt(index);
+    (<UntypedFormArray>this.formGroup.controls.fields).removeAt(index);
   }
 
   private checkForExistingId(): ValidatorFn {

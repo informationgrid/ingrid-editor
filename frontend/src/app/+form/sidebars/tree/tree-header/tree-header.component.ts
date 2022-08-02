@@ -8,9 +8,9 @@ import {
 } from "@angular/core";
 import { Subject, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { debounceTime, finalize, first, map, take, tap } from "rxjs/operators";
+import { debounceTime, map } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 @UntilDestroy()
@@ -38,8 +38,9 @@ export class TreeHeaderComponent implements OnInit {
   @Output() toggleAllSelection = new EventEmitter<boolean>();
   @Output() toggleView = new EventEmitter<boolean>();
   searchResult = new Subject<TreeNode[]>();
-  query = new FormControl("");
+  query = new UntypedFormControl("");
   searchSub: Subscription;
+
   constructor(private db: DynamicDatabase, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -87,6 +88,7 @@ export class TreeHeaderComponent implements OnInit {
     this.query.reset("");
     this.searchSub.unsubscribe();
   }
+
   deactivateMultiSelection() {
     this.multiSelectionModeEnabled = false;
     this.edit.next(false);

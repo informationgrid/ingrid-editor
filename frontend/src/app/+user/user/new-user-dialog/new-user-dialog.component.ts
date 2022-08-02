@@ -8,7 +8,11 @@ import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
@@ -31,7 +35,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     )
   );
   externalUsers: BackendUser[];
-  form: FormGroup;
+  form: UntypedFormGroup;
   noAvailableUsers = true;
   importExternal: boolean;
   formlyFieldConfig: FormlyFieldConfig[];
@@ -65,8 +69,8 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     };
     this.importExternal = false;
 
-    this.form = new FormGroup({
-      login: new FormControl("", Validators.required),
+    this.form = new UntypedFormGroup({
+      login: new UntypedFormControl("", Validators.required),
     });
     this.form
       .get("login")

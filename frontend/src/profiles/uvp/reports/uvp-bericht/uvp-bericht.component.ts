@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
@@ -40,7 +40,7 @@ export class UvpBerichtComponent implements AfterViewInit {
       },
     ],
   };
-  facetForm = new FormControl();
+  facetForm = new UntypedFormControl();
   dataSource = new MatTableDataSource([]);
   dataSourceMiscellaneous = new MatTableDataSource([]);
   displayedColumns = ["eiaNumber", "eiaCategory", "count"];

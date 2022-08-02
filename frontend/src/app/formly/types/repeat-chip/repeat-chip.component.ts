@@ -5,7 +5,7 @@ import {
   ChipDialogComponent,
   ChipDialogData,
 } from "./chip-dialog/chip-dialog.component";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -18,7 +18,7 @@ import { CdkDragDrop } from "@angular/cdk/drag-drop";
   styleUrls: ["./repeat-chip.component.scss"],
 })
 export class RepeatChipComponent extends FieldArrayType {
-  inputControl = new FormControl();
+  inputControl = new UntypedFormControl();
 
   constructor(private dialog: MatDialog) {
     super();

@@ -12,7 +12,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
@@ -30,7 +30,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   selectedCodelist: Codelist;
   initialValue: SelectOptionUi;
-  descriptionCtrl = new FormControl();
+  descriptionCtrl = new UntypedFormControl();
 
   constructor(
     private codelistService: CodelistService,

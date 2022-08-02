@@ -1,16 +1,18 @@
-import { FormControl, ValidationErrors } from "@angular/forms";
+import { UntypedFormControl, ValidationErrors } from "@angular/forms";
 
-export function IpValidator(control: FormControl): ValidationErrors {
+export function IpValidator(control: UntypedFormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
     ? null
     : { ip: true };
 }
 
-export function EmailValidator(control: FormControl): ValidationErrors {
+export function EmailValidator(control: UntypedFormControl): ValidationErrors {
   return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
 }
 
-export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
+export function EmailInRepeatValidator(
+  control: UntypedFormControl
+): ValidationErrors {
   const connectionType = control.parent.value.type;
   // if connection type is email
   if (connectionType?.key === "3") {
@@ -18,7 +20,9 @@ export function EmailInRepeatValidator(control: FormControl): ValidationErrors {
   }
 }
 
-export function LowercaseValidator(control: FormControl): ValidationErrors {
+export function LowercaseValidator(
+  control: UntypedFormControl
+): ValidationErrors {
   return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };

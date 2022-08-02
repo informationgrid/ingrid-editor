@@ -15,9 +15,9 @@ import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-lis
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ControlValueAccessor,
-  FormBuilder,
-  FormGroup,
   NG_VALUE_ACCESSOR,
+  UntypedFormBuilder,
+  UntypedFormGroup,
 } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
 import { filter, map, take, tap } from "rxjs/operators";
@@ -88,7 +88,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private facetsInitialized = new BehaviorSubject<boolean>(false);
   private timeGroupId: string;
 
-  form: FormGroup = this.fb.group({});
+  form: UntypedFormGroup = this.fb.group({});
 
   private onChange: (x: any) => {};
   onTouched = () => {};
@@ -101,7 +101,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private leafletService: LeafletService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public codelistService: CodelistService,
     private behaviourService: BehaviourService
   ) {}
@@ -312,7 +312,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   private getSpatialKey() {
-    return Object.keys((<FormGroup>this.form.get("spatial")).controls)[0];
+    return Object.keys(
+      (<UntypedFormGroup>this.form.get("spatial")).controls
+    )[0];
   }
 
   filterForStartDate = (d: Date | null): boolean => {

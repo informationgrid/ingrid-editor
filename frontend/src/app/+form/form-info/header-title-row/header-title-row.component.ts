@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { ProfileService } from "../../../services/profile.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { DocumentUtils } from "../../../services/document.utils";
@@ -22,7 +22,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderTitleRowComponent implements OnInit {
-  @Input() set form(value: FormGroup) {
+  @Input() set form(value: UntypedFormGroup) {
     this._form = value;
   }
 
@@ -39,7 +39,7 @@ export class HeaderTitleRowComponent implements OnInit {
   @ViewChild("titleInput") titleInput: ElementRef;
   @ViewChild("cfcAutosize") contentFCAutosize: CdkTextareaAutosize;
 
-  _form: FormGroup;
+  _form: UntypedFormGroup;
   _model: IgeDocument;
   stateClass: string;
   icon: string;

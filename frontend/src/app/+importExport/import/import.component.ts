@@ -1,5 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { ImportExportService, ImportTypeInfo } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
@@ -28,9 +32,9 @@ export class ImportComponent implements OnInit {
   uploadUrl: string;
 
   step1Complete: any;
-  optionsFormGroup = new FormGroup({
-    importer: new FormControl("", Validators.required),
-    option: new FormControl("overwrite_identical", Validators.required),
+  optionsFormGroup = new UntypedFormGroup({
+    importer: new UntypedFormControl("", Validators.required),
+    option: new UntypedFormControl("overwrite_identical", Validators.required),
   });
   analyzedData: any;
   importFileErrorMessage: any;

@@ -3,7 +3,11 @@ import {
   BehaviourFormatBackend,
   BehaviourService,
 } from "../../services/behavior/behaviour.service";
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Plugin } from "./plugin";
@@ -30,7 +34,7 @@ export class BehavioursComponent implements OnInit {
   title: string;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private builder: FormlyFormBuilder,
     @Inject(FormPluginToken) formPluginsDef: Plugin[],
     private route: ActivatedRoute,
@@ -111,7 +115,7 @@ export class BehavioursComponent implements OnInit {
 
   private createModelFromPlugins(items: Plugin[]) {
     return items.reduce((acc: any, plugin: Plugin) => {
-      const formGroup = new FormGroup({});
+      const formGroup = new UntypedFormGroup({});
 
       // initially set disabled state for fields
       if (plugin.fields.length > 0 && !plugin.isActive) {
@@ -127,7 +131,7 @@ export class BehavioursComponent implements OnInit {
 
       acc[plugin.id] = {
         form: formGroup,
-        active: new FormControl(plugin.isActive),
+        active: new UntypedFormControl(plugin.isActive),
         modified: plugin.isActive !== plugin.defaultActive,
         fields: plugin.fields,
         data: plugin.data ? plugin.data : {},

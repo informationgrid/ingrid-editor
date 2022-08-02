@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
@@ -22,7 +22,7 @@ export class FreeSpatialComponent implements OnInit {
   @Output() updateTitle = new EventEmitter<string>();
 
   nominatimResult: NominatimResult[] = [];
-  searchInput = new FormControl();
+  searchInput = new UntypedFormControl();
   showNoResult = false;
   showWelcome = true;
 

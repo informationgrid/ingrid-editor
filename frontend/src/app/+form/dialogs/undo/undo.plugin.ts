@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UndoPlugin extends Plugin {
   eventUndoId = "UNDO";
   eventRedoId = "REDO";
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   private history: any[] = [];
   private redoHistory: any[] = [];
   private actionTriggered = false;

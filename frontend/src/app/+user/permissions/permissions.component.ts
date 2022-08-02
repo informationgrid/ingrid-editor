@@ -1,10 +1,9 @@
 import { Component, forwardRef, Input, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
 import {
   ControlValueAccessor,
-  FormBuilder,
-  FormGroup,
   NG_VALUE_ACCESSOR,
+  UntypedFormBuilder,
+  UntypedFormGroup,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -28,11 +27,11 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
   @Input() showRootWriteSlider: boolean = false;
   @Input() showRootReadSlider: boolean = false;
 
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   rootPermissionRead = this.fb.control([]);
   rootPermissionWrite = this.fb.control([]);
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({

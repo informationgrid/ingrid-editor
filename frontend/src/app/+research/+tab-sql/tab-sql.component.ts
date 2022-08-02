@@ -7,7 +7,7 @@ import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { SqlQuery } from "../../store/query/query.model";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -16,7 +16,7 @@ import { FormControl } from "@angular/forms";
   styleUrls: ["./tab-sql.component.scss"],
 })
 export class TabSqlComponent implements OnInit {
-  sql = new FormControl("");
+  sql = new UntypedFormControl("");
 
   sqlExamples = this.researchService.sqlExamples;
 

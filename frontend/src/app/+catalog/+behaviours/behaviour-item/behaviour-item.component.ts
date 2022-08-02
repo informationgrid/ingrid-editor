@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { delay, filter } from "rxjs/operators";
 
@@ -19,7 +19,7 @@ export class BehaviourItemComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    const form = <FormGroup>this.control.form;
+    const form = <UntypedFormGroup>this.control.form;
     form.valueChanges
       .pipe(
         untilDestroyed(this),

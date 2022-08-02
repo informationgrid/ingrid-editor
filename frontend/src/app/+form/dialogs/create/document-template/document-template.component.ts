@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
-import { types } from "util";
 import { ProfileService } from "../../../../services/profile.service";
 
 @Component({
@@ -14,7 +13,7 @@ import { ProfileService } from "../../../../services/profile.service";
   styleUrls: ["./document-template.component.scss"],
 })
 export class DocumentTemplateComponent implements OnInit {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() isFolder = true;
 
   @Output() create = new EventEmitter();

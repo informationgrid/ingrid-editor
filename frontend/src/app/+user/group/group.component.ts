@@ -5,8 +5,8 @@ import { FrontendGroup, Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
 import {
   AbstractControl,
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   ValidatorFn,
 } from "@angular/forms";
 import { Permissions, User } from "../user";
@@ -42,7 +42,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
   userHasRootReadPermission: boolean = false;
   userHasRootWritePermission: boolean = false;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   selectedGroup: FrontendGroup;
   isLoading = false;
@@ -54,7 +54,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   constructor(
     private modalService: ModalService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private dialog: MatDialog,
     public groupService: GroupService,
     private configService: ConfigService,

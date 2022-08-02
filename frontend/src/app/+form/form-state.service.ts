@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { transaction } from "@datorama/akita";
@@ -8,7 +8,7 @@ import { transaction } from "@datorama/akita";
   providedIn: "root",
 })
 export class FormStateService {
-  private form: FormGroup;
+  private form: UntypedFormGroup;
   private textareaElementsRows: any = {};
   private readonly fontSize = 16;
 
@@ -23,7 +23,7 @@ export class FormStateService {
     };
   }
 
-  updateForm(form: FormGroup) {
+  updateForm(form: UntypedFormGroup) {
     this.form = form;
   }
 

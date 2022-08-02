@@ -7,7 +7,7 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MatSelect } from "@angular/material/select";
@@ -29,8 +29,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
-  inputControl = new FormControl();
-  filterCtrl: FormControl;
+  inputControl = new UntypedFormControl();
+  filterCtrl: UntypedFormControl;
   private manualUpdate = new Subject<string>();
 
   constructor() {
@@ -39,7 +39,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   ngOnInit(): void {
     if (this.to.asSelect && this.to.showSearch) {
-      this.filterCtrl = new FormControl();
+      this.filterCtrl = new UntypedFormControl();
       this.filterCtrl.valueChanges
         .pipe(untilDestroyed(this))
         .subscribe((value) => this.manualUpdate.next(value));

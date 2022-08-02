@@ -1,6 +1,6 @@
 import { Component, Inject, OnDestroy } from "@angular/core";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 export interface FormDialogData {
@@ -15,7 +15,7 @@ export interface FormDialogData {
   styleUrls: ["./form-dialog.component.scss"],
 })
 export class FormDialogComponent implements OnDestroy {
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
   titleText: string;
   options: FormlyFormOptions = {};
 

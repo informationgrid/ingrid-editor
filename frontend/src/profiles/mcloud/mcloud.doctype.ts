@@ -5,7 +5,7 @@ import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
 import { CodelistStore } from "../../app/store/codelist/codelist.store";
 import { map } from "rxjs/operators";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
 
@@ -98,7 +98,7 @@ export class McloudDoctype extends BaseDoctype {
                 onClick: (docUuid, uri, $event) => {
                   this.uploadService.downloadFile(docUuid, uri, $event);
                 },
-                formatter: (link: any, form: FormGroup) => {
+                formatter: (link: any, form: UntypedFormGroup) => {
                   if (link.asLink) {
                     return `
                          <a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">

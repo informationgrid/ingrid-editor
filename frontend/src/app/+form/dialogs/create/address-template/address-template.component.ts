@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { FormGroup, Validators } from "@angular/forms";
+import { UntypedFormGroup, Validators } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
@@ -16,7 +16,7 @@ import { ProfileService } from "../../../../services/profile.service";
   styleUrls: ["./address-template.component.scss"],
 })
 export class AddressTemplateComponent implements OnInit {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() isPerson: boolean;
 
   @Input() set parent(value: string) {

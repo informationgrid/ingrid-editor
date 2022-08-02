@@ -12,7 +12,7 @@ import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { AbstractControl, FormControl } from "@angular/forms";
+import { AbstractControl, UntypedFormControl } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -34,7 +34,7 @@ export class AutocompleteTypeComponent
   filteredOptions: SelectOptionUi[] = [];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
-  input: AbstractControl = new FormControl();
+  input: AbstractControl = new UntypedFormControl();
 
   ngOnInit() {
     super.ngOnInit();

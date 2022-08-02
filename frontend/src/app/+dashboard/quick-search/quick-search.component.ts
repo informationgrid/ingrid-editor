@@ -2,10 +2,9 @@ import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, finalize } from "rxjs/operators";
-import { SearchResult } from "../../models/search-result.model";
+import { debounceTime } from "rxjs/operators";
 import { combineLatest, Subscription } from "rxjs";
 
 @UntilDestroy()
@@ -23,7 +22,7 @@ export class QuickSearchComponent implements OnInit {
   numDocs: number;
   numAddresses: number;
 
-  query = new FormControl("");
+  query = new UntypedFormControl("");
   searchSub: Subscription;
 
   constructor(

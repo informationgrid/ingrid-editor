@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatPseudoCheckboxState } from "@angular/material/core";
 import { filter, take, tap } from "rxjs/operators";
@@ -24,7 +24,7 @@ import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 export class SelectTypeComponent extends FieldType implements OnInit {
   @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
 
-  public filterCtrl = new FormControl();
+  public filterCtrl = new UntypedFormControl();
 
   defaultOptions = {
     templateOptions: {
@@ -35,7 +35,7 @@ export class SelectTypeComponent extends FieldType implements OnInit {
     },
   };
 
-  selectControl = new FormControl();
+  selectControl = new UntypedFormControl();
 
   private selectAllValue!: { options: any; value: any[] };
   selectOptions: SelectOptionUi[];

@@ -5,7 +5,7 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
 import { Facets, ResearchService } from "../../+research/research.service";
-import { FormControl, FormGroup } from "@angular/forms";
+import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
@@ -34,9 +34,9 @@ export class GeneralReportComponent implements OnInit {
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
 
-  form = new FormGroup({
-    type: new FormControl("selectDocuments"),
-    facets: new FormControl(),
+  form = new UntypedFormGroup({
+    type: new UntypedFormControl("selectDocuments"),
+    facets: new UntypedFormControl(),
   });
   facets: Facets;
 

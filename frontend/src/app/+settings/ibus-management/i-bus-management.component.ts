@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { FormArray, FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { iBusFields } from "./formly-fields";
 import { ConfigService } from "../../services/config/config.service";
-import { delay, tap } from "rxjs/operators";
 
 @Component({
   selector: "ige-ibus-management",
@@ -10,9 +9,10 @@ import { delay, tap } from "rxjs/operators";
   styleUrls: ["./i-bus-management.component.scss"],
 })
 export class IBusManagementComponent implements OnInit {
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
   fields = iBusFields;
   model: any;
+
   constructor(private configService: ConfigService) {}
 
   ngOnInit(): void {

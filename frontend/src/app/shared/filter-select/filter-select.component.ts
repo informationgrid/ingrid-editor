@@ -7,7 +7,7 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { combineLatest, Observable } from "rxjs";
 import { filter, map, startWith } from "rxjs/operators";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
@@ -29,7 +29,7 @@ export class FilterSelectComponent implements OnInit {
 
   @ViewChild("filter") filter: ElementRef;
 
-  control = new FormControl();
+  control = new UntypedFormControl();
 
   filteredOptions: Observable<SelectOptionUi[]>;
   private selectedValue: SelectOptionUi;

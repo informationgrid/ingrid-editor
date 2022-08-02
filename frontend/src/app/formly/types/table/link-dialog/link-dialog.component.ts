@@ -5,7 +5,7 @@ import {
   Inject,
   OnInit,
 } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormDialogData } from "../form-dialog/form-dialog.component";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
@@ -19,7 +19,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   private URL_REGEXP =
     "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?;&//=]*)";
 
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
 
   options: FormlyFormOptions = {};
 

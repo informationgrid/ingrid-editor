@@ -6,7 +6,7 @@ import {
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { FrontendUser } from "../../user";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 
 @Component({
   selector: "user-header-more",
@@ -28,7 +28,7 @@ import { FormGroup } from "@angular/forms";
 })
 export class HeaderMoreComponent implements OnInit {
   @Input() user: FrontendUser;
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() showMore = false;
 
   constructor() {}

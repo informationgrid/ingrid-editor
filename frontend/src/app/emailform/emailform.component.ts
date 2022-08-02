@@ -6,8 +6,11 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { FrontendUser } from "../+user/user";
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 
 import { UserService } from "./../services/user/user.service";
 
@@ -24,8 +27,12 @@ export class EmailformComponent implements OnInit {
   onClose = new EventEmitter<String>();
 
   @ViewChild("editForm") emailFormDirective: any;
-  emailForm: FormGroup;
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  emailForm: UntypedFormGroup;
+
+  constructor(
+    private fb: UntypedFormBuilder,
+    private userService: UserService
+  ) {
     this.createForm();
   }
 

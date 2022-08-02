@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../models/ige-document";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { combineLatest, fromEvent } from "rxjs";
@@ -49,7 +49,7 @@ export interface StickyHeaderInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormInfoComponent implements OnInit, AfterViewInit {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
 
   _model: IgeDocument;
   @Input() set model(value: IgeDocument) {

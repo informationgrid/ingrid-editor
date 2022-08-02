@@ -3,7 +3,7 @@ import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
 import { tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
 import { MatTableDataSource } from "@angular/material/table";
 import { NewMessageDialogComponent } from "./new-message-dialog/new-message-dialog.component";
@@ -29,7 +29,7 @@ export class MessagesManagementComponent implements OnInit {
     this.fetchMessages();
   }
 
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
   fields = messagesFields;
   model: any;
 

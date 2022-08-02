@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
 } from "@angular/forms";
 import { ImportExportService } from "../import-export-service";
 import { catchError, tap } from "rxjs/operators";
@@ -30,7 +29,7 @@ export class ExportComponent implements OnInit {
   @ViewChild("treeComponent") treeComponent: TreeComponent;
 
   selection: any[] = [];
-  optionsFormGroup: FormGroup;
+  optionsFormGroup: UntypedFormGroup;
   datasetSelected = false;
   private selectedIds: string[];
   exportResult: any;
@@ -44,7 +43,7 @@ export class ExportComponent implements OnInit {
   exportSuccess = false;
 
   constructor(
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private exportService: ImportExportService,
     private docService: DocumentService,
     private dialog: MatDialog
@@ -52,9 +51,9 @@ export class ExportComponent implements OnInit {
 
   ngOnInit() {
     this.optionsFormGroup = this._formBuilder.group({
-      option: new FormControl("dataset"),
-      drafts: new FormControl(),
-      format: new FormControl(),
+      option: new UntypedFormControl("dataset"),
+      drafts: new UntypedFormControl(),
+      format: new UntypedFormControl(),
     });
   }
 

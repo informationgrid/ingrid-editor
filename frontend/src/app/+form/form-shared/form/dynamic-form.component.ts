@@ -8,7 +8,7 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -65,7 +65,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sections: Observable<string[]> = this.formularService.sections$;
 
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
 
   behaviours: Behaviour[];
   error = false;
@@ -414,7 +414,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private createNewForm() {
     // create new form group since it can become corrupted, probably because of page caching
     // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
-    this.form = new FormGroup({});
+    this.form = new UntypedFormGroup({});
 
     // update form here instead of onInit, because of caching problem, where no onInit method is called
     // after revisiting the page

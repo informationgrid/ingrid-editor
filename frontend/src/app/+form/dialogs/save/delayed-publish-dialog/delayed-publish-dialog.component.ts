@@ -1,16 +1,19 @@
 import { Component, OnInit } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { ModalService } from "../../../../services/modal/modal.service";
-import { MatDatepickerModule } from "@angular/material/datepicker";
 
 @Component({
   selector: "delayed-publish-dialog",
   templateUrl: "./delayed-publish-dialog.component.html",
 })
 export class DelayedPublishDialogComponent implements OnInit {
-  form = new FormGroup({
-    date: new FormControl("", Validators.required),
+  form = new UntypedFormGroup({
+    date: new UntypedFormControl("", Validators.required),
   });
   minDate: Date;
 

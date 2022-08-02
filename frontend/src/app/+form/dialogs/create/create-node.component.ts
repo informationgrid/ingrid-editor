@@ -11,7 +11,11 @@ import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -39,7 +43,7 @@ export class CreateNodeComponent implements OnInit {
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: string = null;
@@ -53,7 +57,7 @@ export class CreateNodeComponent implements OnInit {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private router: Router,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private documentService: DocumentService,
     private docBehaviours: DocBehavioursService,
     private translocoService: TranslocoService,

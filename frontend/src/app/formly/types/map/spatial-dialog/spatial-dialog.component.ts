@@ -13,7 +13,7 @@ import {
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 
@@ -41,7 +41,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     type: "free",
   };
 
-  titleInput: FormControl;
+  titleInput: UntypedFormControl;
 
   leafletReference: L.Map;
 
@@ -69,9 +69,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (this.data) {
       this._bbox = this.data.value;
-      this.titleInput = new FormControl(this.data.title);
+      this.titleInput = new UntypedFormControl(this.data.title);
     } else {
-      this.titleInput = new FormControl("Neuer Raumbezug");
+      this.titleInput = new UntypedFormControl("Neuer Raumbezug");
     }
   }
 

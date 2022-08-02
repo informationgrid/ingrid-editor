@@ -1,5 +1,9 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
 import {
@@ -24,8 +28,8 @@ import { FacetQuery } from "../../store/query/query.model";
   styleUrls: ["./tab-search.component.scss"],
 })
 export class TabSearchComponent implements OnInit {
-  form: FormGroup;
-  query = new FormControl("");
+  form: UntypedFormGroup;
+  query = new UntypedFormControl("");
 
   result: ResearchResponse;
 
@@ -42,7 +46,7 @@ export class TabSearchComponent implements OnInit {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private snackBar: MatSnackBar,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {}
 
   async ngOnInit() {

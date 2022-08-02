@@ -1,5 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MessageService } from "../../../services/messages/message.service";
 
@@ -9,9 +13,9 @@ import { MessageService } from "../../../services/messages/message.service";
   styleUrls: ["./new-message-dialog.component.scss"],
 })
 export class NewMessageDialogComponent implements OnInit {
-  form = new FormGroup({
-    text: new FormControl("", Validators.required),
-    date: new FormControl(""),
+  form = new UntypedFormGroup({
+    text: new UntypedFormControl("", Validators.required),
+    date: new UntypedFormControl(""),
   });
 
   constructor(

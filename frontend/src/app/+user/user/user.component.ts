@@ -12,7 +12,7 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -45,7 +45,7 @@ export class UserComponent
   implements OnInit, AfterViewInit, AfterContentChecked
 {
   users: User[];
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
 
   selectedUser: User;
   showMore = false;
@@ -57,7 +57,7 @@ export class UserComponent
   selectedUserRole: string;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,

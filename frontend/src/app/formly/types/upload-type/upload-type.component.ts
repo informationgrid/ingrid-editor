@@ -3,7 +3,7 @@ import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../models/ige-document";
-import { FormControl, Validators } from "@angular/forms";
+import { UntypedFormControl, Validators } from "@angular/forms";
 
 interface LinkType {
   uri: string;
@@ -31,7 +31,7 @@ export class UploadTypeComponent extends FieldType implements OnInit {
     documentID: "",
   };
 
-  control: FormControl;
+  control: UntypedFormControl;
 
   constructor() {
     super();
@@ -58,7 +58,7 @@ export class UploadTypeComponent extends FieldType implements OnInit {
       validators.push(Validators.required);
     }
 
-    this.control = new FormControl(
+    this.control = new UntypedFormControl(
       { value: this.upload.uri, disabled: !this.upload.asLink },
       validators
     );

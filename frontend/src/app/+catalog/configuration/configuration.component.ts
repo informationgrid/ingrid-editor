@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { fields } from "./formly-fields";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { CatalogService } from "../services/catalog.service";
@@ -10,7 +10,7 @@ import { CatalogService } from "../services/catalog.service";
   styleUrls: ["./configuration.component.scss"],
 })
 export class ConfigurationComponent implements OnInit {
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
   fields = fields(this.codelistService);
   model: any = {};
 

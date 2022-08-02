@@ -1,4 +1,4 @@
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { EventManager } from "@angular/platform-browser";
 
 export interface Behaviour {
@@ -8,7 +8,7 @@ export interface Behaviour {
   defaultActive: boolean;
   forProfile?: string;
   isActive?: boolean;
-  register: (form: FormGroup, eventManager: EventManager) => void;
+  register: (form: UntypedFormGroup, eventManager: EventManager) => void;
   unregister: () => void;
   controls?: any[];
   outer?: any;
