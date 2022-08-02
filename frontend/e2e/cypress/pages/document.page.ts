@@ -874,10 +874,24 @@ export class DocumentPage extends BasePage {
     cy.contains('button', 'Ok').click();
   }
 
+  // TODO: remove, since no advantage
+  /**
+   * @param identifier
+   * @param fieldType
+   * @param value
+   * @deprecated not useful
+   */
   static checkValueOfField(identifier: string, fieldType: string, value: string) {
     cy.get(`${identifier} ${fieldType}`).should('have.value', value);
   }
 
+  // TODO: remove, since no advantage
+  /**
+   * @param identifier
+   * @param fieldType
+   * @param value
+   * @deprecated not useful
+   */
   static checkContentOfField(identifier: string, fieldType: string, value: string) {
     //cy.contains(`${identifier} ${fieldType}`, value);
     cy.get(`${identifier} ${fieldType}`).should('contain.text', value);

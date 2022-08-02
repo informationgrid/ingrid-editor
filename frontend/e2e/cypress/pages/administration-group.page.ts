@@ -176,6 +176,7 @@ export class AdminGroupPage extends BasePage {
     });
   }
 
+  // TODO: refactor to two functions grantUniversalRights and revokeUniversalRights
   static grantOrRevokeUniversalRights(access: 'Leserecht' | 'Schreibrecht', revoke = false) {
     cy.contains('ige-permissions label', access, { timeout: 8000 }).click();
     cy.wait(500)

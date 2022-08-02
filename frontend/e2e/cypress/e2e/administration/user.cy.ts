@@ -577,6 +577,7 @@ describe('User', () => {
   });
 
   it('Author can be granted universal read + write access by adding to group universal rights #3267', () => {
+    // TODO: modifying this group is done in three tests. Prepare a user with this group and just use it for this test
     const groupName = 'test_gruppe_3';
     const authorName = 'mcloud-author-with-group';
 
@@ -600,6 +601,8 @@ describe('User', () => {
     Tree.openNode(['Doc_h']);
     DocumentPage.addDescription('some description');
     DocumentPage.saveDocument();
+    // TODO: remove function and use logic directly
+    //       What is the advantage over: cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
     DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
     // check write access addresses
     Menu.switchTo('ADDRESSES');
@@ -615,6 +618,7 @@ describe('User', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     AdminGroupPage.selectGroupAndWait(groupName);
+    // TODO: refactor to two functions grantUniversalRights and revokeUniversalRights
     AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
     // revoke read access that was automatically granted with right access
     AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
@@ -648,6 +652,7 @@ describe('User', () => {
     CopyCutUtils.copyObject();
     Tree.openNode(['Doc_j_1']);
 
+    // TODO: why revert changes? Takes a lot of time!  Remove code below
     // login as ige and withdraw access
     cy.logoutClearCookies();
     cy.kcLogin('super-admin');
