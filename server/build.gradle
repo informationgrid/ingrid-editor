@@ -188,8 +188,8 @@ dependencyManagement {
 
 group = 'de.ingrid'
 description = 'IGE-NG Server'
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 springBoot {
     buildInfo()
@@ -217,7 +217,7 @@ allOpen {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -259,7 +259,7 @@ jib {
     }
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'openjdk:11-jre-slim'
+        image = 'openjdk:17-slim'
     }
     to {
         image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
