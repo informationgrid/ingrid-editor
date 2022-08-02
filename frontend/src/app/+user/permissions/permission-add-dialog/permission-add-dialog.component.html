@@ -1,40 +1,42 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">Rechte hinzufügen</span>
+        </h2>
+    </div>
+    <mat-dialog-content>
+        <ige-tree
+            (selected)="selection = $event"
+            [forAddresses]="forAddress"
+            [disabledCondition]="disableTreeNodes"
+            [isExpandable]="isExpandable"
+            [setActiveNode]="activeNodeSetter"
+            [showHeader]="false"
+            [allowMultiSelectionMode]="false"
+        ></ige-tree>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button
+            mat-button
+            mat-dialog-close
+            cdkFocusInitial
+            color="primary"
+            data-cy="permission-dialog-cancel"
+        >
+            Abbrechen
         </button>
-        <span class="text">Rechte hinzufügen</span>
-    </h2>
+        <div fxFlex></div>
+        <button
+            data-cy="permission-dialog-add"
+            mat-flat-button
+            color="primary"
+            [disabled]="shouldDisableAddButton()"
+            (click)="addPermission('writeTree')"
+        >
+            Hinzufügen
+        </button>
+    </mat-dialog-actions>
 </div>
-<mat-dialog-content>
-    <ige-tree
-        (selected)="selection = $event"
-        [forAddresses]="forAddress"
-        [disabledCondition]="disableTreeNodes"
-        [isExpandable]="isExpandable"
-        [setActiveNode]="activeNodeSetter"
-        [showHeader]="false"
-        [allowMultiSelectionMode]="false"
-    ></ige-tree>
-</mat-dialog-content>
-<mat-dialog-actions>
-    <button
-        mat-button
-        mat-dialog-close
-        cdkFocusInitial
-        color="primary"
-        data-cy="permission-dialog-cancel"
-    >
-        Abbrechen
-    </button>
-    <div fxFlex></div>
-    <button
-        data-cy="permission-dialog-add"
-        mat-flat-button
-        color="primary"
-        [disabled]="shouldDisableAddButton()"
-        (click)="addPermission('writeTree')"
-    >
-        Hinzufügen
-    </button>
-</mat-dialog-actions>
