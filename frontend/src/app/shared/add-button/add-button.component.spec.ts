@@ -7,14 +7,12 @@ describe("AddButtonComponent", () => {
   let component: AddButtonComponent;
   let fixture: ComponentFixture<AddButtonComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [AddButtonComponent],
-        imports: [MatRadioModule],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [AddButtonComponent],
+      imports: [MatRadioModule],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddButtonComponent);

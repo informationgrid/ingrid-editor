@@ -6,13 +6,11 @@ describe("DrawSpatialComponent", () => {
   let component: DrawSpatialComponent;
   let fixture: ComponentFixture<DrawSpatialComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [DrawSpatialComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [DrawSpatialComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawSpatialComponent);

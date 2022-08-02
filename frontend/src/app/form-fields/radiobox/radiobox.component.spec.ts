@@ -8,14 +8,12 @@ describe("RadioboxComponent", () => {
   let component: RadioboxComponent;
   let fixture: ComponentFixture<RadioboxComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [RadioboxComponent],
-        imports: [MatRadioModule, FormsModule],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [RadioboxComponent],
+      imports: [MatRadioModule, FormsModule],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RadioboxComponent);

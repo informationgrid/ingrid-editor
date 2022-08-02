@@ -28,11 +28,9 @@ describe("CatalogDetailComponent", () => {
     detectChanges: false,
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      spectator = createHost();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    spectator = createHost();
+  }));
 
   it("should create", () => {
     expect(spectator.component).toBeTruthy();

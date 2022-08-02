@@ -6,13 +6,11 @@ describe("HeaderMoreComponent", () => {
   let component: HeaderMoreComponent;
   let fixture: ComponentFixture<HeaderMoreComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [HeaderMoreComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [HeaderMoreComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderMoreComponent);

@@ -6,13 +6,11 @@ describe("NameSpatialComponent", () => {
   let component: NameSpatialComponent;
   let fixture: ComponentFixture<NameSpatialComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [NameSpatialComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [NameSpatialComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NameSpatialComponent);

@@ -6,13 +6,11 @@ describe("IgeFormErrorComponent", () => {
   let component: FormErrorComponent;
   let fixture: ComponentFixture<FormErrorComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [FormErrorComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [FormErrorComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FormErrorComponent);
