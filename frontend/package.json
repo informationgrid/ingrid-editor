@@ -97,6 +97,6 @@
   },
   "lint-staged": {
     "*.{ts,scss,js,css,html,md}": "prettier --check",
-    "*.spec.ts": "yarn stop-only --folder"
+    "*.{spec,cy}.ts": "yarn stop-only --folder"
   }
 }

@@ -508,9 +508,8 @@ describe('User', () => {
     AdminUserPage.userShouldNotExist('me@wemove.com');
   });
 
-  it.only('should update user information (#2972)', () => {
+  it('should update user information (#2972)', () => {
     const dateOfToday = new Date().toLocaleDateString('de', { day: 'numeric', month: 'long', year: 'numeric' });
-
     AdminUserPage.selectUser('mcloud-author-last-login');
     AdminUserPage.getInfoInHeader(keysInHeader.LastLogin, false, true).then(oldLoginDate => {
       // log in as a user to update last login information
