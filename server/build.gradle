@@ -81,6 +81,14 @@ if (hasProperty('buildProfile')) {
     bootJarMainClassName {
         dependsOn(unzip)
     }
+
+    compileTestKotlin {
+        dependsOn(unzip)
+    }
+
+    test {
+        dependsOn(unzip)
+    }
 }
 
 dependencies {
