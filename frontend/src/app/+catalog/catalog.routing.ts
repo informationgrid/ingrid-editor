@@ -17,6 +17,7 @@ export const routing = RouterModule.forChild([
       {
         path: "",
         redirectTo: "codelists",
+        pathMatch: "full",
       },
       {
         path: "codelists",

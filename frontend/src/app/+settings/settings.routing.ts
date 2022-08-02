@@ -17,6 +17,7 @@ export const routing = RouterModule.forChild([
       {
         path: "",
         redirectTo: "general",
+        pathMatch: "full",
       },
       {
         path: "general",

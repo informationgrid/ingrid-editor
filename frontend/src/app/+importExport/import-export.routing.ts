@@ -14,6 +14,7 @@ export const routing = RouterModule.forChild([
       {
         path: "",
         redirectTo: "import",
+        pathMatch: "full",
       },
       {
         path: "import",

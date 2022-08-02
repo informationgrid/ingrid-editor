@@ -8,6 +8,7 @@
     "start-hmr": "ng serve --hmr",
     "start-ie11": "ng serve --configuration es5",
     "hmr": "ng serve --configuration hmr",
+    "browserslist": "browserslist --update-db",
     "build": "ng build ige-ng",
     "postinstallX": "grep -rl node_modules/@material/ -e '@import \"@material' | xargs sed -i \"\" 's/@material/~@material/g'",
     "prod": "ng build ige-ng --configuration production",
