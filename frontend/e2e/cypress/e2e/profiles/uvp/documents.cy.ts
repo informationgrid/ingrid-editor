@@ -137,9 +137,21 @@ describe('uvp documents', () => {
     cy.get('[data-cy="decisionDate"] input').should('have.value', '06.12.2021');
   });
 
-  it('should add procedure steps to document of type "Linienbestimmung"', () => {
-    Tree.openNode(['Plan_L']);
+  it('Create a completely filled dataset of type "Linienbestimmung" that can be published', () => {
+    Tree.openNode(['Plan_L_1']);
 
+    // add description
+    uvpPage.setDescription('some expressive description');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_10');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Sayda', false);
+    // add arrival date of request
+    uvpPage.setDateOfRequest('02.07.2021');
+    // add uvp number
+    uvpPage.setUVPnumber('UVPG-1.1.1');
+
+    // add additional steps
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
@@ -171,6 +183,14 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some expressive description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
+      'Ansprechpartner Adresse, Organisation_10'
+    );
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '02.07.2021');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.1');
+    cy.get('.spatial-title').should('contain.text', 'Sayda');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '12.12.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.12.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
@@ -187,11 +207,27 @@ describe('uvp documents', () => {
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_5.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_4.json');
+
+    DocumentPage.publishNow();
   });
 
-  it('should add procedure steps to document of type "Zulassungsverfahren"', () => {
-    Tree.openNode(['Plan_Z']);
+  it('Create a completely filled dataset of type "Zulassungsverfahren" that can be published', () => {
+    Tree.openNode(['Plan_Z_1']);
 
+    // add description
+    uvpPage.setDescription('some description');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_7');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Annaburg', false);
+    // add arrival date of request
+    uvpPage.setDateOfRequest('03.10.2020');
+    // add uvp number
+    uvpPage.setUVPnumber('UVPG-1.1.2');
+    // was there a preliminary assessment?
+    uvpPage.IsPreliminaryAssessment('Ja');
+
+    // add steps
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
@@ -223,6 +259,15 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
+      'Ansprechpartner Adresse, Organisation_7'
+    );
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '03.10.2020');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.2');
+    cy.get('.spatial-title').should('contain.text', 'Annaburg');
+    cy.get('[data-cy="prelimAssessment"] mat-radio-button').should('have.class', 'mat-radio-checked');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '01.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
@@ -239,11 +284,25 @@ describe('uvp documents', () => {
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
+
+    DocumentPage.publishNow();
   });
 
-  it('should add procedure steps to document of type "Raumordnungsverfahren"', () => {
-    Tree.openNode(['Plan_R']);
+  it('Create a completely filled dataset of type "Raumordnungsverfahren" that can be published', () => {
+    Tree.openNode(['Plan_R_1']);
 
+    // add description
+    uvpPage.setDescription('some description');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_8');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Niesky', false);
+    // add arrival date of request
+    uvpPage.setDateOfRequest('05.12.2020');
+    // add uvp number
+    uvpPage.setUVPnumber('UVPG-1.1.2');
+
+    // add steps
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
@@ -275,6 +334,14 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
+      'Ansprechpartner Adresse, Organisation_8'
+    );
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '05.12.2020');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.2');
+    cy.get('.spatial-title').should('contain.text', 'Niesky');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
@@ -291,11 +358,21 @@ describe('uvp documents', () => {
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
+
+    DocumentPage.publishNow();
   });
 
-  it('should add procedure steps to document of type "Ausländisches Vorhaben"', () => {
-    Tree.openNode(['Plan_A']);
+  it('Create a completely filled dataset of type "Ausländisches Vorhaben" that can be published', () => {
+    Tree.openNode(['Plan_A_1']);
 
+    // add description
+    uvpPage.setDescription('descr');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_9');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Barby', false);
+
+    // add steps
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
@@ -321,6 +398,12 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
+    cy.get('[data-cy="description"] textarea').should('have.value', 'descr');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
+      'Ansprechpartner Adresse, Organisation_9'
+    );
+    cy.get('.spatial-title').should('contain.text', 'Barby');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
@@ -332,6 +415,8 @@ describe('uvp documents', () => {
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(1, 'Entscheidung', 'importtest_5.json');
+
+    DocumentPage.publishNow();
   });
 
   it('should add a maximum one spatial reference (#3747) using JSON schema', () => {
