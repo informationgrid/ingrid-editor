@@ -1,8 +1,8 @@
-import { DocumentPage, headerElements, PublishOptions } from '../../../pages/document.page';
+import { DocumentPage, PublishOptions } from '../../../pages/document.page';
 import { Utils } from '../../../pages/utils';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
+import { uvpPage } from '../../../pages/uvp.page';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { ResearchPage } from '../../../pages/research.page';
 import { BasePage } from '../../../pages/base.page';
@@ -31,15 +31,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
-    DocumentPage.checkContentOfField(
-      '[data-cy="pointOfContact"]',
-      'ige-address-card',
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
       'Ansprechpartner Adresse, Organisation_6'
     );
-    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '02.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
-    DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '02.12.2021');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.1');
+    cy.get('.spatial-title').should('contain.text', 'Fulda');
   });
 
   it('create a minimal publishable document of type "Zulassungsverfahren" and publish it', () => {
@@ -61,15 +60,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
-    DocumentPage.checkContentOfField(
-      '[data-cy="pointOfContact"]',
-      'ige-address-card',
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
       'Ansprechpartner Adresse, Organisation_7'
     );
-    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '03.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
-    DocumentPage.checkContentOfField('.spatial-title', '', 'Fulda');
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '03.12.2021');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.1');
+    cy.get('.spatial-title').should('contain.text', 'Fulda');
     cy.get('[data-cy="prelimAssessment"] mat-radio-button').should('have.class', 'mat-radio-checked');
   });
 
@@ -90,15 +88,14 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some other description');
-    DocumentPage.checkContentOfField(
-      '[data-cy="pointOfContact"]',
-      'ige-address-card',
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some other description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
       'Ansprechpartner Adresse, Organisation_8'
     );
-    DocumentPage.checkValueOfField('[data-cy="receiptDate"]', 'input', '04.12.2021');
-    DocumentPage.checkContentOfField('[data-cy="eiaNumbers"]', '.list-item', 'UVPG-1.1.1');
-    DocumentPage.checkContentOfField('.spatial-title', '', 'Bonn');
+    cy.get('[data-cy="receiptDate"] input').should('have.value', '04.12.2021');
+    cy.get('[data-cy="eiaNumbers"] .list-item').should('contain.text', 'UVPG-1.1.1');
+    cy.get('.spatial-title').should('contain.text', 'Bonn');
   });
 
   it('create a minimal publishable document of type "Ausländisches Vorhaben" and publish it', () => {
@@ -114,13 +111,12 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some more description');
-    DocumentPage.checkContentOfField(
-      '[data-cy="pointOfContact"]',
-      'ige-address-card',
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some more description');
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
       'Ansprechpartner Adresse, Organisation_9'
     );
-    DocumentPage.checkContentOfField('.spatial-title', '', 'Olpe');
+    cy.get('.spatial-title').should('contain.text', 'Olpe');
   });
 
   it('create a minimal publishable document of type "Negative Vorprüfung" and publish it', () => {
@@ -134,12 +130,11 @@ describe('uvp documents', () => {
     DocumentPage.publishNow();
 
     // check content of fields
-    DocumentPage.checkContentOfField(
-      '[data-cy="pointOfContact"]',
-      'ige-address-card',
+    cy.get('[data-cy="pointOfContact"] ige-address-card').should(
+      'contain.text',
       'Ansprechpartner Adresse, Organisation_10'
     );
-    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '06.12.2021');
+    cy.get('[data-cy="decisionDate"] input').should('have.value', '06.12.2021');
   });
 
   it('should add procedure steps to document of type "Linienbestimmung"', () => {
@@ -176,20 +171,20 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '12.12.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.12.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_5.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_4.json');
   });
@@ -228,20 +223,20 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '01.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
   });
@@ -280,20 +275,20 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.checkValueOfField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
+    cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
     DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
   });
@@ -326,15 +321,15 @@ describe('uvp documents', () => {
     DocumentPage.saveDocument();
 
     // check content of fields after saving
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.checkValueOfField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
+    cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
     DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'importtest_2.json');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Entscheidung über die Zulassung'
-    DocumentPage.checkValueOfField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
     DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', 'importtest_4.json');
     DocumentPage.checkTableEntry(1, 'Entscheidung', 'importtest_5.json');
   });

@@ -8,7 +8,6 @@ import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import { ResearchPage } from '../../pages/research.page';
 
 describe('User', () => {
   beforeEach(() => {
@@ -601,9 +600,7 @@ describe('User', () => {
     Tree.openNode(['Doc_h']);
     DocumentPage.addDescription('some description');
     DocumentPage.saveDocument();
-    // TODO: remove function and use logic directly
-    //       What is the advantage over: cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
-    DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some description');
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
     // check write access addresses
     Menu.switchTo('ADDRESSES');
     cy.get('mat-tree mat-tree-node')
@@ -724,7 +721,7 @@ describe('User', () => {
     cy.get('[data-cy="email"] input').should('have.value', user.email);
 
     // role field should not be filled with a value
-    DocumentPage.checkContentOfField('[data-cy="role"]', 'mat-select', '');
+    cy.get('[data-cy="role"] mat-select').should('contain.text', '');
     // the add-button should not be activated
     cy.contains('button', 'Anlegen').should('be.disabled');
   });

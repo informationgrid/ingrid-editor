@@ -1,11 +1,9 @@
-import { DocumentPage, PublishOptions } from '../../../pages/document.page';
+import { DocumentPage } from '../../../pages/document.page';
 import { AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { Menu } from '../../../pages/menu';
 import { Utils } from '../../../pages/utils';
-import { AdminUserPage } from '../../../pages/administration-user.page';
-import Doc = Mocha.reporters.Doc;
 
 describe('mCLOUD documents', function () {
   beforeEach(() => {
@@ -110,25 +108,21 @@ describe('mCLOUD documents', function () {
       DocumentPage.saveDocument();
 
       // check if fields contain their values after saving
-      DocumentPage.checkValueOfField('[data-cy="description"]', 'textarea', 'some meaningful description');
-      DocumentPage.checkContentOfField(
-        '[data-cy="addresses"]',
-        'ige-address-card',
-        'Herausgeber Published Testorganization'
-      );
-      DocumentPage.checkContentOfField('[data-cy="keywords"]', '.mat-chip', 'schlagwort');
-      DocumentPage.checkValueOfField('[data-cy="accessRights"]', 'textarea', 'Nutzerhinweise');
-      DocumentPage.checkContentOfField('[data-cy="mCloudCategories"]', '.mat-chip', 'Bahn');
-      DocumentPage.checkContentOfField('[data-cy="DCATThemes"]', '.mat-chip', 'Verkehr');
-      DocumentPage.checkContentOfField('[data-cy="Downloads-table"]', 'mat-cell', 'https://docs.cypress.io/api/this');
-      DocumentPage.checkValueOfField('[data-cy="license"]', 'input', 'Andere offene Lizenz');
-      DocumentPage.checkValueOfField('[data-cy="origin"]', 'textarea', 'Meine Quelle');
+      cy.get('[data-cy="description"] textarea').should('have.value', 'some meaningful description');
+      cy.get('[data-cy="addresses"] ige-address-card').should('contain.text', 'Herausgeber Published Testorganization');
+      cy.get('[data-cy="keywords"] .mat-chip').should('contain.text', 'schlagwort');
+      cy.get('[data-cy="accessRights"] textarea').should('have.value', 'Nutzerhinweise');
+      cy.get('[data-cy="mCloudCategories"] .mat-chip').should('contain.text', 'Bahn');
+      cy.get('[data-cy="DCATThemes"] .mat-chip').should('contain.text', 'Verkehr');
+      cy.get('[data-cy="Downloads-table"] mat-cell').should('contain.text', 'https://docs.cypress.io/api/this');
+      cy.get('[data-cy="license"] input').should('have.value', 'Andere offene Lizenz');
+      cy.get('[data-cy="origin"] textarea').should('have.value', 'Meine Quelle');
       cy.get('[data-cy="mFUND"] input').eq(0).should('have.value', 'text1');
       cy.get('[data-cy="mFUND"] input').eq(1).should('have.value', 'text2');
-      DocumentPage.checkValueOfField('[data-cy="events"]', 'input', '11.01.2020');
-      DocumentPage.checkContentOfField('[data-cy="temporal"]', 'mat-select', 'von - bis');
-      DocumentPage.checkValueOfField('[data-cy="temporal"]', 'input.mat-start-date', '11.01.2020');
-      DocumentPage.checkValueOfField('[data-cy="temporal"]', 'input.mat-end-date', Utils.getFormattedDate(new Date()));
+      cy.get('[data-cy="events"] input').should('have.value', '11.01.2020');
+      cy.get('[data-cy="temporal"] mat-select').should('contain.text', 'von - bis');
+      cy.get('[data-cy="temporal"] input.mat-start-date').should('have.value', '11.01.2020');
+      cy.get('[data-cy="temporal"] input.mat-end-date').should('have.value', Utils.getFormattedDate(new Date()));
       cy.get('ige-spatial-list').should('exist');
     });
 
