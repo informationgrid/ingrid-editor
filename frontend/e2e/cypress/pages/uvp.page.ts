@@ -1,7 +1,4 @@
 import { DocumentPage } from './document.page';
-import { Utils } from './utils';
-import { Tree } from './tree.partial';
-import { UserAndRights } from './base.page';
 import Chainable = Cypress.Chainable;
 
 export class uvpPage {
@@ -10,7 +7,7 @@ export class uvpPage {
   }
 
   static setDateOfRequest(date: string) {
-    cy.get('[data-cy="receiptDate"] input').type(date);
+    cy.get('[data-cy="receiptDate"] input').clear().type(date);
   }
 
   static setDecisionDate(date: string) {

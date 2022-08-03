@@ -472,4 +472,42 @@ describe('uvp documents', () => {
       cy.wrap(el).find('mat-icon').invoke('attr', 'data-mat-icon-name').should('eq', 'zulassungsverfahren');
     });
   });
+
+  it('should not publish document if date of "Datum des Antrags" is later than begin of "Erste Auslegung"', () => {
+    Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
+
+    // add description
+    uvpPage.setDescription('description');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_10');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Euba', false);
+    // add arrival date of request
+    uvpPage.setDateOfRequest('02.07.2021');
+    // add uvp number
+    uvpPage.setUVPnumber('UVPG-1.1.1');
+
+    // add step "öffentliche Auslegung"
+    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2020');
+    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2020');
+    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
+    enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io/quatsch');
+    BasePage.closeDialogAndAdoptChoices();
+    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
+    enterMcloudDocTestData.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    BasePage.closeDialogAndAdoptChoices();
+    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('Test.pdf', true);
+    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
+    enterMcloudDocTestData.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+    BasePage.closeDialogAndAdoptChoices();
+
+    // try to publish and expect error
+    cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
+    cy.get(DocumentPage.Toolbar.PublishNow).click();
+    cy.hasErrorDialog('Es müssen alle Felder korrekt');
+    cy.containsFormErrors(1);
+    cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn der ersten Auslegung sein/);
+  });
 });
