@@ -122,6 +122,15 @@ describe('author with groups', () => {
   });
 
   it('author with groups should be able to jump to documents via the "last edited"-section of the dashboard, addresses and data page', () => {
+    const docName = 'Datum_Ebene_2_1';
+    DocumentPage.visit();
+    Tree.openNode(['Neue Testdokumente', docName]);
+    DocumentPage.fillInField('[data-cy="description"]', 'textarea', 'some more text');
+    DocumentPage.saveDocument();
+    AddressPage.visit();
+    Tree.openNode(['Ordner 2. Ebene', 'Aquitanien, Adresse']);
+    AddressPage.saveDocument();
+
     // from dashboard page
     DashboardPage.visit();
     DashboardPage.getLatestDocTitle(1).then(text => {
