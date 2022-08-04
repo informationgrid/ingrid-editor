@@ -21,7 +21,7 @@ describe('General create addresses/folders', () => {
     it('should show all nested folders after creation when root parent is collapsed and expanded', () => {
       // create root folder "Nested"
       const rootFolder = 'Nested';
-      DocumentPage.createFolder(rootFolder, []);
+      DocumentPage.createFolder(rootFolder);
       // create another folder under "Nested" with name "More nested"
       const moreNested = 'More nested';
       DocumentPage.createFolder(moreNested, [rootFolder]);
