@@ -14,6 +14,7 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.FindMetadata
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
@@ -137,6 +138,25 @@ class DocumentService @Autowired constructor(
         }
     }
 
+    fun getDocumentByDocumentIdAndCatalog(catalogIdentifier: String, id: String): Document {
+        try {
+            val wrapper = docWrapperRepo.findById(id.toInt()).get()
+            val doc = docRepo.getByCatalogAndUuid(wrapper.catalog!!, wrapper.uuid)
+            
+            // add metadata
+            doc.hasWritePermission = wrapper.hasWritePermission
+            doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+            doc.wrapperId = wrapper.id
+            doc.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
+            doc.catalogIdentifier = catalogIdentifier
+            return doc
+        } catch (ex: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(id, null)
+        } catch (ex: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(id, null)
+        }
+    }
+
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
         return if (includeFolders)
             docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
@@ -144,11 +164,37 @@ class DocumentService @Autowired constructor(
             docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<Document> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
     fun findChildren(
+        catalogId: String,
+        parentId: Int?,
+        docCat: DocumentCategory = DocumentCategory.DATA
+    ): FindAllResults<Document> {
+
+        val wrappers = if (parentId == null) {
+            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+        } else {
+            docWrapperRepo.findByParent_id(parentId.toInt())
+        }
+
+        val accessibleUuids = wrappers.map { it.uuid }
+        val docs = docRepo.findAllByCatalogAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+        val metadata = wrappers.map {
+            it.uuid to FindMetadata(it.parent?.id, it.countChildren > 0)
+        }.toMap()
+
+        return FindAllResults(
+            docs.size.toLong(),
+            docs,
+            metadata
+        )
+
+    }
+
+    fun findChildrenWrapper(
         catalogId: String,
         parentId: Int?,
         docCat: DocumentCategory = DocumentCategory.DATA
@@ -159,11 +205,7 @@ class DocumentService @Autowired constructor(
         } else {
             docWrapperRepo.findByParent_id(parentId.toInt())
         }
-        /*val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
-            catalogId,
-            parentId,
-            docCat.value
-        )*/
+
         return FindAllResults(
             docs.size.toLong(),
             docs
@@ -181,7 +223,7 @@ class DocumentService @Autowired constructor(
         } else {
             docs.hits
                 .flatMap { doc ->
-                    if (doc.countChildren > 0) getAllDescendantIds(
+                    if (docs.metadata[doc.uuid]!!.hasChildren) getAllDescendantIds(
                         catalogId,
                         doc.id!!
                     ) + doc.id!! else listOf(doc.id!!)
@@ -258,10 +300,11 @@ class DocumentService @Autowired constructor(
 
         // set wrapper to document association
         if (publish) {
-            preCreatePayload.wrapper.published = newDocument
-        } else {
+//            preCreatePayload.wrapper.published = newDocument
+            preCreatePayload.document.state = DOCUMENT_STATE.PUBLISHED.name
+        }/* else {
             preCreatePayload.wrapper.draft = newDocument
-        }
+        }*/
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
@@ -276,9 +319,9 @@ class DocumentService @Autowired constructor(
 
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
-        val latestDocument = getLatestDocumentVersion(postWrapper, false)
+//        val latestDocument = getLatestDocumentVersion(postWrapper, false)
 
-        return convertToJsonNode(latestDocument)
+        return convertToJsonNode(newDocument)
     }
 
     /**
@@ -657,7 +700,7 @@ class DocumentService @Autowired constructor(
 
         val objectNode = if (onlyPublished) {
             wrapper.published
-        } else  {
+        } else {
             wrapper.draft ?: wrapper.pending ?: wrapper.published
         }
 
@@ -671,7 +714,7 @@ class DocumentService @Autowired constructor(
         // and increase of the version
         entityManager.detach(objectNode)
 
-        objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
+//        objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
         objectNode.hasWritePermission = wrapper.hasWritePermission
         objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
         objectNode.wrapperId = wrapper.id

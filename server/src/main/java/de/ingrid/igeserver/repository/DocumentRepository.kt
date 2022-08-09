@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.repository
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -9,6 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 
 interface DocumentRepository : JpaRepository<Document, Int> {
 
+    fun getByCatalogAndUuid(catalog: Catalog, uuid: String): Document
+    
+    fun findAllByCatalogAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
+    
     @Modifying
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteAllByUuid(uuid: String)

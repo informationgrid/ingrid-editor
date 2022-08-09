@@ -32,7 +32,7 @@ class PostMigrationTask(
     val mapperService: MapperService,
     val aclService: IgeAclService
 ) {
-    val log = logger()
+    /*val log = logger()
 
     // this ensures that the post migration task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)
@@ -399,4 +399,4 @@ class PostMigrationTask(
         SecurityContextHolder.getContext().authentication = auth
     }
 
-}
+*/}

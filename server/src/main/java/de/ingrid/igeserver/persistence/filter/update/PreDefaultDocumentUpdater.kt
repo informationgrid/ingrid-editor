@@ -50,7 +50,7 @@ class PreDefaultDocumentUpdater @Autowired constructor(
 
         // save document with same ID or new one, if no draft version exists (because the last version is published)
         // this can happen when moving a published document
-        val draftId = payload.wrapper.draft?.id
+//        val draftId = payload.wrapper.draft?.id
         val createdDate = payload.wrapper.draft?.created ?: payload.wrapper.published?.created
         val createdBy = payload.wrapper.draft?.createdby ?: payload.wrapper.published?.createdby
         val createdbyUser = payload.wrapper.draft?.createdByUser ?: payload.wrapper.published?.createdByUser
@@ -65,10 +65,10 @@ class PreDefaultDocumentUpdater @Autowired constructor(
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(context.principal!!)
-            modifiedByUser =  catalogService.getDbUserFromPrincipal(context.principal!!)
+            modifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
 
             // set server side fields from previous document version
-            id = id ?: draftId
+//            id = id ?: draftId
             created = createdDate
             createdby = createdBy
             createdByUser = createdbyUser

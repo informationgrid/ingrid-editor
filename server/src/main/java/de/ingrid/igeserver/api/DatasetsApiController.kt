@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -35,6 +36,7 @@ import java.util.*
 class DatasetsApiController @Autowired constructor(
     private val authUtils: AuthUtils,
     private val catalogService: CatalogService,
+    private val docRepo: DocumentRepository,
     private val docWrapperRepo: DocumentWrapperRepository,
     private val documentService: DocumentService,
     private val aclService: IgeAclService,
@@ -228,8 +230,8 @@ class DatasetsApiController @Autowired constructor(
         docs.hits.forEach { child ->
 
             child.let {
-                val childDoc = documentService.getLatestDocument(it, false, false)
-                val childVersion = (documentService.convertToJsonNode(childDoc) as ObjectNode)
+//                val childDoc = documentService.getLatestDocument(it, false, false)
+                val childVersion = (documentService.convertToJsonNode(it) as ObjectNode)
                     .put(FIELD_PARENT, parentId)
                 createCopyAndHandleSubTree(principal, catalogId, childVersion, CopyOptions(parentId, true), isAddress)
             }
@@ -265,9 +267,10 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
-        documentService.findChildren(catalogId, id).hits
+        documentService.findChildrenWrapper(catalogId, id).hits
             .forEach {
                 it.path = path + id.toString()
+                // FIXME: what about the path of person under an institution???
                 if (it.type == "FOLDER") {
                     updatePathForAllChildren(catalogId, it.path, it.id!!)
                 }
@@ -312,13 +315,13 @@ class DatasetsApiController @Autowired constructor(
 
         val childDocs = children
             .map { doc ->
-                val latest = documentService.getLatestDocument(doc, resolveLinks = false)
-                latest.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
-                latest.data.put(FIELD_PARENT, doc.parent?.id)
+//                val latest = documentService.getLatestDocument(doc, resolveLinks = false)
+//                doc.data.put(FIELD_HAS_CHILDREN, doc.countChildren > 0)
+//                doc.data.put(FIELD_PARENT, doc.parent?.id)
                 val permissionInfo = aclService.getPermissionInfo(principal, doc.id)
-                latest.hasWritePermission = permissionInfo.canWrite
-                latest.hasOnlySubtreeWritePermission = permissionInfo.canOnlyWriteSubtree
-                documentService.convertToJsonNode(latest)
+                doc.hasWritePermission = permissionInfo.canWrite
+                doc.hasOnlySubtreeWritePermission = permissionInfo.canOnlyWriteSubtree
+                documentService.convertToJsonNode(doc)
             }
         return ResponseEntity.ok(childDocs)
     }
@@ -327,7 +330,7 @@ class DatasetsApiController @Autowired constructor(
         userGroups: MutableSet<Group>?,
         catalogId: String,
         isAddress: Boolean,
-    ): List<DocumentWrapper> {
+    ): List<Document> {
 
         val actualRootIds = mutableListOf<Int>()
         val potentialRootIds = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
@@ -344,8 +347,10 @@ class DatasetsApiController @Autowired constructor(
             if (isRoot) actualRootIds.add(currentId)
         }
 
-        return actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
-
+        val wrappers = actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
+        val accessibleUuids = wrappers.map{ it.uuid}
+        return docRepo.findAllByCatalogAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+        
     }
 
     private fun isChildOf(childId: Int, parentId: Int, catalogId: String, isAddress: Boolean): Boolean {
@@ -429,9 +434,10 @@ class DatasetsApiController @Autowired constructor(
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
             val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
+            val doc = documentService.getDocumentByDocumentIdAndCatalog(catalogId, id.toString())
 
-            val doc =
-                documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
+//            val doc =
+//                documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
             addMetadataToDocument(doc, wrapper)
             val jsonDoc = documentService.convertToJsonNode(doc)
             return ResponseEntity.ok(jsonDoc)

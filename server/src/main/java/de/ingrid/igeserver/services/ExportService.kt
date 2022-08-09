@@ -110,11 +110,12 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         else null
 
         val children = documentService.findChildren(catalogId, doc.id)
-        val resultList = children.hits.flatMap { handleWithSubDocuments(it, options, catalogId, true) }
+        /*val resultList = children.hits.flatMap { handleWithSubDocuments(it, options, catalogId, true) }
         return if (result == null)
             resultList
         else
-            resultList + result
+            resultList + result*/
+        return emptyList()
 
     }
 }

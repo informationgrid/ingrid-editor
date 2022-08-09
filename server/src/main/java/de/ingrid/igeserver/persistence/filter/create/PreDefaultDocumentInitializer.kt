@@ -7,10 +7,7 @@ import de.ingrid.igeserver.persistence.filter.PreCreatePayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.FIELD_HAS_CHILDREN
-import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -65,6 +62,8 @@ class PreDefaultDocumentInitializer @Autowired constructor(
             createdByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
             modifiedby = fullName
             modifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
+            state = DOCUMENT_STATE.DRAFT.name
+            isLatest = true
         }
     }
 
@@ -87,13 +86,13 @@ class PreDefaultDocumentInitializer @Autowired constructor(
 
         with(payload.wrapper) {
             catalog = catalogRef
-            draft = null
-            published = null
+//            draft = null
+//            published = null
             uuid = payload.document.uuid
             parent = parentRef
             type = documentType
             category = payload.category
-            archive = mutableSetOf()
+//            archive = mutableSetOf()
             path = newPath
         }
     }

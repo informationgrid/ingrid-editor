@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
 import org.hibernate.annotations.OnDelete
@@ -104,10 +105,16 @@ class Document {
     @JsonIgnore
     var modifiedByUser: UserInfo? = null
 
+    var isLatest: Boolean = false
 
-    @Transient
+    // TODO: use enum DOCUMENT_STATE and map to db as string
     @JsonProperty("_state")
     var state: String? = null
+        get() = when(field) {
+            "PUBLISHED" -> "P"
+            else -> "W"
+        }
+
 
     companion object {
         private val dateService: DateService? by lazy {

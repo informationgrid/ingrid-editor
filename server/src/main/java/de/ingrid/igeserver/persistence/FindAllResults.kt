@@ -1,3 +1,5 @@
 package de.ingrid.igeserver.persistence
 
-class FindAllResults<T>(var totalHits: Long, var hits: List<T>) 
+data class FindMetadata(val parent: Int?, val hasChildren: Boolean)
+
+class FindAllResults<T>(var totalHits: Long, var hits: List<T>, val metadata: Map<String, FindMetadata> = emptyMap()) 
