@@ -19,6 +19,10 @@ jgitver {
         pattern = '([main|develop|support].*)'
         transformations = ['IGNORE']
     }
+    policy {
+        pattern = '(\\d+\\.\\d+\\.\\d+)'
+        transformations = ['IGNORE']
+    }
 }
 
 allprojects {
