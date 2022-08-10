@@ -870,7 +870,7 @@ export class DocumentPage extends BasePage {
   }
 
   static editDownloadTableEntry(field: fieldsForDownloadEntry, value: string) {
-    cy.get('ige-form-dialog mat-form-field input').eq(field).type(value);
+    cy.get('ige-form-dialog mat-form-field input').eq(field).clear().type(value);
     cy.contains('button', 'Ok').click();
   }
 

@@ -80,9 +80,8 @@ export class uvpPage {
   }
 
   static goToTabmenu(tabmenu: UVPreports) {
-    cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
-    cy.contains('.page-title', 'UVP Bericht', { timeout: 10000 }).should('exist');
-    cy.get('[label="Kennzahlen"] tbody', { timeout: 8000 }).should('exist');
+    cy.get(`a.mat-tab-link[href="${tabmenu}"]`, { timeout: 10000 }).click();
+    cy.url().should('include', tabmenu);
     cy.wait(1000);
   }
 
@@ -150,6 +149,22 @@ export class uvpPage {
     cy.get(`[data-cy="${parameter}"] mat-select`).should('contain', value);
     cy.get(`[data-cy="${parameter}"] mat-select`).invoke('attr', 'aria-expanded').should('eq', 'false');
   }
+
+  static replaceURL(url: string, newURL: string) {
+    cy.contains('.mat-table .mat-row', url).find('.mat-checkbox').click();
+    cy.findByPlaceholderText('URL').clear().type(newURL);
+    cy.contains('button', 'Ersetzen').click();
+  }
+
+  static getNumberOfAnalysedURLs(): Chainable<number> {
+    return cy.get('.status').then(el => {
+      return parseInt(el.text().trim().split('Analysierte URLs: ')[1]);
+    });
+  }
+
+  static getNumberOfInvalidURLs(): Chainable<number> {
+    return cy.get('.mat-column-url.mat-cell').then(coll => coll.length);
+  }
 }
 
 export enum AddressDetails {
@@ -166,5 +181,7 @@ export enum UVPmetrics {
 
 export enum UVPreports {
   Statistic = '/reports/general',
-  Report = '/reports/uvp-bericht'
+  Report = '/reports/uvp-bericht',
+  URLmanagement = '/reports/url-check',
+  UploadCheck = '/reports/uvp-upload-check'
 }

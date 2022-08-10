@@ -27,7 +27,7 @@ export class BasePage {
   }
 
   static checkErrorDialogMessage(message: string | RegExp) {
-    cy.get('[data-cy=error-dialog-content]').contains(message);
+    cy.get('[data-cy=error-dialog-content]', { timeout: 8000 }).contains(message);
   }
 
   static closeDialog() {
