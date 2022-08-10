@@ -663,7 +663,7 @@ export class DocumentPage extends BasePage {
       Tree.openNodeInsideDialog(targetNodePath);
     } else {
       // cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
-      cy.get('ige-destination-selection mat-list-option').click();
+      cy.get('ige-destination-selection mat-list-option', { timeout: 8000 }).click();
     }
     cy.get('[data-cy=create-applyLocation]').click();
   }
