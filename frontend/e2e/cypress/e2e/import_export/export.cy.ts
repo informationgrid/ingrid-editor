@@ -11,8 +11,6 @@ describe('mCLOUD: Export', () => {
   it('should export a completed document with option "mCLOUD Portal" ', () => {
     Tree.openNode(['TestDocResearch4'], false);
     ExportPage.continue();
-    // TODO select "Nur diesen Datensatz"
-    //  --------------
     ExportPage.selectOption('mCLOUD Portal');
     // go to preview step
     ExportPage.continue();
@@ -77,19 +75,24 @@ describe('Export', () => {
     ExportPage.checkForFileDownload('export.json');
   });
 
-  xit('should exportExport of a subtree with options: "alle untergeordneten", "IGE")  ', () => {
+  it('should exportExport of a subtree with options: "alle untergeordneten", "IGE")  ', () => {
     Tree.openNode(['folder_to_export_draft_files'], false);
     ExportPage.continue();
     ExportPage.selectExportOption('alle untergeordneten');
     ExportPage.checkDraftOption();
     //go to preview step
     ExportPage.continue();
+    // give it little time to load the content
+    cy.wait(300);
     ExportPage.preview();
+    ExportPage.checkPreviewContent('first_draft_document');
+    ExportPage.checkPreviewContent('second_draft_document');
     ExportPage.closePreview();
     ExportPage.exportFile();
     ExportPage.checkForFileDownload('export.json');
   });
 
+  // this test is pending right now because option "dieser und alle untergeordneten" preduce the same result as "alle untergeordneten"
   xit('should exportExport of a subtree  including the selected one with options: "dieser und alle untergeordneten", "IGE")  ', () => {
     Tree.openNode(['folder_to_export_draft_files'], false);
     ExportPage.continue();

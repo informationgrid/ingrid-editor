@@ -43,6 +43,10 @@ export class ExportPage {
     cy.get('ige-export button').contains('Vorschau').click();
   }
 
+  static checkPreviewContent(data: string) {
+    cy.contains('mat-dialog-content', data);
+  }
+
   static closePreview() {
     cy.get('[data-cy="confirm-dialog-cancel"]').click();
   }
