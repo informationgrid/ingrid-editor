@@ -86,9 +86,20 @@ export class UploadService {
 
     let start = uri.lastIndexOf("/") + 1;
     const filename = uri.substring(start);
+    uri = this.preEncodeUri(uri);
     this.getFile(docUuid, uri)
       .pipe(catchError((error) => this.handleDownloadError(error)))
       .subscribe((data) => this.handleDownloadProcess(data, filename));
+  }
+
+  /**
+   * Manually encodes '+' and '%' as they are not otherwise.
+   * Necessary because of angular bug.
+   * See Ticket https://github.com/angular/angular/issues/11058
+   * @param uri
+   */
+  preEncodeUri(uri: string): string {
+    return uri.replace("%", "%25").replace("+", "%2B");
   }
 
   private handleDownloadProcess(hash: String, filename: string) {
