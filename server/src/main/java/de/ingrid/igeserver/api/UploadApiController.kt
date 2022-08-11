@@ -185,7 +185,9 @@ class UploadApiController @Autowired constructor(
         checkReadPermission(catalogId, docUuid, principal as Authentication)
 
         val info = StorageParameters(catalogId, principal.getName(), docUuid, file)
-        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()){
+        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()
+            && storage.isArchived(info.catalog, info.datasetID, info.file).not()
+        ){
             throw NotFoundException.withMissingResource(info.file, "file")
         }
 
