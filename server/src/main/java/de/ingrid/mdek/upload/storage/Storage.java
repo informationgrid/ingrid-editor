@@ -135,7 +135,7 @@ public interface Storage {
      * @throws IOException
      */
     void delete(final String catalog, final FileSystemItem file) throws IOException;
-    
+
     /**
      * Archive a file
      *
@@ -144,6 +144,8 @@ public interface Storage {
      * @throws IOException
      */
     void archive(String catalog, String datasetID, String file) throws IOException;
+
+    boolean isArchived(String catalog, String path, String file);
 
     /**
      * Restore a file
@@ -221,7 +223,7 @@ public interface Storage {
 
     /**
      * Remove all files in published state
-     * 
+     *
      * @param catalog
      * @param datasetID
      * @throws IOException
@@ -245,6 +247,6 @@ public interface Storage {
      * @throws IOException
      */
     void discardUnsaved(String catalog, String userID, String datasetID) throws IOException;
-    
+
     List<FileSystemItem> list(String catalog, Scope scope) throws IOException;
 }
