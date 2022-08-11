@@ -4,6 +4,7 @@ import { ResearchPage } from '../../../pages/research.page';
 import { Utils } from '../../../pages/utils';
 import { DocumentPage, fieldsForDownloadEntry } from '../../../pages/document.page';
 import { BasePage } from '../../../pages/base.page';
+import { Tree } from '../../../pages/tree.partial';
 
 describe('uvp reports', () => {
   beforeEach(() => {
@@ -202,8 +203,9 @@ describe('uvp reports', () => {
     cy.contains('error-dialog', /zu ersetzende URL konnte nicht gefunden werden/);
   });
 
-  xit('should show documents that have invalid url in common', () => {
+  it('should show documents that have invalid url in common', () => {
     const url = 'https://wemove.com/xxx';
+    let docs: string[] = [];
 
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.URLmanagement);
@@ -211,11 +213,17 @@ describe('uvp reports', () => {
     // click on 'eye'-symbol
     cy.contains('.mat-table .mat-row', url).find('[mattooltip="Datensätze anzeigen"]').click();
     cy.get('ige-list-datasets-dialog').should('exist');
-    cy.get('mat-action-list button').each(element => {
-      cy.wrap(element).click();
-      cy.url().should('contain', '/form');
-      cy.contains('.title', element.text().trim());
-      cy.contains('mat-row a', url).should('exist');
-    });
+    // collect document names, then open documents and check for url
+    cy.get('mat-action-list button')
+      .each(element => {
+        docs.push(element.text().trim());
+      })
+      .then(_ => {
+        DocumentPage.visit();
+        docs.forEach(node => {
+          Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', node]);
+          cy.contains('mat-row a', url).should('exist');
+        });
+      });
   });
 });
