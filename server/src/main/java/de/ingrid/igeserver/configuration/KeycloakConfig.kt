@@ -92,6 +92,7 @@ internal class KeycloakConfig : KeycloakWebSecurityConfigurerAdapter() {
         val firewall = StrictHttpFirewall()
         firewall.setAllowUrlEncodedSlash(true)
         firewall.setAllowSemicolon(true)
+        firewall.setAllowUrlEncodedPercent(true)
         return firewall
     }
 
