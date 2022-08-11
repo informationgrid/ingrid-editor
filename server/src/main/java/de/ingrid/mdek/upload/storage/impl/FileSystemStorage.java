@@ -86,7 +86,7 @@ public class FileSystemStorage implements Storage {
     private static final Pattern ILLEGAL_FILE_NAME = Pattern.compile(".*"+ILLEGAL_FILE_CHARS.pattern()+".*");
 
     private static final String TMP_FILE_PREFIX = "upload";
-    
+
     private static CopyOption[] DEFAULT_COPY_OPTIONS = {StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING};
 
     private static final Logger log = LogManager.getLogger(FileSystemStorage.class);
@@ -444,7 +444,7 @@ public class FileSystemStorage implements Storage {
         this.getArchivePath(catalog, path, "", this.docsDir, Scope.PUBLISHED).toFile().mkdirs();
         Files.move(realPath, archivePath, DEFAULT_COPY_OPTIONS);
     }
-    
+    @Override
     public boolean isArchived(final String catalog, final String path, final String file) {
         // check if file exists
         return this.getArchivePath(catalog, path, file, this.docsDir, Scope.PUBLISHED).toFile().exists();
@@ -814,7 +814,7 @@ public class FileSystemStorage implements Storage {
 
         unpublishedFiles.forEach(file -> moveFileToTrash(catalog, datasetID, copyOptions, file, Scope.UNPUBLISHED));
     }
-    
+
     @Override
     public void discardPublished(final String catalog, final String datasetID) throws IOException{
         var publishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
@@ -942,9 +942,9 @@ public class FileSystemStorage implements Storage {
      */
     Path getUnsavedPath(final String catalog, final String userID, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNSAVED_PATH,
-                this.sanitize(catalog, ILLEGAL_PATH_CHARS), 
-                this.sanitize(path, ILLEGAL_PATH_CHARS), 
-                this.sanitize(userID, ILLEGAL_PATH_CHARS), 
+                this.sanitize(catalog, ILLEGAL_PATH_CHARS),
+                this.sanitize(path, ILLEGAL_PATH_CHARS),
+                this.sanitize(userID, ILLEGAL_PATH_CHARS),
                 this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
 
