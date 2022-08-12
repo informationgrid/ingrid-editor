@@ -128,13 +128,14 @@ class DocumentService @Autowired constructor(
      * This function gets the latest document version with its wrapper element. This function implicitly checks
      * permission when getting the wrapper.
      */
-    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int): DocumentData {
+    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
-            val docWithResolvedReferences = prepareDocument(doc)
-            return DocumentData(wrapper, docWithResolvedReferences)
+            
+            return if (expandReferences) DocumentData(wrapper, expandInternalReferences(doc))
+            else DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
@@ -265,7 +266,7 @@ class DocumentService @Autowired constructor(
 
         val doc = getLatestDocumentVersion(wrapper, onlyPublished, catalogId)
 
-        return prepareDocument(doc, onlyPublished, resolveLinks)
+        return expandInternalReferences(doc, onlyPublished, resolveLinks)
     }
 
     @Deprecated("do not use at all")
@@ -278,7 +279,7 @@ class DocumentService @Autowired constructor(
 
         val doc = getLatestDocumentVersion(wrapper, options.onlyPublished, catalogId)
 
-        return prepareDocument(doc, options.onlyPublished, options.forExport, options)
+        return expandInternalReferences(doc, options.onlyPublished, options.forExport, options)
     }
 
     fun getDocumentType(docType: String): EntityType {
@@ -452,9 +453,10 @@ class DocumentService @Autowired constructor(
         try {
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
+
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
-            return DocumentData(postWrapper, updatedDoc)
+            return DocumentData(postWrapper, expandInternalReferences(updatedDoc))
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
@@ -468,7 +470,7 @@ class DocumentService @Autowired constructor(
 
         if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
             docData.document.isLatest = false
-            docData.document.state = DOCUMENT_STATE.ARCHIVED
+            if (!nextStateIsDraft) docData.document.state = DOCUMENT_STATE.ARCHIVED
             docRepo.save(docData.document)
 
             // prepare new document
@@ -514,7 +516,7 @@ class DocumentService @Autowired constructor(
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
-            
+
             val updatedDoc = docRepo.save(preUpdatePayload.document)
             val updatedWrapper = if (publishDate != null) {
                 preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
@@ -702,7 +704,8 @@ class DocumentService @Autowired constructor(
     }
 
     fun getLastPublishedDocument(catalogId: String, uuid: String): Document {
-        return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        return expandInternalReferences(doc)
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {
@@ -727,7 +730,8 @@ class DocumentService @Autowired constructor(
         } else {
             // else delete published version which automatically sets published version in wrapper to null
             docRepo.delete(lastPublished)
-            currentDoc.document
+            currentDoc.document.state = DOCUMENT_STATE.DRAFT
+            docRepo.save(currentDoc.document)
         }
 
         // run post-unpublish pipe(s)
@@ -829,7 +833,7 @@ class DocumentService @Autowired constructor(
         return objectNode
     }
 
-    private fun prepareDocument(
+    private fun expandInternalReferences(
         docData: Document,
         onlyPublished: Boolean = false,
         resolveLinks: Boolean = true,

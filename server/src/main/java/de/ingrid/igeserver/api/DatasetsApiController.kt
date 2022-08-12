@@ -439,10 +439,8 @@ class DatasetsApiController @Autowired constructor(
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
-            val docData = documentService.getDocumentFromCatalog(catalogId, id)
+            val docData = documentService.getDocumentFromCatalog(catalogId, id, true)
 
-//            val doc =
-//                documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
             addMetadataToDocument(docData)
             val jsonDoc = documentService.convertToJsonNode(docData.document)
             return ResponseEntity.ok(jsonDoc)
