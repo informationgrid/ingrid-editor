@@ -14,6 +14,7 @@ export class FormFieldHelper {
   addGroup(id: string, label: string, fields: any[], options?) {
     return {
       key: id,
+      id: id,
       fieldGroupClassName:
         options?.fieldGroupClassName === null ? undefined : "display-flex",
       wrappers: ["panel"],
@@ -69,6 +70,7 @@ export class FormFieldHelper {
   addRepeatChip(id, label, options?) {
     return {
       key: id,
+      id: id,
       type: "repeatChip",
       wrappers: ["panel"],
       templateOptions: {
@@ -138,6 +140,7 @@ export class FormFieldHelper {
   addInput(id, label, options?): FormlyFieldConfig {
     return {
       key: id,
+      id: id,
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers,

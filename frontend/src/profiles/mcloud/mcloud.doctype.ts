@@ -77,6 +77,7 @@ export class McloudDoctype extends BaseDoctype {
           columns: [
             {
               key: "title",
+              id: "title",
               type: "input",
               label: "Titel",
               focus: true,
