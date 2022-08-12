@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeExactly
@@ -53,6 +54,7 @@ class JpaTest : AnnotationSpec() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 
@@ -105,6 +107,7 @@ class JpaTest : AnnotationSpec() {
             data = addressJson as ObjectNode
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 
@@ -159,6 +162,7 @@ class JpaTest : AnnotationSpec() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 
