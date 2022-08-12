@@ -241,7 +241,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(openDataSelector, { timeout: 10000 }).should('exist');
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 0);
     });
@@ -259,7 +259,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(addressSelector, { timeout: 10000 }).should('exist');
       // with slow connection, it happened that name of address was undefined for a moment -> check that address cards are ready
       cy.contains('ige-address-card', address1, { timeout: 8000 }).should('exist');
@@ -280,7 +280,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get("[data-cy='events']", { timeout: 10000 }).should('exist');
 
       DocumentPage.scrollToSection('Zeitbezüge');
@@ -302,7 +302,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(downloadSelector, { timeout: 10000 }).should('exist');
 
       DocumentPage.scrollToSection('mCLOUD');
@@ -320,7 +320,8 @@ describe('General create documents/folders', () => {
       cy.get(resizableElement).invoke('attr', 'style', 'height: 200px');
       cy.get(resizableElement).invoke('height').should('equal', 200);
 
-      cy.wait(500).reload();
+      cy.wait(500);
+      cy.pageReload('ige-header-title-row');
 
       // make sure that expanded size of text box is preserved after loading page
       cy.contains(DocumentPage.title, docTitle, { timeout: 12000 });

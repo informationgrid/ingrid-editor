@@ -42,7 +42,7 @@ describe('uvp reports', () => {
     uvpPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
       // create new document of type "negative Vorprüfung"
       DocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle);
-      cy.reload();
+      cy.pageReload('.page-title', ' UVP Bericht');
       cy.get(
         `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
       ).then(node => {
@@ -60,7 +60,7 @@ describe('uvp reports', () => {
     uvpPage.getUVPNumbermetrics('UVPG-1.4.1.2').then(oldValue => {
       // create new document of type "Linienbestimmungsverfahren"
       DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle);
-      cy.reload();
+      cy.pageReload('.page-title', ' UVP Bericht');
       cy.contains('[label="Verwendete UVP Nummern"] .mat-row', 'UVPG-1.4.1.2')
         .children()
         .last()

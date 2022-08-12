@@ -163,7 +163,7 @@ describe('General create addresses/folders', () => {
 
       // create published address via api
       AddressPage.apiCreateAddress(json, true);
-      cy.reload();
+      cy.pageReload('dashboard-address-header', 'Adressen');
       // open address and withdraw publication
       Tree.openNode(['Thessalien, Adresse']);
       DocumentPage.choosePublishOption(PublishOptions.Unpublish);
@@ -307,7 +307,7 @@ describe('General create addresses/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('dashboard-address-header', 'Adressen');
       cy.get('[data-cy=contact]', { timeout: 10000 }).should('exist');
 
       DocumentPage.checkOfExistingItem('[data-cy=contact] ige-repeat .mat-input-element', contact2, 0, true);
