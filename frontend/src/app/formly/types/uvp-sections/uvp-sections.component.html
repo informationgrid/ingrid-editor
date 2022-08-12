@@ -31,10 +31,10 @@
     </ng-container>
     <div style="display: flex; justify-content: center">
         <button
+            *ngIf="formControl.enabled"
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn add-button"
-            [disabled]="field.form?.disabled"
             [matMenuTriggerFor]="menu"
         >
             <mat-icon color="white">add</mat-icon>
@@ -46,6 +46,7 @@
     <ige-section-wrapper>
         <h3>Verfahrenschritte</h3>
         <button
+            *ngIf="formControl.enabled"
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn"

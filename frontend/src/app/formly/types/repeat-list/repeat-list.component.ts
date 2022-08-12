@@ -69,6 +69,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
 
+    this.formControl.statusChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((status) =>
+        status === "DISABLED"
+          ? this.inputControl.disable()
+          : this.inputControl.enable()
+      );
+
     this.filteredOptions = merge(
       this.formControl.valueChanges,
       this.inputControl.valueChanges,

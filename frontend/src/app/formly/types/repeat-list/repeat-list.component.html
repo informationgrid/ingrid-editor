@@ -8,7 +8,7 @@
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
-        [cdkDragDisabled]="to.noDrag"
+        [cdkDragDisabled]="to.noDrag || formControl.disabled"
         class="clickable list-item"
         (click)="this.onItemClick(model[i]?.key)"
     >
@@ -20,6 +20,7 @@
             {{ getParameter(model[i]) }}
         </span>
         <button
+            *ngIf="formControl.enabled"
             type="button"
             mat-icon-button
             class="close gray"
