@@ -7,7 +7,6 @@ import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.SearchResult
 import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -61,7 +60,10 @@ class DatasetsApiController @Autowired constructor(
         val parent = data.get(FIELD_PARENT)
         val parentId = if (parent == null || parent.isNull) null else parent.asInt()
         val resultDoc = documentService.createDocument(principal, catalogId, data, parentId, address, publish)
-        return ResponseEntity.ok(resultDoc)
+        addMetadataToDocument(resultDoc)
+
+        val node = documentService.convertToJsonNode(resultDoc.document)
+        return ResponseEntity.ok(node)
     }
 
     /**
@@ -85,28 +87,34 @@ class DatasetsApiController @Autowired constructor(
             documentService.unpublishDocument(principal, catalogId, id)
         } else if (cancelPendingPublishing) {
             documentService.cancelPendingPublishing(principal, catalogId, id)
+        } else if (publish) {
+            val doc = documentService.convertToDocument(data)
+            documentService.publishDocument(principal, catalogId, id, doc, publishDate)
         } else {
             val doc = documentService.convertToDocument(data)
-            documentService.updateDocument(principal, catalogId, id, doc, publish, publishDate)
+            documentService.updateDocument(principal, catalogId, id, doc)
         }
 
-        val wrapper = documentService.getWrapperByDocumentId(id)
-        addMetadataToDocument(resultDoc, wrapper)
+        addMetadataToDocument(resultDoc)
 
-        val node = documentService.convertToJsonNode(resultDoc)
+        val node = documentService.convertToJsonNode(resultDoc.document)
         return ResponseEntity.ok(node)
     }
 
     private fun addMetadataToDocument(
-        resultDoc: Document,
-        wrapper: DocumentWrapper
+        documentData: DocumentData
     ) {
-        resultDoc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
-        resultDoc.data.put(FIELD_PARENT, wrapper.parent?.id)
-        resultDoc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
-        resultDoc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-        resultDoc.hasWritePermission = wrapper.hasWritePermission
-        resultDoc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+        val wrapper = documentData.wrapper
+        
+        with (documentData.document) {
+            data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
+            data.put(FIELD_PARENT, wrapper.parent?.id)
+            data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
+            data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
+            hasWritePermission = wrapper.hasWritePermission
+            hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+            wrapperId = wrapper.id
+        }
     }
 
     @Transactional
@@ -349,7 +357,7 @@ class DatasetsApiController @Autowired constructor(
 
         val wrappers = actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
         val accessibleUuids = wrappers.map{ it.uuid}
-        return docRepo.findAllByCatalogAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+        return docRepo.findAllByCatalogAndIsLatestIsTrueAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
         
     }
 
@@ -415,31 +423,28 @@ class DatasetsApiController @Autowired constructor(
 
     override fun getByUUID(
         principal: Principal,
-        uuid: String,
-        publish: Boolean?
+        uuid: String
     ): ResponseEntity<JsonNode> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
 
-        return getByID(principal, wrapper.id!!, publish)
+        return getByID(principal, wrapper.id!!)
     }
 
     override fun getByID(
         principal: Principal,
-        id: Int,
-        publish: Boolean?
+        id: Int
     ): ResponseEntity<JsonNode> {
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
-            val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id.toString())
-            val doc = documentService.getDocumentByDocumentIdAndCatalog(catalogId, id.toString())
+            val docData = documentService.getDocumentFromCatalog(catalogId, id)
 
 //            val doc =
 //                documentService.getLatestDocument(wrapper, onlyPublished = publish ?: false, catalogId = catalogId)
-            addMetadataToDocument(doc, wrapper)
-            val jsonDoc = documentService.convertToJsonNode(doc)
+            addMetadataToDocument(docData)
+            val jsonDoc = documentService.convertToJsonNode(docData.document)
             return ResponseEntity.ok(jsonDoc)
         } catch (ex: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")

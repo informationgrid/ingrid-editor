@@ -163,10 +163,10 @@ interface DatasetsApi {
     fun getByID(
         principal: Principal,
         @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
-        @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
+        /*@Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
             required = false
-        ) publish: Boolean?
+        ) publish: Boolean?*/
     ): ResponseEntity<JsonNode>
 
     @Operation(description = "Retrieve a dataset by a given UUID.")
@@ -184,10 +184,10 @@ interface DatasetsApi {
     fun getByUUID(
         principal: Principal,
         @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
-        @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
+        /*@Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
             required = false
-        ) publish: Boolean?
+        ) publish: Boolean?*/
     ): ResponseEntity<JsonNode>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")

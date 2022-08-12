@@ -270,7 +270,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc.hasWritePermission || doc._pendingDate != null;
+    this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
   }
 
   private updateBreadcrumb(id: string) {

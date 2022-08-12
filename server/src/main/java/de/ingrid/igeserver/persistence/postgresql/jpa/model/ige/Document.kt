@@ -45,7 +45,7 @@ class Document {
     @JsonProperty("_uuid")
     var uuid: String = UUID.randomUUID().toString()
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @JsonProperty("_type")
     lateinit var type: String
 
@@ -81,11 +81,6 @@ class Document {
         modified = dateService?.now()
     }
 
-    @PreUpdate
-    fun setUpdateDate() {
-        modified = dateService?.now()
-    }
-
     @Column
     @JsonProperty("_createdBy")
     var createdby: String? = null
@@ -107,14 +102,10 @@ class Document {
 
     var isLatest: Boolean = false
 
-    // TODO: use enum DOCUMENT_STATE and map to db as string
+    //    @JsonIgnore
+    @Convert(converter = StateEnumConverter::class)
     @JsonProperty("_state")
-    var state: String? = null
-        get() = when(field) {
-            "PUBLISHED" -> "P"
-            else -> "W"
-        }
-
+    lateinit var state: DOCUMENT_STATE
 
     companion object {
         private val dateService: DateService? by lazy {
@@ -131,4 +122,11 @@ class Document {
     @Transient
     @JsonProperty("_id")
     var wrapperId: Int? = null
+}
+
+class StateEnumConverter : AttributeConverter<DOCUMENT_STATE, String> {
+    override fun convertToDatabaseColumn(attribute: DOCUMENT_STATE): String = attribute.name
+
+    override fun convertToEntityAttribute(dbData: String): DOCUMENT_STATE = DOCUMENT_STATE.valueOf(dbData)
+
 }

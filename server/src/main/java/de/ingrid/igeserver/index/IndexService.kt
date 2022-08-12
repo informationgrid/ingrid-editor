@@ -42,9 +42,7 @@ class IndexService @Autowired constructor(
         format: String,
         uuid: String
     ): Document {
-        val doc = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        assert(doc.published != null)
-        return documentService.getLatestDocument(doc, true, catalogId = catalogId)
+        return documentService.getLastPublishedDocument(catalogId, uuid)
     }
 
     fun getPublishedDocuments(

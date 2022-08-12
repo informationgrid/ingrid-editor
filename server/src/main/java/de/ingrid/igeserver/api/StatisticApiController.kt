@@ -42,9 +42,9 @@ class StatisticApiController @Autowired constructor(
         val queryResult = researchService.query(principal, userGroups, dbId, query)
 
 
-        val allData = queryResult.totalHits
-        var allDataDrafts = 0
-        var allDataPublished = 0
+        val allData = queryResult.totalHits.toLong()
+        var allDataDrafts: Long = 0
+        var allDataPublished: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
             if (hit._type != null) {

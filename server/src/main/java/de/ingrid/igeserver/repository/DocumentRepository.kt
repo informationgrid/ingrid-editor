@@ -2,6 +2,7 @@ package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -10,9 +11,17 @@ import org.springframework.security.access.prepost.PreAuthorize
 
 interface DocumentRepository : JpaRepository<Document, Int> {
 
-    fun getByCatalogAndUuid(catalog: Catalog, uuid: String): Document
+    fun getByCatalogAndUuidAndIsLatestIsTrue(catalog: Catalog, uuid: String): Document
     
-    fun findAllByCatalogAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
+    fun findAllByCatalogAndIsLatestIsTrueAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
+    
+    fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DOCUMENT_STATE): Long
+    
+    fun getByCatalog_IdentifierAndUuidAndState(
+        catalog_identifier: String,
+        uuid: String,
+        state: DOCUMENT_STATE
+    ): Document
     
     @Modifying
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")

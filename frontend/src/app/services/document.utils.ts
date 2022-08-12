@@ -8,6 +8,7 @@ export class DocumentUtils {
       case "PW":
         return "workingWithPublished";
       case "P":
+      case "PENDING":
         return "published";
       default:
         console.error("State is not supported: " + state);
@@ -23,6 +24,8 @@ export class DocumentUtils {
         return "In Bearbeitung";
       case "PW":
         return "In Bearbeitung mit Veröffentlichung";
+      case "PENDING":
+        return "Veröffentlichung geplant";
       default:
         throw new Error("State unknown: " + state);
     }

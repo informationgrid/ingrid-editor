@@ -11,9 +11,7 @@ import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import java.security.Principal
 import java.util.*
 
 /**
@@ -62,7 +60,7 @@ class PreDefaultDocumentInitializer @Autowired constructor(
             createdByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
             modifiedby = fullName
             modifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
-            state = DOCUMENT_STATE.DRAFT.name
+            state = DOCUMENT_STATE.DRAFT
             isLatest = true
         }
     }

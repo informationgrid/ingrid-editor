@@ -42,7 +42,7 @@ class DocumentWrapper {
 
     @Column(nullable = false)
     @JsonProperty("_type")
-    var type: String? = null
+    lateinit var type: String
 
     @Column(nullable = false)
     @JsonProperty("_category")
@@ -84,13 +84,16 @@ class DocumentWrapper {
     @JoinColumn(name = "draft", nullable = true)
     @JsonAlias("draft") // hint for model registry
     @JsonIgnore
+    @Deprecated("Use state in document")
     var draft: Document? = null
 
     @Transient
     @JsonSetter("draft")
+    @Deprecated("Use state in document")
     private var draftId: String? = null
 
     @JsonGetter("draft")
+    @Deprecated("Use state in document")
     fun getDraftId(): String? {
         if (this.draftId == null) {
             this.draftId = draft?.id?.toString()
@@ -107,13 +110,16 @@ class DocumentWrapper {
     @JoinColumn(name = "published", nullable = true)
     @JsonAlias("published") // hint for model registry
     @JsonIgnore
+    @Deprecated("Use state in document")
     var published: Document? = null
 
     @Transient
     @JsonSetter("published")
+    @Deprecated("Use state in document")
     private var publishedId: String? = null
 
     @JsonGetter("published")
+    @Deprecated("Use state in document")
     fun getPublishedId(): String? {
         if (this.publishedId == null) {
             this.publishedId = published?.id?.toString()
@@ -134,13 +140,16 @@ class DocumentWrapper {
     )
     @JsonAlias("archive") // hint for model registry
     @JsonIgnore
+    @Deprecated("Use state in document")
     var archive: MutableSet<Document> = LinkedHashSet<Document>()
 
     @Transient
     @JsonSetter("archive")
+    @Deprecated("Use state in document")
     private var archiveIds: Array<String>? = null
 
     @JsonGetter("archive")
+    @Deprecated("Use state in document")
     fun getArchiveIds(): Array<String> {
         if (this.archiveIds == null) {
             this.archiveIds = archive.map { it.id.toString() }.toTypedArray()
@@ -173,6 +182,7 @@ class DocumentWrapper {
     @JoinColumn(name = "pending", nullable = true)
     @JsonAlias("pending") // hint for model registry
     @JsonIgnore
+    @Deprecated("Use state in document")
     var pending: Document? = null
 
     @Column
@@ -180,19 +190,6 @@ class DocumentWrapper {
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
-
-    @Transient
-    fun getState(): String {
-        val hasDraft = draft != null
-        val hasPublished = published != null
-        return if (hasPublished && hasDraft) {
-            DocumentService.DocumentState.PUBLISHED.value + DocumentService.DocumentState.DRAFT.value
-        } else if (hasPublished) {
-            DocumentService.DocumentState.PUBLISHED.value
-        } else {
-            DocumentService.DocumentState.DRAFT.value
-        }
-    }
 
     @Transient
     var hasWritePermission: Boolean = true
