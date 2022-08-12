@@ -75,7 +75,8 @@ describe('Export', () => {
     ExportPage.checkForFileDownload('export.json');
   });
 
-  it('should exportExport of a subtree with options: "alle untergeordneten", "IGE")  ', () => {
+  // bug is covered by #2502
+  xit('should exportExport of a subtree with options: "alle untergeordneten", "IGE")  ', () => {
     Tree.openNode(['folder_to_export_draft_files'], false);
     ExportPage.continue();
     ExportPage.selectExportOption('alle untergeordneten');
