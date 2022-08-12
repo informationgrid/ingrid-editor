@@ -121,7 +121,9 @@ class ResearchService {
             """.trimIndent()
 
         val deletedFilter = "document_wrapper.deleted = 0 AND "
-        val latestFilter = "document1.is_latest = true AND "
+
+        // if we don't look explicitly for published state then look by default for latest version
+        val latestFilter = if (!checkForPublishedSearch(query.clauses)) "document1.is_latest = true AND " else ""
         val catalogAndPermissionFilter = deletedFilter + latestFilter + catalogFilter + permissionFilter
 
         val termSearch = convertSearchTerm(query)
@@ -158,6 +160,22 @@ class ResearchService {
             clauses.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
                 ?.map { it?.isFieldQuery ?: false } ?: listOf()
+        } else listOf(false)
+
+        return filterString.any { it }
+    }
+
+    private fun checkForPublishedSearch(clauses: BoolFilter?): Boolean {
+        if (clauses == null) {
+            return false
+        }
+
+        val filterString: List<Boolean> = if (clauses.clauses != null && clauses.clauses.isNotEmpty()) {
+            clauses.clauses.map { checkForPublishedSearch(it) }
+        } else if (clauses.isFacet) {
+            clauses.value
+                ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
+                ?.map { it?.id == "selectPublished" } ?: listOf()
         } else listOf(false)
 
         return filterString.any { it }
