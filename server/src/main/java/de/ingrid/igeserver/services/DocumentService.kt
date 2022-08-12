@@ -132,6 +132,7 @@ class DocumentService @Autowired constructor(
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
+            entityManager.detach(doc)
             val docWithResolvedReferences = prepareDocument(doc)
             return DocumentData(wrapper, docWithResolvedReferences)
         } catch (ex: EmptyResultDataAccessException) {
@@ -438,6 +439,7 @@ class DocumentService @Autowired constructor(
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
         val docType = getDocumentType(docData.wrapper.type)
+        val dbVersion = docData.document.version
 
         // if we update a published document then create a new document with the correct latest flag
         handleUpdateOnPublishedOnlyDocument(docData)
@@ -448,8 +450,6 @@ class DocumentService @Autowired constructor(
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
         try {
-//            preUpdatePayload.document.wrapperId = docData.wrapper.id
-//            preUpdatePayload.document.catalog = docData.document.catalog
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             val postWrapper =
@@ -458,7 +458,7 @@ class DocumentService @Autowired constructor(
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
-                preUpdatePayload.document.version!!,
+                dbVersion!!,
                 data.version!!
             )
         }
@@ -496,6 +496,7 @@ class DocumentService @Autowired constructor(
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
         val docType = getDocumentType(docData.wrapper.type)
+        val dbVersion = docData.document.version
 
         handleUpdateOnPublishedOnlyDocument(docData, false)
 
@@ -529,7 +530,7 @@ class DocumentService @Autowired constructor(
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
-                docData.document.version!!,
+                dbVersion!!,
                 data.version!!
             )
         }
@@ -539,6 +540,7 @@ class DocumentService @Autowired constructor(
         with(dbDocument) {
             title = newDocument.title
             data = newDocument.data
+            version = newDocument.version // discover concurrent editing conflict
 
             // remove parent from document (only store parent in wrapper)
             data.remove(FIELD_PARENT)

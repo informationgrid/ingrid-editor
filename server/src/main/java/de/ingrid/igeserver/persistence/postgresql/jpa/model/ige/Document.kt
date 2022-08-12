@@ -56,10 +56,6 @@ class Document {
     @Column(columnDefinition = "jsonb")
     lateinit var data: ObjectNode
 
-    @ManyToMany(mappedBy = "archive", fetch = FetchType.LAZY)
-    @JsonIgnore
-    var archiveWrapper: MutableSet<DocumentWrapper> = LinkedHashSet<DocumentWrapper>()
-
     @Version
     @JsonProperty("_version")
     var version: Int? = null
