@@ -109,6 +109,13 @@ Cypress.Commands.add('pageReload', (selector, content) => {
   }
 });
 
+// -- Visit multiple domains\ports in one test
+Cypress.Commands.add('forceVisit', url => {
+  cy.window().then(win => {
+    return win.open(url, '_self');
+  });
+});
+
 Cypress.Commands.add('fieldIsValid', (fieldClass, content) => {
   cy.get('.' + fieldClass + ' mat-form-field.ng-invalid').should('not.exist');
 });

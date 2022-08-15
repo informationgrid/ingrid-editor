@@ -140,10 +140,10 @@ describe('Profile', () => {
     ProfilePage.changeUserEmail(newEmail, true);
   });
 
-  xit('should check for forget password functionality #4033', () => {
+  it('should check for forget password functionality #4033', () => {
     cy.visit('');
     cy.contains('a', 'Passwort vergessen?').click();
-    let userEmail = 'newcatalog@test.com';
+    let userEmail = 'autor-forgetpass@test.com';
 
     cy.get('.reset-password-field  input ').type(userEmail);
     cy.contains('button', 'Absenden').click();
@@ -153,11 +153,23 @@ describe('Profile', () => {
     cy.task('getLastEmail', userEmail)
       .its('body')
       .then(body => {
-        debugger;
-        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+        expect(body).to.contain('Es wurde eine Änderung der Anmeldeinformationen für Ihren Account');
 
-        // Extract the password
-        let bodyArray = body.split('Passwort: ');
+        // Extract the link
+        let bodyArray = body.split('\n\n');
+        let resetLink = bodyArray[1];
+
+        // use force visit because of port number in the link
+        cy.forceVisit(resetLink);
+
+        let newPassword = '123FFffGex@$wtab129nn';
+        cy.get('#password-new').type(newPassword);
+        cy.get('#password-confirm').type(newPassword);
+        cy.get('#kc-login').click();
+        cy.get('.dashboard-content', { timeout: 10000 }).should('exist');
+        cy.logoutClearCookies();
+        cy.kcLogin('author-profile-test-forget-pass');
+        DashboardPage.visit();
       });
   });
 });
