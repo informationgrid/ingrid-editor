@@ -6,8 +6,10 @@ import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
+import { ExportPage } from '../../pages/export.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
-describe('User', () => {
+describe('mCLOUD: User', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin');
@@ -564,6 +566,30 @@ describe('User', () => {
     cy.get('[data-cy="role"] mat-select').should('contain.text', '');
     // the add-button should not be activated
     cy.contains('button', 'Anlegen').should('be.disabled');
+  });
+});
+
+describe('User', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    AdminUserPage.visit();
+  });
+
+  it('Should check of reset password functionality #4030', () => {
+    const toResetPaassword = 'author-profile-test-reset-pass';
+    AdminUserPage.selectUser(toResetPaassword);
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('button').contains('Passwort zurücksetzen').click();
+    cy.get('[data-cy="confirm-dialog-ok"]').click();
+    AdminUserPage.extractAndResetNewUserPassword(
+      toResetPaassword,
+      'authorresetpass@test.com',
+      'Author',
+      '123FFffGex@$wfhjfh444',
+      'autor',
+      'reset-pass'
+    );
   });
 });
 
