@@ -434,7 +434,8 @@ export class AdminUserPage extends BasePage {
         }
         cy.get('.welcome').contains('Willkommen');
         cy.get('[data-cy="header-profile-button"]').click();
-        if ((userFirstname = '' && userLastname == '')) {
+
+        if (userFirstname == '' && userLastname == '') {
           cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
         } else {
           cy.get('.mat-card-title').contains(userFirstname + ' ' + userLastname);
