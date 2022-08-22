@@ -8,6 +8,7 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
@@ -54,8 +55,18 @@ class IndexService @Autowired constructor(
         currentPage: Int = 0
     ): Page<Document> {
         val auth = SecurityContextHolder.getContext().authentication
+
+        val conditions = mutableListOf("category = 'data'", "published IS NOT NULL", "deleted = 0")
+
+        // TODO: support profile specific configuration which documents to be published
+        // TODO: extract profile specific configuration to profile files
+        val publishNegativeAssessments =
+            DataModel.behaviourService?.get(catalogId, "plugin.publish.negative.assessment")?.active ?: false
+        if (!publishNegativeAssessments) conditions.add("document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc'")
+
         val filter =
-            BoolFilter("AND", listOf("category = 'data'", "published IS NOT NULL", "deleted = 0"), null, null, false)
+            BoolFilter("AND", conditions, null, null, false)
+
         val response = researchService.query(
             auth,
             emptySet(),
