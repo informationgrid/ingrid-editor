@@ -276,7 +276,7 @@ export class UserComponent
           data: (<ConfirmDialogData>{
             title: "Änderungen speichern?",
             message:
-              "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
+              "Es wurden Änderungen am ausgewählten Benutzer vorgenommen.\nMöchten Sie die Änderungen speichern?",
             buttons: [
               { text: "Abbrechen" },
               {
