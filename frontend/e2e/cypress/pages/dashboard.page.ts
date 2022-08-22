@@ -6,7 +6,7 @@ export class DashboardPage {
   static visit() {
     cy.intercept('GET', 'api/statistic').as('getStatistic');
     cy.visit('/dashboard');
-    cy.wait('@getStatistic', { timeout: 10000 });
+    cy.wait('@getStatistic', { timeout: 12000 });
   }
 
   static getLatestDocTitle(position: number) {
