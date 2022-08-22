@@ -215,20 +215,31 @@ export class UserComponent
       });
   }
 
-  saveUser(user?: User): void {
+  saveUser(user?: User, loadUser: boolean = true): void {
     this.showLoading();
 
     user = user ?? this.model;
-
     // send request and handle error
     this.userService
       .updateUser(user)
       .pipe(finalize(() => this.hideLoading()))
       .subscribe(() => {
-        this.fetchUsers().subscribe();
-        this.form.markAsPristine();
-        this.loadUser(user.login);
+        if (loadUser) {
+          this.fetchUsers().subscribe();
+          this.form.markAsPristine();
+          this.loadUser(user.login);
+        }
       });
+  }
+
+  discardUser(user?: User): void {
+    this.showLoading();
+
+    user = user ?? this.model;
+
+    this.fetchUsers().subscribe();
+    this.form.markAsPristine();
+    this.loadUser(user.login);
   }
 
   // on error:
@@ -263,13 +274,19 @@ export class UserComponent
       return this.dialog
         .open(ConfirmDialogComponent, {
           data: (<ConfirmDialogData>{
-            title: "Änderungen verwerfen?",
-            message: "Wollen Sie die Änderungen verwerfen?",
+            title: "Änderungen speichern?",
+            message:
+              "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
             buttons: [
               { text: "Abbrechen" },
               {
                 text: "Verwerfen",
                 id: "discard",
+                alignRight: true,
+              },
+              {
+                text: "Speichern",
+                id: "save",
                 alignRight: true,
                 emphasize: true,
               },
@@ -278,12 +295,26 @@ export class UserComponent
           hasBackdrop: true,
         })
         .afterClosed()
-        .pipe(map((response) => response === "discard"));
+        .pipe(
+          tap((response) => (response ? this.handleAction(response) : null)),
+          map((response) => response === "discard" || response === "save")
+        );
     }
 
     return of(true);
   }
 
+  private async handleAction(action: undefined | "save" | "discard") {
+    if (action === "save") {
+      const user = this.model;
+      this.saveUser(user, false);
+    } else if (action === "discard") {
+      const user = this.form.value;
+      this.form.reset(user);
+    } else {
+      // do nothing
+    }
+  }
   private showLoading() {
     this.isLoading = true;
     this.form.disable();

@@ -10,7 +10,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
-import { map } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UserComponent } from "./user/user.component";
 import { GroupComponent } from "./group/group.component";
@@ -44,17 +44,29 @@ export class DeactivateGuard
     // of a selected element   "/form" to "/form;id=xxx"
     if (nextState?.url.includes(";id=")) return true;
 
+    const type = component instanceof UserComponent ? "user" : "group";
+    const currentObject =
+      component instanceof UserComponent
+        ? component.model
+        : component.form.value;
+
     return this.dialog
       .open(ConfirmDialogComponent, {
         disableClose: true,
         data: (<ConfirmDialogData>{
-          title: "Änderungen verwerfen?",
-          message: "Wollen Sie die Änderungen verwerfen?",
+          title: "Änderungen speichern?",
+          message:
+            "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
           buttons: [
             { text: "Abbrechen" },
             {
               text: "Verwerfen",
               id: "discard",
+              alignRight: true,
+            },
+            {
+              text: "Speichern",
+              id: "save",
               alignRight: true,
               emphasize: true,
             },
@@ -63,6 +75,34 @@ export class DeactivateGuard
         hasBackdrop: true,
       })
       .afterClosed()
-      .pipe(map((response) => response === "discard"));
+      .pipe(
+        tap((response) =>
+          response
+            ? this.handleAction(response, type, currentObject, component)
+            : null
+        ),
+        map((response) => response === "discard" || response === "save")
+      );
+  }
+
+  private async handleAction(
+    action: undefined | "save" | "discard",
+    type: "group" | "user",
+    currentObject = null,
+    component: UserComponent | GroupComponent
+  ) {
+    console.log(currentObject);
+    if (action === "save") {
+      type == "group"
+        ? (<GroupComponent>component).saveGroup()
+        : (<UserComponent>component).saveUser(currentObject);
+    } else if (action === "discard") {
+      console.log(action);
+      type == "group"
+        ? (<GroupComponent>component).discardGroup(currentObject)
+        : (<UserComponent>component).discardUser(currentObject);
+    } else {
+      // do nothing
+    }
   }
 }
