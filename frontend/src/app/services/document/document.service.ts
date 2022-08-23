@@ -97,10 +97,16 @@ export class DocumentService {
 
   findRecent(): void {
     this.researchService
-      .search("", { type: "selectDocuments" }, "modified", "DESC", {
-        page: 1,
-        pageSize: 10,
-      })
+      .search(
+        "",
+        { type: "selectDocuments", ignoreFolders: "exceptFolders" },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        }
+      )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
@@ -110,10 +116,16 @@ export class DocumentService {
 
   findRecentAddresses(): void {
     this.researchService
-      .search("", { type: "selectAddresses" }, "modified", "DESC", {
-        page: 1,
-        pageSize: 10,
-      })
+      .search(
+        "",
+        { type: "selectAddresses", ignoreFolders: "exceptFolders" },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        }
+      )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits }))

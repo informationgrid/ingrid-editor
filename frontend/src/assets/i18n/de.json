@@ -18,6 +18,7 @@
     "application": "INGRID",
     "newDocument": "Neuer Datensatz",
     "importDocument": "Datensatz importieren",
+    "mostRecent": "Zuletzt bearbeitet im Katalog",
     "form": "Daten",
     "formSingular": "Datensatz"
   },
