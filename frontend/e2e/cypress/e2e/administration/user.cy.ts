@@ -385,7 +385,7 @@ describe('mCLOUD: User', () => {
     AdminUserPage.updateUser({ firstName: modified }, false);
 
     AdminUserPage.selectUser(username2);
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
 
     // when overlay is findable, other entries are not clickable
     cy.get('mat-dialog-container').parent().parent().parent().find('.cdk-overlay-dark-backdrop');
