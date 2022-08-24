@@ -160,7 +160,7 @@ export class enterMcloudDocTestData {
     title: string = 'Spaaaaatiaaal',
     locationText: string = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))'
   ) {
-    cy.get('[data-cy=spatialButton]').click();
+    cy.get('[data-cy=spatialButton]').click({ timeout: 8000 });
     this.setOpenedSpatialWKT(title, locationText);
   }
 

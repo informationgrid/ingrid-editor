@@ -1,7 +1,6 @@
 import { UserAndRights } from '../../pages/base.page';
 import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { ResearchPage } from '../../pages/research.page';
 import { Utils } from '../../pages/utils';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
@@ -87,7 +86,7 @@ describe('Group', () => {
     cy.get('textarea').click().clear().type(description);
 
     AdminGroupPage.selectGroup(groupName2);
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
     AdminUserPage.discardChanges();
   });
 
