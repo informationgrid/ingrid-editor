@@ -9,13 +9,18 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 export class BreadcrumbComponent implements OnInit {
   breadPath: ShortTreeNode[];
   @Input() set path(path: ShortTreeNode[]) {
-    path?.forEach(
-      (item) =>
-        (this.showBreadcrumbPart[item.id] =
-          item.permission.canRead || item.permission.canWrite)
-    );
+    path?.forEach((item, ind, arr) => {
+      this.showBreadcrumbPart[item.id] =
+        item.permission.canRead || item.permission.canWrite;
+      this.representations[item.id] = this.showCollapsedSymbol(arr, item, ind)
+        ? "..."
+        : item.title;
+    });
     this.breadPath = path;
+    this.toShow = this.calculateShortPath(this.breadPath);
   }
+
+  toShow: any[];
 
   @Input() hideLastSeparator = true;
   @Input() simplePath = false;
@@ -29,6 +34,7 @@ export class BreadcrumbComponent implements OnInit {
 
   showBreadcrumbPart = {};
   showDisabledBreadcrumbPart = {};
+  representations = {};
 
   constructor() {}
 
@@ -38,6 +44,35 @@ export class BreadcrumbComponent implements OnInit {
     if (this.selectable) {
       this.select.next(id);
     }
+  }
+
+  calculateShortPath(breadpath: ShortTreeNode[]) {
+    let newPath: ShortTreeNode[] = [];
+
+    for (let i = 0; i < breadpath.length; i++) {
+      // test if it should be shown
+      if (this.showBreadcrumbPart[breadpath[i].id]) {
+        newPath.push(breadpath[i]);
+      } else {
+        if (this.showCollapsedSymbol(breadpath, breadpath[i], i)) {
+          // show '...'
+          this.representations[breadpath[i].id] = "...";
+          newPath.push(breadpath[i]);
+        }
+        // neither shown nor represented by '...' ? -> ignore and continue with loop
+      }
+    }
+    return newPath;
+  }
+
+  calculateLongPath(breadpath: ShortTreeNode[]) {
+    let newPath: ShortTreeNode[] = [];
+
+    for (let i = 0; i < breadpath.length; i++) {
+      newPath.push(breadpath[i]);
+      this.showBreadcrumbPart[breadpath[i].id] = true;
+    }
+    return newPath;
   }
 
   toggleShowProperty(item: ShortTreeNode) {
@@ -68,16 +103,7 @@ export class BreadcrumbComponent implements OnInit {
     );
   }
 
-  unfoldDisabledPath(path: ShortTreeNode[]) {
-    path
-      .filter((element) => element.disabled && !element.permission.canRead)
-      .forEach(
-        (elem) =>
-          (this.showBreadcrumbPart[elem.id] = !this.showBreadcrumbPart[elem.id])
-      );
-  }
-
-  collapsePath(path: ShortTreeNode[], item: ShortTreeNode) {
+  handleClick(path: ShortTreeNode[], item: ShortTreeNode) {
     if (
       !item.disabled ||
       item.permission.canOnlyWriteSubtree ||
@@ -86,17 +112,42 @@ export class BreadcrumbComponent implements OnInit {
       this.onSelect(item.id);
       return;
     }
-    path.forEach((elem) => this.togglePathElementsIfNecessary(elem));
+    if (this.representations[item.id] === "...") {
+      this.unfoldDisabledPath(path);
+      this.toShow = this.calculateLongPath(path);
+    } else {
+      this.collapsePath(path);
+      this.toShow = this.calculateShortPath(path);
+    }
+  }
+
+  unfoldDisabledPath(path: ShortTreeNode[]) {
+    path
+      .filter((element) => element.disabled && !element.permission.canRead)
+      .forEach((elem) => {
+        this.showBreadcrumbPart[elem.id] = !this.showBreadcrumbPart[elem.id];
+        this.representations[elem.id] = elem.title;
+      });
+  }
+
+  collapsePath(path: ShortTreeNode[]) {
+    path
+      .filter((element) => element.disabled && !element.permission.canRead)
+      .forEach((elem) => this.togglePathElementsIfNecessary(elem));
   }
 
   togglePathElementsIfNecessary(item: ShortTreeNode) {
-    if (
-      !item.disabled ||
-      item.permission.canRead ||
-      item.permission.canOnlyWriteSubtree
-    ) {
-      return;
-    }
     this.showBreadcrumbPart[item.id] = !this.showBreadcrumbPart[item.id];
+    if (this.representations[item.id] === "...") {
+      this.representations[item.id] = item.title;
+    }
+  }
+
+  getBreadcrumbTooltip(item: ShortTreeNode) {
+    return item.disabled && item.permission.canRead
+      ? "Sie haben keine Schreibberechtigung auf diesen Ordner"
+      : item.disabled && this.representations[item.id] !== "..."
+      ? "Sie haben keine Leseberechtigung auf diesen Ordner"
+      : "";
   }
 }

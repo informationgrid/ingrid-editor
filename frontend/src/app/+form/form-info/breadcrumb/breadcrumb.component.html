@@ -18,41 +18,21 @@
         </ng-container>
     </span>
 
-    <span *ngFor="let item of breadPath; let last = last; let i = index">
+    <span *ngFor="let item of toShow; let last = last; let i = index">
         <span
-            *ngIf="showBreadcrumbPart[item.id]; else noShow"
-            [matTooltip]="
-                item.disabled &&
-                !item.hasOnlySubtreeWritePermission &&
-                item.permission.canRead
-                    ? 'Sie haben keine Schreibberechtigung auf diesen Ordner'
-                    : item.disabled && !item.hasOnlySubtreeWritePermission
-                    ? 'Sie haben keine Leseberechtigung auf diesen Ordner'
-                    : ''
-            "
+            [matTooltip]="getBreadcrumbTooltip(item)"
             data-cy="{{ item.disabled ? 'yes' : 'no' }}"
             [class.selectable]="
                 selectable &&
-                (!item.disabled ||
-                    item.permission.hasOnlySubtreeWritePermission ||
-                    item.permission.canRead)
+                (item.permission.canRead || item.permission.canWrite)
             "
             [class.disabled]="item.disabled"
-            (click)="collapsePath(breadPath, item)"
-            >{{ item.title }}</span
+            (click)="handleClick(breadPath, item)"
+            >{{ representations[item.id] }}</span
         >
-
-        <ng-template #noShow
-            ><span
-                *ngIf="showCollapsedSymbol(breadPath, item, i)"
-                (click)="unfoldDisabledPath(breadPath)"
-                [class.selectable]="true"
-                >...</span
-            >
-        </ng-template>
         <ng-container
             *ngIf="
-                showChevron(breadPath, item, i) && (!last || !hideLastSeparator)
+                showChevron(toShow, item, i) && (!last || !hideLastSeparator)
             "
         >
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
