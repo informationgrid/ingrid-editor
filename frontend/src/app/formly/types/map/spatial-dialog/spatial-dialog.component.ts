@@ -70,6 +70,11 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     if (this.data) {
       this._bbox = this.data.value;
       this.titleInput = new UntypedFormControl(this.data.title);
+      this.result = {
+        value: this.data?.value,
+        title: this.data?.title,
+        type: this.data?.type ?? "free",
+      };
     } else {
       this.titleInput = new UntypedFormControl("Neuer Raumbezug");
     }
@@ -90,14 +95,14 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   updateView(viewType: SpatialLocationType) {
     this.view = viewType;
     this.result.type = viewType;
-    this.result.value = null;
+    if (viewType != "free") this.result.value = null;
 
     // @ts-ignore
     setTimeout(() => (<Map>this.leafletReference)._onResize());
   }
 
   returnResult() {
-    this.result.title = this.titleInput.value;
+    this.result.title = this.titleInput.value ?? "";
     this.dialogRef.close(this.result);
   }
 }
