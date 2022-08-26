@@ -11,7 +11,12 @@
         *ngIf="!showTitleInput"
         fxFlex
         class="label"
-        matTooltip="Der Titel der Adresse ergibt sich aus den Feldern Organisation und Name/Vorname."
+        [matTooltip]="
+            _model._type === 'UvpOrganisationDoc' ||
+            _model._type === 'McloudAddressDoc'
+                ? 'Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.'
+                : 'Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.'
+        "
         [matTooltipDisabled]="!disableEdit"
         [matTooltipShowDelay]="1000"
         [class.editable]="!disableEdit && _form.enabled"
