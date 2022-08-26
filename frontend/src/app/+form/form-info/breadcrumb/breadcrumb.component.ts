@@ -49,7 +49,7 @@ export class BreadcrumbComponent implements OnInit {
   calculateShortPath(breadpath: ShortTreeNode[]) {
     let newPath: ShortTreeNode[] = [];
 
-    for (let i = 0; i < breadpath.length; i++) {
+    for (let i = 0; i < breadpath?.length; i++) {
       // test if it should be shown
       if (this.showBreadcrumbPart[breadpath[i].id]) {
         newPath.push(breadpath[i]);
