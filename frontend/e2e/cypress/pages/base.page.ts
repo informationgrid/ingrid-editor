@@ -30,11 +30,19 @@ export class BasePage {
     cy.get('[data-cy=error-dialog-content]', { timeout: 8000 }).contains(message);
   }
 
+  static checkDialogTitle(title: string) {
+    cy.get('.mat-dialog-title', { timeout: 8000 }).contains(title);
+  }
+
   static closeDialog() {
     cy.get('[data-cy=dlg-close]').click();
     cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
 
+  static dialogSaveChanges() {
+    cy.get('.mat-dialog-title').contains('Änderungen speichern?');
+    cy.get('[data-cy=confirm-dialog-save]').click();
+  }
   static closeDialogAndAdoptChoices() {
     cy.contains('button', /Anlegen|Übernehmen/i).click();
     cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });

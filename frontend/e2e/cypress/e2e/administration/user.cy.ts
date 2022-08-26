@@ -591,6 +591,63 @@ describe('User', () => {
       'reset-pass'
     );
   });
+  it('Should check the functionality of cancel, discard, and save buttons in users section #4184', () => {
+    let firstUserName = 'author-profile-test-forget-pass';
+    let secondUserName = 'author-profile-test-reset-pass';
+    let orgName = 'someRandomOrganization';
+
+    // cancel and stay on the same user
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.updateUser({ organisation: orgName }, false);
+    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.cancelChanges();
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // discard changes and change the user
+    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.discardChanges();
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName('');
+
+    // save and change the user
+    AdminUserPage.updateUser({ organisation: orgName }, false);
+    AdminUserPage.selectUser(secondUserName);
+    BasePage.dialogSaveChanges();
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // reload page and check
+    cy.pageReload('.page-title', 'Benutzer');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    let newOrgName = 'new org 2';
+    // select another page, cancel and stay on the same user
+    AdminUserPage.updateUser({ organisation: newOrgName }, false);
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.cancelChanges();
+    AdminUserPage.checkOrganisationName(newOrgName);
+
+    // select another page, discard changes, then check again
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.discardChanges();
+    Menu.switchTo('USERS');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // select another page, save changes, then check again
+    AdminUserPage.updateUser({ organisation: newOrgName }, false);
+    Menu.switchTo('ADDRESSES', false);
+    BasePage.dialogSaveChanges();
+    Menu.switchTo('USERS');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(newOrgName);
+
+    // reload page and check again
+    cy.pageReload('.page-title', 'Benutzer');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(newOrgName);
+  });
 });
 
 describe('Universal Read Access', () => {

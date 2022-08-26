@@ -130,6 +130,10 @@ export class AdminUserPage extends BasePage {
     }
   }
 
+  static checkOrganisationName(name: string) {
+    cy.get('[data-cy="organisation"] input').should('have.value', name);
+  }
+
   static addGroupToUser(groupName: string) {
     // TODO: remove wait when we find another way to wait for field to be initialized
     // TODO: replace with BasePage.selectOption()

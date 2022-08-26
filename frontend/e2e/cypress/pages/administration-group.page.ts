@@ -45,6 +45,10 @@ export class AdminGroupPage extends BasePage {
     this.applyDialog();
   }
 
+  static checkDescription(name: string) {
+    cy.get('#formRoles [formcontrolname=description]').should('have.value', name);
+  }
+
   static verifyNewlyCreatedGroup(groupname: string, description: string) {
     cy.get('groups-table').should('contain', groupname);
     cy.get('groups-table').should('contain', description);
