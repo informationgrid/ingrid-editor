@@ -149,4 +149,23 @@ describe('uvp addresses', () => {
       'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
     );
   });
+
+  it('should show one name on address card when address was created with only one name (first or last name)', () => {
+    const addressFirstName = '';
+    const addressLastName = 'lastName' + Utils.randomString();
+    const addressData = {
+      firstName: addressFirstName,
+      lastName: addressLastName,
+      title: addressLastName,
+      _type: 'UvpOrganisationDoc'
+    };
+    AddressPage.apiCreateAddress(addressData, false);
+
+    // add address to document and check address card
+    Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
+    uvpPage.setAddress(addressLastName);
+    cy.get('ige-address-card .title').then(addressTitle => {
+      expect(addressTitle.text().trim()).to.equal(addressLastName);
+    });
+  });
 });
