@@ -157,7 +157,7 @@ describe('uvp addresses', () => {
       firstName: addressFirstName,
       lastName: addressLastName,
       title: addressLastName,
-      _type: 'UvpOrganisationDoc'
+      _type: 'UvpAddressDoc'
     };
     AddressPage.apiCreateAddress(addressData, false);
 
