@@ -62,7 +62,11 @@ class IndexService @Autowired constructor(
         // TODO: extract profile specific configuration to profile files
         val publishNegativeAssessments =
             DataModel.behaviourService?.get(catalogId, "plugin.publish.negative.assessment")?.active ?: false
+        val publishNegativeAssessmentsOnlyWithSpatialReferences =
+            DataModel.behaviourService?.get(catalogId, "plugin.publish.negative.assessment")?.data?.get("onlyWithSpatial") == true
+
         if (!publishNegativeAssessments) conditions.add("document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc'")
+        if ( publishNegativeAssessmentsOnlyWithSpatialReferences ) conditions.add("(document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc' OR (jsonb_path_exists(jsonb_strip_nulls(data), '\$.spatial')))")
 
         val filter =
             BoolFilter("AND", conditions, null, null, false)
