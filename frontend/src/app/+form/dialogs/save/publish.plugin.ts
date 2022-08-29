@@ -115,7 +115,7 @@ export class PublishPlugin extends SaveBase {
         },
         {
           eventId: this.eventPlanPublishId,
-          label: "Planen",
+          label: "Veröffentlichung planen",
           active: true,
         },
         {
