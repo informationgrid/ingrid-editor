@@ -11,6 +11,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
+import org.unbescape.json.JsonEscape
 
 @Component
 class JsonSchemaValidator @Autowired constructor(
@@ -44,8 +45,8 @@ class JsonSchemaValidator @Autowired constructor(
     ): String {
         val extraFields = """
             ,
-            "title": "${payload.document.title}",
-            "_type": "${payload.document.type}"
+            "title": "${JsonEscape.escapeJson(payload.document.title)}",
+            "_type": "${JsonEscape.escapeJson(payload.document.type)}"
         """.trimIndent()
         return json.substringBeforeLast("}") + extraFields + "}"
     }
