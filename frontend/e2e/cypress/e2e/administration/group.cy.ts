@@ -38,8 +38,7 @@ describe('Group', () => {
     AdminGroupPage.updateGroup({ description: descriptionName }, false);
     AdminGroupPage.selectGroup(secondGroup);
     BasePage.dialogSaveChanges();
-    // little time to send save request
-    cy.wait(200);
+    AdminGroupPage.selectGroup(firstGroup);
     AdminGroupPage.checkDescription(descriptionName);
 
     // reload page and check
@@ -64,8 +63,6 @@ describe('Group', () => {
     AdminGroupPage.updateGroup({ description: descriptionName2 }, false);
     Menu.switchTo('ADDRESSES', false);
     BasePage.dialogSaveChanges();
-    // little time to send save request
-    cy.wait(200);
     Menu.switchTo('USERS', false);
     AdminGroupPage.checkDescription(descriptionName2);
 
