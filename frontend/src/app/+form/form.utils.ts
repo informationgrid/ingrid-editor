@@ -9,6 +9,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { UntypedFormGroup } from "@angular/forms";
 
 export class FormUtils {
+  static timestamp: number = 0;
   static addHotkeys(
     event: KeyboardEvent,
     service: FormToolbarService,
@@ -20,8 +21,10 @@ export class FormUtils {
       event.stopImmediatePropagation();
       event.stopPropagation();
       event.preventDefault();
-      if (!readonly) {
+      let dif = event.timeStamp - FormUtils.timestamp;
+      if (!readonly && !event.repeat && dif > 500) {
         service.sendEvent("SAVE");
+        FormUtils.timestamp = event.timeStamp;
       }
     }
   }
