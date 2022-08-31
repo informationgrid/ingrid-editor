@@ -18,11 +18,18 @@
 
     <mat-list dense>
         <h3 mat-subheader class="inline">Administratoren</h3>
-        <mat-list-item *ngFor="let admin of catAdmins">
-            <h4 mat-line>
-                {{ admin.firstName }} {{ admin.lastName }} ({{ admin.login }})
-            </h4>
-        </mat-list-item>
+        <mat-list-item *ngIf="catAdmins?.length === 0; else admins"
+            >keine zugewiesen</mat-list-item
+        >
+        <ng-template #admins>
+            <mat-list-item *ngFor="let admin of catAdmins">
+                <h4 mat-line>
+                    {{ admin.firstName }} {{ admin.lastName }} ({{
+                        admin.login
+                    }})
+                </h4>
+            </mat-list-item></ng-template
+        >
     </mat-list>
 </mat-dialog-content>
 
