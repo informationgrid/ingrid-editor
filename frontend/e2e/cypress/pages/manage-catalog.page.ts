@@ -15,8 +15,8 @@ export class ManageCatalogPage {
 
   static switchToCatalog(title: string) {
     ManageCatalogPage.openCatalogCardMenu(title);
-    // use "Verwenden" button on catalog to switch to new catalog
-    cy.get('button.mat-menu-item').contains('Verwenden').click();
+    // use "Aktivieren" button on catalog to switch to new catalog
+    cy.get('button.mat-menu-item').contains('Aktivieren').click();
     // wait a bit longer since page will be reloaded
     cy.wait(4000);
   }
