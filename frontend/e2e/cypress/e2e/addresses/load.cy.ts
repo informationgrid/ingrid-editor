@@ -68,7 +68,7 @@ describe('mCLOUD: Load addresses', () => {
   });
 
   it('should "Adresse ersetzen" option exists only for catalog administrators and super users #3811', () => {
-    Tree.openNode(['Neue Testadressen']);
+    Tree.openNode(['test_z, test_z']);
     AddressPage.openActionMenu();
     AddressPage.openReplaceAddressDialog();
     AddressPage.closeReplaceAddressDialog();
@@ -76,7 +76,7 @@ describe('mCLOUD: Load addresses', () => {
 
     cy.kcLogin('mcloud-catalog-authorization');
     AddressPage.visit();
-    Tree.openNode(['Neue Testadressen']);
+    Tree.openNode(['test_z, test_z']);
     AddressPage.openActionMenu();
     AddressPage.openReplaceAddressDialog();
     AddressPage.closeReplaceAddressDialog();
@@ -90,7 +90,7 @@ describe('mCLOUD: Load addresses', () => {
 
     cy.kcLogin('mcloud-author-with-group');
     AddressPage.visit();
-    Tree.openNode(['Ordner 2. Ebene']);
+    Tree.openNode(['Ordner 2. Ebene', 'Aquitanien, Adresse']);
     cy.get('[data-cy="more-actions"]').should('not.exist');
     cy.logoutClearCookies();
   });
