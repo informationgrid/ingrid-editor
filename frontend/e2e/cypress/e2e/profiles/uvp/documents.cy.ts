@@ -510,4 +510,34 @@ describe('uvp documents', () => {
     cy.containsFormErrors(1);
     cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn der ersten Auslegung sein/);
   });
+
+  // validation not yet implemented (09/01/22)
+  xit('should not publish document if date of "Datum des Antrags" is later than begin of "Erörterungszeitraum" #4057', () => {
+    Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
+
+    // add description
+    uvpPage.setDescription('description');
+    // add address
+    uvpPage.setAddress('Adresse, Organisation_6');
+    // add spatial reference
+    enterMcloudDocTestData.setSpatialBbox('information about location', 'Nidda', false);
+    // add arrival date of request
+    uvpPage.setDateOfRequest('12.07.2021');
+    // add uvp number
+    uvpPage.setUVPnumber('UVPG-1.2.1');
+
+    // add step "Erörterungstermin"
+    uvpPage.addProcedureSteps('Erörterungstermin');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2020');
+    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2020');
+    DocumentPage.addTableEntry(0, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
+    enterMcloudDocTestData.uploadFile('importtest_1.json', true);
+
+    // try to publish and expect error
+    cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
+    cy.get(DocumentPage.Toolbar.PublishNow).click();
+    cy.hasErrorDialog('Es müssen alle Felder korrekt');
+    cy.containsFormErrors(1);
+    cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn des Erörterungstermins sein/);
+  });
 });
