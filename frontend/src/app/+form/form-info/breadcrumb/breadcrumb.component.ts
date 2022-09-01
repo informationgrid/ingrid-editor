@@ -71,6 +71,7 @@ export class BreadcrumbComponent implements OnInit {
     for (let i = 0; i < breadpath.length; i++) {
       newPath.push(breadpath[i]);
       this.showBreadcrumbPart[breadpath[i].id] = true;
+      this.representations[breadpath[i].id] = breadpath[i].title;
     }
     return newPath;
   }
@@ -113,21 +114,11 @@ export class BreadcrumbComponent implements OnInit {
       return;
     }
     if (this.representations[item.id] === "...") {
-      this.unfoldDisabledPath(path);
       this.toShow = this.calculateLongPath(path);
     } else {
       this.collapsePath(path);
       this.toShow = this.calculateShortPath(path);
     }
-  }
-
-  unfoldDisabledPath(path: ShortTreeNode[]) {
-    path
-      .filter((element) => element.disabled && !element.permission.canRead)
-      .forEach((elem) => {
-        this.showBreadcrumbPart[elem.id] = !this.showBreadcrumbPart[elem.id];
-        this.representations[elem.id] = elem.title;
-      });
   }
 
   collapsePath(path: ShortTreeNode[]) {
