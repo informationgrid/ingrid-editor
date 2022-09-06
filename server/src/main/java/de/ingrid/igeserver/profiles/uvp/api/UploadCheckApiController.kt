@@ -31,7 +31,7 @@ class UploadCheckApiController @Autowired constructor(
         val published = referenceHandler.getPublishedDocumentsByCatalog().flatMap { doc ->
             doc.docs.map { checkIfUploadExists(doc, it.uri, "published") }
         }
-        val drafts = referenceHandler.getDraftDocumentsByCatalog().flatMap { doc ->
+        val drafts = referenceHandler.getDraftAndPendingDocumentsByCatalog().flatMap { doc ->
             doc.docs.map { checkIfUploadExists(doc, it.uri, "draft") }
         }
         return published + drafts

@@ -17,7 +17,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     override fun getProfile() = UvpProfile.id
 
 
-    val sqlStepsDraft = """
+    val sqlStepsDraftAndPending = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
@@ -27,10 +27,10 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND dw.draft = doc.id
+          AND (dw.draft = doc.id OR dw.pending = doc.id)
     """.trimIndent()
 
-    val sqlNegativeDecisionDocsDraft = """
+    val sqlNegativeDecisionDocsDraftAndPending = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
@@ -39,7 +39,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND dw.draft = doc.id
+          AND (dw.draft = doc.id OR dw.pending = doc.id)
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
@@ -49,9 +49,9 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    fun getDraftDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
-        val result = queryDocs(sqlStepsDraft, "step", docId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraft, "negativeDocs", docId)
+    fun getDraftAndPendingDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
+        val result = queryDocs(sqlStepsDraftAndPending, "step", docId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraftAndPending, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 

@@ -27,7 +27,7 @@ val sqlStepsWithDrafts = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.published = doc.id OR dw.draft = doc.id)
+          AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
     """.trimIndent()
 
 val sqlNegativeDecisionDocsPublished = """
@@ -52,7 +52,7 @@ val sqlNegativeDecisionDocsWithDraft = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.published = doc.id OR dw.draft = doc.id)
+          AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
