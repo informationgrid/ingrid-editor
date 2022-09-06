@@ -287,7 +287,7 @@ class DatasetsApiController @Autowired constructor(
             val userGroups = catalogService.getUser(userName)?.groups
                 ?.filter { it.catalog?.identifier == catalogId }
                 ?.toMutableSet()
-            getRootDocsFromGroup(userGroups, catalogId, isAddress)
+            getRootDocsFromGroup(userGroups, isAddress)
         } else {
             documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress).hits
         }
@@ -304,37 +304,21 @@ class DatasetsApiController @Autowired constructor(
 
     private fun getRootDocsFromGroup(
         userGroups: MutableSet<Group>?,
-        catalogId: String,
         isAddress: Boolean,
     ): List<DocumentWrapper> {
 
-        val actualRootIds = mutableListOf<Int>()
-        val potentialRootIds = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
+        val actualRoots = mutableListOf<DocumentWrapper>()
+        val groupDatasets = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
+            .map { id -> documentService.getWrapperByDocumentId(id) }
+        val groupDatasetIds = groupDatasets.map{it.id.toString()}.toSet()
 
-        for (currentId in potentialRootIds) {
-            var isRoot = true
-            for (potentialParent in potentialRootIds) {
-                if (currentId == potentialParent) continue
-                if (isChildOf(currentId, potentialParent, catalogId, isAddress)) {
-                    isRoot = false
-                    break
-                }
-            }
-            if (isRoot) actualRootIds.add(currentId)
+        for (potentialRoot in groupDatasets) {
+            // if potentialRoot.path contains(intersects) any other groupDatasetId it is a descendant and therefore not an actual root node.
+            val isRoot = potentialRoot.path.intersect(groupDatasetIds).isEmpty()
+            if (isRoot) actualRoots.add(potentialRoot)
         }
+        return actualRoots
 
-        return actualRootIds.map { id -> documentService.getWrapperByDocumentId(id) }
-
-    }
-
-    private fun isChildOf(childId: Int, parentId: Int, catalogId: String, isAddress: Boolean): Boolean {
-
-        val childrenIds =
-            this.documentService.findChildrenDocs(catalogId, parentId, isAddress).hits.mapNotNull { it.id }
-        if (childrenIds.contains(childId)) return true
-
-        childrenIds.forEach { parentChild -> if (isChildOf(childId, parentChild, catalogId, isAddress)) return true }
-        return false
     }
 
     override fun find(
