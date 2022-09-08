@@ -375,31 +375,6 @@ describe('create/delete/edit addresses', () => {
     cy.get('simple-snack-bar').contains('Die Adresse ist bereits vorhanden');
   });
 
-  it('should test sorting of the tree inside catalogue of type test', () => {
-    const firstDoc = 'Datum_Ebene_4_1';
-    const lastDoc = 'Datum_Ebene_4_2';
-
-    Menu.switchTo('DOCUMENTS');
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
-    cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
-    Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
-    cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
-    // check order of documents
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(firstDoc);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(lastDoc);
-    // change sorting of the tree
-    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
-    // check new order of the tree
-    DocumentPage.visit();
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
-    // toggle button to original state
-    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
-  });
-
   it('should create an address via api for the test catalogue', () => {
     const addressFirstName = 'firstName' + Utils.randomString();
     const addressLastName = 'firstName' + Utils.randomString();
