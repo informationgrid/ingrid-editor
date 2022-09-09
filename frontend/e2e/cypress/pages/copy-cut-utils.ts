@@ -1,5 +1,4 @@
 import { Tree } from './tree.partial';
-import { timeout } from 'rxjs/operators';
 
 export enum CopyOption {
   COPY = '[data-cy="copyMenu_COPY"]',

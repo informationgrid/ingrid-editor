@@ -1,5 +1,4 @@
 import { BasePage, CatalogsTabmenu } from './base.page';
-import { DocumentPage } from './document.page';
 import { Menu } from './menu';
 
 export class BehavioursPage extends BasePage {

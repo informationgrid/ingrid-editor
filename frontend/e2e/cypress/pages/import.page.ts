@@ -1,5 +1,3 @@
-import { Tree } from '../pages/tree.partial';
-
 export class ImportPage {
   static visit() {
     cy.intercept('GET', /api\/import\?profile=mcloud/).as('getImportPage');

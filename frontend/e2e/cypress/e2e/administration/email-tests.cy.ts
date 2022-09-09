@@ -12,7 +12,6 @@ describe('Email-tests', () => {
   it('should register a user, get her password per email and log in', () => {
     let userLogIn = 'email-test-' + Date.now().toString();
     let userEmail = 'email-test' + Date.now().toString() + '@wemove.com';
-    var psw = '';
 
     // create user
     AdminUserPage.createNewUser(userLogIn, userEmail, 'Autor');

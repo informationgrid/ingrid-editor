@@ -3,7 +3,6 @@ import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Menu } from '../../pages/menu';
-import Doc = Mocha.reporters.Doc;
 
 describe('General create documents/folders', () => {
   beforeEach(() => {

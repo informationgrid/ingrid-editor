@@ -4,8 +4,6 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Menu } from '../../pages/menu';
-import { BehavioursPage } from '../../pages/behaviours.page';
-import { CatalogsTabmenu } from '../../pages/base.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
 describe('General create addresses/folders', () => {

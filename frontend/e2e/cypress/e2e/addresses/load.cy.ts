@@ -1,5 +1,5 @@
 import { DocumentPage, SEPARATOR } from '../../pages/document.page';
-import { Address, AddressPage, ROOT } from '../../pages/address.page';
+import { AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
 import { BasePage, CatalogsTabmenu } from '../../pages/base.page';

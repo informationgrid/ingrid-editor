@@ -1,13 +1,10 @@
 import { DocumentPage } from '../../pages/document.page';
 import { beforeEach } from 'mocha';
-import { Utils } from '../../pages/utils';
 import { AdminUserPage } from '../../pages/administration-user.page';
 import { UserAndRights } from '../../pages/base.page';
-import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import { AddressPage } from '../../pages/address.page';
 
 describe('Read Only Documents', () => {
   beforeEach(() => {

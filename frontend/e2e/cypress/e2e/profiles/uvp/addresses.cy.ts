@@ -4,10 +4,7 @@ import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
 import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
-import { ResearchPage } from '../../../pages/research.page';
-import { BasePage } from '../../../pages/base.page';
 
 describe('uvp addresses', () => {
   beforeEach(() => {

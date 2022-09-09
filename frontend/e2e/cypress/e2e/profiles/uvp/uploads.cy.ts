@@ -5,7 +5,6 @@ import { enterMcloudDocTestData, FileHandlingOptions } from '../../../pages/ente
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';
-import { Menu } from '../../../pages/menu';
 
 describe('uvp uploads', () => {
   beforeEach(() => {
