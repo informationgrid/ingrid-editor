@@ -18,6 +18,7 @@
 
       ::ng-deep .mat-tab-body-content {
         display: flex;
+        overflow-y: auto;
       }
     }
   }
