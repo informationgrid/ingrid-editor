@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.context.annotation.Lazy
 
-const val PAGE_SIZE: Int = 10
+const val PAGE_SIZE: Int = 100
 
 @Service
 class IndexService @Autowired constructor(
@@ -56,7 +56,7 @@ class IndexService @Autowired constructor(
     ): Page<Document> {
         val auth = SecurityContextHolder.getContext().authentication
 
-        val conditions = mutableListOf("category = 'data'", "published IS NOT NULL", "deleted = 0")
+        val conditions = mutableListOf("category = '$category'", "published IS NOT NULL", "deleted = 0")
 
         // TODO: support profile specific configuration which documents to be published
         // TODO: extract profile specific configuration to profile files

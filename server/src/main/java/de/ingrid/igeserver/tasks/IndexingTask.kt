@@ -15,6 +15,7 @@ import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.IndexService
+import de.ingrid.igeserver.index.PAGE_SIZE
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -132,7 +133,7 @@ class IndexingTask @Autowired constructor(
                 realIndexName = info.second
                 toType = "base"
                 toAlias = categoryAlias
-                docIdField = "t01_object.obj_id"
+                docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
             }
 
             var page = -1
@@ -141,7 +142,7 @@ class IndexingTask @Autowired constructor(
                     page++
                     val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
                     // isLast function sometimes delivers the next to last page without a total count, so we write our own
-                    val isLast = (page*10 + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
+                    val isLast = (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
                     updateMessageWithDocumentInfo(message, category, docsToPublish)
 
                     exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
@@ -197,7 +198,7 @@ class IndexingTask @Autowired constructor(
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
                 handleCancelation(catalogId, message)
-                sendNotification(category, message, index + (page * 10))
+                sendNotification(category, message, index + (page * PAGE_SIZE))
                 log.debug("export ${doc.uuid}")
                 try {
                     exporter.run(doc, catalogId)
@@ -205,7 +206,7 @@ class IndexingTask @Autowired constructor(
                     val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
-                    sendNotification(category, message, index + (page * 10))
+                    sendNotification(category, message, index + (page * PAGE_SIZE))
                     null
                 }
             }
@@ -267,7 +268,7 @@ class IndexingTask @Autowired constructor(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         try {
-            val doc = indexService.getSinglePublishedDocument(catalogId, DocumentCategory.DATA, format, docId)
+            val doc = indexService.getSinglePublishedDocument(catalogId, category, format, docId)
 
             val export = exporter.run(doc, catalogId)
 
@@ -297,7 +298,7 @@ class IndexingTask @Autowired constructor(
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
-            docIdField = "t01_object.obj_id" // TODO: make docIdField dynamic
+            docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
         }
     }
 
