@@ -344,7 +344,7 @@ class IndexingTask @Autowired constructor(
             val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId)
+                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId, info.category == "ADDRESS")
             )
         }
     }
@@ -358,7 +358,8 @@ class IndexingTask @Autowired constructor(
         totalCount: Int?,
         partner: String?,
         provider: String?,
-        catalogId: String?
+        catalogId: String?,
+        forAddress: Boolean
     ): String? {
 
         val plugId = "ige-ng_$catalogId"
@@ -371,7 +372,7 @@ class IndexingTask @Autowired constructor(
             .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
-            .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId))
+            .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId, forAddress))
             .startObject("indexingState")
             .field("numProcessed", count)
             .field("totalDocs", totalCount)
