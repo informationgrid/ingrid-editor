@@ -1,4 +1,5 @@
 <div class="side-padding place-title">Zielordner wählen</div>
+<!-- FIXME: [hideReadOnly]="true" after completion of #4261 -->
 <ige-tree
     [disabledCondition]="disabledCondition()"
     (selected)="updateParent($event, 'Tree')"
@@ -6,7 +7,7 @@
     [forAddresses]="forAddress"
     [showOnlyFolders]="showOnlyFolders"
     [showHeaderOptions]="false"
-    [hideReadOnly]="true"
+    [hideReadOnly]="false"
     [ignoreTreeUpdates]="true"
 ></ige-tree>
 <ng-container *ngIf="!disableRoot">
