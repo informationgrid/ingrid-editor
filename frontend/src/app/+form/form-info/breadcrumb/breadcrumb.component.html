@@ -1,5 +1,5 @@
-<span *ngIf="breadPath" [class.emphasize]="emphasize">
-    <span *ngIf="showRoot" class="root">
+<span *ngIf="fullPath" [class.emphasize]="emphasize">
+    <span class="root">
         <span
             [class.selectable]="selectable && !disableRoot"
             [class.disabled]="disableRoot"
@@ -9,32 +9,29 @@
                     : ''
             "
             (click)="!disableRoot && onSelect(null)"
-            *transloco="let t; read: 'menu'"
             >{{ rootName }}</span
         >
-        <ng-container *ngIf="breadPath.length > 0 || !hideLastSeparator">
+        <ng-container *ngIf="fullPath.length > 0">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>
     </span>
 
-    <span *ngFor="let item of toShow; let last = last; let i = index">
+    <span
+        *ngFor="let item of collapsed ? shortPath : fullPath; let last = last"
+    >
         <span
-            [matTooltip]="getBreadcrumbTooltip(item)"
-            data-cy="{{ item.disabled ? 'yes' : 'no' }}"
+            [matTooltip]="item | breadCrumbTooltip"
+            [matTooltipShowDelay]="500"
             [class.selectable]="
                 selectable &&
-                (item.permission.canRead || item.permission.canWrite)
+                (item.permission?.canRead || item.permission?.canWrite)
             "
             [class.disabled]="item.disabled"
-            (click)="handleClick(breadPath, item)"
-            >{{ representations[item.id] }}</span
+            (click)="handleClick(item)"
+            >{{ item.title }}</span
         >
-        <ng-container
-            *ngIf="
-                showChevron(toShow, item, i) && (!last || !hideLastSeparator)
-            "
-        >
+        <ng-container *ngIf="!last">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>

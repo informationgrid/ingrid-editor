@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  Pipe,
+  PipeTransform,
+} from "@angular/core";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 
 @Component({
@@ -7,24 +15,13 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
   styleUrls: ["./breadcrumb.component.scss"],
 })
 export class BreadcrumbComponent implements OnInit {
-  breadPath: ShortTreeNode[];
   @Input() set path(path: ShortTreeNode[]) {
-    path?.forEach((item, ind, arr) => {
-      this.showBreadcrumbPart[item.id] =
-        item.permission.canRead || item.permission.canWrite;
-      this.representations[item.id] = this.showCollapsedSymbol(arr, item, ind)
-        ? "..."
-        : item.title;
-    });
-    this.breadPath = path;
-    this.toShow = this.calculateShortPath(this.breadPath);
+    this.fullPath = path;
+    this.shortPath = this.calculateShortPath(this.fullPath);
+    this.collapsed = true;
   }
 
-  toShow: any[];
-
-  @Input() hideLastSeparator = true;
   @Input() simplePath = false;
-  @Input() showRoot = true;
   @Input() rootName = "Daten";
   @Input() emphasize = false;
   @Input() selectable = false;
@@ -32,9 +29,16 @@ export class BreadcrumbComponent implements OnInit {
 
   @Output() select = new EventEmitter<string>();
 
-  showBreadcrumbPart = {};
-  showDisabledBreadcrumbPart = {};
-  representations = {};
+  fullPath: ShortTreeNode[];
+  shortPath: ShortTreeNode[];
+  collapsed = true;
+
+  static readonly COLLAPSED_SYMBOL_NODE = new ShortTreeNode(
+    "COLLAPSED",
+    "...",
+    undefined,
+    true
+  );
 
   constructor() {}
 
@@ -47,98 +51,43 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   calculateShortPath(breadpath: ShortTreeNode[]) {
-    let newPath: ShortTreeNode[] = [];
+    if (!breadpath) return [];
 
-    for (let i = 0; i < breadpath?.length; i++) {
-      // test if it should be shown
-      if (this.showBreadcrumbPart[breadpath[i].id]) {
-        newPath.push(breadpath[i]);
-      } else {
-        if (this.showCollapsedSymbol(breadpath, breadpath[i], i)) {
-          // show '...'
-          this.representations[breadpath[i].id] = "...";
-          newPath.push(breadpath[i]);
-        }
-        // neither shown nor represented by '...' ? -> ignore and continue with loop
-      }
-    }
-    return newPath;
-  }
-
-  calculateLongPath(breadpath: ShortTreeNode[]) {
-    let newPath: ShortTreeNode[] = [];
-
-    for (let i = 0; i < breadpath.length; i++) {
-      newPath.push(breadpath[i]);
-      this.showBreadcrumbPart[breadpath[i].id] = true;
-      this.representations[breadpath[i].id] = breadpath[i].title;
-    }
-    return newPath;
-  }
-
-  toggleShowProperty(item: ShortTreeNode) {
-    this.showBreadcrumbPart[item.id] = !this.showBreadcrumbPart[item.id];
-  }
-
-  showCollapsedSymbol(
-    path: ShortTreeNode[],
-    item: ShortTreeNode,
-    index: number
-  ) {
-    return (
-      path.findIndex(
-        (elem) => !this.showBreadcrumbPart[elem.id] && elem.disabled
-      ) === index
+    const shortPath = breadpath.filter(
+      (node) => node.permission.canRead || node.permission.canWrite
     );
+    const collapsedItemsExist = shortPath.length < breadpath.length;
+
+    if (collapsedItemsExist) {
+      // add collapsed symbolNode to front
+      shortPath.unshift(BreadcrumbComponent.COLLAPSED_SYMBOL_NODE);
+    }
+    return shortPath;
   }
 
-  showChevron(path: ShortTreeNode[], item: ShortTreeNode, index: number) {
-    // chevron is not visible if item is not last one in collapsed part of path
-    return !(
-      !this.showBreadcrumbPart[item.id] &&
-      path.reduce(
-        (prev, curr, ind) =>
-          !this.showBreadcrumbPart[curr.id] && curr.disabled ? ind : prev,
-        -1
-      ) !== index
-    );
-  }
-
-  handleClick(path: ShortTreeNode[], item: ShortTreeNode) {
-    if (
-      !item.disabled ||
-      item.permission.canOnlyWriteSubtree ||
-      item.permission.canRead
-    ) {
+  handleClick(item: ShortTreeNode) {
+    if (item.isSelectable()) {
       this.onSelect(item.id);
-      return;
-    }
-    if (this.representations[item.id] === "...") {
-      this.toShow = this.calculateLongPath(path);
     } else {
-      this.collapsePath(path);
-      this.toShow = this.calculateShortPath(path);
+      // collapse on COLLAPSED_SYMBOL click, expand on other non-readable items
+      this.collapsed = item.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id;
     }
   }
+}
 
-  collapsePath(path: ShortTreeNode[]) {
-    path
-      .filter((element) => element.disabled && !element.permission.canRead)
-      .forEach((elem) => this.togglePathElementsIfNecessary(elem));
-  }
-
-  togglePathElementsIfNecessary(item: ShortTreeNode) {
-    this.showBreadcrumbPart[item.id] = !this.showBreadcrumbPart[item.id];
-    if (this.representations[item.id] === "...") {
-      this.representations[item.id] = item.title;
+@Pipe({
+  name: "breadCrumbTooltip",
+})
+export class BreadCrumbTooltipPipe implements PipeTransform {
+  transform(value: ShortTreeNode, args?: any): any {
+    if (value) {
+      return value.disabled && value.permission?.canRead
+        ? "Sie haben keine Schreibberechtigung auf diesen Ordner"
+        : value.disabled &&
+          value.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id
+        ? "Sie haben keine Leseberechtigung auf diesen Ordner"
+        : "";
     }
-  }
-
-  getBreadcrumbTooltip(item: ShortTreeNode) {
-    return item.disabled && item.permission.canRead
-      ? "Sie haben keine Schreibberechtigung auf diesen Ordner"
-      : item.disabled && this.representations[item.id] !== "..."
-      ? "Sie haben keine Leseberechtigung auf diesen Ordner"
-      : "";
+    return value;
   }
 }

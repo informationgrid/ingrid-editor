@@ -12,6 +12,14 @@ export class ShortTreeNode {
     },
     public disabled = false
   ) {}
+
+  isSelectable() {
+    return (
+      !this.disabled ||
+      this.permission?.canOnlyWriteSubtree ||
+      this.permission?.canRead
+    );
+  }
 }
 
 export class TreeAction {
