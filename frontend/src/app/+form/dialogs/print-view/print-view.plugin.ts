@@ -11,6 +11,9 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { ProfileService } from "../../../services/profile.service";
+import { FormStateService } from "../../form-state.service";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Injectable()
@@ -30,7 +33,9 @@ export class PrintViewPlugin extends Plugin {
     private docEvents: DocEventsService,
     private docTreeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private profileService: ProfileService,
+    private formService: FormStateService
   ) {
     super();
   }
@@ -72,7 +77,48 @@ export class PrintViewPlugin extends Plugin {
   }
 
   private showPrintDialog() {
-    this.dialog.open(PrintViewDialogComponent);
+    let openedDocument = this.treeQuery.getOpenedDocument();
+    const type = openedDocument._type;
+    const profile = this.profileService.getProfile(type);
+
+    this.dialog.open(PrintViewDialogComponent, {
+      data: {
+        model: this.formService.getForm().value,
+        fields: this.exchangeType(profile.getFields()),
+      },
+    });
+  }
+
+  private exchangeType(fields: FormlyFieldConfig[]) {
+    const supportedTypes = [
+      "textarea",
+      "address-card",
+      "datepicker",
+      "repeatList",
+    ];
+    const newFields = [];
+    fields.forEach((field) => {
+      const newField: any = { templateOptions: {} };
+      if (field.fieldGroup) {
+        const deepFields = this.exchangeType(field.fieldGroup);
+        newFields.push(...deepFields);
+      }
+      newField.key = field.key;
+      newField.className = field.className;
+      newField.fieldGroupClassName = field.fieldGroupClassName;
+      newField.templateOptions.externalLabel =
+        field.templateOptions.externalLabel;
+      if (field.type && supportedTypes.includes(field.type)) {
+        newField.type = field.type + "Print";
+        newField.wrappers = field.wrappers.filter(
+          (wrapper) => wrapper !== "form-field"
+        );
+      } else {
+        newField.type = field.type;
+      }
+      newFields.push(newField);
+    });
+    return newFields;
   }
 
   unregister() {

@@ -1,31 +1,12 @@
 <h2 mat-dialog-title>Detailansicht</h2>
-<mat-dialog-content>
-    <div *ngFor="let field of profile">
-        <div [ngSwitch]="field.controlType">
-            <div *ngSwitchCase="'container'">
-                <div *ngFor="let child of field.children">
-                    <!-- TODO: use component to handle rendering -->
-                    <dt>{{ child.key }}</dt>
-                    <dd *ngIf="field.key">{{ doc[field.key][child.key] }}</dd>
-                    <dd *ngIf="!field.key">{{ doc[child.key] }}</dd>
-                </div>
-            </div>
-            <div *ngSwitchCase="'rubric'">
-                <div *ngFor="let child of field.children">
-                    <!-- TODO: use component to handle rendering -->
-                    <dt>{{ child.key }}</dt>
-                    <dd *ngIf="field.key">{{ doc[field.key][child.key] }}</dd>
-                    <dd *ngIf="!field.key">{{ doc[child.key] }}</dd>
-                </div>
-            </div>
-            <div *ngSwitchDefault>
-                <!-- TODO: use component to handle rendering -->
-                <dt>{{ field.key }}</dt>
-                <dd>{{ doc[field.key] }}</dd>
-            </div>
-        </div>
-    </div>
+<mat-dialog-content class="preview-dialog">
+    <formly-form
+        [form]="form"
+        [fields]="data.fields"
+        [model]="data.model"
+    ></formly-form>
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Schließen</button>
 </mat-dialog-actions>
