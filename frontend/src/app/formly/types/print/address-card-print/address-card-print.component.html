@@ -1,0 +1,4 @@
+<ng-container *ngFor="let card of formControl.value">
+    <div>{{ card.type | codelist: "505" | async }}</div>
+    <div>{{ card.ref.organization }}</div>
+</ng-container>

@@ -60,7 +60,7 @@
 
 <mat-menu #menu="matMenu">
     <button
-        *ngFor="let type of field.fieldArray.fieldGroup"
+        *ngFor="let type of field.fieldArray?.fieldGroup"
         mat-menu-item
         [attr.data-cy]="'add_step_' + type.name"
         (click)="addSection(type.name)"
