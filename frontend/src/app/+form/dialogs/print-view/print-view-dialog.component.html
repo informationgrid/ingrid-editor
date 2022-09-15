@@ -1,4 +1,11 @@
-<h2 mat-dialog-title>Vorschau</h2>
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text">Vorschau</span>
+    </h2>
+</div>
 <mat-dialog-content id="print-content" class="preview-dialog">
     <formly-form
         [form]="form"
