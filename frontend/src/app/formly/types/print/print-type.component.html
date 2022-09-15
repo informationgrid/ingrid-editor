@@ -1,0 +1,22 @@
+<ng-container [ngSwitch]="field.type">
+    <ng-container *ngSwitchCase="'datepickerPrint'">{{
+        formControl.value | date: "dd.MM.yyyy"
+    }}</ng-container>
+    <ng-container *ngSwitchCase="'repeatListPrint'">
+        <div *ngFor="let item of formControl.value">
+            {{ item | codelist: to.codelistId | async }}
+        </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'address-cardPrint'">
+        <ng-container *ngFor="let address of formControl.value">
+            <div>{{ address.type | codelist: "505" | async }}</div>
+            <div>{{ address.ref.organization }}</div>
+        </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'tablePrint'">
+        <ng-container *ngFor="let row of formControl.value">
+            <div>{{ row | json }}</div>
+        </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchDefault>{{ formControl.value }}</ng-container>
+</ng-container>
