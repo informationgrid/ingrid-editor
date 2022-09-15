@@ -14,9 +14,13 @@
         </ng-container>
     </ng-container>
     <ng-container *ngSwitchCase="'tablePrint'">
-        <ng-container *ngFor="let row of formControl.value">
-            <div>{{ row | json }}</div>
-        </ng-container>
+        <table>
+            <tr *ngFor="let row of formControl.value">
+                <td *ngFor="let column of row | keyvalue">
+                    {{ column.value | json }}
+                </td>
+            </tr>
+        </table>
     </ng-container>
     <ng-container *ngSwitchDefault>{{ formControl.value }}</ng-container>
 </ng-container>

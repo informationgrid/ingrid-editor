@@ -214,6 +214,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "address-card",
       "datepicker",
       "repeatList",
+      // "table",
     ];
     fields.forEach((field) => {
       if (field.fieldGroup) {
@@ -222,6 +223,19 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldArray) {
         this.createFieldsForPrint(field.fieldArray.fieldGroup);
       }
+      if (field.templateOptions?.columns) {
+        const formatter = this.getFormatterForColumn(
+          this.fields,
+          field.key as string
+        );
+        if (formatter) {
+          field.templateOptions.columns.forEach(
+            (column, index) =>
+              (column.templateOptions.formatter = formatter[index])
+          );
+        }
+      }
+
       delete field.validators;
       delete field.validation;
 
@@ -234,5 +248,30 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
     });
     return fields;
+  }
+
+  private getFormatterForColumn(
+    fields: FormlyFieldConfig[],
+    tableId: string
+  ): any[] {
+    for (const field of fields) {
+      if (field.fieldGroup) {
+        const result = this.getFormatterForColumn(field.fieldGroup, tableId);
+        if (result) return result;
+      }
+      if (field.fieldArray) {
+        const result = this.getFormatterForColumn(
+          field.fieldArray.fieldGroup,
+          tableId
+        );
+        if (result) return result;
+      }
+      if (field.key === tableId) {
+        return field.templateOptions.columns.map(
+          (column) => column.templateOptions.formatter
+        );
+      }
+    }
+    return null;
   }
 }

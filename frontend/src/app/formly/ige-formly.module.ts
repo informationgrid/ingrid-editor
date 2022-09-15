@@ -174,6 +174,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "repeatListPrint",
           component: PrintTypeComponent,
         },
+        {
+          name: "tablePrint",
+          component: PrintTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
