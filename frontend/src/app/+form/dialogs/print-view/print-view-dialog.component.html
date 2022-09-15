@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>Vorschau</h2>
-<mat-dialog-content class="preview-dialog">
+<mat-dialog-content id="print-content" class="preview-dialog">
     <formly-form
         [form]="form"
         [fields]="data.fields"
@@ -7,6 +7,8 @@
     ></formly-form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Schließen</button>
+<mat-dialog-actions>
+    <button mat-button color="primary" mat-dialog-close>Schließen</button>
+    <div fxFlex></div>
+    <button mat-flat-button color="primary" (click)="print()">Drucken</button>
 </mat-dialog-actions>

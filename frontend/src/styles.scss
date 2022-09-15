@@ -2,6 +2,30 @@
 @import "./material.override.scss";
 @import "./material-fields.override.scss";
 
+@media print {
+  /*ige-root,
+  .cdk-overlay-container {
+    display: none !important;
+  }
+
+  .label-wrapper {
+    width: 275px !important;
+    padding-top: 0 !important;
+  }*/
+
+  .mat-dialog-container,
+  .print-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+  .print-content {
+    overflow: unset;
+  }
+}
+
 html,
 body {
   height: 100%;
