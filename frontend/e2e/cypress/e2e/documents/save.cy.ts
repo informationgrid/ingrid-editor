@@ -85,6 +85,7 @@ describe('General create documents/folders', () => {
       Tree.selectNodeAndCheckPath(folderName, ['Daten', parentFolder]);
     });
 
+    // failing because of bug #4172 (15.09.2022)
     it("should create a folder by switching location in dialog to 'Daten' when a root folder was selected initially", () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner' + Utils.randomString();
