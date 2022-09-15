@@ -84,41 +84,9 @@ export class PrintViewPlugin extends Plugin {
     this.dialog.open(PrintViewDialogComponent, {
       data: {
         model: this.formService.getForm().value,
-        fields: this.exchangeType(profile.getFields()),
+        fields: profile.fieldsForPrint,
       },
     });
-  }
-
-  private exchangeType(fields: FormlyFieldConfig[]) {
-    const supportedTypes = [
-      "textarea",
-      "address-card",
-      "datepicker",
-      "repeatList",
-    ];
-    const newFields = [];
-    fields.forEach((field) => {
-      const newField: any = { templateOptions: {} };
-      if (field.fieldGroup) {
-        const deepFields = this.exchangeType(field.fieldGroup);
-        newFields.push(...deepFields);
-      }
-      newField.key = field.key;
-      newField.className = field.className;
-      newField.fieldGroupClassName = field.fieldGroupClassName;
-      newField.templateOptions.externalLabel =
-        field.templateOptions.externalLabel;
-      if (field.type && supportedTypes.includes(field.type)) {
-        newField.type = field.type + "Print";
-        newField.wrappers = field.wrappers.filter(
-          (wrapper) => wrapper !== "form-field"
-        );
-      } else {
-        newField.type = field.type;
-      }
-      newFields.push(newField);
-    });
-    return newFields;
   }
 
   unregister() {

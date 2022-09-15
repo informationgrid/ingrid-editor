@@ -5,5 +5,7 @@
     formControl.value | date: "dd.MM.yyyy"
 }}</ng-container>
 <ng-container *ngIf="field.type === 'repeatListPrint'">
-    <div *ngFor="let item of formControl.value">{{ item | json }}</div>
+    <div *ngFor="let item of formControl.value">
+        {{ item | codelist: to.codelistId | async }}
+    </div>
 </ng-container>

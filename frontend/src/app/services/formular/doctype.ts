@@ -44,6 +44,8 @@ export interface Doctype {
    */
   fieldsMap: SelectOptionUi[];
 
+  fieldsForPrint: FormlyFieldConfig[];
+
   behaviours?: any[];
 
   applyValidations?: any;

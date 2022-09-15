@@ -65,6 +65,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
+  fieldsForPrint: FormlyFieldConfig[];
 
   constructor(
     private codelistService: CodelistService,
@@ -105,6 +106,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.addCodelistDefaultValues(this.fields);
       this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
+      const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
+      this.fieldsForPrint = this.createFieldsForPrint(copy);
       console.debug(`Document type ${this.id} initialized`);
     });
   }
@@ -201,5 +204,35 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return item?.key
       ? this.codelistQuery.getCatalogEntryByKey(codelist, item.key, item.value)
       : item?.value;
+  }
+
+  private createFieldsForPrint(
+    fields: FormlyFieldConfig[]
+  ): FormlyFieldConfig[] {
+    const supportedTypes = [
+      "textarea",
+      "address-card",
+      "datepicker",
+      "repeatList",
+    ];
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.createFieldsForPrint(field.fieldGroup);
+      }
+      if (field.fieldArray) {
+        this.createFieldsForPrint(field.fieldArray.fieldGroup);
+      }
+      delete field.validators;
+      delete field.validation;
+
+      field.wrappers = field.wrappers?.filter(
+        (wrapper) => wrapper !== "form-field"
+      );
+
+      if (field.type && supportedTypes.includes(field.type)) {
+        field.type += "Print";
+      }
+    });
+    return fields;
   }
 }

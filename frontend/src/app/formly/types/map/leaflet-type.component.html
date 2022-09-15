@@ -46,7 +46,7 @@
     (remove)="removeLocation($event)"
 ></ige-spatial-list>
 
-<div class="spatialHelpText">
+<div *ngIf="!disabled" class="spatialHelpText">
     Erstellen Sie Informationen über die räumliche Zuordnung des beschriebenen
     Datenbestands.
     <a *ngIf="to.hasContextHelp" (click)="showContextHelp($event)"
