@@ -65,6 +65,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
+  fieldsForPrint: FormlyFieldConfig[];
 
   constructor(
     private codelistService: CodelistService,
@@ -105,6 +106,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.addCodelistDefaultValues(this.fields);
       this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
+      const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
+      this.fieldsForPrint = this.createFieldsForPrint(copy);
       console.debug(`Document type ${this.id} initialized`);
     });
   }
@@ -201,5 +204,76 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return item?.key
       ? this.codelistQuery.getCatalogEntryByKey(codelist, item.key, item.value)
       : item?.value;
+  }
+
+  private createFieldsForPrint(
+    fields: FormlyFieldConfig[]
+  ): FormlyFieldConfig[] {
+    const supportedTypes = [
+      "textarea",
+      "address-card",
+      "select",
+      "autocomplete",
+      // "datepicker",
+      "repeatList",
+      // "table",
+    ];
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.createFieldsForPrint(field.fieldGroup);
+      }
+      if (field.fieldArray) {
+        this.createFieldsForPrint(field.fieldArray.fieldGroup);
+      }
+      if (field.templateOptions?.columns) {
+        const formatter = this.getFormatterForColumn(
+          this.fields,
+          field.key as string
+        );
+        if (formatter) {
+          field.templateOptions.columns.forEach(
+            (column, index) =>
+              (column.templateOptions.formatter = formatter[index])
+          );
+        }
+      }
+
+      delete field.validators;
+      delete field.validation;
+
+      field.wrappers = field.wrappers?.filter(
+        (wrapper) => wrapper !== "form-field"
+      );
+
+      if (field.type && supportedTypes.includes(field.type)) {
+        field.type += "Print";
+      }
+    });
+    return fields;
+  }
+
+  private getFormatterForColumn(
+    fields: FormlyFieldConfig[],
+    tableId: string
+  ): any[] {
+    for (const field of fields) {
+      if (field.fieldGroup) {
+        const result = this.getFormatterForColumn(field.fieldGroup, tableId);
+        if (result) return result;
+      }
+      if (field.fieldArray) {
+        const result = this.getFormatterForColumn(
+          field.fieldArray.fieldGroup,
+          tableId
+        );
+        if (result) return result;
+      }
+      if (field.key === tableId) {
+        return field.templateOptions.columns.map(
+          (column) => column.templateOptions.formatter
+        );
+      }
+    }
+    return null;
   }
 }

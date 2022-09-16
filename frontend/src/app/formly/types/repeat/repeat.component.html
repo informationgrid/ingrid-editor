@@ -23,6 +23,7 @@
             drag_indicator
         </mat-icon>
         <formly-field [field]="field" class="flex-1"></formly-field>
+        <!--        <formly-form [fields]="field.fieldGroup" class="flex-1"></formly-form>-->
         <button
             *ngIf="formControl.enabled"
             [disabled]="to.minLength && i < to.minLength"

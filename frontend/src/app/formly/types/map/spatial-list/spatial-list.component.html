@@ -62,7 +62,7 @@
                         {{ location.wkt }}
                     </div>
                 </div>
-                <div>
+                <div *ngIf="!disabled">
                     <button
                         type="button"
                         mat-icon-button
@@ -82,15 +82,10 @@
                         <button
                             mat-menu-item
                             (click)="edit.next(location.indexNumber)"
-                            [disabled]="disabled"
                         >
                             Bearbeiten
                         </button>
-                        <button
-                            mat-menu-item
-                            (click)="confirmRemove(location)"
-                            [disabled]="disabled"
-                        >
+                        <button mat-menu-item (click)="confirmRemove(location)">
                             Löschen
                         </button>
                     </mat-menu>

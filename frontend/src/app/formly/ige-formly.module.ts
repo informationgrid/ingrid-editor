@@ -77,6 +77,7 @@ import {
 import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { ValidUntilDialogComponent } from "./types/table/valid-until-dialog/valid-until-dialog.component";
+import { PrintTypeComponent } from "./types/print/print-type.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -155,6 +156,35 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "referencedDocuments",
           component: ReferencedDocumentsTypeComponent,
+        },
+        /* FOR PREVIEW */
+        {
+          name: "textareaPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "address-cardPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "datepickerPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "repeatListPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "tablePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "selectPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "autocompletePrint",
+          component: PrintTypeComponent,
         },
       ],
       validators: [
@@ -256,6 +286,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UvpSectionsComponent,
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
+    PrintTypeComponent,
   ],
   exports: [
     ReactiveFormsModule,

@@ -11,6 +11,9 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { ProfileService } from "../../../services/profile.service";
+import { FormStateService } from "../../form-state.service";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Injectable()
@@ -30,7 +33,9 @@ export class PrintViewPlugin extends Plugin {
     private docEvents: DocEventsService,
     private docTreeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private profileService: ProfileService,
+    private formService: FormStateService
   ) {
     super();
   }
@@ -72,7 +77,16 @@ export class PrintViewPlugin extends Plugin {
   }
 
   private showPrintDialog() {
-    this.dialog.open(PrintViewDialogComponent);
+    let openedDocument = this.treeQuery.getOpenedDocument();
+    const type = openedDocument._type;
+    const profile = this.profileService.getProfile(type);
+
+    this.dialog.open(PrintViewDialogComponent, {
+      data: {
+        model: this.formService.getForm().value,
+        fields: profile.fieldsForPrint,
+      },
+    });
   }
 
   unregister() {
