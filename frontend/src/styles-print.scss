@@ -10,12 +10,22 @@
   #print-content {
     overflow: unset !important;
   }
+
+  .dialog-title-wrapper,
+  mat-dialog-actions {
+    display: none !important;
+  }
+
+  mat-dialog-container {
+    box-shadow: none !important;
+  }
 }
 
 #print-content {
   formly-field-mat-datepicker,
   ige-one-column-wrapper > div > formly-group,
   ige-one-column-wrapper > div > ige-repeat,
+  ige-one-column-wrapper > div > formly-field-mat-input,
   ige-date-range-type {
     padding-top: 1.55em;
   }

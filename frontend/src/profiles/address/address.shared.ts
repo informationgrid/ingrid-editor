@@ -26,6 +26,7 @@ export abstract class AddressShared extends BaseDoctype {
               items.filter((item) => item.value !== "5" && item.value !== "6")
             )
           ),
+          codelistId: 4430,
         }),
         this.addInput("connection", "Verbindung", {
           fieldLabel: "Verbindung",

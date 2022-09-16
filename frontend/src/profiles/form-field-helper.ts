@@ -144,7 +144,7 @@ export class FormFieldHelper {
       id: id,
       type: "input",
       className: options?.className ?? "flex-1",
-      wrappers: options?.wrappers,
+      wrappers: options?.wrappers ?? ["form-field"],
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,
