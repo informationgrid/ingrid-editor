@@ -133,6 +133,7 @@ export class FormFieldHelper {
         highlightMatches: options?.highlightMatches,
         hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
+        codelistId: options?.codelistId,
       },
     };
   }
@@ -179,6 +180,7 @@ export class FormFieldHelper {
         options: options?.options,
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue,
+        codelistId: options?.codelistId,
       },
       hideExpression: options?.hideExpression,
     };

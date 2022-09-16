@@ -1,7 +1,7 @@
-<ng-container [ngSwitch]="field.type">
-    <ng-container *ngSwitchCase="'datepickerPrint'">{{
+<div [ngSwitch]="field.type">
+    <!--<ng-container *ngSwitchCase="'datepickerPrint'">{{
         formControl.value | date: "dd.MM.yyyy"
-    }}</ng-container>
+    }}</ng-container>-->
     <ng-container *ngSwitchCase="'repeatListPrint'">
         <div *ngFor="let item of formControl.value">
             {{ item | codelist: to.codelistId | async }}
@@ -13,7 +13,7 @@
             <div>{{ address.ref.organization }}</div>
         </ng-container>
     </ng-container>
-    <ng-container *ngSwitchCase="'tablePrint'">
+    <!--<ng-container *ngSwitchCase="'tablePrint'">
         <table>
             <tr *ngFor="let row of formControl.value">
                 <td *ngFor="let column of row | keyvalue">
@@ -21,6 +21,16 @@
                 </td>
             </tr>
         </table>
-    </ng-container>
+    </ng-container>-->
+    <ng-container *ngSwitchCase="'selectPrint'">{{
+        to.codelistId
+            ? (formControl.value | codelist: to.codelistId | async)
+            : getFromOption(formControl.value)
+    }}</ng-container>
+    <ng-container *ngSwitchCase="'autocompletePrint'">{{
+        to.codelistId
+            ? (formControl.value | codelist: to.codelistId | async)
+            : getFromOption(formControl.value)
+    }}</ng-container>
     <ng-container *ngSwitchDefault>{{ formControl.value }}</ng-container>
-</ng-container>
+</div>

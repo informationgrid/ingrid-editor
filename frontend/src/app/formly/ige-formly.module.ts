@@ -178,6 +178,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "tablePrint",
           component: PrintTypeComponent,
         },
+        {
+          name: "selectPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "autocompletePrint",
+          component: PrintTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },

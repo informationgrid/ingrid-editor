@@ -1,20 +1,7 @@
 @import "./variables.scss";
 @import "./material.override.scss";
 @import "./material-fields.override.scss";
-
-@media print {
-  #print-content,
-  .cdk-overlay-container {
-    position: absolute !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: 0 !important;
-    bottom: 0 !important;
-  }
-  #print-content {
-    overflow: unset !important;
-  }
-}
+@import "./styles-print.scss";
 
 html,
 body {

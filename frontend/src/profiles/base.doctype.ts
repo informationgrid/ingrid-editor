@@ -212,7 +212,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     const supportedTypes = [
       "textarea",
       "address-card",
-      "datepicker",
+      "select",
+      "autocomplete",
+      // "datepicker",
       "repeatList",
       // "table",
     ];
