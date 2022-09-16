@@ -14,7 +14,8 @@ export class PrintTypeComponent extends FieldType implements OnInit {
 
   ngOnInit(): void {}
 
-  getFromOption(value: any) {
+  getFromOption(value: any): string {
+    if (value === null) return "";
     const options = this.to.options as any[];
     return options.find((option) => option.value === value.key).label;
   }
