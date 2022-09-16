@@ -19,12 +19,11 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 @Injectable()
 export class PrintViewPlugin extends Plugin {
   id = "plugin.printView";
-  name = "Print View Plugin";
+  name = "Vorschau";
   description =
     "Fügt einen Button hinzu, um sich eine Vorschau anzeigen zu lassen.";
   group = "Toolbar";
   defaultActive = true;
-  hide = true;
 
   private treeQuery: TreeQuery | AddressTreeQuery;
 
