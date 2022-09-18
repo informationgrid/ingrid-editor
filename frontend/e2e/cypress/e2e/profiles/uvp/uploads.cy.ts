@@ -264,6 +264,7 @@ describe('uvp uploads', () => {
     enterMcloudDocTestData.uploadFile(files[1], false, false);
     enterMcloudDocTestData.uploadFile(files[2], false, false);
     cy.contains('button', 'Übernehmen').click();
+    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[2]);
@@ -287,6 +288,7 @@ describe('uvp uploads', () => {
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     enterMcloudDocTestData.uploadFile(fileName_2, false, false);
     cy.contains('button', 'Übernehmen').click();
+    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check for every file
@@ -316,6 +318,7 @@ describe('uvp uploads', () => {
     enterMcloudDocTestData.uploadFile(fileName, false, false);
     enterMcloudDocTestData.unzipArchiveAfterUpload();
     cy.contains('button', 'Übernehmen').click();
+    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[2]);

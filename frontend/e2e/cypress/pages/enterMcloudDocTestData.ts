@@ -262,6 +262,10 @@ export class enterMcloudDocTestData {
     this.setLicense('Andere offene Lizenz');
   }
 
+  // TODO: move all functions below to another file since function is general and not mcloud related
+
+  // TODO: in UVP there can be multiple upload dialogs, so this needs to be configurable
+  // TODO: rename in openUploadDialog()
   static openDownloadDialog() {
     cy.contains('button', 'Dateien hochladen').click();
   }
