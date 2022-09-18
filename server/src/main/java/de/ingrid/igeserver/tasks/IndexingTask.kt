@@ -291,7 +291,7 @@ class IndexingTask @Autowired constructor(
             val categoryAlias = "${elasticsearchAlias}_${category.value}"
             val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
             oldIndex = newIndex
-            // TODO: indexManager.addToAlias(elasticsearchAlias, newIndex)
+            indexManager.switchAlias(elasticsearchAlias, null, newIndex)
         }
 
         return IndexInfo().apply {
