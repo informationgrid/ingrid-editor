@@ -60,7 +60,13 @@
         </ng-container>
 
         <ng-container *ngIf="!address.ref?.organization">
-            <div class="title">{{ content.title }}</div>
+            <div class="title">
+                <span
+                    >{{
+                        address.ref["academic-title"] | codelist: "4305" | async
+                    }} </span
+                >{{ content.title }}
+            </div>
             <div class="email">{{ content.emailOrPhone }}</div>
         </ng-container>
     </mat-card-content>
