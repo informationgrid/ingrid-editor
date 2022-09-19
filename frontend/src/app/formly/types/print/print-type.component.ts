@@ -19,4 +19,8 @@ export class PrintTypeComponent extends FieldType implements OnInit {
     const options = this.to.options as any[];
     return options.find((option) => option.value === value.key).label;
   }
+
+  replaceNewLines(value: string) {
+    return value.replace(/\n/g, "<br>");
+  }
 }

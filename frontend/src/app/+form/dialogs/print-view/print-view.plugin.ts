@@ -81,6 +81,7 @@ export class PrintViewPlugin extends Plugin {
     const profile = this.profileService.getProfile(type);
 
     this.dialog.open(PrintViewDialogComponent, {
+      width: "80%",
       data: {
         model: this.formService.getForm().value,
         fields: profile.fieldsForPrint,
@@ -90,5 +91,6 @@ export class PrintViewPlugin extends Plugin {
 
   unregister() {
     super.unregister();
+    this.toolbarService.removeButton("toolBtnPrint");
   }
 }

@@ -10,7 +10,18 @@
     <ng-container *ngSwitchCase="'address-cardPrint'">
         <ng-container *ngFor="let address of formControl.value">
             <div>{{ address.type | codelist: "505" | async }}</div>
-            <div>{{ address.ref.organization }}</div>
+            <div *ngIf="address.ref.organization; else person">
+                {{ address.ref.organization }}
+            </div>
+            <ng-template #person>
+                <div>
+                    <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
+                    {{
+                        address.ref["academic-title"] | codelist: "4305" | async
+                    }}
+                    {{ address.ref.firstName }} {{ address.ref.lastName }}
+                </div>
+            </ng-template>
         </ng-container>
     </ng-container>
     <!--<ng-container *ngSwitchCase="'tablePrint'">
@@ -32,5 +43,8 @@
             ? (formControl.value | codelist: to.codelistId | async)
             : getFromOption(formControl.value)
     }}</ng-container>
-    <ng-container *ngSwitchDefault>{{ formControl.value }}</ng-container>
+    <div
+        *ngSwitchDefault
+        [innerHTML]="replaceNewLines(formControl.value)"
+    ></div>
 </div>
