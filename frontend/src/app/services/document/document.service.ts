@@ -35,7 +35,6 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
-import * as path from "path";
 import { TranslocoService } from "@ngneat/transloco";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
@@ -206,14 +205,23 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return DocumentService.trimObject(data);
+    return DocumentService.trimObjectAndRemoveEvilTags(data);
   }
 
-  private static trimObject(obj: IgeDocument): IgeDocument {
+  private static trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
     const trimmed = JSON.stringify(obj, (key, value) => {
-      return typeof value === "string" ? value.trim() : value;
+      return typeof value === "string"
+        ? DocumentService.removeEvilTags(value.trim())
+        : value;
     });
     return JSON.parse(trimmed);
+  }
+
+  private static removeEvilTags(val: String) {
+    return val.replace(
+      /<(?!b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+      ""
+    );
   }
 
   postSaveActions(
