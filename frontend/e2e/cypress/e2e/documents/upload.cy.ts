@@ -1,6 +1,7 @@
 import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
-import { enterMcloudDocTestData, FileHandlingOptions } from '../../pages/enterMcloudDocTestData';
+import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { FileHandlingOptions, fileUploadManagement } from '../../pages/fileUploadManagement.page';
 
 describe('mCLOUD: Upload Tests', () => {
   beforeEach(() => {
@@ -13,21 +14,21 @@ describe('mCLOUD: Upload Tests', () => {
     const fileTitle = 'Test.pdf';
 
     Tree.openNode(['Neue Testdokumente', 'Datum_Ebene_2_1']);
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
-    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
+    fileUploadManagement.DownloadFileAddedToDocument(fileTitle);
+    fileUploadManagement.verifyExistenceOfDownloadedFile(fileTitle);
   });
 
   it('should remove file from upload dialog (#3575 (2))', () => {
     const fileTitle = 'Test.pdf';
 
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.removeFileFromUploadDialog();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.removeFileFromUploadDialog();
     cy.contains('button', 'Übernehmen').should('be.disabled');
   });
 
@@ -36,18 +37,18 @@ describe('mCLOUD: Upload Tests', () => {
 
     // upload file
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B', 'Datum_Ebene_4_3']);
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
     // try to upload file with same name
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addAlreadyExistingFile(fileTitle);
     // choose option "Überschreiben"
-    enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.Overwrite);
+    fileUploadManagement.handleExistingFile(FileHandlingOptions.Overwrite);
     cy.contains('button', 'Übernehmen').click();
     // make sure that there is still only one entry in the table
-    enterMcloudDocTestData.checkForOneEntryForTable();
+    fileUploadManagement.checkForOneEntryForTable();
   });
 
   it('should rename uploaded file when uploading file with same name (#3575 (4))', () => {
@@ -56,22 +57,22 @@ describe('mCLOUD: Upload Tests', () => {
 
     // upload file
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
     // try to upload file with same name
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addAlreadyExistingFile(fileTitle);
     // choose option "Umbenennen"
-    enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.Rename);
+    fileUploadManagement.handleExistingFile(FileHandlingOptions.Rename);
     cy.contains('button', 'Übernehmen').click();
     // make sure the file name has been changed and new entry has been added
     cy.contains('[data-cy="Downloads-table"]', newFileTitle);
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 2);
     // download new entry
-    enterMcloudDocTestData.DownloadFileAddedToDocument(newFileTitle);
-    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(newFileTitle);
+    fileUploadManagement.DownloadFileAddedToDocument(newFileTitle);
+    fileUploadManagement.verifyExistenceOfDownloadedFile(newFileTitle);
   });
 
   it('should choose existing file when uploading file with same name (#3575 (5))', () => {
@@ -79,22 +80,22 @@ describe('mCLOUD: Upload Tests', () => {
 
     // upload file
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_7']);
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
     // try to upload file with same name
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addAlreadyExistingFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addAlreadyExistingFile(fileTitle);
     // choose option "Existierende verwenden"
-    enterMcloudDocTestData.handleExistingFile(FileHandlingOptions.UseExisting);
+    fileUploadManagement.handleExistingFile(FileHandlingOptions.UseExisting);
     cy.contains('button', 'Übernehmen').click();
     // make sure no file name has been changed and no new entry has been added
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    enterMcloudDocTestData.checkForOneEntryForTable();
+    fileUploadManagement.checkForOneEntryForTable();
     // download old entry
-    enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
-    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
+    fileUploadManagement.DownloadFileAddedToDocument(fileTitle);
+    fileUploadManagement.verifyExistenceOfDownloadedFile(fileTitle);
   });
 
   it('should upload a zip-file (#3575 (6))', () => {
@@ -104,14 +105,14 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileTitle);
     // check entry in table
     cy.contains('[data-cy="Downloads-table"]', fileTitle);
-    enterMcloudDocTestData.checkForOneEntryForTable();
+    fileUploadManagement.checkForOneEntryForTable();
     // download file
-    enterMcloudDocTestData.DownloadFileAddedToDocument(fileTitle);
-    enterMcloudDocTestData.verifyExistenceOfDownloadedFile(fileTitle);
+    fileUploadManagement.DownloadFileAddedToDocument(fileTitle);
+    fileUploadManagement.verifyExistenceOfDownloadedFile(fileTitle);
   });
 
   it('should upload and unzip a zip-file (#3575 (7))', () => {
@@ -121,10 +122,10 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // check unzipped files in table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
   });
@@ -137,20 +138,20 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // check unzipped files in table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
 
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // here should appear a dialog pointing to the file extraction conflict!
-    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Overwrite);
+    fileUploadManagement.solveZIPExtractionConflict(FileHandlingOptions.Overwrite);
     // check number of unzipped files in table (3 files with same name, 1 file specific to each zip archive)
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
@@ -173,19 +174,19 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(toBeOverwritten);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(toBeOverwritten);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // check unzipped files in table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
 
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFileWithRename(fileTitle, 'Test.zip');
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
-    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Overwrite);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFileWithRename(fileTitle, 'Test.zip');
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
+    fileUploadManagement.solveZIPExtractionConflict(FileHandlingOptions.Overwrite);
     // check number of unzipped files in table (3 files with same name, 1 file specific to each zip archive)
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 5);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
@@ -210,19 +211,19 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // check number of unzipped files in table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
 
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
-    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Rename);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
+    fileUploadManagement.solveZIPExtractionConflict(FileHandlingOptions.Rename);
     // check number of unzipped files in table (4 files with original name, 4 files with modified name)
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 8);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
@@ -247,8 +248,8 @@ describe('mCLOUD: Upload Tests', () => {
     const url = 'https:/.docs.cypress.io/guides/overview/invalidURL';
 
     Tree.openNode(['Testdokumente', 'Leeres mCloud Test Objekt']);
-    enterMcloudDocTestData.openAddURLDialog();
-    enterMcloudDocTestData.fillFieldsOfAddURLDialog('invalid url', url);
+    fileUploadManagement.openAddURLDialog();
+    fileUploadManagement.fillFieldsOfAddURLDialog('invalid url', url);
     // click outside of url text field so that validation is triggered
     cy.get('mat-dialog-container .mat-select-trigger').click();
     cy.contains('mat-error', 'Verwenden Sie bitte eine gültige URL');
@@ -273,19 +274,19 @@ describe('mCLOUD: Upload Tests', () => {
     // check no file has been added yet
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFile(fileTitle);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFile(fileTitle);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
     // check number of unzipped files in table
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 4);
 
     // upload file and activate unzip option
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.addFileWithRename(toBeRenamed, 'Test2.zip');
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.assertFileUpload();
-    enterMcloudDocTestData.solveZIPExtractionConflict(FileHandlingOptions.Rename);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.addFileWithRename(toBeRenamed, 'Test2.zip');
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.assertFileUpload();
+    fileUploadManagement.solveZIPExtractionConflict(FileHandlingOptions.Rename);
     // check number of unzipped files in table (5 files with original name, 3 files with modified name)
     cy.get('[data-cy="Downloads-table"] mat-row').should('have.length', 8);
     cy.get('[data-cy="Downloads-table"] mat-row').each((item, index) => {
@@ -363,7 +364,7 @@ describe('Upload Tests', () => {
     const fileToBeRenamed = 'Test.pdf';
 
     Tree.openNode(['Neue Testdokumente', 'Datum_3_1']);
-    enterMcloudDocTestData.openDownloadDialog();
+    fileUploadManagement.openUploadDialog();
     cy.get('[type="file"]').attachFile({ filePath: fileToBeRenamed, fileName: illegalFileTitle });
     cy.get('error-dialog').should('include', /Dateiname darf kein '%' enthalten/);
   });

@@ -1,10 +1,11 @@
 import { DocumentPage, fieldsForDownloadEntry, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Tree } from '../../../pages/tree.partial';
 import { uvpPage } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData, FileHandlingOptions } from '../../../pages/enterMcloudDocTestData';
+import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';
+import { fileUploadManagement, FileHandlingOptions } from '../../../pages/fileUploadManagement.page';
 
 describe('uvp uploads', () => {
   beforeEach(() => {
@@ -20,8 +21,8 @@ describe('uvp uploads', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // add file
-      enterMcloudDocTestData.openDownloadDialog();
-      enterMcloudDocTestData.uploadFile(fileName);
+      fileUploadManagement.openUploadDialog();
+      fileUploadManagement.uploadFile(fileName);
       DocumentPage.publishNow();
       // access file
       uvpPage.tryToAccessFile(id, fileName, 'success');
@@ -39,8 +40,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.saveDocument();
     // get id of document
     DocumentPage.openUpDocumentHeader();
@@ -60,8 +61,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -82,8 +83,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', 'Plan_R_12']);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -103,8 +104,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -129,8 +130,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     // plan publishing
     DocumentPage.planPublishing(publishDate);
     // get id
@@ -147,8 +148,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.saveDocument();
     // copy document
     CopyCutUtils.copyObject();
@@ -169,8 +170,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -191,8 +192,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile(fileName);
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -219,13 +220,13 @@ describe('uvp uploads', () => {
     Tree.openNode(['Plan_R_Dirty_Uploads', 'All_Document_Types']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Auslegungsinformationen.pdf');
+    fileUploadManagement.uploadFile('Auslegungsinformationen.pdf');
     DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
+    fileUploadManagement.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
     DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Berichte und Empfehlungen.pdf');
+    fileUploadManagement.uploadFile('Berichte und Empfehlungen.pdf');
     DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile('Weitere Unterlagen.pdf');
+    fileUploadManagement.uploadFile('Weitere Unterlagen.pdf');
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
@@ -239,15 +240,15 @@ describe('uvp uploads', () => {
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Öffentliche_Auslegung']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile(files[0]);
+    fileUploadManagement.uploadFile(files[0]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile(files[1]);
+    fileUploadManagement.uploadFile(files[1]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(2, 'Weitere Unterlagen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile(files[2]);
+    fileUploadManagement.uploadFile(files[2]);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(2, 'Weitere Unterlagen', files[2]);
@@ -260,16 +261,16 @@ describe('uvp uploads', () => {
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Files_Simultaneously']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile(files[0], false, false);
-    enterMcloudDocTestData.uploadFile(files[1], false, false);
-    enterMcloudDocTestData.uploadFile(files[2], false, false);
+    fileUploadManagement.uploadFile(files[0], false, false);
+    fileUploadManagement.uploadFile(files[1], false, false);
+    fileUploadManagement.uploadFile(files[2], false, false);
     cy.contains('button', 'Übernehmen').click();
-    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
+    //  wait for files to appear in table, otherwise dataset might be saved without the entries
+    DocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[2]);
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[1]);
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+    // check again after save
+    DocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
   });
 
   it('should upload multiple zip files with same names of the content, unzip the files, save them and check for the included files #4031', () => {
@@ -284,22 +285,18 @@ describe('uvp uploads', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(0, documentType, 'Dateien hochladen');
     // upload the files and save the document
-    enterMcloudDocTestData.uploadFile(fileName, false, false);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
-    enterMcloudDocTestData.uploadFile(fileName_2, false, false);
+    fileUploadManagement.uploadFile(fileName, false, false);
+    fileUploadManagement.unzipArchiveAfterUpload();
+    fileUploadManagement.uploadFile(fileName_2, false, false);
     cy.contains('button', 'Übernehmen').click();
-    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
+    // wait for files to appear in table, otherwise dataset might be saved without the entries
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check for every file
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[3]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[2]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[1]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[0]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[3]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[2]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[1]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle_2 + unzippedFiles[0]);
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
   });
 
   it('should upload zip file with special characters, unzip, save it and check for the included files #4031', () => {
@@ -315,15 +312,14 @@ describe('uvp uploads', () => {
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Zip_File_Special_Characters']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    enterMcloudDocTestData.uploadFile(fileName, false, false);
-    enterMcloudDocTestData.unzipArchiveAfterUpload();
+    fileUploadManagement.uploadFile(fileName, false, false);
+    fileUploadManagement.unzipArchiveAfterUpload();
     cy.contains('button', 'Übernehmen').click();
-    // TODO: wait for files to appear in table, otherwise dataset might be saved without the entries
+    //  wait for files to appear in table, otherwise dataset might be saved without the entries
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[2]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[1]);
-    DocumentPage.checkTableEntry(0, documentType, fileTitle + unzippedFiles[0]);
+    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
   });
 
   it('should activate publish option in catalog behavior for negative preliminary and upload a file #4031', () => {
@@ -334,7 +330,7 @@ describe('uvp uploads', () => {
     DocumentPage.visit();
     Tree.openNode(['Plan_N_With_Upload']);
     cy.contains('button', 'Dateien hochladen').click();
-    enterMcloudDocTestData.uploadFile(fileTitle);
+    fileUploadManagement.uploadFile(fileTitle);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check entry in table

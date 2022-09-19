@@ -889,12 +889,18 @@ export class DocumentPage extends BasePage {
       });
   }
 
-  static checkTableEntry(section: 0 | 1 | 2, label: string, name: string) {
+  static checkTableEntry(section: 0 | 1 | 2, label: string, name: string, prefix: string = '') {
     cy.get('.steps')
       .eq(section)
       .within(_ => {
-        cy.contains(`[data-cy="${label}-table"] mat-row`, name);
+        cy.contains(`[data-cy="${label}-table"] mat-row`, prefix + name);
       });
+  }
+
+  static checkTableMultipleEntries(section: 0 | 1 | 2, label: string, names: string[], prefix: string = '') {
+    names.forEach(value => {
+      this.checkTableEntry(section, label, value, prefix);
+    });
   }
 
   static fillInFieldWithEnter(identifier: string, fieldType: string, value: string, newPosition: string) {
