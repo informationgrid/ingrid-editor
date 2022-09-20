@@ -20,8 +20,6 @@
     "form": "Vorhaben"
   },
   "export": {
-    "formWithPronoun": "dieses Vorhaben",
-    "adjustedPronoun": "dieses",
     "form": "Vorhaben",
     "formSingular": "Vorhaben"
   },

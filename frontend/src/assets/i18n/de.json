@@ -33,8 +33,6 @@
     "form": "Daten"
   },
   "export": {
-    "formWithPronoun": "diesen Datensatz",
-    "adjustedPronoun": "dieser",
     "form": "Daten",
     "formSingular": "Datensatz"
   },

@@ -23,6 +23,7 @@ import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 import { UploadModule } from "../shared/upload/upload.module";
 import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
 import { TranslocoModule } from "@ngneat/transloco";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   imports: [
@@ -47,6 +48,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     UploadModule,
     BreadcrumbModule,
     TranslocoModule,
+    MatProgressSpinnerModule,
   ],
   declarations: [OverviewComponent, ImportComponent, ExportComponent],
   providers: [ImportExportService],

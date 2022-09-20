@@ -3,21 +3,16 @@ import {
   Configuration,
 } from "../services/config/config.service";
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { FileUploadModel } from "../shared/upload/fileUploadModel";
-
-export type ExportMethod = "dataset" | "belowDataset" | "datasetAndBelow";
 
 export interface ExportOptions {
   id: string;
-  method: ExportMethod;
   exportFormat: string;
   useDraft: boolean;
 }
 
 export interface ExportFormOptions {
-  option: ExportMethod;
   drafts: boolean;
   format: any;
 }
@@ -36,16 +31,6 @@ export interface ImportTypeInfo {
   description: string;
 }
 
-export interface ImportAnalyzeResponse {
-  importer: string[];
-  existingDatasets: string[];
-}
-
-export interface UploadAnalysis {
-  file: FileUploadModel;
-  analysis: ImportAnalyzeResponse;
-}
-
 @Injectable({
   providedIn: "root",
 })
@@ -59,7 +44,6 @@ export class ImportExportService {
   ): ExportOptions {
     return {
       id: docId,
-      method: options.option,
       exportFormat: options.format.type,
       useDraft: options.drafts,
     };
@@ -74,9 +58,10 @@ export class ImportExportService {
     return this.http.post(this.configuration.backendUrl + "import", file);
   }
 
-  export(options: ExportOptions): Observable<Blob> {
+  export(options: ExportOptions): Observable<HttpResponse<Blob>> {
     return this.http.post(this.configuration.backendUrl + "export", options, {
       responseType: "blob",
+      observe: "response",
     });
   }
 

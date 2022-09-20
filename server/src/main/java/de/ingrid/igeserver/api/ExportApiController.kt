@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import com.google.common.net.HttpHeaders.CONTENT_DISPOSITION
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.services.CatalogService
@@ -19,15 +20,19 @@ class ExportApiController : ExportApi {
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    override fun export(principal: Principal, data: ExportRequestParameter): ResponseEntity<ByteArray?> {
+    override fun export(principal: Principal, options: ExportRequestParameter): ResponseEntity<ByteArray?> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val result = exportService.export(catalogId, data)
+        val exportResult = exportService.export(catalogId, options)
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok()
+            .header(CONTENT_DISPOSITION, "attachment;filename=\"${exportResult.fileName}\"")
+            .contentType(exportResult.exportFormat)
+            .body(exportResult.result)
     }
 
     override fun exportTypes(principal: Principal, profile: String): ResponseEntity<List<ExportTypeInfo>> {
         return ResponseEntity.ok(exportService.getExportTypes(profile))
     }
+
 }
