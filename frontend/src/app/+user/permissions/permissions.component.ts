@@ -27,6 +27,7 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
 
   @Input() showRootWriteSlider: boolean = false;
   @Input() showRootReadSlider: boolean = false;
+  @Input() disabled: boolean = false;
 
   formGroup: FormGroup;
   rootPermissionRead = this.fb.control([]);

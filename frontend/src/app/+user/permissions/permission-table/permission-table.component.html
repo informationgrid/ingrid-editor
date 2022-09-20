@@ -39,6 +39,7 @@
                 matTooltip="Leserecht"
                 matTooltipShowDelay="1000"
                 (click)="updatePermission(element, permissionLevel.READ)"
+                [class.disabled]="disabled"
                 [class.active]="element.permission == permissionLevel.READ"
             >
                 <mat-icon>visibility</mat-icon>
@@ -57,6 +58,7 @@
                         permissionLevel.WRITE_EXCEPT_PARENT
                     )
                 "
+                [class.disabled]="disabled"
                 [class.active]="
                     element.permission == permissionLevel.WRITE_EXCEPT_PARENT
                 "
@@ -71,6 +73,7 @@
                 matTooltip="Schreibrecht"
                 matTooltipShowDelay="1000"
                 (click)="updatePermission(element, permissionLevel.WRITE)"
+                [class.disabled]="disabled"
                 [class.active]="element.permission == permissionLevel.WRITE"
             >
                 <mat-icon>edit</mat-icon>
@@ -90,7 +93,11 @@
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #permissionMoreMenu="matMenu">
-                <button mat-menu-item (click)="removePermission(element.id)">
+                <button
+                    [disabled]="disabled"
+                    mat-menu-item
+                    (click)="removePermission(element.id)"
+                >
                     Entfernen
                 </button>
             </mat-menu>
@@ -106,6 +113,7 @@
 </table>
 <div class="permission-table-footer">
     <button
+        [disabled]="disabled"
         type="button"
         data-cy="add-permission"
         color="primary"

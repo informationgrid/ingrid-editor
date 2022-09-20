@@ -109,6 +109,7 @@
                             Nutzer anzeigen
                         </button>
                         <button
+                            [disabled]="selectedGroup.currentUserIsMember"
                             mat-menu-item
                             (click)="deleteGroup(selectedGroup.id)"
                         >
@@ -120,6 +121,21 @@
                     [showMore]="this.showMore"
                     [group]="selectedGroup"
                 ></group-header-more>
+                <div
+                    *ngIf="selectedGroup.currentUserIsMember"
+                    class="no-fields-selected-notice warn"
+                >
+                    <div class="infoIcon">
+                        <mat-icon
+                            class="material-icons-outlined"
+                            svgIcon="info-24px"
+                        ></mat-icon>
+                    </div>
+                    <span>
+                        Für Mitglieder der Gruppe ist die Bearbeitung
+                        deaktiviert.</span
+                    >
+                </div>
                 <!-- TITLE -->
                 <mat-form-field appearance="outline">
                     <mat-label>Name</mat-label>
@@ -136,6 +152,7 @@
                 </mat-form-field>
 
                 <ige-permissions
+                    [disabled]="selectedGroup.currentUserIsMember"
                     [showRootReadSlider]="
                         userHasRootReadPermission || userHasRootWritePermission
                     "

@@ -6,6 +6,7 @@ export class Group {
   description: string;
   permissions: Permissions;
   data: GroupData;
+  currentUserIsMember?: boolean;
 
   constructor(values: Object = {}) {
     this.init();
@@ -17,8 +18,9 @@ export class Group {
   }
 }
 
-export class FrontendGroup extends Group {
-  manager?: string;
+export class FrontendGroup {
+  backendGroup: Group;
+  currentUserIsMember?: boolean;
 }
 
 export class GroupData {

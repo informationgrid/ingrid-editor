@@ -6,6 +6,7 @@
 >
     <div fxFlex fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="end end">
         <mat-slide-toggle
+            [disabled]="disabled"
             *ngIf="showRootReadSlider"
             labelPosition="before"
             (change)="toggleRootPermission()"
@@ -16,6 +17,7 @@
             >Allgemeines Leserecht
         </mat-slide-toggle>
         <mat-slide-toggle
+            [disabled]="disabled"
             *ngIf="showRootWriteSlider"
             labelPosition="before"
             (change)="toggleRootPermission()"
@@ -46,11 +48,13 @@
         </span>
     </div>
     <permission-table
+        [disabled]="disabled"
         formControlName="documents"
         label="Berechtigungen {{ t('form') }}"
         data-cy="Berechtigungen Daten"
     ></permission-table>
     <permission-table
+        [disabled]="disabled"
         formControlName="addresses"
         label="Berechtigungen Adressen"
         data-cy="Berechtigungen Adressen"

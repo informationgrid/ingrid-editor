@@ -24,6 +24,7 @@ import { IgeDocument } from "../../../models/ige-document";
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;
   @Input() forAddress = false;
+  @Input() disabled = false;
 
   public permissionLevel: typeof PermissionLevel = PermissionLevel;
 
@@ -126,6 +127,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   updatePermission(element, level: PermissionLevel) {
+    if (this.disabled) return;
     element.permission = level;
     this.onChange(this.val);
   }
