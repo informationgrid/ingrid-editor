@@ -17,6 +17,7 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -33,7 +34,11 @@ class UvpProfile @Autowired constructor(
     @JsonIgnore val authUtils: AuthUtils
 ) : CatalogProfile {
 
-    override val identifier = "uvp"
+    companion object {
+        const val id = "uvp"
+    }
+
+    override val identifier = id
     override val title = "UVP Katalog"
     override val description = null
     override val indexExportFormatID = "indexUvpIDF"
@@ -112,6 +117,19 @@ class UvpProfile @Autowired constructor(
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isAdmin = authUtils.isAdmin(principal)
+        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
+
+        return if (isAdmin)
+            // catalog and super admins can create uvp report
+            permissions + "can_create_uvp_report"
+        else if (isMdAdmin)
+            permissions
+        else {
+            // authors can not import or export
+            permissions.filterNot {
+                listOf(Permissions.can_import.name, Permissions.can_export.name).contains(it)
+            }
+        }
 
         return if (isAdmin) permissions + "can_create_uvp_report" else permissions
     }
