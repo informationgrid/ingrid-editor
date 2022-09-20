@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
-import { FrontendGroup, Group } from "../../models/user-group";
+import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
 import {
   AbstractControl,
@@ -44,7 +44,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   form: UntypedFormGroup;
 
-  selectedGroup: FrontendGroup;
+  selectedGroup: Group;
   isLoading = false;
   showMore = false;
   tableWidth: number;
@@ -139,7 +139,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.selectedGroup = group;
     this.form.reset(group);
     this.form.markAsPristine();
-    this.form.enable();
+    if (!group.currentUserIsMember) this.form.enable();
     this.isLoading = false;
     this.loadGroupUsers(group.id);
     this.groupService.setActive(group.id);

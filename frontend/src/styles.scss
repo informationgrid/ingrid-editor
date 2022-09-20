@@ -1031,6 +1031,11 @@ mat-icon.wide-icon-26px {
   margin-bottom: 5px;
   min-height: 40px;
 
+  &.warn {
+    background-color: $error-background;
+    color: $error-color;
+  }
+
   span {
     padding: 10px 0;
   }

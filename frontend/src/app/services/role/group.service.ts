@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { Group } from "../../models/user-group";
+import { FrontendGroup, Group } from "../../models/user-group";
 import { BehaviorSubject, Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
 import { map, tap } from "rxjs/operators";
@@ -23,14 +23,24 @@ export class GroupService {
   getGroups(): void {
     this.dataService
       .getGroups()
-      .pipe(tap((groups) => this.groupStore.set(groups)))
+      .pipe(
+        map((groups) => groups.map(GroupService.convertFrontendGroup)),
+        tap((groups) => this.groupStore.set(groups))
+      )
       .subscribe();
   }
 
   getGroup(id: number): Observable<Group> {
     return this.dataService
       .getGroup(id)
-      .pipe(map((json) => this.prepareGroup([json])[0]));
+      .pipe(map(GroupService.convertFrontendGroup));
+  }
+
+  private static convertFrontendGroup(frontendGroup: FrontendGroup): Group {
+    return <Group>{
+      ...frontendGroup.backendGroup,
+      currentUserIsMember: frontendGroup.currentUserIsMember,
+    };
   }
 
   getGroupManager(id: number): Observable<User> {
@@ -39,10 +49,6 @@ export class GroupService {
 
   updateGroupManager(id: number, managerId: string): Observable<User> {
     return this.dataService.updateGroupManager(id, managerId);
-  }
-
-  prepareGroup(groups: any[]) {
-    return groups.map((group) => new Group(group));
   }
 
   updateGroup(group: Group): Observable<any> {

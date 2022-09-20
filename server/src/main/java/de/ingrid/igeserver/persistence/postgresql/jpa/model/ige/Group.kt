@@ -28,7 +28,7 @@ class Group {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var manager: UserInfo? = null
-    
+
     @ManyToMany(mappedBy = "groups", fetch=FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

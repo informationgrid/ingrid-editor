@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { FrontendGroup } from "../../../models/user-group";
+import { Group } from "../../../models/user-group";
 
 @Component({
   selector: "group-header-more",
@@ -20,7 +20,7 @@ import { FrontendGroup } from "../../../models/user-group";
   ],
 })
 export class GroupHeaderMoreComponent implements OnInit {
-  @Input() group: FrontendGroup;
+  @Input() group: Group;
   @Input() showMore = false;
 
   constructor() {}
