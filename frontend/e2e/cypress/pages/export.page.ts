@@ -52,7 +52,7 @@ export class ExportPage {
   }
 
   static exportFile() {
-    cy.get('div .action-bar').contains('Exportieren').click();
+    cy.get('div .action-bar').contains('Herunterladen').click();
   }
 
   static checkForFileDownload(fileName: string) {

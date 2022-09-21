@@ -46,7 +46,6 @@ describe('Export', () => {
   it('should export a single published document with options "Nur diesen Datensatz", "IGE" ', () => {
     Tree.openNode(['document_to_export'], false);
     ExportPage.continue();
-    ExportPage.selectExportOption('nur diesen Datensatz');
     // move back and forth and click on cancel to check the steps functionality
     ExportPage.back();
     ExportPage.continue();
@@ -65,7 +64,6 @@ describe('Export', () => {
   it('should export a single published document that is in progress with options "Nur diesen Datensatz","IGE" and "Auch Entwürfe exportieren" ', () => {
     Tree.openNode(['published_document_in_progress'], false);
     ExportPage.continue();
-    ExportPage.selectExportOption('nur diesen Datensatz');
     ExportPage.checkDraftOption();
     //go to preview step
     ExportPage.continue();
