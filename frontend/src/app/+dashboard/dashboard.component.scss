@@ -39,7 +39,9 @@ ige-quick-search,
 .shortcut {
   text-align: center;
 }
-
+.allPageScroll {
+  overflow-y: scroll;
+}
 .dashboard-content {
   overflow: auto;
   padding-top: 30px;
