@@ -1,13 +1,21 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { tap } from "rxjs/operators";
+import { filter, switchMap, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
 import { MatTableDataSource } from "@angular/material/table";
 import { NewMessageDialogComponent } from "./new-message-dialog/new-message-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { ConfigService, UserInfo } from "../../services/config/config.service";
+import { userInfo } from "os";
+import { MatSort, MatSortable, Sort } from "@angular/material/sort";
+import { LiveAnnouncer } from "@angular/cdk/a11y";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../dialogs/confirm/confirm-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -17,15 +25,21 @@ import { MatDialog } from "@angular/material/dialog";
 })
 export class MessagesManagementComponent implements OnInit {
   messages: MessageFormatBackend[] = [];
-  dataSource = new MatTableDataSource<MessageFormatBackend>([]);
+  dataSourceAllCatalog = new MatTableDataSource<MessageFormatBackend>([]);
+  dataSourceCurrentCatalog = new MatTableDataSource<MessageFormatBackend>([]);
   displayedColumns: string[] = ["text", "_expires", "_actions_"];
-
   constructor(
     private messageService: MessageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private configService: ConfigService
   ) {}
 
+  private userInfo: UserInfo;
+  @ViewChild("allCatalogSort") public allCatalogSort: MatSort;
+  @ViewChild("currentCatalogSort") public currentCatalogSort: MatSort;
+
   ngOnInit() {
+    this.userInfo = this.configService.$userInfo.getValue();
     this.fetchMessages();
   }
 
@@ -42,10 +56,22 @@ export class MessagesManagementComponent implements OnInit {
   }
 
   removeMessage(_id: any) {
-    this.messageService
-      .deleteMessage(_id)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => this.fetchMessages());
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "Benachrichtigung löschen",
+          message: "Möchten Sie die Benachrichtigung wirklich löschen?",
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.messageService
+            .deleteMessage(_id)
+            .pipe(untilDestroyed(this))
+            .subscribe(() => this.fetchMessages());
+        }
+      });
   }
 
   showAddMessageDialog() {
@@ -68,7 +94,14 @@ export class MessagesManagementComponent implements OnInit {
           text: m.message.text,
           validUntil: m._validUntil,
         }));
-        this.dataSource.data = messages;
+        this.dataSourceAllCatalog.data = messages.filter(
+          (value) => value.catalog == null
+        );
+        this.dataSourceCurrentCatalog.data = messages.filter(
+          (value) =>
+            value.catalog != null &&
+            value.catalog.id == this.userInfo.currentCatalog.id
+        );
       });
   }
 }
