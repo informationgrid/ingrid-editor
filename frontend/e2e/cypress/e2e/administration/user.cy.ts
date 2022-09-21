@@ -6,8 +6,6 @@ import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import { ExportPage } from '../../pages/export.page';
-import { DashboardPage } from '../../pages/dashboard.page';
 
 describe('mCLOUD: User', () => {
   beforeEach(() => {
@@ -674,6 +672,17 @@ describe('Universal Read Access', () => {
       })
       .its('length')
       .should('be.greaterThan', 10);
+  });
+
+  it('Author with  universal read access should not be able to delete an existing document #3267', () => {
+    DocumentPage.visit();
+    Tree.openNode(['Doc_m']);
+    cy.get('[data-cy="toolbar_DELETE"]').should('be.disabled');
+  });
+
+  it('Author with  universal read access should not be able to create a document #3267', () => {
+    DocumentPage.visit();
+    cy.get('[data-cy="toolbar_NEW_DOC"]').should('be.disabled');
   });
 });
 
