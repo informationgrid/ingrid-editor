@@ -21,6 +21,6 @@ export class PrintTypeComponent extends FieldType implements OnInit {
   }
 
   replaceNewLines(value: string) {
-    return value.replace(/\n/g, "<br>");
+    return value?.replace(/\n/g, "<br>");
   }
 }
