@@ -13,13 +13,12 @@
         <docs type="${type}">
             @for(Document doc : notExpiredDocs)
                 <doc>
-                    <link>
-                    @if (doc.getDownloadURL().getAsLink()) 
-                        ${doc.getDownloadURL().getUri()} 
-                    @else 
-                        ${docInfo.getExternalUrl()}${docInfo.getCatalogId()}/${docInfo.getUuid()}/${doc.getDownloadURL().getUri()}
-                    @endif 
-                    </link>
+                    !{
+                        var link = doc.getDownloadURL().getAsLink() 
+                            ? doc.getDownloadURL().getUri() 
+                            : docInfo.getExternalUrl() + docInfo.getCatalogId() + "/" + docInfo.getUuid() + "/" + doc.getDownloadURL().getUri();  
+                    }
+                    <link>${link}</link>
                     <label>${doc.getTitle()}</label>
                 </doc>
             @endfor
