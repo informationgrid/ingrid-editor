@@ -17,7 +17,7 @@ describe('mCLOUD: Export', () => {
     ExportPage.preview();
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('e5bc272c-142b-4ad6-8278-093e3de74b7c.json');
   });
 
   it('should export a completed document with option "mCLOUD DCAT-AP.de" ', () => {
@@ -32,7 +32,7 @@ describe('mCLOUD: Export', () => {
     // TODO: check for content
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('e5bc272c-142b-4ad6-8278-093e3de74b7c.json');
   });
 });
 
@@ -58,7 +58,7 @@ describe('Export', () => {
     ExportPage.preview();
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('bdd57671-66b6-471f-b787-f41590e7a416.json');
   });
 
   it('should export a single published document that is in progress with options "Nur diesen Datensatz","IGE" and "Auch Entwürfe exportieren" ', () => {
@@ -70,7 +70,7 @@ describe('Export', () => {
     ExportPage.preview();
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('d7f79de1-6bcb-4fa8-893b-da3c5688b52e.json');
   });
 
   // bug is covered by #2502

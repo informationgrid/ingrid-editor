@@ -673,7 +673,7 @@ export class DocumentPage extends BasePage {
     cy.wait(300);
     cy.get(DocumentPage.Toolbar.PublishNow).click();
     cy.get(PublishOptions.ConfirmPublish).click();
-    cy.get('[data-cy="form-message"]').contains('veröffentlicht');
+    cy.contains('[data-cy="form-message"]', 'veröffentlicht', { timeout: 8000 });
   }
 
   static planPublishing(date: string, inDialog: boolean = false) {

@@ -40,7 +40,7 @@ export class ExportPage {
   }
 
   static preview() {
-    cy.get('ige-export button').contains('Vorschau').click();
+    cy.contains('ige-export button', 'Vorschau', { timeout: 8000 }).click();
   }
 
   static checkPreviewContent(data: string) {
