@@ -16,7 +16,7 @@
                     !{
                         var link = doc.getDownloadURL().getAsLink() 
                             ? doc.getDownloadURL().getUri() 
-                            : docInfo.getExternalUrl() + docInfo.getCatalogId() + "/" + docInfo.getUuid() + "/" + doc.getDownloadURL().getUri();  
+                            : docInfo.getExternalUrl() + docInfo.getCatalogId() + "/" + docInfo.getUuid() + "/" + doc.getDownloadURL().getUriEncoded();  
                     }
                     <link>${link}</link>
                     <label>${doc.getTitle()}</label>

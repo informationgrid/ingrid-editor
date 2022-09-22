@@ -11,6 +11,8 @@ import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
+import org.springframework.web.util.UriUtils
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -140,5 +142,8 @@ data class Document(val title: String, val downloadURL: DownloadUrl, val validUn
 
 }
 
-@JsonIgnoreProperties("value") // field was removed and must be marked ignored now
-data class DownloadUrl(val uri: String, val asLink: Boolean)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DownloadUrl(val uri: String, val asLink: Boolean) {
+    fun getUriEncoded() = UriUtils.encode(uri, StandardCharsets.UTF_8)
+
+}
