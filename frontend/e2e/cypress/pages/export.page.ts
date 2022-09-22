@@ -31,16 +31,12 @@ export class ExportPage {
     cy.get('mat-option').contains(option).click();
   }
 
-  static selectExportOption(exportOption: string) {
-    cy.get('mat-radio-group mat-radio-button ').contains(exportOption).click();
-  }
-
   static cancel() {
     cy.get('div .action-bar').contains('Abbrechen').click();
   }
 
   static preview() {
-    cy.contains('ige-export button', 'Vorschau', { timeout: 8000 }).click();
+    cy.contains('ige-export button', 'Vorschau').click();
   }
 
   static checkPreviewContent(data: string) {

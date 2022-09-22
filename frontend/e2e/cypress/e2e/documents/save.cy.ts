@@ -49,7 +49,7 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
-      cy.contains(DocumentPage.title, 'Testdokumente', { timeout: 8000 });
+      cy.contains(DocumentPage.title, 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
     });
 

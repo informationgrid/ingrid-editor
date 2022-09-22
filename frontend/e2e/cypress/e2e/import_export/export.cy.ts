@@ -73,35 +73,16 @@ describe('Export', () => {
     ExportPage.checkForFileDownload('d7f79de1-6bcb-4fa8-893b-da3c5688b52e.json');
   });
 
-  // bug is covered by #2502
-  xit('should exportExport of a subtree with options: "alle untergeordneten", "IGE")  ', () => {
+  it('should not show preview for exported folders', () => {
     Tree.openNode(['folder_to_export_draft_files'], false);
     ExportPage.continue();
-    ExportPage.selectExportOption('alle untergeordneten');
     ExportPage.checkDraftOption();
     //go to preview step
     ExportPage.continue();
     // give it little time to load the content
     cy.wait(300);
-    ExportPage.preview();
-    ExportPage.checkPreviewContent('first_draft_document');
-    ExportPage.checkPreviewContent('second_draft_document');
-    ExportPage.closePreview();
+    cy.contains('.mat-horizontal-stepper-content', 'Für ZIP-Dateien gibt es keine Vorschau');
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
-  });
-
-  // this test is pending right now because option "dieser und alle untergeordneten" preduce the same result as "alle untergeordneten"
-  xit('should exportExport of a subtree  including the selected one with options: "dieser und alle untergeordneten", "IGE")  ', () => {
-    Tree.openNode(['folder_to_export_draft_files'], false);
-    ExportPage.continue();
-    ExportPage.selectExportOption('dieser und alle untergeordneten');
-    ExportPage.checkDraftOption();
-    //go to preview step
-    ExportPage.continue();
-    ExportPage.preview();
-    ExportPage.closePreview();
-    ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('aa1d85e5-ca82-4676-b746-d19a7d1744a8.zip');
   });
 });
