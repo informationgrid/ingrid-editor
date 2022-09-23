@@ -55,8 +55,8 @@ describe('Catalog management', () => {
     ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
       // add document
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
-      const lastDocCreateDate = new Date();
       cy.pageReload('.page-title', 'Katalogverwaltung');
+      const lastDocCreateDate = new Date();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
       ManageCatalogPage.getDateOfChangesInCatalog('Test').should(
