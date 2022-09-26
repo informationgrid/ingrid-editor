@@ -259,7 +259,7 @@ jib {
     }
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'eclipse-temurin:17-jre-jammy'
+        image = 'eclipse-temurin:17-jre-focal'
     }
     to {
         image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
