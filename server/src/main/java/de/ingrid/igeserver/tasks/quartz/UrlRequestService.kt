@@ -16,15 +16,20 @@ class UrlRequestService {
     private val log = logger()
 
     fun getStatus(url: String): Int {
-        val requestHead = createHttpRequest("HEAD", url)
-        var status = httpRequestSync(requestHead)
-        // if server responds with NOT ALLOWED try with GET request
-        if (status == 405) {
-            val requestGet = createHttpRequest("GET", url)
-            status = httpRequestSync(requestGet)
+        try {
+            val requestHead = createHttpRequest("HEAD", url)
+            var status = httpRequestSync(requestHead)
+            // if server responds with NOT ALLOWED try with GET request
+            if (status == 405) {
+                val requestGet = createHttpRequest("GET", url)
+                status = httpRequestSync(requestGet)
+            }
+            log.debug("Status of URL '$url' is $status")
+            return status
+        } catch (e: Exception) {
+            log.debug("URL seems invalid: $url")
+            return 500
         }
-        log.debug("Status of URL '$url' is $status")
-        return status
     }
 
     private fun createHttpClient(executor: ExecutorService) = HttpClient.newBuilder()
