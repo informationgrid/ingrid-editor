@@ -92,6 +92,10 @@ describe('General create documents/folders', () => {
 
       Tree.openNode([parentFolder]);
 
+      // wait some time before creating a new folder
+      // find out if this is the problem, that the dialog shows an empty page
+      // when switching location
+      cy.wait(1000);
       DocumentPage.createFolder(folderName, []);
 
       Tree.containsNodeWithFolderTitle(folderName, 1);
