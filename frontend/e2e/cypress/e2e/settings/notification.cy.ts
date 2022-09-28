@@ -4,16 +4,15 @@ import { DashboardPage } from '../../pages/dashboard.page';
 describe('Catalog management', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.kcLogin('test-catalog-general-test').as('tokens');
+    cy.kcLogin('super-admin').as('tokens');
     NotificationPage.visit();
   });
 
-  // change the test to pending becuase the functionality of notifications has changed
-  // needs to add more tests too
-  xit('Catalog-admin should be able to create a notification for all users.', () => {
-    let message = 'Welcome from test catalog';
+  it('Should add a general notification, without expire date and check it in the dashboard #4328', () => {
+    let message = 'Welcome from super admin';
     NotificationPage.openNotificationDialog();
     NotificationPage.addNotificationText(message);
+    NotificationPage.toggleForGeneralNotification();
     NotificationPage.addNotification();
 
     // logout and check from message display in other users
