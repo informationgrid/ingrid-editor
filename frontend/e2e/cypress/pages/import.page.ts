@@ -29,7 +29,9 @@ export class ImportPage {
   }
 
   static closeDialogAndImport() {
+    cy.intercept('POST', '/api/import').as('importData');
     cy.contains('button', 'Importieren').click();
+    cy.wait('@importData');
   }
 
   static jumpToDocument(docName: string) {
