@@ -183,13 +183,13 @@ class ResearchService {
 
     private fun createCatalogFilter(catalogId: String): String {
 
-        return "catalog.identifier = '$catalogId' "
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 
     private fun determineJsonSearch(term: String?): String {
 
-        return if (term != null)
+        return if (!term.isNullOrEmpty())
             "CROSS JOIN LATERAL jsonb_each_text(document1.data) as t(k, val)"
         else ""
 
@@ -264,31 +264,32 @@ class ResearchService {
         principal: Principal
     ): List<Result> {
         principal as Authentication
-        return result.filter { item ->
-            isAdmin || aclService.getPermissionInfo(
-                principal,
-                item[7] as Int // "id"
-            ).canRead
-        }.map { item ->
-            Result(
-                title = item[1] as? String,
-                _uuid = item[2] as? String,
-                _type = item[3] as? String,
-                _created = item[4] as? Date,
-                _modified = item[5] as? Date,
-                _state = determineDocumentState(item[8] as String),
-                _category = (item[6] as? String),
-                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
+        return result
+            .filter { item ->
+                isAdmin || aclService.getPermissionInfo(
                     principal,
-                    item[7] as Int
-                ).canWrite,
-                hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
-                    principal,
-                    item[7] as Int
-                ).canOnlyWriteSubtree,
-                _id = (item[7] as Int).toString()
-            )
-        }
+                    item[7] as Int // "id"
+                ).canRead
+            }.map { item ->
+                Result(
+                    title = item[1] as? String,
+                    _uuid = item[2] as? String,
+                    _type = item[3] as? String,
+                    _created = item[4] as? Date,
+                    _modified = item[5] as? Date,
+                    _state = determineDocumentState(item[8] as String),
+                    _category = (item[6] as? String),
+                    hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
+                        principal,
+                        item[7] as Int
+                    ).canWrite,
+                    hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
+                        principal,
+                        item[7] as Int
+                    ).canOnlyWriteSubtree,
+                    _id = (item[7] as Int).toString()
+                )
+            }
     }
 
     private fun determineDocumentState(state: String) = DOCUMENT_STATE.valueOf(state).getState()
@@ -352,6 +353,7 @@ class ResearchService {
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter
                 """.trimIndent()
+
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
                 $catalogFilter AND 

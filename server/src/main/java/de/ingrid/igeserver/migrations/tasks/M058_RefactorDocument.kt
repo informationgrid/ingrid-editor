@@ -17,8 +17,8 @@ class M058_RefactorDocument : MigrationBase("0.58") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val sqlUpdate = """
-        alter table document add is_latest boolean;
-        alter table document add state varchar(30);
+        alter table document add is_latest boolean DEFAULT false;
+        alter table document add state varchar(30) default 'ARCHIVED';
     """.trimIndent()
 
     override fun exec() {

@@ -1,9 +1,10 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,21 +17,46 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class StatisticApiController @Autowired constructor(
     val researchService: ResearchService,
-    val authUtils: AuthUtils
+    val authUtils: AuthUtils,
+    val catalogService: CatalogService
 ) : StatisticApi {
-
-    @Autowired
-    private lateinit var dbService: DocumentService
-
-    @Autowired
-    private lateinit var catalogService: CatalogService
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val statistic = this.dbService.getDocumentStatistic(catalogId)
-        return ResponseEntity.ok(statistic)
+        val userName = authUtils.getUsernameFromPrincipal(principal)
+        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
+        val allDrafts = researchService.query(
+            principal, userGroups, catalogId,
+            ResearchQuery(
+                null, BoolFilter("AND", listOf("selectDocuments", "selectDraft", "exceptFolders"), null, null),
+                pagination = ResearchPaging(pageSize = 1)
+            )
+        )
+        val allPublished = researchService.query(
+            principal, userGroups, catalogId,
+            ResearchQuery(
+                null, BoolFilter("AND", listOf("selectDocuments", "selectPublished", "exceptFolders"), null, null),
+                pagination = ResearchPaging(pageSize = 1)
+            )
+        )
+        val total = researchService.query(
+            principal, userGroups, catalogId,
+            ResearchQuery(
+                null, BoolFilter("AND", listOf("selectDocuments", "exceptFolders"), null, null),
+                pagination = ResearchPaging(pageSize = 10)
+            )
+        )
+        // TODO: fix calculation of total
+
+        return ResponseEntity.ok(
+            StatisticResponse(
+                total.totalHits.toLong(),
+                allPublished.totalHits.toLong(),
+                allDrafts.totalHits.toLong()
+            )
+        )
     }
 
     override fun searchStatistic(principal: Principal, query: ResearchQuery): ResponseEntity<StatisticResponse> {
