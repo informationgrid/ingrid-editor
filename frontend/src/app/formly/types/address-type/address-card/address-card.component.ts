@@ -91,12 +91,12 @@ export class AddressCardComponent implements OnInit {
   private getTitle(ref: any) {
     return ref.organization?.length > 0
       ? ref.organization
-      : ref.firstName + " " + ref.lastName;
+      : (ref.firstName ?? "") + " " + ref.lastName;
   }
 
   private getSecondTitle(ref: any) {
-    return ref.organization?.length > 0 && ref.firstName && ref.lastName
-      ? ref.firstName + " " + ref.lastName
+    return ref.organization?.length > 0 && ref.lastName
+      ? (ref.firstName ?? "") + " " + ref.lastName
       : null;
   }
 

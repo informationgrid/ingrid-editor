@@ -31,16 +31,16 @@ export class ExportPage {
     cy.get('mat-option').contains(option).click();
   }
 
-  static selectExportOption(exportOption: string) {
-    cy.get('mat-radio-group mat-radio-button ').contains(exportOption).click();
-  }
-
   static cancel() {
     cy.get('div .action-bar').contains('Abbrechen').click();
   }
 
   static preview() {
-    cy.get('ige-export button').contains('Vorschau').click();
+    cy.contains('ige-export button', 'Vorschau').click();
+  }
+
+  static checkPreviewContent(data: string) {
+    cy.contains('mat-dialog-content', data);
   }
 
   static closePreview() {
@@ -48,7 +48,7 @@ export class ExportPage {
   }
 
   static exportFile() {
-    cy.get('div .action-bar').contains('Exportieren').click();
+    cy.get('div .action-bar').contains('Herunterladen').click();
   }
 
   static checkForFileDownload(fileName: string) {

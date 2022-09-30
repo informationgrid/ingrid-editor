@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
@@ -39,40 +40,41 @@ class GroupsApiController @Autowired constructor(
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
+        // user is not allowed to delete groups he is a member of
+        if (userBelongsToGroup(principal,id)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         groupService.remove(catalogId, id)
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun getGroup(principal: Principal, id: Int): ResponseEntity<Group> {
+    override fun getGroup(principal: Principal, id: Int): ResponseEntity<FrontendGroup> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         return when (val group = groupService.get(catalogId, id)) {
             null -> ResponseEntity.notFound().build()
-            else -> ResponseEntity.ok(group)
+            else -> ResponseEntity.ok(FrontendGroup(group, userBelongsToGroup(principal, id)))
         }
     }
 
-    override fun listGroups(principal: Principal): ResponseEntity<List<Group>> {
+    override fun listGroups(principal: Principal): ResponseEntity<List<FrontendGroup>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val userId = authUtils.getUsernameFromPrincipal(principal)
         var groups = groupService.getAll(catalogId)
 
         val isCatAdmin = authUtils.isAdmin(principal)
         if (isCatAdmin) {
-            return ResponseEntity.ok(groups)
+            return ResponseEntity.ok(groups.map { FrontendGroup(it, false) })
         }
 
         val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
 
-        // user is not allowed to edit groups he is a member of
-        // user is only allowed to edit groups he has rights for
+        // user is only allowed to see and edit groups he has rights for
         groups = groups
-            .filter { userDoesNotBelongToGroup(userGroupIds, it) }
             .filter { userHasRightsForGroupsPermissions(userId, principal, it) }
 
-        return ResponseEntity.ok(groups)
+        return ResponseEntity.ok(groups.map {
+            FrontendGroup(it, userBelongsToGroup(userGroupIds, it))
+        })
     }
 
     private fun userHasRightsForGroupsPermissions(
@@ -84,14 +86,25 @@ class GroupsApiController @Autowired constructor(
         group
     )
 
-    private fun userDoesNotBelongToGroup(
+    private fun userBelongsToGroup(
         userGroupIds: List<Int>,
         group: Group
-    ) = !userGroupIds.contains(group.id!!)
+    ) = userGroupIds.contains(group.id!!)
+
+    private fun userBelongsToGroup(
+        principal: Principal,
+        groupId: Int
+    ): Boolean {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
+       return userGroupIds.contains(groupId)
+    }
 
 
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        // user is not allowed to edit groups he is a member of
+        if (userBelongsToGroup(principal,group.id!!)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         val updatedGroup = groupService.update(catalogId, id, group, true)
         return ResponseEntity.ok(updatedGroup)

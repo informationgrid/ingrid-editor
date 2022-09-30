@@ -96,10 +96,16 @@ export class DocumentService {
 
   findRecent(): void {
     this.researchService
-      .search("", { type: "selectDocuments" }, "modified", "DESC", {
-        page: 1,
-        pageSize: 10,
-      })
+      .search(
+        "",
+        { type: "selectDocuments", ignoreFolders: "exceptFolders" },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        }
+      )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
@@ -109,10 +115,16 @@ export class DocumentService {
 
   findRecentAddresses(): void {
     this.researchService
-      .search("", { type: "selectAddresses" }, "modified", "DESC", {
-        page: 1,
-        pageSize: 10,
-      })
+      .search(
+        "",
+        { type: "selectAddresses", ignoreFolders: "exceptFolders" },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        }
+      )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits }))
@@ -193,14 +205,23 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return DocumentService.trimObject(data);
+    return DocumentService.trimObjectAndRemoveEvilTags(data);
   }
 
-  private static trimObject(obj: IgeDocument): IgeDocument {
+  private static trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
     const trimmed = JSON.stringify(obj, (key, value) => {
-      return typeof value === "string" ? value.trim() : value;
+      return typeof value === "string"
+        ? DocumentService.removeEvilTags(value.trim())
+        : value;
     });
     return JSON.parse(trimmed);
+  }
+
+  private static removeEvilTags(val: String) {
+    return val.replace(
+      /<(?!b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+      ""
+    );
   }
 
   postSaveActions(

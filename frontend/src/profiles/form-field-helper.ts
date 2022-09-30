@@ -14,6 +14,7 @@ export class FormFieldHelper {
   addGroup(id: string, label: string, fields: any[], options?) {
     return {
       key: id,
+      id: id,
       fieldGroupClassName:
         options?.fieldGroupClassName === null ? undefined : "display-flex",
       wrappers: ["panel"],
@@ -69,6 +70,7 @@ export class FormFieldHelper {
   addRepeatChip(id, label, options?) {
     return {
       key: id,
+      id: id,
       type: "repeatChip",
       wrappers: ["panel"],
       templateOptions: {
@@ -131,6 +133,7 @@ export class FormFieldHelper {
         highlightMatches: options?.highlightMatches,
         hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
+        codelistId: options?.codelistId,
       },
     };
   }
@@ -138,9 +141,10 @@ export class FormFieldHelper {
   addInput(id, label, options?): FormlyFieldConfig {
     return {
       key: id,
+      id: id,
       type: "input",
       className: options?.className ?? "flex-1",
-      wrappers: options?.wrappers,
+      wrappers: options?.wrappers ?? ["form-field"],
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -176,6 +180,7 @@ export class FormFieldHelper {
         options: options?.options,
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue,
+        codelistId: options?.codelistId,
       },
       hideExpression: options?.hideExpression,
     };

@@ -140,7 +140,7 @@ describe('mCLOUD documents', function () {
       cy.get('ige-header-navigation').contains('mCLOUD');
       enterMcloudDocTestData.setPeriodOfTime(option, previousDate, dateNow);
       DocumentPage.saveDocument();
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
 
       enterMcloudDocTestData.checkPeriodOfTimeSelectedValue(option);
     });

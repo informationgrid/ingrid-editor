@@ -55,11 +55,8 @@ describe('Catalog management', () => {
     ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').then(oldNumberOfDocs => {
       // add document
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName);
+      cy.pageReload('.page-title', 'Katalogverwaltung');
       const lastDocCreateDate = new Date();
-
-      // refresh page
-      // we cannot add custom command pageReload because we are waiting for specific number to show up after parsing to int
-      ManageCatalogPage.visit();
       // compare values
       ManageCatalogPage.getNumberOfDatasetsInCatalog('Test').should('be.greaterThan', oldNumberOfDocs);
       ManageCatalogPage.getDateOfChangesInCatalog('Test').should(

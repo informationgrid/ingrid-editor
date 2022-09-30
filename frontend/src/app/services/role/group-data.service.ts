@@ -1,7 +1,7 @@
 import { Observable, of } from "rxjs";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient } from "@angular/common/http";
-import { Group } from "../../models/user-group";
+import { FrontendGroup, Group } from "../../models/user-group";
 import { Injectable } from "@angular/core";
 import { User } from "../../+user/user";
 
@@ -35,17 +35,21 @@ export class GroupDataService {
     return this.http.delete(this.configuration.backendUrl + "groups/" + id);
   }
 
-  getGroups(): Observable<Group[]> {
+  getGroups(): Observable<FrontendGroup[]> {
     try {
-      return this.http.get<Group[]>(this.configuration.backendUrl + "groups");
+      return this.http.get<FrontendGroup[]>(
+        this.configuration.backendUrl + "groups"
+      );
     } catch (e) {
       console.error("Could not get groups");
       return of([]);
     }
   }
 
-  getGroup(id: number): Observable<Group> {
-    return this.http.get<Group>(this.configuration.backendUrl + "groups/" + id);
+  getGroup(id: number): Observable<FrontendGroup> {
+    return this.http.get<FrontendGroup>(
+      this.configuration.backendUrl + "groups/" + id
+    );
   }
 
   getGroupManager(id: number): Observable<User> {

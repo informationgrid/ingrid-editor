@@ -9,6 +9,7 @@ import { HistoryPlugin } from "./+form/dialogs/history/history.plugin";
 import { DeleteEmptyFoldersBehaviour } from "./+catalog/+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour";
 import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-json.behaviour";
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
+import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -21,6 +22,7 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
   { provide: FormPluginToken, useClass: HistoryPlugin, multi: true },
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
+  { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   {
     provide: FormPluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

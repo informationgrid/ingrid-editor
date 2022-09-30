@@ -16,6 +16,13 @@
     <div main-header>
         <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
             <ng-container *ngIf="liveLog | async as log">
+                <mat-icon
+                    *ngIf="log.errors?.length > 0"
+                    class="error-color"
+                    matTooltip="Bei der letzten Prüfung trat ein Fehler auf"
+                    >error_outline</mat-icon
+                >
+
                 <span *ngIf="!isRunning; else running"
                     >Letzte Prüfung erfolgte am
                     {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
@@ -69,6 +76,13 @@
             </div>
             <br />
             <div>Analysierte URLs: {{ analyzedUrls }}</div>
+            <div *ngIf="log.errors?.length > 0">
+                Fehler:
+                <span data-cy="count-errors">{{ log.errors.length }}</span>
+                <ul>
+                    <li *ngFor="let error of log.errors">{{ error }}</li>
+                </ul>
+            </div>
         </div>
     </div>
 

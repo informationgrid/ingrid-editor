@@ -8,7 +8,7 @@
 >
     <!-- Role Column -->
     <ng-container matColumnDef="role-icon" class="thin-column">
-        <th class="thin-column" mat-header-cell *matHeaderCellDef>Rolle</th>
+        <th class="thin-column" mat-header-cell *matHeaderCellDef></th>
         <td class="thin-column" mat-cell *matCellDef="let element">
             <mat-icon [svgIcon]="'group'"></mat-icon>
         </td>
@@ -38,7 +38,11 @@
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
             <mat-menu #groupEditMenu="matMenu">
-                <button mat-menu-item (click)="onDelete.next(element.id)">
+                <button
+                    [disabled]="element.currentUserIsMember"
+                    mat-menu-item
+                    (click)="onDelete.next(element.id)"
+                >
                     Löschen
                 </button>
             </mat-menu>
@@ -50,6 +54,7 @@
         mat-row
         *matRowDef="let row; columns: displayedColumns"
         [class.selected]="selection.isSelected(row)"
+        [class.disabled]="row.currentUserIsMember"
         (click)="select(row)"
     ></tr>
 </table>

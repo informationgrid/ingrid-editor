@@ -3,7 +3,7 @@
 
 {
     "uuid": "{{ model.uuid }}",
-    "title": "{{ model.title }}",
+    "title": "{{ model.title.trim() }}",
     "description": "{{ model.data.description }}",
     "theme": [
       "{{ model.getThemes() | join('","') | raw }}"
@@ -28,7 +28,7 @@
         ],
     {% endif %}
     "publisher": {
-        "organization": "{{ model.getPublisher().organization }}",
+        "organization": "{{ model.getPublisher().organization.trim() }}",
         "homepage": "{{ model.getPublisher().getHomepage() }}"
     },
     {% if model.data.accessRights %}
@@ -110,7 +110,7 @@
          {% endif %}],
         "groups": null,
         "display_contact": [{
-            "name": "{{ model.getPublisher().organization }}",
+            "name": "{{ model.getPublisher().organization.trim() }}",
             "homepage": "{{ model.getPublisher().getHomepage() }}"
         }],
         "realtime": {{ model.data.periodicity == "1" }},

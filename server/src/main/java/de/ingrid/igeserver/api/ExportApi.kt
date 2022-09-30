@@ -28,7 +28,7 @@ interface ExportApi {
             description = "The stored dataset, which might contain additional storage information."
         ), ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
-    @PostMapping(value = ["/export"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+    @PostMapping(value = ["/export"], produces = ["application/zip"])
     fun export(
         principal: Principal,
         @Parameter(

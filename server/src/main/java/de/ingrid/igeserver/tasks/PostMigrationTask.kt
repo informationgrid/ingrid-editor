@@ -68,9 +68,10 @@ class PostMigrationTask(
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
+        // Warning: Execution Order is important
         saveAllGroupsOfCatalog(catalogIdentifier)
-        enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpAdaptFolderStructure(catalogIdentifier)
+        enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
     }

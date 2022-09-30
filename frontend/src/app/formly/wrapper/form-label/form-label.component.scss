@@ -10,6 +10,10 @@
   padding-top: 1.55em;
 }
 
+:host-context(.preview-dialog) .label-wrapper {
+  width: 190px;
+}
+
 :host-context(ige-new-user-dialog) .label-wrapper {
   width: 120px;
   padding-top: 0.8em;

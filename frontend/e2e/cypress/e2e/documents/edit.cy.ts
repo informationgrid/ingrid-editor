@@ -5,6 +5,7 @@ import { Menu } from '../../pages/menu';
 import { Utils } from '../../pages/utils';
 import { AdminUserPage } from '../../pages/administration-user.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { fileUploadManagement } from '../../pages/fileUploadManagement.page';
 
 describe('mCLOUD: edit documents', function () {
   beforeEach(() => {
@@ -118,8 +119,8 @@ describe('edit documents', function () {
     DocumentPage.fillInField('[data-cy="multiInputs"]', 'formly-field-mat-input input', 'chips');
     DocumentPage.fillInField('[data-cy="multiInputs"]', 'formly-field-mat-datepicker input', '12.11.2020');
     // upload file
-    enterMcloudDocTestData.openDownloadDialog();
-    enterMcloudDocTestData.uploadFile('importtest_3.json');
+    fileUploadManagement.openUploadDialog();
+    fileUploadManagement.uploadFile('importtest_3.json');
     DocumentPage.fillInFieldWithEnter('[data-cy="repeatListSimple"]', 'input', 'stuff', '.list-item');
     DocumentPage.addList('[data-cy="repeatDetailListImage"]', 'image title');
     DocumentPage.addList('[data-cy="repeatDetailListLink"]', 'sometitle', true);

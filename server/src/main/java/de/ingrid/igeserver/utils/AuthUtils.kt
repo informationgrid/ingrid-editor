@@ -8,4 +8,5 @@ interface AuthUtils {
     fun getFullNameFromPrincipal(principal: Principal): String
     fun containsRole(principal: Principal, role: String): Boolean
     fun isAdmin(principal: Principal): Boolean
+    fun isSuperAdmin(principal: Principal): Boolean
 }

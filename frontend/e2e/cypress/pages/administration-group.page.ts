@@ -45,6 +45,10 @@ export class AdminGroupPage extends BasePage {
     this.applyDialog();
   }
 
+  static checkDescription(name: string) {
+    cy.get('#formRoles [formcontrolname=description]').should('have.value', name);
+  }
+
   static verifyNewlyCreatedGroup(groupname: string, description: string) {
     cy.get('groups-table').should('contain', groupname);
     cy.get('groups-table').should('contain', description);
@@ -176,12 +180,14 @@ export class AdminGroupPage extends BasePage {
     });
   }
 
-  // TODO: refactor to two functions grantUniversalRights and revokeUniversalRights
-  static grantOrRevokeUniversalRights(access: 'Leserecht' | 'Schreibrecht', revoke = false) {
+  static grantUniversalRights(access: 'Leserecht' | 'Schreibrecht') {
     cy.contains('ige-permissions label', access, { timeout: 8000 }).click();
-    cy.wait(500)
-      .contains('ige-permissions mat-slide-toggle', access)
-      .should(`${revoke ? 'not.' : ''}have.class`, 'mat-checked');
+    cy.wait(500).contains('ige-permissions mat-slide-toggle', access).should('have.class', 'mat-checked');
+  }
+
+  static revokeUniversalRights(access: 'Leserecht' | 'Schreibrecht') {
+    cy.contains('ige-permissions label', access, { timeout: 8000 }).click();
+    cy.wait(500).contains('ige-permissions mat-slide-toggle', access).should('not.have.class', 'mat-checked');
   }
 }
 

@@ -15,7 +15,7 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "../../models/ige-error";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
 
@@ -32,7 +32,7 @@ export class ExportComponent implements OnInit {
   optionsFormGroup: UntypedFormGroup;
   datasetSelected = false;
   private selectedIds: number[];
-  exportResult: any;
+  exportResult: HttpResponse<Blob>;
   exportFormats = this.exportService
     .getExportTypes()
     .pipe(
@@ -40,7 +40,6 @@ export class ExportComponent implements OnInit {
     );
   path: ShortTreeNode[];
   showMore = false;
-  exportSuccess = false;
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -75,38 +74,33 @@ export class ExportComponent implements OnInit {
       this.selectedIds[0],
       model
     );
+    this.exportResult = null;
     this.exportService
       .export(options)
       .pipe(catchError((error) => this.handleError(error)))
-      .subscribe((response) => {
+      .subscribe((response: HttpResponse<Blob>) => {
         console.log("Export-Result:", response);
-        response.text().then((text) => (this.exportResult = text));
-        this.exportSuccess = true;
+        this.exportResult = response;
       });
   }
 
   downloadExport() {
-    let model = this.optionsFormGroup.value;
-    this.downloadFile(
-      this.exportResult,
-      model.format.dataType,
-      model.format.fileExtension
-    );
+    this.downloadFile(this.exportResult);
   }
 
-  private downloadFile(
-    data: Blob,
-    dataType: string,
-    fileExtension: string = "json"
-  ) {
+  private downloadFile(data: HttpResponse<Blob>) {
     const downloadLink = document.createElement("a");
-    downloadLink.href = window.URL.createObjectURL(
-      new Blob([data], { type: dataType })
-    );
-    downloadLink.setAttribute("download", `export.${fileExtension}`);
+    const filename = this.getFilenameFromHeader(data);
+    downloadLink.href = window.URL.createObjectURL(data.body);
+    downloadLink.setAttribute("download", filename);
     document.body.appendChild(downloadLink);
     downloadLink.click();
     downloadLink.remove();
+  }
+
+  private getFilenameFromHeader(data: HttpResponse<Blob>) {
+    const content = data.headers.get("Content-Disposition");
+    return content.substring(21, content.length - 1);
   }
 
   cancel() {
@@ -117,12 +111,13 @@ export class ExportComponent implements OnInit {
     });
   }
 
-  showPreview() {
+  async showPreview() {
+    const data = await this.exportResult.body.text();
     this.dialog.open(ConfirmDialogComponent, {
       maxWidth: 700,
       data: {
         title: "Vorschau",
-        message: this.exportResult,
+        message: data,
         buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
         preformatted: true,
       } as ConfirmDialogData,
@@ -130,8 +125,6 @@ export class ExportComponent implements OnInit {
   }
 
   private handleError(error: HttpErrorResponse): Promise<any> {
-    this.exportSuccess = false;
-
     return this.getErrorFromBlob(error).then((jsonError: IgeException) => {
       if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
         throw new IgeError(
@@ -147,13 +140,13 @@ export class ExportComponent implements OnInit {
       let reader = new FileReader();
       reader.onload = (e: Event) => {
         try {
-          const errmsg = JSON.parse((<any>e.target).result);
-          resolve(errmsg);
+          const error = JSON.parse((<any>e.target).result);
+          resolve(error);
         } catch (e) {
           reject(error);
         }
       };
-      reader.onerror = (e) => {
+      reader.onerror = () => {
         reject(error);
       };
       reader.readAsText(error.error);

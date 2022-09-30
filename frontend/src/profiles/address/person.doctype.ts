@@ -79,7 +79,7 @@ export class PersonDoctype extends AddressShared {
           fieldLabel:
             "für Anzeige Daten der übergeordneten Organisation verwenden",
           hideExpression:
-            "!formState.mainModel._parent ||  formState.parentIsFolder",
+            "!(formState.mainModel && formState.mainModel._parent) ||  formState.parentIsFolder",
         }),
       ]),
       this.addSection("Kommunikation", [

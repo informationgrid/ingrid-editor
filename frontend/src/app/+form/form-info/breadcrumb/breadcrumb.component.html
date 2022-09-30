@@ -1,5 +1,5 @@
-<span *ngIf="breadPath" [class.emphasize]="emphasize">
-    <span *ngIf="showRoot" class="root">
+<span *ngIf="fullPath" [class.emphasize]="emphasize">
+    <span class="root">
         <span
             [class.selectable]="selectable && !disableRoot"
             [class.disabled]="disableRoot"
@@ -9,52 +9,29 @@
                     : ''
             "
             (click)="!disableRoot && onSelect(null)"
-            *transloco="let t; read: 'menu'"
             >{{ rootName }}</span
         >
-        <ng-container *ngIf="breadPath.length > 0 || !hideLastSeparator">
+        <ng-container *ngIf="fullPath.length > 0">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>
     </span>
 
-    <span *ngFor="let item of breadPath; let last = last; let i = index">
+    <span
+        *ngFor="let item of collapsed ? shortPath : fullPath; let last = last"
+    >
         <span
-            *ngIf="showBreadcrumbPart[item.id]; else noShow"
-            [matTooltip]="
-                item.disabled &&
-                !item.hasOnlySubtreeWritePermission &&
-                item.permission.canRead
-                    ? 'Sie haben keine Schreibberechtigung auf diesen Ordner'
-                    : item.disabled && !item.hasOnlySubtreeWritePermission
-                    ? 'Sie haben keine Leseberechtigung auf diesen Ordner'
-                    : ''
-            "
-            data-cy="{{ item.disabled ? 'yes' : 'no' }}"
+            [matTooltip]="item | breadCrumbTooltip"
+            [matTooltipShowDelay]="500"
             [class.selectable]="
                 selectable &&
-                (!item.disabled ||
-                    item.permission.hasOnlySubtreeWritePermission ||
-                    item.permission.canRead)
+                (item.permission?.canRead || item.permission?.canWrite)
             "
             [class.disabled]="item.disabled"
-            (click)="collapsePath(breadPath, item)"
+            (click)="handleClick(item)"
             >{{ item.title }}</span
         >
-
-        <ng-template #noShow
-            ><span
-                *ngIf="showCollapsedSymbol(breadPath, item, i)"
-                (click)="unfoldDisabledPath(breadPath)"
-                [class.selectable]="true"
-                >...</span
-            >
-        </ng-template>
-        <ng-container
-            *ngIf="
-                showChevron(breadPath, item, i) && (!last || !hideLastSeparator)
-            "
-        >
+        <ng-container *ngIf="!last">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
         </ng-container>

@@ -59,7 +59,7 @@ describe('mCLOUD: Tree', () => {
       const docName = 'Published can be Moved' + Utils.randomString();
 
       DocumentPage.CreateFullMcloudDocumentWithAPI(docName, true, null);
-      cy.reload();
+      cy.pageReload('dashboard-docs-header', 'Daten');
 
       Tree.selectNodeAndCheckPath(docName, ['Daten']);
 

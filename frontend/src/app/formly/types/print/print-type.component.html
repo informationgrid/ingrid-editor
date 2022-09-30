@@ -1,0 +1,50 @@
+<div [ngSwitch]="field.type">
+    <!--<ng-container *ngSwitchCase="'datepickerPrint'">{{
+        formControl.value | date: "dd.MM.yyyy"
+    }}</ng-container>-->
+    <ng-container *ngSwitchCase="'repeatListPrint'">
+        <div *ngFor="let item of formControl.value">
+            {{ item | codelist: to.codelistId | async }}
+        </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'address-cardPrint'">
+        <ng-container *ngFor="let address of formControl.value">
+            <div>{{ address.type | codelist: "505" | async }}</div>
+            <div *ngIf="address.ref.organization; else person">
+                {{ address.ref.organization }}
+            </div>
+            <ng-template #person>
+                <div>
+                    <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
+                    {{
+                        address.ref["academic-title"] | codelist: "4305" | async
+                    }}
+                    {{ address.ref.firstName }} {{ address.ref.lastName }}
+                </div>
+            </ng-template>
+        </ng-container>
+    </ng-container>
+    <!--<ng-container *ngSwitchCase="'tablePrint'">
+        <table>
+            <tr *ngFor="let row of formControl.value">
+                <td *ngFor="let column of row | keyvalue">
+                    {{ column.value | json }}
+                </td>
+            </tr>
+        </table>
+    </ng-container>-->
+    <ng-container *ngSwitchCase="'selectPrint'">{{
+        to.codelistId
+            ? (formControl.value | codelist: to.codelistId | async)
+            : getFromOption(formControl.value)
+    }}</ng-container>
+    <ng-container *ngSwitchCase="'autocompletePrint'">{{
+        to.codelistId
+            ? (formControl.value | codelist: to.codelistId | async)
+            : getFromOption(formControl.value)
+    }}</ng-container>
+    <div
+        *ngSwitchDefault
+        [innerHTML]="replaceNewLines(formControl.value)"
+    ></div>
+</div>

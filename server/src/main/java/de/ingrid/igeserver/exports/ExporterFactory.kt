@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class ExporterFactory @Autowired constructor(val exporterList: List<IgeExporter>) {
-    val typeInfos: List<ExportTypeInfo>
-        get() = exporterList
-                .map { exporter: IgeExporter -> exporter.typeInfo }
+class ExporterFactory @Autowired constructor(private val exporterList: List<IgeExporter>) {
+    val typeInfos: List<ExportTypeInfo> = exporterList.map { exporter: IgeExporter -> exporter.typeInfo }
 
     fun getExporter(category: DocumentCategory, format: String): IgeExporter {
         try {

@@ -4,10 +4,7 @@ import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
 import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
-import { ResearchPage } from '../../../pages/research.page';
-import { BasePage } from '../../../pages/base.page';
 
 describe('uvp addresses', () => {
   beforeEach(() => {
@@ -148,5 +145,24 @@ describe('uvp addresses', () => {
     cy.get('ige-replace-address-dialog').contains(
       'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
     );
+  });
+
+  it('should show one name on address card when address was created with only one name (first or last name)', () => {
+    const addressFirstName = '';
+    const addressLastName = 'lastName' + Utils.randomString();
+    const addressData = {
+      firstName: addressFirstName,
+      lastName: addressLastName,
+      title: addressLastName,
+      _type: 'UvpAddressDoc'
+    };
+    AddressPage.apiCreateAddress(addressData, false);
+
+    // add address to document and check address card
+    Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
+    uvpPage.setAddress(addressLastName);
+    cy.get('ige-address-card .title').then(addressTitle => {
+      expect(addressTitle.text().trim()).to.equal(addressLastName);
+    });
   });
 });

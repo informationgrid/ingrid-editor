@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
-import { FrontendGroup, Group } from "../../models/user-group";
+import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
 import {
   AbstractControl,
@@ -44,7 +44,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   form: UntypedFormGroup;
 
-  selectedGroup: FrontendGroup;
+  selectedGroup: Group;
   isLoading = false;
   showMore = false;
   tableWidth: number;
@@ -139,13 +139,22 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.selectedGroup = group;
     this.form.reset(group);
     this.form.markAsPristine();
-    this.form.enable();
+    if (!group.currentUserIsMember) this.form.enable();
     this.isLoading = false;
     this.loadGroupUsers(group.id);
     this.groupService.setActive(group.id);
   }
 
-  saveGroup(): void {
+  discardGroup(group: Group) {
+    this.form.markAsPristine();
+    this.form.enable();
+    this.isLoading = false;
+    this.loadGroupUsers(group.id);
+    this.loadGroup(this.groupQuery.getActiveId());
+    this.groupService.setActive(group.id);
+  }
+
+  saveGroup(setActive: boolean = true): void {
     const group = this.form.value;
     this.groupService
       .updateGroup(group)
@@ -154,7 +163,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
         map((group) => JSON.parse(JSON.stringify(group)))
       )
       .subscribe((group) => {
-        if (group) {
+        if (group && setActive) {
           this.updateGroupOnPage(group);
         }
       });
@@ -253,13 +262,19 @@ export class GroupComponent implements OnInit, AfterViewInit {
       return this.dialog
         .open(ConfirmDialogComponent, {
           data: (<ConfirmDialogData>{
-            title: "Änderungen verwerfen?",
-            message: "Wollen Sie die Änderungen verwerfen?",
+            title: "Änderungen speichern?",
+            message:
+              "Es wurden Änderungen an der ausgewählten Gruppe vorgenommen.\nMöchten Sie die Änderungen speichern?",
             buttons: [
               { text: "Abbrechen" },
               {
                 text: "Verwerfen",
                 id: "discard",
+                alignRight: true,
+              },
+              {
+                text: "Speichern",
+                id: "save",
                 alignRight: true,
                 emphasize: true,
               },
@@ -268,12 +283,25 @@ export class GroupComponent implements OnInit, AfterViewInit {
           hasBackdrop: true,
         })
         .afterClosed()
-        .pipe(map((response) => response === "discard"));
+        .pipe(
+          tap((response) => (response ? this.handleAction(response) : null)),
+          map((response) => response === "discard" || response === "save")
+        );
     }
 
     return of(true);
   }
 
+  private async handleAction(action: undefined | "save" | "discard") {
+    if (action === "save") {
+      this.saveGroup(false);
+    } else if (action === "discard") {
+      const group = this.form.value;
+      this.form.reset(group);
+    } else {
+      // do nothing
+    }
+  }
   private loadGroupUsers(id: number) {
     this.groupService
       .getUsersOfGroup(id)

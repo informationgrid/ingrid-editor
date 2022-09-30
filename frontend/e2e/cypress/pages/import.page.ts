@@ -1,5 +1,3 @@
-import { Tree } from '../pages/tree.partial';
-
 export class ImportPage {
   static visit() {
     cy.intercept('GET', /api\/import\?profile=mcloud/).as('getImportPage');
@@ -31,7 +29,9 @@ export class ImportPage {
   }
 
   static closeDialogAndImport() {
+    cy.intercept('POST', '/api/import').as('importData');
     cy.contains('button', 'Importieren').click();
+    cy.wait('@importData');
   }
 
   static jumpToDocument(docName: string) {

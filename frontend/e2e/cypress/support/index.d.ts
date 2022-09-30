@@ -19,6 +19,8 @@ declare namespace Cypress {
 
     pageReload(selector: string, content?: string): void;
 
+    forceVisit(url: string): void;
+
     fieldIsValid(fieldClass: string): void;
 
     fieldIsInvalid(fieldClass: string, content?: string): void;

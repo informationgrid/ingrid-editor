@@ -1,6 +1,7 @@
 @import "./variables.scss";
 @import "./material.override.scss";
 @import "./material-fields.override.scss";
+@import "./styles-print.scss";
 
 html,
 body {
@@ -1029,6 +1030,11 @@ mat-icon.wide-icon-26px {
   padding: 0 15px;
   margin-bottom: 5px;
   min-height: 40px;
+
+  &.warn {
+    background-color: $error-background;
+    color: $error-color;
+  }
 
   span {
     padding: 10px 0;

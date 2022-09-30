@@ -77,6 +77,7 @@ export class McloudDoctype extends BaseDoctype {
           columns: [
             {
               key: "title",
+              id: "title",
               type: "input",
               label: "Titel",
               focus: true,
@@ -138,6 +139,7 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
+                codelistId: 20003,
                 formatter: (item: any) =>
                   this.formatCodelistValue("20003", item),
               },
@@ -154,6 +156,7 @@ export class McloudDoctype extends BaseDoctype {
         this.addAutocomplete("license", "Lizenz", {
           required: true,
           options: this.getCodelistForSelect(6500, "license"),
+          codelistId: 6500,
         }),
         this.addTextArea("origin", "Quellenvermerk", this.id),
         this.addGroup(null, "mFUND", [
@@ -184,16 +187,17 @@ export class McloudDoctype extends BaseDoctype {
               this.addDatepicker("date", null, {
                 fieldLabel: "Datum",
                 required: true,
-                wrappers: null,
+                wrappers: ["form-field"],
               }),
               this.addSelect("text", "Typ", {
                 required: true,
                 className: "flex-1",
-                wrappers: null,
+                wrappers: ["form-field"],
                 externalLabel: null,
                 options: this.getCodelistForSelect(502, "text").pipe(
                   map((items) => items.filter((it) => it.value !== "2"))
                 ),
+                codelistId: 502,
               }),
             ],
           },
@@ -201,7 +205,7 @@ export class McloudDoctype extends BaseDoctype {
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
             className: "flex-1",
-            wrappers: null,
+            wrappers: ["form-field"],
             options: [
               { label: "", value: undefined },
               { label: "am", value: "at" },
@@ -212,7 +216,7 @@ export class McloudDoctype extends BaseDoctype {
           }),
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
-            wrappers: null,
+            wrappers: ["form-field"],
             hideExpression: (model: any) =>
               model && model.rangeType?.key === "range",
           }),
@@ -223,6 +227,7 @@ export class McloudDoctype extends BaseDoctype {
         ]),
         this.addSelect("periodicity", "Periodizität", {
           options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
+          codelistId: 518,
         }),
       ]),
     ];

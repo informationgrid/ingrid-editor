@@ -4,12 +4,10 @@ import { BasePage, UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { Menu } from '../../pages/menu';
-import { AdminGroupPage } from '../../pages/administration-group.page';
-import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 
-describe('User', () => {
+describe('mCLOUD: User', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin');
@@ -385,7 +383,7 @@ describe('User', () => {
     AdminUserPage.updateUser({ firstName: modified }, false);
 
     AdminUserPage.selectUser(username2);
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
 
     // when overlay is findable, other entries are not clickable
     cy.get('mat-dialog-container').parent().parent().parent().find('.cdk-overlay-dark-backdrop');
@@ -535,164 +533,6 @@ describe('User', () => {
     });
   });
 
-  it('Author can be granted universal read access by adding to group universal rights #3267', () => {
-    const groupName = 'test_gruppe_3';
-    const authorName = 'mcloud-author-with-group';
-
-    // activate universal read access in group
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht');
-    UserAuthorizationPage.changeAccessRightFromWriteToRead('Neue Testdokumente', 'Daten');
-    AdminGroupPage.saveGroup();
-    // log in as author
-    cy.logoutClearCookies();
-    cy.kcLogin(authorName);
-    // check read access data
-    DocumentPage.visit();
-    cy.get('mat-tree mat-tree-node')
-      .each(item => {
-        cy.wrap(item).should('have.class', 'readonly');
-      })
-      .its('length')
-      .should('be.greaterThan', 50);
-    // check read access addresses
-    Menu.switchTo('ADDRESSES');
-    cy.get('mat-tree mat-tree-node')
-      .each(item => {
-        cy.wrap(item).should('have.class', 'readonly');
-      })
-      .its('length')
-      .should('be.greaterThan', 10);
-    // login as ige and withdraw access
-    cy.logoutClearCookies();
-    cy.kcLogin('super-admin');
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
-    UserAuthorizationPage.changeAccessRightFromReadToWrite('Neue Testdokumente', 'Daten');
-    AdminGroupPage.saveGroup();
-  });
-
-  it('Author can be granted universal read + write access by adding to group universal rights #3267', () => {
-    // TODO: modifying this group is done in three tests. Prepare a user with this group and just use it for this test
-    const groupName = 'test_gruppe_3';
-    const authorName = 'mcloud-author-with-group';
-
-    // activate universal access in group
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
-    AdminGroupPage.saveGroup();
-    // log in as author
-    cy.logoutClearCookies();
-    cy.kcLogin(authorName);
-    // check write access data
-    DocumentPage.visit();
-    cy.get('mat-tree mat-tree-node')
-      .each(item => {
-        cy.wrap(item).should('not.have.class', 'readonly');
-      })
-      .its('length')
-      .should('be.greaterThan', 50);
-    // check document can be edited
-    Tree.openNode(['Doc_h']);
-    DocumentPage.addDescription('some description');
-    DocumentPage.saveDocument();
-    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
-    // check write access addresses
-    Menu.switchTo('ADDRESSES');
-    cy.get('mat-tree mat-tree-node')
-      .each(item => {
-        cy.wrap(item).should('not.have.class', 'readonly');
-      })
-      .its('length')
-      .should('be.greaterThan', 10);
-    // login as ige and withdraw access
-    cy.logoutClearCookies();
-    cy.kcLogin('super-admin');
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    // TODO: refactor to two functions grantUniversalRights and revokeUniversalRights
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
-    // revoke read access that was automatically granted with right access
-    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
-    AdminGroupPage.saveGroup();
-  });
-
-  it('Author can create root document/move and copy document to root when granted universal read + write access #3267', () => {
-    const groupName = 'test_gruppe_3';
-    const authorName = 'mcloud-author-with-group';
-
-    // activate universal access in group
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
-    AdminGroupPage.saveGroup();
-    // log in as author
-    cy.logoutClearCookies();
-    cy.kcLogin(authorName);
-
-    // create root document
-    DocumentPage.visit();
-    DocumentPage.createDocument('newRootDoc');
-
-    // move to root
-    Tree.openNode(['Folder_g', 'Folder_g_1']);
-    CopyCutUtils.move();
-    Tree.openNode(['Folder_g_1']);
-
-    // copy to root
-    Tree.openNode(['Folder_j', 'Doc_j_1']);
-    CopyCutUtils.copyObject();
-    Tree.openNode(['Doc_j_1']);
-
-    // TODO: why revert changes? Takes a lot of time!  Remove code below
-    // login as ige and withdraw access
-    cy.logoutClearCookies();
-    cy.kcLogin('super-admin');
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
-    // revoke read access that was automatically granted with right access
-    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
-    AdminGroupPage.saveGroup();
-  });
-
-  it('Author should be able to delete any document when granted universal read + write access #3267', () => {
-    const groupName = 'test_gruppe_3';
-    const authorName = 'mcloud-author-with-group';
-
-    // activate universal access in group
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht');
-    AdminGroupPage.saveGroup();
-    // log in as author
-    cy.logoutClearCookies();
-    cy.kcLogin(authorName);
-
-    // delete document
-    DocumentPage.visit();
-    Tree.openNode(['Doc_m']);
-    DocumentPage.deleteLoadedNode();
-    cy.contains('ige-tree mat-tree-node', 'Doc_m').should('not.exist');
-
-    // login as ige and withdraw access
-    cy.logoutClearCookies();
-    cy.kcLogin('super-admin');
-    AdminUserPage.visit();
-    AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
-    AdminGroupPage.grantOrRevokeUniversalRights('Schreibrecht', true);
-    // revoke read access that was automatically granted with right access
-    AdminGroupPage.grantOrRevokeUniversalRights('Leserecht', true);
-    AdminGroupPage.saveGroup();
-  });
-
   it('should download user data as CSV file #3943', () => {
     AdminUserPage.getUserData().then(arr1 => {
       AdminUserPage.downloadCSVFile();
@@ -724,5 +564,181 @@ describe('User', () => {
     cy.get('[data-cy="role"] mat-select').should('contain.text', '');
     // the add-button should not be activated
     cy.contains('button', 'Anlegen').should('be.disabled');
+  });
+});
+
+describe('User', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    AdminUserPage.visit();
+  });
+
+  it('Should check of reset password functionality #4030', () => {
+    const toResetPaassword = 'author-profile-test-reset-pass';
+    AdminUserPage.selectUser(toResetPaassword);
+    cy.get('#formUser [data-mat-icon-name=Mehr]').click();
+    cy.get('button').contains('Passwort zurücksetzen').click();
+    cy.get('[data-cy="confirm-dialog-ok"]').click();
+    AdminUserPage.extractAndResetNewUserPassword(
+      toResetPaassword,
+      'authorresetpass@test.com',
+      'Author',
+      '123FFffGex@$wfhjfh444',
+      'autor',
+      'reset-pass'
+    );
+  });
+  it('Should check the functionality of cancel, discard, and save buttons in users section #4184', () => {
+    let firstUserName = 'author-profile-test-forget-pass';
+    let secondUserName = 'author-profile-test-reset-pass';
+    let orgName = 'someRandomOrganization';
+
+    // cancel and stay on the same user
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.updateUser({ organisation: orgName }, false);
+    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.cancelChanges();
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // discard changes and change the user
+    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.discardChanges();
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName('');
+
+    // save and change the user
+    AdminUserPage.updateUser({ organisation: orgName }, false);
+    AdminUserPage.selectUser(secondUserName);
+    BasePage.dialogSaveChanges();
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // reload page and check
+    cy.pageReload('.page-title', 'Benutzer');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    let newOrgName = 'new org 2';
+    // select another page, cancel and stay on the same user
+    AdminUserPage.updateUser({ organisation: newOrgName }, false);
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.cancelChanges();
+    AdminUserPage.checkOrganisationName(newOrgName);
+
+    // select another page, discard changes, then check again
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.discardChanges();
+    Menu.switchTo('USERS');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(orgName);
+
+    // select another page, save changes, then check again
+    AdminUserPage.updateUser({ organisation: newOrgName }, false);
+    Menu.switchTo('ADDRESSES', false);
+    BasePage.dialogSaveChanges();
+    Menu.switchTo('USERS');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(newOrgName);
+
+    // reload page and check again
+    cy.pageReload('.page-title', 'Benutzer');
+    AdminUserPage.selectUser(firstUserName);
+    AdminUserPage.checkOrganisationName(newOrgName);
+  });
+});
+
+describe('Universal Read Access', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('author-universal-read').as('tokens');
+  });
+
+  it('Author can be granted universal read access #3267', () => {
+    // check read access data
+    DocumentPage.visit();
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 50);
+
+    // check read access addresses
+    Menu.switchTo('ADDRESSES');
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 10);
+  });
+
+  it('Author with  universal read access should not be able to delete an existing document #3267', () => {
+    DocumentPage.visit();
+    Tree.openNode(['Doc_m']);
+    cy.get('[data-cy="toolbar_DELETE"]').should('be.disabled');
+  });
+
+  it('Author with  universal read access should not be able to create a document #3267', () => {
+    DocumentPage.visit();
+    cy.get('[data-cy="toolbar_NEW_DOC"]').should('be.disabled');
+  });
+});
+
+describe('Universal Write Access', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('author-universal-write').as('tokens');
+  });
+
+  it('Author can be granted universal read + write #3267', () => {
+    // check write access data
+    DocumentPage.visit();
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('not.have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 50);
+
+    // check document can be edited
+    Tree.openNode(['Doc_h']);
+    DocumentPage.addDescription('some description');
+    DocumentPage.saveDocument();
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
+
+    // check write access addresses
+    Menu.switchTo('ADDRESSES');
+    cy.get('mat-tree mat-tree-node')
+      .each(item => {
+        cy.wrap(item).should('not.have.class', 'readonly');
+      })
+      .its('length')
+      .should('be.greaterThan', 10);
+  });
+
+  it('Author with universal read + write access can create root document/move and copy document to root #3267', () => {
+    // create root document
+    DocumentPage.visit();
+    DocumentPage.createDocument('newRootDoc');
+
+    // move to root
+    Tree.openNode(['Folder_g', 'Folder_g_1']);
+    CopyCutUtils.move();
+    Tree.openNode(['Folder_g_1']);
+
+    // copy to root
+    Tree.openNode(['Folder_j', 'Doc_j_1']);
+    CopyCutUtils.copyObject();
+    Tree.openNode(['Doc_j_1']);
+  });
+
+  it('Author with  universal read + write access should be able to delete any document #3267', () => {
+    // delete document
+    DocumentPage.visit();
+    Tree.openNode(['Doc_m']);
+    DocumentPage.deleteLoadedNode();
+    cy.contains('ige-tree mat-tree-node', 'Doc_m').should('not.exist');
   });
 });

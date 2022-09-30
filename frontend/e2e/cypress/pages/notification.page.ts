@@ -12,6 +12,9 @@ export class NotificationPage {
     cy.get('mat-dialog-content textarea').type(notificationText);
   }
 
+  static toggleForGeneralNotification() {
+    cy.get('mat-slide-toggle input').check({ force: true });
+  }
   static addNotification() {
     cy.intercept('POST', '/api/messages').as('incorrectAddNot');
     cy.get('[data-cy=create-notification]').click();

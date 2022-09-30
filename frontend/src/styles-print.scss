@@ -1,0 +1,32 @@
+@media print {
+  #print-content,
+  .cdk-overlay-container {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+  }
+  #print-content {
+    overflow: unset !important;
+  }
+
+  .dialog-title-wrapper,
+  mat-dialog-actions {
+    display: none !important;
+  }
+
+  mat-dialog-container {
+    box-shadow: none !important;
+  }
+}
+
+#print-content {
+  formly-field-mat-datepicker,
+  ige-one-column-wrapper > div > formly-group,
+  ige-one-column-wrapper > div > ige-repeat,
+  ige-one-column-wrapper > div > formly-field-mat-input,
+  ige-date-range-type {
+    padding-top: 1.55em;
+  }
+}

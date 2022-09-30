@@ -1,12 +1,79 @@
-import { UserAndRights } from '../../pages/base.page';
+import { BasePage, UserAndRights } from '../../pages/base.page';
 import { AdminGroupPage, headerKeys } from '../../pages/administration-group.page';
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { ResearchPage } from '../../pages/research.page';
 import { Utils } from '../../pages/utils';
 import { DocumentPage } from '../../pages/document.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
+import { Menu } from '../../pages/menu';
 
 describe('Group', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('test-catalog-general-test').as('tokens');
+    AdminUserPage.visit();
+
+    AdminGroupPage.goToTabmenu(UserAndRights.Group);
+    cy.get('.page-title').contains('Gruppen');
+  });
+
+  it('Should check the functionality of cancel, discard, and save buttons in groups section #4184', () => {
+    let firstGroup = 'Group1ToChange';
+    let secondGroup = 'Group2ToChange';
+    let descriptionName = 'desc';
+
+    // cancel and stay on the same group
+    AdminGroupPage.selectGroup(firstGroup);
+    AdminGroupPage.updateGroup({ description: descriptionName }, false);
+    AdminGroupPage.selectGroup(secondGroup);
+    AdminUserPage.cancelChanges();
+    AdminGroupPage.checkDescription(descriptionName);
+
+    // discard changes and change the group
+    AdminGroupPage.selectGroup(secondGroup);
+    AdminUserPage.discardChanges();
+    AdminGroupPage.selectGroup(firstGroup);
+    AdminGroupPage.checkDescription('');
+
+    // save and change the group
+    AdminGroupPage.updateGroup({ description: descriptionName }, false);
+    AdminGroupPage.selectGroup(secondGroup);
+    BasePage.dialogSaveChanges();
+    AdminGroupPage.selectGroup(firstGroup);
+    AdminGroupPage.checkDescription(descriptionName);
+
+    // reload page and check
+    cy.pageReload('.page-title', 'Gruppen');
+    AdminGroupPage.selectGroup(firstGroup);
+    AdminGroupPage.checkDescription(descriptionName);
+
+    let descriptionName2 = 'new  2';
+    // select another page, cancel and stay on the same group
+    AdminGroupPage.updateGroup({ description: descriptionName2 }, false);
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.cancelChanges();
+    AdminGroupPage.checkDescription(descriptionName2);
+
+    // select another page, discard changes, then check again
+    Menu.switchTo('ADDRESSES', false);
+    AdminUserPage.discardChanges();
+    Menu.switchTo('USERS', false);
+    AdminGroupPage.checkDescription(descriptionName);
+
+    // select another page, save changes, then check again
+    AdminGroupPage.updateGroup({ description: descriptionName2 }, false);
+    Menu.switchTo('ADDRESSES', false);
+    BasePage.dialogSaveChanges();
+    Menu.switchTo('USERS', false);
+    AdminGroupPage.checkDescription(descriptionName2);
+
+    // reload page and check again
+    cy.pageReload('.page-title', 'Gruppen');
+    AdminGroupPage.selectGroup(firstGroup);
+    AdminGroupPage.checkDescription(descriptionName2);
+  });
+});
+
+describe('mCLOUD: Group', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
@@ -87,7 +154,7 @@ describe('Group', () => {
     cy.get('textarea').click().clear().type(description);
 
     AdminGroupPage.selectGroup(groupName2);
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
     AdminUserPage.discardChanges();
   });
 

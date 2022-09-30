@@ -30,8 +30,26 @@
                 matSuffix
                 [for]="picker"
             ></mat-datepicker-toggle>
+
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+
+        <div [hidden]="userInfo.role != 'ige-super-admin'">
+            <mat-slide-toggle
+                labelPosition="before"
+                color="accent"
+                class="stretch"
+                [checked]="currentCatalog"
+                (change)="slideToggleChange($event)"
+                >Für alle Kataloge
+            </mat-slide-toggle>
+            <div>
+                <mat-hint matCardSubtitle>
+                    Bei aktivierter Option wird die Nachricht in allen Katalogen
+                    angezeigt, ansonsten nur in diesem Katalog.
+                </mat-hint>
+            </div>
+        </div>
     </mat-dialog-content>
     <mat-dialog-actions>
         <button mat-button mat-dialog-close color="primary">Abbrechen</button>

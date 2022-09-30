@@ -4,8 +4,6 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Menu } from '../../pages/menu';
-import { BehavioursPage } from '../../pages/behaviours.page';
-import { CatalogsTabmenu } from '../../pages/base.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 
 describe('General create addresses/folders', () => {
@@ -163,7 +161,7 @@ describe('General create addresses/folders', () => {
 
       // create published address via api
       AddressPage.apiCreateAddress(json, true);
-      cy.reload();
+      cy.pageReload('dashboard-address-header', 'Adressen');
       // open address and withdraw publication
       Tree.openNode(['Thessalien, Adresse']);
       DocumentPage.choosePublishOption(PublishOptions.Unpublish);
@@ -307,7 +305,7 @@ describe('General create addresses/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('dashboard-address-header', 'Adressen');
       cy.get('[data-cy=contact]', { timeout: 10000 }).should('exist');
 
       DocumentPage.checkOfExistingItem('[data-cy=contact] ige-repeat .mat-input-element', contact2, 0, true);
@@ -373,31 +371,6 @@ describe('create/delete/edit addresses', () => {
     // try to add the same address again
     enterMcloudDocTestData.setAddress(addressName);
     cy.get('simple-snack-bar').contains('Die Adresse ist bereits vorhanden');
-  });
-
-  it('should test sorting of the tree inside catalogue of type test', () => {
-    const firstDoc = 'Datum_Ebene_4_1';
-    const lastDoc = 'Datum_Ebene_4_2';
-
-    Menu.switchTo('DOCUMENTS');
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
-    cy.get('[data-mat-icon-name="Fachaufgabe"]').should('be.visible');
-    Tree.selectNodeAndCheckPath(firstDoc, ['Daten', 'Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A']);
-    cy.get('[data-mat-icon-name="Geodatendienst"]').should('be.visible');
-    // check order of documents
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(firstDoc);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(lastDoc);
-    // change sorting of the tree
-    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
-    // check new order of the tree
-    DocumentPage.visit();
-    Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
-    cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
-    // toggle button to original state
-    BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
-    BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
   });
 
   it('should create an address via api for the test catalogue', () => {

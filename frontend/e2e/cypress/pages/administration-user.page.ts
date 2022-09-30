@@ -130,6 +130,10 @@ export class AdminUserPage extends BasePage {
     }
   }
 
+  static checkOrganisationName(name: string) {
+    cy.get('[data-cy="organisation"] input').should('have.value', name);
+  }
+
   static addGroupToUser(groupName: string) {
     // TODO: remove wait when we find another way to wait for field to be initialized
     // TODO: replace with BasePage.selectOption()
@@ -260,13 +264,13 @@ export class AdminUserPage extends BasePage {
   }
 
   static discardChanges() {
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
     cy.get('[data-cy=confirm-dialog-discard]').click();
     cy.get('mat-dialog-container').should('not.exist');
   }
 
   static cancelChanges() {
-    cy.get('mat-dialog-container').contains('Änderungen verwerfen').should('be.visible');
+    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
     cy.get('[data-cy=confirm-dialog-cancel]').click();
   }
 
@@ -386,7 +390,14 @@ export class AdminUserPage extends BasePage {
     cy.get('[data-cy=groups] .no-fields-selected-notice').should('exist');
   }
 
-  static extractAndResetNewUserPassword(userLogIn: string, userEmail: string, userRole: string) {
+  static extractAndResetNewUserPassword(
+    userLogIn: string,
+    userEmail: string,
+    userRole: string,
+    newPassword: string = '',
+    userFirstname: string = '',
+    userLastname: string = ''
+  ) {
     //Here we want to wait after user creation to get the email
     //Because it takes some time to receive welcoming email
     //we are unable to intercept the call, so we added random wait time
@@ -410,8 +421,15 @@ export class AdminUserPage extends BasePage {
         cy.get('#kc-content-wrapper').should('contain', 'Sie müssen Ihr Passwort ändern,');
 
         // login and check for the user name
-        cy.get('#password-new').type(userLogIn);
-        cy.get('#password-confirm').type(userLogIn);
+
+        if (newPassword == '') {
+          cy.get('#password-new').type(userLogIn);
+          cy.get('#password-confirm').type(userLogIn);
+        } else {
+          cy.get('#password-new').type(newPassword);
+          cy.get('#password-confirm').type(newPassword);
+        }
+
         cy.intercept('GET', 'api/info/currentUser').as('getUser');
         cy.get('#kc-login').click();
         cy.wait('@getUser');
@@ -420,7 +438,12 @@ export class AdminUserPage extends BasePage {
         }
         cy.get('.welcome').contains('Willkommen');
         cy.get('[data-cy="header-profile-button"]').click();
-        cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
+
+        if (userFirstname == '' && userLastname == '') {
+          cy.get('.mat-card-title').contains(userLogIn + ' ' + userLogIn);
+        } else {
+          cy.get('.mat-card-title').contains(userFirstname + ' ' + userLastname);
+        }
       });
   }
 }

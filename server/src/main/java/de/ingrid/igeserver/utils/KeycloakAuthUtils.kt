@@ -50,4 +50,8 @@ class KeycloakAuthUtils : AuthUtils {
     override fun isAdmin(principal: Principal): Boolean {
         return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
     }
+
+    override fun isSuperAdmin(principal: Principal): Boolean {
+        return containsRole(principal, "ige-super-admin")
+    }
 }

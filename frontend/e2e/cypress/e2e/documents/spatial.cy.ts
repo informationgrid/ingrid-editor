@@ -51,7 +51,7 @@ describe('Spatial References', () => {
     // create new document
     DocumentPage.CreateSpatialWKTWithAPI(docNameBbox, false);
     // reload page to see added document in tree
-    cy.reload();
+    cy.pageReload('dashboard-docs-header', 'Daten');
     Tree.openNode(['api-' + docNameBbox]);
 
     enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
@@ -90,8 +90,8 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((10 5, 1 6, 1 7, 2 1, 3 5)(8 5, 5 7, 2 7, 3 5, 5 8))';
 
     DocumentPage.CreateSpatialBboxAndWktEntrysWithAPI(docName, false);
-    cy.wait(1000);
-    DocumentPage.visit();
+
+    cy.pageReload('dashboard-docs-header', 'Daten');
     Tree.openNode(['api-' + docName]);
 
     enterMcloudDocTestData.openSpatialMenuDoc('reference, wkt-1');

@@ -80,7 +80,9 @@ have a look at `mcloud.doctype.ts`
 
 The form fields are defined by using the [ngx-formly](https://formly.dev/guide/getting-started) library.
 Besides using standard from fields you can also define your own. Your custom field component must extend
-from `FieldType` and has to be declared in `IgeFormlyModule`.  
+from `FieldType` and has to be declared in `IgeFormlyModule`. 
+
+To support autocomplete in [ngx-formly] forms, `id` property must be added  
 
 For a correct integration of a field into the form, you need to use the wrappers-field and set it to 
 `['panel']`. This will use a component (OneColumnWrapperComponent) to place the form field in a defined

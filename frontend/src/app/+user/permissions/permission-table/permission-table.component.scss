@@ -21,7 +21,6 @@ td {
 }
 
 mat-button {
-  cursor: pointer;
   user-select: none;
   margin: 1px;
   padding: 6px;
@@ -29,11 +28,6 @@ mat-button {
   background: $ige-background-bar;
   ::ng-deep svg path {
     fill: $ige-hint-color;
-  }
-
-  &:hover {
-    color: darken($ige-hint-color, 5%);
-    background: darken($ige-background-bar, 5%);
   }
 
   vertical-align: middle;
@@ -44,10 +38,22 @@ mat-button {
     ::ng-deep svg path {
       fill: white;
     }
+  }
+
+  &:not(.disabled) {
+    cursor: pointer;
     &:hover {
-      color: darken(white, 5%);
-      background: darken($ige-check-color, 5%);
+      color: darken($ige-hint-color, 5%);
+      background: darken($ige-background-bar, 5%);
+
+      &.active {
+        color: darken(white, 5%);
+        background: darken($ige-check-color, 5%);
+      }
     }
+  }
+  &.disabled {
+    opacity: 0.38;
   }
 
   .mat-icon {

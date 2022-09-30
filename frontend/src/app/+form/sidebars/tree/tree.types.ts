@@ -10,9 +10,16 @@ export class ShortTreeNode {
       canWrite: true,
       canOnlyWriteSubtree: false,
     },
-    public disabled = false,
-    public showDisabledBreadcrumb = permission.canRead || permission.canWrite
+    public disabled = false
   ) {}
+
+  isSelectable() {
+    return (
+      !this.disabled ||
+      this.permission?.canOnlyWriteSubtree ||
+      this.permission?.canRead
+    );
+  }
 }
 
 export class TreeAction {

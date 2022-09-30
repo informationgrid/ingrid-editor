@@ -3,7 +3,6 @@ import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Menu } from '../../pages/menu';
-import Doc = Mocha.reporters.Doc;
 
 describe('General create documents/folders', () => {
   beforeEach(() => {
@@ -50,7 +49,7 @@ describe('General create documents/folders', () => {
       cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
       cy.visit('/form;id=bdde3ecb-3629-489c-86df-12ffac978ef5');
-      cy.get(DocumentPage.title).should('have.text', 'Testdokumente');
+      cy.contains(DocumentPage.title, 'Testdokumente');
       cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
     });
 
@@ -86,12 +85,17 @@ describe('General create documents/folders', () => {
       Tree.selectNodeAndCheckPath(folderName, ['Daten', parentFolder]);
     });
 
+    // failing because of bug #4172 (15.09.2022)
     it("should create a folder by switching location in dialog to 'Daten' when a root folder was selected initially", () => {
       const parentFolder = 'Neue Testdokumente';
       const folderName = 'Root Ordner' + Utils.randomString();
 
       Tree.openNode([parentFolder]);
 
+      // wait some time before creating a new folder
+      // find out if this is the problem, that the dialog shows an empty page
+      // when switching location
+      cy.wait(1000);
       DocumentPage.createFolder(folderName, []);
 
       Tree.containsNodeWithFolderTitle(folderName, 1);
@@ -241,7 +245,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(openDataSelector, { timeout: 10000 }).should('exist');
       DocumentPage.checkOfExistingItem(openDataSelector + ' mat-chip', openDataCategory1, 0);
     });
@@ -259,7 +263,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(addressSelector, { timeout: 10000 }).should('exist');
       // with slow connection, it happened that name of address was undefined for a moment -> check that address cards are ready
       cy.contains('ige-address-card', address1, { timeout: 8000 }).should('exist');
@@ -280,7 +284,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get("[data-cy='events']", { timeout: 10000 }).should('exist');
 
       DocumentPage.scrollToSection('Zeitbezüge');
@@ -302,7 +306,7 @@ describe('General create documents/folders', () => {
       DocumentPage.saveDocument();
 
       // // reload and make sure of ordering
-      cy.reload();
+      cy.pageReload('ige-header-title-row');
       cy.get(downloadSelector, { timeout: 10000 }).should('exist');
 
       DocumentPage.scrollToSection('mCLOUD');
@@ -320,7 +324,8 @@ describe('General create documents/folders', () => {
       cy.get(resizableElement).invoke('attr', 'style', 'height: 200px');
       cy.get(resizableElement).invoke('height').should('equal', 200);
 
-      cy.wait(500).reload();
+      cy.wait(500);
+      cy.pageReload('ige-header-title-row');
 
       // make sure that expanded size of text box is preserved after loading page
       cy.contains(DocumentPage.title, docTitle, { timeout: 12000 });

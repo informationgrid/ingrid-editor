@@ -45,30 +45,6 @@
                     <div class="section-title">Ort</div>
                     <ige-breadcrumb [path]="path"></ige-breadcrumb>
 
-                    <div class="section-title space">Export</div>
-
-                    <mat-radio-group
-                        class="radio-vertical"
-                        formControlName="option"
-                    >
-                        <mat-radio-button
-                            name="exportOption"
-                            value="dataset"
-                            checked
-                            >nur {{ t("formWithPronoun") }}
-                        </mat-radio-button>
-                        <mat-radio-button
-                            name="exportOption"
-                            value="belowDataset"
-                            >alle untergeordneten
-                        </mat-radio-button>
-                        <mat-radio-button
-                            name="exportOption"
-                            value="datasetAndBelow"
-                            >{{ t("adjustedPronoun") }} und alle untergeordneten
-                        </mat-radio-button>
-                    </mat-radio-group>
-
                     <div class="section-title space">{{ t("form") }}</div>
                     <mat-checkbox
                         formControlName="drafts"
@@ -78,7 +54,11 @@
                     </mat-checkbox>
 
                     <div class="section-title space">Format</div>
-                    <mat-form-field appearance="outline" style="width: 300px">
+                    <mat-form-field
+                        appearance="outline"
+                        class="white-bg"
+                        style="width: 300px"
+                    >
                         <mat-select formControlName="format">
                             <mat-option
                                 *ngFor="let format of exportFormats | async"
@@ -89,10 +69,14 @@
                         </mat-select>
                     </mat-form-field>
                 </form>
-                <div class="action-bar">
-                    <button mat-button (click)="cancel()">Abbrechen</button>
+                <div class="action-bar" fxLayoutGap="12px">
+                    <button mat-button color="primary" (click)="cancel()">
+                        Abbrechen
+                    </button>
                     <div fxFlex></div>
-                    <button mat-button matStepperPrevious>Zurück</button>
+                    <button mat-button color="primary" matStepperPrevious>
+                        Zurück
+                    </button>
                     <button
                         mat-flat-button
                         color="primary"
@@ -107,29 +91,53 @@
             <mat-step>
                 <ng-template matStepLabel>Vorschau</ng-template>
 
-                <div fxLayoutAlign="center center" fxLayout="column">
+                <div
+                    *ngIf="exportResult; else waitForResponse"
+                    fxLayoutAlign="center center"
+                    fxLayout="column"
+                >
                     <div class="section-title">Exportdatei erstellt:</div>
                     <mat-icon
                         class="big-icon gray"
                         svgIcon="Fachaufgabe"
                     ></mat-icon>
-                    <button mat-stroked-button (click)="showPreview()">
-                        Vorschau
-                    </button>
+                    <ng-container
+                        *ngIf="
+                            exportResult?.body?.type === 'application/zip';
+                            else showPreviewButton
+                        "
+                    >
+                        Für ZIP-Dateien gibt es keine Vorschau.
+                    </ng-container>
+                    <ng-template #showPreviewButton>
+                        <button mat-stroked-button (click)="showPreview()">
+                            Vorschau
+                        </button>
+                    </ng-template>
                 </div>
 
-                <div class="action-bar">
-                    <button mat-button (click)="cancel()">Abbrechen</button>
+                <ng-template #waitForResponse>
+                    <div fxLayoutAlign="center center">
+                        <mat-spinner></mat-spinner>
+                    </div>
+                </ng-template>
+
+                <div class="action-bar" fxLayoutGap="12px">
+                    <button mat-button color="primary" (click)="cancel()">
+                        Abbrechen
+                    </button>
                     <div fxFlex></div>
-                    <button mat-button matStepperPrevious>Zurück</button>
+                    <button mat-button color="primary" matStepperPrevious>
+                        Zurück
+                    </button>
                     <button
                         mat-flat-button
                         color="primary"
                         matStepperNext
-                        [disabled]="!exportSuccess"
+                        [disabled]="!exportResult"
                         (click)="downloadExport()"
                     >
-                        Exportieren
+                        Herunterladen
                     </button>
                 </div>
             </mat-step>

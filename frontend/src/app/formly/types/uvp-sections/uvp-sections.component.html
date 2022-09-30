@@ -1,40 +1,39 @@
 <ng-container *ngIf="field.fieldGroup.length > 0">
     <ng-container *ngFor="let currentField of field.fieldGroup; let i = index">
-        <!--        <mat-divider></mat-divider>-->
         <div
             class="steps"
             [class.mat-elevation-z4]="markSection[i]"
             [class.elevated]="markSection[i]"
         >
             <formly-field [field]="currentField"></formly-field>
-            <button
-                type="button"
-                class="menu dark menu-button"
-                [class.elevated]="markSection[i]"
-                mat-icon-button
-                [matMenuTriggerFor]="sectionMenu"
-            >
-                <!--                (mouseenter)="markSection[i] = true"-->
-                <!--                (mouseleave)="markSection[i] = false"-->
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
-            <mat-menu #sectionMenu="matMenu">
+            <ng-container *ngIf="form.enabled">
                 <button
-                    mat-menu-item
-                    (click)="removeSection(i)"
-                    [disabled]="currentField.form?.disabled"
+                    type="button"
+                    class="menu dark menu-button"
+                    [class.elevated]="markSection[i]"
+                    mat-icon-button
+                    [matMenuTriggerFor]="sectionMenu"
                 >
-                    Löschen
+                    <mat-icon svgIcon="Mehr"></mat-icon>
                 </button>
-            </mat-menu>
+                <mat-menu #sectionMenu="matMenu">
+                    <button
+                        mat-menu-item
+                        (click)="removeSection(i)"
+                        [disabled]="currentField.form?.disabled"
+                    >
+                        Löschen
+                    </button>
+                </mat-menu>
+            </ng-container>
         </div>
     </ng-container>
     <div style="display: flex; justify-content: center">
         <button
+            *ngIf="formControl.enabled"
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn add-button"
-            [disabled]="field.form?.disabled"
             [matMenuTriggerFor]="menu"
         >
             <mat-icon color="white">add</mat-icon>
@@ -46,6 +45,7 @@
     <ige-section-wrapper>
         <h3>Verfahrenschritte</h3>
         <button
+            *ngIf="formControl.enabled"
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn"
@@ -59,7 +59,7 @@
 
 <mat-menu #menu="matMenu">
     <button
-        *ngFor="let type of field.fieldArray.fieldGroup"
+        *ngFor="let type of field.fieldArray?.fieldGroup"
         mat-menu-item
         [attr.data-cy]="'add_step_' + type.name"
         (click)="addSection(type.name)"

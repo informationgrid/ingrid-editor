@@ -34,7 +34,7 @@ class URLChecker @Autowired constructor(
         val message = UrlMessage()
         notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
 
-        val info = prepareJob(context)
+        val info = prepareJob(context, message)
 
         val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
 
@@ -53,17 +53,20 @@ class URLChecker @Autowired constructor(
     private fun finishJob(
         message: UrlMessage,
         urls: List<UrlReport>,
-        context: JobExecutionContext
+        context: JobExecutionContext,
+        errors: MutableList<String> = mutableListOf()
     ) {
         notifier.endMessage(message.apply {
             this.message = "Finished URLChecker"
             this.report = URLCheckerReport(urls.size, urls.filter { it.success.not() })
+            this.errors = errors
         })
 
         val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
         persistData["startTime"] = message.startTime
         persistData["endTime"] = message.endTime
         persistData["report"] = jacksonObjectMapper().writeValueAsString(message.report)
+        persistData["errors"] = jacksonObjectMapper().writeValueAsString(message.errors)
 
         currentThread = null
     }
@@ -73,7 +76,7 @@ class URLChecker @Autowired constructor(
         currentThread?.interrupt()
     }
 
-    private fun prepareJob(context: JobExecutionContext): JobInfo {
+    private fun prepareJob(context: JobExecutionContext, message: UrlMessage): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
         val profile = dataMap.getString("profile")
@@ -83,6 +86,7 @@ class URLChecker @Autowired constructor(
         if (referenceHandler == null) {
             val msg = "No class defined to get URLs from catalog with profile $profile"
             log.warn(msg)
+            finishJob(message, emptyList(), context, mutableListOf(msg))
             throw ClientException.withReason(msg)
         }
         currentThread = Thread.currentThread()

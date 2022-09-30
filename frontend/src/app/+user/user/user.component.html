@@ -106,15 +106,15 @@
                     <mat-menu #userMoreMenu="matMenu">
                         <button
                             mat-menu-item
-                            (click)="deleteUser(selectedUser.login)"
-                        >
-                            Löschen
-                        </button>
-                        <button
-                            mat-menu-item
                             (click)="resetPassword(selectedUser.login)"
                         >
                             Passwort zurücksetzen
+                        </button>
+                        <button
+                            mat-menu-item
+                            (click)="deleteUser(selectedUser.login)"
+                        >
+                            Löschen
                         </button>
                     </mat-menu>
                 </div>

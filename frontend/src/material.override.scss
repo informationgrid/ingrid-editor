@@ -3,7 +3,7 @@
 .mat-dialog-override {
   mat-dialog-container {
     > :first-child,
-    .cdk-drag {
+    .cdk-drag:not(mat-row) {
       display: flex;
       flex-direction: column;
       flex: 1;

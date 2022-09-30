@@ -10,6 +10,7 @@ import de.ingrid.mdek.upload.storage.ConflictHandling
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.StorageItem
 import org.apache.commons.io.IOUtils
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -37,6 +38,7 @@ class UploadApiController @Autowired constructor(
 ) : UploadApi {
 
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
+    private val log = logger()
 
     override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
         val fileInfo = this.fileInfos[flowIdentifier]
@@ -58,6 +60,7 @@ class UploadApiController @Autowired constructor(
         flowIdentifier: String,
         flowFilename: String,
     ): ResponseEntity<UploadResponse> {
+        log.debug("Uploading file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
@@ -109,6 +112,7 @@ class UploadApiController @Autowired constructor(
                     replace
                 )
             } catch (ex: Exception) {
+                log.error("Error uploading file $flowFilename", ex)
                 return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
             } finally {
                 this.fileInfos.remove(flowIdentifier)
@@ -185,7 +189,9 @@ class UploadApiController @Autowired constructor(
         checkReadPermission(catalogId, docUuid, principal as Authentication)
 
         val info = StorageParameters(catalogId, principal.getName(), docUuid, file)
-        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()){
+        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()
+            && storage.isArchived(info.catalog, info.datasetID, info.file).not()
+        ) {
             throw NotFoundException.withMissingResource(info.file, "file")
         }
 

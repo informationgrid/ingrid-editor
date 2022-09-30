@@ -338,7 +338,7 @@ class CatalogService @Autowired constructor(
             val hasAnyWritePermission =
                 listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
 
-            return isFolder && hasAnyWritePermission
+            isFolder && hasAnyWritePermission
         }
 
     fun getAllCatalogUsers(principal: Principal): List<User> {

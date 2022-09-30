@@ -663,7 +663,7 @@ export class DocumentPage extends BasePage {
       Tree.openNodeInsideDialog(targetNodePath);
     } else {
       // cy.get(`.mat-dialog-content .mat-selection-list > :first-child`).click();
-      cy.get('ige-destination-selection mat-list-option').click();
+      cy.get('ige-destination-selection mat-list-option', { timeout: 8000 }).click();
     }
     cy.get('[data-cy=create-applyLocation]').click();
   }
@@ -673,7 +673,7 @@ export class DocumentPage extends BasePage {
     cy.wait(300);
     cy.get(DocumentPage.Toolbar.PublishNow).click();
     cy.get(PublishOptions.ConfirmPublish).click();
-    cy.get('[data-cy="form-message"]').contains('veröffentlicht');
+    cy.contains('[data-cy="form-message"]', 'veröffentlicht', { timeout: 6000 });
   }
 
   static planPublishing(date: string, inDialog: boolean = false) {
@@ -870,7 +870,7 @@ export class DocumentPage extends BasePage {
   }
 
   static editDownloadTableEntry(field: fieldsForDownloadEntry, value: string) {
-    cy.get('ige-form-dialog mat-form-field input').eq(field).type(value);
+    cy.get('ige-form-dialog mat-form-field input').eq(field).clear().type(value);
     cy.contains('button', 'Ok').click();
   }
 
@@ -889,12 +889,18 @@ export class DocumentPage extends BasePage {
       });
   }
 
-  static checkTableEntry(section: 0 | 1 | 2, label: string, name: string) {
+  static checkTableEntry(section: 0 | 1 | 2, label: string, name: string, prefix: string = '') {
     cy.get('.steps')
       .eq(section)
       .within(_ => {
-        cy.contains(`[data-cy="${label}-table"] mat-row`, name);
+        cy.contains(`[data-cy="${label}-table"] mat-row`, prefix + name);
       });
+  }
+
+  static checkTableMultipleEntries(section: 0 | 1 | 2, label: string, names: string[], prefix: string = '') {
+    names.forEach(value => {
+      this.checkTableEntry(section, label, value, prefix);
+    });
   }
 
   static fillInFieldWithEnter(identifier: string, fieldType: string, value: string, newPosition: string) {

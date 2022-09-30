@@ -33,7 +33,8 @@ import { MessagesManagementComponent } from "./messages-management/messages-mana
 import { SharedModule } from "../shared/shared.module";
 import { NewMessageDialogComponent } from "./messages-management/new-message-dialog/new-message-dialog.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -54,6 +55,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     MatInputModule,
     FlexModule,
     MatCardModule,
+    MatSlideToggleModule,
     MatButtonModule,
     MatTableModule,
     MatSortModule,
@@ -72,6 +74,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
     IgeFormlyModule,
     SharedModule,
     MatDatepickerModule,
+    DragDropModule,
   ],
 })
 export class SettingsModule {}

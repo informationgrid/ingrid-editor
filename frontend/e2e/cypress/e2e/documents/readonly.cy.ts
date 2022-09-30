@@ -1,13 +1,10 @@
 import { DocumentPage } from '../../pages/document.page';
 import { beforeEach } from 'mocha';
-import { Utils } from '../../pages/utils';
 import { AdminUserPage } from '../../pages/administration-user.page';
 import { UserAndRights } from '../../pages/base.page';
-import { AdminGroupPage } from '../../pages/administration-group.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
-import { AddressPage } from '../../pages/address.page';
 
 describe('Read Only Documents', () => {
   beforeEach(() => {
@@ -44,8 +41,14 @@ describe('Read Only Documents', () => {
     Tree.openNode(['Ordner_Ebene_2C', folderToMove]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPYTREE"]').click();
-    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
-    cy.get('[data-cy="dlg-close"]').click();
+    // (former behaviour: readonly docs not present in dialog)
+    /*cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+    cy.get('[data-cy="dlg-close"]').click();*/
+    cy.contains('mat-dialog-content .readonly', readOnlyFolder).click();
+    cy.contains('button', 'Einfügen').click();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion', { timeout: 10000 });
+    cy.get('mat-dialog-actions button').click();
+    cy.get('error-dialog').should('not.exist');
 
     // try to move this folder via drag and drop to read-only folder
     CopyCutUtils.simpleDragdropWithoutAutoExpand(folderToMove, readOnlyFolder);
@@ -58,8 +61,14 @@ describe('Read Only Documents', () => {
     Tree.openNode(['Ordner_Ebene_2A', documentToMove]);
     cy.get('[data-cy=toolbar_COPY]').click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
-    cy.contains('mat-dialog-content', 'Folder_for_meta2').should('not.exist');
-    cy.get('[data-cy="dlg-close"]').click();
+    // (former behaviour)
+    /*cy.contains('mat-dialog-content', 'Folder_for_meta2').should('not.exist');
+    cy.get('[data-cy="dlg-close"]').click();*/
+    cy.contains('mat-dialog-content .readonly', readOnlyFolder).click();
+    cy.contains('button', 'Einfügen').click();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion', { timeout: 10000 });
+    cy.get('mat-dialog-actions button').click();
+    cy.get('error-dialog').should('not.exist');
 
     // try to move this document via drag and drop to read-only folder
     CopyCutUtils.simpleDragdropWithoutAutoExpand(documentToMove, readOnlyFolder);

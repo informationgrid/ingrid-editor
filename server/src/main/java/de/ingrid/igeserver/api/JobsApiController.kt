@@ -47,6 +47,10 @@ class JobsApiController @Autowired constructor(
             if (report != null) {
                 put("report", jacksonObjectMapper().readValue(report, URLCheckerReport::class.java))
             }
+            val errors = getString("errors")
+            if (errors != null) {
+                put("errors", jacksonObjectMapper().readValue(errors, List::class.java))
+            }
         }
         return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
     }

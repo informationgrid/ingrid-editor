@@ -18,18 +18,20 @@ describe('Export', () => {
     // click on the node again
     Tree.openNode(['Plan_A'], false);
     ExportPage.continue();
+    ExportPage.checkDraftOption();
     // go to preview step
     ExportPage.continue();
     ExportPage.preview();
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('5d6115ff-9064-4d0d-9e6c-a7de8d0daa02.json');
   });
 
   it('should export a fully completed document with option "IDF"', () => {
     Tree.openNode(['Plan_A'], false);
 
     ExportPage.continue();
+    ExportPage.checkDraftOption();
     ExportPage.selectOption('UVP IDF');
     // go to preview step
     ExportPage.continue();
@@ -37,13 +39,14 @@ describe('Export', () => {
     // TODO: check for content
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('5d6115ff-9064-4d0d-9e6c-a7de8d0daa02.json');
   });
 
   it('should export a fully completed document with option "UVP IDF (Elasticsearch)"', () => {
     Tree.openNode(['Plan_A'], false);
 
     ExportPage.continue();
+    ExportPage.checkDraftOption();
     ExportPage.selectOption('UVP IDF (Elasticsearch)');
     // go to preview step
     ExportPage.continue();
@@ -51,6 +54,6 @@ describe('Export', () => {
     // TODO: check for content
     ExportPage.closePreview();
     ExportPage.exportFile();
-    ExportPage.checkForFileDownload('export.json');
+    ExportPage.checkForFileDownload('5d6115ff-9064-4d0d-9e6c-a7de8d0daa02.json');
   });
 });

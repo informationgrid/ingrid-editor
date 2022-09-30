@@ -6,8 +6,8 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -68,12 +68,12 @@ interface GroupsApi {
     fun getGroup(
         principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
-    ): ResponseEntity<Group>
+    ): ResponseEntity<FrontendGroup>
 
     @Operation(description = "")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of groups")])
     @GetMapping(value = ["/groups"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun listGroups(principal: Principal): ResponseEntity<List<Group>>
+    fun listGroups(principal: Principal): ResponseEntity<List<FrontendGroup>>
 
     @Operation(description = "Updates a group. If group could not be found an error will be returned.")
     @ApiResponses(

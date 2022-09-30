@@ -4,7 +4,6 @@ import { DashboardPage } from '../../pages/dashboard.page';
 import { Tree } from '../../pages/tree.partial';
 import { ResearchPage, SearchOptionTabs } from '../../pages/research.page';
 import { UserAuthorizationPage } from '../../pages/user_authorizations.page';
-import { Utils } from '../../pages/utils';
 
 // user without authorizations (author)
 describe('User without authorizations', () => {
@@ -95,7 +94,6 @@ describe('author with groups', () => {
   });
 
   it('search by search field in sidebar should search for the assigned address documents, be they expanded or not', () => {
-    const searchTerm_1 = 'Ordner 2.Ebene';
     const searchTerm_2 = 'Rheinland, Adresse';
     const searchTerm_3 = 'Franken, Adresse';
 

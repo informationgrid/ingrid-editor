@@ -264,8 +264,15 @@ describe('Meta data administrator with a group', () => {
     Tree.openNode([folderToMove]);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_COPYTREE"]').click();
-    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
-    cy.get('[data-cy="dlg-close"]').click();
+    // (former behaviour: read-only destination folders are not visible in dialog)
+    /*cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+    cy.get('[data-cy="dlg-close"]').click();*/
+
+    cy.contains('mat-dialog-content .readonly', readOnlyFolder).click();
+    cy.contains('button', 'Einfügen').click();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion', { timeout: 10000 });
+    cy.get('mat-dialog-actions button').click();
+    cy.get('error-dialog').should('not.exist');
 
     // try to move this folder via drag and drop to read-only folder
     CopyCutUtils.simpleDragdropWithoutAutoExpand(folderToMove, readOnlyFolder);
@@ -278,8 +285,15 @@ describe('Meta data administrator with a group', () => {
     Tree.openNode([documentToMove]);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy="copyMenu_COPY"]').click();
-    cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
-    cy.get('[data-cy="dlg-close"]').click();
+    // (former behaviour)
+    /*cy.contains('mat-dialog-content', readOnlyFolder).should('not.exist');
+    cy.get('[data-cy="dlg-close"]').click();*/
+
+    cy.contains('mat-dialog-content .readonly', readOnlyFolder).click();
+    cy.contains('button', 'Einfügen').click();
+    cy.contains('error-dialog', 'Sie haben keine Berechtigung für diese Aktion', { timeout: 10000 });
+    cy.get('mat-dialog-actions button').click();
+    cy.get('error-dialog').should('not.exist');
 
     // try to move document via drag and drop to read-only folder
     CopyCutUtils.simpleDragdropWithoutAutoExpand(documentToMove, readOnlyFolder);
@@ -447,6 +461,7 @@ describe('Meta data administrator with a group', () => {
     // make sure the folder newly to be created would be part of a legal path
     cy.get('mat-tab-group .mat-tooltip-trigger')
       .filter('.selectable')
+      .not('.disabled')
       .then(items => {
         expect(items[0]).to.contain.text('Ordner_2.Ebene_C');
         expect(items[1]).to.contain.text('Ordner_3.Ebene_F');
