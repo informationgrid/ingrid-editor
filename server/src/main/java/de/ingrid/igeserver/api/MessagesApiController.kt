@@ -41,8 +41,8 @@ class MessagesApiController @Autowired constructor(
 
     override fun getDbMessages(principal: Principal): ResponseEntity<List<de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Message>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        var catalogMessages = this.messageService.get(catalogId)
-        var generalMessages =  this.messageService.get(null)
+        val catalogMessages = this.messageService.get(catalogId)
+        val generalMessages =  this.messageService.get(null)
 
         // TODO
         // use one query to get the required messages with order and general messages as the first messages in the list
@@ -54,28 +54,14 @@ class MessagesApiController @Autowired constructor(
     override fun createMessage(principal: Principal, messageRequest: MessageCreationRequest): ResponseEntity<Void> {
 
         val catalogId = if (messageRequest.forCurrentCatalog) catalogService.getCurrentCatalogForPrincipal(principal) else null
-        if (catalogId == null) {
-            val isSuperAdmin = authUtils.isSuperAdmin(principal)
-            // only super admin allowed to add a general notification
-            if (!isSuperAdmin){
-                throw ForbiddenException.withUser("")
-            }
-        }
         val expires = if (messageRequest.validUntil.isNullOrEmpty()) null else OffsetDateTime.parse(messageRequest.validUntil)
         this.messageService.save(messageRequest.message, expires, catalogId)
         return ResponseEntity.ok().build()
     }
 
     override fun deleteMessage(principal: Principal, id: Int): ResponseEntity<Void> {
-        var message = this.messageService.getById(id)
-        if (message!= null && message.get().catalog==  null){
-            val isSuperAdmin = authUtils.isSuperAdmin(principal)
-            // only super admin allowed to delete a general notification
-            if (!isSuperAdmin){
-                throw ForbiddenException.withUser("")
-            }
-        }
-        this.messageService.delete(id)
+        val message = this.messageService.getById(id).get()
+        this.messageService.delete(message)
         return ResponseEntity.ok().build()
     }
 }
