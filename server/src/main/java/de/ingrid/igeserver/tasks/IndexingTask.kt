@@ -260,6 +260,7 @@ class IndexingTask @Autowired constructor(
      * Indexing of a single document into an Elasticsearch index.
      */
     fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
+        log.info("Export dataset to Elasticsearch: $catalogId/$docId")
 
         runAsCatalogAdministrator()
 
