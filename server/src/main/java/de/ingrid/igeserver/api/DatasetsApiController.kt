@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*

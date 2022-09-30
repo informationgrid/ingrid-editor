@@ -34,7 +34,7 @@ export class BreadcrumbComponent implements OnInit {
   collapsed = true;
 
   static readonly COLLAPSED_SYMBOL_NODE = new ShortTreeNode(
-    "COLLAPSED",
+    -1,
     "...",
     undefined,
     true
