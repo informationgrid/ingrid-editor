@@ -25,7 +25,7 @@ export class BreadcrumbComponent implements OnInit {
   @Input() selectable = false;
   @Input() disableRoot = false;
 
-  @Output() select = new EventEmitter<string>();
+  @Output() select = new EventEmitter<number>();
 
   showBreadcrumbPart = {};
   showDisabledBreadcrumbPart = {};
@@ -34,7 +34,7 @@ export class BreadcrumbComponent implements OnInit {
 
   ngOnInit() {}
 
-  onSelect(id: string) {
+  onSelect(id: number) {
     if (this.selectable) {
       this.select.next(id);
     }

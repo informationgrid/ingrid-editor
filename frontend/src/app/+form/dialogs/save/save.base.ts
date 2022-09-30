@@ -117,7 +117,7 @@ export abstract class SaveBase extends Plugin {
     return this.formStateService.getForm();
   }
 
-  private loadDocument(id: string, address: boolean) {
+  private loadDocument(id: number, address: boolean) {
     this.documentService
       .load(id, address)
       .pipe(

@@ -273,7 +273,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
   }
 
-  private updateBreadcrumb(id: string) {
+  private updateBreadcrumb(id: number) {
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 

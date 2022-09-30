@@ -10,7 +10,7 @@ import { FileUploadModel } from "../shared/upload/fileUploadModel";
 export type ExportMethod = "dataset" | "belowDataset" | "datasetAndBelow";
 
 export interface ExportOptions {
-  id: string;
+  id: number;
   method: ExportMethod;
   exportFormat: string;
   useDraft: boolean;
@@ -54,7 +54,7 @@ export class ImportExportService {
   private catalogType: string;
 
   public static prepareExportInfo(
-    docId: string,
+    docId: number,
     options: ExportFormOptions
   ): ExportOptions {
     return {

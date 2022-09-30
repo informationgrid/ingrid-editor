@@ -31,7 +31,7 @@ export class ExportComponent implements OnInit {
   selection: any[] = [];
   optionsFormGroup: UntypedFormGroup;
   datasetSelected = false;
-  private selectedIds: string[];
+  private selectedIds: number[];
   exportResult: any;
   exportFormats = this.exportService
     .getExportTypes()
@@ -61,7 +61,7 @@ export class ExportComponent implements OnInit {
     this.selection = nodes;
   }
 
-  selectDatasets(ids: string[]) {
+  selectDatasets(ids: number[]) {
     this.selectedIds = ids;
     if (ids.length > 0) {
       this.datasetSelected = true;

@@ -50,7 +50,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection: DocumentAbstract;
   selectedType: string;
-  selectedNode = new BehaviorSubject<string>(null);
+  selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   placeholder: string;
 
@@ -123,7 +123,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   updateAddressList(address: DocumentAbstract) {
     this.selection = address;
-    this.selectedNode.next(address.id.toString());
+    this.selectedNode.next(address.id as number);
   }
 
   getResult(): void {

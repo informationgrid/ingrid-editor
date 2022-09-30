@@ -60,7 +60,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       });
   }
 
-  removePermission(id: string) {
+  removePermission(id: number) {
     this.value = this.val.filter((entry) => id !== entry.id);
   }
 
@@ -109,7 +109,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     });
   }
 
-  getDocument(id: string): Promise<IgeDocument> {
+  getDocument(id: number): Promise<IgeDocument> {
     return this.documentService.load(id, this.forAddress, false).toPromise();
   }
 
