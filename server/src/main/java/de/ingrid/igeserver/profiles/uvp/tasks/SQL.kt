@@ -14,7 +14,8 @@ val sqlStepsPublished = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND dw.published = doc.id
+          AND dw.uuid = doc.uuid
+          AND doc.state = 'PUBLISHED'
     """.trimIndent()
 
 val sqlStepsWithDrafts = """

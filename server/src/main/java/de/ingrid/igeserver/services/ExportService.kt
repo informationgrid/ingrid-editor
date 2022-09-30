@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream
 class ExportService @Autowired constructor(val exporterFactory: ExporterFactory) {
 
     private val log = logger()
-    
+
     @Autowired
     @Lazy
     private lateinit var documentService: DocumentService
@@ -85,7 +85,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
     ): String {
         return try {
             val docOptions = UpdateReferenceOptions(!options.useDraft, true)
-            val docVersion = documentService.getLatestDocument(doc, docOptions, catalogId = catalogId)
+            val docVersion = if (docOptions.onlyPublished) documentService.getLastPublishedDocument(
+                catalogId,
+                doc.uuid
+            ) else documentService.getDocumentByDocumentIdAndCatalog(catalogId, doc.id!!)
             val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
             val result = exporter.run(docVersion, catalogId)
             if (result is ObjectNode) result.toPrettyString() else result as String

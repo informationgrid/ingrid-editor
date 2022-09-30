@@ -3,26 +3,20 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
-import de.ingrid.igeserver.model.QueryField
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.FindMetadata
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -30,9 +24,6 @@ import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
@@ -42,7 +33,6 @@ import java.security.Principal
 import java.time.ZoneOffset
 import java.util.*
 import javax.persistence.EntityManager
-import javax.persistence.criteria.*
 
 @Service
 class DocumentService @Autowired constructor(
@@ -133,7 +123,7 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
-            
+
             return if (expandReferences) DocumentData(wrapper, expandInternalReferences(doc))
             else DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
@@ -141,14 +131,14 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
+    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: Int): DocumentWrapper {
         try {
 //            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
-            return docWrapperRepo.findById(id.toInt()).get()
+            return docWrapperRepo.findById(id).get()
         } catch (ex: EmptyResultDataAccessException) {
-            throw NotFoundException.withMissingResource(id, null)
+            throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
-            throw NotFoundException.withMissingResource(id, null)
+            throw NotFoundException.withMissingResource(id.toString(), null)
         }
     }
 
@@ -171,14 +161,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
-        return if (includeFolders)
-            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        else
-            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
-    }
-
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<Document> {
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
@@ -186,7 +169,7 @@ class DocumentService @Autowired constructor(
         catalogId: String,
         parentId: Int?,
         docCat: DocumentCategory = DocumentCategory.DATA
-    ): FindAllResults<Document> {
+    ): FindAllResults<DocumentData> {
 
         val wrappers = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
@@ -194,24 +177,21 @@ class DocumentService @Autowired constructor(
             docWrapperRepo.findByParent_id(parentId.toInt())
         }
 
+        return getDocumentsFromWrappers(wrappers)
+    }
+
+    fun getDocumentsFromWrappers(wrappers: List<DocumentWrapper>): FindAllResults<DocumentData> {
         if (wrappers.isEmpty()) return FindAllResults(0, emptyList())
 
         val accessibleUuids = wrappers.map { it.uuid }
         val docs = docRepo.findAllByCatalogAndIsLatestIsTrueAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
-        val metadata = wrappers.associate {
-            it.uuid to FindMetadata(it.parent?.id, it.countChildren > 0)
-        }
-        // add wrapper ID to documents
-        docs.forEach { document ->
-            document.wrapperId = wrappers[accessibleUuids.indexOf(document.uuid)].id
-        }
+
+        val docsData = docs.map { DocumentData(wrappers[accessibleUuids.indexOf(it.uuid)], it) }
 
         return FindAllResults(
-            docs.size.toLong(),
-            docs,
-            metadata
+            docsData.size.toLong(),
+            docsData
         )
-
     }
 
     fun findChildrenWrapper(
@@ -243,43 +223,12 @@ class DocumentService @Autowired constructor(
         } else {
             docs.hits
                 .flatMap { doc ->
-                    if (docs.metadata[doc.uuid]!!.hasChildren) getAllDescendantIds(
+                    if (doc.wrapper.countChildren > 0) getAllDescendantIds(
                         catalogId,
-                        doc.id!!
-                    ) + doc.id!! else listOf(doc.id!!)
+                        doc.wrapper.id!!
+                    ) + doc.wrapper.id!! else listOf(doc.wrapper.id!!)
                 }
         }
-    }
-
-    /**
-     * Get the latest version of the document associated with the given wrapper
-     * If onlyPublished is true, the method will return the published version and will throw an exception,
-     * if it does not exist. If onlyPublished is false, it will prefer the draft version, if it exists.
-     */
-    @Deprecated("do not use at all")
-    fun getLatestDocument(
-        wrapper: DocumentWrapper,
-        onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true,
-        catalogId: String? = null
-    ): Document {
-
-        val doc = getLatestDocumentVersion(wrapper, onlyPublished, catalogId)
-
-        return expandInternalReferences(doc, onlyPublished, resolveLinks)
-    }
-
-    @Deprecated("do not use at all")
-    // TODO: consolidate function with above
-    fun getLatestDocument(
-        wrapper: DocumentWrapper,
-        options: UpdateReferenceOptions,
-        catalogId: String? = null
-    ): Document {
-
-        val doc = getLatestDocumentVersion(wrapper, options.onlyPublished, catalogId)
-
-        return expandInternalReferences(doc, options.onlyPublished, options.forExport, options)
     }
 
     fun getDocumentType(docType: String): EntityType {
@@ -353,7 +302,7 @@ class DocumentService @Autowired constructor(
             node.replace(entry.key, entry.value)
         }
         // convert FIELD_ID to String, since frontend needs it as string
-        node.put(FIELD_ID, node.get(FIELD_ID).asText())
+//        node.put(FIELD_ID, node.get(FIELD_ID).asText())
         return node
 
     }
@@ -482,6 +431,12 @@ class DocumentService @Autowired constructor(
             docData.document.state = if (nextStateIsDraft)
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
             else DOCUMENT_STATE.PUBLISHED
+        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft) {
+
+            val lastPublishedDoc =
+                getLastPublishedDocument(docData.document.catalog!!.identifier, docData.document.uuid)
+            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            docRepo.save(lastPublishedDoc)
         }
         docData.document.modified = dateService.now()
     }
@@ -623,14 +578,14 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: String) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         deleteRecursively(catalogId, id, filterContext)
     }
 
-    private fun deleteRecursively(catalogId: String, id: String, filterContext: Context) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context) {
         // run pre-delete pipe(s)
-        val docData = getDocumentFromCatalog(catalogId, id.toInt())
+        val docData = getDocumentFromCatalog(catalogId, id)
 //        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
 //        val data = getLatestDocumentVersion(wrapper, false)
@@ -643,18 +598,18 @@ class DocumentService @Autowired constructor(
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
-        findChildrenDocs(catalogId, id.toInt(), isAddress(docData.wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.id.toString(), filterContext)
+        findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext)
         }
 
         if (generalProperties.markInsteadOfDelete) {
             markDocumentAsDeleted(catalogId, id)
         } else {
             // remove all document versions which have the same ID
-            docRepo.deleteAllByUuid(id)
+            docRepo.deleteAllByUuid(docData.document.uuid)
 
             // remove the wrapper
-            docWrapperRepo.deleteById(id.toInt())
+            docWrapperRepo.deleteById(id)
 
             // remove ACL from document, which works now since reference is by database ID instead of UUID
             // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique
@@ -671,7 +626,7 @@ class DocumentService @Autowired constructor(
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
 
-    private fun markDocumentAsDeleted(catalogId: String, id: String) {
+    private fun markDocumentAsDeleted(catalogId: String, id: Int) {
         val markedDoc = getWrapperByDocumentIdAndCatalog(catalogId, id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
@@ -784,7 +739,7 @@ class DocumentService @Autowired constructor(
     }
 
     /**
-     * Every document type belongs to a category (data or address). However a folder can belong to multiple categories
+     * Every document type belongs to a category (data or address). However, a folder can belong to multiple categories
      */
     private fun getCategoryFromType(docType: String, defaultIsAddress: Boolean): String {
         if (docType == DocumentCategory.FOLDER.value) {
@@ -794,43 +749,6 @@ class DocumentService @Autowired constructor(
         return documentTypes
             .find { it.className == docType }!!
             .category
-    }
-
-    @Deprecated("not used anymore")
-    private fun getLatestDocumentVersion(
-        wrapper: DocumentWrapper,
-        onlyPublished: Boolean,
-        catalogId: String? = null
-    ): Document {
-
-        if (onlyPublished && wrapper.published == null) {
-            throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
-        }
-
-        val objectNode = if (onlyPublished) {
-            wrapper.published
-        } else {
-            wrapper.draft ?: wrapper.pending ?: wrapper.published
-        }
-
-
-        if (objectNode == null) {
-            throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)
-        }
-
-        // we need to detach entity, otherwise unwanted updated operations can happen when we change this
-        // this happened by modifying the data-field and doing a flush, which lead to an update of the document
-        // and increase of the version
-        entityManager.detach(objectNode)
-
-//        objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
-        objectNode.hasWritePermission = wrapper.hasWritePermission
-        objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-        objectNode.wrapperId = wrapper.id
-        objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
-        objectNode.catalogIdentifier = catalogId
-
-        return objectNode
     }
 
     private fun expandInternalReferences(
@@ -857,143 +775,6 @@ class DocumentService @Autowired constructor(
         }
 
         return docData
-    }
-
-    @Deprecated("Search is really slow with lot of data", ReplaceWith("ResearchService"))
-    fun find(
-        catalogId: String,
-        category: String = "data",
-        query: List<QueryField> = emptyList(),
-        pageRequest: PageRequest = PageRequest.of(0, 10),
-        userGroups: Set<Group> = emptySet()
-    ): Page<DocumentWrapper> {
-
-        val specification = getSearchSpecification(catalogId, category, query, userGroups)
-        return docWrapperRepo.findAll(specification, pageRequest)
-
-    }
-
-    fun getSearchSpecification(
-        catalog: String,
-        category: String,
-        queryFields: List<QueryField>,
-        userGroups: Set<Group> = emptySet()
-    ): Specification<DocumentWrapper> {
-        return Specification<DocumentWrapper> { wrapper, cq, cb ->
-            val catalogWrapper = wrapper.join<DocumentWrapper, Catalog>("catalog")
-
-            val draft = wrapper.join<DocumentWrapper, Document>("draft", JoinType.LEFT)
-            val published = wrapper.join<DocumentWrapper, Document?>("published", JoinType.LEFT)
-
-            cq.orderBy(
-                listOf(
-                    cb.desc(draft.get<String>("modified")),
-                    cb.desc(published.get<String>("modified"))
-                )
-            )
-
-            val preds = queryFields
-                .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
-
-            val combindPreds = if (queryFields.isNotEmpty() && queryFields[0].operator == "OR") {
-                cb.or(*preds.toTypedArray())
-            } else {
-                cb.and(*preds.toTypedArray())
-            }
-
-            var result = cb.and(
-                cb.equal(catalogWrapper.get<String>("identifier"), catalog),
-                cb.equal(wrapper.get<String>("category"), category),
-                combindPreds
-            )
-
-            // TODO probably performance bottle neck. Analyze and Adapt.
-            // necessary for rights management
-            val datasetUuids = docWrapperRepo.getAll().map { it?.id }
-            val exp: Expression<String> = wrapper.get("id")
-            val predicate: Predicate = exp.`in`(datasetUuids)
-            result = cb.and(predicate, result)
-
-            result
-
-        }
-    }
-
-    private fun createPredicateForField(
-        cb: CriteriaBuilder,
-        draft: Join<DocumentWrapper, Document>,
-        published: Join<DocumentWrapper, Document>,
-        queryField: QueryField
-    ): Predicate? {
-
-        if (queryField.field == "title" || queryField.field == "type" || queryField.field == "uuid") {
-            return cb.or(
-                handleNot(
-                    cb, queryField, handleComparisonType(cb, queryField, draft)
-                ),
-                handleNot(
-                    cb, queryField, handleComparisonType(cb, queryField, published)
-                )
-            )
-        } else if (queryField.field == "published" && queryField.value == null) {
-            return if (queryField.invert) {
-                cb.isNotNull(published)
-            } else {
-                cb.isNull(published)
-            }
-        } else {
-            return cb.or(
-                handleNot(
-                    cb, queryField, handleComparisonTypeJson(cb, queryField, draft)
-                ),
-                handleNot(
-                    cb, queryField, handleComparisonTypeJson(cb, queryField, published)
-                )
-            )
-        }
-    }
-
-    private fun handleNot(cb: CriteriaBuilder, queryField: QueryField, predicate: Predicate?): Predicate? {
-        return if (queryField.invert) cb.not(predicate) else predicate
-    }
-
-    private fun handleComparisonType(
-        cb: CriteriaBuilder,
-        queryField: QueryField,
-        docJoin: Join<DocumentWrapper, Document>
-    ): Predicate? {
-        val value = queryField.value?.lowercase()
-        return when (queryField.queryType) {
-            QueryType.EXACT -> cb.equal(cb.lower(docJoin.get(queryField.field)), value)
-            else -> cb.like(cb.lower(docJoin.get(queryField.field)), "%$value%")
-        }
-    }
-
-    private fun handleComparisonTypeJson(
-        cb: CriteriaBuilder,
-        queryField: QueryField,
-        docJoin: Join<DocumentWrapper, Document>
-    ): Predicate? {
-        val value = queryField.value?.lowercase()
-        return when (queryField.queryType) {
-            QueryType.EXACT -> cb.equal(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), value)
-            else -> cb.like(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), "%$value%")
-        }
-    }
-
-    private fun createJsonExtract(
-        cb: CriteriaBuilder,
-        docJoin: Join<DocumentWrapper, Document>,
-        field: String
-    ): Expression<String>? {
-        val literals = field.split(".").map { cb.literal(it) }
-
-        return cb.function(
-            "jsonb_extract_path_text",
-            String::class.java,
-            docJoin.get<String>("data"),
-            *literals.toTypedArray()
-        )
     }
 
     @Transactional

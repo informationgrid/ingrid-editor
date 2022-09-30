@@ -3,16 +3,13 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import de.ingrid.igeserver.services.DocumentService
 import org.hibernate.annotations.*
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
-import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.Table
 
@@ -64,8 +61,8 @@ class DocumentWrapper {
     @JsonSetter("_parent")
     private var parentUuid: String? = null
 
-/*    @JsonIgnore
-    private var parentId: Int? = null*/
+    /*    @JsonIgnore
+        private var parentId: Int? = null*/
 
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
@@ -73,88 +70,6 @@ class DocumentWrapper {
             this.parentUuid = parent?.uuid
         }
         return this.parentUuid
-    }
-
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "draft", nullable = true)
-    @JsonAlias("draft") // hint for model registry
-    @JsonIgnore
-    @Deprecated("Use state in document")
-    var draft: Document? = null
-
-    @Transient
-    @JsonSetter("draft")
-    @Deprecated("Use state in document")
-    private var draftId: String? = null
-
-    @JsonGetter("draft")
-    @Deprecated("Use state in document")
-    fun getDraftId(): String? {
-        if (this.draftId == null) {
-            this.draftId = draft?.id?.toString()
-        }
-        return this.draftId
-    }
-
-    /**
-     * Published document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('published') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "published", nullable = true)
-    @JsonAlias("published") // hint for model registry
-    @JsonIgnore
-    @Deprecated("Use state in document")
-    var published: Document? = null
-
-    @Transient
-    @JsonSetter("published")
-    @Deprecated("Use state in document")
-    private var publishedId: String? = null
-
-    @JsonGetter("published")
-    @Deprecated("Use state in document")
-    fun getPublishedId(): String? {
-        if (this.publishedId == null) {
-            this.publishedId = published?.id?.toString()
-        }
-        return this.publishedId
-    }
-
-    /**
-     * Archive document relation (many-to-many)
-     * NOTE Since the JSON representation contains document ids ('archive') only, we need
-     * to map them manually to document instances for persistence
-     */
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "document_archive",
-        joinColumns = [JoinColumn(name = "wrapper_id")],
-        inverseJoinColumns = [JoinColumn(name = "document_id")]
-    )
-    @JsonAlias("archive") // hint for model registry
-    @JsonIgnore
-    @Deprecated("Use state in document")
-    var archive: MutableSet<Document> = LinkedHashSet<Document>()
-
-    @Transient
-    @JsonSetter("archive")
-    @Deprecated("Use state in document")
-    private var archiveIds: Array<String>? = null
-
-    @JsonGetter("archive")
-    @Deprecated("Use state in document")
-    fun getArchiveIds(): Array<String> {
-        if (this.archiveIds == null) {
-            this.archiveIds = archive.map { it.id.toString() }.toTypedArray()
-        }
-        return this.archiveIds!!
     }
 
     @Type(type = "list-array")

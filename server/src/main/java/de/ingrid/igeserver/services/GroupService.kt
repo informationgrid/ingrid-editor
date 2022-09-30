@@ -176,15 +176,15 @@ class GroupService @Autowired constructor(
         }
     }
 
-    fun removeDocFromGroups(catalogId: String, docId: String) {
+    fun removeDocFromGroups(catalogId: String, docId: Int) {
         var wasUpdated = false
 
         this.getAll(catalogId).forEach { group ->
             val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
             group.permissions?.apply {
-                documents = group.permissions?.documents?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
-                addresses = group.permissions?.addresses?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
+                documents = group.permissions?.documents?.filter { it.get("id").asInt() != docId } ?: emptyList()
+                addresses = group.permissions?.addresses?.filter { it.get("id").asInt() != docId } ?: emptyList()
             }
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 

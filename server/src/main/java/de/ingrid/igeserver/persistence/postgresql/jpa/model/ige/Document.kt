@@ -96,6 +96,7 @@ class Document {
     @JsonIgnore
     var modifiedByUser: UserInfo? = null
 
+    @JsonIgnore
     var isLatest: Boolean = false
 
     //    @JsonIgnore
