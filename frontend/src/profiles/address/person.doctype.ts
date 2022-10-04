@@ -36,6 +36,7 @@ export class PersonDoctype extends AddressShared {
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
+                  codelistId: 4300,
                 }),
                 this.addAutocomplete("academic-title", null, {
                   wrappers: ["form-field"],
@@ -45,6 +46,7 @@ export class PersonDoctype extends AddressShared {
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4305, "academic-title"),
+                  codelistId: 4305,
                 }),
               ],
             },
