@@ -25,9 +25,9 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             SELECT DISTINCT d.uuid, title 
             FROM document d, document_wrapper dw 
             WHERE (
-                dw.deleted = 0 AND
-                AND dw.uuid = doc.uuid
-                AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
+                dw.deleted = 0
+                AND dw.uuid = d.uuid
+                AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING')
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
@@ -43,9 +43,9 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             SELECT DISTINCT d.uuid, title 
             FROM document d, document_wrapper dw 
             WHERE (
-                dw.deleted = 0 AND
-                AND dw.uuid = doc.uuid
-                AND (doc.state = 'PENDING' OR doc.state = 'PUBLISHED')
+                dw.deleted = 0
+                AND dw.uuid = d.uuid
+                AND (d.state = 'PENDING' OR d.state = 'PUBLISHED')
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)

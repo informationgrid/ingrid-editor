@@ -56,7 +56,6 @@ val sqlNegativeDecisionDocsWithDraft = """
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
-          AND doc.state = 'PUBLISHED'
           AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()

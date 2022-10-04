@@ -56,7 +56,7 @@ class MCloudPublishExport @Autowired constructor(
             SELECT DISTINCT d.uuid 
             FROM document d, document_wrapper dw 
             WHERE (
-                AND dw.uuid = doc.uuid
+                AND dw.uuid = d.uuid
                 AND doc.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');

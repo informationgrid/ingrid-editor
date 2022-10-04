@@ -50,7 +50,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         UPDATE document doc
         SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
         FROM document_wrapper dw, catalog cat
-        WHERE AND dw.uuid = doc.uuid
+        WHERE dw.uuid = doc.uuid
           AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING') AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
     """.trimIndent()
 
