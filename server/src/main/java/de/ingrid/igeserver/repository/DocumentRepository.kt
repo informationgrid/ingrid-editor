@@ -43,19 +43,6 @@ interface DocumentRepository : JpaRepository<Document, Int> {
      */
     @Modifying
     @PreAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin')")
-//    @Query(
-/*        """
-        UPDATE document
-            SET data = replace(data::text, CONCAT('"ref": ', ?2), CONCAT('"ref": ', ?3))::jsonb
-            WHERE id IN (SELECT doc.id as docId
-                 FROM catalog,
-                      document_wrapper dw, document doc
-                 WHERE dw.catalog_id = catalog.id AND catalog.identifier = ?1 AND dw.deleted = 0
-                   AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
-                   AND dw.category = 'data'
-                   AND doc.data::text ilike CONCAT('%"ref": "', ?2, '%'))
-        """, nativeQuery = true
-    )*/
     @Query(
         value = """
         UPDATE document
@@ -75,7 +62,8 @@ interface DocumentRepository : JpaRepository<Document, Int> {
                      FROM catalog,
                           document_wrapper dw, document doc
                      WHERE dw.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
-                       AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
+                       AND dw.uuid = doc.uuid
+                       AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
                        AND dw.category = 'data'
                        AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
     """, nativeQuery = true)

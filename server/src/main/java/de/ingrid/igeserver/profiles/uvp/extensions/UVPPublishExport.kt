@@ -54,7 +54,8 @@ class UVPPublishExport @Autowired constructor(
             SELECT DISTINCT d.uuid 
             FROM document d, document_wrapper dw 
             WHERE (
-                dw.published = d.id
+                AND dw.uuid = doc.uuid
+                AND doc.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'pointOfContact' @> '[{"ref": "$docId"}]');
             """.trimIndent()

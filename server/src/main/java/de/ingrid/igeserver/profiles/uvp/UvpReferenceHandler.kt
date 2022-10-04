@@ -27,7 +27,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
     """.trimIndent()
 
     val sqlNegativeDecisionDocsDraftAndPending = """
@@ -39,7 +40,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 

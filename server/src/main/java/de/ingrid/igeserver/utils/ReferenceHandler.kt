@@ -50,12 +50,13 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         UPDATE document doc
         SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
         FROM document_wrapper dw, catalog cat
-        WHERE (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+        WHERE AND dw.uuid = doc.uuid
+          AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING') AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
     """.trimIndent()
 
     private val countReplaceUrlSql = """SELECT doc.id
         FROM document doc, document_wrapper dw, catalog cat
-        WHERE (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+        WHERE (dw.uuid = doc.uuid AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING') AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
          AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
      """.trimIndent()
 }
