@@ -428,9 +428,9 @@ public class FileSystemStorage implements Storage {
 
     public void delete(final String catalog, final FileSystemItem file) throws IOException {
         // no path since unreferenced file is not known by any user anymore
-        final Path trashPath = this.getTrashPath(catalog, "", file.getFile(), this.docsDir, Scope.PUBLISHED);
+        final Path trashPath = this.getTrashPath(catalog, file.getPath(), file.getFile(), this.docsDir, Scope.PUBLISHED);
         // ensure directory without file
-        this.getTrashPath(catalog, "", "", this.docsDir, Scope.PUBLISHED).toFile().mkdirs();
+        this.getTrashPath(catalog, file.getPath(), "", this.docsDir, Scope.PUBLISHED).toFile().mkdirs();
         // get the real location of the file
         Files.move(file.getRealPath(), trashPath, DEFAULT_COPY_OPTIONS);
     }
