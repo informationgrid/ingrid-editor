@@ -13,7 +13,7 @@ import javax.persistence.EntityManager
 class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
 
     val sqlSteps = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -26,7 +26,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
 
     val sqlNegativeDecisionDocs = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
@@ -39,7 +39,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
     
     val sqlStepsDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc,
@@ -52,7 +52,7 @@ class UploadUtils @Autowired constructor(val entityManager: EntityManager) {
     """.trimIndent()
 
     val sqlNegativeDecisionDocsDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
              document doc
