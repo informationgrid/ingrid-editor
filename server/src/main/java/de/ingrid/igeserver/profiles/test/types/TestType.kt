@@ -55,7 +55,7 @@ class TestType : EntityType() {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalogIdentifier!!, uuid, options)
+                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalog!!.identifier, uuid, options)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
