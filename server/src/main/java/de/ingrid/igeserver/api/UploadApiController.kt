@@ -60,7 +60,7 @@ class UploadApiController @Autowired constructor(
         flowIdentifier: String,
         flowFilename: String,
     ): ResponseEntity<UploadResponse> {
-        log.debug("Uploading file '$flowFilename' for document $docUuid")
+        log.info("Uploading file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
@@ -230,6 +230,7 @@ class UploadApiController @Autowired constructor(
     }
 
     override fun deleteFile(principal: Principal, docUuid: String, file: String): ResponseEntity<Unit> {
+        log.info("Unsaved file is going to be deleted: $docUuid/$file")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
