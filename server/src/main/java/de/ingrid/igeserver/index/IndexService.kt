@@ -54,7 +54,7 @@ class IndexService @Autowired constructor(
     ): Page<Document> {
         val auth = SecurityContextHolder.getContext().authentication
 
-        val conditions = mutableListOf("category = '$category'", "published IS NOT NULL", "deleted = 0")
+        val conditions = mutableListOf("category = '$category'", "state = 'PUBLISHED'", "deleted = 0")
 
         // TODO: support profile specific configuration which documents to be published
         // TODO: extract profile specific configuration to profile files
@@ -76,7 +76,7 @@ class IndexService @Autowired constructor(
             ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )
         val docsToIndex = response.hits
-            .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!) }
+            .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!).apply { wrapperId = it._id } }
 
         val pagedDocs = PageImpl(docsToIndex, Pageable.ofSize(PAGE_SIZE), response.totalHits.toLong())
 

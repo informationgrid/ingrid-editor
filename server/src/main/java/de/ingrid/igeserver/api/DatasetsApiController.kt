@@ -170,7 +170,7 @@ class DatasetsApiController @Autowired constructor(
 
         val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
 
-        val doc = documentService.getDocumentByDocumentIdAndCatalog(catalogId, id)
+        val doc = documentService.getDocumentByWrapperId(id)
 
         if (options.includeTree) {
             validateCopyOperation(catalogId, id, options.destId)

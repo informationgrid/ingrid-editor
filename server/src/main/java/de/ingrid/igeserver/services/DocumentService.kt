@@ -142,7 +142,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getDocumentByDocumentIdAndCatalog(catalogIdentifier: String, id: Int): Document {
+    fun getDocumentByWrapperId(id: Int): Document {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -152,7 +152,6 @@ class DocumentService @Autowired constructor(
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             doc.wrapperId = wrapper.id
             doc.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
-            doc.catalogIdentifier = catalogIdentifier
             return doc
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
@@ -660,7 +659,7 @@ class DocumentService @Autowired constructor(
 
     fun getLastPublishedDocument(catalogId: String, uuid: String): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
-        return expandInternalReferences(doc)
+        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {

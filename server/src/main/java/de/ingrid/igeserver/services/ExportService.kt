@@ -87,7 +87,7 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
             val docVersion = if (docOptions.onlyPublished) documentService.getLastPublishedDocument(
                 catalogId,
                 doc.uuid
-            ) else documentService.getDocumentByDocumentIdAndCatalog(catalogId, doc.id!!)
+            ) else documentService.getDocumentByWrapperId(doc.id!!)
             val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
             val result = exporter.run(docVersion, catalogId)
             if (result is ObjectNode) result.toPrettyString() else result as String

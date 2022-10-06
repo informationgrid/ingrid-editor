@@ -45,7 +45,7 @@ class IndexExporterAddress @Autowired constructor(
         val commTypeKeys = getCommTypeKeys(doc)
         val commTypeValues = getCommTypeValues(doc)
         val commValues = getCommValues(doc)
-        val wrapperDoc = docWrapperRepo.getById(doc.wrapperId!!)
+        val wrapperDoc = docWrapperRepo.getReferenceById(doc.wrapperId!!)
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("title", doc.title)

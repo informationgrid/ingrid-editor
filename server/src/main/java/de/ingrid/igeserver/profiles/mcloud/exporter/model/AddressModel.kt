@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
@@ -32,9 +33,7 @@ data class AddressModel(
 ) {
 
     companion object {
-        val documentService: DocumentService? by lazy {
-            SpringContext.getBean(DocumentService::class.java)
-        }
+        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
 
     init {
@@ -50,19 +49,20 @@ data class AddressModel(
      *  but only if they have a parent themselves.
      *  @return List of ancestors
      */
-    fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<AddressModel> {
+    fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
         if (id == null) return mutableListOf()
 
         val doc = documentService!!.getWrapperByDocumentId(id)
-        val publishedDoc = documentService!!.getLastPublishedDocument(doc.catalog!!.identifier, doc.uuid)
-        if (publishedDoc == null || publishedDoc.type == "FOLDER") {
+        if (doc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()
         }
+        
+        val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
 
         val convertedDoc = addInternalFields(publishedDoc, doc)
 
         return if (doc.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!)
+            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
             // ignore hideAddress if address has no ancestors
             if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
             ancestors
