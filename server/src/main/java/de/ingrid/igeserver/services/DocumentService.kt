@@ -124,7 +124,10 @@ class DocumentService @Autowired constructor(
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
 
-            return if (expandReferences) DocumentData(wrapper, expandInternalReferences(doc))
+            return if (expandReferences) DocumentData(
+                wrapper,
+                expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogIdentifier))
+            )
             else DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
@@ -404,7 +407,10 @@ class DocumentService @Autowired constructor(
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
-            return DocumentData(postWrapper, expandInternalReferences(updatedDoc))
+            return DocumentData(
+                postWrapper,
+                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+            )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
