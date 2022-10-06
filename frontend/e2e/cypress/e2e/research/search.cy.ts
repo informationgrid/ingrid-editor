@@ -122,13 +122,9 @@ describe('Research Page', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.get(ResearchPage.SQLField).type(
       'SELECT document1.*, document_wrapper.*\n' +
-        '            FROM document_wrapper\n' +
-        '                   JOIN document document1 ON\n' +
-        '              CASE\n' +
-        '                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id\n' +
-        '                ELSE document_wrapper.draft = document1.id\n' +
-        '                END\n' +
-        "            WHERE document_wrapper.category = 'address'\n" +
+        '            FROM document_wrapper dw\n' +
+        '                   JOIN document document1 ON dw.uuid = document1.uuid\n' +
+        "            WHERE document_wrapper.category = 'address' AND document1.is_latest = true\n" +
         "              AND LOWER(title) LIKE '%test%'"
     );
     cy.get('button').contains('Suchen').click();

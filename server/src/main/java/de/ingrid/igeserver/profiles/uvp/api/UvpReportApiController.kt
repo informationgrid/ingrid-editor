@@ -50,13 +50,8 @@ class UvpReportApiController @Autowired constructor(
     ): MutableList<Any?> {
         val GROUPED_EIA_COUNT_SQL = """
         SELECT jsonb_array_elements(document1.data->'eiaNumbers') ->> 'key' as eia, Count(*) AS num
-        FROM document_wrapper
-                 JOIN document document1 ON
-            CASE
-                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                ELSE document_wrapper.draft = document1.id
-                END
-        WHERE document_wrapper.catalog_id = $catalogID
+        FROM document_wrapper dw JOIN document document1 ON dw.uuid = document1.uuid
+        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
         AND jsonb_array_length(data -> 'eiaNumbers') > 0        
         """
         val customOrder = """
@@ -73,13 +68,9 @@ class UvpReportApiController @Autowired constructor(
     fun getSuccessfulPrelimCount(catalogID: Int, from: String?, to: String?): Number {
         val PRELIM_COUNT_SQL = """
         SELECT Count(*)
-        FROM document_wrapper
-        JOIN document document1 ON
-        CASE
-        WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-        ELSE document_wrapper.draft = document1.id
-        END
-        WHERE document_wrapper.catalog_id = $catalogID
+        FROM document_wrapper dw
+        JOIN document document1 ON dw.uuid = document1.uuid
+        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
         AND document1.data -> 'prelimAssessment' = 'true'
         """
 
@@ -92,13 +83,9 @@ class UvpReportApiController @Autowired constructor(
     fun getNegativePrelimCount(catalogID: Int, from: String?, to: String?): Number {
         val NEGATIVE_PRELIM_COUNT_SQL = """
         SELECT Count(*)
-        FROM document_wrapper
-                 JOIN document document1 ON
-            CASE
-                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                ELSE document_wrapper.draft = document1.id
-                END
-        WHERE document_wrapper.catalog_id = $catalogID
+        FROM document_wrapper dw
+                 JOIN document document1 ON dw.uuid = document1.uuid
+        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
         AND document_wrapper.type = 'UvpNegativePreliminaryAssessmentDoc'
         """
 
@@ -110,13 +97,9 @@ class UvpReportApiController @Autowired constructor(
     fun getAverageProcedureDuration(catalogID: Int, from: String?, to: String?): Number {
         val PROCEDURE_DATES_SQL = """
         SELECT (document1.data ->> 'receiptDate') as receiptDate, (document1.data -> 'processingSteps' -> -1 ->>'decisionDate') as decisionDate
-        FROM document_wrapper
-                 JOIN document document1 ON
-            CASE
-                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                ELSE document_wrapper.draft = document1.id
-                END
-        WHERE document_wrapper.catalog_id = $catalogID
+        FROM document_wrapper dw
+                 JOIN document document1 ON dw.uuid = document1.uuid
+        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
         AND jsonb_array_length(data -> 'processingSteps') > 0
         AND (document1.data -> 'receiptDate') != 'null'
         """
