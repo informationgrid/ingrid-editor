@@ -728,15 +728,11 @@ class DocumentService @Autowired constructor(
         return DocumentData(updatedWrapper, updatedDoc)
     }
 
-    fun getDocumentStatistic(catalogId: String): StatisticResponse {
-
-        val allDrafts = docWrapperRepo.findAllDrafts(catalogId)
-        val allPublished = docWrapperRepo.findAllPublished(catalogId)
-
-        return StatisticResponse(
-            numDrafts = allDrafts.size.toLong(),
-            numPublished = allPublished.size.toLong(),
-        )
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
+        return if (includeFolders)
+            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+        else
+            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
     fun isAddress(wrapper: DocumentWrapper): Boolean {
