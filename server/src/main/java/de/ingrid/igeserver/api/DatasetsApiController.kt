@@ -6,6 +6,7 @@ import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
@@ -31,6 +32,7 @@ class DatasetsApiController @Autowired constructor(
     private val authUtils: AuthUtils,
     private val catalogService: CatalogService,
     private val docWrapperRepo: DocumentWrapperRepository,
+    private val docRepo: DocumentRepository,
     private val documentService: DocumentService,
     private val aclService: IgeAclService,
     private val storage: Storage,
@@ -146,7 +148,7 @@ class DatasetsApiController @Autowired constructor(
         ids.forEach { id -> handleMove(catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
     }
-    
+
     private fun checkPermissionForCopyMove(principal: Principal, sources: List<Int>, target: Int?) {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, target)
             .let { it.canWrite || it.canOnlyWriteSubtree }
@@ -332,7 +334,7 @@ class DatasetsApiController @Autowired constructor(
         val actualRoots = mutableListOf<DocumentWrapper>()
         val groupDatasets = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
             .map { id -> documentService.getWrapperByDocumentId(id) }
-        val groupDatasetIds = groupDatasets.map{it.id}.toSet()
+        val groupDatasetIds = groupDatasets.map { it.id }.toSet()
 
         for (potentialRoot in groupDatasets) {
             // if potentialRoot.path contains(intersects) any other groupDatasetId it is a descendant and therefore not an actual root node.
@@ -376,22 +378,16 @@ class DatasetsApiController @Autowired constructor(
         principal: Principal,
         id: Int
     ): ResponseEntity<List<PathResponse>> {
-//        val wrapper = documentService.getWrapperByDocumentId(id)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val documentData = documentService.getDocumentFromCatalog(catalogId, id)
         val path = documentData.wrapper.path
 
-        val response = path.map(String::toInt).map { pathId ->
-//            val pathWrapper = docWrapperRepo.findByIdNoPermissionCheck(pathId.toInt())
-            // TODO: use function without permission check to get parents we don't have access to
-            val latestDoc = documentService.getDocumentFromCatalog(catalogId, pathId)
-            val title = latestDoc.document.title ?: "???"
-            val permission = aclService.getPermissionInfo(principal as Authentication, pathId)
-            PathResponse(pathId, title, permission)
-        }
+        val pathInfos = path
+            .map(String::toInt)
+            .map { pathId -> createPathResponse(pathId, principal) }
 
         return ResponseEntity.ok(
-            response + PathResponse(
+            pathInfos + PathResponse(
                 documentData.wrapper.id!!,
                 documentData.document.title ?: "???",
                 PermissionInfo(
@@ -402,6 +398,18 @@ class DatasetsApiController @Autowired constructor(
             )
         )
 
+    }
+
+    private fun createPathResponse(
+        pathId: Int,
+        principal: Principal
+    ): PathResponse {
+        // use function without permission check to get parents we don't have access to
+        val pathWrapper = docWrapperRepo.findByIdNoPermissionCheck(pathId)
+        val latestDoc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(pathWrapper.catalog!!, pathWrapper.uuid)
+        val title = latestDoc.title ?: "???"
+        val permission = aclService.getPermissionInfo(principal as Authentication, pathId)
+        return PathResponse(pathId, title, permission)
     }
 
     data class PathResponse(val id: Int, val title: String, val permission: PermissionInfo? = null)

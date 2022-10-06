@@ -69,7 +69,7 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
         
         if (pendingId != null) {
             entityManager.createNativeQuery(updateDocument)
-                .setParameter(1, false)
+                .setParameter(1, true)
                 .setParameter(2, DOCUMENT_STATE.PENDING.toString())
                 .setParameter(3, pendingId)
                 .executeUpdate()
