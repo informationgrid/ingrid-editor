@@ -1,4 +1,4 @@
-export class fileUploadManagement {
+export class fileDataTransferManagement {
   static openUploadDialog(name: string = '', indexOfSection: number = 0) {
     if (name != '') {
       cy.get('.steps')
