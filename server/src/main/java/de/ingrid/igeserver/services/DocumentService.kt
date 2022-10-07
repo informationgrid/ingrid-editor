@@ -489,7 +489,10 @@ class DocumentService @Autowired constructor(
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
 
-            return DocumentData(postWrapper, updatedDoc)
+            return DocumentData(
+                postWrapper,
+                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+            )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
