@@ -130,7 +130,11 @@ class DatasetsApiController @Autowired constructor(
         ids: List<Int>,
         options: CopyOptions
     ): ResponseEntity<List<JsonNode>> {
-        checkPermissionForCopyMove(principal, ids, options.destId)
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
+            .let { it.canWrite || it.canOnlyWriteSubtree }
+        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it.toInt()).canRead }.all { it }
+        if (!(destCanWrite && sourceCanRead)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
+
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val results = ids.map { id -> handleCopy(principal, catalogId, id, options) }
@@ -142,18 +146,14 @@ class DatasetsApiController @Autowired constructor(
         ids: List<Int>,
         options: CopyOptions
     ): ResponseEntity<Void> {
-        checkPermissionForCopyMove(principal, ids, options.destId)
+        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
+            .let { it.canWrite || it.canOnlyWriteSubtree }
+        val sourceCanWrite = ids.map { aclService.getPermissionInfo(principal, it).canWrite }.all { it }
+        if (!(destCanWrite && sourceCanWrite)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         ids.forEach { id -> handleMove(catalogId, id, options) }
         return ResponseEntity(HttpStatus.OK)
-    }
-
-    private fun checkPermissionForCopyMove(principal: Principal, sources: List<Int>, target: Int?) {
-        val destCanWrite = aclService.getPermissionInfo(principal as Authentication, target)
-            .let { it.canWrite || it.canOnlyWriteSubtree }
-        val sourceCanRead = sources.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
-        if (!(destCanWrite && sourceCanRead)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
     }
 
     override fun replaceAddress(
