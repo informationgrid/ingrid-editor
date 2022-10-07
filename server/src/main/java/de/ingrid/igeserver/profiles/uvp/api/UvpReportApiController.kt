@@ -51,7 +51,7 @@ class UvpReportApiController @Autowired constructor(
         val GROUPED_EIA_COUNT_SQL = """
         SELECT jsonb_array_elements(document1.data->'eiaNumbers') ->> 'key' as eia, Count(*) AS num
         FROM document_wrapper dw JOIN document document1 ON dw.uuid = document1.uuid
-        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
+        WHERE dw.catalog_id = $catalogID AND document1.is_latest = true
         AND jsonb_array_length(data -> 'eiaNumbers') > 0        
         """
         val customOrder = """
@@ -70,7 +70,7 @@ class UvpReportApiController @Autowired constructor(
         SELECT Count(*)
         FROM document_wrapper dw
         JOIN document document1 ON dw.uuid = document1.uuid
-        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
+        WHERE dw.catalog_id = $catalogID AND document1.is_latest = true
         AND document1.data -> 'prelimAssessment' = 'true'
         """
 
@@ -85,7 +85,7 @@ class UvpReportApiController @Autowired constructor(
         SELECT Count(*)
         FROM document_wrapper dw
                  JOIN document document1 ON dw.uuid = document1.uuid
-        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
+        WHERE dw.catalog_id = $catalogID AND document1.is_latest = true
         AND document_wrapper.type = 'UvpNegativePreliminaryAssessmentDoc'
         """
 
@@ -99,7 +99,7 @@ class UvpReportApiController @Autowired constructor(
         SELECT (document1.data ->> 'receiptDate') as receiptDate, (document1.data -> 'processingSteps' -> -1 ->>'decisionDate') as decisionDate
         FROM document_wrapper dw
                  JOIN document document1 ON dw.uuid = document1.uuid
-        WHERE document_wrapper.catalog_id = $catalogID AND document1.is_latest = true
+        WHERE dw.catalog_id = $catalogID AND document1.is_latest = true
         AND jsonb_array_length(data -> 'processingSteps') > 0
         AND (document1.data -> 'receiptDate') != 'null'
         """
