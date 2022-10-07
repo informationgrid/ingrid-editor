@@ -57,7 +57,7 @@ class MCloudPublishExport @Autowired constructor(
             FROM document d, document_wrapper dw 
             WHERE (
                 dw.uuid = d.uuid
-                AND doc.state = 'PUBLISHED'
+                AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
             """.trimIndent()
