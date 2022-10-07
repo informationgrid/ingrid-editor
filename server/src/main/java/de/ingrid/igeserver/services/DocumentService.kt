@@ -9,7 +9,6 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
-import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.*
@@ -565,6 +564,9 @@ class DocumentService @Autowired constructor(
         publish: Boolean
     ): DocumentWrapper {
         try {
+            // make sure database has current state
+            docRepo.flush()
+            
             val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
             postUpdatePipe.runFilters(postUpdatePayload, filterContext)
             return if (publish) {
