@@ -267,13 +267,12 @@ class DocumentService @Autowired constructor(
             }
         }
 
-        // save document
-        val newDocument = docRepo.save(preCreatePayload.document)
-
-        // set wrapper to document association
         if (publish) {
             preCreatePayload.document.state = DOCUMENT_STATE.PUBLISHED
         }
+        
+        // save document
+        val newDocument = docRepo.save(preCreatePayload.document)
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
