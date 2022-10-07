@@ -219,14 +219,18 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'All_Document_Types']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile('Auslegungsinformationen.pdf');
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Dateien hochladen');
+
+    fileDataTransferManagement.openUploadDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
+
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('Berichte und Empfehlungen.pdf');
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Dateien hochladen');
+
+    fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.uploadFile('Weitere Unterlagen.pdf');
+
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
@@ -239,15 +243,15 @@ describe('uvp uploads', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Öffentliche_Auslegung']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(files[0]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 1);
     fileDataTransferManagement.uploadFile(files[1]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(2, 'Weitere Unterlagen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 2);
     fileDataTransferManagement.uploadFile(files[2]);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
@@ -260,7 +264,7 @@ describe('uvp uploads', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Files_Simultaneously']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(files[0], false, false);
     fileDataTransferManagement.uploadFile(files[1], false, false);
     fileDataTransferManagement.uploadFile(files[2], false, false);
@@ -283,7 +287,7 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Save_Extracted_Zip_Files']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, documentType, 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog(documentType, 0);
     // upload the files and save the document
     fileDataTransferManagement.uploadFile(fileName, false, false);
     fileDataTransferManagement.unzipArchiveAfterUpload();
@@ -311,7 +315,7 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Zip_File_Special_Characters']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(fileName, false, false);
     fileDataTransferManagement.unzipArchiveAfterUpload();
     cy.contains('button', 'Übernehmen').click();
