@@ -106,7 +106,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateFullMcloudDocumentWithAPI(title: string, published = false, parentNode: any = 1) {
+  static CreateFullMcloudDocumentWithAPI(title: string, published = false, parentNode: number = 1) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
@@ -170,7 +170,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateSimpleMcloudDocumentWithAPI(title: string, published = false, parentNode: any = 1) {
+  static CreateSimpleMcloudDocumentWithAPI(title: string, published = false, parentNode: number = 1) {
     const json = {
       _hasChildren: false,
       _parent: parentNode,
