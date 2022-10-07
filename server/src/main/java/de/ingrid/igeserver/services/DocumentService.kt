@@ -402,8 +402,9 @@ class DocumentService @Autowired constructor(
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
         try {
+            // the wrapperId needs to be set for correct permission when saving document
+            preUpdatePayload.document.wrapperId = docData.wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
-
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
