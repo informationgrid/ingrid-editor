@@ -124,7 +124,7 @@ describe('Research Page', () => {
       'SELECT document1.*, document_wrapper.*\n' +
         '            FROM document_wrapper dw\n' +
         '                   JOIN document document1 ON dw.uuid = document1.uuid\n' +
-        "            WHERE document_wrapper.category = 'address' AND document1.is_latest = true\n" +
+        "            WHERE dw.category = 'address' AND document1.is_latest = true\n" +
         "              AND LOWER(title) LIKE '%test%'"
     );
     cy.get('button').contains('Suchen').click();

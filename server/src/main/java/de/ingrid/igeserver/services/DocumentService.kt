@@ -144,7 +144,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getDocumentByWrapperId(id: Int): Document {
+    fun getDocumentByWrapperId(catalogId: String, id: Int): Document {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -153,9 +153,9 @@ class DocumentService @Autowired constructor(
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             doc.wrapperId = wrapper.id
-            doc.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
+            doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = wrapper.catalog!!.identifier))
+            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {

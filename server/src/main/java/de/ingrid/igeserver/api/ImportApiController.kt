@@ -32,8 +32,8 @@ class ImportApiController @Autowired constructor(
         principal: Principal,
         file: MultipartFile,
         importerId: String,
-        parentDoc: String,
-        parentAddress: String,
+        parentDoc: Int,
+        parentAddress: Int,
         options: String
     ): ResponseEntity<ImportAnalyzeInfo> {
 
@@ -60,4 +60,4 @@ class ImportApiController @Autowired constructor(
     }
 }
 
-data class ImportOptions(val parentDocument: String, val parentAddress: String, val options: String)
+data class ImportOptions(val parentDocument: Int, val parentAddress: Int, val options: String)

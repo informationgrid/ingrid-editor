@@ -112,7 +112,7 @@ abstract class EntityType {
 
     fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val document = documentService.getDocumentByWrapperId(wrapper.id!!)
+        val document = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
         val latestDocumentJson = documentService.convertToJsonNode(document)
 
         if (options.forExport) {

@@ -77,7 +77,7 @@ class ImportService {
                 principal,
                 catalogId,
                 document,
-                options.parentDocument.toInt(),
+                options.parentDocument,
                 false,
                 false
             )
@@ -122,6 +122,7 @@ class ImportService {
             .map {
                 // create address under given folder
                 it.data.put(FIELD_PARENT, options.parentAddress)
+                it.state = DOCUMENT_STATE.DRAFT
                 val json = documentService.convertToJsonNode(it)
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
@@ -131,7 +132,7 @@ class ImportService {
                     principal,
                     catalogId,
                     it,
-                    parentId = options.parentAddress.toInt(),
+                    parentId = options.parentAddress,
                     publish = false
                 )
             }

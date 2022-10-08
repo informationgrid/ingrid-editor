@@ -185,7 +185,7 @@ class PostMigrationTask(
         if (oldPath.isEmpty()) return
         val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
         val pathTitles = reducedPath.map {
-            documentService.getDocumentByWrapperId(it.toInt()).title!!
+            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it.toInt()).title!!
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
@@ -197,7 +197,7 @@ class PostMigrationTask(
                 doc.catalog!!.identifier,
                 newPath.lastOrNull(),
             ).hits.find {
-                it.document.title == documentService.getDocumentByWrapperId(doc.id!!).title
+                it.document.title == documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, doc.id!!).title
             }
 
             if (folderWithSameNameAndPath != null) {

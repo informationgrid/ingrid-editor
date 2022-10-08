@@ -86,7 +86,7 @@ class UvpReportApiController @Autowired constructor(
         FROM document_wrapper dw
                  JOIN document document1 ON dw.uuid = document1.uuid
         WHERE dw.catalog_id = $catalogID AND document1.is_latest = true
-        AND document_wrapper.type = 'UvpNegativePreliminaryAssessmentDoc'
+        AND dw.type = 'UvpNegativePreliminaryAssessmentDoc'
         """
 
         val nativeQuery =
