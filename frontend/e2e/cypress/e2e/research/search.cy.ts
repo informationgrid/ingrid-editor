@@ -121,7 +121,7 @@ describe('Research Page', () => {
   it('should do search with example SQL-query typed in manually', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.get(ResearchPage.SQLField).type(
-      'SELECT document1.*, document_wrapper.*\n' +
+      'SELECT document1.*, dw.*\n' +
         '            FROM document_wrapper dw\n' +
         '                   JOIN document document1 ON dw.uuid = document1.uuid\n' +
         "            WHERE dw.category = 'address' AND document1.is_latest = true\n" +
