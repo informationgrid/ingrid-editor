@@ -40,8 +40,8 @@ class MessageService @Autowired constructor(
 
     }
 
-    fun delete(id: Int) {
-        messageRepo.deleteById(id)
+    fun delete(message: Message) {
+        messageRepo.delete(message)
     }
 
 }

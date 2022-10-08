@@ -67,13 +67,7 @@ export class CreateDocumentPlugin extends Plugin {
           },
         ];
         buttons.forEach((button) => this.toolbarService.addButton(button));
-
-        if (!this.isAdmin) {
-          const buttonEnabled = this.config.hasPermission(
-            this.forAddress ? "can_create_address" : "can_create_dataset"
-          );
-          this.toolbarService.setButtonState("toolBtnNew", buttonEnabled);
-        }
+        this.addNonAdminBehaviour();
       });
   }
 
@@ -114,5 +108,30 @@ export class CreateDocumentPlugin extends Plugin {
     super.unregister();
 
     this.toolbarService.removeButton("toolBtnNew");
+  }
+
+  private addNonAdminBehaviour() {
+    if (!this.isAdmin) {
+      const canGenerallyCreate = this.config.hasPermission(
+        this.forAddress ? "can_create_address" : "can_create_dataset"
+      );
+      this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
+
+      if (!canGenerallyCreate && this.forAddress) {
+        const organisationCheckSubscription = this.addressTreeQuery
+          .selectActive()
+          .subscribe((data) => {
+            this.toolbarService.setButtonState(
+              "toolBtnNew",
+              this.isOrganisation(data)
+            );
+          });
+        this.subscriptions.push(organisationCheckSubscription);
+      }
+    }
+  }
+
+  private isOrganisation(data: any[]) {
+    return data.length === 1 && data[0]._type.endsWith("OrganisationDoc");
   }
 }

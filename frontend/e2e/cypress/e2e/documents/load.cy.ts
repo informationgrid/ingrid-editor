@@ -5,6 +5,7 @@ import { AddressPage } from '../../pages/address.page';
 import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
+import Doc = Mocha.reporters.Doc;
 
 describe('Load documents', () => {
   beforeEach(() => {
@@ -22,6 +23,36 @@ describe('Load documents', () => {
     // save the folder and check again
     DocumentPage.saveDocument();
     cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
+  });
+
+  it('should check for the content of preview dialog for Test catalog data record, #4269', function () {
+    DocumentPage.visit();
+    // open published document and check for the content
+    Tree.openNode(['document_to_export']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=description] ige-print-type ', 'test');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=addresses] ige-print-type ', 'address_for_export');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=mCloudCategories] ', 'Klima und Wetter');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=mCloudCategories] ', 'Straßen');
+    DocumentPage.checkOfExistingItem(
+      'mat-dialog-content [data-cy=DCATThemes]  ',
+      ' Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel '
+    );
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=DCATThemes]  ', 'Umwelt');
+
+    // check for download table
+    DocumentPage.checkOfExistingItem('mat-dialog-content ige-table-type  ', 'test', 0);
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=license]  ', 'Andere Freeware Lizenz');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=origin]  ', 'test');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=mFUND] input  ', 'test', 0, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content .spatial-title  ', 'Berlin Brandenburg Airport');
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=events] input  ', '22.06.2022', 0, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=events]  ', 'Letzte Änderung');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=temporal] input ', '30.06.2022', 0, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=periodicity]  ', 'einmalig');
   });
 });
 

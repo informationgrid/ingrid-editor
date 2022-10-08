@@ -22,7 +22,7 @@ export class AdminUserPage extends BasePage {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.intercept('GET', '/api/groups').as('groups');
     cy.visit('manage/user');
-    cy.wait('@usersCall', { timeout: 9000 });
+    cy.wait('@usersCall', { timeout: 12000 });
     cy.wait('@groups', { timeout: 9000 });
   }
 

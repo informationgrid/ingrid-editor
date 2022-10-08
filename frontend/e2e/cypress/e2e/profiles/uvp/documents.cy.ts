@@ -6,7 +6,7 @@ import { uvpPage } from '../../../pages/uvp.page';
 import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { ResearchPage } from '../../../pages/research.page';
 import { BasePage } from '../../../pages/base.page';
-import { fileUploadManagement } from '../../../pages/fileUploadManagement.page';
+import { fileDataTransferManagement } from '../../../pages/fileDataTransferManagement.page';
 
 describe('uvp documents', () => {
   beforeEach(() => {
@@ -156,35 +156,36 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+
+    fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
 
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
 
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Test.pdf', true);
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('Test.pdf', true);
 
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+    fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
 
-    DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_1.json', true);
+    fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
+    fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
-    DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_5.json', true);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
+    fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
-    DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_4.json', true);
+    fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
+    fileDataTransferManagement.uploadFile('importtest_4.json', true);
 
     DocumentPage.saveDocument();
 
@@ -237,30 +238,37 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+
+    fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+
+    fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Test.pdf', true);
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('Test.pdf', true);
+
+    fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
-    DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_1.json', true);
+
+    fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
+    fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
-    DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_4.json', true);
-    DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_5.json', true);
+
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
+    fileDataTransferManagement.uploadFile('importtest_4.json', true);
+
+    fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
+    fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
@@ -312,30 +320,30 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Test.pdf', true);
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('Test.pdf', true);
+    fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Erörterungstermin');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
-    DocumentPage.addTableEntry(1, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_1.json', true);
+    fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
+    fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
-    DocumentPage.addTableEntry(2, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_4.json', true);
-    DocumentPage.addTableEntry(2, 'Entscheidung', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_5.json', true);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
+    fileDataTransferManagement.uploadFile('importtest_4.json', true);
+    fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
+    fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
@@ -382,24 +390,24 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_2.json', true);
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('importtest_2.json', true);
+    fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
 
     uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
     DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
-    DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_4.json', true);
-    DocumentPage.addTableEntry(1, 'Entscheidung', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_5.json', true);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 1);
+    fileDataTransferManagement.uploadFile('importtest_4.json', true);
+    fileDataTransferManagement.openUploadDialog('Entscheidung', 1);
+    fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
     DocumentPage.saveDocument();
 
@@ -497,16 +505,16 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2020');
     DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2020');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io/quatsch');
+    fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io/quatsch');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
+    fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
     BasePage.closeDialogAndAdoptChoices();
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Test.pdf', true);
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Link angeben');
-    fileUploadManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('Test.pdf', true);
+    fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
     BasePage.closeDialogAndAdoptChoices();
 
     // try to publish and expect error
@@ -536,8 +544,9 @@ describe('uvp documents', () => {
     uvpPage.addProcedureSteps('Erörterungstermin');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2020');
     DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2020');
-    DocumentPage.addTableEntry(0, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('importtest_1.json', true);
+    // DocumentPage.addTableEntry(0, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 0);
+    fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
     // try to publish and expect error
     cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');

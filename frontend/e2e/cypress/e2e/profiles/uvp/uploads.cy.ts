@@ -5,7 +5,7 @@ import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';
-import { fileUploadManagement, FileHandlingOptions } from '../../../pages/fileUploadManagement.page';
+import { fileDataTransferManagement, FileHandlingOptions } from '../../../pages/fileDataTransferManagement.page';
 
 describe('uvp uploads', () => {
   beforeEach(() => {
@@ -21,8 +21,8 @@ describe('uvp uploads', () => {
     DocumentPage.openUpDocumentHeader();
     DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // add file
-      fileUploadManagement.openUploadDialog();
-      fileUploadManagement.uploadFile(fileName);
+      fileDataTransferManagement.openUploadDialog();
+      fileDataTransferManagement.uploadFile(fileName);
       DocumentPage.publishNow();
       // access file
       uvpPage.tryToAccessFile(id, fileName, 'success');
@@ -40,8 +40,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.saveDocument();
     // get id of document
     DocumentPage.openUpDocumentHeader();
@@ -61,8 +61,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -83,8 +83,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', 'Plan_R_12']);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -104,8 +104,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -130,8 +130,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     // plan publishing
     DocumentPage.planPublishing(publishDate);
     // get id
@@ -148,8 +148,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.saveDocument();
     // copy document
     CopyCutUtils.copyObject();
@@ -170,8 +170,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -192,8 +192,8 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_Ordner_4', docName]);
     // upload file
-    fileUploadManagement.openUploadDialog();
-    fileUploadManagement.uploadFile(fileName);
+    fileDataTransferManagement.openUploadDialog();
+    fileDataTransferManagement.uploadFile(fileName);
     DocumentPage.publishNow();
     // get id
     DocumentPage.openUpDocumentHeader();
@@ -219,14 +219,18 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'All_Document_Types']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Auslegungsinformationen.pdf');
-    DocumentPage.addTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
-    DocumentPage.addTableEntry(0, 'Berichte und Empfehlungen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Berichte und Empfehlungen.pdf');
-    DocumentPage.addTableEntry(0, 'Weitere Unterlagen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile('Weitere Unterlagen.pdf');
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile('Auslegungsinformationen.pdf');
+
+    fileDataTransferManagement.openUploadDialog('UVP Bericht/Antragsunterlagen', 0);
+    fileDataTransferManagement.uploadFile('UVP_Bericht_Antragsunterlagen.pdf');
+
+    fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
+    fileDataTransferManagement.uploadFile('Berichte und Empfehlungen.pdf');
+
+    fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 0);
+    fileDataTransferManagement.uploadFile('Weitere Unterlagen.pdf');
+
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
@@ -239,16 +243,16 @@ describe('uvp uploads', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Öffentliche_Auslegung']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile(files[0]);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(files[0]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(1, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile(files[1]);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 1);
+    fileDataTransferManagement.uploadFile(files[1]);
 
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(2, 'Weitere Unterlagen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile(files[2]);
+    fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 2);
+    fileDataTransferManagement.uploadFile(files[2]);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     DocumentPage.checkTableEntry(2, 'Weitere Unterlagen', files[2]);
@@ -260,10 +264,10 @@ describe('uvp uploads', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Files_Simultaneously']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile(files[0], false, false);
-    fileUploadManagement.uploadFile(files[1], false, false);
-    fileUploadManagement.uploadFile(files[2], false, false);
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(files[0], false, false);
+    fileDataTransferManagement.uploadFile(files[1], false, false);
+    fileDataTransferManagement.uploadFile(files[2], false, false);
     cy.contains('button', 'Übernehmen').click();
     //  wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
@@ -283,11 +287,11 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Save_Extracted_Zip_Files']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, documentType, 'Dateien hochladen');
+    fileDataTransferManagement.openUploadDialog(documentType, 0);
     // upload the files and save the document
-    fileUploadManagement.uploadFile(fileName, false, false);
-    fileUploadManagement.unzipArchiveAfterUpload();
-    fileUploadManagement.uploadFile(fileName_2, false, false);
+    fileDataTransferManagement.uploadFile(fileName, false, false);
+    fileDataTransferManagement.unzipArchiveAfterUpload();
+    fileDataTransferManagement.uploadFile(fileName_2, false, false);
     cy.contains('button', 'Übernehmen').click();
     // wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
@@ -311,9 +315,9 @@ describe('uvp uploads', () => {
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Zip_File_Special_Characters']);
     uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.addTableEntry(0, 'Auslegungsinformationen', 'Dateien hochladen');
-    fileUploadManagement.uploadFile(fileName, false, false);
-    fileUploadManagement.unzipArchiveAfterUpload();
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(fileName, false, false);
+    fileDataTransferManagement.unzipArchiveAfterUpload();
     cy.contains('button', 'Übernehmen').click();
     //  wait for files to appear in table, otherwise dataset might be saved without the entries
     DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
@@ -330,7 +334,7 @@ describe('uvp uploads', () => {
     DocumentPage.visit();
     Tree.openNode(['Plan_N_With_Upload']);
     cy.contains('button', 'Dateien hochladen').click();
-    fileUploadManagement.uploadFile(fileTitle);
+    fileDataTransferManagement.uploadFile(fileTitle);
     DocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check entry in table

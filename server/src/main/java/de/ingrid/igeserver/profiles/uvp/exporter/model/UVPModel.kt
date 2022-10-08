@@ -112,12 +112,10 @@ data class UVPModel(
     }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
-        var coordinates =
+        val coordinates =
             "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
-        if (spatial.title != null) {
-            coordinates = "${spatial.title}: $coordinates"
-        }
-        return coordinates
+        val title = spatial.title ?: "" 
+        return "${title}: $coordinates"
     }
 
     val steps = data.steps

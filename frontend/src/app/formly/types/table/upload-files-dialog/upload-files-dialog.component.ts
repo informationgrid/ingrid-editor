@@ -55,10 +55,11 @@ export class UploadFilesDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   removeUploadedFile(fileId: string) {
-    const fileNotReferenced = this.fileExistsInTable(fileId);
+    // uploaded files will not be removed for now due to a bug
+    /*const fileNotReferenced = this.fileExistsInTable(fileId);
     if (!fileNotReferenced) {
       this.uploadService.deleteUploadedFile(this.docUuid, fileId);
-    }
+    }*/
   }
 
   submit() {

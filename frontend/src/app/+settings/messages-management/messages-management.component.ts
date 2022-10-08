@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { filter, switchMap, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
@@ -9,9 +9,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { NewMessageDialogComponent } from "./new-message-dialog/new-message-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService, UserInfo } from "../../services/config/config.service";
-import { userInfo } from "os";
-import { MatSort, MatSortable, Sort } from "@angular/material/sort";
-import { LiveAnnouncer } from "@angular/cdk/a11y";
+import { partition } from "rxjs";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -35,8 +33,6 @@ export class MessagesManagementComponent implements OnInit {
   ) {}
 
   private userInfo: UserInfo;
-  @ViewChild("allCatalogSort") public allCatalogSort: MatSort;
-  @ViewChild("currentCatalogSort") public currentCatalogSort: MatSort;
 
   ngOnInit() {
     this.userInfo = this.configService.$userInfo.getValue();
@@ -68,7 +64,6 @@ export class MessagesManagementComponent implements OnInit {
         if (confirmed) {
           this.messageService
             .deleteMessage(_id)
-            .pipe(untilDestroyed(this))
             .subscribe(() => this.fetchMessages());
         }
       });
@@ -84,24 +79,32 @@ export class MessagesManagementComponent implements OnInit {
   fetchMessages() {
     this.messageService
       .getAllMessagesForAdmin()
-      .pipe(
-        untilDestroyed(this),
-        tap((m) => console.log(m))
-      )
+      .pipe(tap((m) => console.log(m)))
       .subscribe((messages) => {
         this.messages = messages;
         this.model = messages.map((m) => ({
           text: m.message.text,
           validUntil: m._validUntil,
         }));
-        this.dataSourceAllCatalog.data = messages.filter(
-          (value) => value.catalog == null
+        this.dataSourceAllCatalog.data = null;
+        this.dataSourceCurrentCatalog.data = null;
+        let [allCatalog$, currentCatalog$] = partition(
+          messages,
+          (value, index) => value.catalog == null
         );
-        this.dataSourceCurrentCatalog.data = messages.filter(
-          (value) =>
-            value.catalog != null &&
-            value.catalog.id == this.userInfo.currentCatalog.id
-        );
+
+        allCatalog$.subscribe((value) => {
+          this.dataSourceAllCatalog.data = [
+            ...this.dataSourceAllCatalog.data,
+            value,
+          ];
+        });
+        currentCatalog$.subscribe((value) => {
+          this.dataSourceCurrentCatalog.data = [
+            ...this.dataSourceCurrentCatalog.data,
+            value,
+          ];
+        });
       });
   }
 }

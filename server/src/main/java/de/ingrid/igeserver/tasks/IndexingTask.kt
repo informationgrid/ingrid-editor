@@ -276,6 +276,7 @@ class IndexingTask @Autowired constructor(
             log.debug("Exported document: $export")
             val indexInfo = getOrPrepareIndex(catalog.type, category, format, elasticsearchAlias)
             indexManager.update(indexInfo, convertToElasticDocument(export), false)
+            log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")
         } catch (ex: NoSuchElementException) {
             throw NotFoundException.withMissingPublishedVersion(docId, ex)
         }

@@ -42,7 +42,7 @@ export class DocumentPage extends BasePage {
   static Toolbar: Record<string, string> = {
     NewDoc: '[data-cy=toolbar_NEW_DOC]',
     NewFolder: '[data-cy=toolbar_CREATE_FOLDER]',
-    // Preview: '[data-cy=toolbar_PRINT]',
+    Preview: '[data-cy=toolbar_PRINT]',
     Copy: '[data-cy=toolbar_COPY]',
     // Revert: '[data-cy=toolbar_REVERT]',
     Delete: '[data-cy=toolbar_DELETE]',
@@ -91,6 +91,9 @@ export class DocumentPage extends BasePage {
     cy.log('Create folder: ' + folderName);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     if (location) {
+      // wait some time before switching to other tab
+      // otherwise the dialog might be blank
+      cy.wait(500);
       this.changeLocation(location);
     }
     this.fillDialog(folderName);

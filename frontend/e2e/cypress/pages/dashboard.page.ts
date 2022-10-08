@@ -4,7 +4,7 @@ export class DashboardPage {
   static url = '/dashboard';
 
   static visit() {
-    cy.intercept('GET', 'api/statistic').as('getStatistic');
+    cy.intercept({ method: 'GET', url: 'api/statistic', times: 1 }).as('getStatistic');
     cy.visit('/dashboard');
     cy.wait('@getStatistic', { timeout: 12000 });
   }

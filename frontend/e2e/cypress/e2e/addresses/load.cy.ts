@@ -167,4 +167,31 @@ describe('Load addresses', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
   });
+
+  it('should check for the content of preview dialog for Test catalog (address), #4269', function () {
+    AddressPage.visit();
+    // open published document and check for the content
+    Tree.openNode(['topreview, address']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Herr');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Prof.');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'address', 0, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'topreview', 1, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  ', 'Telefon');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  input', '123456', 0, true);
+
+    // check for address details
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'unknown', 1, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '2132', 2, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'north pole', 3, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '123', 4, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input ', '123', 5, true);
+
+    // check for country and state
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
+
+    // TODO
+    /// check for state
+  });
 });

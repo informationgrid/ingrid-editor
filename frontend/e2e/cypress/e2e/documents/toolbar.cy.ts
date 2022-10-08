@@ -20,7 +20,8 @@ describe('Toolbar behavior', () => {
 
     // Empty folder
     Tree.openNode(['checkDisabledBtn']);
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
+    // ignore preview button for now for now
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save'], ['Preview']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled');
@@ -29,7 +30,11 @@ describe('Toolbar behavior', () => {
     // Non Empty folder
     cy.get('body').type('{esc}');
     Tree.openNode(['Testdokumente']);
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
+    // ignore preview button for now for now
+    DocumentPage.checkOnlyActiveToolbarButtons(
+      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous'],
+      ['Preview']
+    );
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
@@ -40,7 +45,7 @@ describe('Toolbar behavior', () => {
     Tree.openNode(['Testdokumente']);
     cy.get('#sidebar').findByText('Test mCLOUD Dokument').click();
     DocumentPage.checkOnlyActiveToolbarButtons(
-      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous'],
+      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Previous', 'Preview'],
       ['PublishNow']
     );
     cy.get(DocumentPage.Toolbar.Copy).click();
@@ -56,7 +61,7 @@ describe('Toolbar behavior', () => {
 
     Tree.openNode(['Neue Testdokumente', docTitle]);
     DocumentPage.checkOnlyActiveToolbarButtons(
-      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish'],
+      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Publish', 'Preview'],
       ['Previous', 'PublishNow']
     );
     cy.get(DocumentPage.Toolbar.Copy).click();
@@ -69,7 +74,7 @@ describe('Toolbar behavior', () => {
     const docTitle = 'Veröffentlichter Datensatz mit Bearbeitungsversion';
     Tree.openNode([docTitle]);
     DocumentPage.checkOnlyActiveToolbarButtons(
-      ['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish'],
+      ['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish', 'Preview'],
       ['PublishNow']
     );
     cy.get(DocumentPage.Toolbar.Copy).click();

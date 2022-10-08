@@ -1,30 +1,22 @@
-export class fileUploadManagement {
-  static openUploadDialog(name: string = '', index: number = 0) {
-    // ToDO check for possible cases
-    // if (name != '') {
-    //   cy.contains('ige-table-type', name)
-    //     .eq(index)
-    //     .within(_ => {
-    //       cy.contains('button', 'Dateien hochladen').click();
-    //     });
-    // } else {
-    //   cy.contains('button', 'Dateien hochladen').click();
-    // }
-    cy.contains('button', 'Dateien hochladen').click();
+export class fileDataTransferManagement {
+  static openUploadDialog(name: string = '', indexOfSection: number = 0) {
+    if (name != '') {
+      cy.get('.steps')
+        .eq(indexOfSection)
+        .contains('ige-table-type', name)
+        .contains('button', 'Dateien hochladen')
+        .click();
+    } else {
+      cy.contains('button', 'Dateien hochladen').click();
+    }
   }
 
-  static openAddURLDialog(name: string = '', index: number = 0) {
-    // ToDO check for possible cases
-    // if (name != '') {
-    //   cy.contains('ige-table-type', name)
-    //     .eq(index)
-    //     .within(_ => {
-    //       cy.contains('button', 'Link angeben').click();
-    //     });
-    // } else {
-    //   cy.contains('button', 'Link angeben').click();
-    // }
-    cy.contains('button', 'Link angeben').click();
+  static openAddURLDialog(name: string = '', indexOfSection: number = 0) {
+    if (name != '') {
+      cy.get('.steps').eq(indexOfSection).contains('ige-table-type', name).contains('button', 'Link angeben').click();
+    } else {
+      cy.contains('button', 'Link angeben').click();
+    }
   }
 
   static fillFieldsOfAddURLDialog(title: string, url: string) {
@@ -76,9 +68,7 @@ export class fileUploadManagement {
   }
 
   static removeFileFromUploadDialog() {
-    cy.intercept('DELETE', /api\/upload/).as('deleteFile');
     cy.get('[data-mat-icon-name="Entfernen"]').click();
-    cy.wait('@deleteFile');
   }
 
   static DownloadFileAddedToDocument(fileName: string) {
