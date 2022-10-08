@@ -154,7 +154,8 @@ class DocumentService @Autowired constructor(
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             doc.wrapperId = wrapper.id
             doc.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
-            return doc
+            // TODO: only call when requested!?
+            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = wrapper.catalog!!.identifier))
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
