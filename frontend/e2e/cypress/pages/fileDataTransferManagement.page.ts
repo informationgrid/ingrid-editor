@@ -68,9 +68,7 @@ export class fileDataTransferManagement {
   }
 
   static removeFileFromUploadDialog() {
-    cy.intercept('DELETE', /api\/upload/).as('deleteFile');
     cy.get('[data-mat-icon-name="Entfernen"]').click();
-    cy.wait('@deleteFile');
   }
 
   static DownloadFileAddedToDocument(fileName: string) {

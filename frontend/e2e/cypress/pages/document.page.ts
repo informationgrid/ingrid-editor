@@ -90,11 +90,10 @@ export class DocumentPage extends BasePage {
   static createFolder(folderName: string, location?: string[]) {
     cy.log('Create folder: ' + folderName);
     cy.get(DocumentPage.Toolbar.NewFolder).click();
-    // wait some time before creating a new folder
-    // find out if this is the problem, that the dialog shows an empty page
-    // when switching location
-    cy.wait(1000);
     if (location) {
+      // wait some time before switching to other tab
+      // otherwise the dialog might be blank
+      cy.wait(500);
       this.changeLocation(location);
     }
     this.fillDialog(folderName);
