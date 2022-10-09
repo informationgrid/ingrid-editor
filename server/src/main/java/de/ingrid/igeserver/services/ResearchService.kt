@@ -183,7 +183,7 @@ class ResearchService {
 
     private fun createCatalogFilter(catalogId: String): String {
 
-        return "dw.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
+        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 

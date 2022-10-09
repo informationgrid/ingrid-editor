@@ -121,10 +121,10 @@ describe('Research Page', () => {
   it('should do search with example SQL-query typed in manually', () => {
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.get(ResearchPage.SQLField).type(
-      'SELECT document1.*, dw.*\n' +
-        '            FROM document_wrapper dw\n' +
-        '                   JOIN document document1 ON dw.uuid = document1.uuid\n' +
-        "            WHERE dw.category = 'address' AND document1.is_latest = true\n" +
+      'SELECT document1.*, document_wrapper.*\n' +
+        '            FROM document_wrapper\n' +
+        '                   JOIN document document1 ON document_wrapper.uuid = document1.uuid\n' +
+        "            WHERE document_wrapper.category = 'address' AND document1.is_latest = true\n" +
         "              AND LOWER(title) LIKE '%test%'"
     );
     cy.get('button').contains('Suchen').click();
