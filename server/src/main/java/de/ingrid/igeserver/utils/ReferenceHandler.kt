@@ -56,7 +56,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
 
     private val countReplaceUrlSql = """SELECT doc.id
         FROM document doc, document_wrapper dw, catalog cat
-        WHERE (dw.uuid = doc.uuid AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING') AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+        WHERE dw.uuid = doc.uuid AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING') AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
          AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
      """.trimIndent()
 }
