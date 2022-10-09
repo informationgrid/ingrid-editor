@@ -76,7 +76,7 @@ import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
-import { RouteReuseStrategy } from "@angular/router";
+import { Router, RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
@@ -90,20 +90,24 @@ registerLocaleData(de);
 
 export function ConfigLoader(
   configService: ConfigService,
-  authFactory: AuthenticationFactory
+  authFactory: AuthenticationFactory,
+  router: Router
 ) {
   return () => {
-    const redirectToCatalogSpecificRoute = () => {
+    const redirectToCatalogSpecificRoute = (router: Router) => {
       console.log(
         "Current Catalog: ",
         configService.$userInfo.value.currentCatalog.id
       );
+      return router.navigate([
+        "/" + configService.$userInfo.value.currentCatalog.id + "/dashboard",
+      ]);
     };
     return configService
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
-      .then(() => redirectToCatalogSpecificRoute())
+      .then(() => redirectToCatalogSpecificRoute(router))
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
@@ -210,7 +214,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, AuthenticationFactory],
+      deps: [ConfigService, AuthenticationFactory, Router],
       multi: true,
     },
     // set locale for dates

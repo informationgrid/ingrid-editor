@@ -34,6 +34,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     configService: ConfigService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private docService: DocumentService,
     private sessionQuery: SessionQuery,
@@ -101,7 +102,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  openDocument(uuid:  string) {
+  openDocument(uuid: string) {
     this.router.navigate(["../form", { id: uuid }], { relativeTo: this.route });
   }
 
