@@ -143,7 +143,7 @@ describe('uvp addresses', () => {
     Tree.openNode(['Referenced Org']);
     AddressPage.deleteLoadedNode(true);
     cy.get('ige-replace-address-dialog').contains(
-      'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
+      'Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?'
     );
   });
 
