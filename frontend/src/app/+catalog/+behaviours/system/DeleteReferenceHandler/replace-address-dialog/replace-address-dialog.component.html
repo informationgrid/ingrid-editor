@@ -10,8 +10,13 @@
     <mat-dialog-content class="hide-tab-header">
         <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
             <mat-tab *ngIf="showInfo">
-                <p>
-                    Das Dokument wird bereits von mindestens einem Dokument
+                <p [hidden]="currentCatalog == 'uvp'">
+                    Diese Adresse wird von mindestens einem Datensatz
+                    referenziert. Möchten Sie die Adresse ersetzen?
+                </p>
+
+                <p [hidden]="currentCatalog != 'uvp'">
+                    Diese Adresse wird von mindestens einem Verfahren
                     referenziert. Möchten Sie die Adresse ersetzen?
                 </p>
             </mat-tab>

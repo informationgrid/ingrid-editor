@@ -19,6 +19,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   group = "Adressen";
   defaultActive = true;
   forAddress = true;
+  currentCatalog = "";
   private disabled = false;
 
   constructor(
@@ -31,6 +32,8 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
 
     let role = configService.$userInfo.getValue().role;
     const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    this.currentCatalog =
+      configService.$userInfo.getValue().currentCatalog.type;
     if (!isPrivileged) this.disabled = true;
   }
 
@@ -72,9 +75,14 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   }
 
   private showDialog(source: string, showInfo = true): Observable<any> {
+    debugger;
     return this.dialog
       .open(ReplaceAddressDialogComponent, {
-        data: <ReplaceAddressDialogData>{ source: source, showInfo: showInfo },
+        data: <ReplaceAddressDialogData>{
+          source: source,
+          showInfo: showInfo,
+          currentCatalog: this.currentCatalog,
+        },
       })
       .afterClosed();
   }
