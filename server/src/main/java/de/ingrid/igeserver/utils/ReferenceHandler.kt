@@ -63,7 +63,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
 data class DocumentLinks(
     val catalogId: String,
     val docUuid: String,
-    val docs: List<UvpReferenceHandler.UploadInfo>,
+    val docs: MutableList<UvpReferenceHandler.UploadInfo>,
     val title: String = "",
     val type: String = ""
 ) {
