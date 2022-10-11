@@ -23,7 +23,7 @@ class UploadExpiredTask(
 
     data class Counter(var archived: Int, var restored: Int)
 
-    @Scheduled(cron = "\${upload.cleanup.schedule}")
+    @Scheduled(cron = "\${upload.expired.schedule}")
     fun scheduleStart() {
         start(null)
     }
