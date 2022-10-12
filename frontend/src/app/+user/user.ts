@@ -51,6 +51,7 @@ export class TreePermission {
   permission: string; // TODO: still used?
   hasWritePermission: boolean;
   hasOnlySubtreeWritePermission: boolean;
+  uvpAdressType?: string; // either "UvpOrganisationDoc" or "UvpAddressDoc"
 }
 
 export enum PermissionType {

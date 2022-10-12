@@ -104,6 +104,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
       doc.isFolder = igeDoc._type === "FOLDER";
       doc.title = igeDoc.title;
+      doc.uvpAdressType = igeDoc._type;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);
@@ -117,7 +118,12 @@ export class PermissionTableComponent implements ControlValueAccessor {
   getIcon(element) {
     if (element.isFolder) {
       return "Ordner";
-    } else if (this.forAddress) {
+    } else if (
+      this.forAddress &&
+      element.uvpAdressType === "UvpOrganisationDoc"
+    ) {
+      return "Institution";
+    } else if (this.forAddress && element.uvpAdressType === "UvpAddressDoc") {
       return "Freie-Adresse";
     } else {
       return "Fachaufgabe";
