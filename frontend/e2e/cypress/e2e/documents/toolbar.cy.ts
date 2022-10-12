@@ -20,8 +20,8 @@ describe('Toolbar behavior', () => {
 
     // Empty folder
     Tree.openNode(['checkDisabledBtn']);
-    // ignore preview button for now for now
-    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save'], ['Preview']);
+
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled');
@@ -30,11 +30,8 @@ describe('Toolbar behavior', () => {
     // Non Empty folder
     cy.get('body').type('{esc}');
     Tree.openNode(['Testdokumente']);
-    // ignore preview button for now for now
-    DocumentPage.checkOnlyActiveToolbarButtons(
-      ['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous'],
-      ['Preview']
-    );
+
+    DocumentPage.checkOnlyActiveToolbarButtons(['NewDoc', 'NewFolder', 'Copy', 'Delete', 'Save', 'Previous']);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.enabled');
