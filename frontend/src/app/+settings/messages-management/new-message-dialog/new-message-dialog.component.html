@@ -20,6 +20,7 @@
         <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Benachrichtigung anzeigen bis (optional)</mat-label>
             <input
+                data-cy="expire-date-input"
                 formControlName="date"
                 igeFocus
                 matInput
@@ -28,6 +29,7 @@
             />
             <mat-datepicker-toggle
                 matSuffix
+                data-cy="expire-date"
                 [for]="picker"
             ></mat-datepicker-toggle>
 
@@ -36,6 +38,7 @@
 
         <div [hidden]="userInfo.role != 'ige-super-admin'">
             <mat-slide-toggle
+                data-cy="toggle-for-all-catalogs"
                 labelPosition="before"
                 color="accent"
                 class="stretch"

@@ -1,6 +1,6 @@
 <div fxFlex fxLayout="column" *transloco="let t; read: 'dashboard'">
     <div class="allPageScroll">
-        <div class="welcome">
+        <div class="welcome" data-cy="welcome-message">
             <div>{{ t("welcome") }}</div>
             <div *ngFor="let message of messages$ | async" class="message">
                 <span>{{ message.text }}</span>
@@ -74,6 +74,7 @@
 
                 <ige-card-box
                     fxFlex
+                    data-cy="recent-docs"
                     label="{{ t('mostRecent') }}"
                     data-cy="card-latest-docs"
                 >
