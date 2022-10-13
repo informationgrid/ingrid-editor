@@ -5,6 +5,9 @@ import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
 import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
+import { AdminUserPage } from '../../../pages/administration-user.page';
+import { UserAndRights } from '../../../pages/base.page';
+import { AdminGroupPage } from '../../../pages/administration-group.page';
 
 describe('uvp addresses', () => {
   beforeEach(() => {
@@ -164,5 +167,18 @@ describe('uvp addresses', () => {
     cy.get('ige-address-card .title').then(addressTitle => {
       expect(addressTitle.text().trim()).to.equal(addressLastName);
     });
+  });
+
+  it('should show correct icons when adding addresses to permissions (#3767)', () => {
+    const addressName = 'Bauer, Fred';
+    const organizationName = 'Organisation_13';
+
+    Menu.switchTo('USERS');
+    AdminUserPage.goToTabmenu(UserAndRights.Group);
+    AdminGroupPage.selectGroupAndWait('group_1');
+    AdminGroupPage.addDocumentToGroup(addressName, 'Adressen');
+    AdminGroupPage.addDocumentToGroup(organizationName, 'Adressen');
+    cy.contains('permission-table tr', addressName).find('[data-mat-icon-name="Freie-Adresse"]');
+    cy.contains('permission-table tr', organizationName).find('[data-mat-icon-name="Institution"]');
   });
 });
