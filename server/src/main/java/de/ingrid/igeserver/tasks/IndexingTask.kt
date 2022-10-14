@@ -107,7 +107,7 @@ class IndexingTask @Autowired constructor(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         categories.forEach categoryLoop@{ category ->
-            val categoryAlias = "${elasticsearchAlias}_${category.value}"
+            val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
 
             val exporter = try {
                 indexService.getExporter(category, format)
@@ -288,9 +288,9 @@ class IndexingTask @Autowired constructor(
         format: String,
         elasticsearchAlias: String
     ): IndexInfo {
-        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+        val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
+        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         if (oldIndex == null) {
-            val categoryAlias = "${elasticsearchAlias}_${category.value}"
             val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
             oldIndex = newIndex
             indexManager.switchAlias(elasticsearchAlias, null, newIndex)
@@ -303,6 +303,11 @@ class IndexingTask @Autowired constructor(
             docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
         }
     }
+
+    private fun getIndexIdentifier(
+        elasticsearchAlias: String,
+        category: DocumentCategory
+    ) = "${elasticsearchAlias}_${category.value}"
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
 
