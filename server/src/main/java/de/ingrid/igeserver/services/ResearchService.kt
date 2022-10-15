@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import org.hibernate.jpa.QueryHints
@@ -56,11 +57,11 @@ class ResearchService {
 
     fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
 
-        val isAdmin = authUtils.isAdmin(principal)
-        val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
         // if a user has no groups then user is not allowed anything
-        if (groupIds.isEmpty() && !isAdmin) {
+        if (groupIds.isEmpty() && !hasAccessToRootDocs) {
             return ResearchResponse(0, emptyList())
         }
 
@@ -68,7 +69,7 @@ class ResearchService {
         val parameters = getParameters(query)
 
         val result = sendQuery(sql, parameters, query.pagination)
-        val map = filterAndMapResult(result, isAdmin, principal)
+        val map = filterAndMapResult(result, hasAccessToRootDocs, principal)
 
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
             getTotalHits(sql, parameters)
@@ -78,6 +79,9 @@ class ResearchService {
 
         return ResearchResponse(totalHits, map)
     }
+
+    private fun hasRootAccess(groups: Set<Group>) =
+        groups.any { listOf(RootPermissionType.READ, RootPermissionType.WRITE).contains(it.permissions?.rootPermission) }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
