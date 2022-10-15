@@ -46,6 +46,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.io.IOException
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -203,7 +204,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     exporter.run(doc, catalogId)
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
+                    val errorMessage = "Error exporting document '${doc.uuid}' in catalog '$catalogId': ${ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
                     sendNotification(category, message, index + (page * PAGE_SIZE))
@@ -228,6 +229,7 @@ class IndexingTask @Autowired constructor(
         } else {
             catalog.settings?.lastLogSummary = message
         }
+        catalog.modified = OffsetDateTime.now()
         catalogRepo.save(catalog)
     }
 
