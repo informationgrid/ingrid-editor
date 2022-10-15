@@ -249,7 +249,6 @@ publishing {
 }
 
 // create docker image
-/*
 jib {
     // tag for image on develop branch will be latest
     // tag for image on master branch will be the version
@@ -284,7 +283,6 @@ jib {
         }
     }
 }
-*/
 
 noArg {
     annotation('de.ingrid.igeserver.annotations.NoArgs')
