@@ -40,10 +40,9 @@ ige-quick-search,
   text-align: center;
 }
 .allPageScroll {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .dashboard-content {
-  overflow: auto;
   padding-top: 30px;
   flex: 1;
 }
