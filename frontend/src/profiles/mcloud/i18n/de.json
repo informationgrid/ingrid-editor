@@ -6,5 +6,8 @@
   "dashboard": {
     "welcome": "Willkommen im mCLOUD Editor",
     "application": "mCLOUD"
+  },
+  "replace-address" : {
+    "reference-error" : "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
   }
 }

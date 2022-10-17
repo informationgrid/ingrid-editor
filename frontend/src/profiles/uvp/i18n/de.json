@@ -43,5 +43,8 @@
     "publicDisclosure": "Öffentliche Auslegung",
     "decisionOfAdmission": "Entscheidung über die Zulassung",
     "publicHearing": "Erörterungstermin"
+  },
+  "replace-address" : {
+    "reference-error" : "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?"
   }
 }

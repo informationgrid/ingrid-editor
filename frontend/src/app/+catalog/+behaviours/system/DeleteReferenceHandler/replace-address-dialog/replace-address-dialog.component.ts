@@ -7,7 +7,6 @@ import { TreeNode } from "../../../../../store/tree/tree-node.model";
 export interface ReplaceAddressDialogData {
   source: string;
   showInfo: boolean;
-  currentCatalog: string;
 }
 
 @Component({
@@ -18,7 +17,6 @@ export interface ReplaceAddressDialogData {
 export class ReplaceAddressDialogComponent implements OnInit {
   page = 0;
   selectedAddress: string[];
-  currentCatalog: string;
   private source: string;
   showInfo = true;
   disableTreeNode = (node: TreeNode) =>
@@ -30,7 +28,6 @@ export class ReplaceAddressDialogComponent implements OnInit {
   ) {
     this.source = data.source;
     this.showInfo = data.showInfo;
-    this.currentCatalog = data.currentCatalog;
   }
 
   ngOnInit(): void {}
