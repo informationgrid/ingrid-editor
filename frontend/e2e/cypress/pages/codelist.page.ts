@@ -4,7 +4,7 @@ export class CodelistPage {
   static visit() {
     cy.intercept('GET', 'api/codelist/manage').as('GetCodeList');
     cy.visit('catalogs');
-    cy.wait('@GetCodeList', { timeout: 10000 });
+    cy.wait('@GetCodeList', { timeout: 20000 });
   }
 
   static resetCodelistEntries() {
