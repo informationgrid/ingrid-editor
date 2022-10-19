@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
-@Service()
+@Service
 @Profile("mcloud")
 class MCloudProfile @Autowired constructor(
     @JsonIgnore val codelistRepo: CodelistRepository,

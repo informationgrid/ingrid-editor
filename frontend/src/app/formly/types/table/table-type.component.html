@@ -236,24 +236,29 @@
             >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
 
-        <div class="button-wrapper">
-            <button
-                type="button"
-                mat-stroked-button
-                color="primary"
-                (click)="showUploadFilesDialog()"
-            >
-                Dateien hochladen
-            </button>
-            oder
-            <button
-                type="button"
-                mat-stroked-button
-                color="primary"
-                (click)="showAddLinkDialog()"
-            >
-                Link angeben
-            </button>
-        </div>
+        <ng-container *ngIf="to.supportUpload; else simpleAdd">
+            <div class="button-wrapper">
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showUploadFilesDialog()"
+                >
+                    Dateien hochladen
+                </button>
+                oder
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showAddLinkDialog()"
+                >
+                    Link angeben
+                </button>
+            </div>
+        </ng-container>
+        <ng-template #simpleAdd>
+            <ige-add-button (add)="editRow(null)"></ige-add-button>
+        </ng-template>
     </div>
 </div>

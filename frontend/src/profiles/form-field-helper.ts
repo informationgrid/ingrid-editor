@@ -12,7 +12,7 @@ export class FormFieldHelper {
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       id: id,
       fieldGroupClassName:
@@ -22,6 +22,7 @@ export class FormFieldHelper {
         externalLabel: label,
       },
       fieldGroup: fields,
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -84,7 +85,7 @@ export class FormFieldHelper {
   }
 
   addRepeatList(id, label, options?) {
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
       wrappers: ["panel"],
@@ -97,6 +98,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -195,6 +197,7 @@ export class FormFieldHelper {
         required: options?.required,
         columns: options?.columns,
         batchValidUntil: options?.batchValidUntil,
+        supportUpload: options?.supportUpload ?? true,
       },
       validators: options?.validators,
     };
