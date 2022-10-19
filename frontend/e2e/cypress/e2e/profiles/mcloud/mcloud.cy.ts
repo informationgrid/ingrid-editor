@@ -172,7 +172,7 @@ describe('mCLOUD documents', function () {
       Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_B', 'Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);
       AddressPage.tryIllegitimatDelete();
       // expect warning
-      cy.contains('ige-replace-address-dialog', 'Diese Adresse wird von mindestens einem Verfahren referenziert.');
+      cy.contains('ige-replace-address-dialog', 'Diese Adresse wird von mindestens einem Datensatz referenziert');
     });
   });
 });
