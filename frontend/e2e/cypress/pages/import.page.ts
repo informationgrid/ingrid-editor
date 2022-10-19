@@ -2,7 +2,7 @@ export class ImportPage {
   static visit() {
     cy.intercept('GET', /api\/import\?profile=mcloud/).as('getImportPage');
     cy.visit('/importExport/import');
-    cy.wait('@getImportPage', { timeout: 10000 });
+    cy.wait('@getImportPage', { timeout: 20000 });
   }
 
   static addFile(filePath: string) {
@@ -36,7 +36,7 @@ export class ImportPage {
 
   static jumpToDocument(docName: string) {
     cy.contains('button', 'Öffnen').click();
-    cy.get('.title').should('contain', docName);
+    cy.get('.title', { timeout: 7000 }).should('contain', docName);
   }
 }
 
