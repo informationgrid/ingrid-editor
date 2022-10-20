@@ -50,6 +50,7 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -201,6 +202,7 @@ export class FormFieldHelper {
         supportUpload: options?.supportUpload ?? true,
       },
       validators: options?.validators,
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -277,7 +279,8 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "checkbox",
-      wrappers: ["panel", "form-field", "inline-help"],
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,

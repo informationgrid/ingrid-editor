@@ -47,7 +47,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
       this.addSection("Allgemeines", [
         this.addGroup(
           null,
-          "???",
+          "Info",
           [
             this.addInput("parentUuid", null, {
               fieldLabel: "Identifikator des übergeordneten Metadatensatzes",
@@ -69,26 +69,43 @@ export class GeoDatasetDoctype extends BaseDoctype {
           required: true,
         }),
         this.addAddressCard("addresses", "Adressen"),
-        this.addCheckbox("isInspireRelevant", "INSPIRE-relevant"),
-        this.addCheckbox("isAdVCompatible", "AdV kompatibel"),
-        this.addCheckbox("isOpenData", "Open Data"),
+        this.addGroup(null, "Typ", [
+          this.addCheckbox("isInspireRelevant", "INSPIRE-relevant", {
+            wrappers: ["form-field", "inline-help"],
+            fieldLabel: "INSPIRE-relevant",
+            className: "flex-1",
+          }),
+          this.addCheckbox("isAdVCompatible", "AdV kompatibel", {
+            wrappers: ["form-field", "inline-help"],
+            fieldLabel: "AdV kompatibel",
+            className: "flex-1",
+          }),
+          this.addCheckbox("isOpenData", "Open Data", {
+            wrappers: ["form-field", "inline-help"],
+            fieldLabel: "Open Data",
+            className: "flex-1",
+          }),
+        ]),
       ]),
       this.addSection("Verschlagwortung", [
         this.addRepeatList("advProductGroup", "AdV-Produktgruppe", {
           asSelect: true,
           options: this.getCodelistForSelect(8010, "advProductGroup"),
           codelistId: 8010,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addRepeatList("inspireTopics", "INSPIRE-Themen", {
           asSelect: true,
           options: this.getCodelistForSelect(6100, "inspireTopics"),
           codelistId: 6100,
+          hideExpression: "formState.hideOptionals",
         }),
         // TODO: output needs to be formatted in a different way
         this.addRepeatList("priorityDataset", "INSPIRE - priority data set", {
           asSelect: true,
           options: this.getCodelistForSelect(6350, "priorityDataset"),
           codelistId: 6350,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addSelect(
           "spatialScope",
@@ -98,7 +115,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
             codelistId: 6360,
           }
         ),
-        this.addRepeatList("thesaurusTopics", "INSPIRE - priority data set", {
+        this.addRepeatList("thesaurusTopics", "ISO-Themenkategorie", {
           asSelect: true,
           options: this.getCodelistForSelect(527, "thesaurusTopics"),
           codelistId: 527,
@@ -106,6 +123,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         this.addRepeatChip("keywords", "Optionale Schlagworte"),
       ]),
       this.addSection("Fachbezug", [
+        this.addTextArea("baseText", "Fachliche Grundlage", "dataset"),
         this.addInput("sourceIdentifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field"],
@@ -119,9 +137,11 @@ export class GeoDatasetDoctype extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(526, "priorityDataset"),
           codelistId: 526,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addTable("scale", "Erstellungsmaßstab", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "scale",
@@ -159,6 +179,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         }),
         this.addTable("symbol", "Symbolkatalog", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "title",
@@ -198,6 +219,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         }),
         this.addTable("keys", "Schlüsselkatalog", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "title",
@@ -235,10 +257,18 @@ export class GeoDatasetDoctype extends BaseDoctype {
             },
           ],
         }),
-        this.addRepeatList("attributes", "Sachdaten/Attributinformation"),
-        this.addRepeatList("coupledServices", "Darstellender Dienst"),
-        this.addRepeatList("dataBasis", "Datengrundlage"),
-        this.addTextArea("process", "Herstellungsprozess", "geoDataset"),
+        this.addRepeatList("attributes", "Sachdaten/Attributinformation", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addRepeatList("coupledServices", "Darstellender Dienst", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addRepeatList("dataBasis", "Datengrundlage", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addTextArea("process", "Herstellungsprozess", "geoDataset", {
+          hideExpression: "formState.hideOptionals",
+        }),
       ]),
       this.addSection("Datenqualität", [
         this.addInput("coverage", "Datendefizit", {
@@ -254,6 +284,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         ]),
         this.addTable("qualities", "Qualität", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "type",
@@ -314,6 +345,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(100, "spatialSystems"),
           codelistId: 100,
+          required: true,
         }),
         this.addGroup(
           null,
@@ -357,14 +389,14 @@ export class GeoDatasetDoctype extends BaseDoctype {
               ],
             },
           ],
-          { fieldGroupClassName: null }
+          {
+            fieldGroupClassName: null,
+            hideExpression: "formState.hideOptionals",
+          }
         ),
-        this.addTextArea(
-          "spatialRefExplanation",
-          "Erläuterungen",
-          "spatial",
-          {}
-        ),
+        this.addTextArea("spatialRefExplanation", "Erläuterungen", "spatial", {
+          hideExpression: "formState.hideOptionals",
+        }),
       ]),
       this.addSection("Zeitbezug", [
         this.addRepeat("timeRefTable", "Zeitbezug der Resource", {
@@ -388,43 +420,55 @@ export class GeoDatasetDoctype extends BaseDoctype {
           ],
         }),
         this.addTextArea("timeRefExplanation", "Erläuterungen", "dataset", {
-          // wrappers: ["form-field"],
+          hideExpression: "formState.hideOptionals",
         }),
-        this.addGroup(null, "Durch die Ressource abgedeckte Zeitspanne", [
-          this.addSelect("timeRefType", null, {
-            wrappers: ["form-field"],
-            fieldLabel: "Typ",
-            options: <SelectOptionUi[]>[
-              { label: "am", value: "am" },
-              { label: "bis", value: "bis" },
-              { label: "von", value: "fromType" },
-            ],
-          }),
-          this.addDatepicker("timeRefDate1", null, {
-            wrappers: ["form-field"],
-          }),
-        ]),
+        this.addGroup(
+          null,
+          "Durch die Ressource abgedeckte Zeitspanne",
+          [
+            this.addSelect("timeRefType", null, {
+              wrappers: ["form-field"],
+              fieldLabel: "Typ",
+              options: <SelectOptionUi[]>[
+                { label: "am", value: "am" },
+                { label: "bis", value: "bis" },
+                { label: "von", value: "fromType" },
+              ],
+            }),
+            this.addDatepicker("timeRefDate1", null, {
+              wrappers: ["form-field"],
+            }),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
         this.addSelect("timeRefStatus", "Status", {
           options: this.getCodelistForSelect(523, "timeRefStatus"),
           codelistId: 523,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addSelect("timeRefPeriodicity", "Periodizität", {
           options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
           codelistId: 518,
+          hideExpression: "formState.hideOptionals",
         }),
-        this.addGroup(null, "Im Intervall", [
-          this.addInput("timeRefIntervalNum", null, {
-            fieldLabel: "Anzahl",
-            type: "number",
-            className: "flex-1",
-          }),
-          this.addSelect("timeRefStatus", "Einheit", {
-            wrappers: ["form-field"],
-            options: this.getCodelistForSelect(1230, "timeRefStatus"),
-            codelistId: 1230,
-            className: "flex-3",
-          }),
-        ]),
+        this.addGroup(
+          null,
+          "Im Intervall",
+          [
+            this.addInput("timeRefIntervalNum", null, {
+              fieldLabel: "Anzahl",
+              type: "number",
+              className: "flex-1",
+            }),
+            this.addSelect("timeRefStatus", "Einheit", {
+              wrappers: ["form-field"],
+              options: this.getCodelistForSelect(1230, "timeRefStatus"),
+              codelistId: 1230,
+              className: "flex-3",
+            }),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
       ]),
       // ]),
       this.addSection("Zusatzinformation", [
@@ -441,6 +485,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         this.addSelect("extraInfoCharSetData", "Zeichensatz des Datensatzes", {
           options: this.getCodelistForSelect(510, "extraInfoCharSetData"),
           codelistId: 510,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addRepeatList("extraInfoLangData", "Sprache der Ressource", {
           options: this.getCodelistForSelect(99999999, "extraInfoLangData"),
@@ -449,6 +494,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         }),
         this.addTable("conformity", "Konformität", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "specification",
@@ -506,6 +552,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(1370, "extraInfoXMLExportTable"),
           codelistId: 1370,
+          hideExpression: "formState.hideOptionals",
         }),
         this.addRepeatList(
           "extraInfoLegalBasicsTable",
@@ -517,10 +564,15 @@ export class GeoDatasetDoctype extends BaseDoctype {
               "extraInfoLegalBasicsTable"
             ),
             codelistId: 1350,
+            hideExpression: "formState.hideOptionals",
           }
         ),
-        this.addTextArea("extraInfoPurpose", "Herstellungszweck", "dataset"),
-        this.addTextArea("extraInfoUse", "Eignung/Nutzung", "dataset"),
+        this.addTextArea("extraInfoPurpose", "Herstellungszweck", "dataset", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addTextArea("extraInfoUse", "Eignung/Nutzung", "dataset", {
+          hideExpression: "formState.hideOptionals",
+        }),
       ]),
       this.addSection("Verfügbarkeit", [
         this.addRepeatList(
@@ -559,10 +611,12 @@ export class GeoDatasetDoctype extends BaseDoctype {
         this.addTextArea(
           "availabilityUseConstraints",
           "Anwendungseinschränkungen",
-          "dataset"
+          "dataset",
+          { hideExpression: "formState.hideOptionals" }
         ),
         this.addTable("availabilityDataFormat", "Datenformat", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "name",
@@ -611,6 +665,7 @@ export class GeoDatasetDoctype extends BaseDoctype {
         }),
         this.addTable("availabilityMediaOptions", "Medienoption", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [
             {
               key: "medium",
@@ -649,12 +704,14 @@ export class GeoDatasetDoctype extends BaseDoctype {
         this.addTextArea(
           "availabilityOrderInfo",
           "Bestellinformation",
-          "dataset"
+          "dataset",
+          { hideExpression: "formState.hideOptionals" }
         ),
       ]),
       this.addSection("Verweise", [
         this.addTable("linksTo", "Verweise", {
           supportUpload: false,
+          hideExpression: "formState.hideOptionals",
           columns: [],
         }),
       ]),
