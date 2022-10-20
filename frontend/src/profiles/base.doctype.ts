@@ -187,12 +187,15 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
               console.log(
                 `Setting default codelist value for: ${field.key} with: ${codelist.default}`
               );
-              field.defaultValue =
-                field.type === "select"
-                  ? codelist.default
-                  : codelist.entries.find(
-                      (entry) => entry.id === codelist.default
-                    ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
+              if (field.type === "select") {
+                field.defaultValue = codelist.default;
+              } else if (field.type === "repeatList") {
+                field.defaultValue = [{ key: codelist.default }];
+              } else {
+                field.defaultValue = codelist.entries.find(
+                  (entry) => entry.id === codelist.default
+                ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
+              }
             })
           )
           .subscribe();

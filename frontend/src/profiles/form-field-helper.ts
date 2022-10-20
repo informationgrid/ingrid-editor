@@ -39,7 +39,7 @@ export class FormFieldHelper {
       type: "textarea",
       className: id,
       id: elementIdPrefix + id,
-      wrappers: ["panel", "form-field"],
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
         autosize: false,
@@ -106,7 +106,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "repeat",
-      wrappers: ["panel"],
+      wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       templateOptions: {
         externalLabel: label,
@@ -148,6 +148,7 @@ export class FormFieldHelper {
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
       templateOptions: {
+        type: options?.type,
         externalLabel: label,
         label: options?.fieldLabel,
         required: options?.required,
