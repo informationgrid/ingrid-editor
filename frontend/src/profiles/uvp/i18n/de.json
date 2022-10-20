@@ -30,6 +30,7 @@
   "publish": {
     "formWithPronoun": "Dieses Vorhaben"
   },
+
   "procedureType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
@@ -44,7 +45,7 @@
     "decisionOfAdmission": "Entscheidung über die Zulassung",
     "publicHearing": "Erörterungstermin"
   },
-  "replace-address" : {
-    "reference-error" : "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?"
+  "replace-address": {
+    "reference-error": "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?"
   }
 }
