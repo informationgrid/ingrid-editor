@@ -50,10 +50,7 @@ export class MainHeaderComponent implements OnInit {
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       tap(
         (userInfo) =>
-          (this.otherAssignedCatalogs =
-            userInfo?.assignedCatalogs?.filter(
-              (c) => c.id !== userInfo.currentCatalog?.id
-            ) ?? [])
+          (this.otherAssignedCatalogs = this.getOtherAssignedCatalogs(userInfo))
       ),
       map((userInfo) => userInfo?.currentCatalog?.label)
     );
@@ -65,6 +62,14 @@ export class MainHeaderComponent implements OnInit {
       }
     });
     this.config = this.configService.getConfiguration();
+  }
+
+  private getOtherAssignedCatalogs(userInfo: UserInfo) {
+    return (
+      userInfo?.assignedCatalogs
+        ?.filter((c) => c.id !== userInfo.currentCatalog?.id)
+        .sort((a, b) => a.name.localeCompare(b.name)) ?? []
+    );
   }
 
   logout() {
