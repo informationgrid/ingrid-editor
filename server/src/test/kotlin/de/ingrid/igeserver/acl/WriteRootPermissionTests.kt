@@ -1,32 +1,18 @@
 package de.ingrid.igeserver.acl
 
-import de.ingrid.igeserver.IgeServer
+import IntegrationTest
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.transaction.annotation.Transactional
 
-
-@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@TestPropertySource(locations = ["classpath:application-test.properties"])
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
-class WriteRootPermissionTests : AnnotationSpec() {
-
-    override fun extensions() = listOf(SpringExtension)
+class WriteRootPermissionTests : IntegrationTest() {
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository

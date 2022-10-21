@@ -1,23 +1,13 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
-import com.ninjasquad.springmockk.MockkBean
-import de.ingrid.igeserver.IgeServer
+import IntegrationTest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.services.CatalogService
-import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.mockk.every
 import io.mockk.mockk
 import org.hamcrest.Matchers.`is`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.web.servlet.MockMvc
@@ -29,40 +19,28 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManager
 
 
-@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@TestPropertySource(locations = ["classpath:application-test.properties"])
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/uvp/test_data_uvp-report.sql"], config = SqlConfig(encoding = "UTF-8"))
-@AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles(profiles = ["uvp"])
-class UvpReportApiControllerTest @Autowired constructor(
-    val mockMvc: MockMvc,
-    @MockkBean(relaxed = true) val mockCatalogService: CatalogService,
-    val entityManager: EntityManager,
-    val transactionManager: PlatformTransactionManager
-) : AnnotationSpec() {
+class UvpReportApiControllerTest : IntegrationTest() {
 
-    override fun extensions() = listOf(SpringExtension)
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var entityManager: EntityManager
+
+    @Autowired
+    lateinit var transactionManager: PlatformTransactionManager
 
     @Before
     fun beforeTest() {
-        every {
-            mockCatalogService.getPermissions(any())
-        }.returns(listOf("can_create_uvp_report"))
-        every {
-            mockCatalogService.getCatalogById(any())
-        }.returns(Catalog().apply { id = 100 })
-        every {
-            mockCatalogService.getCurrentCatalogForPrincipal(any())
-        }.returns("test_catalog")
-
         every {
             mockPrincipal.authorities
         }.returns(listOf(SimpleGrantedAuthority("cat-admin")))
         every {
             mockPrincipal.principal
-        }.returns("tester")
+        }.returns("user1")
     }
 
     @Test
