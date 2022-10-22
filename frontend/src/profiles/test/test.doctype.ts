@@ -232,6 +232,7 @@ export class TestDoctype extends BaseDoctype {
             type: "table",
             templateOptions: {
               externalLabel: "Table",
+              supportUpload: true,
               required: true,
               columns: [
                 {
