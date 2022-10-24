@@ -341,6 +341,7 @@ public class FileSystemStorage implements Storage {
             }
         }
         catch (final ValidationException ex) {
+            log.error("Validation failed for file '" + file + "'");
             // remove temporary file, if validation failed
             Files.delete(tmpFile);
             throw ex;
@@ -357,11 +358,11 @@ public class FileSystemStorage implements Storage {
         final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
 
         try {
+            log.info("Moving uploaded file '" + file + "' to target dir: " + realPath);
             Files.move(tmpFile, realPath, copyOptions);
         }
         catch (final FileAlreadyExistsException faex) {
-            final StorageItem[] items = null;//{ this.getFileInfo(catalog, userID, path, file, this.docsDir, Path.of(faex.getFile()).getFileName().toString()) };
-            throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+            throw new ConflictException(faex.getMessage(), null, "");
         }
         if (Files.size(realPath) != size) {
             throw new IOException("The file size is different to the expected size");
@@ -386,7 +387,7 @@ public class FileSystemStorage implements Storage {
         }
         catch (final FileAlreadyExistsException faex) {
             final StorageItem[] items = null;//{ this.getFileInfo(faex.getFile()) };
-            throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+            throw new ConflictException(faex.getMessage(), items, "");
         }
         if (Files.size(realPath) != size) {
             throw new IOException("The file size is different to the expected size");
@@ -693,7 +694,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
@@ -708,7 +709,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
@@ -745,7 +746,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
@@ -761,7 +762,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
@@ -780,7 +781,7 @@ public class FileSystemStorage implements Storage {
         catch (final FileAlreadyExistsException faex) {
 
             final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-            throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+            throw new ConflictException(faex.getMessage(), items, "");
         }
         catch (final IOException ex) {
             throw new UncheckedIOException(ex);
@@ -811,7 +812,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
@@ -872,7 +873,7 @@ public class FileSystemStorage implements Storage {
             catch (final FileAlreadyExistsException faex) {
 
                 final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, items[0].getNextName());
+                throw new ConflictException(faex.getMessage(), items, "");
             }
             catch (final IOException ex) {
                 throw new UncheckedIOException(ex);
