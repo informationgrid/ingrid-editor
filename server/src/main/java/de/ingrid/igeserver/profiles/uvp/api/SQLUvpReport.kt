@@ -3,7 +3,11 @@ package de.ingrid.igeserver.profiles.uvp.api
 import org.intellij.lang.annotations.Language
 
 /*
-
+    Get the statistic of all EIA-numbers in all datasets in a given time-range of the decision-date.
+    Moreover only datasets of type 'Zulassungsverfahren', 'Linienbestimmung' and 'Raumordnungsverfahren'
+    are considered.
+    The result is filtered by a given time-range on the decision date. If multiple decision-dates
+    exist, the most recent one is used.
  */
 @Language("PostgreSQL")
 fun getEiaStatisiticSQL(catalogId: Int, startDate: String?, endDate: String?) = """
@@ -20,7 +24,9 @@ fun getEiaStatisiticSQL(catalogId: Int, startDate: String?, endDate: String?) = 
 """.trimIndent()
 
 /*
-
+    Count all datasets where preliminary assessment is set to `true`.
+    The result is filtered by a given time-range on the decision date. If multiple decision-dates
+    exist, the most recent one is used.
  */
 @Language("PostgreSQL")
 fun getSuccessfulPrelimCountSQL(catalogId: Int, startDate: String?, endDate: String?) = """
@@ -31,8 +37,10 @@ fun getSuccessfulPrelimCountSQL(catalogId: Int, startDate: String?, endDate: Str
         AND document1.data -> 'prelimAssessment' = 'true'
         ${addDateLimit(startDate, endDate)}
 """.trimIndent()
-/*
 
+/*
+    Count all negative preliminary assessments. The result is filtered by a given time-range on the
+    decision date, which can only exist once for this dataset type.
  */
 @Language("PostgreSQL")
 fun getNegativePrelimCountSQL(catalogId: Int, startDate: String?, endDate: String?) = """
@@ -45,9 +53,12 @@ fun getNegativePrelimCountSQL(catalogId: Int, startDate: String?, endDate: Strin
 """.trimIndent()
 
 /*
-    Get receipt date and latest decision date (in case there are more than one) for datasets of type
+    Get receipt-date and latest decision date (in case there are more than one) for datasets of type
     'Zulassungsverfahren', 'Linienbestimmung' and 'Raumordnungsverfahren'.
-    
+    In case the receipt-date is missing (since it only was required at a later point in time), we also get
+    the start-date of the disclosure-date, which is used instead.
+    The result is filtered by a given time-range on the decision date. If multiple decision-dates
+    exist, the most recent one is used.
  */
 @Language("PostgreSQL")
 fun getReceiptAndLatestDecisionDatesSQL(catalogId: Int, startDate: String?, endDate: String?) = """
@@ -66,6 +77,10 @@ fun getReceiptAndLatestDecisionDatesSQL(catalogId: Int, startDate: String?, endD
       ${addDateLimit(startDate, endDate)}
 """.trimIndent()
 
+/*
+    Filter decision date to be contained between start- and end-date. When multiple decision dates exist
+    then the most recent one is used for comparison.
+ */
 @Language("PostgreSQL")
 private fun addDateLimit(startDate: String?, endDate: String?) = """
     ${if (startDate != null) "AND CAST((steps ->>'decisionDate') as date) >= CAST('$startDate' as date)" else ""}
