@@ -48,11 +48,12 @@ class UvpReportApiControllerTest : IntegrationTest() {
         mockMvc.perform(get("/api/uvp/report").principal(mockPrincipal))
             .andDo(print())
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(3)))
             .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("6", 2))))
             .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("3", 1))))
             .andExpect(jsonPath("$.eiaStatistic[2]", `is`(listOf("32", 1))))
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
-            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(4))))
     }
 
@@ -64,11 +65,12 @@ class UvpReportApiControllerTest : IntegrationTest() {
         mockMvc.perform(get("/api/uvp/report").principal(mockPrincipal))
             .andDo(print())
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(3)))
             .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("6", 2))))
             .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("3", 1))))
             .andExpect(jsonPath("$.eiaStatistic[2]", `is`(listOf("32", 1))))
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(1)))
-            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(4))))
     }
 
@@ -78,11 +80,12 @@ class UvpReportApiControllerTest : IntegrationTest() {
         mockMvc.perform(get("/api/uvp/report").principal(mockPrincipal))
             .andDo(print())
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(3)))
             .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("6", 2))))
             .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("3", 1))))
             .andExpect(jsonPath("$.eiaStatistic[2]", `is`(listOf("32", 1))))
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
-            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(4))))
     }
 
@@ -92,11 +95,12 @@ class UvpReportApiControllerTest : IntegrationTest() {
         mockMvc.perform(get("/api/uvp/report").principal(mockPrincipal))
             .andDo(print())
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(3)))
             .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("6", 3))))
             .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("32", 2))))
             .andExpect(jsonPath("$.eiaStatistic[2]", `is`(listOf("3", 1))))
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(1)))
-            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(2)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(6))))
     }
 
@@ -106,12 +110,64 @@ class UvpReportApiControllerTest : IntegrationTest() {
         mockMvc.perform(get("/api/uvp/report").principal(mockPrincipal))
             .andDo(print())
             .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(3)))
             .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("6", 3))))
             .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("32", 2))))
             .andExpect(jsonPath("$.eiaStatistic[2]", `is`(listOf("3", 1))))
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
+            .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
+    }
+    
+    @Test
+    fun filterByStartDate() {
+        mockMvc.perform(get("/api/uvp/report?from=2022-10-08T22:00:00.000Z").principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(2)))
+            .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("3", 1))))
+            .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("6", 1))))
+//            .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("32", 2))))
+            .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
+    }    
+    @Test
+    fun filterByEndDate() {
+        mockMvc.perform(get("/api/uvp/report?to=2022-10-07T22:00:00.000Z").principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(2)))
+            .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("32", 1))))
+            .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("6", 1))))
+            .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
+            .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(3))))
+    }    
+    @Test
+    fun filterByStartAndEndDate() {
+        mockMvc.perform(get("/api/uvp/report?from=2022-10-08T22:00:00.000Z&to=2022-10-10T22:00:00.000Z").principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(2)))
+            .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("3", 1))))
+            .andExpect(jsonPath("$.eiaStatistic[1]", `is`(listOf("6", 1))))
+            .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
+    }
+    
+    @Test
+    fun filterByStartAndEndDateAndMultipleDecisionDates() {
+        execSQL("/uvp/test_data_uvp-report_startEndMultipleDecisionDates.sql")
+        mockMvc.perform(get("/api/uvp/report?from=2021-10-09T22:00:00.000Z&to=2021-10-10T22:00:00.000Z").principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(1)))
+            .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("10", 1))))
+            .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
+            .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(7))))
     }
 
 

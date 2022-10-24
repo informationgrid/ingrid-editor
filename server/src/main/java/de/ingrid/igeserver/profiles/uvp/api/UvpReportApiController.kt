@@ -54,7 +54,7 @@ class UvpReportApiController @Autowired constructor(
     }
 
     fun getAverageProcedureDuration(catalogID: Int, from: String?, to: String?): Number {
-        val nativeQuery = entityManager.createNativeQuery(getReceiptAndLatestDecisionDatesSQL(catalogID))
+        val nativeQuery = entityManager.createNativeQuery(getReceiptAndLatestDecisionDatesSQL(catalogID, from, to))
 
         @Suppress("UNCHECKED_CAST") val queryResults = nativeQuery.resultList as List<Array<out Any?>>
         var totalDuration: Long = 0

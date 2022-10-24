@@ -47,6 +47,7 @@ VALUES (1010, 100, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'UvpApprovalProcedure
     }
   ],
   "receiptDate": "2022-10-03T22:00:00.000Z",
+  "prelimAssessment": true,
   "processingSteps": [
     {
       "type": "decisionOfAdmission",
@@ -67,6 +68,7 @@ VALUES (1011, 100, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'UvpApprovalProcedure
     }
   ],
   "receiptDate": "2022-10-03T22:00:00.000Z",
+  "prelimAssessment": false,
   "processingSteps": [
     {
       "type": "decisionOfAdmission",

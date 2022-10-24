@@ -22,6 +22,7 @@ VALUES (1014, 100, '222-approval-222', 'UvpApprovalProcedureDoc', 'Approval1', '
     }
   ],
   "receiptDate": "2022-10-03T22:00:00.000Z",
+  "prelimAssessment": true,
   "processingSteps": [
     {
       "type": "decisionOfAdmission",
