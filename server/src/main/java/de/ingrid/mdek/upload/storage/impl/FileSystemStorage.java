@@ -685,10 +685,12 @@ public class FileSystemStorage implements Storage {
                 if(targetPath.toFile().exists()){
                     var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir, Scope.UNPUBLISHED);
                     Files.createDirectories(trashPath.getParent());
+                    log.info("saveDataset => Moving file: " + targetPath + " to trash: " + trashPath);
                     Files.move(targetPath, trashPath, copyOptions);
                 }
 
                 Files.createDirectories(targetPath.getParent());
+                log.info("saveDataset => Moving file from unsaved folder: " + srcPath + " to: " + targetPath);
                 Files.move(srcPath, targetPath, copyOptions);
             }
             catch (final FileAlreadyExistsException faex) {
@@ -704,6 +706,7 @@ public class FileSystemStorage implements Storage {
         unsavedFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var unsavedFile = f.getRealPath();
+                log.info("saveDataset => Delete unreferenced file from unsaved folder: " + unsavedFile);
                 Files.deleteIfExists(unsavedFile);
             }
             catch (final FileAlreadyExistsException faex) {
@@ -737,10 +740,12 @@ public class FileSystemStorage implements Storage {
                 if(targetPath.toFile().exists()){
                     var trashPath = this.getTrashPath(catalog, datasetID, targetPath.getFileName().toString(), this.docsDir, Scope.PUBLISHED);
                     Files.createDirectories(trashPath.getParent());
+                    log.info("publishDataset => Moving file: " + targetPath + " to trash: " + trashPath);
                     Files.move(targetPath, trashPath, copyOptions);
                 }
 
                 Files.createDirectories(targetPath.getParent());
+                log.info("publishDataset => Moving file from unpublished folder: " + srcPath + " to: " + targetPath);
                 Files.move(srcPath, targetPath, copyOptions);
             }
             catch (final FileAlreadyExistsException faex) {
@@ -756,7 +761,7 @@ public class FileSystemStorage implements Storage {
         unpublishedFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
             try {
                 var unsavedFile = f.getRealPath();
-
+                log.info("publishDataset => Delete unreferenced file from unpublished folder: " + unsavedFile);
                 Files.deleteIfExists(unsavedFile);
             }
             catch (final FileAlreadyExistsException faex) {
