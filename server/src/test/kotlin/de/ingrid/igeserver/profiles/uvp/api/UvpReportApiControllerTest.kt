@@ -169,6 +169,19 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(7))))
     }
+    
+    @Test
+    fun filterByStartAndEndDateAndMissingReceiptDate() {
+        execSQL("/uvp/test_data_uvp-report_addPublishedWithoutReceiptDate.sql")
+        mockMvc.perform(get("/api/uvp/report?from=2022-01-22T23:00:00.000Z&to=2022-01-22T23:00:00.000Z").principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.eiaStatistic.length()", `is`(1)))
+            .andExpect(jsonPath("$.eiaStatistic[0]", `is`(listOf("8", 1))))
+            .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
+            .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
+            .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(17))))
+    }
 
 
     private fun execSQL(sqlFile: String) {

@@ -59,8 +59,8 @@ class UvpReportApiController @Autowired constructor(
         @Suppress("UNCHECKED_CAST") val queryResults = nativeQuery.resultList as List<Array<out Any?>>
         var totalDuration: Long = 0
         queryResults.forEach {
-            val receiptDate = LocalDateTime.parse(it[0] as String, DateTimeFormatter.ISO_DATE_TIME)
-            val decisionDate = LocalDateTime.parse(it[1] as String, DateTimeFormatter.ISO_DATE_TIME)
+            val receiptDate = LocalDateTime.parse((it[0] ?: it[1]) as String, DateTimeFormatter.ISO_DATE_TIME)
+            val decisionDate = LocalDateTime.parse(it[2] as String, DateTimeFormatter.ISO_DATE_TIME)
             totalDuration += decisionDate.toEpochSecond(ZoneOffset.UTC) - receiptDate.toEpochSecond(ZoneOffset.UTC)
         }
         return if (queryResults.isEmpty()) 0 else totalDuration / queryResults.size

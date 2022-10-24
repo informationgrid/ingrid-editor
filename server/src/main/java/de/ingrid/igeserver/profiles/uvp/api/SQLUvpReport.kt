@@ -51,16 +51,18 @@ fun getNegativePrelimCountSQL(catalogId: Int, startDate: String?, endDate: Strin
  */
 @Language("PostgreSQL")
 fun getReceiptAndLatestDecisionDatesSQL(catalogId: Int, startDate: String?, endDate: String?) = """
-    SELECT (document1.data ->> 'receiptDate') as receiptDate,
+    SELECT DISTINCT (document1.data ->> 'receiptDate') as receiptDate,
+           (stepsDisclosureDate -> 'disclosureDate' ->> 'start') as disclosureStartDate,
            (steps ->> 'decisionDate') as decisionDate
     FROM document_wrapper JOIN document document1 ON document_wrapper.published = document1.id,
-         jsonb_array_elements(document1.data -> 'processingSteps') as steps
+         jsonb_array_elements(document1.data -> 'processingSteps') as steps,
+         jsonb_array_elements(document1.data -> 'processingSteps') as stepsDisclosureDate
     WHERE document_wrapper.catalog_id = $catalogId
       AND (document_wrapper.type = 'UvpApprovalProcedureDoc' OR document_wrapper.type = 'UvpLineDeterminationDoc' OR
            document_wrapper.type = 'UvpSpatialPlanningProcedureDoc')
       AND jsonb_array_length(data -> 'processingSteps') > 0
-      AND (document1.data -> 'receiptDate') != 'null'
       AND (steps ->> 'type') = 'decisionOfAdmission'
+      AND ((document1.data -> 'receiptDate') != 'null' OR (stepsDisclosureDate ->> 'type') = 'publicDisclosure')
       ${addDateLimit(startDate, endDate)}
 """.trimIndent()
 
