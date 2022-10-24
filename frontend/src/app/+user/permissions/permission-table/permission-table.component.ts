@@ -102,7 +102,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.getDocument(doc.id).then((igeDoc) => {
       doc.hasWritePermission = igeDoc.hasWritePermission;
       doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
-      doc.isFolder = igeDoc._type === "FOLDER";
+      // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
+      doc.isFolder =
+        igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
 
       // downgrade permission if rights are not sufficient
