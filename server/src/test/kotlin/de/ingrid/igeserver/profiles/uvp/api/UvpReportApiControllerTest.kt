@@ -57,8 +57,6 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(4))))
     }
 
-    private fun daysInSeconds(days: Int) = days * 60 * 60 * 24
-
     @Test
     fun negativeTest() {
         execSQL("/uvp/test_data_uvp-report_addNegative.sql")
@@ -118,7 +116,7 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
     }
-    
+
     @Test
     fun filterByStartDate() {
         mockMvc.perform(get("/api/uvp/report?from=2022-10-08T22:00:00.000Z").principal(mockPrincipal))
@@ -131,7 +129,8 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
-    }    
+    }
+
     @Test
     fun filterByEndDate() {
         mockMvc.perform(get("/api/uvp/report?to=2022-10-07T22:00:00.000Z").principal(mockPrincipal))
@@ -143,10 +142,15 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.negativePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(3))))
-    }    
+    }
+
     @Test
     fun filterByStartAndEndDate() {
-        mockMvc.perform(get("/api/uvp/report?from=2022-10-08T22:00:00.000Z&to=2022-10-10T22:00:00.000Z").principal(mockPrincipal))
+        mockMvc.perform(
+            get("/api/uvp/report?from=2022-10-08T22:00:00.000Z&to=2022-10-10T22:00:00.000Z").principal(
+                mockPrincipal
+            )
+        )
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.eiaStatistic.length()", `is`(2)))
@@ -156,11 +160,15 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(0)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(5))))
     }
-    
+
     @Test
     fun filterByStartAndEndDateAndMultipleDecisionDates() {
         execSQL("/uvp/test_data_uvp-report_startEndMultipleDecisionDates.sql")
-        mockMvc.perform(get("/api/uvp/report?from=2021-10-09T22:00:00.000Z&to=2021-10-10T22:00:00.000Z").principal(mockPrincipal))
+        mockMvc.perform(
+            get("/api/uvp/report?from=2021-10-09T22:00:00.000Z&to=2021-10-10T22:00:00.000Z").principal(
+                mockPrincipal
+            )
+        )
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.eiaStatistic.length()", `is`(1)))
@@ -169,11 +177,15 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.positivePreliminaryAssessments", `is`(1)))
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(7))))
     }
-    
+
     @Test
     fun filterByStartAndEndDateAndMissingReceiptDate() {
         execSQL("/uvp/test_data_uvp-report_addPublishedWithoutReceiptDate.sql")
-        mockMvc.perform(get("/api/uvp/report?from=2022-01-22T23:00:00.000Z&to=2022-01-22T23:00:00.000Z").principal(mockPrincipal))
+        mockMvc.perform(
+            get("/api/uvp/report?from=2022-01-22T23:00:00.000Z&to=2022-01-22T23:00:00.000Z").principal(
+                mockPrincipal
+            )
+        )
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.eiaStatistic.length()", `is`(1)))
@@ -191,5 +203,7 @@ class UvpReportApiControllerTest : IntegrationTest() {
                 .executeUpdate()
         }
     }
+
+    private fun daysInSeconds(days: Int) = days * 60 * 60 * 24
 
 }
