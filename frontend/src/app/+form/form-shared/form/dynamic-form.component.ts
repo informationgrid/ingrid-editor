@@ -256,17 +256,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
+        filter((doc) => doc != null),
         tap((doc) => this.handleReadOnlyState(doc)),
-        tap((doc) =>
-          doc != null
-            ? this.treeService.selectTreeNode(this.address, doc._id)
-            : false
-        ),
-        tap((doc) =>
-          doc != null
-            ? this.loadSubscription.push(this.updateBreadcrumb(doc._id))
-            : false
-        )
+        tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
+        tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
       )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
@@ -278,7 +271,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc?.hasWritePermission || doc._pendingDate != null;
+    this.readonly = !doc.hasWritePermission || doc._pendingDate != null;
   }
 
   private updateBreadcrumb(id: string) {
