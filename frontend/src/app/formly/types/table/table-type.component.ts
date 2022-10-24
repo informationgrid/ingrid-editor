@@ -18,6 +18,10 @@ import {
   UploadFilesDialogComponent,
 } from "./upload-files-dialog/upload-files-dialog.component";
 import { ValidUntilDialogComponent } from "./valid-until-dialog/valid-until-dialog.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -170,6 +174,31 @@ export class TableTypeComponent
     if (updated.length === 0) {
       this.toggleBatchMode(false);
     }
+  }
+
+  showDeleteEntriesDialog() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie die Einträge wirklich löschen?`,
+          title: "Löschen",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((response) => {
+        if (response === "confirm") {
+          this.removeSelectedRows();
+        }
+      });
   }
 
   drop(event: CdkDragDrop<any, any>) {
