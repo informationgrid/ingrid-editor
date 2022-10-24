@@ -99,6 +99,7 @@ class UploadApiController @Autowired constructor(
         fileInfo.addUploadedChunk(flowChunkNumber)
 
         if (fileInfo.isUploadFinished(flowTotalChunks)) {
+            log.info("Merging parts of uploaded file: $flowFilename")
             // store file
             try {
                 files = storage.combineParts(
@@ -111,6 +112,7 @@ class UploadApiController @Autowired constructor(
                     flowTotalSize,
                     replace
                 )
+                log.info("Upload complete: $flowFilename")
             } catch (ex: Exception) {
                 log.error("Error uploading file $flowFilename", ex)
                 return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
