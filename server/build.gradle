@@ -8,6 +8,7 @@ buildscript {
     ext.jackson_version = '2.13.4'
     ext.kotest_version = '5.5.1'
     ext.jte_version = '2.2.2'
+    ext.elastic_version = '7.17.6'
     repositories {
         mavenCentral()
     }
@@ -165,7 +166,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:5.14.0.1')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:5.15.0-SNAPSHOT')
 
     implementation('de.ingrid:ingrid-ibus-client:5.13.0') {
         exclude group: 'org.apache.logging.log4j'
@@ -179,10 +180,10 @@ dependencies {
 
 dependencyManagement {
     dependencies {
-        dependency 'org.elasticsearch:elasticsearch:6.8.23'
-        dependency 'org.elasticsearch.client:elasticsearch-rest-client:6.8.23'
-        dependency 'org.elasticsearch.plugin:transport-netty4-client:6.8.23'
-        dependency 'org.elasticsearch.client:transport:6.8.23'
+        dependency "org.elasticsearch:elasticsearch:$elastic_version"
+        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
+        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
+        dependency "org.elasticsearch.client:transport:$elastic_version"
     }
 }
 
