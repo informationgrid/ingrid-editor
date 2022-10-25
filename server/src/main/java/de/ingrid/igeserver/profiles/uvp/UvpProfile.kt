@@ -5,7 +5,7 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
+import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
-@Service()
+@Service
 @Profile("uvp")
 class UvpProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,

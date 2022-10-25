@@ -40,8 +40,8 @@ describe('uvp reports', () => {
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.Report);
     uvpPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
-      // create new document of type "negative Vorprüfung"
-      DocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle);
+      // create new published document of type "negative Vorprüfung"
+      DocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
       cy.get(
         `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
@@ -58,8 +58,8 @@ describe('uvp reports', () => {
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.Report);
     uvpPage.getUVPNumbermetrics('UVPG-1.4.1.2').then(oldValue => {
-      // create new document of type "Linienbestimmungsverfahren"
-      DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle);
+      // create new published document of type "Linienbestimmungsverfahren"
+      DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
       cy.contains('[label="Verwendete UVP Nummern"] .mat-row', 'UVPG-1.4.1.2')
         .children()
@@ -83,7 +83,12 @@ describe('uvp reports', () => {
     uvpPage.goToTabmenu(UVPreports.Report);
     uvpPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
       // create new document of type "negative Vorprüfung"
-      DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(docTitle_2);
+      DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(
+        docTitle_2,
+        '2020-11-05T23:00:00.000Z',
+        '2022-03-18T23:00:00.000Z',
+        true
+      );
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       cy.get(
         `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.averageProcessLength}) :nth-child(2)`
@@ -101,7 +106,7 @@ describe('uvp reports', () => {
     uvpPage.goToTabmenu(UVPreports.Report);
     uvpPage.getUVPmetrics(UVPmetrics.positiveAudit).then(oldValue => {
       // create new document of type "negative Vorprüfung"
-      DocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle);
+      DocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle, true);
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.positiveAudit}) :nth-child(2)`).then(
         node => {

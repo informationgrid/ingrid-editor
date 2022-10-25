@@ -17,7 +17,6 @@ export interface ReplaceAddressDialogData {
 export class ReplaceAddressDialogComponent implements OnInit {
   page = 0;
   selectedAddress: string[];
-
   private source: string;
   showInfo = true;
   disableTreeNode = (node: TreeNode) =>

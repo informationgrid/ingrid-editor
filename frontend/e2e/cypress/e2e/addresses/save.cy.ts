@@ -396,7 +396,7 @@ describe('create/delete/edit addresses', () => {
     Tree.openNode(['address_with_reference_to_delete_catalog_admin']);
     AddressPage.deleteLoadedNode(true);
     cy.get('ige-replace-address-dialog').contains(
-      'Das Dokument wird bereits von mindestens einem Dokument referenziert. Möchten Sie die Adresse ersetzen?'
+      'Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?'
     );
     cy.get('[data-cy=dialog-choose-address]').click();
     Tree.openNodeInsideDialog(['address_to _be_replaced_catalog_admin']);

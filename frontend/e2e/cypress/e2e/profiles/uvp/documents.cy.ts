@@ -525,6 +525,35 @@ describe('uvp documents', () => {
     cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn der ersten Auslegung sein/);
   });
 
+  it('should check for the content of preview dialog for UVP catalog data record, #4269', function () {
+    DocumentPage.visit();
+    // open published document and check for the content
+    Tree.openNode(['Plan_to_preview']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=description] ige-print-type ', 'desc Allgemeine');
+    DocumentPage.checkOfExistingItem(
+      'mat-dialog-content [data-cy=pointOfContact] ige-print-type ',
+      'Adresse, Organisation_1'
+    );
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=receiptDate] input ', '04.10.2022', 0, true);
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=eiaNumbers] ', ' UVPG-1.1.1 ');
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Auslegungsinformationen-table]  ', 'testlink');
+    DocumentPage.checkOfExistingItem(
+      'mat-dialog-content [data-cy="UVP Bericht/Antragsunterlagen-table"]  ',
+      'UVPBericht'
+    );
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Berichte und Empfehlungen-table"]  ', 'Emp_desk');
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Weitere Unterlagen-table"]  ', 'other');
+
+    DocumentPage.checkOfExistingItem(
+      'mat-dialog-content [data-cy="Informationen zum Erörterungstermin-table"]  ',
+      'info about app'
+    );
+
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Entscheidung-table"]  ', 'Entscheidung ueber alles');
+  });
   // validation not yet implemented (09/01/22)
   xit('should not publish document if date of "Datum des Antrags" is later than begin of "Erörterungszeitraum" #4057', () => {
     Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);

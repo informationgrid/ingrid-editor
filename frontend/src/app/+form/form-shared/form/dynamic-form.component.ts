@@ -256,6 +256,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .load(id, this.address, true, true)
       .pipe(
         untilDestroyed(this),
+        filter((doc) => doc != null),
         tap((doc) => this.handleReadOnlyState(doc)),
         tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
         tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))

@@ -12,7 +12,7 @@ export class FormFieldHelper {
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       id: id,
       fieldGroupClassName:
@@ -22,6 +22,7 @@ export class FormFieldHelper {
         externalLabel: label,
       },
       fieldGroup: fields,
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -38,7 +39,7 @@ export class FormFieldHelper {
       type: "textarea",
       className: id,
       id: elementIdPrefix + id,
-      wrappers: ["panel", "form-field"],
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
         autosize: false,
@@ -49,6 +50,7 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -84,7 +86,7 @@ export class FormFieldHelper {
   }
 
   addRepeatList(id, label, options?) {
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
       wrappers: ["panel"],
@@ -97,6 +99,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -104,7 +107,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "repeat",
-      wrappers: ["panel"],
+      wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       templateOptions: {
         externalLabel: label,
@@ -146,6 +149,7 @@ export class FormFieldHelper {
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
       templateOptions: {
+        type: options?.type,
         externalLabel: label,
         label: options?.fieldLabel,
         required: options?.required,
@@ -195,8 +199,10 @@ export class FormFieldHelper {
         required: options?.required,
         columns: options?.columns,
         batchValidUntil: options?.batchValidUntil,
+        supportUpload: options?.supportUpload ?? true,
       },
       validators: options?.validators,
+      hideExpression: options?.hideExpression,
     };
   }
 
@@ -273,7 +279,8 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "checkbox",
-      wrappers: ["panel", "form-field", "inline-help"],
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,

@@ -190,8 +190,6 @@ describe('Load addresses', () => {
 
     // check for country and state
     DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
-
-    // TODO
-    /// check for state
+    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
   });
 });

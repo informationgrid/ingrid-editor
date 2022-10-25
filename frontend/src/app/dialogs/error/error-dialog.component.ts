@@ -20,7 +20,7 @@ export class ErrorDialogComponent {
     private dlgRef: MatDialogRef<ErrorDialogComponent>,
     configService: ConfigService
   ) {
-    this.supportEmail = configService.getConfiguration().supportEmail;
+    this.supportEmail = configService.getConfiguration()?.supportEmail;
     if (data instanceof Array) {
       this.errors = data;
     } else {

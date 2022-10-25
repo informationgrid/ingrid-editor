@@ -201,7 +201,7 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateNegativePreauditDocumentWithAPI(title: string) {
+  static CreateNegativePreauditDocumentWithAPI(title: string, publish: boolean = false) {
     const json = {
       title: title,
       _type: 'UvpNegativePreliminaryAssessmentDoc',
@@ -211,7 +211,7 @@ export class DocumentPage extends BasePage {
 
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
-        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false` + '&publish=' + publish,
         body: json,
         method: 'POST',
         auth: {
@@ -221,23 +221,90 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateLinienbestimmungdocumentWithAPI(title: string) {
+  static CreateLinienbestimmungdocumentWithAPI(title: string, publish: boolean = false) {
     const json = {
       title: title,
       _type: 'UvpLineDeterminationDoc',
-      spatial: null,
+      spatial: [
+        {
+          type: 'free',
+          title: 'BEE, Zum Nordkai, Hafen Ost, Emden, Lower Saxony, 26725, Germany (parking)',
+          value: {
+            lat1: 53.3494842,
+            lat2: 53.3497366,
+            lon1: 7.2128697,
+            lon2: 7.2141324
+          }
+        }
+      ],
       eiaNumbers: [
         {
           key: '10'
         }
       ],
-      pointOfContact: null,
+      description: 'test',
+      receiptDate: '2022-10-03T22:00:00.000Z',
+      pointOfContact: [
+        {
+          ref: {
+            title: 'Adresse, Organisation_10',
+            hasWritePermission: true,
+            hasOnlySubtreeWritePermission: false,
+            _uuid: '1ecc944a-5ed5-4e08-84b1-bad762a4c966',
+            _type: 'UvpOrganisationDoc',
+            _id: '12262',
+            address: {
+              city: null,
+              'po-box': null,
+              street: null,
+              country: {
+                key: '276'
+              },
+              'zip-code': null,
+              'zip-po-box': null
+            },
+            contact: [
+              {
+                type: {
+                  key: '1'
+                },
+                connection: '798323345'
+              }
+            ],
+            organization: 'Adresse, Organisation_10',
+            _parent: '12263'
+          },
+          type: {
+            key: '7'
+          }
+        }
+      ],
       processingSteps: [
         {
           type: 'decisionOfAdmission',
-          approvalDocs: null,
+          approvalDocs: [
+            {
+              title: 'test',
+              validUntil: '2022-10-05T22:00:00.000Z',
+              downloadURL: {
+                uri: 'https://docs.python.org/3/library/shutil.html#shutil.rmtree',
+                value: 'https://docs.python.org/3/library/shutil.html#shutil.rmtree',
+                asLink: true
+              }
+            }
+          ],
           decisionDate: '2022-04-11T22:00:00.000Z',
-          decisionDocs: null
+          decisionDocs: [
+            {
+              title: 't',
+              validUntil: null,
+              downloadURL: {
+                uri: 'https://docs.python.org/3/library/shutil.html#shutil.rmtree',
+                value: 'https://docs.python.org/3/library/shutil.html#shutil.rmtree',
+                asLink: true
+              }
+            }
+          ]
         }
       ],
       _parent: null
@@ -245,7 +312,7 @@ export class DocumentPage extends BasePage {
 
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
-        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false` + '&publish=' + publish,
         body: json,
         method: 'POST',
         auth: {
@@ -255,14 +322,64 @@ export class DocumentPage extends BasePage {
     });
   }
 
-  static CreateZulassungsverfahrenDocumentWithAPI(title: string) {
+  static CreateZulassungsverfahrenDocumentWithAPI(title: string, publish: boolean = false) {
     const json = {
       title: title,
       _type: 'UvpApprovalProcedureDoc',
-      spatial: null,
-      eiaNumbers: [],
-      description: null,
-      pointOfContact: null,
+      spatial: [
+        {
+          value: {
+            lat1: 52.3408173,
+            lon1: 13.4549773,
+            lat2: 52.3921915,
+            lon2: 13.5388427
+          },
+          title:
+            'Berlin Brandenburg Airport "Willy Brandt", Willy-Brandt-Platz, Schönefeld, Dahme-Spreewald, Brandenburg, 12529, Germany (aerodrome)',
+          type: 'free'
+        }
+      ],
+      eiaNumbers: [
+        {
+          key: '0'
+        }
+      ],
+      description: 'test',
+      pointOfContact: [
+        {
+          type: {
+            key: '7'
+          },
+          ref: {
+            title: 'Adresse, Organisation_10',
+            hasWritePermission: true,
+            hasOnlySubtreeWritePermission: false,
+            _uuid: '1ecc944a-5ed5-4e08-84b1-bad762a4c966',
+            _type: 'UvpOrganisationDoc',
+            _id: '12262',
+            address: {
+              city: null,
+              'po-box': null,
+              street: null,
+              country: {
+                key: '276'
+              },
+              'zip-code': null,
+              'zip-po-box': null
+            },
+            contact: [
+              {
+                type: {
+                  key: '1'
+                },
+                connection: '798323345'
+              }
+            ],
+            organization: 'Adresse, Organisation_10',
+            _parent: '12263'
+          }
+        }
+      ],
       processingSteps: [
         {
           type: 'decisionOfAdmission',
@@ -277,7 +394,7 @@ export class DocumentPage extends BasePage {
 
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
-        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false` + '&publish=' + publish,
         body: json,
         method: 'POST',
         auth: {
@@ -290,16 +407,63 @@ export class DocumentPage extends BasePage {
   static CreateRaumordnungverfahrenDocumentWithAPI(
     title: string,
     receiptDate: string = '2020-11-05T23:00:00.000Z',
-    decisionDate: string = '2022-03-18T23:00:00.000Z'
+    decisionDate: string = '2022-03-18T23:00:00.000Z',
+    publish: boolean = false
   ) {
     const json = {
       title: title,
       _type: 'UvpSpatialPlanningProcedureDoc',
-      spatial: null,
+      spatial: [
+        {
+          value: {
+            lat1: 52.3408173,
+            lon1: 13.4549773,
+            lat2: 52.3921915,
+            lon2: 13.5388427
+          },
+          title:
+            'Berlin Brandenburg Airport "Willy Brandt", Willy-Brandt-Platz, Schönefeld, Dahme-Spreewald, Brandenburg, 12529, Germany (aerodrome)',
+          type: 'free'
+        }
+      ],
       eiaNumbers: [],
-      description: null,
+      description: 'desc',
       receiptDate: receiptDate,
-      pointOfContact: null,
+      pointOfContact: [
+        {
+          type: {
+            key: '7'
+          },
+          ref: {
+            title: 'Adresse, Organisation_10',
+            hasWritePermission: true,
+            hasOnlySubtreeWritePermission: false,
+            _uuid: '1ecc944a-5ed5-4e08-84b1-bad762a4c966',
+            _type: 'UvpOrganisationDoc',
+            _id: '12262',
+            address: {
+              city: null,
+              'po-box': null,
+              street: null,
+              country: {
+                key: '276'
+              },
+              'zip-code': null,
+              'zip-po-box': null
+            },
+            contact: [
+              {
+                type: {
+                  key: '1'
+                },
+                connection: '798323345'
+              }
+            ],
+            organization: 'Adresse, Organisation_10',
+            _parent: '12263'
+          }
+        }
+      ],
       processingSteps: [
         {
           type: 'publicDisclosure',
@@ -332,7 +496,7 @@ export class DocumentPage extends BasePage {
 
     cy.get('@tokens').then((tokens: any) => {
       cy.request({
-        url: `${Cypress.config('baseUrl')}/api/datasets?address=false&publish=false`,
+        url: `${Cypress.config('baseUrl')}/api/datasets?address=false` + '&publish=' + publish,
         body: json,
         method: 'POST',
         auth: {

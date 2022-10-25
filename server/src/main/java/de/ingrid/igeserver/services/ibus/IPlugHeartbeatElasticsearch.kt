@@ -26,16 +26,11 @@ import de.ingrid.elasticsearch.IBusIndexManager
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexManager
 import de.ingrid.igeserver.services.CatalogService
-import org.apache.logging.log4j.LogManager
-import org.elasticsearch.common.Strings
-import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.IOException
 import java.util.*
-import java.util.concurrent.ExecutionException
 
 @Service
 @Profile("elasticsearch & ibus")
@@ -77,7 +72,7 @@ class IPlugHeartbeatElasticsearch @Autowired constructor(
         }*/
     }
 
-    private fun getIPlugInfos(docProducerIndices: List<String>): Map<String, String?> {
+    /*private fun getIPlugInfos(docProducerIndices: List<String>): Map<String, String?> {
         val map: MutableMap<String, String?> = HashMap()
         for (docProdId in docProducerIndices) {
             map[docProdId] = getHearbeatInfo(docProdId, "ige-ng_" + docProdId.split(":")[1])
@@ -98,10 +93,12 @@ class IPlugHeartbeatElasticsearch @Autowired constructor(
             null
         }
     }
+    
+     */
 
-    companion object {
+    /*companion object {
         private val log = LogManager.getLogger(
             IPlugHeartbeatElasticsearch::class.java
         )
-    }
+    }*/
 }

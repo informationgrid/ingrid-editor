@@ -7,6 +7,7 @@ import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 import { DocumentService } from "../../../services/document/document.service";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
 import { IgeDocument } from "../../../models/ige-document";
+import { ProfileService } from "../../../services/profile.service";
 
 @Component({
   selector: "permission-table",
@@ -37,7 +38,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   constructor(
     private dialog: MatDialog,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private profileService: ProfileService
   ) {}
 
   callAddPermissionDialog() {
@@ -102,8 +104,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.getDocument(doc.id).then((igeDoc) => {
       doc.hasWritePermission = igeDoc.hasWritePermission;
       doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
-      doc.isFolder = igeDoc._type === "FOLDER";
+      // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
+      doc.isFolder =
+        igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
+      doc.iconClass = this.profileService.getProfile(igeDoc._type).iconClass;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);
@@ -112,16 +117,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   getDocument(id: string): Promise<IgeDocument> {
     return this.documentService.load(id, this.forAddress, false).toPromise();
-  }
-
-  getIcon(element) {
-    if (element.isFolder) {
-      return "Ordner";
-    } else if (this.forAddress) {
-      return "Freie-Adresse";
-    } else {
-      return "Fachaufgabe";
-    }
   }
 
   updatePermission(element, level: PermissionLevel) {
@@ -147,19 +142,5 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (!doc.hasWritePermission && !doc.hasOnlySubtreeWritePermission) {
       doc.permission = PermissionLevel.READ;
     }
-  }
-
-  addRootPermission(permission: PermissionLevel) {
-    this.value = [
-      ...this.val,
-      {
-        id: null,
-        permission,
-        hasOnlySubtreeWritePermission: false,
-        hasWritePermission: true,
-        isFolder: false,
-        title: this.forAddress ? "Alle Adressen" : "Alle Datensätze",
-      },
-    ];
   }
 }

@@ -35,8 +35,11 @@ class UVPPublishExport @Autowired constructor(
         val isAddress = payload.wrapper.category == "address"
 
         try {
-            if (isDocument) indexUvpDoc(context, docId)
-            else if (isAddress) indexReferencedUvpDocs(context, docId)
+            if (isDocument) indexUvpDoc(context, docId, DocumentCategory.DATA)
+            else if (isAddress) {
+                indexUvpDoc(context, docId, DocumentCategory.ADDRESS)
+                indexReferencedUvpDocs(context, docId)
+            }
         } catch (ex: NoNodeAvailableException) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
@@ -60,14 +63,14 @@ class UVPPublishExport @Autowired constructor(
             """.trimIndent()
         )
 
-        docsWithReferences.forEach { indexUvpDoc(context, it) }
+        docsWithReferences.forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
 
     }
 
-    private fun indexUvpDoc(context: Context, docId: String) {
+    private fun indexUvpDoc(context: Context, docId: String, category: DocumentCategory) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "indexUvpIDF", docId)
+        indexingTask.updateDocument(context.catalogId, category, "indexUvpIDF", docId)
 
     }
 }

@@ -66,27 +66,50 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
         resultNegativeDocs: List<Array<Any>>,
         onlyLinks: Boolean = false
     ): List<DocumentLinks> {
-        val stepUrls =
-            result.map {
-                DocumentLinks(
-                    it[1].toString(),
-                    it[0].toString(),
-                    getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
-                    it[3].toString(),
-                    it[4].toString()
+        val uniqueList = mutableListOf<DocumentLinks>()
+        // TODO: logic in both forEachs almost the same
+        result.forEach {
+            val catalogId = it[1].toString()
+            val docUuid = it[0].toString()
+            val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            if (existingDoc == null) {
+                uniqueList.add(
+                    DocumentLinks(
+                        catalogId,
+                        docUuid,
+                        getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
+                        it[3].toString(),
+                        it[4].toString()
+                    )
                 )
+            } else {
+                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
             }
-        val negativeUrls = resultNegativeDocs.map {
-            DocumentLinks(
-                it[1].toString(),
-                it[0].toString(),
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs", onlyLinks),
-                it[3].toString(),
-                it[4].toString()
-            )
+        }
+        resultNegativeDocs.forEach {
+            val catalogId = it[1].toString()
+            val docUuid = it[0].toString()
+            val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            if (existingDoc == null) {
+                uniqueList.add(
+                    DocumentLinks(
+                        catalogId,
+                        docUuid,
+                        getUrlsFromJsonFieldTable(
+                            it[2] as JsonNode,
+                            "uvpNegativeDecisionDocs",
+                            onlyLinks
+                        ).toMutableList(),
+                        it[3].toString(),
+                        it[4].toString()
+                    )
+                )
+            } else {
+                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
+            }
         }
 
-        return stepUrls + negativeUrls
+        return uniqueList
     }
 
     private fun queryDocs(
@@ -108,7 +131,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             .resultList as List<Array<Any>>
     }
 
-    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): List<UploadInfo> {
+    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> {
         return (getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks)
                 + getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks)
                 + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks)
@@ -116,7 +139,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
                 + getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks)
                 + getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks)
                 + getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
-                )
+                ).toMutableList()
     }
 
     private fun getUrlsFromJsonFieldTable(

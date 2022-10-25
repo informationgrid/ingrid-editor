@@ -33,7 +33,10 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     entryKey: string,
     defaultValue?: string
   ) {
-    const entryFields = this.getCatalogCodelist(codelistId).entries.find(
+    const entities =
+      this.getCatalogCodelist(codelistId) ??
+      this.getValue().entities[codelistId];
+    const entryFields = entities.entries.find(
       (entry) => entry.id === entryKey
     )?.fields;
 

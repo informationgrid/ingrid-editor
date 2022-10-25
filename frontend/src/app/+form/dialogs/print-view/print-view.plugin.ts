@@ -69,7 +69,7 @@ export class PrintViewPlugin extends Plugin {
         .subscribe((openedDoc) => {
           this.toolbarService.setButtonState(
             "toolBtnPrint",
-            openedDoc !== null
+            openedDoc !== null && openedDoc._type != "FOLDER"
           );
         })
     );

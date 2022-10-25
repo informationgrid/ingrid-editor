@@ -28,8 +28,8 @@ import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.elasticsearch.common.Strings
-import org.elasticsearch.common.xcontent.XContentBuilder
-import org.elasticsearch.common.xcontent.XContentFactory
+import org.elasticsearch.xcontent.XContentBuilder
+import org.elasticsearch.xcontent.XContentFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -46,6 +46,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.io.IOException
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -107,7 +108,7 @@ class IndexingTask @Autowired constructor(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         categories.forEach categoryLoop@{ category ->
-            val categoryAlias = "${elasticsearchAlias}_${category.value}"
+            val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
 
             val exporter = try {
                 indexService.getExporter(category, format)
@@ -203,7 +204,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     exporter.run(doc, catalogId)
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document ${doc.uuid}: ${ex.message}"
+                    val errorMessage = "Error exporting document '${doc.uuid}' in catalog '$catalogId': ${ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
                     sendNotification(category, message, index + (page * PAGE_SIZE))
@@ -228,6 +229,7 @@ class IndexingTask @Autowired constructor(
         } else {
             catalog.settings?.lastLogSummary = message
         }
+        catalog.modified = OffsetDateTime.now()
         catalogRepo.save(catalog)
     }
 
@@ -288,9 +290,9 @@ class IndexingTask @Autowired constructor(
         format: String,
         elasticsearchAlias: String
     ): IndexInfo {
-        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+        val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
+        var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         if (oldIndex == null) {
-            val categoryAlias = "${elasticsearchAlias}_${category.value}"
             val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
             oldIndex = newIndex
             indexManager.switchAlias(elasticsearchAlias, null, newIndex)
@@ -303,6 +305,11 @@ class IndexingTask @Autowired constructor(
             docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
         }
     }
+
+    private fun getIndexIdentifier(
+        elasticsearchAlias: String,
+        category: DocumentCategory
+    ) = "${elasticsearchAlias}_${category.value}"
 
     private fun convertToElasticDocument(doc: Any): ElasticDocument? {
 
