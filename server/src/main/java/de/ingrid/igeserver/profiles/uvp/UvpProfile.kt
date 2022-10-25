@@ -5,7 +5,7 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
+import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep

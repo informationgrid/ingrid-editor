@@ -66,13 +66,12 @@ class ResearchService {
         }
 
         val sql = createQuery(catalogId, query, groupIds)
-        val parameters = getParameters(query)
 
-        val result = sendQuery(sql, parameters, query.pagination)
+        val result = sendQuery(sql, query.pagination)
         val map = filterAndMapResult(result, hasAccessToRootDocs, principal)
 
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
-            getTotalHits(sql, parameters)
+            getTotalHits(sql)
         } else {
             map.size
         }
@@ -147,8 +146,8 @@ class ResearchService {
         if (query.term.isNullOrEmpty()) return ""
 
         val searchOnlyInTitle = checkForTitleSearch(query.clauses)
-        return if (searchOnlyInTitle) "title ILIKE ?"
-        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ? )"
+        return if (searchOnlyInTitle) "title ILIKE '%${query.term}%'"
+        else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%' OR document1.uuid ILIKE '${query.term}' )"
     }
 
     private fun checkForTitleSearch(clauses: BoolFilter?): Boolean {
@@ -187,9 +186,8 @@ class ResearchService {
             return null
         }
 
-        val filterString: List<String?>? = if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
-            boolFilter.clauses
-                .mapNotNull { convertQuery(it) }
+        val filterString: List<String?>? = if (!boolFilter.clauses.isNullOrEmpty()) {
+            boolFilter.clauses.mapNotNull { convertQuery(it) }
         } else if (boolFilter.isFacet) {
             boolFilter.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
@@ -216,12 +214,8 @@ class ResearchService {
             """.trimIndent()
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
+    private fun sendQuery(sql: String, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
-
-        for ((index, it) in parameter.withIndex()) {
-            nativeQuery.setParameter(index + 1, it)
-        }
 
         return nativeQuery
             .setHint(QueryHints.HINT_READONLY, true)
@@ -242,14 +236,12 @@ class ResearchService {
     }
 
 
-    private fun getTotalHits(sql: String, parameter: List<Any>): Int {
+    private fun getTotalHits(sql: String): Int {
         val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
             .substring(sql.indexOf("FROM"))
             .substringBeforeLast("ORDER BY")
         val countQuery = entityManager.createNativeQuery(countSQL)
-        for ((index, it) in parameter.withIndex()) {
-            countQuery.setParameter(index + 1, it)
-        }
+
         return (countQuery.singleResult as Number).toInt()
     }
 
@@ -305,11 +297,11 @@ class ResearchService {
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
 
-            val result = sendQuery(finalQuery, emptyList(), paging)
+            val result = sendQuery(finalQuery, paging)
             val map = filterAndMapResult(result, isAdmin, principal)
 
             val totalHits = if (paging.pageSize != Int.MAX_VALUE) {
-                getTotalHits(finalQuery, emptyList())
+                getTotalHits(finalQuery)
             } else {
                 map.size
             }

@@ -15,26 +15,28 @@ class TimeSpan : QuickFilter() {
     override fun filter(parameter: List<*>?): String {
         // returns true if the filter should not be applied. results in sql query ".. AND (true) AND"
         if (parameter == null) return "true"
-        val start = parameter[0]
-        val end = parameter[1]
+        val start = parameter[0] as String?
+        val end = parameter[1] as String?
         if (start == null && end == null) {
             return "true"
         } else if (start == null) {
-            return toFilter
+            return toFilter.replace("?", end!!)
         } else if (end == null) {
-            return fromFilter
+            return fromFilter.replace("?", start)
         }
         return this.filter
+            .replace("?1", start)
+            .replace("?2", end)
     }
 
 
     //    @Language("PostgreSQL")
     override val filter =
-        """document1.modified BETWEEN ?\:\:timestamp AND ?\:\:timestamp"""
+        """document1.modified BETWEEN CAST('?1' as timestamp) AND CAST('?2' as timestamp)"""
 
     val fromFilter =
-        """document1.modified >= ?\:\:timestamp"""
+        """document1.modified >= CAST('?' as timestamp)"""
     val toFilter =
-        """document1.modified <= ?\:\:timestamp"""
+        """document1.modified <= CAST('?' as timestamp)"""
 
 }
