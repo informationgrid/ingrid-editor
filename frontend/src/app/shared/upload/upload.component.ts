@@ -105,10 +105,14 @@ export class UploadComponent implements OnInit {
     this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
         if (this.autoupload && event.type === "filesSubmitted") {
-          await this.uploadService.updateAuthenticationToken(
-            <flowjs.FlowFile[]>event.event[0]
-          );
+          const flowFiles = <flowjs.FlowFile[]>event.event[0];
+          await this.uploadService.updateAuthenticationToken(flowFiles);
+          this.resetParametersForSubmittedFiles(flowFiles);
           this.flow.upload();
+        } else if (event.type === "fileProgress") {
+          await this.uploadService.updateAuthenticationToken([
+            (<flowjs.FlowChunk>event.event[1]).fileObj,
+          ]);
         } else if (event.type === "fileError") {
           this.handleUploadError(event.event);
         } else if (event.type === "fileSuccess") {
@@ -125,6 +129,12 @@ export class UploadComponent implements OnInit {
         throw new IgeError(e);
       }
     });
+  }
+
+  private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
+    flowFiles.forEach(
+      (file) => (file.flowObj.opts.query = { ...this.additionalParameters })
+    );
   }
 
   isDragged = false;
@@ -197,6 +207,5 @@ export class UploadComponent implements OnInit {
       };
     }
     flowFile.retry();
-    flowFile.flowObj.opts.query = { ...this.additionalParameters };
   }
 }

@@ -67,11 +67,12 @@ export class UploadService {
       return;
     }
 
-    if (this.keycloak.isTokenExpired()) {
+    if (this.keycloak.isTokenExpired(5)) {
       await this.keycloak.updateToken();
     }
     flowFiles.forEach((file) => {
       file.flowObj.opts.headers = {
+        ...file.flowObj.opts.headers,
         Authorization: "Bearer " + keycloakInstance.token,
       };
     });
