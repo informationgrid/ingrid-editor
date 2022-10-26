@@ -30,6 +30,7 @@ export class MainHeaderComponent implements OnInit {
   externalHelp: string;
   config: Configuration;
   otherAssignedCatalogs: any[];
+  catalogId: string;
 
   constructor(
     private configService: ConfigService,
@@ -46,6 +47,7 @@ export class MainHeaderComponent implements OnInit {
     this.isAdmin = this.configService.isAdmin();
     this.version = userInfo?.version;
     this.externalHelp = userInfo?.externalHelp;
+    this.catalogId = userInfo?.currentCatalog.id;
     this.initials = this.getInitials(userInfo);
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       tap(

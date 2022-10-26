@@ -11,18 +11,24 @@ import { TreeQuery } from "../store/tree/tree.query";
 import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 import { DocumentService } from "../services/document/document.service";
 import { BehaviourService } from "../services/behavior/behaviour.service";
+import { ConfigService } from "../services/config/config.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class RedirectFormGuard implements CanActivate {
+  private catalogId: string;
+
   constructor(
     private router: Router,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
-    private behaviourService: BehaviourService
-  ) {}
+    private behaviourService: BehaviourService,
+    private configService: ConfigService
+  ) {
+    this.catalogId = configService.$userInfo.value.currentCatalog.id;
+  }
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -32,9 +38,9 @@ export class RedirectFormGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (state.url.indexOf("/form") === 0) {
+    if (state.url.indexOf(`/${this.catalogId}/form`) === 0) {
       // in case we come from a different page
-      if (this.router.url.indexOf("/form") !== 0) {
+      if (this.router.url.indexOf(`/${this.catalogId}/form`) !== 0) {
         this.behaviourService.registerState$.next({
           register: true,
           address: false,
@@ -46,9 +52,9 @@ export class RedirectFormGuard implements CanActivate {
         const previousOpenedDocId = this.getOpenedDocumentId(false);
         return this.handleNavigation(route, previousOpenedDocId, false);
       }
-    } else if (state.url.indexOf("/address") === 0) {
+    } else if (state.url.indexOf(`/${this.catalogId}/address`) === 0) {
       // in case we come from a different page
-      if (this.router.url.indexOf("/address") !== 0) {
+      if (this.router.url.indexOf(`/${this.catalogId}/address`) !== 0) {
         this.behaviourService.registerState$.next({
           register: true,
           address: true,
@@ -76,7 +82,10 @@ export class RedirectFormGuard implements CanActivate {
     forAddress: boolean
   ): boolean {
     if (uuid && route.params.id !== uuid) {
-      this.router.navigate([forAddress ? "/address" : "/form", { id: uuid }]);
+      this.router.navigate([
+        forAddress ? `/${this.catalogId}/address` : `/${this.catalogId}/form`,
+        { id: uuid },
+      ]);
       return false;
     }
   }
