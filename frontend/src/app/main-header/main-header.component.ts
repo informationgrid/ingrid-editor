@@ -5,7 +5,7 @@ import {
   UserInfo,
   Version,
 } from "../services/config/config.service";
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
@@ -38,8 +38,7 @@ export class MainHeaderComponent implements OnInit {
     private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService,
-    private route: ActivatedRoute
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
@@ -59,8 +58,10 @@ export class MainHeaderComponent implements OnInit {
 
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
-        this.showShadow = this.router.url !== "/dashboard";
-        this.pageTitle = this.route.snapshot.firstChild.routeConfig.path;
+        const rootPath = this.router.parseUrl(this.router.url).root.children
+          .primary.segments[1].path;
+        this.showShadow = rootPath !== "dashboard";
+        this.pageTitle = rootPath;
       }
     });
     this.config = this.configService.getConfiguration();
@@ -85,12 +86,12 @@ export class MainHeaderComponent implements OnInit {
   }
 
   openProfileSettings() {
-    this.router.navigate(["/profile"]);
+    this.router.navigate([`/${this.catalogId}/profile`]);
   }
 
   chooseCatalog(id: string) {
     // navigate to dashboard before switching catalog
-    this.router.navigate(["/dashboard"]).then((success) => {
+    this.router.navigate([`/${this.catalogId}/dashboard`]).then((success) => {
       // success can be null if no navigation happened
       if (success != false)
         this.catalogService.switchCatalog(id).subscribe(() => {

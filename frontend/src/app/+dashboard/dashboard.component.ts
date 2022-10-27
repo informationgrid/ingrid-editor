@@ -7,7 +7,7 @@ import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { SessionQuery } from "../store/session.query";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import {
   CreateNodeComponent,
@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     configService: ConfigService,
     private router: Router,
-    private route: ActivatedRoute,
     private dialog: MatDialog,
     private docService: DocumentService,
     private sessionQuery: SessionQuery,
@@ -97,19 +96,15 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoImportPage() {
-    this.router.navigate(["../importExport/import"], {
-      relativeTo: this.route,
-    });
+    this.router.navigate([`${ConfigService.catalogId}/importExport/import`]);
   }
 
   openDocument(uuid: string) {
-    this.router.navigate(["../form", { id: uuid }], { relativeTo: this.route });
+    this.router.navigate([`${ConfigService.catalogId}/form`, { id: uuid }]);
   }
 
   openAddress(uuid: string) {
-    this.router.navigate(["../address", { id: uuid }], {
-      relativeTo: this.route,
-    });
+    this.router.navigate([`${ConfigService.catalogId}/address`, { id: uuid }]);
   }
 
   createNewFolder() {

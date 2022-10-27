@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { ConfigService } from "../services/config/config.service";
 import { MenuService } from "../menu/menu.service";
-import { ActivatedRoute, NavigationEnd, Route, Router } from "@angular/router";
+import { NavigationEnd, Route, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { animate, style, transition, trigger } from "@angular/animations";
 
@@ -45,8 +45,6 @@ export class SideMenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.catalogId = this.configService.$userInfo.value.currentCatalog.id;
-
     this.session.isSidebarExpanded$.subscribe(
       (expanded) => (this.menuIsExpanded = expanded)
     );
@@ -80,12 +78,15 @@ export class SideMenuComponent implements OnInit {
     const tab = this.session.getValue().ui.currentTab[path];
     if (tab) {
       const tabWithParameter = tab.split(";");
-      const newPath = [path, tabWithParameter[0]];
+      const newPath = [
+        ConfigService.catalogId + "/" + path,
+        tabWithParameter[0],
+      ];
       if (tabWithParameter.length > 1)
         newPath.push(JSON.parse(tabWithParameter[1]));
       this.router.navigate(newPath);
     } else {
-      this.router.navigate([path]);
+      this.router.navigate([ConfigService.catalogId + "/" + path]);
     }
   }
 }

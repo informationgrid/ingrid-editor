@@ -17,6 +17,7 @@ import { ConfigService } from "../services/config/config.service";
   providedIn: "root",
 })
 export class RedirectFormGuard implements CanActivate {
+  // TODO: get along without catalogId info!?
   private catalogId: string;
 
   constructor(

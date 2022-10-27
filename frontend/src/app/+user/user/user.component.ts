@@ -86,7 +86,7 @@ export class UserComponent
     const doReload = this.groupQuery.getActiveId() === groupId;
     this.groupService.getGroup(groupId).subscribe((group) => {
       this.groupService.setActive(groupId);
-      this.router.navigate(["/manage/group"]);
+      this.router.navigate([`${ConfigService.catalogId}/manage/group`]);
 
       if (doReload) this.groupService.forceReload$.next();
     });
@@ -315,6 +315,7 @@ export class UserComponent
       // do nothing
     }
   }
+
   private showLoading() {
     this.isLoading = true;
     this.form.disable();

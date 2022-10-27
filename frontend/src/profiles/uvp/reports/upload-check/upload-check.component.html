@@ -18,7 +18,11 @@
         {{ catalogItem.key }}
         <ul>
             <li *ngFor="let docItem of catalogItem.value | keyvalue">
-                <a [routerLink]="['/form', { id: docItem.key }]"
+                <a
+                    [routerLink]="[
+                        '/' + catalogItem.key + '/form',
+                        { id: docItem.key }
+                    ]"
                     >{{ docItem.key }} ({{ docItem.value[0].state }})</a
                 >
 

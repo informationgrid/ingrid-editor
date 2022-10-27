@@ -146,6 +146,9 @@ export class ImportComponent implements OnInit {
   }
 
   openImportedDocument() {
-    this.router.navigate(["/form", { id: this.importedDocUuid }]);
+    this.router.navigate([
+      `${ConfigService.catalogId}/form`,
+      { id: this.importedDocUuid },
+    ]);
   }
 }

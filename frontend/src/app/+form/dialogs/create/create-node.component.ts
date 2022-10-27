@@ -244,7 +244,8 @@ export class CreateNodeComponent implements OnInit {
   private navigateAfterSave(uuid: string) {
     this.dialogRef.close(uuid);
 
-    const page = this.forAddress ? "/address" : "/form";
+    const page =
+      ConfigService.catalogId + (this.forAddress ? "/address" : "/form");
     this.router.navigate([page, { id: uuid }]);
   }
 }

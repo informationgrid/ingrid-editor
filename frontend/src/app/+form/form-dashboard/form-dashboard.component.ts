@@ -59,7 +59,8 @@ export class FormDashboardComponent implements OnInit {
   }
 
   openDocument(uuid: string) {
-    const target = this.address ? "/address" : "/form";
+    const target =
+      ConfigService.catalogId + (this.address ? "/address" : "/form");
     this.router.navigate([target, { id: uuid }]);
   }
 }

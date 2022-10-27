@@ -90,11 +90,10 @@ export class FolderDashboardComponent {
     );
 
     if (handled) {
-      if (this.isAddress) {
-        this.router.navigate(["/address", { id: uuid }]);
-      } else {
-        this.router.navigate(["/form", { id: uuid }]);
-      }
+      this.router.navigate([
+        ConfigService.catalogId + (this.isAddress ? "/address" : "/form"),
+        { id: uuid },
+      ]);
     }
   }
 }

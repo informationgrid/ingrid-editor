@@ -15,6 +15,7 @@ import {
 import { MatPaginator } from "@angular/material/paginator";
 import { IgeError } from "../../models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-url-check",
@@ -105,7 +106,7 @@ export class UrlCheckComponent implements OnInit {
 
   loadDataset(uuid: string) {
     if (!uuid) return;
-    this.router.navigate(["form", { id: uuid }]);
+    this.router.navigate([`${ConfigService.catalogId}/form`, { id: uuid }]);
   }
 
   replaceUrl(url: string) {

@@ -6,6 +6,7 @@ import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { combineLatest, Subscription } from "rxjs";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -61,7 +62,7 @@ export class QuickSearchComponent implements OnInit {
     event.preventDefault();
 
     this.router.navigate([
-      "/research/search",
+      `${ConfigService.catalogId}/research/search`,
       {
         q: this.query.value,
         type: inAddresses ? "selectAddresses" : "selectDocuments",

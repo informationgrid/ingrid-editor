@@ -8,6 +8,8 @@ import {
 } from "@angular/router";
 import { AuthGuard } from "./security/auth.guard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
+import { ConfigService } from "./services/config/config.service";
+import { filter } from "rxjs/operators";
 
 export const routes: Routes = [
   {
@@ -17,7 +19,9 @@ export const routes: Routes = [
       {
         path: "dashboard",
         loadChildren: () =>
-          import("./+dashboard/dashboard.module").then((m) => m.DashboardModule),
+          import("./+dashboard/dashboard.module").then(
+            (m) => m.DashboardModule
+          ),
         canActivate: [AuthGuard],
         data: {
           icon: "Uebersicht",
@@ -61,7 +65,8 @@ export const routes: Routes = [
       },
       {
         path: "manage",
-        loadChildren: () => import("./+user/user.module").then((m) => m.UserModule),
+        loadChildren: () =>
+          import("./+user/user.module").then((m) => m.UserModule),
         data: {
           onlyAdmin: true,
           permission: "manage_users",
@@ -111,13 +116,13 @@ export const routes: Routes = [
           hideFromMenu: true,
         },
       },
-      {
+      /*{
         path: "",
         redirectTo: "/dashboard",
         pathMatch: "full",
-      },
+      },*/
     ],
-  }
+  },
   /*  {
         path: "**",
         redirectTo: "/dashboard",
@@ -144,9 +149,19 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
     "/research",
     "/reports/uvp-upload-check",
   ];
+
   private handlers: Map<Route, DetachedRouteHandle> = new Map();
 
-  constructor() {}
+  constructor(configService: ConfigService) {
+    configService.$userInfo
+      .pipe(filter((user) => user !== null))
+      .subscribe((user) => {
+        const catalogId = user.currentCatalog.id;
+        this.routesToCache = this.routesToCache.map(
+          (route) => "/" + catalogId + route
+        );
+      });
+  }
 
   public shouldDetach(_route: ActivatedRouteSnapshot): boolean {
     return this.routesToCache.some(

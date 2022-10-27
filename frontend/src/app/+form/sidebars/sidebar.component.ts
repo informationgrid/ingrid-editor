@@ -12,6 +12,7 @@ import { FormStateService } from "../form-state.service";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import { filter, take } from "rxjs/operators";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -112,9 +113,10 @@ export class SidebarComponent implements OnInit {
     );
 
     if (handled) {
-      this.router.navigate([this.path, { id: selectedDocUuids[0] }], {
-        relativeTo: this.route,
-      });
+      this.router.navigate([
+        ConfigService.catalogId + this.path,
+        { id: selectedDocUuids[0] },
+      ]);
     } else {
       this.activeTreeNode.next(currentId);
     }

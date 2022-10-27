@@ -76,7 +76,7 @@ import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
-import { Router, RouteReuseStrategy } from "@angular/router";
+import { ActivatedRoute, Router, RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
@@ -91,17 +91,18 @@ registerLocaleData(de);
 export function ConfigLoader(
   configService: ConfigService,
   authFactory: AuthenticationFactory,
-  router: Router
+  router: Router,
+  route: ActivatedRoute
 ) {
   return () => {
     const redirectToCatalogSpecificRoute = (router: Router) => {
-      console.log(
-        "Current Catalog: ",
-        configService.$userInfo.value.currentCatalog.id
-      );
-      return router.navigate([
-        "/" + configService.$userInfo.value.currentCatalog.id + "/dashboard",
-      ]);
+      const catalogId = configService.$userInfo.value.currentCatalog.id;
+      console.log("Current Catalog: ", catalogId);
+      const urlPath = document.location.pathname;
+      // if (urlPath.startsWith(`/${catalogId}`))
+      if (!urlPath.startsWith(`/${catalogId}`)) {
+        return router.navigate([`/${catalogId}/dashboard`]);
+      }
     };
     return configService
       .load()
@@ -214,7 +215,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, AuthenticationFactory, Router],
+      deps: [ConfigService, AuthenticationFactory, Router, ActivatedRoute],
       multi: true,
     },
     // set locale for dates
@@ -243,6 +244,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: RouteReuseStrategy,
       useClass: CustomReuseStrategy,
+      deps: [ConfigService],
     },
     // uploader
     {

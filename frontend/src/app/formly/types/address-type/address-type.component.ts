@@ -7,7 +7,7 @@ import {
   ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
-import { distinctUntilChanged, filter, tap, map } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -18,10 +18,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import {
-  CreateNodeComponent,
-  CreateOptions,
-} from "../../../+form/dialogs/create/create-node.component";
+import { ConfigService } from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -141,7 +138,9 @@ export class AddressTypeComponent extends FieldType implements OnInit {
         .afterClosed()
         .pipe(
           filter((response) => response === "confirm"),
-          tap((_) => this.router.navigate(["/address"])),
+          tap((_) =>
+            this.router.navigate([`${ConfigService.catalogId}/address`])
+          ),
           // no address to return
           map((_) => undefined)
         );
@@ -159,7 +158,10 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   }
 
   gotoAddress(address: AddressRef) {
-    this.router.navigate(["/address", { id: address.ref._uuid }]);
+    this.router.navigate([
+      `${ConfigService.catalogId}/address`,
+      { id: address.ref._uuid },
+    ]);
   }
 
   private getAddressFromBackend(id: string) {

@@ -92,11 +92,11 @@ export class QueryManagerComponent implements OnInit {
     this.researchService.setActiveQuery(id);
 
     logAction("Load query");
-    if (entity.type === "facet") {
-      this.router.navigate(["research/search"]);
-    } else {
-      this.router.navigate(["research/sql"]);
-    }
+    this.router.navigate([
+      entity.type === "facet"
+        ? `${ConfigService.catalogId}/research/search`
+        : `${ConfigService.catalogId}/research/sql`,
+    ]);
   }
 
   getIdentifier(index, item: Query) {

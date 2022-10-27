@@ -35,6 +35,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
+import { ConfigService } from "../../services/config/config.service";
 
 export interface StickyHeaderInfo {
   show: boolean;
@@ -181,15 +182,11 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     );
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);
-      if (nodeId) {
-        const uuid = this.query.getEntity(nodeId)._uuid;
-        this.router.navigate([
-          this.forAddress ? "/address" : "/form",
-          { id: uuid },
-        ]);
-      } else {
-        this.router.navigate([this.forAddress ? "/address" : "/form"]);
-      }
+      const route: any[] = [
+        ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
+      ];
+      if (nodeId) route.push({ id: this.query.getEntity(nodeId)._uuid });
+      this.router.navigate(route);
     }
   }
 }
