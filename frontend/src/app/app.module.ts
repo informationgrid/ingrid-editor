@@ -101,7 +101,7 @@ export function ConfigLoader(
       const urlPath = document.location.pathname;
       // if (urlPath.startsWith(`/${catalogId}`))
       if (!urlPath.startsWith(`/${catalogId}`)) {
-        return router.navigate([`/${catalogId}/dashboard`]);
+        return router.navigate([`/${catalogId}/${urlPath}`]);
       }
     };
     return configService

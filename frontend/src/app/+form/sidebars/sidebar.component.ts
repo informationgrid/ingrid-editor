@@ -30,7 +30,7 @@ export class SidebarComponent implements OnInit {
 
   private treeStore: AddressTreeStore | TreeStore;
   private treeQuery: AddressTreeQuery | TreeQuery;
-  private path: "../form" | "../address";
+  private path: "/form" | "/address";
   private formType: "document" | "address";
 
   constructor(
@@ -49,12 +49,12 @@ export class SidebarComponent implements OnInit {
     if (this.address) {
       this.treeStore = this.addressTreeStore;
       this.treeQuery = this.addressTreeQuery;
-      this.path = "../address";
+      this.path = "/address";
       this.formType = "address";
     } else {
       this.treeStore = this.docTreeStore;
       this.treeQuery = this.docTreeQuery;
-      this.path = "../form";
+      this.path = "/form";
       this.formType = "document";
     }
 

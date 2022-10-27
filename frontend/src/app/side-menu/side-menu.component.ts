@@ -35,7 +35,7 @@ export class SideMenuComponent implements OnInit {
 
   currentRoute: string;
   toggleState = "collapsed";
-  catalogId: string;
+  catalogId = ConfigService.catalogId;
 
   constructor(
     private router: Router,
