@@ -116,20 +116,20 @@ export const routes: Routes = [
           hideFromMenu: true,
         },
       },
-      /*{
+      {
         path: "",
-        redirectTo: "/dashboard",
+        redirectTo: "dashboard",
         pathMatch: "full",
-      },*/
-    ],
-  },
-  /*  {
+      },
+      {
         path: "**",
-        redirectTo: "/dashboard",
+        redirectTo: "dashboard",
         data: {
           hideFromMenu: true,
         },
-  },*/
+      },
+    ],
+  },
 ];
 
 // export const appRoutingProviders: any[] = [];
