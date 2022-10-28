@@ -42,7 +42,7 @@ export class AuthGuard implements CanActivate {
     }
 
     console.warn("User is not allowed to access this resource: " + path);
-    this.router.navigate([""]);
+    this.router.navigate([ConfigService.catalogId]);
     return false;
   }
 
