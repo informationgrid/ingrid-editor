@@ -303,6 +303,37 @@ how to configure a form field.
 
 Also check out some basics in the section "Create a new profile".
 
+# Add context help for a form field
+
+The context help is stored as mark-down files on the server side. They are located under
+`server/src/main/resources/contextHelp/<profile>`. The German translations will be found
+in this directory. For other languages a sub-directory needs to be created with the 
+language-ID, e.g. `en` or `es`.
+
+The structure is as follows:
+* **id**: defines the ID of the form field the context help belongs to
+* **docType**: a list of document types for which this help will be displayed
+* **profile**: for which profile is this help used
+
+The help text itself can be found under the last separator: `---`
+
+Example:
+```markdown
+---
+# ID des GUI Elements
+id: announcementDocs
+docType:
+    - UvpApprovalProcedureDoc
+    - UvpLineDeterminationDoc
+    - UvpSpatialPlanningProcedureDoc
+    - UvpForeignProjectDoc
+profile: uvp
+
+---
+
+Auslegungsinformationen hochladen/verlinken ...
+```
+
 # Create a new page
 
 * create a new module under app (e.g. AddressModule)
