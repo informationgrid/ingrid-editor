@@ -94,6 +94,18 @@ export function ConfigLoader(
   router: Router,
   route: ActivatedRoute
 ) {
+  function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
+    const splittedUrl = urlPath.split(";");
+    const commands: any[] = [`/${catalogId}/${splittedUrl[0]}`];
+    if (splittedUrl.length > 1) {
+      const parameterData = splittedUrl[1].split("=");
+      const parameter = {};
+      parameter[parameterData[0]] = parameterData[1];
+      commands.push(parameter);
+    }
+    return commands;
+  }
+
   return () => {
     const redirectToCatalogSpecificRoute = (router: Router) => {
       const catalogId = configService.$userInfo.value.currentCatalog.id;
@@ -101,7 +113,8 @@ export function ConfigLoader(
       const urlPath = document.location.pathname;
       // if (urlPath.startsWith(`/${catalogId}`))
       if (!urlPath.startsWith(`/${catalogId}`)) {
-        return router.navigate([`/${catalogId}/${urlPath}`]);
+        const commands = getRedirectNavigationCommand(catalogId, urlPath);
+        return router.navigate(commands);
       }
     };
     return configService
