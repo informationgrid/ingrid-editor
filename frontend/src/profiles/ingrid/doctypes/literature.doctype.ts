@@ -23,9 +23,12 @@ export class LiteratureDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addTextArea("author", "Autor/Verfasser", this.id),
+        this.addTextArea("author", "Autor/Verfasser", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
         this.addInput("publisher", "Herausgeber", {
           wrappers: ["panel", "form-field"],
+          hideExpression: "formState.hideOptionals",
         }),
         this.addGroup(
           null,
@@ -51,28 +54,43 @@ export class LiteratureDoctype extends IngridShared {
               { wrappers: [] }
             ),
           ],
-          { fieldGroupClassName: null }
+          {
+            fieldGroupClassName: null,
+            hideExpression: "formState.hideOptionals",
+          }
         ),
-        this.addTextArea("location", "Standort", this.id),
+        this.addTextArea("location", "Standort", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
         this.addInput("publishedISBN", "ISBN-Nr.", {
           wrappers: ["panel", "form-field"],
+          hideExpression: "formState.hideOptionals",
         }),
         this.addInput("publishedPublisher", "Verlag", {
           wrappers: ["panel", "form-field"],
+          hideExpression: "formState.hideOptionals",
         }),
         this.addAutocomplete("documentType", "Dokumententyp", {
           options: this.getCodelistForSelect(3385, "documentType"),
           codelistId: 3385,
+          hideExpression: "formState.hideOptionals",
         }),
-        this.addTextArea("baseDataText", "Basisdaten", this.id),
-        this.addGroup(null, "Weiteres", [
-          this.addTextAreaInline(
-            "bibliographicData",
-            "Weitere bibliographische Angaben",
-            this.id
-          ),
-          this.addTextAreaInline("explanation", "Erläuterungen", this.id),
-        ]),
+        this.addTextArea("baseDataText", "Basisdaten", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addGroup(
+          null,
+          "Weiteres",
+          [
+            this.addTextAreaInline(
+              "bibliographicData",
+              "Weitere bibliographische Angaben",
+              this.id
+            ),
+            this.addTextAreaInline("explanation", "Erläuterungen", this.id),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
       ]),
 
       this.addSpatialSection(),

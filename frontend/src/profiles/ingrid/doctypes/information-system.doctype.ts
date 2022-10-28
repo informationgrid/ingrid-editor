@@ -31,23 +31,36 @@ export class InformationSystemDoctype extends IngridShared {
             options: this.getCodelistForSelect(5300, "serviceType"),
             codelistId: 5300,
           }),
-          this.addRepeatListInline("serviceVersion", "Version"),
+          this.addRepeatListInline("serviceVersion", "Version", {
+            hideExpression: "formState.hideOptionals",
+          }),
         ]),
-        this.addGroup(null, "Weitere Informationen", [
-          this.addTextAreaInline(
-            "systemEnvironment",
-            "Systemumgebung",
-            this.id
-          ),
-          this.addTextAreaInline("history", "Historie", this.id),
-        ]),
-        this.addGroup(null, null, [
-          this.addTextAreaInline("baseDataText", "Basisdaten", this.id),
-          this.addTextAreaInline("explanation", "Erläuterungen", this.id),
-        ]),
+        this.addGroup(
+          null,
+          "Weitere Informationen",
+          [
+            this.addTextAreaInline(
+              "systemEnvironment",
+              "Systemumgebung",
+              this.id
+            ),
+            this.addTextAreaInline("history", "Historie", this.id),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
+        this.addGroup(
+          null,
+          null,
+          [
+            this.addTextAreaInline("baseDataText", "Basisdaten", this.id),
+            this.addTextAreaInline("explanation", "Erläuterungen", this.id),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
         this.addTable("serviceUrls", "Service-Urls", {
           supportUpload: false,
           columns: [],
+          hideExpression: "formState.hideOptionals",
         }),
       ]),
 

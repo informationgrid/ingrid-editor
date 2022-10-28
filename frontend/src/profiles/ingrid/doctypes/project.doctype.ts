@@ -23,9 +23,15 @@ export class ProjectDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addTextArea("participants", "Beteiligte", this.id),
-        this.addTextArea("manager", "Projektleiter", this.id),
-        this.addTextArea("explanation", "Erläuterungen", this.id),
+        this.addTextArea("participants", "Beteiligte", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addTextArea("manager", "Projektleiter", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addTextArea("explanation", "Erläuterungen", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
       ]),
 
       this.addSpatialSection(),

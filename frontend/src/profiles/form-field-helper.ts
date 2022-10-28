@@ -152,6 +152,7 @@ export class FormFieldHelper {
       type: "autocomplete",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
+      hideExpression: options?.hideExpression,
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,

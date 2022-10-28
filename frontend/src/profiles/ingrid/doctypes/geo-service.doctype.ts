@@ -39,6 +39,7 @@ export class GeoServiceDoctype extends IngridShared {
           this.addRepeatListInline("serviceVersion", "Version des Dienstes", {
             options: this.getCodelistForSelect(5152, "serviceVersion"),
             codelistId: 5152,
+            hideExpression: "formState.hideOptionals",
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -48,18 +49,28 @@ export class GeoServiceDoctype extends IngridShared {
         this.addTable("scale", "Erstellungsmaßstab", {
           supportUpload: false,
           columns: [],
+          hideExpression: "formState.hideOptionals",
         }),
-        this.addGroup(null, null, [
-          this.addTextAreaInline(
-            "systemEnvironment",
-            "Systemumgebung",
-            this.id
-          ),
-          this.addTextAreaInline("history", "Historie", this.id),
-        ]),
-        this.addTextArea("explanation", "Erläuterungen", this.id),
+        this.addGroup(
+          null,
+          null,
+          [
+            this.addTextAreaInline(
+              "systemEnvironment",
+              "Systemumgebung",
+              this.id
+            ),
+            this.addTextAreaInline("history", "Historie", this.id),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
+        this.addTextArea("explanation", "Erläuterungen", this.id, {
+          hideExpression: "formState.hideOptionals",
+        }),
         this.addGroup(null, "Dargestellte Daten", [
-          this.addRepeatListInline("coupledResources", "Dargestellte Daten"),
+          this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
+            hideExpression: "formState.hideOptionals",
+          }),
           this.addSelectInline("couplingType", "Kopplungstyp", {
             options: <SelectOptionUi[]>[
               { label: "loose", value: "loose" },
@@ -68,7 +79,9 @@ export class GeoServiceDoctype extends IngridShared {
             ],
           }),
         ]),
-        this.addCheckbox("hasAccessConstraints", "Zugang geschützt"),
+        this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
+          hideExpression: "formState.hideOptionals",
+        }),
       ]),
 
       this.addSpatialSection(),
