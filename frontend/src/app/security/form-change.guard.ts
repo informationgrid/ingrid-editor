@@ -17,6 +17,7 @@ import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
 import { BehaviourService } from "../services/behavior/behaviour.service";
+import { ConfigService } from "../services/config/config.service";
 
 @Injectable({
   providedIn: "root",
@@ -36,9 +37,10 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
+    const documentPath = `${ConfigService.catalogId}/form`;
     if (
-      currentState.url.indexOf("/form") === 0 &&
-      nextState.url.indexOf("/form") !== 0
+      currentState.url.indexOf(documentPath) === 0 &&
+      nextState.url.indexOf(documentPath) !== 0
     ) {
       console.log("redirect from form");
       // unsubscribe from form plugins
@@ -46,16 +48,19 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         register: false,
         address: false,
       });
-    } else if (
-      currentState.url.indexOf("/address") === 0 &&
-      nextState.url.indexOf("/address") !== 0
-    ) {
-      console.log("redirect from address");
-      // subscribe form plugins
-      this.behaviourService.registerState$.next({
-        register: false,
-        address: true,
-      });
+    } else {
+      const addressPath = `${ConfigService.catalogId}/address`;
+      if (
+        currentState.url.indexOf(addressPath) === 0 &&
+        nextState.url.indexOf(addressPath) !== 0
+      ) {
+        console.log("redirect from address");
+        // subscribe form plugins
+        this.behaviourService.registerState$.next({
+          register: false,
+          address: true,
+        });
+      }
     }
 
     // do not check when we navigate within the current page (loading another document)

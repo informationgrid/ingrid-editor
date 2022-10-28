@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { Observable, Subject } from "rxjs";
 import { filter } from "rxjs/operators";
 import { IgeDocument } from "../../models/ige-document";
+import { ConfigService } from "../config/config.service";
 
 export interface BeforePublishData {
   errors: any[];
@@ -58,8 +59,10 @@ export class DocEventsService {
 
   private belongsToThisPage(address: boolean) {
     return (
-      (address && this.router.url.indexOf("/address") === 0) ||
-      (!address && this.router.url.indexOf("/form") === 0)
+      (address &&
+        this.router.url.indexOf(`/${ConfigService.catalogId}/address`) === 0) ||
+      (!address &&
+        this.router.url.indexOf(`/${ConfigService.catalogId}/form`) === 0)
     );
   }
 
