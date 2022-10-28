@@ -66,6 +66,7 @@ class UploadApiController @Autowired constructor(
 
         val userID = principal.getName()
 
+        // TODO: remove validation, check if filename can be invalid
         // check filename
         try {
             storage.validate(catalogId, userID, docUuid, flowFilename, flowTotalSize)
@@ -87,6 +88,9 @@ class UploadApiController @Autowired constructor(
 
         var files: Array<StorageItem> = arrayOf()
 
+        // Since multiple chunks are uploaded in parallel the fileInfo-object also
+        // can be updated/created in parallel. This can lead to problem determining the end of an upload,
+        // when we do not have the latest state of the already uploaded chunks.
         synchronized(this) {
             var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
             if (fileInfo == null) {
