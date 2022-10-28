@@ -96,7 +96,7 @@ export function ConfigLoader(
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
-    const commands: any[] = [`/${catalogId}/${splittedUrl[0]}`];
+    const commands: any[] = [`/${catalogId}${splittedUrl[0]}`];
     if (splittedUrl.length > 1) {
       const parameterData = splittedUrl[1].split("=");
       const parameter = {};
@@ -114,7 +114,8 @@ export function ConfigLoader(
       // if (urlPath.startsWith(`/${catalogId}`))
       if (!urlPath.startsWith(`/${catalogId}`)) {
         const commands = getRedirectNavigationCommand(catalogId, urlPath);
-        return router.navigate(commands);
+        // redirect a bit delayed to complete this navigation first before doing another
+        setTimeout(() => router.navigate(commands));
       }
     };
     return configService
