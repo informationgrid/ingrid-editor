@@ -9,7 +9,7 @@ export interface GroupFormData {
 
 export class AdminGroupPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
-    cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
+    cy.get('a.mat-tab-link[data-cy="' + tabmenu + '"]', { timeout: 10000 }).click();
   }
 
   static applyDialog() {
