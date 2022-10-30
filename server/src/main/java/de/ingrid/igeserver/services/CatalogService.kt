@@ -140,10 +140,10 @@ class CatalogService @Autowired constructor(
     }
 
     private fun transformNameToIdentifier(name: String): String {
-        var identifier = name.lowercase().replace(" ".toRegex(), "_")
+        return name.lowercase()
+            .replace(" ".toRegex(), "_")
         // slash not valid as it makes problems in URLs
-        identifier = identifier.replace("/".toRegex(), "_")
-        return identifier
+            .replace("/".toRegex(), "_")
     }
 
     fun catalogWithNameExists(name: String): Boolean {
