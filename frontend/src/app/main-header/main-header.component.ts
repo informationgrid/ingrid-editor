@@ -59,7 +59,7 @@ export class MainHeaderComponent implements OnInit {
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         const rootPath = this.router.parseUrl(this.router.url).root.children
-          .primary.segments[1].path;
+          .primary?.segments[1]?.path;
         this.showShadow = rootPath !== "dashboard";
         this.pageTitle = rootPath;
       }
