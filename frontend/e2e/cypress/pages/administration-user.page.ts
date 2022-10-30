@@ -15,7 +15,7 @@ export interface UserFormData {
 
 export class AdminUserPage extends BasePage {
   static goToTabmenu(tabmenu: UserAndRights) {
-    cy.get('a.mat-tab-link[href="' + tabmenu + '"]', { timeout: 10000 }).click();
+    cy.get('a.mat-tab-link[data-cy="' + tabmenu + '"]', { timeout: 10000 }).click();
   }
 
   static visit() {
@@ -245,7 +245,7 @@ export class AdminUserPage extends BasePage {
     });
   }
 
-  static getInfoInHeader(key: keysInHeader, headerOpen = false, fromTitleAttribute = false): Chainable<String> {
+  static getInfoInHeader(key: keysInHeader, headerOpen = false, fromTitleAttribute = false): Chainable<string> {
     if (!headerOpen) {
       cy.get('.user-title .menu-button').eq(0).click();
     }

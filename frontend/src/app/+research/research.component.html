@@ -1,6 +1,7 @@
 <nav mat-tab-nav-bar class="page-tabs-routing">
     <a
         *ngFor="let tab of tabs; let i = index"
+        [attr.data-cy]="tab.path"
         mat-tab-link
         #rla="routerLinkActive"
         routerLinkActive="active-link"

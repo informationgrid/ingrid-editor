@@ -180,8 +180,8 @@ export enum UVPmetrics {
 }
 
 export enum UVPreports {
-  Statistic = '/reports/general',
-  Report = '/reports/uvp-bericht',
-  URLmanagement = '/reports/url-check',
-  UploadCheck = '/reports/uvp-upload-check'
+  Statistic = 'general',
+  Report = 'uvp-bericht',
+  URLmanagement = 'url-check',
+  UploadCheck = 'uvp-upload-check'
 }
