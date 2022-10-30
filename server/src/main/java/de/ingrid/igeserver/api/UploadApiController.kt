@@ -66,6 +66,7 @@ class UploadApiController @Autowired constructor(
 
         val userID = principal.getName()
 
+        // TODO: remove validation, check if filename can be invalid
         // check filename
         try {
             storage.validate(catalogId, userID, docUuid, flowFilename, flowTotalSize)
@@ -87,37 +88,41 @@ class UploadApiController @Autowired constructor(
 
         var files: Array<StorageItem> = arrayOf()
 
-        var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
-        if (fileInfo == null) {
-            fileInfo = FileInfo()
-            this.fileInfos[flowIdentifier] = fileInfo
-        }
+        // Since multiple chunks are uploaded in parallel the fileInfo-object also
+        // can be updated/created in parallel. This can lead to problem determining the end of an upload,
+        // when we do not have the latest state of the already uploaded chunks.
+        synchronized(this) {
+            var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
+            if (fileInfo == null) {
+                fileInfo = FileInfo()
+                this.fileInfos[flowIdentifier] = fileInfo
+            }
 
-        storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
+            storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
+            fileInfo.addUploadedChunk(flowChunkNumber)
 
-        fileInfo.addUploadedChunk(flowChunkNumber)
-
-        if (fileInfo.isUploadFinished(flowTotalChunks)) {
-            log.info("Merging parts of uploaded file: $flowFilename")
-            // store file
-            try {
-                files = storage.combineParts(
-                    catalogId,
-                    userID,
-                    docUuid,
-                    flowFilename,
-                    flowIdentifier,
-                    flowTotalChunks,
-                    flowTotalSize,
-                    replace
-                )
-                log.info("Upload complete: $flowFilename")
-            } catch (ex: Exception) {
-                log.error("Error uploading file $flowFilename", ex)
-                return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
-            } finally {
-                this.fileInfos.remove(flowIdentifier)
+            if (fileInfo.isUploadFinished(flowTotalChunks)) {
+                log.info("Merging parts of uploaded file: $flowFilename")
+                // store file
+                try {
+                    files = storage.combineParts(
+                        catalogId,
+                        userID,
+                        docUuid,
+                        flowFilename,
+                        flowIdentifier,
+                        flowTotalChunks,
+                        flowTotalSize,
+                        replace
+                    )
+                    log.info("Upload complete: $flowFilename")
+                } catch (ex: Exception) {
+                    log.error("Error uploading file $flowFilename", ex)
+                    return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
+                } finally {
+                    this.fileInfos.remove(flowIdentifier)
+                }
             }
         }
         return this.createUploadResponse(files)

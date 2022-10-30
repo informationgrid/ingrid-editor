@@ -17,7 +17,7 @@ export class FormFieldHelper {
       id: id,
       fieldGroupClassName:
         options?.fieldGroupClassName === null ? undefined : "display-flex",
-      wrappers: ["panel"],
+      wrappers: options?.wrappers ?? ["panel"],
       templateOptions: {
         externalLabel: label,
       },
@@ -37,11 +37,13 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "textarea",
-      className: id,
+      // className: id,
+      className: (options?.className ?? "flex-1") + ` ${id}`,
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       templateOptions: {
         externalLabel: label,
+        label: options?.fieldLabel,
         autosize: false,
         autosizeMinRows: 3,
         attributes: {
@@ -52,6 +54,19 @@ export class FormFieldHelper {
       },
       hideExpression: options?.hideExpression,
     };
+  }
+
+  addTextAreaInline(
+    id,
+    label,
+    elementIdPrefix,
+    options = {}
+  ): FormlyFieldConfig {
+    return this.addTextArea(id, null, elementIdPrefix, {
+      ...options,
+      wrappers: ["form-field"],
+      fieldLabel: label,
+    });
   }
 
   addAddressCard(id, label, options?) {
@@ -89,10 +104,11 @@ export class FormFieldHelper {
     return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
-      wrappers: ["panel"],
+      wrappers: options?.wrappers ?? ["panel"],
+      className: options?.className,
       templateOptions: {
         externalLabel: label,
-        placeholder: "Bitte wählen...",
+        placeholder: options?.fieldLabel ?? "Bitte wählen...",
         options: options?.options,
         codelistId: options?.codelistId,
         required: options?.required,
@@ -101,6 +117,15 @@ export class FormFieldHelper {
       },
       hideExpression: options?.hideExpression,
     };
+  }
+
+  addRepeatListInline(id, label, options = {}) {
+    return this.addRepeatList(id, null, {
+      ...options,
+      fieldLabel: label,
+      wrappers: [],
+      className: "flex-1",
+    });
   }
 
   addRepeat(id, label, options?) {
@@ -127,6 +152,7 @@ export class FormFieldHelper {
       type: "autocomplete",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
+      hideExpression: options?.hideExpression,
       templateOptions: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -165,6 +191,14 @@ export class FormFieldHelper {
     };
   }
 
+  addInputInline(id, label, options = {}): FormlyFieldConfig {
+    return this.addInput(id, null, {
+      ...options,
+      fieldLabel: label,
+      wrappers: ["form-field"],
+    });
+  }
+
   addSelect(id, label, options?) {
     return {
       key: id,
@@ -188,6 +222,15 @@ export class FormFieldHelper {
       },
       hideExpression: options?.hideExpression,
     };
+  }
+
+  addSelectInline(id, label, options: any = {}) {
+    return this.addSelect(id, null, {
+      ...options,
+      fieldLabel: label,
+      wrappers: ["form-field"],
+      className: options.className ?? "flex-1",
+    });
   }
 
   addTable(id, label, options?): FormlyFieldConfig {

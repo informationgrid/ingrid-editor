@@ -304,6 +304,8 @@ describe('mCLOUD: Upload Tests', () => {
     cy.contains('button', 'Bearbeiten').click();
     cy.get('.table-batch-edit-row mat-checkbox').click();
     cy.contains('.table-batch-edit-row button', 'Löschen').click();
+    cy.get('[data-cy=confirm-dialog-confirm]').click();
+
     // check that download table has disappeared
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // check that row to delete entries has disappeared
@@ -341,6 +343,8 @@ describe('mCLOUD: Upload Tests', () => {
     cy.contains('button', 'Bearbeiten').click();
     cy.get('.table-batch-edit-row mat-checkbox').click();
     cy.contains('.table-batch-edit-row button', 'Löschen').click();
+    cy.get('[data-cy=confirm-dialog-confirm]').click();
+
     // check that download table has disappeared
     cy.get('[data-cy="Downloads-table"]').should('not.exist');
     // check that row to delete entries has disappeared

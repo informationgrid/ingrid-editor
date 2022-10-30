@@ -54,7 +54,7 @@ describe('uvp reports', () => {
   it('should update display of uvp numbers after creating new document of type Linienbestimmung', () => {
     const docTitle = 'L' + Utils.randomString();
 
-    DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle);
+    DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.Report);
     uvpPage.getUVPNumbermetrics('UVPG-1.4.1.2').then(oldValue => {

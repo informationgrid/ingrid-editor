@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class InGridGeoDatasetType @Autowired constructor() : EntityType() {
+class InGridGeoServiceType @Autowired constructor() : EntityType() {
     override val profiles = arrayOf("ingrid")
     
-    override val className = "InGridGeoDataset"
+    override val className = "InGridGeoService"
 
-//    override val jsonSchema = "/uvp/schemes/approval-procedure.schema.json"
+//    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"
 }

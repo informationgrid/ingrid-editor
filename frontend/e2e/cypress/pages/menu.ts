@@ -5,7 +5,8 @@ export class Menu {
   static switchTo(page: Page, waitForPage = true) {
     const menuId = Menu.mapPageToMenuId(page);
     cy.wait(500);
-    cy.get(`[data-cy="${menuId}"]`).click();
+    // allow force clicking here, sometimes menu is covered by another element
+    cy.get(`[data-cy="${menuId}"]`).click({ force: true });
     if (waitForPage) Menu.waitForPage(page);
   }
 
