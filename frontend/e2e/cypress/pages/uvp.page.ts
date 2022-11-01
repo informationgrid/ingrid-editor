@@ -80,7 +80,7 @@ export class uvpPage {
   }
 
   static goToTabmenu(tabmenu: UVPreports) {
-    cy.get(`a.mat-tab-link[href="${tabmenu}"]`, { timeout: 10000 }).click();
+    cy.get(`a.mat-tab-link[data-cy="${tabmenu}"]`, { timeout: 10000 }).click();
     cy.url().should('include', tabmenu);
     cy.wait(1000);
   }
