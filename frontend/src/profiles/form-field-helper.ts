@@ -26,6 +26,13 @@ export class FormFieldHelper {
     };
   }
 
+  addGroupSimple(id: string, fields: any[]) {
+    return this.addGroup(id, null, fields, {
+      fieldGroupClassName: null,
+      wrappers: [],
+    });
+  }
+
   /**
    * Add a text area with the id `elementIdPrefix + id`
    * @param id
@@ -106,6 +113,7 @@ export class FormFieldHelper {
       type: "repeatList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
+      expressions: options?.expressions,
       templateOptions: {
         externalLabel: label,
         placeholder: options?.fieldLabel ?? "Bitte wählen...",
@@ -237,6 +245,8 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "table",
+      className: options?.className,
+      wrappers: options?.wrappers,
       templateOptions: {
         externalLabel: label,
         required: options?.required,
@@ -332,6 +342,14 @@ export class FormFieldHelper {
       },
       hideExpression: options?.hideExpression,
     };
+  }
+
+  addCheckboxInline(id, label, options = {}) {
+    return this.addCheckbox(id, null, {
+      ...options,
+      fieldLabel: label,
+      wrappers: ["form-field", "inline-help"],
+    });
   }
 
   addRadioboxes(id, label, options?) {
