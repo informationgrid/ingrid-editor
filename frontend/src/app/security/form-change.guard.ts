@@ -37,7 +37,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
-    const documentPath = `${ConfigService.catalogId}/form`;
+    const documentPath = `/${ConfigService.catalogId}/form`;
     if (
       currentState.url.indexOf(documentPath) === 0 &&
       nextState.url.indexOf(documentPath) !== 0
@@ -49,7 +49,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
         address: false,
       });
     } else {
-      const addressPath = `${ConfigService.catalogId}/address`;
+      const addressPath = `/${ConfigService.catalogId}/address`;
       if (
         currentState.url.indexOf(addressPath) === 0 &&
         nextState.url.indexOf(addressPath) !== 0
