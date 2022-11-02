@@ -67,11 +67,12 @@ class ResearchService {
 
         val sql = createQuery(catalogId, query, groupIds)
 
-        val result = sendQuery(sql, query.pagination)
+        val termAsParameters = getParameters(query)
+        val result = sendQuery(sql, termAsParameters, query.pagination)
         val map = filterAndMapResult(result, hasAccessToRootDocs, principal)
 
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
-            getTotalHits(sql)
+            getTotalHits(sql, termAsParameters)
         } else {
             map.size
         }
@@ -84,7 +85,7 @@ class ResearchService {
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
-        val termParameters: List<Any> = if (query.term.isNullOrEmpty()) {
+        return if (query.term.isNullOrEmpty()) {
             emptyList()
         } else {
             val withWildcard = "%" + query.term + "%"
@@ -93,13 +94,6 @@ class ResearchService {
             else listOf(withWildcard, withWildcard, query.term)
         }
 
-        val clauseParameters = query.clauses?.clauses
-            ?.mapNotNull { it.parameter }
-            ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it } }
-            ?.filter { it.isNotEmpty() }
-            ?.flatten() ?: emptyList()
-
-        return termParameters + clauseParameters
     }
 
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
@@ -146,8 +140,8 @@ class ResearchService {
         if (query.term.isNullOrEmpty()) return ""
 
         val searchOnlyInTitle = checkForTitleSearch(query.clauses)
-        return if (searchOnlyInTitle) "title ILIKE '%${query.term}%'"
-        else "(t.val ILIKE '%${query.term}%' OR title ILIKE '%${query.term}%' OR document1.uuid ILIKE '${query.term}' )"
+        return if (searchOnlyInTitle) "title ILIKE ?"
+        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ?)"
     }
 
     private fun checkForTitleSearch(clauses: BoolFilter?): Boolean {
@@ -214,8 +208,12 @@ class ResearchService {
             """.trimIndent()
     }
 
-    private fun sendQuery(sql: String, paging: ResearchPaging): List<Array<out Any?>> {
+    private fun sendQuery(sql: String, termParameters: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
+
+        termParameters.forEachIndexed { index, term ->
+            nativeQuery.setParameter(index + 1, term)
+        }
 
         return nativeQuery
             .setHint(QueryHints.HINT_READONLY, true)
@@ -236,11 +234,15 @@ class ResearchService {
     }
 
 
-    private fun getTotalHits(sql: String): Int {
+    private fun getTotalHits(sql: String, termParameters: List<Any>): Int {
         val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
             .substring(sql.indexOf("FROM"))
             .substringBeforeLast("ORDER BY")
         val countQuery = entityManager.createNativeQuery(countSQL)
+
+        termParameters.forEachIndexed { index, term ->
+            countQuery.setParameter(index + 1, term)
+        }
 
         return (countQuery.singleResult as Number).toInt()
     }
@@ -297,11 +299,12 @@ class ResearchService {
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
 
-            val result = sendQuery(finalQuery, paging)
+            val termAsParameters = emptyList<String>()
+            val result = sendQuery(finalQuery, termAsParameters, paging)
             val map = filterAndMapResult(result, isAdmin, principal)
 
             val totalHits = if (paging.pageSize != Int.MAX_VALUE) {
-                getTotalHits(finalQuery)
+                getTotalHits(finalQuery, termAsParameters)
             } else {
                 map.size
             }
