@@ -113,7 +113,8 @@ export function ConfigLoader(
     const catalogId = userInfo.currentCatalog.id;
     const urlPath = document.location.pathname;
     // FIXME: what about IGE-NG installed behind a context path? check configuration!
-    const rootPath = urlPath.split("/")[1];
+    // get first part of the path without any parameters separated by ";"
+    const rootPath = urlPath.split("/")[1].split(";")[0];
     if (rootPath !== catalogId) {
       // check if no catalogId is in requested URL
       const hasNoCatalogId =
