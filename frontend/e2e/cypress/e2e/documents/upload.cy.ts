@@ -373,7 +373,7 @@ describe('Upload Tests', () => {
     cy.get('error-dialog').should('include', /Dateiname darf kein '%' enthalten/);
   });
 
-  it('should upload a large file 10 MB  #4448', () => {
+  it('should upload a large file 10 MB (#4448)', () => {
     const fileTitle = 'sample-large-file.pdf';
 
     Tree.openNode(['Testdokumente', 'MC_with_large_file']);

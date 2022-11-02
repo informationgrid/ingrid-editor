@@ -363,7 +363,7 @@ describe('create/delete/edit addresses', () => {
     cy.get('ige-address-card').should('not.exist');
   });
 
-  it('Should not  be possible to add same address with same type more than once #3652', () => {
+  it('Should not  be possible to add same address with same type more than once (#3652)', () => {
     const docname = 'document_to_check_for_duplicate_address';
     const addressName = 'address_to_add_twice';
     Tree.openNode([docname]);
@@ -391,7 +391,7 @@ describe('create/delete/edit addresses', () => {
     cy.get(DocumentPage.title).should('have.text', addressData.title);
   });
 
-  it('Should allow catalog admin to delete address with references after replacing it with another #3811', () => {
+  it('Should allow catalog admin to delete address with references after replacing it with another (#3811)', () => {
     Menu.switchTo('ADDRESSES');
     Tree.openNode(['address_with_reference_to_delete_catalog_admin']);
     AddressPage.deleteLoadedNode(true);

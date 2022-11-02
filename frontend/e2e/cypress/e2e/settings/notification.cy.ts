@@ -9,7 +9,7 @@ describe('Catalog management', () => {
     NotificationPage.visit();
   });
 
-  it('Should add a general notification, without expire date and check it in the dashboard #4328', () => {
+  it('Should add a general notification, without expire date and check it in the dashboard (#4328)', () => {
     let message = 'Welcome from super admin';
     NotificationPage.openNotificationDialog();
     NotificationPage.addNotificationText(message);
@@ -38,7 +38,7 @@ describe('Catalog management', () => {
     NotificationPage.checkForNotificationInDashboard(message);
   });
 
-  it('Should add multiple general notifications with expire date, (old date, now and in the future), and check for the notifications in the dashboard for multiple users. #4328', () => {
+  it('Should add multiple general notifications with expire date, (old date, now and in the future), and check for the notifications in the dashboard for multiple users. (#4328)', () => {
     let messageOldDate = 'general notification old expire date ';
     let messageCurrentDate = 'general notification expire date today';
     let messageFutureDate = 'general notification future expire date ';
@@ -100,7 +100,7 @@ describe('Catalog management', () => {
     NotificationPage.checkForNotificationInDashboard(messageFutureDate);
   });
 
-  it('Should add notifications (with and without expire date) for specific catalog, and check the existing of the notification in different catalog. #4328', () => {
+  it('Should add notifications (with and without expire date) for specific catalog, and check the existing of the notification in different catalog. (#4328)', () => {
     let catalogMessageWithDate = 'catalog notification with expire date ';
     let catalogMessageWithoutDate = 'catalog notification without expire date ';
     cy.logoutClearCookies();
@@ -142,7 +142,7 @@ describe('Catalog management', () => {
     NotificationPage.checkForNotificationInDashboard(catalogMessageWithoutDate, true);
   });
 
-  it('Should delete general and catalog notifications. #4328', () => {
+  it('Should delete general and catalog notifications. (#4328)', () => {
     let generalMessage = 'general message to delete';
     let catalogMessage = 'catalog message to delete ';
 

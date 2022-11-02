@@ -77,7 +77,7 @@ describe('Read Only Documents', () => {
     cy.get('error-dialog').contains('keine Berechtigung');
   });
 
-  it('should be able to copy a read only document #3512', function () {
+  it('should be able to copy a read only document (#3512)', function () {
     const readOnlyFolder = 'Folder_e';
     const documentToCopy = 'Doc_ee_1';
 
@@ -92,7 +92,7 @@ describe('Read Only Documents', () => {
     Tree.openNode(['Folder2 For Meta2', documentToCopy]);
   });
 
-  it('should not be able to edit fields in read only document #3512', function () {
+  it('should not be able to edit fields in read only document (#3512)', function () {
     // logout
     cy.logoutClearCookies();
 

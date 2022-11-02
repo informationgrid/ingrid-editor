@@ -547,7 +547,7 @@ describe('Tree', () => {
     cy.kcLogin('test-catalog-general-test').as('tokens');
   });
 
-  it('should not be possible to move folder under an address #3925', () => {
+  it('should not be possible to move folder under an address (#3925)', () => {
     const testFolder = 'Ordner_Ebene_2A';
 
     AddressPage.visit();

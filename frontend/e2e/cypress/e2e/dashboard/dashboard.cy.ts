@@ -133,7 +133,7 @@ describe('Dashboard', () => {
       cy.get(AddressPage.title, { timeout: 10000 }).should('have.text', instituteName);
     });
 
-    it('should have working action buttons on all dashboards #3960', () => {
+    it('should have working action buttons on all dashboards (#3960)', () => {
       // dashboard page (check import button)
       DashboardPage.startShortcutAction(Shortcuts.ImportDataset);
       cy.url().should('include', '/importExport/import');
@@ -167,7 +167,7 @@ describe('Dashboard', () => {
       cy.url().should('include', '/importExport/import');
     });
 
-    it('should have working action buttons in folder view #3960', () => {
+    it('should have working action buttons in folder view (#3960)', () => {
       Menu.switchTo('DOCUMENTS');
       Tree.openNode(['Folder_d']);
       // new dataset
