@@ -21,7 +21,7 @@ class PostDefaultDocumentUnpublisher @Autowired constructor(val indexTask: Index
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
 
         // remove from index
-        this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid)
+        this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
 
         return payload
     }

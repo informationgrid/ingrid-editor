@@ -6,7 +6,6 @@ import { DocumentService } from "../../../app/services/document/document.service
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
-import { BaseDoctype } from "../../base.doctype";
 import { IngridShared } from "./ingrid-shared";
 
 const qualityTables = <SelectOptionUi[]>[
@@ -54,27 +53,242 @@ export class GeoDatasetDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addTextArea("baseText", "Fachliche Grundlage", this.id),
-        this.addInput("sourceIdentifier", "Identifikator der Datenquelle", {
+        this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field"],
         }),
-        this.addSelect(this.id, "Datensatz/Datenserie", {
+        this.addSelect("subType", "Datensatz/Datenserie", {
           required: true,
-          options: this.getCodelistForSelect(525, this.id),
+          options: this.getCodelistForSelect(525, "subType"),
           codelistId: 525,
         }),
-        this.addRepeatList("digitalRepresentation", "Digitale Repräsentation", {
-          asSelect: true,
-          options: this.getCodelistForSelect(526, "priorityDataset"),
-          codelistId: 526,
-          hideExpression: "formState.hideOptionals",
+        this.addRepeatList(
+          "spatialRepresentationType",
+          "Digitale Repräsentation",
+          {
+            asSelect: true,
+            options: this.getCodelistForSelect(526, "priorityDataset"),
+            codelistId: 526,
+            hideExpression: "formState.hideOptionals",
+          }
+        ),
+        this.addTable("vectorSpatialRepresentation", "Topologieinformation", {
+          supportUpload: false,
+          columns: [
+            {
+              key: "topologyLevel",
+              type: "select",
+              label: "Topologieinformation",
+              templateOptions: {
+                label: "Topologieinformation",
+                appearance: "outline",
+                options: this.getCodelistForSelect(528, "topologyLevel"),
+                codelistId: 528,
+                formatter: (item: any) => this.formatCodelistValue("528", item),
+              },
+            },
+            {
+              key: "geometricObjectType",
+              type: "select",
+              label: "Geometrietyp",
+              templateOptions: {
+                label: "Geometrietyp",
+                appearance: "outline",
+                options: this.getCodelistForSelect(515, "geometricObjectType"),
+                codelistId: 515,
+                formatter: (item: any) => this.formatCodelistValue("515", item),
+              },
+            },
+            {
+              key: "geometricObjectCount",
+              type: "input",
+              label: "Elementanzahl",
+              templateOptions: {
+                label: "Elementanzahl",
+                type: "number",
+                appearance: "outline",
+              },
+            },
+          ],
+          hideExpression:
+            'formState.mainModel.spatialRepresentationType.find(x => x.key === "1") === undefined',
         }),
-        this.addTable("scale", "Erstellungsmaßstab", {
+        this.addGroup(
+          "gridSpatialRepresentation",
+          "Raster/Gitter",
+          [
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addCheckboxInline(
+                  "transformationParameterAvailability",
+                  "Verfügbarkeit von Transformationsparametern",
+                  { className: "flex-3" }
+                ),
+                this.addInputInline(
+                  "numberOfDimenstions",
+                  "Anzahl der Dimensionen"
+                ),
+                this.addInputInline("cellGeometry", "Zellengeometrie"),
+              ],
+              { wrappers: [] }
+            ),
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addTable("axisDimensionsProperties", null, {
+                  supportUpload: false,
+                  className: "flex-1",
+                  columns: [
+                    {
+                      key: "name",
+                      type: "input",
+                      label: "Achsenbezeichnung",
+                      templateOptions: {
+                        label: "Achsenbezeichnung",
+                        appearance: "outline",
+                        options: this.getCodelistForSelect(
+                          514,
+                          "geometricObjectType"
+                        ),
+                        codelistId: 514,
+                        formatter: (item: any) =>
+                          this.formatCodelistValue("514", item),
+                      },
+                    },
+                    {
+                      key: "size",
+                      type: "input",
+                      label: "Elementanzahl",
+                      templateOptions: {
+                        label: "Elementanzahl",
+                        type: "number",
+                        appearance: "outline",
+                      },
+                    },
+                    {
+                      key: "resolution",
+                      type: "input",
+                      label: "Auflösung in Meter",
+                      templateOptions: {
+                        label: "Auflösung in Meter",
+                        type: "number",
+                        appearance: "outline",
+                      },
+                    },
+                  ],
+                }),
+              ],
+              { wrappers: [] }
+            ),
+            this.addSelectInline("type", "Typ", {
+              options: <SelectOptionUi[]>[
+                {
+                  value: "basis",
+                  label: "Geobasisraster",
+                },
+                {
+                  value: "rectified",
+                  label: "Georektifiziertes Raster",
+                },
+                {
+                  value: "referenced",
+                  label: "Georeferenzierbares Raster",
+                },
+              ],
+            }),
+            this.addGroup(
+              "georectified",
+              null,
+              [
+                this.addGroup(
+                  null,
+                  null,
+                  [
+                    this.addCheckboxInline(
+                      "checkPointAvailability",
+                      "Kontrollpunktverfügbarkeit",
+                      { className: "flex-3" }
+                    ),
+                    this.addInputInline(
+                      "checkPointDescription",
+                      "Kontrollpunktbeschreibung",
+                      { className: "flex-1" }
+                    ),
+                  ],
+                  { wrappers: [] }
+                ),
+                this.addGroup(
+                  null,
+                  null,
+                  [
+                    this.addInputInline("cornerPoints", "Eckpunkte", {
+                      className: "flex-3",
+                    }),
+                    this.addSelectInline("pointInPixel", "Punkt im Pixel", {
+                      options: this.getCodelistForSelect(2100, "pointInPixel"),
+                      codelistId: 2100,
+                      className: "flex-3",
+                    }),
+                  ],
+                  { wrappers: [] }
+                ),
+              ],
+              {
+                wrappers: [],
+                fieldGroupClassName: null,
+                hideExpression:
+                  'formState.mainModel.gridSpatialRepresentation.type?.key !== "rectified"',
+              }
+            ),
+            this.addGroup(
+              "georeferenceable",
+              null,
+              [
+                this.addGroup(
+                  null,
+                  null,
+                  [
+                    this.addCheckboxInline(
+                      "orientationParameterAvailability",
+                      "Verfügbarkeit der Orientierungsparameter",
+                      { className: "flex-3" }
+                    ),
+                    this.addCheckboxInline(
+                      "controlPointAvaliability",
+                      "Passpunktverfügbarkeit",
+                      { className: "flex-3" }
+                    ),
+                  ],
+                  { wrappers: [] }
+                ),
+                this.addInputInline(
+                  "parameters",
+                  "Georeferenzierungsparameter"
+                ),
+              ],
+              {
+                wrappers: [],
+                fieldGroupClassName: null,
+                hideExpression:
+                  'formState.mainModel.gridSpatialRepresentation.type?.key !== "referenced"',
+              }
+            ),
+          ],
+          {
+            fieldGroupClassName: null,
+            hideExpression:
+              'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+          }
+        ),
+        this.addTable("resolution", "Erstellungsmaßstab", {
           supportUpload: false,
           hideExpression: "formState.hideOptionals",
           columns: [
             {
-              key: "scale",
+              key: "equivalentScale",
               type: "input",
               label: "Maßstab 1:x",
               templateOptions: {
@@ -84,7 +298,7 @@ export class GeoDatasetDoctype extends IngridShared {
               },
             },
             {
-              key: "groundResolution",
+              key: "distanceMeter",
               type: "input",
               label: "Bodenauflösung (m)",
               width: "300px",
@@ -95,7 +309,7 @@ export class GeoDatasetDoctype extends IngridShared {
               },
             },
             {
-              key: "scanResolution",
+              key: "distanceDPI",
               type: "input",
               label: "Scanauflösung (DPI)",
               width: "300px",
@@ -107,104 +321,137 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           ],
         }),
-        this.addTable("symbol", "Symbolkatalog", {
-          supportUpload: false,
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "title",
-              type: "input",
-              label: "Titel",
-              templateOptions: {
-                required: true,
-                label: "Titel",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "date",
-              type: "datepicker",
-              label: "Datum",
-              width: "300px",
-              templateOptions: {
-                required: true,
-                label: "Datum",
-                appearance: "outline",
-                formatter: (date: Date) => {
-                  return new Date(date).toLocaleDateString();
+        this.addGroup(
+          "portrayalCatalogueInfo",
+          null,
+          [
+            this.addTable("citation", "Symbolkatalog", {
+              supportUpload: false,
+              hideExpression: "formState.hideOptionals",
+              columns: [
+                {
+                  key: "title",
+                  type: "input",
+                  label: "Titel",
+                  templateOptions: {
+                    required: true,
+                    label: "Titel",
+                    appearance: "outline",
+                  },
                 },
-              },
-            },
-            {
-              key: "version",
-              type: "input",
-              label: "Version",
-              width: "300px",
-              templateOptions: {
-                label: "Version",
-                appearance: "outline",
-              },
-            },
-          ],
-        }),
-        this.addTable("keys", "Schlüsselkatalog", {
-          supportUpload: false,
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "title",
-              type: "input",
-              label: "Titel",
-              templateOptions: {
-                required: true,
-                label: "Titel",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "date",
-              type: "datepicker",
-              label: "Datum",
-              width: "300px",
-              templateOptions: {
-                required: true,
-                label: "Datum",
-                appearance: "outline",
-                formatter: (date: Date) => {
-                  return new Date(date).toLocaleDateString();
+                {
+                  key: "date",
+                  type: "datepicker",
+                  label: "Datum",
+                  width: "300px",
+                  templateOptions: {
+                    required: true,
+                    label: "Datum",
+                    appearance: "outline",
+                    formatter: (date: Date) => {
+                      return new Date(date).toLocaleDateString();
+                    },
+                  },
                 },
-              },
-            },
-            {
-              key: "version",
-              type: "input",
-              label: "Version",
-              width: "300px",
-              templateOptions: {
-                label: "Version",
-                appearance: "outline",
-              },
-            },
+                {
+                  key: "edition",
+                  type: "input",
+                  label: "Version",
+                  width: "300px",
+                  templateOptions: {
+                    label: "Version",
+                    appearance: "outline",
+                  },
+                },
+              ],
+            }),
           ],
-        }),
-        this.addRepeatList("attributes", "Sachdaten/Attributinformation", {
-          hideExpression: "formState.hideOptionals",
-        }),
+          { fieldGroupClassName: null, wrappers: [] }
+        ),
+        this.addGroupSimple("contentInfo", [
+          this.addGroupSimple("featureCatalogueDescription", [
+            this.addTable("citation", "Schlüsselkatalog", {
+              supportUpload: false,
+              hideExpression: "formState.hideOptionals",
+              columns: [
+                {
+                  key: "title",
+                  type: "input",
+                  label: "Titel",
+                  templateOptions: {
+                    required: true,
+                    label: "Titel",
+                    appearance: "outline",
+                  },
+                },
+                {
+                  key: "date",
+                  type: "datepicker",
+                  label: "Datum",
+                  width: "300px",
+                  templateOptions: {
+                    required: true,
+                    label: "Datum",
+                    appearance: "outline",
+                    formatter: (date: Date) => {
+                      return new Date(date).toLocaleDateString();
+                    },
+                  },
+                },
+                {
+                  key: "version",
+                  type: "input",
+                  label: "Version",
+                  width: "300px",
+                  templateOptions: {
+                    label: "Version",
+                    appearance: "outline",
+                  },
+                },
+              ],
+            }),
+            this.addRepeatList(
+              "featureTypes",
+              "Sachdaten/Attributinformation",
+              {
+                hideExpression: "formState.hideOptionals",
+              }
+            ),
+          ]),
+        ]),
         this.addRepeatList("coupledServices", "Darstellender Dienst", {
           hideExpression: "formState.hideOptionals",
         }),
-        this.addRepeatList("dataBasis", "Datengrundlage", {
-          hideExpression: "formState.hideOptionals",
-        }),
-        this.addTextArea("process", "Herstellungsprozess", "geoDataset", {
-          hideExpression: "formState.hideOptionals",
-        }),
+        this.addGroupSimple("dataQualityInfo", [
+          this.addGroupSimple("lineage", [
+            this.addGroupSimple("source", [
+              this.addRepeatList("descriptions", "Datengrundlage", {
+                hideExpression: "formState.hideOptionals",
+              }),
+            ]),
+            this.addGroupSimple("processStep", [
+              this.addTextArea(
+                "description",
+                "Herstellungsprozess",
+                "geoDataset",
+                {
+                  hideExpression: "formState.hideOptionals",
+                }
+              ),
+            ]),
+          ]),
+        ]),
       ]),
       this.addSection("Datenqualität", [
         this.addInput("coverage", "Datendefizit", {
           wrappers: ["panel", "form-field"],
         }),
         this.addGroup(null, "Genauigkeit", [
+          this.addInput("gridPosAccuracy", null, {
+            fieldLabel: "Rasterpositionsgenauigkeit (m)",
+            hideExpression:
+              'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+          }),
           this.addInput("altAccuracy", null, {
             fieldLabel: "Höhengenauigkeit (m)",
           }),

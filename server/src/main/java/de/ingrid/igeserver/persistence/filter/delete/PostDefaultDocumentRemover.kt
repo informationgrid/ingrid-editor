@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component
 class PostDefaultDocumentRemover @Autowired constructor(val indexTask: IndexingTask) : Filter<PostDeletePayload> {
 
     private val log = logger()
-    
+
     override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
 
         // remove from index
         try {
-            this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid)
+            this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
         } catch (e: NoElasticsearchConnectionException) {
             // just give a warning so that delete operation succeeds since it runs in a transaction
             log.warn("There's no connection to Elasticsearch: ${e.message}")

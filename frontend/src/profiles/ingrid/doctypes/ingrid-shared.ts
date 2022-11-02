@@ -23,85 +23,97 @@ export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
-    return this.addSection("Allgemeines", [
-      this.addGroup(
-        null,
-        "Info",
-        [
-          this.addInputInline(
-            "parentUuid",
-            "Identifikator des übergeordneten Metadatensatzes"
-          ),
-          this.addInputInline(
-            "metadataDate",
-            "Metadaten-Datum (veröffentlichte Version)"
-          ),
-        ],
-        { hideExpression: "formState.hideOptionals" }
-      ),
-      this.addRepeatList("previewGraphic", "Vorschaugrafik", {
-        hideExpression: "formState.hideOptionals",
-      }),
-      this.addInput("shortDescription", "Kurzbezeichnung", {
-        wrappers: ["panel", "form-field"],
-        hideExpression: "formState.hideOptionals",
-      }),
-      this.addTextArea("description", "Beschreibung", this.id, {
-        required: true,
-      }),
-      this.addAddressCard("addresses", "Adressen"),
-      this.addGroup(
-        null,
-        "Typ",
-        [
-          options.inspireRelevant
-            ? this.addCheckbox("isInspireRelevant", "INSPIRE-relevant", {
-                wrappers: ["form-field", "inline-help"],
-                fieldLabel: "INSPIRE-relevant",
-                className: "flex-1",
-              })
-            : null,
-          this.addCheckbox("isAdVCompatible", "AdV kompatibel", {
-            wrappers: ["form-field", "inline-help"],
-            fieldLabel: "AdV kompatibel",
-            className: "flex-1",
-          }),
-          options.openData
-            ? this.addCheckbox("isOpenData", "Open Data", {
-                wrappers: ["form-field", "inline-help"],
-                fieldLabel: "Open Data",
-                className: "flex-1",
-              })
-            : null,
-        ].filter(Boolean)
-      ),
-    ]);
+    return this.addSection(
+      "Allgemeines",
+      [
+        this.addGroup(
+          null,
+          "Info",
+          [
+            this.addInputInline(
+              "parentIdentifier",
+              "Identifikator des übergeordneten Metadatensatzes"
+            ),
+            this.addInputInline(
+              "modifiedMetadata",
+              "Metadaten-Datum (veröffentlichte Version)"
+            ),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
+        this.addRepeatList("graphicOverviews", "Vorschaugrafik", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addInput("alternateTitle", "Kurzbezeichnung", {
+          wrappers: ["panel", "form-field"],
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addTextArea("description", "Beschreibung", this.id, {
+          required: true,
+        }),
+        this.addAddressCard("pointOfContact", "Adressen"),
+        this.addGroup(
+          null,
+          "Typ",
+          [
+            options.inspireRelevant
+              ? this.addCheckbox("isInspireIdentified", "INSPIRE-relevant", {
+                  wrappers: ["form-field", "inline-help"],
+                  fieldLabel: "INSPIRE-relevant",
+                  className: "flex-1",
+                })
+              : null,
+            this.addCheckbox("isAdVCompatible", "AdV kompatibel", {
+              wrappers: ["form-field", "inline-help"],
+              fieldLabel: "AdV kompatibel",
+              className: "flex-1",
+            }),
+            options.openData
+              ? this.addCheckbox("isOpenData", "Open Data", {
+                  wrappers: ["form-field", "inline-help"],
+                  fieldLabel: "Open Data",
+                  className: "flex-1",
+                })
+              : null,
+          ].filter(Boolean)
+        ),
+        options.openData
+          ? this.addRepeatList("openDataCategories", "Kategorien", {
+              asSelect: true,
+              options: this.getCodelistForSelect(6400, "openDataCategories"),
+              codelistId: 6400,
+              // expressions: { hide: "!model.isOpenData" },
+              hideExpression: "!formState.mainModel.isOpenData",
+            })
+          : null,
+      ].filter(Boolean)
+    );
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
     return this.addSection(
       "Verschlagwortung",
       [
-        this.addRepeatList("advProductGroup", "AdV-Produktgruppe", {
+        this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
           asSelect: true,
-          options: this.getCodelistForSelect(8010, "advProductGroup"),
+          options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
           hideExpression: "formState.hideOptionals",
         }),
-        this.addRepeatList("inspireTopics", "INSPIRE-Themen", {
+        this.addRepeatList("themes", "INSPIRE-Themen", {
           asSelect: true,
-          options: this.getCodelistForSelect(6100, "inspireTopics"),
+          options: this.getCodelistForSelect(6100, "themes"),
           codelistId: 6100,
           hideExpression: "formState.hideOptionals",
         }),
         // TODO: output needs to be formatted in a different way
         options.priorityDataset
           ? this.addRepeatList(
-              "priorityDataset",
+              "priorityDatasets",
               "INSPIRE - priority data set",
               {
                 asSelect: true,
-                options: this.getCodelistForSelect(6350, "priorityDataset"),
+                options: this.getCodelistForSelect(6350, "priorityDatasets"),
                 codelistId: 6350,
                 hideExpression: "formState.hideOptionals",
               }
@@ -118,9 +130,9 @@ export abstract class IngridShared extends BaseDoctype {
             )
           : null,
         options.thesaurusTopics
-          ? this.addRepeatList("thesaurusTopics", "ISO-Themenkategorie", {
+          ? this.addRepeatList("topicCategories", "ISO-Themenkategorie", {
               asSelect: true,
-              options: this.getCodelistForSelect(527, "thesaurusTopics"),
+              options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
             })
           : null,

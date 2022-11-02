@@ -321,15 +321,15 @@ class IndexingTask @Autowired constructor(
 
 
     private fun indexPrePhase(
-        alias: String,
+        categoryAlias: String,
         catalogType: String,
         format: String,
         elasticsearchAlias: String
     ): Pair<String, String> {
         val catalogProfile = catalogService.getCatalogProfile(catalogType)
 
-        val oldIndex = indexManager.getIndexNameFromAliasName(alias, generalProperties.uuid)
-        val newIndex = IndexManager.getNextIndexName(alias, generalProperties.uuid, elasticsearchAlias)
+        val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
+        val newIndex = IndexManager.getNextIndexName(categoryAlias, generalProperties.uuid, elasticsearchAlias)
         indexManager.createIndex(
             newIndex,
             "base",
@@ -487,11 +487,13 @@ class IndexingTask @Autowired constructor(
         this.cancellations[catalogId] = true
     }
 
-    fun removeFromIndex(catalogId: String, id: String) {
+    fun removeFromIndex(catalogId: String, id: String, category: String) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
+        val enumCategory = DocumentCategory.values().first {it.value == category}
+        val categoryAlias = getIndexIdentifier(elasticsearchAlias, enumCategory)
         try {
-            val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, generalProperties.uuid)
+            val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
             val info = IndexInfo().apply {
                 realIndexName = oldIndex
                 toType = "base"
