@@ -90,13 +90,6 @@ export class MainHeaderComponent implements OnInit {
   }
 
   chooseCatalog(id: string) {
-    // navigate to dashboard before switching catalog
-    this.router.navigate([`/${this.catalogId}/dashboard`]).then((success) => {
-      // success can be null if no navigation happened
-      if (success != false)
-        this.catalogService.switchCatalog(id).subscribe(() => {
-          window.location.reload();
-        });
-    });
+    this.catalogService.switchCatalog(id);
   }
 }

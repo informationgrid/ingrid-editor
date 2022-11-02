@@ -15,6 +15,7 @@ import { ConfigService } from "./services/config/config.service";
 import { GlobalErrorHandler } from "./error-handler";
 import {
   HTTP_INTERCEPTORS,
+  HttpClient,
   HttpClientModule,
   HttpClientXsrfModule,
 } from "@angular/common/http";
@@ -76,7 +77,7 @@ import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
-import { ActivatedRoute, Router, RouteReuseStrategy } from "@angular/router";
+import { Router, RouteReuseStrategy } from "@angular/router";
 import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
@@ -85,6 +86,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { SharedModule } from "./shared/shared.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
+import { Catalog } from "./+catalog/services/catalog.model";
 
 registerLocaleData(de);
 
@@ -92,7 +94,7 @@ export function ConfigLoader(
   configService: ConfigService,
   authFactory: AuthenticationFactory,
   router: Router,
-  route: ActivatedRoute
+  http: HttpClient
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -106,18 +108,48 @@ export function ConfigLoader(
     return commands;
   }
 
-  return () => {
-    const redirectToCatalogSpecificRoute = (router: Router) => {
-      const catalogId = configService.$userInfo.value.currentCatalog.id;
-      console.log("Current Catalog: ", catalogId);
-      const urlPath = document.location.pathname;
-      // if (urlPath.startsWith(`/${catalogId}`))
-      if (!urlPath.startsWith(`/${catalogId}`)) {
+  async function redirectToCatalogSpecificRoute(router: Router) {
+    const userInfo = configService.$userInfo.value;
+    const catalogId = userInfo.currentCatalog.id;
+    const urlPath = document.location.pathname;
+    // FIXME: what about IGE-NG installed behind a context path? check configuration!
+    const rootPath = urlPath.split("/")[1];
+    if (rootPath !== catalogId) {
+      // check if no catalogId is in requested URL
+      const hasNoCatalogId = router.config[0].children.some(
+        (route) => route.path === rootPath
+      );
+      if (hasNoCatalogId) {
         const commands = getRedirectNavigationCommand(catalogId, urlPath);
         // redirect a bit delayed to complete this navigation first before doing another
         setTimeout(() => router.navigate(commands));
+        return;
       }
-    };
+
+      const isAssignedToCatalog = userInfo.assignedCatalogs.some(
+        (assigned) => assigned.id === rootPath
+      );
+      if (isAssignedToCatalog) {
+        // await catalogService.switchCatalog(rootPath).toPromise();
+        await http
+          .post<Catalog>(
+            configService.getConfiguration().backendUrl +
+              "user/catalog/" +
+              rootPath,
+            null
+          )
+          .toPromise()
+          .then(() => configService.getCurrentUserInfo());
+        return;
+      }
+
+      throw new IgeError(
+        `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`
+      );
+    }
+  }
+
+  return () => {
     return configService
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
@@ -229,7 +261,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, AuthenticationFactory, Router, ActivatedRoute],
+      deps: [ConfigService, AuthenticationFactory, Router, HttpClient],
       multi: true,
     },
     // set locale for dates
