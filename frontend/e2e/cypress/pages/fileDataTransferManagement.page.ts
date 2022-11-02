@@ -34,7 +34,7 @@ export class fileDataTransferManagement {
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
     cy.get('.upload-content').should('contain', filePath);
-    cy.get('[svgicon="Entfernen"]').should('exist');
+    cy.get('[svgicon="Entfernen"]', { timeout: 8000 }).should('exist');
   }
 
   static addFileWithRename(filePath: string, newName: string) {
@@ -58,7 +58,7 @@ export class fileDataTransferManagement {
   }
 
   static assertFileUpload(checkExistenceOfContainer: boolean = false, submitDialog: boolean = true) {
-    if (submitDialog) cy.contains('button', 'Übernehmen').click();
+    if (submitDialog) cy.contains('button', 'Übernehmen', { timeout: 8000 }).click();
     if (checkExistenceOfContainer) cy.get('mat-dialog-container').should('not.exist', { timeout: 10000 });
   }
 
