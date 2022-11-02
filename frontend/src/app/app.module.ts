@@ -116,9 +116,9 @@ export function ConfigLoader(
     const rootPath = urlPath.split("/")[1];
     if (rootPath !== catalogId) {
       // check if no catalogId is in requested URL
-      const hasNoCatalogId = router.config[0].children.some(
-        (route) => route.path === rootPath
-      );
+      const hasNoCatalogId =
+        rootPath === "index.html" ||
+        router.config[0].children.some((route) => route.path === rootPath);
       if (hasNoCatalogId) {
         const commands = getRedirectNavigationCommand(catalogId, urlPath);
         // redirect a bit delayed to complete this navigation first before doing another
