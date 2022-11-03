@@ -36,6 +36,7 @@ export class UploadFilesDialogComponent implements OnInit {
   docUuid = null;
   extractZipFiles = false;
   uploadComplete = false;
+  extractInProgress = false;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -77,6 +78,7 @@ export class UploadFilesDialogComponent implements OnInit {
   }
 
   private extractAndCloseDialog(option?: ExtractOption) {
+    this.extractInProgress = true;
     forkJoin(
       this.chosenFiles.map((file) => {
         return this.uploadService.extractUploadedFilesOnServer(
@@ -130,6 +132,7 @@ export class UploadFilesDialogComponent implements OnInit {
   }
 
   private handleExtractError(error: any): Observable<any> {
+    this.extractInProgress = false;
     if (error.status === 409) {
       return this.dialog
         .open(ConfirmDialogComponent, {
