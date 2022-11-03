@@ -8,6 +8,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -194,7 +195,7 @@ interface UsersApi {
             description = "The id of the catalog to switch to for the current user",
             required = true
         ) @PathVariable("catalogId") catalogId: String
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Catalog>
 
     @GetMapping(value = ["/info/refreshSession"])
     @Operation

@@ -135,7 +135,7 @@
                             <button
                                 *ngIf="entry.isRouterLink"
                                 mat-menu-item
-                                [routerLink]="[entry.link]"
+                                [routerLink]="[catalogId + '/' + entry.link]"
                             >
                                 {{ entry.label }}
                             </button>

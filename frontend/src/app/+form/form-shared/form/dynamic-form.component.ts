@@ -37,6 +37,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
+import { ConfigService } from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -174,7 +175,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // when clicking on root node in breadcrumb we need to set opened document to null
       // otherwise the last one will be loaded again
       this.documentService.updateOpenedDocumentInTreestore(null, this.address);
-      this.router.navigate([this.address ? "/address" : "/form"]);
+      this.router.navigate([
+        ConfigService.catalogId + (this.address ? "/address" : "/form"),
+      ]);
     });
 
     this.handleJsonViewPlugin();
@@ -281,12 +284,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private handleLoadError(error: HttpErrorResponse, previousDocUuid) {
     if (error.status === 403) {
       // select previous document
-      const target = this.address ? "/address" : "/form";
-      if (previousDocUuid) {
-        this.router.navigate([target, { id: previousDocUuid }]);
-      } else {
-        this.router.navigate([target]);
-      }
+      const target =
+        ConfigService.catalogId + (this.address ? "/address" : "/form");
+      const commands: any[] = [target];
+      if (previousDocUuid) commands.push({ id: previousDocUuid });
+
+      this.router.navigate(commands);
     }
     throw error;
   }

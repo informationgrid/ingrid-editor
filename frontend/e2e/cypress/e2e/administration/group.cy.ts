@@ -16,7 +16,7 @@ describe('Group', () => {
     cy.get('.page-title').contains('Gruppen');
   });
 
-  it('Should check the functionality of cancel, discard, and save buttons in groups section #4184', () => {
+  it('Should check the functionality of cancel, discard, and save buttons in groups section (#4184)', () => {
     let firstGroup = 'Group1ToChange';
     let secondGroup = 'Group2ToChange';
     let descriptionName = 'desc';

@@ -47,11 +47,14 @@ export class CatalogService {
       );
   }
 
-  switchCatalog(id: string) {
-    return this.http.post(
-      this.configuration.backendUrl + "user/catalog/" + id,
-      null
-    );
+  switchCatalog(id: string): void {
+    this.http
+      .post(this.configuration.backendUrl + "user/catalog/" + id, null)
+      .subscribe(() => {
+        // get current location without parameters to avoid 404 errors
+        const path = window.location.pathname.split(";")[0];
+        window.location.href = path.replace(ConfigService.catalogId, id);
+      });
   }
 
   createCatalog(catalog: Catalog) {

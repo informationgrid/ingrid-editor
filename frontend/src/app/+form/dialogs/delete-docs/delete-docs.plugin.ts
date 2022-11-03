@@ -8,13 +8,14 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../../services/document/document.service";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { EventService, IgeEvent } from "../../../services/event/event.service";
 import { filter, take, tap } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -35,6 +36,7 @@ export class DeleteDocsPlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private router: Router,
+    private route: ActivatedRoute,
     private eventService: EventService,
     private dialog: MatDialog
   ) {
@@ -122,16 +124,17 @@ export class DeleteDocsPlugin extends Plugin {
       return;
     }
 
-    const route = this.forAddress ? "/address" : "/form";
     const parent = currentDoc._parent;
 
     const parentEntity = this.tree.getEntity(parent);
 
+    const commands: any[] = [
+      ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
+    ];
     if (parent && parentEntity) {
-      this.router.navigate([route, { id: parentEntity._uuid }]);
-    } else {
-      this.router.navigate([route]);
+      commands.push({ id: parentEntity._uuid });
     }
+    this.router.navigate(commands);
   }
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {

@@ -533,7 +533,7 @@ describe('mCLOUD: User', () => {
     });
   });
 
-  it('should download user data as CSV file #3943', () => {
+  it('should download user data as CSV file (#3943)', () => {
     AdminUserPage.getUserData().then(arr1 => {
       AdminUserPage.downloadCSVFile();
       AdminUserPage.getUserDataFromCSV().then(arr2 => {
@@ -574,7 +574,7 @@ describe('User', () => {
     AdminUserPage.visit();
   });
 
-  it('Should check of reset password functionality #4030', () => {
+  it('Should check of reset password functionality (#4030)', () => {
     const toResetPaassword = 'author-profile-test-reset-pass';
     AdminUserPage.selectUser(toResetPaassword);
     cy.get('#formUser [data-mat-icon-name=Mehr]').click();
@@ -589,7 +589,7 @@ describe('User', () => {
       'reset-pass'
     );
   });
-  it('Should check the functionality of cancel, discard, and save buttons in users section #4184', () => {
+  it('Should check the functionality of cancel, discard, and save buttons in users section (#4184)', () => {
     let firstUserName = 'author-profile-test-forget-pass';
     let secondUserName = 'author-profile-test-reset-pass';
     let orgName = 'someRandomOrganization';
@@ -654,7 +654,7 @@ describe('Universal Read Access', () => {
     cy.kcLogin('author-universal-read').as('tokens');
   });
 
-  it('Author can be granted universal read access #3267', () => {
+  it('Author can be granted universal read access (#3267)', () => {
     // check read access data
     DocumentPage.visit();
     cy.get('mat-tree mat-tree-node')
@@ -674,13 +674,13 @@ describe('Universal Read Access', () => {
       .should('be.greaterThan', 10);
   });
 
-  it('Author with  universal read access should not be able to delete an existing document #3267', () => {
+  it('Author with  universal read access should not be able to delete an existing document (#3267)', () => {
     DocumentPage.visit();
     Tree.openNode(['Doc_m']);
     cy.get('[data-cy="toolbar_DELETE"]').should('be.disabled');
   });
 
-  it('Author with  universal read access should not be able to create a document #3267', () => {
+  it('Author with  universal read access should not be able to create a document (#3267)', () => {
     DocumentPage.visit();
     cy.get('[data-cy="toolbar_NEW_DOC"]').should('be.disabled');
   });
@@ -692,7 +692,7 @@ describe('Universal Write Access', () => {
     cy.kcLogin('author-universal-write').as('tokens');
   });
 
-  it('Author can be granted universal read + write #3267', () => {
+  it('Author can be granted universal read + write (#3267)', () => {
     // check write access data
     DocumentPage.visit();
     cy.get('mat-tree mat-tree-node')
@@ -718,7 +718,7 @@ describe('Universal Write Access', () => {
       .should('be.greaterThan', 10);
   });
 
-  it('Author with universal read + write access can create root document/move and copy document to root #3267', () => {
+  it('Author with universal read + write access can create root document/move and copy document to root (#3267)', () => {
     // create root document
     DocumentPage.visit();
     DocumentPage.createDocument('newRootDoc');
@@ -734,7 +734,7 @@ describe('Universal Write Access', () => {
     Tree.openNode(['Doc_j_1']);
   });
 
-  it('Author with  universal read + write access should be able to delete any document #3267', () => {
+  it('Author with  universal read + write access should be able to delete any document (#3267)', () => {
     // delete document
     DocumentPage.visit();
     Tree.openNode(['Doc_m']);

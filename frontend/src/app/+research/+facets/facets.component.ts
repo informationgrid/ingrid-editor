@@ -20,7 +20,7 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter, map, take, tap } from "rxjs/operators";
+import { filter, map, take } from "rxjs/operators";
 import {
   CodelistService,
   SelectOptionUi,
@@ -202,9 +202,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           )
           .subscribe(
             (id) =>
-              (this.codelistOptions[group.id] = this.codelistService
-                .observe(id)
-                .pipe(tap((val) => console.log("HEY", val))))
+              (this.codelistOptions[group.id] =
+                this.codelistService.observe(id))
           );
       }
     }

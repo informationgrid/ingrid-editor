@@ -23,6 +23,7 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-result-table",
@@ -92,7 +93,9 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   openDataset(element: IgeDocument) {
-    const target = this.isAddress(element) ? "/address" : "/form";
+    const target =
+      ConfigService.catalogId +
+      (this.isAddress(element) ? "/address" : "/form");
     this.router.navigate([target, { id: element._uuid }]);
   }
 

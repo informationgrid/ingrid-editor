@@ -302,6 +302,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
       // do nothing
     }
   }
+
   private loadGroupUsers(id: number) {
     this.groupService
       .getUsersOfGroup(id)
@@ -315,6 +316,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   switchToUser($event: User) {
     this.userService.selectedUser$.next($event);
-    this.router.navigate(["/manage/user"]);
+    this.router.navigate([`${ConfigService.catalogId}/manage/user`]);
   }
 }

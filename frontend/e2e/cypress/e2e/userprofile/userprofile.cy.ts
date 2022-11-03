@@ -27,7 +27,7 @@ describe('Profile', () => {
     ProfilePage.changeUserFirstLastName(firstName, lastName, true);
   });
 
-  it('should update user first, last name, and email respectively #4088 ', () => {
+  it('should update user first, last name, and email respectively (#4088) ', () => {
     let oldFirstName = 'Test';
     let oldLastName = 'Verantwortlicher2';
     let newFirstName = 'newFirstName';
@@ -140,7 +140,7 @@ describe('Profile', () => {
     ProfilePage.changeUserEmail(newEmail, true);
   });
 
-  it('should check for forget password functionality #4033', () => {
+  it('should check for forget password functionality (#4033)', () => {
     cy.visit('');
     cy.contains('a', 'Passwort vergessen?').click();
     let userEmail = 'autor-forgetpass@test.com';

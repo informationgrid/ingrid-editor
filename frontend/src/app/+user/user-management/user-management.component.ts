@@ -28,7 +28,8 @@ export class UserManagementComponent implements OnInit {
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used
     // example: reload page being on 2nd tab -> goto dashboard -> come back again
-    const currentPath = activeRoute.snapshot.firstChild.url[0].path;
+    const currentPath = this.router.parseUrl(this.router.url).root.children
+      .primary.segments[2].path;
     const activeTabIndex = this.tabs.findIndex(
       (tab) => tab.path === currentPath
     );

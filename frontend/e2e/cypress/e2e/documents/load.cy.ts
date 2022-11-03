@@ -13,7 +13,7 @@ describe('Load documents', () => {
     cy.kcLogin('test-catalog-general-test');
   });
 
-  it('should display folder content correctly after saving the folder #3944', function () {
+  it('should display folder content correctly after saving the folder (#3944)', function () {
     DocumentPage.visit();
     // open folder and check for the content
     cy.visit('/form;id=a7bf5a24-921c-4910-b868-bd01c322a4a6');
@@ -25,7 +25,7 @@ describe('Load documents', () => {
     cy.contains('ige-folder-dashboard mat-card  ige-document-list-item mat-list-option', 'MC_Dokument_1');
   });
 
-  it('should check for the content of preview dialog for Test catalog data record, #4269', function () {
+  it('should check for the content of preview dialog for Test catalog data record, (#4269)', function () {
     DocumentPage.visit();
     // open published document and check for the content
     Tree.openNode(['document_to_export']);

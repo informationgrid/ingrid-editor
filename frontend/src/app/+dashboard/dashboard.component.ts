@@ -96,15 +96,15 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoImportPage() {
-    this.router.navigate(["/importExport/import"]);
+    this.router.navigate([`${ConfigService.catalogId}/importExport/import`]);
   }
 
   openDocument(uuid: string) {
-    this.router.navigate(["/form", { id: uuid }]);
+    this.router.navigate([`${ConfigService.catalogId}/form`, { id: uuid }]);
   }
 
   openAddress(uuid: string) {
-    this.router.navigate(["/address", { id: uuid }]);
+    this.router.navigate([`${ConfigService.catalogId}/address`, { id: uuid }]);
   }
 
   createNewFolder() {

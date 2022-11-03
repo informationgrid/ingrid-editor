@@ -67,7 +67,7 @@ describe('mCLOUD: Load addresses', () => {
     });
   });
 
-  it('should "Adresse ersetzen" option exists only for catalog administrators and super users #3811', () => {
+  it('should "Adresse ersetzen" option exists only for catalog administrators and super users (#3811)', () => {
     Tree.openNode(['test_z, test_z']);
     AddressPage.openActionMenu();
     AddressPage.openReplaceAddressDialog();
@@ -95,7 +95,7 @@ describe('mCLOUD: Load addresses', () => {
     cy.logoutClearCookies();
   });
 
-  it('should replace address contains referenced documents with another address #3811', () => {
+  it('should replace address contains referenced documents with another address (#3811)', () => {
     // open second address and make sure that it does contains any referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
     AddressPage.openReferencedDocumentsSection();
@@ -119,7 +119,7 @@ describe('mCLOUD: Load addresses', () => {
     cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
   });
 
-  it('Meta admin should not be allowed to delete Address if it is still referenced in data records #3811', () => {
+  it('Meta admin should not be allowed to delete Address if it is still referenced in data records (#3811)', () => {
     cy.logoutClearCookies();
     cy.kcLogin('mcloud-meta-with-groups');
     DocumentPage.visit();
@@ -168,7 +168,7 @@ describe('Load addresses', () => {
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', false);
   });
 
-  it('should check for the content of preview dialog for Test catalog (address), #4269', function () {
+  it('should check for the content of preview dialog for Test catalog (address), (#4269)', function () {
     AddressPage.visit();
     // open published document and check for the content
     Tree.openNode(['topreview, address']);

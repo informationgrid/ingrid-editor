@@ -52,6 +52,8 @@ export interface UserInfo {
   providedIn: "root",
 })
 export class ConfigService {
+  public static catalogId: string;
+
   private config: Configuration;
 
   defaultConfig: Partial<Configuration> = {
@@ -133,6 +135,8 @@ export class ConfigService {
         throw new IgeError("Could not get current user");
       }
 
+      ConfigService.catalogId = userInfo.currentCatalog.id;
+
       this.isAdministrator =
         userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
 
@@ -163,11 +167,7 @@ export class ConfigService {
 
   hasPermission(neededPermission: string | string[]): boolean {
     const user = this.$userInfo.getValue();
-    const hasExplicitPermission = this.hasExplicitPermission(
-      neededPermission,
-      user
-    );
-    return hasExplicitPermission;
+    return this.hasExplicitPermission(neededPermission, user);
   }
 
   hasExplicitPermission(

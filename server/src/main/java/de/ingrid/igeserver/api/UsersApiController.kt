@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
@@ -326,7 +327,7 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(result)
     }
 
-    override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Void> {
+    override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
@@ -337,7 +338,7 @@ class UsersApiController : UsersApi {
         } ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         userRepo.save(user)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(user.curCatalog)
     }
 
     override fun refreshSession(): ResponseEntity<Void> {

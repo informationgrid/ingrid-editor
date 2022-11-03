@@ -525,7 +525,7 @@ describe('uvp documents', () => {
     cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn der ersten Auslegung sein/);
   });
 
-  it('should check for the content of preview dialog for UVP catalog data record, #4269', function () {
+  it('should check for the content of preview dialog for UVP catalog data record, (#4269)', function () {
     DocumentPage.visit();
     // open published document and check for the content
     Tree.openNode(['Plan_to_preview']);
@@ -555,7 +555,7 @@ describe('uvp documents', () => {
     DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Entscheidung-table"]  ', 'Entscheidung ueber alles');
   });
   // validation not yet implemented (09/01/22)
-  xit('should not publish document if date of "Datum des Antrags" is later than begin of "Erörterungszeitraum" #4057', () => {
+  xit('should not publish document if date of "Datum des Antrags" is later than begin of "Erörterungszeitraum" (#4057)', () => {
     Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
 
     // add description
