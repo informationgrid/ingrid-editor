@@ -30,7 +30,7 @@ export class fileDataTransferManagement {
   }
 
   static addFile(filePath: string) {
-    cy.intercept('POST', /api\/upload/).as('upload');
+    cy.intercept('POST', /api\/upload/, { times: 1 }).as('upload');
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
     cy.get('.upload-content').should('contain', filePath);
