@@ -12,10 +12,10 @@ describe('Dashboard', () => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
     cy.visit('');
+    cy.get('.welcome', { timeout: 15000 }).should('contain.text', 'Willkommen');
   });
 
   it('should be shown as initial page when visiting app', () => {
-    cy.get('.welcome').should('contain.text', 'Willkommen');
     cy.url().should('include', '/dashboard');
   });
 
