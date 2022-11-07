@@ -169,12 +169,12 @@ describe('uvp reports', () => {
   it('should indicate error when replacing url with new invalid url', () => {
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.URLmanagement);
-    uvpPage.replaceURL('https://wemove.com/zyx', 'https://cypress.io/dash');
+    uvpPage.replaceURL('http://192.168.0.226:3001/not_found2', 'https://cypress.io/dash');
     BasePage.checkErrorDialogMessage('Prüfung der URL lieferte einen Fehler');
   });
 
   it('should successfully replace old url with new valid url', () => {
-    const urlToBeReplaced = 'https://wemove.com/xyz';
+    const urlToBeReplaced = 'http://192.168.0.226:3001/not_found1';
     const newURL = 'https://www.cypress.io';
 
     Menu.switchTo('REPORTS');
@@ -187,7 +187,7 @@ describe('uvp reports', () => {
 
   it('should indicate error when trying to replace obsolete url', () => {
     const url = 'https://asdasdasd.xx/';
-    const newURL = 'https://notthat.com';
+    const newURL = 'http://192.168.0.226:3001/server_error';
 
     Menu.switchTo('REPORTS');
     uvpPage.goToTabmenu(UVPreports.URLmanagement);
