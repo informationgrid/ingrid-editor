@@ -130,9 +130,12 @@ data class UVPModel(
     }
 
     fun getDecisionDate(): List<String> {
-        return data.steps
-            .filterIsInstance<StepDecisionOfAdmission>()
-            .map { OffsetDateTime.parse(it.decisionDate) }
+
+        val decisionDates = data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        if (data.decisionDate != null) decisionDates += data.decisionDate
+
+        return decisionDates
+            .map { OffsetDateTime.parse(it) }
             .map { formatDate(formatterNoSeparator, it) }
     }
 
