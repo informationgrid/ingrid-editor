@@ -186,8 +186,8 @@ describe('uvp reports', () => {
   });
 
   it('should indicate error when trying to replace obsolete url', () => {
-    const url = 'https://asdasdasd.xx/';
-    const newURL = 'http://192.168.0.226:3001/server_error';
+    const url = 'http://192.168.0.226:3001/server_error';
+    const newURL = 'https://notthat.com';
 
     Menu.switchTo('REPORTS');
     UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
@@ -209,7 +209,7 @@ describe('uvp reports', () => {
   });
 
   it('should show documents that have invalid url in common', () => {
-    const url = 'https://wemove.com/xxx';
+    const url = 'http://192.168.0.226:3001/users';
     let docs: string[] = [];
 
     Menu.switchTo('REPORTS');
