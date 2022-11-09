@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.ibus.client.BusClient
 import de.ingrid.ibus.client.BusClientFactory
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.services.ibus.HeartBeatPlug
 import de.ingrid.utils.*
@@ -16,7 +17,7 @@ import javax.annotation.PostConstruct
 
 @Service
 @Profile("ibus & elasticsearch")
-class IBusService @Autowired constructor(val settingsService: SettingsService) : HeartBeatPlug(60000) {
+class IBusService @Autowired constructor(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
 
     val log = logger()
 
@@ -83,7 +84,7 @@ class IBusService @Autowired constructor(val settingsService: SettingsService) :
 
     private fun createClientConfiguration(configs: List<IBusConfig>): ClientConfiguration {
         val config = ClientConfiguration().apply {
-            name = "ige-ng"
+            name = appProperties.instanceId
             configs.forEach {
                 val connection = ClientConnection().apply {
                     serverIp = it.ip

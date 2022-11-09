@@ -12,5 +12,6 @@ data class GeneralProperties(
     val enableHttps: Boolean,
     val markInsteadOfDelete: Boolean,
     val host: String,
-    val externalHelp: String?
+    val externalHelp: String?,
+    val instanceId: String = "ige-ng"
 )
