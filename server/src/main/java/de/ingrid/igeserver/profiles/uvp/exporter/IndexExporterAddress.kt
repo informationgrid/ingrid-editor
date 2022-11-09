@@ -60,9 +60,6 @@ class IndexExporterAddress @Autowired constructor(
             set<ArrayNode>("t021_communication.comm_value", commValues)
             set<ArrayNode>(
                 "datatype", jacksonObjectMapper().createArrayNode()
-                    .add("default")
-                    .add("dsc_ecs")
-                    .add("metadata")
                     .add("dsc_ecs_address")
                     .add("address")
                     .add("IDF_1.0")
