@@ -1,9 +1,8 @@
-import { DocumentPage, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Utils } from '../../../pages/utils';
 import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { AddressDetails, UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
+import { AddressDetails, UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocumentPage';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 import { AdminUserPage } from '../../../pages/administration-user.page';
 import { UserAndRights } from '../../../pages/base.page';
@@ -13,7 +12,7 @@ describe('uvp addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('uvpcatalog').as('tokens');
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
   });
 
   it('should create a new address inside catalog of type uvp (type organization)', () => {
@@ -131,14 +130,14 @@ describe('uvp addresses', () => {
     // uncheck slide toggle
     cy.get('[data-cy="Adresse"] .mat-slide-toggle-thumb').click();
     // add new address data
-    uvpPage.addAddressElement(AddressDetails.Street, 'Waldstrasse');
-    uvpPage.addAddressElement(AddressDetails.Zipcode, '54321');
-    uvpPage.addAddressElement(AddressDetails.City, 'Köln');
-    DocumentPage.saveDocument();
+    UvpDocumentPage.addAddressElement(AddressDetails.Street, 'Waldstrasse');
+    UvpDocumentPage.addAddressElement(AddressDetails.Zipcode, '54321');
+    UvpDocumentPage.addAddressElement(AddressDetails.City, 'Köln');
+    UvpDocumentPage.saveDocument();
     // check that after saving the correct values are there
-    uvpPage.checkAddressElement(AddressDetails.Street, 'Waldstrasse');
-    uvpPage.checkAddressElement(AddressDetails.Zipcode, '54321');
-    uvpPage.checkAddressElement(AddressDetails.City, 'Köln');
+    UvpDocumentPage.checkAddressElement(AddressDetails.Street, 'Waldstrasse');
+    UvpDocumentPage.checkAddressElement(AddressDetails.Zipcode, '54321');
+    UvpDocumentPage.checkAddressElement(AddressDetails.City, 'Köln');
   });
 
   it('should not be allowed to delete Address if it is still referenced in data records. (#3767)', () => {
@@ -163,7 +162,7 @@ describe('uvp addresses', () => {
 
     // add address to document and check address card
     Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
-    uvpPage.setAddress(addressLastName);
+    UvpDocumentPage.setAddress(addressLastName);
     cy.get('ige-address-card .title').then(addressTitle => {
       expect(addressTitle.text().trim()).to.equal(addressLastName);
     });

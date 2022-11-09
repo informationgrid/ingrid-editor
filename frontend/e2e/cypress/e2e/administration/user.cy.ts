@@ -704,7 +704,7 @@ describe('Universal Write Access', () => {
 
     // check document can be edited
     Tree.openNode(['Doc_h']);
-    DocumentPage.addDescription('some description');
+    DocumentPage.setDescription('some description');
     DocumentPage.saveDocument();
     cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
 

@@ -1,7 +1,7 @@
 import { DocumentPage } from '../../../pages/document.page';
 import { AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../../pages/mcloudDocumentPage';
 import { Menu } from '../../../pages/menu';
 import { Utils } from '../../../pages/utils';
 
@@ -9,19 +9,19 @@ describe('mCLOUD documents', function () {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('super-admin').as('tokens');
-    DocumentPage.visit();
+    McloudDocumentPage.visit();
   });
 
   describe('Publish documents', () => {
     const PUBLISHED_ADDRESS = 'Published Testorganization';
 
     it('should display a validation error when a required field is not filled', () => {
-      cy.get(DocumentPage.Toolbar.Publish).should('be.disabled');
+      cy.get(McloudDocumentPage.Toolbar.Publish).should('be.disabled');
 
-      DocumentPage.createDocument('New mCLOUD Document');
+      McloudDocumentPage.createDocument('New mCLOUD Document');
 
-      cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-      cy.get(DocumentPage.Toolbar.PublishNow).click();
+      cy.get(McloudDocumentPage.Toolbar.Publish).should('be.enabled');
+      cy.get(McloudDocumentPage.Toolbar.PublishNow).click();
 
       cy.hasErrorDialog('Es müssen alle Felder korrekt');
 
@@ -35,23 +35,23 @@ describe('mCLOUD documents', function () {
     it('should create a minimal publishable document', () => {
       const docName = 'mCloudDoc1';
 
-      DocumentPage.createDocument(docName);
+      McloudDocumentPage.createDocument(docName);
 
-      enterMcloudDocTestData.enterNecessaryData();
+      McloudDocumentPage.enterNecessaryData();
 
-      DocumentPage.publishNow();
+      McloudDocumentPage.publishNow();
     });
 
     it('after adding address to document, the document can not be accessed anymore by users not authorized to access address', () => {
       // add address to document
-      DocumentPage.visit();
+      McloudDocumentPage.visit();
       Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2C', 'Ordner_Ebene_3D', 'Datum_Ebene_4_8']);
-      enterMcloudDocTestData.setAddress('Normandie, Adresse');
-      DocumentPage.saveDocument();
+      McloudDocumentPage.setAddress('Normandie, Adresse');
+      McloudDocumentPage.saveDocument();
       // log in as user with limited access rights and check access
       cy.logoutClearCookies();
       cy.kcLogin('mcloud-meta-with-groups');
-      DocumentPage.visit();
+      McloudDocumentPage.visit();
       // open folder containing document in question
       Tree.openNode(['Ordner_Ebene_2C', 'Ordner_Ebene_3D']);
       // try to open document
@@ -66,13 +66,13 @@ describe('mCLOUD documents', function () {
       const docName = 'mCloudfullDoc1';
 
       // is needed for setTimeReference, because svgicon='Entfernen' is not in view
-      cy.get(DocumentPage.Sidemenu.Skalieren).click();
-      DocumentPage.createDocument(docName);
+      cy.get(McloudDocumentPage.Sidemenu.Skalieren).click();
+      McloudDocumentPage.createDocument(docName);
 
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.checkAddressSelectable(addressName, false);
+      McloudDocumentPage.checkAddressSelectable(addressName, false);
     });
 
     it('should create a complete mcloud document', () => {
@@ -82,30 +82,30 @@ describe('mCLOUD documents', function () {
 
       // is needed for setTimeReference, because svgicon='Entfernen' is not in view
       //cy.get(DocumentPage.Sidemenu.Skalieren).click();
-      DocumentPage.createDocument(docName);
+      McloudDocumentPage.createDocument(docName);
 
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
 
-      enterMcloudDocTestData.setDescription('some meaningful description');
-      enterMcloudDocTestData.setAddress(PUBLISHED_ADDRESS);
-      DocumentPage.fillInFieldWithEnter('[data-cy="keywords"]', 'input', 'schlagwort', '.mat-chip');
-      enterMcloudDocTestData.setUsageInstructions('Nutzerhinweise');
-      enterMcloudDocTestData.setCategory('Bahn');
-      enterMcloudDocTestData.setOpenDataCategory('Verkehr');
-      enterMcloudDocTestData.setAddDownload('someTitle', 'https://docs.cypress.io/api/this');
-      enterMcloudDocTestData.setLicense('Andere offene Lizenz');
-      enterMcloudDocTestData.setSourceNote('Meine Quelle');
-      enterMcloudDocTestData.setMfund('text1', 'text2');
-      enterMcloudDocTestData.setSpatialWKT();
-      enterMcloudDocTestData.setTimeReference(new Date(2020, 1, 11), 'Erstellung');
-      enterMcloudDocTestData.setPeriodOfTime('von - bis', previousDate, dateNow);
-      enterMcloudDocTestData.setPeriodicity('einmalig');
+      McloudDocumentPage.setDescription('some meaningful description');
+      McloudDocumentPage.setAddress(PUBLISHED_ADDRESS);
+      McloudDocumentPage.fillInFieldWithEnter('[data-cy="keywords"]', 'input', 'schlagwort', '.mat-chip');
+      McloudDocumentPage.setUsageInstructions('Nutzerhinweise');
+      McloudDocumentPage.setCategory('Bahn');
+      McloudDocumentPage.setOpenDataCategory('Verkehr');
+      McloudDocumentPage.setAddDownload('someTitle', 'https://docs.cypress.io/api/this');
+      McloudDocumentPage.setLicense('Andere offene Lizenz');
+      McloudDocumentPage.setSourceNote('Meine Quelle');
+      McloudDocumentPage.setMfund('text1', 'text2');
+      McloudDocumentPage.setSpatialWKT();
+      McloudDocumentPage.setTimeReference(new Date(2020, 1, 11), 'Erstellung');
+      McloudDocumentPage.setPeriodOfTime('von - bis', previousDate, dateNow);
+      McloudDocumentPage.setPeriodicity('einmalig');
 
       // needed to slow it down
       cy.get('[data-cy=periodicity').find('mat-form-field').should('have.text', 'einmalig');
 
-      DocumentPage.saveDocument();
+      McloudDocumentPage.saveDocument();
 
       // check if fields contain their values after saving
       cy.get('[data-cy="description"] textarea').should('have.value', 'some meaningful description');
@@ -134,15 +134,15 @@ describe('mCLOUD documents', function () {
 
       // is needed for setTimeReference, because svgicon='Entfernen' is not in view
       cy.get('[data-cy="menu-scale"]').click();
-      DocumentPage.createDocument(docName);
+      McloudDocumentPage.createDocument(docName);
 
       // check if created document is a mCloud-Document
       cy.get('ige-header-navigation').contains('mCLOUD');
-      enterMcloudDocTestData.setPeriodOfTime(option, previousDate, dateNow);
-      DocumentPage.saveDocument();
+      McloudDocumentPage.setPeriodOfTime(option, previousDate, dateNow);
+      McloudDocumentPage.saveDocument();
       cy.pageReload('ige-header-title-row');
 
-      enterMcloudDocTestData.checkPeriodOfTimeSelectedValue(option);
+      McloudDocumentPage.checkPeriodOfTimeSelectedValue(option);
     });
 
     it('should create a published address with an API-Call', () => {
@@ -153,11 +153,11 @@ describe('mCLOUD documents', function () {
         contact: [{ type: 1, connection: '0123456789' }]
       };
 
-      DocumentPage.checkURL('/form');
+      McloudDocumentPage.checkURL('/form');
       AddressPage.apiCreateAddress(json, true);
 
       AddressPage.visit();
-      DocumentPage.checkURL('/address');
+      McloudDocumentPage.checkURL('/address');
       Tree.containsNodeWithObjectTitle('PublishedAdressWithAPI');
       Tree.openNode(['PublishedAdressWithAPI']);
     });
@@ -165,8 +165,8 @@ describe('mCLOUD documents', function () {
     it('should not be able to delete address associated with a document', () => {
       // add address to document
       Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2B', 'Datum_Ebene_3_1']);
-      enterMcloudDocTestData.setAddress('Pays-Basque, Adresse');
-      DocumentPage.saveDocument();
+      McloudDocumentPage.setAddress('Pays-Basque, Adresse');
+      McloudDocumentPage.saveDocument();
       // try to delete address
       Menu.switchTo('ADDRESSES');
       Tree.openNode(['Neue Testadressen', 'Ordner_2.Ebene_B', 'Ordner_3.Ebene_C', 'Pays-Basque, Adresse']);

@@ -4,7 +4,7 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Menu } from '../../pages/menu';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
@@ -367,9 +367,9 @@ describe('create/delete/edit addresses', () => {
     const docname = 'document_to_check_for_duplicate_address';
     const addressName = 'address_to_add_twice';
     Tree.openNode([docname]);
-    enterMcloudDocTestData.setAddress(addressName);
+    McloudDocumentPage.setAddress(addressName);
     // try to add the same address again
-    enterMcloudDocTestData.setAddress(addressName);
+    McloudDocumentPage.setAddress(addressName);
     cy.get('simple-snack-bar').contains('Die Adresse ist bereits vorhanden');
   });
 

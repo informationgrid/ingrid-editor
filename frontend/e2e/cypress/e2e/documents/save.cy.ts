@@ -1,7 +1,7 @@
 import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
 import { Menu } from '../../pages/menu';
 
 describe('General create documents/folders', () => {
@@ -144,7 +144,7 @@ describe('General create documents/folders', () => {
 
       DocumentPage.createDocument(docName);
 
-      enterMcloudDocTestData.setDescription('modified test description');
+      McloudDocumentPage.setDescription('modified test description');
 
       // reject dialog
       // check selected tree node === previous selected node
@@ -168,7 +168,7 @@ describe('General create documents/folders', () => {
 
       Tree.openNode(['Testdokumente', docname]);
 
-      enterMcloudDocTestData.setDescription('modified test description');
+      McloudDocumentPage.setDescription('modified test description');
 
       // TODO find out why clicking too fast does not open dialog
       // reject -> should stay on page
@@ -190,7 +190,7 @@ describe('General create documents/folders', () => {
 
     it('should not remember last dirty state when page has been left (#2121)', () => {
       Tree.openNode(['Testdokumente', 'Test mCLOUD Dokument']);
-      enterMcloudDocTestData.setDescription('modified test description');
+      McloudDocumentPage.setDescription('modified test description');
 
       cy.wait(500);
       Menu.switchTo('DASHBOARD', false);

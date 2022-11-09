@@ -2,10 +2,8 @@ import { DocumentPage, headerElements, ROOT, SEPARATOR } from '../../pages/docum
 import { beforeEach } from 'mocha';
 import { Tree } from '../../pages/tree.partial';
 import { AddressPage } from '../../pages/address.page';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
-import Doc = Mocha.reporters.Doc;
 
 describe('Load documents', () => {
   beforeEach(() => {
@@ -115,7 +113,7 @@ describe('mCloud Load documents', () => {
     // add address to document
     DocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
-    enterMcloudDocTestData.setAddress('Limousin, Adresse');
+    DocumentPage.setAddress('Limousin, Adresse');
     DocumentPage.saveDocument();
     // visit new catalog and make sure recently added address is not among the suggestions
     cy.logoutClearCookies();
@@ -171,7 +169,7 @@ describe('mCloud Load documents', () => {
     // change document
     DocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', docName]);
-    DocumentPage.addDescription('description to alter document');
+    DocumentPage.setDescription('description to alter document');
     DocumentPage.saveDocument();
 
     // check header
@@ -196,7 +194,7 @@ describe('mCloud Load documents', () => {
     );
 
     // change document and check altered header
-    DocumentPage.addDescription('another description to alter document');
+    DocumentPage.setDescription('another description to alter document');
     DocumentPage.saveDocument();
     DocumentPage.openUpDocumentHeader();
     DocumentPage.verifyInfoInDocumentHeader(

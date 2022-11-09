@@ -1,7 +1,6 @@
-import { DocumentPage, fieldsForDownloadEntry, headerElements, PublishOptions } from '../../../pages/document.page';
+import { fieldsForDownloadEntry, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Tree } from '../../../pages/tree.partial';
-import { uvpPage } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
+import { UvpDocumentPage } from '../../../pages/uvpDocumentPage';
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';
@@ -11,26 +10,26 @@ describe('uvp uploads', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('uvpcatalog').as('tokens');
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
   });
 
   it('should be possible to download file after upload has been removed and corresponding document saved (#3831) (2)', () => {
     const fileName = 'importtest_1.json';
 
     Tree.openNode(['Plan_Ordner_4', 'Plan_A_13']);
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // add file
       fileDataTransferManagement.openUploadDialog();
       fileDataTransferManagement.uploadFile(fileName);
-      DocumentPage.publishNow();
+      UvpDocumentPage.publishNow();
       // access file
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // delete file from document and save
-      DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
-      DocumentPage.saveDocument();
+      UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
+      UvpDocumentPage.saveDocument();
       // make sure file can still be accessed
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
     });
   });
 
@@ -42,16 +41,16 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
     // get id of document
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // try to access file attached to unpublished document
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
       // publish document
-      DocumentPage.publishNow();
+      UvpDocumentPage.publishNow();
       // make sure download is possible
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
     });
   });
 
@@ -63,18 +62,18 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // access file belonging to published document
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // delete file from document and save
-      DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
+      UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Löschen');
       // re-publish
-      DocumentPage.publishNow();
+      UvpDocumentPage.publishNow();
       // check that file not accessible anymore
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
 
@@ -85,16 +84,16 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // try to access file attached to document
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // delete document
-      DocumentPage.deleteLoadedNode();
+      UvpDocumentPage.deleteLoadedNode();
       // make sure download is not possible anymore
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
 
@@ -106,20 +105,20 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // access file
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // revoke publication
-      DocumentPage.choosePublishOption(PublishOptions.Unpublish);
+      UvpDocumentPage.choosePublishOption(PublishOptions.Unpublish);
       cy.contains('mat-dialog-container', 'Veröffentlichung zurückziehen');
       cy.contains('button', 'Zurückziehen').click();
       // check header
       cy.get('.title mat-icon.working').should('exist');
       // check that file not accessible anymore
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
 
@@ -133,12 +132,12 @@ describe('uvp uploads', () => {
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
     // plan publishing
-    DocumentPage.planPublishing(publishDate);
+    UvpDocumentPage.planPublishing(publishDate);
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // check that file not yet accessible
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
 
@@ -150,17 +149,17 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
     // copy document
     CopyCutUtils.copyObject();
     // publish document
     Tree.openNode([docName]);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // check that file is accessible
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // make sure download is possible
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
     });
   });
 
@@ -172,17 +171,17 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // make sure download is possible
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // set expiry date in the future
-      DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Bearbeiten');
-      DocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2027');
+      UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Bearbeiten');
+      UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2027');
       // check file still accessible
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
     });
   });
 
@@ -194,18 +193,18 @@ describe('uvp uploads', () => {
     // upload file
     fileDataTransferManagement.openUploadDialog();
     fileDataTransferManagement.uploadFile(fileName);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
     // get id
-    DocumentPage.openUpDocumentHeader();
-    DocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
+    UvpDocumentPage.openUpDocumentHeader();
+    UvpDocumentPage.getInfoInDocumentHeader(headerElements.ID).then(id => {
       // make sure download is possible
-      uvpPage.tryToAccessFile(id, fileName, 'success');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'success');
       // set expiry date in the past
-      DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Bearbeiten');
-      DocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2020');
-      DocumentPage.publishNow();
+      UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', fileName, 'Bearbeiten');
+      UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2020');
+      UvpDocumentPage.publishNow();
       // check file not accessible anymore
-      uvpPage.tryToAccessFile(id, fileName, 'failure');
+      UvpDocumentPage.tryToAccessFile(id, fileName, 'failure');
     });
   });
 
@@ -218,7 +217,7 @@ describe('uvp uploads', () => {
     ];
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'All_Document_Types']);
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile('Auslegungsinformationen.pdf');
 
@@ -231,50 +230,50 @@ describe('uvp uploads', () => {
     fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.uploadFile('Weitere Unterlagen.pdf');
 
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
-    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
-    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', files[2]);
-    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', files[1]);
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+    UvpDocumentPage.checkTableEntry(0, 'Weitere Unterlagen', files[3]);
+    UvpDocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', files[2]);
+    UvpDocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', files[1]);
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
   });
 
   it('should add multiple procedure steps of type "Öffentliche Auslegung" to document of type "Raumordnungsverfahren" (#4031)', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Öffentliche_Auslegung']);
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(files[0]);
 
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 1);
     fileDataTransferManagement.uploadFile(files[1]);
 
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Weitere Unterlagen', 2);
     fileDataTransferManagement.uploadFile(files[2]);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
-    DocumentPage.checkTableEntry(2, 'Weitere Unterlagen', files[2]);
-    DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', files[1]);
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
+    UvpDocumentPage.checkTableEntry(2, 'Weitere Unterlagen', files[2]);
+    UvpDocumentPage.checkTableEntry(1, 'Auslegungsinformationen', files[1]);
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', files[0]);
   });
 
   it('should upload multiple files at the same time (#4031)', () => {
     let files = ['Auslegungsinformationen.pdf', 'Test.pdf', 'Weitere Unterlagen.pdf'];
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Multiple_Files_Simultaneously']);
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(files[0], false, false);
     fileDataTransferManagement.uploadFile(files[1], false, false);
     fileDataTransferManagement.uploadFile(files[2], false, false);
     cy.contains('button', 'Übernehmen').click();
     //  wait for files to appear in table, otherwise dataset might be saved without the entries
-    DocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check again after save
-    DocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
+    UvpDocumentPage.checkTableMultipleEntries(0, 'Auslegungsinformationen', files);
   });
 
   it('should upload multiple zip files with same names of the content, unzip the files, save them and check for the included files (#4031)', () => {
@@ -286,7 +285,7 @@ describe('uvp uploads', () => {
     const unzippedFiles: string[] = ['test_file_1.PNG', 'test_file_2.PNG', 'test_file_3.PNG', 'test_image_6.PNG'];
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Save_Extracted_Zip_Files']);
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog(documentType, 0);
     // upload the files and save the document
     fileDataTransferManagement.uploadFile(fileName, false, false);
@@ -294,13 +293,13 @@ describe('uvp uploads', () => {
     fileDataTransferManagement.uploadFile(fileName_2, false, false);
     cy.contains('button', 'Übernehmen').click();
     // wait for files to appear in table, otherwise dataset might be saved without the entries
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check for every file
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle_2);
   });
 
   it('should upload zip file with special characters, unzip, save it and check for the included files (#4031)', () => {
@@ -314,16 +313,16 @@ describe('uvp uploads', () => {
     ];
 
     Tree.openNode(['Plan_R_Dirty_Uploads', 'Zip_File_Special_Characters']);
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.uploadFile(fileName, false, false);
     fileDataTransferManagement.unzipArchiveAfterUpload();
     cy.contains('button', 'Übernehmen').click();
     //  wait for files to appear in table, otherwise dataset might be saved without the entries
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
-    DocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
+    UvpDocumentPage.checkTableMultipleEntries(0, documentType, unzippedFiles, fileTitle);
   });
 
   it('should activate publish option in catalog behavior for negative preliminary and upload a file (#4031)', () => {
@@ -331,11 +330,11 @@ describe('uvp uploads', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting("'Negative Vorprüfungen' veröffentlichen", true);
     // used visit to reload the page
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
     Tree.openNode(['Plan_N_With_Upload']);
     cy.contains('button', 'Dateien hochladen').click();
     fileDataTransferManagement.uploadFile(fileTitle);
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
     cy.pageReload('dashboard-docs-header');
     // check entry in table
     cy.contains('[data-cy="Ergebnis der UVP-Vorprüfung-table"]', fileTitle);

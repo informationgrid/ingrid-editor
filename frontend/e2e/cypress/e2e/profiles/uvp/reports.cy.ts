@@ -1,8 +1,8 @@
 import { Menu } from '../../../pages/menu';
-import { UVPmetrics, uvpPage, UVPreports } from '../../../pages/uvp.page';
+import { UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocumentPage';
 import { ResearchPage } from '../../../pages/research.page';
 import { Utils } from '../../../pages/utils';
-import { DocumentPage, fieldsForDownloadEntry } from '../../../pages/document.page';
+import { fieldsForDownloadEntry } from '../../../pages/document.page';
 import { BasePage } from '../../../pages/base.page';
 import { Tree } from '../../../pages/tree.partial';
 
@@ -10,12 +10,12 @@ describe('uvp reports', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('uvpcatalog').as('tokens');
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
   });
   it('should filter uvp metrics for negative pre-audits according to decision date', () => {
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
       // filter by decision date
       ResearchPage.setDate('start', '30.09.2022');
       cy.wait(2000);
@@ -38,10 +38,10 @@ describe('uvp reports', () => {
     const docTitle = 'N' + Utils.randomString();
 
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(oldValue => {
       // create new published document of type "negative Vorprüfung"
-      DocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
+      UvpDocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
       cy.get(
         `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
@@ -54,12 +54,12 @@ describe('uvp reports', () => {
   it('should update display of uvp numbers after creating new document of type Linienbestimmung', () => {
     const docTitle = 'L' + Utils.randomString();
 
-    DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
+    UvpDocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getUVPNumbermetrics('UVPG-1.4.1.2').then(oldValue => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getUVPNumbermetrics('UVPG-1.4.1.2').then(oldValue => {
       // create new published document of type "Linienbestimmungsverfahren"
-      DocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
+      UvpDocumentPage.CreateLinienbestimmungdocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
       cy.contains('[label="Verwendete UVP Nummern"] .mat-row', 'UVPG-1.4.1.2')
         .children()
@@ -74,16 +74,16 @@ describe('uvp reports', () => {
     const docTitle_1 = 'R' + Utils.randomString();
     const docTitle_2 = 'R' + Utils.randomString();
 
-    DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(
+    UvpDocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(
       docTitle_1,
       '2018-11-05T23:00:00.000Z',
       '2021-11-05T23:00:00.000Z'
     );
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
       // create new document of type "negative Vorprüfung"
-      DocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(
+      UvpDocumentPage.CreateRaumordnungverfahrenDocumentWithAPI(
         docTitle_2,
         '2020-11-05T23:00:00.000Z',
         '2022-03-18T23:00:00.000Z',
@@ -101,12 +101,12 @@ describe('uvp reports', () => {
   it('should update display of positive pre-audits after creating a new document of type Zulassungsverfahren', () => {
     const docTitle = 'Z' + Utils.randomString();
 
-    DocumentPage.CreateZulassungsverfahrenDocumentWithAPI('Z_13');
+    UvpDocumentPage.CreateZulassungsverfahrenDocumentWithAPI('Z_13');
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getUVPmetrics(UVPmetrics.positiveAudit).then(oldValue => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getUVPmetrics(UVPmetrics.positiveAudit).then(oldValue => {
       // create new document of type "negative Vorprüfung"
-      DocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle, true);
+      UvpDocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle, true);
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.positiveAudit}) :nth-child(2)`).then(
         node => {
@@ -118,10 +118,10 @@ describe('uvp reports', () => {
 
   it('should save metrics to file', () => {
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.Report);
-    uvpPage.getAllValues().then(arr1 => {
-      uvpPage.downloadReport();
-      uvpPage.getReportFromFile().then(arr2 => {
+    UvpDocumentPage.goToTabmenu(UVPreports.Report);
+    UvpDocumentPage.getAllValues().then(arr1 => {
+      UvpDocumentPage.downloadReport();
+      UvpDocumentPage.getReportFromFile().then(arr2 => {
         // compare the content of the two arrays
         expect(arr2).to.deep.eq(arr1);
       });
@@ -130,7 +130,7 @@ describe('uvp reports', () => {
 
   it('should execute validation of urls in published documents', () => {
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
 
     // trigger validation and make sure it concludes with a result
     cy.contains('button', 'Prüfung starten').click();
@@ -140,8 +140,8 @@ describe('uvp reports', () => {
     // inspect details of validation and compare numbers of valid and invalid urls
     cy.get('.main-header .menu-button').click();
     cy.get('.status').should('be.visible');
-    uvpPage.getNumberOfAnalysedURLs().then(total => {
-      uvpPage.getNumberOfInvalidURLs().should('be.lessThan', total);
+    UvpDocumentPage.getNumberOfAnalysedURLs().then(total => {
+      UvpDocumentPage.getNumberOfInvalidURLs().should('be.lessThan', total);
     });
 
     // table should contain different sorts of invalid urls
@@ -168,8 +168,8 @@ describe('uvp reports', () => {
 
   it('should indicate error when replacing url with new invalid url', () => {
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
-    uvpPage.replaceURL('http://192.168.0.226:3001/not_found2', 'https://cypress.io/dash');
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.replaceURL('http://192.168.0.226:3001/not_found2', 'https://cypress.io/dash');
     BasePage.checkErrorDialogMessage('Prüfung der URL lieferte einen Fehler');
   });
 
@@ -178,8 +178,8 @@ describe('uvp reports', () => {
     const newURL = 'https://www.cypress.io';
 
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
-    uvpPage.replaceURL(urlToBeReplaced, newURL);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.replaceURL(urlToBeReplaced, newURL);
 
     // make sure url has been replaced
     cy.contains('.mat-table .mat-row', urlToBeReplaced).should('not.exist');
@@ -190,21 +190,21 @@ describe('uvp reports', () => {
     const newURL = 'http://192.168.0.226:3001/server_error';
 
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
 
     // replace url in document without restarting validation
     cy.contains('.mat-table .mat-row', url).find('.clickable-text').click();
     cy.url().should('contain', '/form');
-    DocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', url, 'Bearbeiten');
-    DocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.Link, newURL);
+    UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', url, 'Bearbeiten');
+    UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.Link, newURL);
 
     // publish document
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
 
     // go back to reports section
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
-    uvpPage.replaceURL(url, newURL);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.replaceURL(url, newURL);
     cy.contains('error-dialog', /zu ersetzende URL konnte nicht gefunden werden/);
   });
 
@@ -213,7 +213,7 @@ describe('uvp reports', () => {
     let docs: string[] = [];
 
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
 
     // click on 'eye'-symbol
     cy.contains('.mat-table .mat-row', url).find('[mattooltip="Datensätze anzeigen"]').click();
@@ -224,7 +224,7 @@ describe('uvp reports', () => {
         docs.push(element.text().trim());
       })
       .then(_ => {
-        DocumentPage.visit();
+        UvpDocumentPage.visit();
         docs.forEach(node => {
           Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', node]);
           cy.contains('mat-row a', url).should('exist');
@@ -236,11 +236,11 @@ describe('uvp reports', () => {
   it('should be able to deal with invalid urls that constitute a bad request (#4173)', () => {
     // publish document with problematic url
     Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_Z_III']);
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
 
     // make sure url validation is executed and ended
     Menu.switchTo('REPORTS');
-    uvpPage.goToTabmenu(UVPreports.URLmanagement);
+    UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
     cy.contains('button', 'Prüfung starten').click();
     cy.contains('.main-header span', 'Laufende Prüfung').should('exist');
     cy.get('mat-progress-spinner circle', { timeout: 15000 }).should('not.exist');

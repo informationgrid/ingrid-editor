@@ -1,11 +1,7 @@
 import { DocumentPage } from './document.page';
 import Chainable = Cypress.Chainable;
 
-export class uvpPage {
-  static setDescription(text: string) {
-    cy.get('[data-cy="description"] textarea').type(text);
-  }
-
+export class UvpDocumentPage extends DocumentPage {
   static setDateOfRequest(date: string) {
     cy.get('[data-cy="receiptDate"] input').clear().type(date);
   }

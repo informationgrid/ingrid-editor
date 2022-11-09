@@ -818,6 +818,35 @@ export class DocumentPage extends BasePage {
     });
   }
 
+  static selectSpatialType(selectType: string) {
+    BasePage.selectOption('spatial-dialog-type', selectType);
+  }
+
+  static setSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
+    cy.get('[data-cy=spatialButton]').click();
+    this.setOpenedSpatialBbox(title, locationText, typeOption);
+    cy.contains('.spatial-title', locationText);
+  }
+
+  static setOpenedSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
+    cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
+    if (typeOption) {
+      this.selectSpatialType('Freier Raumbezug');
+    }
+    cy.get('[data-cy=spatial-dialog-free]')
+      .clear()
+      .type(locationText)
+      .then(() => {
+        cy.intercept('/search/' + locationText + '*').as('waitForSuggestions');
+        cy.wait('@waitForSuggestions', { timeout: 8000 });
+        cy.get('.result-wrapper').should('exist');
+        cy.contains('.result-wrapper mat-list mat-list-item', locationText, { timeout: 8000 }).click();
+      });
+    cy.get('[data-cy=confirm-dialog-save]').click();
+    // give some time to close dialog and update list
+    cy.wait(300);
+  }
+
   static fillCreateDialog(objectName: string) {
     cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
@@ -883,8 +912,16 @@ export class DocumentPage extends BasePage {
     cy.get(DocumentPage.treeSearchBar).should('be.enabled').type(searchTerm);
   }
 
-  static addDescription(text: string) {
-    cy.get('[data-cy="description"] textarea').clear().type(text);
+  static setDescription(text: string) {
+    cy.get('[data-cy=description]').find('mat-form-field').type(text);
+    cy.get('[data-cy=description] textarea').should('have.value', text);
+  }
+
+  static setAddress(addressText: string) {
+    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText);
+    cy.get('[data-cy="choose-address-confirm"]').click();
+    cy.get('[data-cy=addresses]').contains(addressText);
   }
 
   static scrollToSection(section: string) {
