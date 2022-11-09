@@ -1,0 +1,13 @@
+{
+  "menu": {
+    "application": "BMI",
+    "logo": "assets/profiles/bmi/assets/icons/logo.svg"
+  },
+  "dashboard": {
+    "welcome": "Willkommen im BMI Opendata Editor",
+    "application": "BMI"
+  },
+  "replace-address": {
+    "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
+  }
+}

@@ -1,0 +1,125 @@
+{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.bmi.exporter.model.BmiModel" #}
+{# @pebvariable name="catalogId" type="String" #}
+
+{
+    "uuid": "{{ model.uuid }}",
+    "title": "{{ model.title.trim() }}",
+    "description": "{{ model.data.description }}",
+    "theme": [
+      "{{ model.getThemes() | join('","') | raw }}"
+    ],
+    "issued": "{{ model.created }}",
+    "modified": "{{ model.modified }}",
+    {% if model.periodicity %}
+        "accrual_periodicity": "{{ model.periodicity }}",
+    {% endif %}
+    "contact_point": null,
+    "keywords": [
+        {% if not model.data.keywords.isEmpty() %}
+            "{{ model.data.keywords | join('","') | raw }}"
+        {% endif %}
+    ],
+    "creator": null,
+    {% if model.data.origin %}
+        "originator": [
+            {
+                "organization": "{{ model.data.origin }}"
+            }
+        ],
+    {% endif %}
+    "publisher": {
+        "organization": "{{ model.getPublisher().organization.trim() }}",
+        "homepage": "{{ model.getPublisher().getHomepage() }}"
+    },
+    {% if model.data.accessRights %}
+        "access_rights": ["{{ model.data.accessRights }}"],
+    {% endif %}
+    "distribution": [
+    {% for download in model.data.distributions %}
+        {
+            "format": ["{{ model.getCodelistValue(catalogId, "20002", download.type.key, download.type.value) }}"],
+            {% if download.link.asLink %}
+                "accessURL": "{{ download.link.uri }}",
+            {% else %}
+                "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.uri }}",
+            {% endif %}
+            "title": "{{ download.title }}",
+            "type": "{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"
+        }{% if not loop.last %},{% endif %}
+    {% endfor %}
+    ],
+    "extras": {
+        "all": null,
+        "metadata": {
+            "source": {
+                "attribution": "mCLOUD IGE"
+            },
+            "issued": "{{ model.created }}",
+            "modified": "{{ model.modified }}",
+            "harvested": null,
+            "harvesting_errors": null,
+            "is_valid": {{ model.isValid }}
+        },
+        "generated_id": "{{ model.uuid }}",
+        "subgroups": [
+            "{{ model.data.mCloudCategories | join('","') | raw }}"
+        ],
+        "license": {
+            "id": "{{ model.getLicenseData().id }}",
+            "title": "{{ model.getLicenseData().name }}"
+            {% if model.getLicenseData().url %}
+                ,"url": "{{ model.getLicenseData().url }}"
+            {% endif %}
+        },
+        "harvested_data": null,
+        "subsection": null,
+        "spatial":
+        {% if model.realSpatials is empty %}
+        null
+        {% else %}
+            {% if not model.hasSingleSpatial %}
+            {
+                "type": "geometrycollection",
+                "geometries": [
+            {% endif %}
+                {% for spatial in model.realSpatials %}
+                    {
+                        "type": "{{ spatial.getGeoType }}",
+                        "coordinates": {{ spatial.getPolygon }}
+                    }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            {% if not model.hasSingleSpatial %}
+                ]
+            }
+            {% endif %}
+        {% endif %}
+        ,
+       {% if not model.spatialTitels.isEmpty() %}
+            "spatial_text": "{{ model.spatialTitels | join(',') }}",
+        {% endif %}
+        "temporal": [
+         {% if model.data.temporal.start or model.data.temporal.end %}
+        {
+            {% if model.data.temporal.start %}
+                "gte": "{{model.data.temporal.start}}"{% if model.data.temporal.end %},{% endif %}
+            {% endif %}
+            {% if model.data.temporal.end %}
+                "lte": "{{model.data.temporal.end}}"
+            {% endif %}
+            }
+         {% endif %}],
+        "groups": null,
+        "display_contact": [{
+            "name": "{{ model.getPublisher().organization.trim() }}",
+            "homepage": "{{ model.getPublisher().getHomepage() }}"
+        }],
+        "realtime": {{ model.data.periodicity == "1" }},
+        {% if  model.data.mfundFKZ %}
+            "mfund_fkz": "{{ model.data.mfundFKZ }}",
+         {% endif %}
+        {% if  model.data.mfundProject %}
+            "mfund_project_title": "{{ model.data.mfundProject }}",
+         {% endif %}
+        "citation": null
+    }
+}

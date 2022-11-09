@@ -13,7 +13,8 @@
         class="label"
         [matTooltip]="
             _model._type === 'UvpOrganisationDoc' ||
-            _model._type === 'McloudAddressDoc'
+            _model._type === 'McloudAddressDoc' ||
+            _model._type === 'BmiAddressDoc'
                 ? 'Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.'
                 : 'Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.'
         "
