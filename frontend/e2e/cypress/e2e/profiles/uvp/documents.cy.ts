@@ -40,7 +40,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setSpatialBbox('information about location', 'Fulda', false);
     UvpDocumentPage.setDateOfRequest('03.12.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
-    UvpDocumentPage.IsPreliminaryAssessment('Ja');
+    UvpDocumentPage.setPreliminaryAssessment(true);
     UvpDocumentPage.publishNow();
 
     // check content of fields
@@ -187,7 +187,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setSpatialBbox('information about location', 'Annaburg', false);
     UvpDocumentPage.setDateOfRequest('03.10.2020');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.2');
-    UvpDocumentPage.IsPreliminaryAssessment('Ja');
+    UvpDocumentPage.setPreliminaryAssessment(true);
 
     // add steps
     UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
