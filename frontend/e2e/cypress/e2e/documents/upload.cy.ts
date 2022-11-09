@@ -1,6 +1,6 @@
 import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { FileHandlingOptions, fileDataTransferManagement } from '../../pages/fileDataTransferManagement.page';
 
 describe('mCLOUD: Upload Tests', () => {

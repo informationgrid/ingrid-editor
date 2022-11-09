@@ -2,7 +2,7 @@ import { Utils } from '../../../pages/utils';
 import { Address, AddressPage, addressType } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { AddressDetails, UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocumentPage';
+import { AddressDetails, UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocument.page';
 import { CopyCutUtils, CopyOption } from '../../../pages/copy-cut-utils';
 import { AdminUserPage } from '../../../pages/administration-user.page';
 import { UserAndRights } from '../../../pages/base.page';

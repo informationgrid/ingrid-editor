@@ -1,7 +1,7 @@
 import { DocumentPage, ROOT, SEPARATOR } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
 import { Utils } from '../../pages/utils';
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { Menu } from '../../pages/menu';
 
 describe('General create documents/folders', () => {

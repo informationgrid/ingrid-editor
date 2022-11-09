@@ -3,7 +3,7 @@ import { AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
 import { BasePage, CatalogsTabmenu } from '../../pages/base.page';
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { BehavioursPage } from '../../pages/behaviours.page';
 
 describe('mCLOUD: Load addresses', () => {

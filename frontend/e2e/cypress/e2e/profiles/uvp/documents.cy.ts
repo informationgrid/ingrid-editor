@@ -2,7 +2,7 @@ import { PublishOptions } from '../../../pages/document.page';
 import { Utils } from '../../../pages/utils';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { UvpDocumentPage } from '../../../pages/uvpDocumentPage';
+import { UvpDocumentPage } from '../../../pages/uvpDocument.page';
 import { ResearchPage } from '../../../pages/research.page';
 import { BasePage } from '../../../pages/base.page';
 import { fileDataTransferManagement } from '../../../pages/fileDataTransferManagement.page';

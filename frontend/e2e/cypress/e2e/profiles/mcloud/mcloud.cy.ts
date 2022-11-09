@@ -1,7 +1,7 @@
 import { DocumentPage } from '../../../pages/document.page';
 import { AddressPage } from '../../../pages/address.page';
 import { Tree } from '../../../pages/tree.partial';
-import { McloudDocumentPage } from '../../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../../pages/mcloudDocument.page';
 import { Menu } from '../../../pages/menu';
 import { Utils } from '../../../pages/utils';
 

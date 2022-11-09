@@ -2,7 +2,7 @@ import { ImportOptions, ImportPage } from '../../pages/import.page';
 import { Tree } from '../../pages/tree.partial';
 import { DocumentPage } from '../../pages/document.page';
 import { AddressPage } from '../../pages/address.page';
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 
 describe('Import Tests', () => {
   beforeEach(() => {

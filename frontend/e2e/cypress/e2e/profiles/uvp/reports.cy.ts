@@ -1,5 +1,5 @@
 import { Menu } from '../../../pages/menu';
-import { UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocumentPage';
+import { UVPmetrics, UvpDocumentPage, UVPreports } from '../../../pages/uvpDocument.page';
 import { ResearchPage } from '../../../pages/research.page';
 import { Utils } from '../../../pages/utils';
 import { fieldsForDownloadEntry } from '../../../pages/document.page';

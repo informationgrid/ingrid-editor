@@ -1,6 +1,6 @@
 import { fieldsForDownloadEntry, headerElements, PublishOptions } from '../../../pages/document.page';
 import { Tree } from '../../../pages/tree.partial';
-import { UvpDocumentPage } from '../../../pages/uvpDocumentPage';
+import { UvpDocumentPage } from '../../../pages/uvpDocument.page';
 import { CopyCutUtils } from '../../../pages/copy-cut-utils';
 import { BehavioursPage } from '../../../pages/behaviours.page';
 import { CatalogsTabmenu } from '../../../pages/base.page';

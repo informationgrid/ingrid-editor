@@ -1,4 +1,4 @@
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Tree } from '../../pages/tree.partial';

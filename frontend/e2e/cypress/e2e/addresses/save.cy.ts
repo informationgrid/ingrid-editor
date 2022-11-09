@@ -4,7 +4,7 @@ import { Address, AddressPage } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Menu } from '../../pages/menu';
-import { McloudDocumentPage } from '../../pages/mcloudDocumentPage';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 
 describe('General create addresses/folders', () => {
   beforeEach(() => {
