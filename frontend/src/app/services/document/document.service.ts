@@ -389,12 +389,6 @@ export class DocumentService {
 
   private handleIsReferencedError(error) {
     console.error(error?.error?.errorText);
-
-    this.messageService.sendError(
-      `Das Dokument wird von mindestens einem Dokument referenziert.
-      Diese können über das Feld 'Zugeordnete Datensätze' angezeigt werden.
-      Lösen Sie diese auf oder wenden Sie sich an den Katalog-Administrator.`
-    );
   }
 
   revert(id: string, isAddress: boolean): Observable<any> {

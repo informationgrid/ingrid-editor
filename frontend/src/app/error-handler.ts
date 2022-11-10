@@ -3,6 +3,7 @@ import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeException } from "./server-validation.util";
+import { TranslocoService } from "@ngneat/transloco";
 
 export interface IgeValidationError {
   errorCode: string;
@@ -14,7 +15,10 @@ export interface IgeValidationError {
   providedIn: "root",
 })
 export class GlobalErrorHandler implements ErrorHandler {
-  constructor(private modalService: ModalService) {}
+  constructor(
+    private modalService: ModalService,
+    private translocoService: TranslocoService
+  ) {}
 
   handleError(error) {
     console.log("HANDLE ERROR", error);
@@ -23,11 +27,16 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else if (error instanceof HttpErrorResponse) {
       if (error.error?.errorCode) {
         const e = new IgeError();
-        const message = GlobalErrorHandler.translateMessage(error.error);
+        const message = GlobalErrorHandler.translateMessage(
+          error.error,
+          this.translocoService
+        );
         const unHandledException = message == null;
         e.setMessage(
-          GlobalErrorHandler.translateMessage(error.error) ??
-            error.error.errorText,
+          GlobalErrorHandler.translateMessage(
+            error.error,
+            this.translocoService
+          ) ?? error.error.errorText,
           null,
           error.error?.stacktrace,
           unHandledException
@@ -61,10 +70,17 @@ export class GlobalErrorHandler implements ErrorHandler {
     }
   }
 
-  private static translateMessage(error: IgeException) {
+  private static translateMessage(
+    error: IgeException,
+    translateService: TranslocoService = null
+  ) {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
-        return "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.";
+        return translateService != null
+          ? translateService.translateObject(
+              "replace-address.reference-error-multiple-files"
+            )
+          : "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.";
       case "CATALOG_NOT_FOUND":
         return `Dem Benutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       case "CONFLICT_WHEN_MOVING":
