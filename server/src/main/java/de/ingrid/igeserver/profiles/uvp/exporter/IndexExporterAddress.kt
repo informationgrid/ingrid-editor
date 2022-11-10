@@ -22,7 +22,7 @@ class IndexExporterAddress @Autowired constructor(
     val codelistService: CodeListService,
     val docWrapperRepo: DocumentWrapperRepository
 ) : IgeExporter {
-    
+
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,
         "indexUvpIDF",
@@ -45,6 +45,7 @@ class IndexExporterAddress @Autowired constructor(
         val wrapperDoc = docWrapperRepo.getById(doc.wrapperId!!)
 
         return jacksonObjectMapper().createObjectNode().apply {
+            put("t02_address.adr_id", doc.uuid)
             put("title", doc.title)
             put("iPlugId", "ige-ng_$catalogId")
             put("dataSourceName", "iPlug IGE-NG ($catalogId)")
@@ -52,6 +53,7 @@ class IndexExporterAddress @Autowired constructor(
             set<ArrayNode>("provider", jacksonObjectMapper().createArrayNode().add(provider))
             put("title", doc.title)
             put("t02_address.typ", addressType)
+            put("isTopLevel", isTopLevelNode(wrapperDoc.parent))
             set<ArrayNode>("t02_address.parents.title", getParentTitleAsArrayNode(wrapperDoc.parent))
             set<ArrayNode>("t021_communication.commtype_key", commTypeKeys)
             set<ArrayNode>("t021_communication.commtype_value", commTypeValues)
@@ -68,6 +70,11 @@ class IndexExporterAddress @Autowired constructor(
 
         }.toString()
     }
+
+    /**
+     * A top level node is defined by when its parent is null or the parent is a folder.
+     */
+    private fun isTopLevelNode(parent: DocumentWrapper?) = parent == null || parent.type == "FOLDER"
 
     private fun getParentTitleAsArrayNode(parent: DocumentWrapper?): ArrayNode {
         val titles = getParentTitle(parent)
