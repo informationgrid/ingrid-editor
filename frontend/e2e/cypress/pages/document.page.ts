@@ -913,7 +913,7 @@ export class DocumentPage extends BasePage {
   }
 
   static setDescription(text: string) {
-    cy.get('[data-cy=description]').find('mat-form-field').type(text);
+    cy.get('[data-cy=description] textarea').clear().type(text);
     cy.get('[data-cy=description] textarea').should('have.value', text);
   }
 
