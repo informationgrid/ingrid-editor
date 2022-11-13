@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^10.10.0",
+    "cypress": "10.10.0",
     "gremlins.js": "^2.2.0",
     "mocha": "^9.1.3",
     "mochawesome": "^7.1.3",
