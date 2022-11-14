@@ -27,16 +27,10 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else if (error instanceof HttpErrorResponse) {
       if (error.error?.errorCode) {
         const e = new IgeError();
-        const message = GlobalErrorHandler.translateMessage(
-          error.error,
-          this.translocoService
-        );
+        const message = this.translateMessage(error.error);
         const unHandledException = message == null;
         e.setMessage(
-          GlobalErrorHandler.translateMessage(
-            error.error,
-            this.translocoService
-          ) ?? error.error.errorText,
+          this.translateMessage(error.error) ?? error.error.errorText,
           null,
           error.error?.stacktrace,
           unHandledException
@@ -70,17 +64,13 @@ export class GlobalErrorHandler implements ErrorHandler {
     }
   }
 
-  private static translateMessage(
-    error: IgeException,
-    translateService: TranslocoService = null
-  ) {
+  private translateMessage(error: IgeException) {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
-        return translateService != null
-          ? translateService.translateObject(
-              "replace-address.reference-error-multiple-files"
-            )
-          : "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.";
+        return this.translocoService.translate(
+          "replace-address.reference-error-multiple-files"
+        );
+
       case "CATALOG_NOT_FOUND":
         return `Dem Benutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       case "CONFLICT_WHEN_MOVING":
