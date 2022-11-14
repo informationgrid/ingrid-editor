@@ -53,7 +53,7 @@ class IndexExporterAddress @Autowired constructor(
             set<ArrayNode>("provider", jacksonObjectMapper().createArrayNode().add(provider))
             put("title", doc.title)
             put("t02_address.typ", addressType)
-            put("isTopLevel", isTopLevelNode(wrapperDoc.parent))
+            put("is_top_level", isTopLevelNode(wrapperDoc.parent))
             set<ArrayNode>("t02_address.parents.title", getParentTitleAsArrayNode(wrapperDoc.parent))
             set<ArrayNode>("t021_communication.commtype_key", commTypeKeys)
             set<ArrayNode>("t021_communication.commtype_value", commTypeValues)
