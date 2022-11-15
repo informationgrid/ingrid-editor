@@ -387,6 +387,7 @@ export abstract class IngridShared extends BaseDoctype {
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
               hideExpression: "formState.hideOptionals",
+              dialog: ConformityDialogComponent,
               columns: [
                 {
                   key: "specification",

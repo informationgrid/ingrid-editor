@@ -56,7 +56,9 @@ export class TableTypeComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.to.columns.map((column) => column.key);
+    this.displayedColumns = this.to.columns
+      .filter((column) => !column.hidden)
+      .map((column) => column.key);
     this.displayedColumns.push("_actions_");
     this.displayedColumns.forEach(
       (column) => (this.preservedValues[column] = new WeakMap<any, any>())
@@ -108,11 +110,11 @@ export class TableTypeComponent
   editRow(index: number) {
     const newEntry = index === null;
     this.dialog
-      .open(FormDialogComponent, {
+      .open(this.to.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
         minWidth: 550,
         data: {
-          fields: this.to.columns,
+          fields: this.to.columns.filter((column) => !column.hidden),
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),

@@ -10,6 +10,19 @@ import { LiteratureDoctype } from "./ingrid/doctypes/literature.doctype";
 import { ProjectDoctype } from "./ingrid/doctypes/project.doctype";
 import { DataCollectionDoctype } from "./ingrid/doctypes/data-collection.doctype";
 import { InformationSystemDoctype } from "./ingrid/doctypes/information-system.doctype";
+import { ConformityDialogComponent } from "./ingrid/dialogs/conformity-dialog.component";
+import { MatIconModule } from "@angular/material/icon";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatInputModule } from "@angular/material/input";
+import { AsyncPipe, JsonPipe, NgForOf } from "@angular/common";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { FlexModule } from "@angular/flex-layout";
+import { MatSelectModule } from "@angular/material/select";
+import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.component";
 
 @Component({
   template: "",
@@ -46,7 +59,27 @@ class InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridComponent],
+  declarations: [
+    InGridComponent,
+    ConformityDialogComponent,
+    TableDialogComponent,
+  ],
+  imports: [
+    MatIconModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    AsyncPipe,
+    NgForOf,
+    MatDatepickerModule,
+    MatCheckboxModule,
+    FlexModule,
+    JsonPipe,
+  ],
 })
 export class ProfilePack {
   static getMyComponent() {
