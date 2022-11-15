@@ -189,6 +189,7 @@ export class FormFieldHelper {
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
+        disabled: true,
       },
       modelOptions: {
         updateOn: "blur",
@@ -253,6 +254,7 @@ export class FormFieldHelper {
         columns: options?.columns,
         batchValidUntil: options?.batchValidUntil,
         supportUpload: options?.supportUpload ?? true,
+        dialog: options?.dialog,
       },
       validators: options?.validators,
       hideExpression: options?.hideExpression,
@@ -366,6 +368,7 @@ export class FormFieldHelper {
         options: options?.options,
         required: options?.required,
       },
+      hideExpression: options?.hideExpression,
     };
   }
 

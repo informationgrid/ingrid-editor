@@ -1,6 +1,12 @@
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
+import { UploadService } from "../../../app/shared/upload/upload.service";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
 
 interface GeneralSectionOptions {
   inspireRelevant?: boolean;
@@ -22,6 +28,14 @@ interface AdditionalInformationSectionOptions {
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
+  constructor(
+    codelistService: CodelistService,
+    codelistQuery: CodelistQuery,
+    private uploadService: UploadService
+  ) {
+    super(codelistService, codelistQuery);
+  }
+
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addSection(
       "Allgemeines",
@@ -36,13 +50,51 @@ export abstract class IngridShared extends BaseDoctype {
             ),
             this.addInputInline(
               "modifiedMetadata",
-              "Metadaten-Datum (veröffentlichte Version)"
+              "Metadaten-Datum (veröffentlichte Version)",
+              {
+                expressionProperties: {
+                  // since whole form will be disabled/enabled by application
+                  // depending on write access, we need to set disabled state dynamically
+                  "templateOptions.disabled": () => true,
+                },
+              }
             ),
           ],
           { hideExpression: "formState.hideOptionals" }
         ),
-        this.addRepeatList("graphicOverviews", "Vorschaugrafik", {
+        this.addTable("graphicOverviews", "Vorschaugrafik", {
           hideExpression: "formState.hideOptionals",
+          columns: [
+            {
+              key: "fileName",
+              type: "upload",
+              label: "URI",
+              templateOptions: {
+                label: "URI",
+                appearance: "outline",
+                onClick: (docUuid, uri, $event) => {
+                  this.uploadService.downloadFile(docUuid, uri, $event);
+                },
+                formatter: (link: any) => {
+                  if (link.asLink) {
+                    return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
+                  } else {
+                    return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+                  }
+                },
+              },
+            },
+            {
+              key: "fileDescription",
+              type: "input",
+              label: "Beschreibung",
+              templateOptions: {
+                label: "Beschreibung",
+                appearance: "outline",
+              },
+            },
+          ],
         }),
         this.addInput("alternateTitle", "Kurzbezeichnung", {
           wrappers: ["panel", "form-field"],
@@ -77,12 +129,26 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
           ].filter(Boolean)
         ),
+        this.addRadioboxes("isInspireConform", "INSPIRE konform", {
+          hideExpression: "!model.isInspireIdentified",
+          options: [
+            {
+              value: "Ja",
+              id: true,
+            },
+            {
+              value: "Nein",
+              id: false,
+            },
+          ],
+        }),
         options.openData
           ? this.addRepeatList("openDataCategories", "Kategorien", {
               asSelect: true,
               options: this.getCodelistForSelect(6400, "openDataCategories"),
               codelistId: 6400,
               // expressions: { hide: "!model.isOpenData" },
+              // hideExpression: "!model.isOpenData", // repeatList component does not seem to update model!?
               hideExpression: "!formState.mainModel.isOpenData",
             })
           : null,
@@ -143,122 +209,135 @@ export abstract class IngridShared extends BaseDoctype {
 
   addSpatialSection() {
     return this.addSection("Raumbezugssystem", [
-      this.addSpatial("spatial", "Raumbezug"),
-      this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
-        asSelect: true,
-        options: this.getCodelistForSelect(100, "spatialSystems"),
-        codelistId: 100,
-        required: true,
-      }),
-      this.addGroup(
-        null,
-        "Höhe",
-        [
-          this.addGroup(
-            null,
-            null,
-            [
-              this.addInputInline("spatialRefAltMin", "Minimum"),
-              this.addInput("spatialRefAltMax", null, {
-                fieldLabel: "Maximum",
-              }),
-              this.addSelectInline("spatialRefAltMeasure", "Maßeinheit", {
-                options: this.getCodelistForSelect(102, "spatialRefAltMeasure"),
-                codelistId: 102,
-              }),
-            ],
-            { wrappers: [] }
-          ),
-          this.addGroup(
-            null,
-            null,
-            [
-              this.addSelectInline("spatialRefAltVDate", "Vertikaldatum", {
-                options: this.getCodelistForSelect(101, "spatialRefAltVDate"),
-                codelistId: 101,
-              }),
-            ],
-            { wrappers: [] }
-          ),
-        ],
-        {
-          fieldGroupClassName: null,
+      this.addGroupSimple("spatial", [
+        this.addSpatial("references", "Raumbezug"),
+        this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
+          asSelect: true,
+          options: this.getCodelistForSelect(100, "spatialSystems"),
+          codelistId: 100,
+          required: true,
+        }),
+        this.addGroup(
+          "verticalExtent",
+          "Höhe",
+          [
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addInputInline("minimumValue", "Minimum", {
+                  type: "number",
+                }),
+                this.addInputInline("maximumValue", "Maximum", {
+                  type: "number",
+                }),
+                this.addSelectInline("unitOfMeasure", "Maßeinheit", {
+                  options: this.getCodelistForSelect(
+                    102,
+                    "spatialRefAltMeasure"
+                  ),
+                  codelistId: 102,
+                }),
+              ],
+              { wrappers: [] }
+            ),
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addSelectInline("Datum", "Vertikaldatum", {
+                  options: this.getCodelistForSelect(101, "spatialRefAltVDate"),
+                  codelistId: 101,
+                }),
+              ],
+              { wrappers: [] }
+            ),
+          ],
+          {
+            fieldGroupClassName: null,
+            hideExpression: "formState.hideOptionals",
+          }
+        ),
+        this.addTextArea("description", "Erläuterungen", "spatial", {
           hideExpression: "formState.hideOptionals",
-        }
-      ),
-      this.addTextArea("spatialRefExplanation", "Erläuterungen", "spatial", {
-        hideExpression: "formState.hideOptionals",
-      }),
+        }),
+      ]),
     ]);
   }
 
   addTimeReferenceSection() {
     return this.addSection("Zeitbezug", [
-      this.addRepeat("timeRefTable", "Zeitbezug der Resource", {
-        required: true,
-        // wrappers: [],
-        fields: [
-          this.addDatepicker("date", null, {
-            fieldLabel: "Datum",
-            className: "flex-1",
-            required: true,
-            wrappers: ["form-field"],
-          }),
-          this.addSelect("type", null, {
-            fieldLabel: "Typ",
-            wrappers: null,
-            className: "flex-3",
-            required: true,
-            options: this.getCodelistForSelect(502, "type"),
-            codelistId: 502,
-          }),
-        ],
-      }),
-      this.addTextArea("timeRefExplanation", "Erläuterungen", "dataset", {
-        hideExpression: "formState.hideOptionals",
-      }),
-      this.addGroup(
-        null,
-        "Durch die Ressource abgedeckte Zeitspanne",
-        [
-          this.addSelectInline("timeRefType", "Typ", {
-            options: <SelectOptionUi[]>[
-              { label: "am", value: "am" },
-              { label: "bis", value: "bis" },
-              { label: "von", value: "fromType" },
-            ],
-          }),
-          this.addDatepicker("timeRefDate1", null, {
-            wrappers: ["form-field"],
-          }),
-        ],
-        { hideExpression: "formState.hideOptionals" }
-      ),
-      this.addSelect("timeRefStatus", "Status", {
-        options: this.getCodelistForSelect(523, "timeRefStatus"),
-        codelistId: 523,
-        hideExpression: "formState.hideOptionals",
-      }),
-      this.addSelect("timeRefPeriodicity", "Periodizität", {
-        options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
-        codelistId: 518,
-        hideExpression: "formState.hideOptionals",
-      }),
-      this.addGroup(
-        null,
-        "Im Intervall",
-        [
-          this.addInputInline("timeRefIntervalNum", "Anzahl", {
-            type: "number",
-          }),
-          this.addSelectInline("timeRefStatus", "Einheit", {
-            options: this.getCodelistForSelect(1230, "timeRefStatus"),
-            codelistId: 1230,
-            className: "flex-3",
-          }),
-        ],
-        { hideExpression: "formState.hideOptionals" }
-      ),
+      this.addGroupSimple("temporal", [
+        this.addRepeat("events", "Zeitbezug der Resource", {
+          required: true,
+          fields: [
+            this.addDatepicker("referenceDate", null, {
+              fieldLabel: "Datum",
+              className: "flex-1",
+              required: true,
+              wrappers: ["form-field"],
+            }),
+            this.addSelect("referenceDateType", null, {
+              fieldLabel: "Typ",
+              wrappers: null,
+              className: "flex-3",
+              required: true,
+              options: this.getCodelistForSelect(502, "type"),
+              codelistId: 502,
+            }),
+          ],
+        }),
+        this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addGroup(
+          null,
+          "Durch die Ressource abgedeckte Zeitspanne",
+          [
+            this.addSelectInline("resourceDateType", "Typ", {
+              options: <SelectOptionUi[]>[
+                { label: "am", value: "am" },
+                { label: "bis", value: "bis" },
+                { label: "von", value: "fromType" },
+              ],
+            }),
+            this.addDatepicker("resourceStartDate", null, {
+              wrappers: ["form-field"],
+            }),
+            this.addDatepicker("resourceEndDate", null, {
+              wrappers: ["form-field"],
+            }),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
+        this.addSelect("status", "Status", {
+          options: this.getCodelistForSelect(523, "timeRefStatus"),
+          codelistId: 523,
+          hideExpression: "formState.hideOptionals",
+        }),
+      ]),
+      this.addGroupSimple("maintenanceInformation", [
+        this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
+          options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
+          codelistId: 518,
+          hideExpression: "formState.hideOptionals",
+        }),
+        this.addGroup(
+          "userDefinedMaintenanceFrequency",
+          "Im Intervall",
+          [
+            this.addInputInline("number", "Anzahl", {
+              type: "number",
+            }),
+            this.addSelectInline("unit", "Einheit", {
+              options: this.getCodelistForSelect(1230, "timeRefStatus"),
+              codelistId: 1230,
+              className: "flex-3",
+            }),
+          ],
+          { hideExpression: "formState.hideOptionals" }
+        ),
+      ]),
     ]);
   }
 
@@ -268,36 +347,44 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection(
       "Zusatzinformation",
       [
-        this.addSelect("extraInfoLangMetaData", "Sprache des Metadatensatzes", {
-          options: this.getCodelistForSelect(99999999, "extraInfoLangMetaData"),
-          codelistId: 99999999,
-          required: true,
-        }),
+        this.addGroupSimple("metadata", [
+          this.addSelect("language", "Sprache des Metadatensatzes", {
+            options: this.getCodelistForSelect(
+              99999999,
+              "extraInfoLangMetaData"
+            ),
+            codelistId: 99999999,
+            required: true,
+          }),
+        ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
           codelistId: 3571,
           required: true,
         }),
         options.extraInfoCharSetData
-          ? this.addSelect(
-              "extraInfoCharSetData",
-              "Zeichensatz des Datensatzes",
-              {
-                options: this.getCodelistForSelect(510, "extraInfoCharSetData"),
+          ? this.addGroupSimple("metadata", [
+              this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
+                options: this.getCodelistForSelect(510, "characterSet"),
                 codelistId: 510,
                 hideExpression: "formState.hideOptionals",
-              }
-            )
+              }),
+            ])
           : null,
         options.extraInfoLangData
-          ? this.addRepeatList("extraInfoLangData", "Sprache der Ressource", {
-              options: this.getCodelistForSelect(99999999, "extraInfoLangData"),
-              codelistId: 99999999,
-              required: true,
-            })
+          ? this.addGroupSimple("dataset", [
+              this.addRepeatList("languages", "Sprache der Ressource", {
+                options: this.getCodelistForSelect(
+                  99999999,
+                  "extraInfoLangData"
+                ),
+                codelistId: 99999999,
+                required: true,
+              }),
+            ])
           : null,
         options.conformity
-          ? this.addTable("conformity", "Konformität", {
+          ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
               hideExpression: "formState.hideOptionals",
               columns: [
@@ -315,7 +402,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "level",
+                  key: "pass",
                   type: "select",
                   label: "Grad",
                   width: "100px",
@@ -329,7 +416,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "date",
+                  key: "publicationDate",
                   type: "datepicker",
                   label: "Datum",
                   width: "100px",
@@ -349,6 +436,14 @@ export abstract class IngridShared extends BaseDoctype {
                   templateOptions: {
                     label: "geprüft mit",
                     appearance: "outline",
+                  },
+                },
+                {
+                  key: "isInspire",
+                  type: "checkbox",
+                  hidden: true,
+                  templateOptions: {
+                    hidden: true,
                   },
                 },
               ],

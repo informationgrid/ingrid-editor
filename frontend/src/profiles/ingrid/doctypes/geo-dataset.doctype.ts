@@ -7,6 +7,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
+import { UploadService } from "../../../app/shared/upload/upload.service";
 
 const qualityTables = <SelectOptionUi[]>[
   { label: "Datenüberschuss", value: "dü" },
@@ -52,7 +53,9 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
 
       this.addSection("Fachbezug", [
-        this.addTextArea("baseText", "Fachliche Grundlage", this.id),
+        this.addGroupSimple("lineage", [
+          this.addTextArea("statement", "Fachliche Grundlage", this.id),
+        ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field"],
@@ -368,56 +371,50 @@ export class GeoDatasetDoctype extends IngridShared {
           ],
           { fieldGroupClassName: null, wrappers: [] }
         ),
-        this.addGroupSimple("contentInfo", [
-          this.addGroupSimple("featureCatalogueDescription", [
-            this.addTable("citation", "Schlüsselkatalog", {
-              supportUpload: false,
-              hideExpression: "formState.hideOptionals",
-              columns: [
-                {
-                  key: "title",
-                  type: "input",
-                  label: "Titel",
-                  templateOptions: {
-                    required: true,
-                    label: "Titel",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "date",
-                  type: "datepicker",
-                  label: "Datum",
-                  width: "300px",
-                  templateOptions: {
-                    required: true,
-                    label: "Datum",
-                    appearance: "outline",
-                    formatter: (date: Date) => {
-                      return new Date(date).toLocaleDateString();
-                    },
-                  },
-                },
-                {
-                  key: "version",
-                  type: "input",
-                  label: "Version",
-                  width: "300px",
-                  templateOptions: {
-                    label: "Version",
-                    appearance: "outline",
-                  },
-                },
-              ],
-            }),
-            this.addRepeatList(
-              "featureTypes",
-              "Sachdaten/Attributinformation",
+        this.addGroupSimple("featureCatalogueDescription", [
+          this.addTable("citation", "Schlüsselkatalog", {
+            supportUpload: false,
+            hideExpression: "formState.hideOptionals",
+            columns: [
               {
-                hideExpression: "formState.hideOptionals",
-              }
-            ),
-          ]),
+                key: "title",
+                type: "input",
+                label: "Titel",
+                templateOptions: {
+                  required: true,
+                  label: "Titel",
+                  appearance: "outline",
+                },
+              },
+              {
+                key: "date",
+                type: "datepicker",
+                label: "Datum",
+                width: "300px",
+                templateOptions: {
+                  required: true,
+                  label: "Datum",
+                  appearance: "outline",
+                  formatter: (date: Date) => {
+                    return new Date(date).toLocaleDateString();
+                  },
+                },
+              },
+              {
+                key: "version",
+                type: "input",
+                label: "Version",
+                width: "300px",
+                templateOptions: {
+                  label: "Version",
+                  appearance: "outline",
+                },
+              },
+            ],
+          }),
+          this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
+            hideExpression: "formState.hideOptionals",
+          }),
         ]),
         this.addRepeatList("coupledServices", "Darstellender Dienst", {
           hideExpression: "formState.hideOptionals",
@@ -443,78 +440,86 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
       ]),
       this.addSection("Datenqualität", [
-        this.addInput("coverage", "Datendefizit", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addGroup(null, "Genauigkeit", [
-          this.addInput("gridPosAccuracy", null, {
-            fieldLabel: "Rasterpositionsgenauigkeit (m)",
-            hideExpression:
-              'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+        this.addGroupSimple("dataQuality", [
+          this.addInput("coverage", "Datendefizit", {
+            wrappers: ["panel", "form-field"],
+            type: "number",
           }),
-          this.addInput("altAccuracy", null, {
-            fieldLabel: "Höhengenauigkeit (m)",
-          }),
-          this.addInput("posAccuracy", null, {
-            fieldLabel: "Lagegenauigkeit (m)",
+          this.addGroup(null, "Genauigkeit", [
+            this.addInput("griddedDataPositionalAccuracy", null, {
+              fieldLabel: "Rasterpositionsgenauigkeit (m)",
+              type: "number",
+              hideExpression:
+                'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+            }),
+            this.addGroupSimple("absoluteExternalPositionalAccuracy", [
+              this.addInput("vertical", null, {
+                fieldLabel: "Höhengenauigkeit (m)",
+                type: "number",
+              }),
+              this.addInput("horizontal", null, {
+                fieldLabel: "Lagegenauigkeit (m)",
+                type: "number",
+              }),
+            ]),
+          ]),
+          this.addTable("qualities", "Qualität", {
+            supportUpload: false,
+            hideExpression: "formState.hideOptionals",
+            columns: [
+              {
+                key: "type",
+                type: "select",
+                label: "Typ",
+                width: "300px",
+                templateOptions: {
+                  label: "Typ",
+                  appearance: "outline",
+                  options: qualityTables,
+                  formatter: (item: any) =>
+                    qualityTables.find((qt) => qt.value === item.key).label,
+                },
+              },
+              {
+                key: "measureType",
+                type: "select",
+                label: "Art der Messung",
+                width: "300px",
+                templateOptions: {
+                  label: "Art der Messung",
+                  appearance: "outline",
+                  options: this.getCodelistForSelect(
+                    7109,
+                    "extraInfoLangMetaData"
+                  ),
+                  codelistId: 7109, // TODO: codelistId changes for each type!
+                  formatter: (item: any) =>
+                    this.formatCodelistValue("7109", item),
+                },
+              },
+              {
+                key: "value",
+                type: "input",
+                label: "Wert",
+                width: "300px",
+                templateOptions: {
+                  label: "Wert",
+                  appearance: "outline",
+                },
+              },
+              {
+                key: "parameter",
+                type: "input",
+                label: "Parameter",
+                width: "300px",
+                templateOptions: {
+                  label: "Parameter",
+                  appearance: "outline",
+                },
+              },
+            ],
           }),
         ]),
-        this.addTable("qualities", "Qualität", {
-          supportUpload: false,
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "type",
-              type: "select",
-              label: "Typ",
-              width: "300px",
-              templateOptions: {
-                label: "Typ",
-                appearance: "outline",
-                options: qualityTables,
-                formatter: (item: any) =>
-                  qualityTables.find((qt) => qt.value === item.key).label,
-              },
-            },
-            {
-              key: "measureType",
-              type: "select",
-              label: "Art der Messung",
-              width: "300px",
-              templateOptions: {
-                label: "Art der Messung",
-                appearance: "outline",
-                options: this.getCodelistForSelect(
-                  7109,
-                  "extraInfoLangMetaData"
-                ),
-                codelistId: 7109, // TODO: codelistId changes for each type!
-                formatter: (item: any) =>
-                  this.formatCodelistValue("7109", item),
-              },
-            },
-            {
-              key: "value",
-              type: "input",
-              label: "Wert",
-              width: "300px",
-              templateOptions: {
-                label: "Wert",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "parameter",
-              type: "input",
-              label: "Parameter",
-              width: "300px",
-              templateOptions: {
-                label: "Parameter",
-                appearance: "outline",
-              },
-            },
-          ],
-        }),
       ]),
 
       this.addSpatialSection(),
@@ -531,8 +536,9 @@ export class GeoDatasetDoctype extends IngridShared {
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
+    uploadService: UploadService
   ) {
-    super(codelistService, codelistQuery);
+    super(codelistService, codelistQuery, uploadService);
   }
 }
