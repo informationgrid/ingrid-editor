@@ -71,14 +71,16 @@ class UploadApiController @Autowired constructor(
         try {
             storage.validate(catalogId, userID, docUuid, flowFilename, flowTotalSize)
         } catch (ex: Exception) {
+            log.warn("Validation failed for file: $flowFilename")
+            log.warn("Validation error: ${ex.message}")
             return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
         // check if file exists already
         if (!replace) {
             if (storage.exists(catalogId, userID, docUuid, flowFilename)) {
-                val items: Array<StorageItem> =
-                    arrayOf(storage.getInfo(catalogId, userID, docUuid, flowFilename))
+                log.info("File already exists: $flowFilename");
+                val items = arrayOf(storage.getInfo(catalogId, userID, docUuid, flowFilename))
 
                 val uploadResponse =
                     UploadResponse(ConflictException("The file already exists.", items, items[0].nextName))
