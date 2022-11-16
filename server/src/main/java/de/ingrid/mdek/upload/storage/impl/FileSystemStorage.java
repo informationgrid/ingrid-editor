@@ -275,6 +275,14 @@ public class FileSystemStorage implements Storage {
         if(realPath.toFile().exists()){
             return true;
         }
+        realPath = this.getArchivePath(catalog, path, file, this.docsDir, Scope.PUBLISHED );
+        if(realPath.toFile().exists()){
+            return true;
+        }
+        realPath = this.getArchivePath(catalog, path, file, this.docsDir, Scope.UNPUBLISHED );
+        if(realPath.toFile().exists()){
+            return true;
+        }
         realPath = this.getRealPath(catalog, path, file, this.docsDir);
         return realPath.toFile().exists();
     }
@@ -442,13 +450,13 @@ public class FileSystemStorage implements Storage {
     public void archive(final String catalog, final String path, final String file) throws IOException {
         final Path realPath = this.getRealPath(catalog, path, file, this.docsDir);
         final Path archivePath = this.getArchivePath(catalog, path, file, this.docsDir, Scope.PUBLISHED);
-        
+
         // ensure directory
         String subPath = getSubPathFromFile(file);
         this.getArchivePath(catalog, path, subPath, this.docsDir, Scope.PUBLISHED).toFile().mkdirs();
         Files.move(realPath, archivePath, DEFAULT_COPY_OPTIONS);
     }
-    
+
     private String getSubPathFromFile(String file) {
         if (file.contains("/")) {
             // if file was from an extracted zip, then make sure to create the sub folders
@@ -1067,9 +1075,9 @@ public class FileSystemStorage implements Storage {
         final Path strippedPath = Paths.get(this.stripPath(file));
         final boolean isArchived = filePath.equals(archivePath) || filePath.equals(unpublishedArchivePath);
         final boolean isDocIdIsNull = "".equals(docID);
-        final int startPathIndex = isArchived && !isDocIdIsNull ? 1 : 0; 
+        final int startPathIndex = isArchived && !isDocIdIsNull ? 1 : 0;
         final int nameCount = strippedPath.getNameCount();
-        
+
         final String itemPath = (startPathIndex < nameCount-1)
                 ? strippedPath.subpath(startPathIndex, nameCount-1).toString()
                 : "";
@@ -1079,8 +1087,8 @@ public class FileSystemStorage implements Storage {
         final long fileSize = filePath.toFile().exists() ? Files.size(filePath) : 0;
 
         // get last modified date of file and take care of timezone correctly, since LocalDateTime does not store time zone information (#745)
-        final LocalDateTime lastModifiedTime = filePath.toFile().exists() 
-                ? LocalDateTime.ofInstant(Files.getLastModifiedTime(filePath).toInstant(), TimeZone.getDefault().toZoneId()) 
+        final LocalDateTime lastModifiedTime = filePath.toFile().exists()
+                ? LocalDateTime.ofInstant(Files.getLastModifiedTime(filePath).toInstant(), TimeZone.getDefault().toZoneId())
                 : null;
 
         return new FileSystemItem(this, catalog, docID, userID, itemPath, itemFile, mimeType, fileSize, lastModifiedTime,
