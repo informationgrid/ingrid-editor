@@ -26,28 +26,28 @@
     </ng-container>
 
     <!-- Settings -->
-    <ng-container matColumnDef="settings">
-        <th mat-header-cell *matHeaderCellDef class="thin-column"></th>
-        <td mat-cell class="thin-column" *matCellDef="let element">
-            <button
-                mat-icon-button
-                class="menu dark menu-button"
-                [matMenuTriggerFor]="groupEditMenu"
-                (click)="$event.stopPropagation()"
-            >
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
-            <mat-menu #groupEditMenu="matMenu">
-                <button
-                    [disabled]="element.currentUserIsMember"
-                    mat-menu-item
-                    (click)="onDelete.next(element.id)"
-                >
-                    Löschen
-                </button>
-            </mat-menu>
-        </td>
-    </ng-container>
+    <!--    <ng-container matColumnDef="settings">-->
+    <!--        <th mat-header-cell *matHeaderCellDef class="thin-column"></th>-->
+    <!--        <td mat-cell class="thin-column" *matCellDef="let element">-->
+    <!--            <button-->
+    <!--                mat-icon-button-->
+    <!--                class="menu dark menu-button"-->
+    <!--                [matMenuTriggerFor]="groupEditMenu"-->
+    <!--                (click)="$event.stopPropagation()"-->
+    <!--            >-->
+    <!--                <mat-icon svgIcon="Mehr"></mat-icon>-->
+    <!--            </button>-->
+    <!--            <mat-menu #groupEditMenu="matMenu">-->
+    <!--                <button-->
+    <!--                    [disabled]="element.currentUserIsMember"-->
+    <!--                    mat-menu-item-->
+    <!--                    (click)="onDelete.next(element.id)"-->
+    <!--                >-->
+    <!--                    Löschen-->
+    <!--                </button>-->
+    <!--            </mat-menu>-->
+    <!--        </td>-->
+    <!--    </ng-container>-->
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr

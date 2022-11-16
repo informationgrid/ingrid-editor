@@ -49,7 +49,7 @@ export class GroupsTableComponent
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ["role-icon", "name", "settings"];
+  displayedColumns: string[] = ["role-icon", "name"]; //, "settings"];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
 
