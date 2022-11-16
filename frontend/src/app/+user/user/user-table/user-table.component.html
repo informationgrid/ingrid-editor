@@ -66,8 +66,10 @@
     <tr
         mat-row
         *matRowDef="let row; columns: displayedColumns"
-        (click)="select(row)"
+        (click)="row.readOnly || select(row)"
         [class.selected]="selection.isSelected(row)"
+        [class.disabled]="row.readOnly"
+        [class.readonly]="row.readOnly"
     ></tr>
 </table>
 <div *ngIf="isLoading" class="table-spinner">

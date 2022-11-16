@@ -23,6 +23,7 @@ export abstract class User {
 export class FrontendUser extends User {
   permissions?: Permissions;
   groups?: { key: string; value?: string }[];
+  readOnly?: boolean;
 
   constructor(user?: BackendUser, igeGroups?: Group[]) {
     super(user);

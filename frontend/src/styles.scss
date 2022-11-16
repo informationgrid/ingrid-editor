@@ -1144,3 +1144,7 @@ table.big-font {
     font-size: 16px;
   }
 }
+
+.mat-row.readonly {
+  cursor: default;
+}

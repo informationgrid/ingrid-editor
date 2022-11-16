@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.UserResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import io.swagger.v3.oas.annotations.Operation
@@ -106,7 +107,7 @@ interface GroupsApi {
     fun getUsersOfGroup(
         principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int
-    ): ResponseEntity<List<User>>
+    ): ResponseEntity<List<UserResponse>>
 
     @GetMapping(
         value = ["/groups/{id}/manager"],

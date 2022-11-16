@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.UserResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.CatalogService
@@ -110,9 +111,11 @@ class GroupsApiController @Autowired constructor(
         return ResponseEntity.ok(updatedGroup)
     }
 
-    override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<User>> {
+    override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<UserResponse>> {
         val users = groupService.getUsersOfGroup(id, principal)
-        return ResponseEntity.ok(users)
+        return ResponseEntity.ok(users.map {
+            UserResponse(it, readOnly = catalogService.canEditUser(principal, it.login).not() )
+        })
     }
 
     override fun getManagerOfGroup(principal: Principal, id: Int): ResponseEntity<User> {

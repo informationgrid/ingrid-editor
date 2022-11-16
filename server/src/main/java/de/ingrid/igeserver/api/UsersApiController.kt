@@ -4,7 +4,6 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.UserRepository
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
@@ -116,6 +116,10 @@ class UsersApiController : UsersApi {
 
     @Transactional
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
+        if (!catalogService.canEditUser(principal, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val deleted = catalogService.deleteUser(catalogId, userId)
         // if user really deleted (only was connected to one catalog)
@@ -128,6 +132,9 @@ class UsersApiController : UsersApi {
     }
 
     override fun getUser(principal: Principal, userId: String): ResponseEntity<User> {
+        if (!catalogService.canEditUser(principal, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         keycloakService.getClient(principal).use { client ->
 
@@ -145,36 +152,34 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun list(principal: Principal): ResponseEntity<List<User>> {
+    private fun getSingleUser(principal: Principal, userId: String): User {
+        keycloakService.getClient(principal).use { client ->
 
-        // return all users except superadmin for superadmins and katadmins
+            val user = keycloakService.getUser(client, userId)
+
+            val frontendUser =
+                userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+
+            user.latestLogin = this.getMostRecentLoginForUser(userId)
+
+            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
+            return user
+        }
+    }
+
+    override fun list(principal: Principal): ResponseEntity<List<User>> {
+        // return all users except superadmins for superadmins and katadmins
         if (authUtils.isAdmin(principal)) {
             val allUsers = catalogService.getAllCatalogUsers(principal)
             return ResponseEntity.ok(allUsers.filter { it.role != "ige-super-admin" })
         }
+        val userIds = catalogService.getAllCatalogUserIds(principal)
+            .filter { catalogService.canEditUser(principal, it) }
 
-        // return all users of assigned groups and subgroups for non-katadmins
-        val filteredUsers = mutableSetOf<User>()
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        groupService.getAll(catalogId)
-            .filter { hasRightsForGroup(principal, it) }
-            .forEach { filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal)) }
+        return ResponseEntity.ok(userIds.map { getSingleUser(principal, it) })
 
-        val usersWithNoGroups = catalogService.getAllCatalogUsers(principal)
-            .filter { it.groups.isEmpty() }
-        filteredUsers.addAll(usersWithNoGroups)
-
-        // remove admin users (superadmins and catalog katadmins)
-        return ResponseEntity.ok(filteredUsers.filter { it.role != "ige-super-admin" && it.role != "cat-admin" })
     }
-
-    private fun hasRightsForGroup(
-        principal: Principal,
-        group: Group
-    ) = igeAclService.hasRightsForGroup(
-        principal as Authentication,
-        group
-    )
 
     override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
         val filteredUsers = catalogService.getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
@@ -183,6 +188,10 @@ class UsersApiController : UsersApi {
 
 
     override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
+        if (!catalogService.canEditUser(principal, user.login)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         keycloakService.updateUser(principal, user)
@@ -200,9 +209,9 @@ class UsersApiController : UsersApi {
 
             user.apply {
                 login = userId
-                firstName = if (user.firstName == "") kcUser.firstName else user.firstName
-                lastName = if (user.lastName == "") kcUser.lastName else user.lastName
-                email = if (user.email == "") kcUser.email else user.email
+                firstName = user.firstName.ifBlank { kcUser.firstName }
+                lastName = user.lastName.ifBlank { kcUser.lastName }
+                email = user.email.ifBlank { kcUser.email }
             }
             keycloakService.updateUser(principal, user)
         }
