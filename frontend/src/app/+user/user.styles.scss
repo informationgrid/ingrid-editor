@@ -36,7 +36,9 @@ as-split-area {
   overflow-x: auto !important;
   background: white;
 }
-
+::ng-deep .as-split-gutter {
+  height: auto !important;
+}
 .header-wrapper {
   max-width: 1900px;
   margin: 0 auto 0 0;
