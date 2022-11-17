@@ -75,9 +75,9 @@ export class fileDataTransferManagement {
     cy.get('[data-mat-icon-name="Entfernen"]').click();
   }
 
-  static DownloadFileAddedToDocument(fileName: string) {
+  static DownloadFileAddedToDocument(fileName: string, uvp = false) {
     cy.intercept('GET', /api\/upload\/download/).as('download');
-    cy.contains('.no-text-transform', fileName).click();
+    cy.contains(`${uvp ? '.clickable-text' : '.no-text-transform'}`, fileName).click();
     cy.wait('@download', { timeout: 10000 });
   }
 
