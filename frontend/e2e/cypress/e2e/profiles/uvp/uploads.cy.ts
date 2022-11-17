@@ -342,4 +342,92 @@ describe('uvp uploads', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting("'Negative Vorprüfungen' veröffentlichen", false);
   });
+
+  it('should rename when uploading file that has same name as archived one (#4547)', () => {
+    const file1 = 'first_archived.txt';
+    const file2 = 'duplicateTitle/first_archived.txt';
+
+    Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_R_I']);
+
+    // upload file
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(file1);
+
+    // set expiry date in the past (= archive it)
+    UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', file1, 'Bearbeiten');
+    UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2020');
+    UvpDocumentPage.publishNow();
+
+    // upload file with same name
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.addAlreadyExistingFile(file2);
+
+    // choose option "Umbenennen"
+    fileDataTransferManagement.handleExistingFile(FileHandlingOptions.Rename);
+    cy.contains('button', 'Übernehmen').click();
+
+    // make sure the file has been added to download table
+    cy.get('[data-cy="Auslegungsinformationen-table"] mat-row').should('have.length', 3);
+    cy.contains('[data-cy="Auslegungsinformationen-table"] mat-row', file1).should('have.length', 1);
+  });
+
+  it('should overwrite when uploading file that has same name as archived one (#4547)', () => {
+    const file1 = 'first_archived.txt';
+    const file2 = 'duplicateTitle/first_archived.txt';
+
+    Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_R_II']);
+
+    // upload file
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(file1);
+
+    // set expiry date in the past (= archive it)
+    UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', file1, 'Bearbeiten');
+    UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2020');
+    UvpDocumentPage.publishNow();
+
+    // upload file with same name
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.addAlreadyExistingFile(file2);
+
+    // choose option "Überschreiben"
+    fileDataTransferManagement.handleExistingFile(FileHandlingOptions.Overwrite);
+    cy.contains('button', 'Übernehmen').click();
+
+    // make sure old file is overwritten
+    fileDataTransferManagement.DownloadFileAddedToDocument(file1, true);
+    cy.readFile('cypress/downloads/first_archived.txt', { timeout: 15000 }).then(content =>
+      expect(content.trim()).to.equal('archived second')
+    );
+  });
+
+  it('should use existing file when uploading file that has same name as archived one (#4547)', () => {
+    const file1 = 'first_archived.txt';
+    const file2 = 'duplicateTitle/first_archived.txt';
+
+    Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_R_III']);
+
+    // upload file
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.uploadFile(file1);
+
+    // set expiry date in the past (= archive it)
+    UvpDocumentPage.editRowInDownloadTable('Auslegungsinformationen-table', file1, 'Bearbeiten');
+    UvpDocumentPage.editDownloadTableEntry(fieldsForDownloadEntry.ValidUntil, '12.12.2020');
+    UvpDocumentPage.publishNow();
+
+    // upload file with same name
+    fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 0);
+    fileDataTransferManagement.addAlreadyExistingFile(file2);
+
+    // choose option "existierende verwenden"
+    fileDataTransferManagement.handleExistingFile(FileHandlingOptions.UseExisting);
+    cy.contains('button', 'Übernehmen').click();
+
+    // make sure old file is the current version
+    fileDataTransferManagement.DownloadFileAddedToDocument(file1, true);
+    cy.readFile('cypress/downloads/first_archived.txt', { timeout: 15000 }).then(content =>
+      expect(content.trim()).to.equal('archived first')
+    );
+  });
 });
