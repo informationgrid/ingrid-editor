@@ -58,7 +58,8 @@ export default defineConfig({
   env: {
     auth_base_url: 'http://192.168.0.228:8080',
     auth_realm: 'InGrid',
-    auth_client_id: 'ige-ng-frontend'
+    auth_client_id: 'ige-ng-frontend',
+    ELECTRON_ENABLE_LOGGING: 'electron.log'
   },
   screenshotsFolder: 'cypress/mochawesome-reports/assets',
   videosFolder: 'cypress/mochawesome-reports/assets',
