@@ -227,7 +227,8 @@ export class TableTypeComponent
           this.formattedCell[index][column.key] =
             column.templateOptions.formatter(
               value[index][column.key],
-              this.form
+              this.form,
+              value[index]
             );
         })
       );

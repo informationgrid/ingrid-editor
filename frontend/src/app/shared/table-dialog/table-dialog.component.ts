@@ -6,10 +6,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
   styleUrls: ["./table-dialog.component.scss"],
 })
 export class TableDialogComponent implements OnInit {
-  @Input() titleText: string;
+  @Input() set isNew(value: boolean) {
+    this.title = value ? "Eintrag hinzufügen" : "Eintrag bearbeiten";
+  }
   @Input() submitDisabled = false;
 
   @Output() submit = new EventEmitter();
+
+  title: string;
 
   constructor() {}
 

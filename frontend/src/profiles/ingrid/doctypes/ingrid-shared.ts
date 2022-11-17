@@ -396,10 +396,13 @@ export abstract class IngridShared extends BaseDoctype {
                   templateOptions: {
                     label: "Spezifikation",
                     appearance: "outline",
+                    // needed just to wait for codelist being loaded
                     options: this.getCodelistForSelect(6005, "specification"),
-                    codelistId: 6005, // TODO: can also be 6006 depending if it's INSPIRE!
-                    formatter: (item: any) =>
-                      this.formatCodelistValue("6005", item),
+                    formatter: (item: any, form: any, row: any) =>
+                      this.formatCodelistValue(
+                        row.isInspire ? "6005" : "6006",
+                        item
+                      ),
                   },
                 },
                 {
