@@ -10,6 +10,7 @@ import { PageEvent } from "@angular/material/paginator";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { merge } from "rxjs";
 import { ConfigService } from "../../../services/config/config.service";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -18,7 +19,7 @@ import { ConfigService } from "../../../services/config/config.service";
   styleUrls: ["./referenced-documents-type.component.scss"],
 })
 export class ReferencedDocumentsTypeComponent
-  extends FieldType
+  extends FieldType<FieldTypeConfig>
   implements OnInit
 {
   private referencesElement: ElementRef<HTMLElement>;

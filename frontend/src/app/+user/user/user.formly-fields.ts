@@ -2,7 +2,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { of } from "rxjs";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 
 export const getUserFormFields = (
   roles: SelectOptionUi[],

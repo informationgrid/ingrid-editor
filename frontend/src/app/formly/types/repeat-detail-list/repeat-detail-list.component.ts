@@ -45,7 +45,9 @@ export class RepeatDetailListComponent
 
   ngOnInit(): void {
     if (!this.to.asImage) {
-      this.field.fieldArray.fieldGroup.unshift(this.getTypeDeclaration);
+      (<FormlyFieldConfig>this.field.fieldArray).fieldGroup.unshift(
+        this.getTypeDeclaration
+      );
     }
   }
 

@@ -4,7 +4,6 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  OnInit,
   ViewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
@@ -22,6 +21,7 @@ import { distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -30,8 +30,8 @@ import { ConfigService } from "../../../services/config/config.service";
   styleUrls: ["leaflet-type.component.scss"],
 })
 export class LeafletTypeComponent
-  extends FieldType
-  implements OnInit, AfterViewInit, OnDestroy
+  extends FieldType<FieldTypeConfig>
+  implements AfterViewInit, OnDestroy
 {
   @ViewChild("leaflet") leaflet: ElementRef;
 
@@ -81,7 +81,7 @@ export class LeafletTypeComponent
       // (<MyMap>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => (this.mapHasMoved = true));
 
-      this.locations = this.formFieldControl.value || [];
+      this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
       setTimeout(() => {
         try {

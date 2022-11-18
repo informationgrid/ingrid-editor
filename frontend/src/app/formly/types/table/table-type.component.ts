@@ -22,6 +22,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -30,7 +31,7 @@ import {
   styleUrls: ["table-type.component.scss"],
 })
 export class TableTypeComponent
-  extends FieldType
+  extends FieldType<FieldTypeConfig>
   implements OnInit, AfterViewInit
 {
   readonly preservedValues = {};

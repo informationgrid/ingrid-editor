@@ -56,10 +56,9 @@
         </button>
     </ige-section-wrapper>
 </ng-container>
-
 <mat-menu #menu="matMenu">
     <button
-        *ngFor="let type of field.fieldArray?.fieldGroup"
+        *ngFor="let type of sectionTypes"
         mat-menu-item
         [attr.data-cy]="'add_step_' + type.name"
         (click)="addSection(type.name)"

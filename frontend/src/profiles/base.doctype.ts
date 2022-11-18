@@ -1,6 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressType, Doctype } from "../app/services/formular/doctype";
-import { merge, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import {
   CodelistService,
   SelectOption,
@@ -132,8 +132,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldGroup) {
         this.addContextHelp(field.fieldGroup);
       }
-      if (field.fieldArray?.fieldGroup) {
-        this.addContextHelp(field.fieldArray.fieldGroup);
+      if ((<FormlyFieldConfig>field.fieldArray)?.fieldGroup) {
+        this.addContextHelp((<FormlyFieldConfig>field.fieldArray).fieldGroup);
       }
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.templateOptions.docType = this.id;
@@ -230,7 +230,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         this.createFieldsForPrint(field.fieldGroup);
       }
       if (field.fieldArray) {
-        this.createFieldsForPrint(field.fieldArray.fieldGroup);
+        this.createFieldsForPrint(
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup
+        );
       }
       if (field.templateOptions?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
@@ -252,7 +254,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         (wrapper) => wrapper !== "form-field"
       );
 
-      if (field.type && supportedTypes.includes(field.type)) {
+      if (
+        field.type &&
+        supportedTypes.includes((<FormlyFieldConfig>field).type as string)
+      ) {
         field.type += "Print";
       }
     });
@@ -270,7 +275,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
       if (field.fieldArray) {
         const result = this.getFormatterForColumn(
-          field.fieldArray.fieldGroup,
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup,
           tableId
         );
         if (result) return result;

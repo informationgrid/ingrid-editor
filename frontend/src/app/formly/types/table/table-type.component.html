@@ -74,8 +74,7 @@
         </button>
     </div>
 
-    <ige-form-error
-        *ngIf="formFieldControl.errorState && !formControl.errors?.required"
+    <ige-form-error *ngIf="!formControl.errors?.required"
         ><formly-validation-message [field]="field"></formly-validation-message
     ></ige-form-error>
 
@@ -86,6 +85,7 @@
         [class.edit-mode]="batchMode"
         [attr.data-cy]="to.externalLabel + '-table'"
         cdkDropList
+        cdkDrag
         [cdkDragDisabled]="dragDisabled"
         (cdkDropListDropped)="dragDisabled = true; drop($event)"
     >

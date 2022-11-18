@@ -13,6 +13,7 @@ import { MatPseudoCheckboxState } from "@angular/material/core";
 import { filter, take, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -21,7 +22,10 @@ import { SelectOptionUi } from "../../../services/codelist/codelist.service";
   styleUrls: ["./select-type.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectTypeComponent extends FieldType implements OnInit {
+export class SelectTypeComponent
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
+{
   @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
 
   public filterCtrl = new UntypedFormControl();

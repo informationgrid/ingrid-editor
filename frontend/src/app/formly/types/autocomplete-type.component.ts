@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { MatInput } from "@angular/material/input";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
@@ -13,6 +7,7 @@ import { filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { AbstractControl, UntypedFormControl } from "@angular/forms";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -21,14 +16,12 @@ import { AbstractControl, UntypedFormControl } from "@angular/forms";
   styleUrls: ["./autocomplete-type.component.scss"],
 })
 export class AutocompleteTypeComponent
-  extends FieldType
-  implements OnInit, AfterViewInit
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
 {
   @ViewChild(MatInput, { static: true }) formFieldControl: MatInput;
   @ViewChild(MatAutocompleteTrigger, { static: true })
   autocomplete: MatAutocompleteTrigger;
-
-  @ViewChild("matSuffix") matSuffix: TemplateRef<any>;
 
   private parameterOptions: SelectOptionUi[] = [];
   filteredOptions: SelectOptionUi[] = [];
@@ -37,14 +30,12 @@ export class AutocompleteTypeComponent
   input: AbstractControl = new UntypedFormControl();
 
   ngOnInit() {
-    super.ngOnInit();
-
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
         /*distinctUntilChanged(
           ([a], [b]) => JSON.stringify(a) === JSON.stringify(b)
         ),*/
-        filter(([value, ready]) => ready),
+        filter(([_, ready]) => ready),
         map(([value]) => this.mapOptionToValue(value))
       )
       .subscribe((label) => {
@@ -143,14 +134,6 @@ export class AutocompleteTypeComponent
           })
           .filter((option) => !option.disabled || this.to.highlightMatches)
       : [];
-  }
-
-  ngAfterViewInit() {
-    super.ngAfterViewInit();
-    setTimeout(() => (this.to.suffix = this.matSuffix));
-
-    // temporary fix for https://github.com/angular/material2/issues/6728
-    // (<any>this.autocomplete)._formField = this.formField;
   }
 
   openAutocompletePanel() {
