@@ -232,7 +232,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldArray) {
         this.createFieldsForPrint(field.fieldArray.fieldGroup);
       }
-      if (field.templateOptions?.columns) {
+      if (field.templateOptions?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
           this.fields,
           field.key as string

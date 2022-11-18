@@ -327,10 +327,7 @@ class MCloudProfile @Autowired constructor(
             "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002)
             "20003" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
             null -> {
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20000)
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20002)
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
+                codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist20000, codelist20001, codelist20002, codelist20003))
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }

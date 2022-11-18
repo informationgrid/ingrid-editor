@@ -453,36 +453,35 @@ export abstract class IngridShared extends BaseDoctype {
               ],
             })
           : null,
-        this.addRepeatList("extraInfoXMLExportTable", "XML-Export-Kriterium", {
-          asSelect: true,
-          options: this.getCodelistForSelect(1370, "extraInfoXMLExportTable"),
-          codelistId: 1370,
-          hideExpression: "formState.hideOptionals",
-        }),
-        this.addRepeatList(
-          "extraInfoLegalBasicsTable",
-          "Weitere Rechtliche Grundlagen",
-          {
+        this.addGroupSimple("extraInfo", [
+          this.addRepeatList("xmlExportCriteria", "XML-Export-Kriterium", {
             asSelect: true,
-            options: this.getCodelistForSelect(
-              1350,
-              "extraInfoLegalBasicsTable"
-            ),
-            codelistId: 1350,
+            options: this.getCodelistForSelect(1370, "extraInfoXMLExportTable"),
+            codelistId: 1370,
             hideExpression: "formState.hideOptionals",
-          }
-        ),
+          }),
+          this.addRepeatList(
+            "legalBasicsDescriptions",
+            "Weitere Rechtliche Grundlagen",
+            {
+              asSelect: true,
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                1350,
+                "extraInfoLegalBasicsTable"
+              ),
+              codelistId: 1350,
+              hideExpression: "formState.hideOptionals",
+            }
+          ),
+        ]),
         this.addGroup(
-          null,
+          "resource",
           "Weiteres",
           [
+            this.addTextAreaInline("purpose", "Herstellungszweck", "dataset"),
             this.addTextAreaInline(
-              "extraInfoPurpose",
-              "Herstellungszweck",
-              "dataset"
-            ),
-            this.addTextAreaInline(
-              "extraInfoUse",
+              "specificUsage",
               "Eignung/Nutzung",
               "dataset"
             ),
@@ -495,25 +494,19 @@ export abstract class IngridShared extends BaseDoctype {
 
   addAvailabilitySection() {
     return this.addSection("Verfügbarkeit", [
-      this.addRepeatList(
-        "availabilityAccessConstraints",
-        "Zugriffsbeschränkungen",
-        {
+      this.addGroupSimple("resource", [
+        this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
           asSelect: true, // TODO: also allow free values
           options: this.getCodelistForSelect(
             6010,
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
-        }
-      ),
-      this.addRepeat(
-        "availabilityUseAccessConstraints",
-        "Nutzungsbedingungen",
-        {
+        }),
+        this.addRepeat("useConstraints", "Nutzungsbedingungen", {
           required: true,
           fields: [
-            this.addSelect("license", null, {
+            this.addSelect("title", null, {
               options: this.getCodelistForSelect(6500, "license"),
               fieldLabel: "Lizenz",
               codelistId: 6500,
@@ -526,68 +519,71 @@ export abstract class IngridShared extends BaseDoctype {
               className: "flex-1",
             }),
           ],
-        }
-      ),
-      this.addTextArea(
-        "availabilityUseConstraints",
-        "Anwendungseinschränkungen",
-        "dataset",
-        { hideExpression: "formState.hideOptionals" }
-      ),
-      this.addTable("availabilityDataFormat", "Datenformat", {
+        }),
+        this.addTextArea(
+          "useLimitation",
+          "Anwendungseinschränkungen",
+          "dataset",
+          { hideExpression: "formState.hideOptionals" }
+        ),
+      ]),
+      this.addGroupSimple("distribution", [
+        this.addTable("format", "Datenformat", {
+          supportUpload: false,
+          hideExpression: "formState.hideOptionals",
+          columns: [
+            {
+              key: "name",
+              type: "select",
+              label: "Name",
+              templateOptions: {
+                label: "Name",
+                appearance: "outline",
+                options: this.getCodelistForSelect(1320, "specification"),
+                codelistId: 1320,
+                formatter: (item: any) =>
+                  this.formatCodelistValue("1320", item),
+              },
+            },
+            {
+              key: "version",
+              type: "input",
+              label: "Version",
+              width: "100px",
+              templateOptions: {
+                label: "Version",
+                appearance: "outline",
+              },
+            },
+            {
+              key: "compression",
+              type: "input",
+              label: "Kompressionstechnik",
+              width: "100px",
+              templateOptions: {
+                label: "Kompressionstechnik",
+                appearance: "outline",
+              },
+            },
+            {
+              key: "specification",
+              type: "input",
+              label: "Spezifikation",
+              width: "200px",
+              templateOptions: {
+                label: "Spezifikation",
+                appearance: "outline",
+              },
+            },
+          ],
+        }),
+      ]),
+      this.addTable("digitalTransferOptions", "Medienoption", {
         supportUpload: false,
         hideExpression: "formState.hideOptionals",
         columns: [
           {
             key: "name",
-            type: "select",
-            label: "Name",
-            templateOptions: {
-              label: "Name",
-              appearance: "outline",
-              options: this.getCodelistForSelect(1320, "specification"),
-              codelistId: 1320,
-              formatter: (item: any) => this.formatCodelistValue("1320", item),
-            },
-          },
-          {
-            key: "version",
-            type: "input",
-            label: "Version",
-            width: "100px",
-            templateOptions: {
-              label: "Version",
-              appearance: "outline",
-            },
-          },
-          {
-            key: "compression",
-            type: "input",
-            label: "Kompressionstechnik",
-            width: "100px",
-            templateOptions: {
-              label: "Kompressionstechnik",
-              appearance: "outline",
-            },
-          },
-          {
-            key: "specification",
-            type: "input",
-            label: "Spezifikation",
-            width: "200px",
-            templateOptions: {
-              label: "Spezifikation",
-              appearance: "outline",
-            },
-          },
-        ],
-      }),
-      this.addTable("availabilityMediaOptions", "Medienoption", {
-        supportUpload: false,
-        hideExpression: "formState.hideOptionals",
-        columns: [
-          {
-            key: "medium",
             type: "select",
             label: "Medium",
             templateOptions: {
@@ -599,7 +595,7 @@ export abstract class IngridShared extends BaseDoctype {
             },
           },
           {
-            key: "volume",
+            key: "transferSize",
             type: "input",
             label: "Datenvolumen (MB)",
             width: "100px",
@@ -609,7 +605,7 @@ export abstract class IngridShared extends BaseDoctype {
             },
           },
           {
-            key: "location",
+            key: "mediumNote",
             type: "input",
             label: "Speicherort",
             width: "100px",
@@ -620,18 +616,15 @@ export abstract class IngridShared extends BaseDoctype {
           },
         ],
       }),
-      this.addTextArea(
-        "availabilityOrderInfo",
-        "Bestellinformation",
-        "dataset",
-        { hideExpression: "formState.hideOptionals" }
-      ),
+      this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
+        hideExpression: "formState.hideOptionals",
+      }),
     ]);
   }
 
   addLinksSection() {
     return this.addSection("Verweise", [
-      this.addTable("linksTo", "Verweise", {
+      this.addTable("references", "Verweise", {
         supportUpload: false,
         hideExpression: "formState.hideOptionals",
         columns: [],

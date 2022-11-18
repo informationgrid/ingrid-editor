@@ -38,7 +38,14 @@ class CodelistHandler @Autowired constructor(
         codelistRepo.flush()
         codelistRepo.save(codelist)
     }
-
+    
+    fun removeAndAddCodelists(catalogId: String, codelists: List<Codelist>) {
+        codelists.forEach { 
+            codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, it.identifier)
+        }
+        codelistRepo.flush()
+        codelistRepo.saveAll(codelists)
+    }
     
     fun getCodelists(ids: List<String>): List<CodeList> {
 
