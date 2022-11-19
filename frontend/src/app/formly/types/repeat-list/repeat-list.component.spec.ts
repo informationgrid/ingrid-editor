@@ -33,6 +33,7 @@ describe("RepeatListComponent", () => {
           {
             key: "repeatListSimple",
             type: "repeatList",
+            defaultValue: [],
             templateOptions: {},
           },
         ] as FormlyFieldConfig[],
