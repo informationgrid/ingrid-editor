@@ -144,7 +144,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? [{}] : undefined,
+      defaultValue: options?.required ? [{}] : null,
       templateOptions: {
         externalLabel: label,
         required: options?.required,
@@ -216,7 +216,7 @@ export class FormFieldHelper {
       key: id,
       type: "select",
       className: options?.className,
-      defaultValue: options?.defaultValue,
+      defaultValue: options?.defaultValue ?? null,
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -289,6 +289,7 @@ export class FormFieldHelper {
         options?.wrappers === undefined
           ? ["panel", "form-field"]
           : options?.wrappers,
+      defaultValue: null,
       templateOptions: {
         label: options?.fieldLabel,
         externalLabel: label,
@@ -310,6 +311,7 @@ export class FormFieldHelper {
         options?.className === undefined ? "flex-1" : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
+      defaultValue: null,
       templateOptions: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,

@@ -14,35 +14,23 @@
           "type": "string"
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "minLength": 1
         },
         "events": {
-          "type": [
-            "null",
-            "array"
-          ],
+          "type": ["null", "array"],
           "items": {
             "$ref": "#/definitions/Event"
           }
         },
         "origin": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "license": {
           "$ref": "#/definitions/KeyValue"
         },
         "spatial": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": ["array", "null"],
           "items": {
             "$ref": "#/definitions/Spatial"
           }
@@ -50,17 +38,11 @@
         "keywords": {
           "type": "array",
           "items": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           }
         },
         "mfundFKZ": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "temporal": {
           "$ref": "#/definitions/Temporal"
@@ -94,16 +76,10 @@
           ]
         },
         "accessRights": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "mfundProject": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "distributions": {
           "type": "array",
@@ -144,10 +120,7 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "ref",
-        "type"
-      ],
+      "required": ["ref", "type"],
       "title": "Address"
     },
     "Distribution": {
@@ -161,10 +134,7 @@
           "$ref": "#/definitions/KeyValue"
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "format": {
           "oneOf": [
@@ -177,10 +147,7 @@
           ]
         }
       },
-      "required": [
-        "link",
-        "type"
-      ],
+      "required": ["link", "type"],
       "title": "Distribution"
     },
     "Link": {
@@ -188,29 +155,16 @@
       "additionalProperties": false,
       "properties": {
         "uri": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "asLink": {
-          "type": [
-            "boolean",
-            "null"
-          ]
+          "type": ["boolean", "null"]
         }
       },
-      "required": [
-        "asLink",
-        "uri",
-        "value"
-      ],
+      "required": ["asLink", "uri", "value"],
       "title": "Link"
     },
     "Event": {
@@ -218,20 +172,14 @@
       "additionalProperties": false,
       "properties": {
         "date": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "text": {
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "date",
-        "text"
-      ],
+      "required": ["date", "text"],
       "title": "Event"
     },
     "Spatial": {
@@ -242,10 +190,7 @@
           "type": "string"
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
           "oneOf": [
@@ -258,17 +203,10 @@
           ]
         },
         "wkt": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
-      "required": [
-        "title",
-        "type",
-        "value"
-      ],
+      "required": ["title", "type", "value"],
       "title": "Spatial"
     },
     "Value": {
@@ -288,68 +226,25 @@
           "type": "number"
         }
       },
-      "required": [
-        "lat1",
-        "lat2",
-        "lon1",
-        "lon2"
-      ],
+      "required": ["lat1", "lat2", "lon1", "lon2"],
       "title": "Value"
     },
     "Temporal": {
       "type": "object",
-      "oneOf": [
-        {
-          "additionalProperties": false,
-          "properties": {
-            "rangeType": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/KeyValue"
-                }
-              ]
+      "additionalProperties": false,
+      "properties": {
+        "rangeType": {
+          "oneOf": [
+            {
+              "type": "null"
             },
-            "timeSpanDate": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "date-time"
+            {
+              "$ref": "#/definitions/KeyValue"
             }
-          }
-        },
-        {
-          "additionalProperties": false,
-          "properties": {
-            "rangeType": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/KeyValue"
-                }
-              ]
-            },
-            "timeSpanRange": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/Range"
-                }
-              ]
-            }
-          }
+          ]
         }
-      ],
-      "required": [
-        "rangeType"
-      ],
+      },
+      "required": ["rangeType"],
       "title": "Temporal"
     },
     "KeyValue": {
@@ -357,16 +252,10 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"
@@ -376,17 +265,11 @@
       "additionalProperties": false,
       "properties": {
         "start": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "end": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         }
       },
