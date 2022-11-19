@@ -97,6 +97,7 @@ export class FormFieldHelper {
       id: id,
       type: "repeatChip",
       wrappers: ["panel"],
+      defaultValue: [],
       templateOptions: {
         externalLabel: label,
         required: options?.required,
@@ -114,6 +115,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       expressions: options?.expressions,
+      defaultValue: [],
       templateOptions: {
         externalLabel: label,
         placeholder: options?.fieldLabel ?? "Bitte wählen...",
@@ -142,6 +144,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
+      defaultValue: options?.required ? [{}] : undefined,
       templateOptions: {
         externalLabel: label,
         required: options?.required,
@@ -189,7 +192,7 @@ export class FormFieldHelper {
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
-        disabled: true,
+        disabled: options?.disabled,
       },
       modelOptions: {
         updateOn: "blur",

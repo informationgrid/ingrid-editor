@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
 import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
@@ -56,7 +62,8 @@ export class ReferencedDocumentsTypeComponent
     private router: Router,
     private researchService: ResearchService,
     private documentService: DocumentService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -93,7 +100,8 @@ export class ReferencedDocumentsTypeComponent
         map((response) =>
           this.documentService.mapToDocumentAbstracts(response.hits)
         ),
-        tap((docs) => (this.docs = docs))
+        tap((docs) => (this.docs = docs)),
+        tap(() => this.cdr.detectChanges())
       );
   }
 

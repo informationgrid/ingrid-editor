@@ -186,6 +186,7 @@ export class TestDoctype extends BaseDoctype {
             key: "multiChipsSimple",
             type: "repeatChip",
             wrappers: ["panel"],
+            defaultValue: [],
             templateOptions: {
               externalLabel: "Chips (Input)",
               required: true,
