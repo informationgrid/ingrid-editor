@@ -115,6 +115,7 @@ export const getUserFormFields = (
       key: "groups",
       type: "repeatList",
       wrappers: ["panel"],
+      defaultValue: [],
       templateOptions: {
         selectionEmptyNotice:
           "Bitte weisen Sie dem Benutzer mindestens eine Gruppe zu.",

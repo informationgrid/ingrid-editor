@@ -270,6 +270,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatListSimple",
             type: "repeatList",
             wrappers: ["panel"],
+            defaultValue: [],
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Simple)",
               placeholder: "Bitte etwas eingeben",
@@ -280,6 +281,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatListCodelist",
             type: "repeatList",
             wrappers: ["panel"],
+            defaultValue: [],
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Codelist)",
               placeholder: "Raumbezugscode eingeben...",
@@ -291,6 +293,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatListStatic",
             type: "repeatList",
             wrappers: ["panel"],
+            defaultValue: [],
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Statisch)",
               placeholder: "Begriff eingeben...",
@@ -305,6 +308,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatListStaticSelect",
             type: "repeatList",
             wrappers: ["panel"],
+            defaultValue: [],
             templateOptions: {
               externalLabel: "Mehrfacheingabe (Select)",
               placeholder: "Wert wählen...",

@@ -148,7 +148,7 @@ describe('General create addresses/folders', () => {
       cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
       AddressPage.publishIsUnsuccessful();
 
-      cy.get('[data-cy="contact"]').contains('Bitte erstellen Sie mindestens einen Eintrag');
+      cy.get('[data-cy="contact"]').contains('Dieses Feld muss ausgefüllt sein');
     });
 
     it('should withdraw publication of published address', () => {
