@@ -242,6 +242,20 @@
               "$ref": "#/definitions/KeyValue"
             }
           ]
+        },
+        "timeSpanDate": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "timeSpanRange": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/Range"
+            }
+          ]
         }
       },
       "required": ["rangeType"],
