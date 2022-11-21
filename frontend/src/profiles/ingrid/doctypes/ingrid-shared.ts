@@ -41,7 +41,7 @@ export abstract class IngridShared extends BaseDoctype {
       "Allgemeines",
       [
         this.addGroup(
-          null,
+          "info",
           "Info",
           [
             this.addInputInline(
