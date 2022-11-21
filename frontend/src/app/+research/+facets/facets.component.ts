@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
   OnInit,
   ViewChild,
@@ -41,7 +42,7 @@ export interface FacetUpdate {
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: FacetsComponent,
+      useExisting: forwardRef(() => FacetsComponent),
     },
   ],
 })

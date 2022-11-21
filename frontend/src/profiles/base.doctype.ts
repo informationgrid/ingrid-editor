@@ -68,8 +68,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fieldsForPrint: FormlyFieldConfig[];
 
   constructor(
-    private codelistService: CodelistService,
-    protected codelistQuery: CodelistQuery
+    private codelistService?: CodelistService,
+    protected codelistQuery?: CodelistQuery
   ) {
     super();
   }
