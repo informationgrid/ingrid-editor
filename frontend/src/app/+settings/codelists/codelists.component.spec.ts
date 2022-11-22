@@ -1,13 +1,9 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-
 import { CodelistsComponent } from "./codelists.component";
 import {
   createComponentFactory,
   mockProvider,
   Spectator,
 } from "@ngneat/spectator";
-import { RepeatListComponent } from "../../formly/types/repeat-list/repeat-list.component";
-import { MatDialogModule } from "@angular/material/dialog";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { CodelistPresenterModule } from "../../shared/codelist-presenter/codelist-presenter.module";
 import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
@@ -17,7 +13,6 @@ describe("CodelistsComponent", () => {
   let spectator: Spectator<CodelistsComponent>;
   const createHost = createComponentFactory({
     component: CodelistsComponent,
-    // imports: [MatDialogModule],
     providers: [mockProvider(CodelistService)],
     imports: [CodelistPresenterModule, FilterSelectModule, PageTemplateModule],
     detectChanges: false,
