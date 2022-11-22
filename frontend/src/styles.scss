@@ -270,11 +270,12 @@ form-toolbar + div {
 }
 
 .error-box {
+  padding: 12px 24px;
+  margin-bottom: 12px;
   font-size: 16px;
   color: $error-color;
   letter-spacing: 0.4px;
   font-weight: 400;
-  line-height: 48px;
   background-color: $error-background;
 }
 
