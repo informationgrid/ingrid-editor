@@ -63,6 +63,6 @@
         [attr.data-cy]="'add_step_' + type.name"
         (click)="addSection(type.name)"
     >
-        <span>{{ type.templateOptions.label }}</span>
+        <span>{{ type.props.label }}</span>
     </button>
 </mat-menu>

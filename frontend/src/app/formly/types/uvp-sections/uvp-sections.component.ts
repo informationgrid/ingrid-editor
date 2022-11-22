@@ -40,7 +40,7 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
           (item) => item.name === value.type
         )
       )
-      .map((value) => value?.templateOptions?.label);
+      .map((value) => value?.props?.label);
   }
 
   removeSection(index: number) {

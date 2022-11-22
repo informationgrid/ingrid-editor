@@ -19,6 +19,7 @@
         cdkDrag
         [cdkDragDisabled]="!canBeDragged"
     >
+        <!--        <h1>{{ model[i]._type }}</h1>-->
         <mat-icon *ngIf="canBeDragged" cdkDragHandle> drag_indicator </mat-icon>
         <formly-field [field]="row" class="flex-1"></formly-field>
         <button

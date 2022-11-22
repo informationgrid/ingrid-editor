@@ -60,7 +60,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
     return {
       key: field.key,
       type: "input",
-      templateOptions: field.templateOptions,
+      props: field.props,
       validators: {
         url: {
           expression: (c) => new RegExp(this.URL_REGEXP).test(c.value),

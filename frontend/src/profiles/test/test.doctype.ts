@@ -25,7 +25,7 @@ export class TestDoctype extends BaseDoctype {
     <FormlyFieldConfig[]>[
       {
         wrappers: ["section"],
-        templateOptions: {
+        props: {
           label: "Eingabetypen",
         },
         fieldGroup: [
@@ -33,7 +33,7 @@ export class TestDoctype extends BaseDoctype {
             key: "text",
             type: "input",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Textfeld",
               appearance: "outline",
               required: true,
@@ -43,15 +43,14 @@ export class TestDoctype extends BaseDoctype {
             key: "textMaxLength",
             type: "input",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Textfeld Max Länge",
               appearance: "outline",
               required: true,
               maxLength: 10,
             },
             expressionProperties: {
-              "templateOptions.description":
-                '(model.textMaxLength||"").length+" / 10"',
+              "props.description": '(model.textMaxLength||"").length+" / 10"',
             },
           },
           {
@@ -59,7 +58,7 @@ export class TestDoctype extends BaseDoctype {
             type: "input",
             className: "optional animated",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Optionales Textfeld",
               appearance: "outline",
               animation: true,
@@ -71,7 +70,7 @@ export class TestDoctype extends BaseDoctype {
             type: "textarea",
             className: "description",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Textarea",
               autosize: true,
               autosizeMinRows: 3,
@@ -84,7 +83,7 @@ export class TestDoctype extends BaseDoctype {
             key: "select",
             type: "select",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Selectbox",
               placeholder: "Bitte wählen",
               appearance: "outline",
@@ -96,7 +95,7 @@ export class TestDoctype extends BaseDoctype {
             key: "selectWithEmpty",
             type: "select",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Selectbox mit leerer Option",
               placeholder: "Bitte wählen",
               appearance: "outline",
@@ -111,7 +110,7 @@ export class TestDoctype extends BaseDoctype {
             key: "autocomplete",
             type: "autocomplete",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Combobox/Autocomplete",
               placeholder: "Bitte wählen",
               appearance: "outline",
@@ -124,7 +123,7 @@ export class TestDoctype extends BaseDoctype {
             type: "datepicker",
             className: "flex-1",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Date",
               placeholder: "Bitte wählen",
               appearance: "outline",
@@ -135,7 +134,7 @@ export class TestDoctype extends BaseDoctype {
             key: "range",
             type: "date-range",
             wrappers: ["panel", "form-field"],
-            templateOptions: {
+            props: {
               externalLabel: "Date-Range",
               placeholder: "Bitte wählen",
               appearance: "outline",
@@ -146,7 +145,7 @@ export class TestDoctype extends BaseDoctype {
             key: "checkbox",
             type: "checkbox",
             wrappers: ["panel", "form-field", "inline-help"],
-            templateOptions: {
+            props: {
               externalLabel: "Checkbox",
               label: "Open Data",
               indeterminate: false,
@@ -157,7 +156,7 @@ export class TestDoctype extends BaseDoctype {
       },
       {
         wrappers: ["section"],
-        templateOptions: {
+        props: {
           label: "Mehrfacheingaben",
         },
         fieldGroup: [
@@ -165,7 +164,7 @@ export class TestDoctype extends BaseDoctype {
             key: "addresses",
             type: "address-card",
             wrappers: ["panel"],
-            templateOptions: {
+            props: {
               externalLabel: "Addresses",
               required: true,
             },
@@ -174,7 +173,7 @@ export class TestDoctype extends BaseDoctype {
             key: "multiChips",
             type: "repeatChip",
             wrappers: ["panel"],
-            templateOptions: {
+            props: {
               externalLabel: "Chips (Dialog)",
               required: true,
               useDialog: true,
@@ -187,7 +186,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeatChip",
             wrappers: ["panel"],
             defaultValue: [],
-            templateOptions: {
+            props: {
               externalLabel: "Chips (Input)",
               required: true,
             },
@@ -197,7 +196,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeat",
             wrappers: ["panel"],
             defaultValue: [{}],
-            templateOptions: {
+            props: {
               externalLabel: "Multi-Repeat",
               required: true,
               minLength: 1,
@@ -209,7 +208,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "date",
                   type: "datepicker",
                   className: "flex-1",
-                  templateOptions: {
+                  props: {
                     label: "Datum",
                     appearance: "outline",
                     required: true,
@@ -219,7 +218,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "text",
                   type: "input",
                   className: "flex-1",
-                  templateOptions: {
+                  props: {
                     label: "Typ",
                     appearance: "outline",
                     required: true,
@@ -231,7 +230,7 @@ export class TestDoctype extends BaseDoctype {
           {
             key: "table",
             type: "table",
-            templateOptions: {
+            props: {
               externalLabel: "Table",
               supportUpload: true,
               required: true,
@@ -240,7 +239,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "col1",
                   type: "input",
                   label: "Spalte 1",
-                  templateOptions: {
+                  props: {
                     label: "Spalte 1",
                     appearance: "outline",
                   },
@@ -249,7 +248,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "col2",
                   type: "input",
                   label: "Spalte 2",
-                  templateOptions: {
+                  props: {
                     label: "Spalte 2",
                     appearance: "outline",
                   },
@@ -258,7 +257,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "col3",
                   type: "input",
                   label: "Spalte 3",
-                  templateOptions: {
+                  props: {
                     label: "Spalte 3",
                     appearance: "outline",
                   },
@@ -271,7 +270,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeatList",
             wrappers: ["panel"],
             defaultValue: [],
-            templateOptions: {
+            props: {
               externalLabel: "Mehrfacheingabe (Simple)",
               placeholder: "Bitte etwas eingeben",
               required: true,
@@ -282,7 +281,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeatList",
             wrappers: ["panel"],
             defaultValue: [],
-            templateOptions: {
+            props: {
               externalLabel: "Mehrfacheingabe (Codelist)",
               placeholder: "Raumbezugscode eingeben...",
               options: this.getCodelistForSelect(100, "repeatListCodelist"),
@@ -294,7 +293,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeatList",
             wrappers: ["panel"],
             defaultValue: [],
-            templateOptions: {
+            props: {
               externalLabel: "Mehrfacheingabe (Statisch)",
               placeholder: "Begriff eingeben...",
               options: of(<SelectOptionUi[]>[
@@ -309,7 +308,7 @@ export class TestDoctype extends BaseDoctype {
             type: "repeatList",
             wrappers: ["panel"],
             defaultValue: [],
-            templateOptions: {
+            props: {
               externalLabel: "Mehrfacheingabe (Select)",
               placeholder: "Wert wählen...",
               options: of(<SelectOptionUi[]>[
@@ -324,7 +323,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatDetailListImage",
             type: "repeatDetailList",
             wrappers: ["panel"],
-            templateOptions: {
+            props: {
               externalLabel: "Image List",
               asImage: true,
               required: true,
@@ -334,7 +333,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "type",
                   type: "input",
-                  templateOptions: {
+                  props: {
                     label: "Typ",
                     appearance: "outline",
                   },
@@ -342,7 +341,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "title",
                   type: "input",
-                  templateOptions: {
+                  props: {
                     label: "Titel",
                     appearance: "outline",
                     required: true,
@@ -351,7 +350,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "description",
                   type: "textarea",
-                  templateOptions: {
+                  props: {
                     label: "Beschreibung/Link",
                     appearance: "outline",
                     autosize: true,
@@ -366,7 +365,7 @@ export class TestDoctype extends BaseDoctype {
             key: "repeatDetailListLink",
             type: "repeatDetailList",
             wrappers: ["panel"],
-            templateOptions: {
+            props: {
               externalLabel: "Link List",
               required: true,
             },
@@ -375,7 +374,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "type",
                   type: "input",
-                  templateOptions: {
+                  props: {
                     label: "Typ",
                     appearance: "outline",
                   },
@@ -383,7 +382,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "title",
                   type: "input",
-                  templateOptions: {
+                  props: {
                     label: "Titel",
                     appearance: "outline",
                     required: true,
@@ -392,7 +391,7 @@ export class TestDoctype extends BaseDoctype {
                 {
                   key: "description",
                   type: "textarea",
-                  templateOptions: {
+                  props: {
                     label: "Beschreibung/Link",
                     appearance: "outline",
                     autosize: true,
@@ -407,7 +406,7 @@ export class TestDoctype extends BaseDoctype {
       },
       {
         wrappers: ["section"],
-        templateOptions: {
+        props: {
           label: "Raumbezüge",
         },
         fieldGroup: [
@@ -415,7 +414,7 @@ export class TestDoctype extends BaseDoctype {
             key: "map",
             type: "leaflet",
             wrappers: [],
-            templateOptions: {
+            props: {
               mapOptions: {},
               height: 386,
               required: true,

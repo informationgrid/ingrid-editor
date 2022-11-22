@@ -16,7 +16,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
     this.fields.push({
       key: "onlyWithSpatial",
       type: "toggle",
-      templateOptions: {
+      props: {
         label: "Nur mit Raumbezügen",
       },
     });

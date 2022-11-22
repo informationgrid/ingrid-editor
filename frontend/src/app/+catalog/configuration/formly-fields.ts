@@ -7,7 +7,7 @@ export const fields = (codelistService: CodelistService) =>
       key: "catalogName",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Katalogname",
         appearance: "outline",
       },
@@ -16,7 +16,7 @@ export const fields = (codelistService: CodelistService) =>
       key: "description",
       type: "textarea",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Beschreibung",
         appearance: "outline",
       },
@@ -25,7 +25,7 @@ export const fields = (codelistService: CodelistService) =>
       key: "partner",
       type: "select",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Ansprechpartner",
         appearance: "outline",
         options: codelistService.observe("110"),
@@ -37,7 +37,7 @@ export const fields = (codelistService: CodelistService) =>
       key: "provider",
       type: "select",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Anbieter",
         appearance: "outline",
         options: codelistService.observe("111"),
@@ -49,7 +49,7 @@ export const fields = (codelistService: CodelistService) =>
       key: "elasticsearchAlias",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Elasticsearch Alias",
         appearance: "outline",
       },

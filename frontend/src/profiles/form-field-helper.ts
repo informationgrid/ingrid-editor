@@ -4,7 +4,7 @@ export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
     return {
       wrappers: ["section"],
-      templateOptions: {
+      props: {
         label: label,
       },
       fieldGroup: fields,
@@ -17,11 +17,11 @@ export class FormFieldHelper {
       id: id,
       fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
       wrappers: options?.wrappers ?? ["panel"],
-      templateOptions: {
+      props: {
         externalLabel: label,
       },
       fieldGroup: fields,
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -47,7 +47,7 @@ export class FormFieldHelper {
       className: (options?.className ?? "flex-1") + ` ${id}`,
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: label,
         label: options?.fieldLabel,
         autosize: false,
@@ -58,7 +58,7 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -80,7 +80,7 @@ export class FormFieldHelper {
       key: id,
       type: "address-card",
       wrappers: ["panel"],
-      templateOptions: {
+      props: {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
@@ -97,7 +97,7 @@ export class FormFieldHelper {
       type: "repeatChip",
       wrappers: ["panel"],
       defaultValue: [],
-      templateOptions: {
+      props: {
         externalLabel: label,
         required: options?.required,
         useDialog: options?.useDialog,
@@ -113,9 +113,9 @@ export class FormFieldHelper {
       type: "repeatList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      expressions: options?.expressions,
+      // expressions: options?.expressions,
       defaultValue: [],
-      templateOptions: {
+      props: {
         externalLabel: label,
         placeholder: options?.fieldLabel ?? "Bitte wählen...",
         options: options?.options,
@@ -124,7 +124,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -144,7 +144,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       defaultValue: options?.required ? [{}] : null,
-      templateOptions: {
+      props: {
         externalLabel: label,
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
@@ -163,8 +163,8 @@ export class FormFieldHelper {
       type: "autocomplete",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
-      hideExpression: options?.hideExpression,
-      templateOptions: {
+      expressions: { hide: options?.hideExpression },
+      props: {
         externalLabel: label,
         label: options?.fieldLabel,
         placeholder: options?.placeholder ?? "Bitte wählen",
@@ -185,7 +185,7 @@ export class FormFieldHelper {
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
-      templateOptions: {
+      props: {
         type: options?.type,
         externalLabel: label,
         label: options?.fieldLabel,
@@ -198,7 +198,7 @@ export class FormFieldHelper {
         updateOn: "blur",
       },
       expressionProperties: options?.expressionProperties,
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
       validators: options?.validators,
     };
   }
@@ -221,7 +221,7 @@ export class FormFieldHelper {
         options?.wrappers === undefined
           ? ["panel", "form-field"]
           : options?.wrappers,
-      templateOptions: {
+      props: {
         placeholder: "Wählen...",
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
@@ -232,7 +232,7 @@ export class FormFieldHelper {
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -251,7 +251,7 @@ export class FormFieldHelper {
       type: "table",
       className: options?.className,
       wrappers: options?.wrappers,
-      templateOptions: {
+      props: {
         externalLabel: label,
         required: options?.required,
         columns: options?.columns,
@@ -260,7 +260,7 @@ export class FormFieldHelper {
         dialog: options?.dialog,
       },
       validators: options?.validators,
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -269,7 +269,7 @@ export class FormFieldHelper {
       key: id,
       type: "leaflet",
       wrappers: [],
-      templateOptions: {
+      props: {
         required: options?.required,
         mapOptions: {},
         externalLabel: label,
@@ -290,7 +290,7 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       defaultValue: null,
-      templateOptions: {
+      props: {
         label: options?.fieldLabel,
         externalLabel: label,
         placeholder: options?.placeholder ?? "TT.MM.JJJJ",
@@ -298,7 +298,7 @@ export class FormFieldHelper {
         required: options?.required,
         datepickerOptions: options?.datepickerOptions,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
       validators: options?.validators,
     };
   }
@@ -312,13 +312,13 @@ export class FormFieldHelper {
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
       defaultValue: null,
-      templateOptions: {
+      props: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,
         appearance: "outline",
         required: options?.required,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
       validators: options?.validators ?? {
         required: {
           expression: (ctrl) =>
@@ -341,13 +341,13 @@ export class FormFieldHelper {
       type: "checkbox",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
-      templateOptions: {
+      props: {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
         required: options?.required,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -365,7 +365,7 @@ export class FormFieldHelper {
       type: "radio",
       wrappers: ["panel", "form-field", "inline-help"],
       className: "ige-radios",
-      templateOptions: {
+      props: {
         label: options?.fieldLabel,
         externalLabel: label,
         labelProp: "value",
@@ -373,7 +373,7 @@ export class FormFieldHelper {
         options: options?.options,
         required: options?.required,
       },
-      hideExpression: options?.hideExpression,
+      expressions: { hide: options?.hideExpression },
     };
   }
 
@@ -381,7 +381,7 @@ export class FormFieldHelper {
     return {
       type: "referencedDocuments",
       wrappers: ["panel"],
-      templateOptions: {
+      props: {
         externalLabel: "Zugeordnete Datensätze",
         referenceField: referenceField,
       },

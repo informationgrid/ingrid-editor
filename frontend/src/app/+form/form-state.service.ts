@@ -84,7 +84,7 @@ export class FormStateService {
         field.type === "textarea" &&
         this.textareaElementsRows[field.id] !== undefined
       ) {
-        field.templateOptions.rows = this.textareaElementsRows[field.id];
+        field.props.rows = this.textareaElementsRows[field.id];
       }
     });
   }

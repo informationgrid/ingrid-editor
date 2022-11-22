@@ -55,7 +55,7 @@ export abstract class IngridShared extends BaseDoctype {
                 expressionProperties: {
                   // since whole form will be disabled/enabled by application
                   // depending on write access, we need to set disabled state dynamically
-                  "templateOptions.disabled": () => true,
+                  "props.disabled": () => true,
                 },
               }
             ),
@@ -69,7 +69,7 @@ export abstract class IngridShared extends BaseDoctype {
               key: "fileName",
               type: "upload",
               label: "URI",
-              templateOptions: {
+              props: {
                 label: "URI",
                 appearance: "outline",
                 onClick: (docUuid, uri, $event) => {
@@ -89,7 +89,7 @@ export abstract class IngridShared extends BaseDoctype {
               key: "fileDescription",
               type: "input",
               label: "Beschreibung",
-              templateOptions: {
+              props: {
                 label: "Beschreibung",
                 appearance: "outline",
               },
@@ -393,7 +393,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "specification",
                   type: "select",
                   label: "Spezifikation",
-                  templateOptions: {
+                  props: {
                     label: "Spezifikation",
                     appearance: "outline",
                     // needed just to wait for codelist being loaded
@@ -410,7 +410,7 @@ export abstract class IngridShared extends BaseDoctype {
                   type: "select",
                   label: "Grad",
                   width: "100px",
-                  templateOptions: {
+                  props: {
                     label: "Grad",
                     appearance: "outline",
                     options: this.getCodelistForSelect(6000, "level"),
@@ -424,7 +424,7 @@ export abstract class IngridShared extends BaseDoctype {
                   type: "datepicker",
                   label: "Datum",
                   width: "100px",
-                  templateOptions: {
+                  props: {
                     label: "Datum",
                     appearance: "outline",
                     formatter: (date: Date) => {
@@ -437,7 +437,7 @@ export abstract class IngridShared extends BaseDoctype {
                   type: "input",
                   label: "geprüft mit",
                   width: "200px",
-                  templateOptions: {
+                  props: {
                     label: "geprüft mit",
                     appearance: "outline",
                   },
@@ -446,7 +446,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "isInspire",
                   type: "checkbox",
                   hidden: true,
-                  templateOptions: {
+                  props: {
                     hidden: true,
                   },
                 },
@@ -536,7 +536,7 @@ export abstract class IngridShared extends BaseDoctype {
               key: "name",
               type: "select",
               label: "Name",
-              templateOptions: {
+              props: {
                 label: "Name",
                 appearance: "outline",
                 options: this.getCodelistForSelect(1320, "specification"),
@@ -550,7 +550,7 @@ export abstract class IngridShared extends BaseDoctype {
               type: "input",
               label: "Version",
               width: "100px",
-              templateOptions: {
+              props: {
                 label: "Version",
                 appearance: "outline",
               },
@@ -560,7 +560,7 @@ export abstract class IngridShared extends BaseDoctype {
               type: "input",
               label: "Kompressionstechnik",
               width: "100px",
-              templateOptions: {
+              props: {
                 label: "Kompressionstechnik",
                 appearance: "outline",
               },
@@ -570,7 +570,7 @@ export abstract class IngridShared extends BaseDoctype {
               type: "input",
               label: "Spezifikation",
               width: "200px",
-              templateOptions: {
+              props: {
                 label: "Spezifikation",
                 appearance: "outline",
               },
@@ -586,7 +586,7 @@ export abstract class IngridShared extends BaseDoctype {
             key: "name",
             type: "select",
             label: "Medium",
-            templateOptions: {
+            props: {
               label: "Medium",
               appearance: "outline",
               options: this.getCodelistForSelect(520, "specification"),
@@ -599,7 +599,7 @@ export abstract class IngridShared extends BaseDoctype {
             type: "input",
             label: "Datenvolumen (MB)",
             width: "100px",
-            templateOptions: {
+            props: {
               label: "Datenvolumen (MB)",
               appearance: "outline",
             },
@@ -609,7 +609,7 @@ export abstract class IngridShared extends BaseDoctype {
             type: "input",
             label: "Speicherort",
             width: "100px",
-            templateOptions: {
+            props: {
               label: "Speicherort",
               appearance: "outline",
             },

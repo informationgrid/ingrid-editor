@@ -221,16 +221,15 @@ export class TableTypeComponent
     }
 
     this.to.columns
-      .filter((column) => column.templateOptions.formatter)
+      .filter((column) => column.props.formatter)
       .forEach((column) =>
         value?.forEach((row, index) => {
           this.formattedCell.push({});
-          this.formattedCell[index][column.key] =
-            column.templateOptions.formatter(
-              value[index][column.key],
-              this.form,
-              value[index]
-            );
+          this.formattedCell[index][column.key] = column.props.formatter(
+            value[index][column.key],
+            this.form,
+            value[index]
+          );
         })
       );
   }
@@ -324,8 +323,7 @@ export class TableTypeComponent
   handleCellClick(index: number, element, $event: MouseEvent) {
     const uploadKey = this.getUploadFieldKey();
     if (!element[uploadKey].asLink) {
-      const options =
-        this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
+      const options = this.to.columns[this.batchMode ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
           this.form.root.get("_uuid").value,

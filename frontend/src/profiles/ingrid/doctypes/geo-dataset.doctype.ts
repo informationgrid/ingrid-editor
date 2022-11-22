@@ -82,7 +82,7 @@ export class GeoDatasetDoctype extends IngridShared {
               key: "topologyLevel",
               type: "select",
               label: "Topologieinformation",
-              templateOptions: {
+              props: {
                 label: "Topologieinformation",
                 appearance: "outline",
                 options: this.getCodelistForSelect(528, "topologyLevel"),
@@ -94,7 +94,7 @@ export class GeoDatasetDoctype extends IngridShared {
               key: "geometricObjectType",
               type: "select",
               label: "Geometrietyp",
-              templateOptions: {
+              props: {
                 label: "Geometrietyp",
                 appearance: "outline",
                 options: this.getCodelistForSelect(515, "geometricObjectType"),
@@ -106,7 +106,7 @@ export class GeoDatasetDoctype extends IngridShared {
               key: "geometricObjectCount",
               type: "input",
               label: "Elementanzahl",
-              templateOptions: {
+              props: {
                 label: "Elementanzahl",
                 type: "number",
                 appearance: "outline",
@@ -114,7 +114,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           ],
           hideExpression:
-            'formState.mainModel.spatialRepresentationType.find(x => x.key === "1") === undefined',
+            'formState.mainModel.spatialRepresentationType?.find(x => x.key === "1") === undefined',
         }),
         this.addGroup(
           "gridSpatialRepresentation",
@@ -149,7 +149,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       key: "name",
                       type: "input",
                       label: "Achsenbezeichnung",
-                      templateOptions: {
+                      props: {
                         label: "Achsenbezeichnung",
                         appearance: "outline",
                         options: this.getCodelistForSelect(
@@ -165,7 +165,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       key: "size",
                       type: "input",
                       label: "Elementanzahl",
-                      templateOptions: {
+                      props: {
                         label: "Elementanzahl",
                         type: "number",
                         appearance: "outline",
@@ -175,7 +175,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       key: "resolution",
                       type: "input",
                       label: "Auflösung in Meter",
-                      templateOptions: {
+                      props: {
                         label: "Auflösung in Meter",
                         type: "number",
                         appearance: "outline",
@@ -283,7 +283,7 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             fieldGroupClassName: "",
             hideExpression:
-              'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+              'formState.mainModel.spatialRepresentationType?.find(x => x.key === "2") === undefined',
           }
         ),
         this.addTable("resolution", "Erstellungsmaßstab", {
@@ -294,7 +294,7 @@ export class GeoDatasetDoctype extends IngridShared {
               key: "equivalentScale",
               type: "input",
               label: "Maßstab 1:x",
-              templateOptions: {
+              props: {
                 type: "number",
                 label: "Maßstab 1:x",
                 appearance: "outline",
@@ -305,7 +305,7 @@ export class GeoDatasetDoctype extends IngridShared {
               type: "input",
               label: "Bodenauflösung (m)",
               width: "300px",
-              templateOptions: {
+              props: {
                 type: "number",
                 label: "Bodenauflösung (m)",
                 appearance: "outline",
@@ -316,7 +316,7 @@ export class GeoDatasetDoctype extends IngridShared {
               type: "input",
               label: "Scanauflösung (DPI)",
               width: "300px",
-              templateOptions: {
+              props: {
                 type: "number",
                 label: "Scanauflösung (DPI)",
                 appearance: "outline",
@@ -336,7 +336,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   key: "title",
                   type: "input",
                   label: "Titel",
-                  templateOptions: {
+                  props: {
                     required: true,
                     label: "Titel",
                     appearance: "outline",
@@ -347,7 +347,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   type: "datepicker",
                   label: "Datum",
                   width: "300px",
-                  templateOptions: {
+                  props: {
                     required: true,
                     label: "Datum",
                     appearance: "outline",
@@ -361,7 +361,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   type: "input",
                   label: "Version",
                   width: "300px",
-                  templateOptions: {
+                  props: {
                     label: "Version",
                     appearance: "outline",
                   },
@@ -380,7 +380,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 key: "title",
                 type: "input",
                 label: "Titel",
-                templateOptions: {
+                props: {
                   required: true,
                   label: "Titel",
                   appearance: "outline",
@@ -391,7 +391,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "datepicker",
                 label: "Datum",
                 width: "300px",
-                templateOptions: {
+                props: {
                   required: true,
                   label: "Datum",
                   appearance: "outline",
@@ -405,7 +405,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "input",
                 label: "Version",
                 width: "300px",
-                templateOptions: {
+                props: {
                   label: "Version",
                   appearance: "outline",
                 },
@@ -450,7 +450,7 @@ export class GeoDatasetDoctype extends IngridShared {
               fieldLabel: "Rasterpositionsgenauigkeit (m)",
               type: "number",
               hideExpression:
-                'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
+                'formState.mainModel.spatialRepresentationType?.find(x => x.key === "2") === undefined',
             }),
             this.addGroupSimple("absoluteExternalPositionalAccuracy", [
               this.addInput("vertical", null, {
@@ -472,7 +472,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "select",
                 label: "Typ",
                 width: "300px",
-                templateOptions: {
+                props: {
                   label: "Typ",
                   appearance: "outline",
                   options: qualityTables,
@@ -485,7 +485,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "select",
                 label: "Art der Messung",
                 width: "300px",
-                templateOptions: {
+                props: {
                   label: "Art der Messung",
                   appearance: "outline",
                   options: this.getCodelistForSelect(
@@ -502,7 +502,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "input",
                 label: "Wert",
                 width: "300px",
-                templateOptions: {
+                props: {
                   label: "Wert",
                   appearance: "outline",
                 },
@@ -512,7 +512,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 type: "input",
                 label: "Parameter",
                 width: "300px",
-                templateOptions: {
+                props: {
                   label: "Parameter",
                   appearance: "outline",
                 },

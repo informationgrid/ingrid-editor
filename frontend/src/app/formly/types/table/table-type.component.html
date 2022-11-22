@@ -160,10 +160,7 @@
                 >
                     {{ to.columns[batchMode ? i - 1 : i].label }}
                     <span
-                        *ngIf="
-                            to.columns[batchMode ? i - 1 : i].templateOptions
-                                .required
-                        "
+                        *ngIf="to.columns[batchMode ? i - 1 : i].props.required"
                         >*</span
                     >
                 </mat-header-cell>

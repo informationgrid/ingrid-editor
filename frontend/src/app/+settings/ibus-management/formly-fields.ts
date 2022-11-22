@@ -5,7 +5,7 @@ export const iBusFields: FormlyFieldConfig[] = [
     type: "repeat",
     key: "ibus",
     wrappers: [],
-    templateOptions: {
+    props: {
       noDrag: true,
     },
     fieldArray: {
@@ -13,7 +13,7 @@ export const iBusFields: FormlyFieldConfig[] = [
         {
           key: "url",
           type: "input",
-          templateOptions: {
+          props: {
             label: "URL",
             appearance: "outline",
           },
@@ -25,7 +25,7 @@ export const iBusFields: FormlyFieldConfig[] = [
               key: "ip",
               type: "input",
               className: "flex-1",
-              templateOptions: {
+              props: {
                 label: "IP",
                 appearance: "outline",
               },
@@ -34,7 +34,7 @@ export const iBusFields: FormlyFieldConfig[] = [
               key: "port",
               type: "input",
               className: "flex-1",
-              templateOptions: {
+              props: {
                 type: "number",
                 label: "Port",
                 appearance: "outline",

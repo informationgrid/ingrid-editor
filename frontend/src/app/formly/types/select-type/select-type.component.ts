@@ -31,7 +31,7 @@ export class SelectTypeComponent
   public filterCtrl = new UntypedFormControl();
 
   defaultOptions = {
-    templateOptions: {
+    props: {
       options: [],
       compareWith(o1: any, o2: any) {
         return o1 === o2;

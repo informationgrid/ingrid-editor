@@ -82,7 +82,7 @@ export class McloudDoctype extends BaseDoctype {
               label: "Titel",
               focus: true,
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Titel",
                 appearance: "outline",
               },
@@ -92,7 +92,7 @@ export class McloudDoctype extends BaseDoctype {
               type: "upload",
               label: "Link",
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Link",
                 appearance: "outline",
                 required: true,
@@ -120,7 +120,7 @@ export class McloudDoctype extends BaseDoctype {
               key: "type",
               type: "select",
               label: "Typ",
-              templateOptions: {
+              props: {
                 label: "Typ",
                 appearance: "outline",
                 required: true,
@@ -135,7 +135,7 @@ export class McloudDoctype extends BaseDoctype {
               type: "autocomplete",
               label: "Datenformat",
               wrappers: ["form-field"],
-              templateOptions: {
+              props: {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
@@ -178,7 +178,7 @@ export class McloudDoctype extends BaseDoctype {
           key: "events",
           type: "repeat",
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Zeitbezug der Ressource",
           },
           fieldArray: {

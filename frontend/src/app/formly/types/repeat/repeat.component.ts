@@ -41,7 +41,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
   }
 
   onPopulate(field: FieldArrayTypeConfig) {
-    if (!field.templateOptions.menuOptions) {
+    if (!field.props.menuOptions) {
       super.onPopulate(field);
       return;
     }
@@ -61,12 +61,11 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
     type: string
   ) {
-    return field.templateOptions.menuOptions.find((opt) => opt.key === type)
-      .fields;
+    return field.props.menuOptions.find((opt) => opt.key === type).fields;
   }
 
   addItem(type?: string) {
-    if (this.field.templateOptions.menuOptions) {
+    if (this.field.props.menuOptions) {
       this.add(null, { _type: type });
     } else {
       this.add();

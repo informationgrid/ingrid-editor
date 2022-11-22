@@ -26,7 +26,7 @@ export class RepeatDetailListComponent
   private getTypeDeclaration: FormlyFieldConfig = {
     key: "_type",
     type: "select",
-    templateOptions: {
+    props: {
       appearance: "outline",
       required: true,
       label: "Link-Typ",

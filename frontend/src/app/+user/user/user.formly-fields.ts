@@ -15,7 +15,7 @@ export const getUserFormFields = (
       key: "login",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Benutzername",
         appearance: "outline",
         required: true,
@@ -27,7 +27,7 @@ export const getUserFormFields = (
       key: "role",
       type: "select",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Rolle",
         label: "Rolle",
         appearance: "outline",
@@ -39,7 +39,7 @@ export const getUserFormFields = (
     },
     {
       wrappers: ["panel"],
-      templateOptions: {
+      props: {
         externalLabel: "Name",
         required: true,
       },
@@ -51,7 +51,7 @@ export const getUserFormFields = (
               key: "firstName",
               className: "flex-1 firstName",
               type: "input",
-              templateOptions: {
+              props: {
                 required: true,
                 label: "Vorname",
                 appearance: "outline",
@@ -61,7 +61,7 @@ export const getUserFormFields = (
               key: "lastName",
               className: "flex-1 lastName",
               type: "input",
-              templateOptions: {
+              props: {
                 required: true,
                 label: "Nachname",
                 appearance: "outline",
@@ -75,7 +75,7 @@ export const getUserFormFields = (
       key: "email",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "E-Mail",
         appearance: "outline",
         required: true,
@@ -88,7 +88,7 @@ export const getUserFormFields = (
       key: "organisation",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Organisation",
         appearance: "outline",
       },
@@ -97,7 +97,7 @@ export const getUserFormFields = (
       key: "department",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Abteilung",
         appearance: "outline",
       },
@@ -106,7 +106,7 @@ export const getUserFormFields = (
       key: "phoneNumber",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Telefonnummer",
         appearance: "outline",
       },
@@ -116,7 +116,7 @@ export const getUserFormFields = (
       type: "repeatList",
       wrappers: ["panel"],
       defaultValue: [],
-      templateOptions: {
+      props: {
         selectionEmptyNotice:
           "Bitte weisen Sie dem Benutzer mindestens eine Gruppe zu.",
         externalLabel: "Gruppen",

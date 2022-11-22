@@ -51,7 +51,7 @@ describe("DateRangeTypeComponent", () => {
           {
             key: "dateRange",
             type: "dateRange",
-            templateOptions: {},
+            props: {},
           },
         ] as FormlyFieldConfig[],
       },

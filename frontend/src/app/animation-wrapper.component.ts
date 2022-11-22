@@ -88,7 +88,7 @@ export class AnimationWrapperComponent extends FieldWrapper {
 export class AnimationWrapper {
   run(fc: FormlyConfig) {
     /*fc.templateManipulators.preWrapper.push((field) =>
-      field.templateOptions.animation ? "animation" : null
+      field.props.animation ? "animation" : null
     );*/
   }
 }
