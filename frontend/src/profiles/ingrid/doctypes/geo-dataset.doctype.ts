@@ -241,7 +241,7 @@ export class GeoDatasetDoctype extends IngridShared {
               ],
               {
                 wrappers: [],
-                fieldGroupClassName: null,
+                fieldGroupClassName: "",
                 hideExpression:
                   'formState.mainModel.gridSpatialRepresentation.type?.key !== "rectified"',
               }
@@ -274,14 +274,14 @@ export class GeoDatasetDoctype extends IngridShared {
               ],
               {
                 wrappers: [],
-                fieldGroupClassName: null,
+                fieldGroupClassName: "",
                 hideExpression:
                   'formState.mainModel.gridSpatialRepresentation.type?.key !== "referenced"',
               }
             ),
           ],
           {
-            fieldGroupClassName: null,
+            fieldGroupClassName: "",
             hideExpression:
               'formState.mainModel.spatialRepresentationType.find(x => x.key === "2") === undefined',
           }
@@ -369,7 +369,7 @@ export class GeoDatasetDoctype extends IngridShared {
               ],
             }),
           ],
-          { fieldGroupClassName: null, wrappers: [] }
+          { fieldGroupClassName: "", wrappers: [] }
         ),
         this.addGroupSimple("featureCatalogueDescription", [
           this.addTable("citation", "Schlüsselkatalog", {

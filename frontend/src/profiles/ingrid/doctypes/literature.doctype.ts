@@ -56,7 +56,7 @@ export class LiteratureDoctype extends IngridShared {
             ),
           ],
           {
-            fieldGroupClassName: null,
+            fieldGroupClassName: "",
             hideExpression: "formState.hideOptionals",
           }
         ),

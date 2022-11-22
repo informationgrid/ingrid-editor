@@ -101,7 +101,7 @@ export abstract class AddressShared extends BaseDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: null }
+      { fieldGroupClassName: "" }
     );
   }
 

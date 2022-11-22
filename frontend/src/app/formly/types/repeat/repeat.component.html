@@ -35,6 +35,7 @@
 
 <ige-add-button
     *ngIf="formControl.enabled"
-    (add)="add()"
+    (add)="addItem($event)"
+    [options]="to.menuOptions"
     [showRequiredError]="formControl.invalid && formControl.errors?.required"
 ></ige-add-button>

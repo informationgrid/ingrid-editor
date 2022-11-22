@@ -210,7 +210,7 @@ export abstract class IngridShared extends BaseDoctype {
   addSpatialSection() {
     return this.addSection("Raumbezugssystem", [
       this.addGroupSimple("spatial", [
-        this.addSpatial("references", "Raumbezug"),
+        this.addSpatial("references", "Raumbezug", { required: true }),
         this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
           asSelect: true,
           options: this.getCodelistForSelect(100, "spatialSystems"),
@@ -254,7 +254,7 @@ export abstract class IngridShared extends BaseDoctype {
             ),
           ],
           {
-            fieldGroupClassName: null,
+            fieldGroupClassName: "",
             hideExpression: "formState.hideOptionals",
           }
         ),
@@ -624,10 +624,55 @@ export abstract class IngridShared extends BaseDoctype {
 
   addLinksSection() {
     return this.addSection("Verweise", [
-      this.addTable("references", "Verweise", {
-        supportUpload: false,
-        hideExpression: "formState.hideOptionals",
-        columns: [],
+      this.addRepeat("references", "Verweise", {
+        fieldGroupClassName: "display-flex flex-column",
+        menuOptions: [
+          {
+            key: "description",
+            value: "Beschreibung",
+            fields: this.docRefDescription(),
+          },
+          { key: "url", value: "URL", fields: this.urlRefFields() },
+          { key: "object", value: "Objekt", fields: this.docRefFields() },
+        ],
+        fields: [],
+      }),
+    ]);
+  }
+
+  private urlRefFields() {
+    return this.addGroupSimple(null, [
+      { key: "_type" },
+      this.addGroupSimple(
+        null,
+        [
+          this.addSelectInline("type", "Typ", {
+            required: true,
+            options: this.getCodelistForSelect(2000, "type"),
+            codelistId: 2000,
+          }),
+          this.addInputInline("title", "Titel"),
+        ],
+        { fieldGroupClassName: "display-flex" }
+      ),
+      this.addGroupSimple(null, [
+        this.addInputInline("explanation", "Erläuterungen", {}),
+      ]),
+    ]);
+  }
+
+  private docRefFields() {
+    return this.addGroupSimple(null, [
+      { key: "_type" },
+      this.addInputInline("doc", "Dokument", { className: "" }),
+    ]);
+  }
+
+  private docRefDescription() {
+    return this.addGroupSimple(null, [
+      { key: "_type" },
+      this.addTextAreaInline("description", "Beschreibung", "dataset", {
+        className: "",
       }),
     ]);
   }

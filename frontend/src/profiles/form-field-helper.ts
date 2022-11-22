@@ -15,8 +15,7 @@ export class FormFieldHelper {
     return <FormlyFieldConfig>{
       key: id,
       id: id,
-      fieldGroupClassName:
-        options?.fieldGroupClassName === null ? undefined : "display-flex",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
       wrappers: options?.wrappers ?? ["panel"],
       templateOptions: {
         externalLabel: label,
@@ -26,9 +25,9 @@ export class FormFieldHelper {
     };
   }
 
-  addGroupSimple(id: string, fields: any[]) {
+  addGroupSimple(id: string, fields: any[], options?: any) {
     return this.addGroup(id, null, fields, {
-      fieldGroupClassName: null,
+      fieldGroupClassName: options?.fieldGroupClassName ?? "",
       wrappers: [],
     });
   }
@@ -149,9 +148,10 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
+        menuOptions: options?.menuOptions,
       },
       fieldArray: {
-        fieldGroupClassName: "display-flex",
+        fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
         fieldGroup: options?.fields,
       },
     };

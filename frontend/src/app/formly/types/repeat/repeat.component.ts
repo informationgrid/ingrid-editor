@@ -1,7 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {
+  FieldArrayType,
+  FieldArrayTypeConfig,
+  FormlyFieldConfig,
+} from "@ngx-formly/core";
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { clone } from "../../../shared/utils";
 
 @UntilDestroy()
 @Component({
@@ -11,10 +16,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 })
 export class RepeatComponent extends FieldArrayType implements OnInit {
   canBeDragged = false;
-
-  constructor() {
-    super();
-  }
 
   ngOnInit(): void {
     this.formControl.valueChanges
@@ -26,8 +27,49 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
-    const item = this.model[event.previousIndex];
-    this.remove(event.previousIndex);
-    this.add(event.currentIndex, item);
+    moveItemInArray(
+      this.field.fieldGroup,
+      event.previousIndex,
+      event.currentIndex
+    );
+    moveItemInArray(this.model, event.previousIndex, event.currentIndex);
+
+    for (let i = 0; i < this.field.fieldGroup.length; i++) {
+      this.field.fieldGroup[i].key = `${i}`;
+    }
+    this.options.build(this.field);
+  }
+
+  onPopulate(field: FieldArrayTypeConfig) {
+    if (!field.templateOptions.menuOptions) {
+      super.onPopulate(field);
+      return;
+    }
+
+    const initialLength = field.fieldGroup?.length ?? 0;
+    super.onPopulate(field);
+
+    const length = field.model ? field.model.length : 0;
+
+    for (let i = initialLength; i < length; i++) {
+      const fields = this.getFieldsFromModelType(field, field.model[i]._type);
+      field.fieldGroup[i] = { ...clone(fields), key: `${i}` };
+    }
+  }
+
+  private getFieldsFromModelType(
+    field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
+    type: string
+  ) {
+    return field.templateOptions.menuOptions.find((opt) => opt.key === type)
+      .fields;
+  }
+
+  addItem(type?: string) {
+    if (this.field.templateOptions.menuOptions) {
+      this.add(null, { _type: type });
+    } else {
+      this.add();
+    }
   }
 }

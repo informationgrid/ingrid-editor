@@ -6,10 +6,16 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
   styleUrls: ["./add-button.component.scss"],
 })
 export class AddButtonComponent implements OnInit {
-  @Input() buttonType: "stroked" | "flat" = "stroked";
+  @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";
   @Input() showRequiredError = false;
   @Input() showLabel = true;
+  @Input() set options(value: any[]) {
+    if (value) this._options = value;
+  }
+
   @Output() add = new EventEmitter();
+
+  _options: { key; value }[] = [];
 
   constructor() {}
 
