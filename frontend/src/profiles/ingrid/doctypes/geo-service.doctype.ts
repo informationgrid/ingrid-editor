@@ -68,18 +68,24 @@ export class GeoServiceDoctype extends IngridShared {
         this.addTextArea("explanation", "Erläuterungen", this.id, {
           hideExpression: "formState.hideOptionals",
         }),
-        this.addGroup(null, "Dargestellte Daten", [
-          this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
-            hideExpression: "formState.hideOptionals",
-          }),
-          this.addSelectInline("couplingType", "Kopplungstyp", {
-            options: <SelectOptionUi[]>[
-              { label: "loose", value: "loose" },
-              { label: "mixed", value: "mixed" },
-              { label: "tight", value: "tight" },
-            ],
-          }),
-        ]),
+        this.addGroup(
+          null,
+          "Dargestellte Daten",
+          [
+            this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
+              hideExpression: "formState.hideOptionals",
+            }),
+            this.addSelectInline("couplingType", "Kopplungstyp", {
+              options: <SelectOptionUi[]>[
+                { label: "loose", value: "loose" },
+                { label: "mixed", value: "mixed" },
+                { label: "tight", value: "tight" },
+              ],
+            }),
+          ],
+          null,
+          "shownData"
+        ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
           hideExpression: "formState.hideOptionals",
         }),

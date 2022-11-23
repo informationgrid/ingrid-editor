@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: description
+id: processStep
 docType: InGridGeoDataset
 profile: ingrid
 

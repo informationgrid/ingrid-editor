@@ -11,7 +11,13 @@ export class FormFieldHelper {
     };
   }
 
-  addGroup(id: string, label: string, fields: any[], options?) {
+  addGroup(
+    id: string,
+    label: string,
+    fields: any[],
+    options?,
+    contextHelpId: string = null
+  ) {
     return <FormlyFieldConfig>{
       key: id,
       id: id,
@@ -19,6 +25,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       props: {
         externalLabel: label,
+        contextHelpId: contextHelpId,
       },
       fieldGroup: fields,
       expressions: { hide: options?.hideExpression },

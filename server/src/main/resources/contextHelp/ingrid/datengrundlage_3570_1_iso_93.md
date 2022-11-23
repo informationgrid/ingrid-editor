@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: descriptions
+id: source
 docType: InGridGeoDataset
 profile: ingrid
 

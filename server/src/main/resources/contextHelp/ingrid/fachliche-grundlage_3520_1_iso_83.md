@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: statement
+id: lineage
 docType: InGridGeoDataset
 profile: ingrid
 
