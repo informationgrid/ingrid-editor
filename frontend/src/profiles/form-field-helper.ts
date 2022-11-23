@@ -130,10 +130,10 @@ export class FormFieldHelper {
 
   addRepeatListInline(id, label, options = {}) {
     return this.addRepeatList(id, null, {
-      ...options,
       fieldLabel: label,
       wrappers: [],
       className: "flex-1",
+      ...options,
     });
   }
 
@@ -301,6 +301,14 @@ export class FormFieldHelper {
       expressions: { hide: options?.hideExpression },
       validators: options?.validators,
     };
+  }
+
+  addDatepickerInline(id, label, options = {}) {
+    return this.addDatepicker(id, null, {
+      ...options,
+      fieldLabel: label,
+      wrappers: ["form-field"],
+    });
   }
 
   addDateRange(id, label, options?) {

@@ -640,18 +640,19 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  private urlRefFields() {
+  protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
       this.addGroupSimple(
         null,
         [
-          this.addSelectInline("type", "Typ", {
+          /*this.addSelectInline("type", "Typ", {
             required: true,
             options: this.getCodelistForSelect(2000, "type"),
             codelistId: 2000,
-          }),
+          }),*/
           this.addInputInline("title", "Titel"),
+          this.addInputInline("url", "URL"),
         ],
         { fieldGroupClassName: "display-flex" }
       ),
@@ -661,7 +662,7 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  private docRefFields() {
+  protected docRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
       this.addInputInline("doc", "Dokument", { className: "" }),

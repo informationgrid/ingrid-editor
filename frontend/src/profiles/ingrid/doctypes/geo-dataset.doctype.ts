@@ -53,9 +53,27 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
 
       this.addSection("Fachbezug", [
-        this.addGroupSimple("lineage", [
-          this.addTextArea("statement", "Fachliche Grundlage", this.id),
-        ]),
+        // this.addGroupSimple("lineage", [
+        this.addRepeat("lineage", "Fachliche Grundlage", {
+          menuOptions: [
+            {
+              key: "information",
+              value: "Information",
+              fields: this.addGroupSimple(null, [
+                { key: "_type" },
+                this.addTextAreaInline(
+                  "statement",
+                  "Fachliche Grundlage",
+                  this.id,
+                  { className: "" }
+                ),
+              ]),
+            },
+            { key: "url", value: "Verweise", fields: this.urlRefFields() },
+          ],
+          fields: [],
+        }),
+
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field"],
@@ -324,93 +342,33 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           ],
         }),
-        this.addGroup(
-          "portrayalCatalogueInfo",
-          null,
-          [
-            this.addTable("citation", "Symbolkatalog", {
-              supportUpload: false,
-              hideExpression: "formState.hideOptionals",
-              columns: [
-                {
-                  key: "title",
-                  type: "input",
-                  label: "Titel",
-                  props: {
-                    required: true,
-                    label: "Titel",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "date",
-                  type: "datepicker",
-                  label: "Datum",
-                  width: "300px",
-                  props: {
-                    required: true,
-                    label: "Datum",
-                    appearance: "outline",
-                    formatter: (date: Date) => {
-                      return new Date(date).toLocaleDateString();
-                    },
-                  },
-                },
-                {
-                  key: "edition",
-                  type: "input",
-                  label: "Version",
-                  width: "300px",
-                  props: {
-                    label: "Version",
-                    appearance: "outline",
-                  },
-                },
-              ],
-            }),
-          ],
-          { fieldGroupClassName: "", wrappers: [] }
-        ),
-        this.addGroupSimple("featureCatalogueDescription", [
-          this.addTable("citation", "Schlüsselkatalog", {
-            supportUpload: false,
-            hideExpression: "formState.hideOptionals",
-            columns: [
+        this.addGroupSimple("portrayalCatalogueInfo", [
+          this.addRepeat("citation", "Symbolkatalog", {
+            menuOptions: [
               {
-                key: "title",
-                type: "input",
-                label: "Titel",
-                props: {
-                  required: true,
-                  label: "Titel",
-                  appearance: "outline",
-                },
+                key: "information",
+                value: "Information",
+                fields: this.symbolInformation(),
               },
-              {
-                key: "date",
-                type: "datepicker",
-                label: "Datum",
-                width: "300px",
-                props: {
-                  required: true,
-                  label: "Datum",
-                  appearance: "outline",
-                  formatter: (date: Date) => {
-                    return new Date(date).toLocaleDateString();
-                  },
-                },
-              },
-              {
-                key: "version",
-                type: "input",
-                label: "Version",
-                width: "300px",
-                props: {
-                  label: "Version",
-                  appearance: "outline",
-                },
-              },
+              { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
+            fields: [],
+          }),
+        ]),
+
+        // { fieldGroupClassName: "", wrappers: [] }
+        // ),
+        this.addGroupSimple("featureCatalogueDescription", [
+          this.addRepeat("citation", "Schlüsselkatalog", {
+            menuOptions: [
+              {
+                key: "information",
+                value: "Information",
+                fields: this.symbolInformation(),
+              },
+              { key: "url", value: "Verweise", fields: this.urlRefFields() },
+            ],
+            fields: [],
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             hideExpression: "formState.hideOptionals",
@@ -421,21 +379,45 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
-            this.addGroupSimple("source", [
-              this.addRepeatList("descriptions", "Datengrundlage", {
-                hideExpression: "formState.hideOptionals",
-              }),
-            ]),
-            this.addGroupSimple("processStep", [
-              this.addTextArea(
-                "description",
-                "Herstellungsprozess",
-                "geoDataset",
+            this.addRepeat("source", "Datengrundlage", {
+              menuOptions: [
                 {
-                  hideExpression: "formState.hideOptionals",
-                }
-              ),
-            ]),
+                  key: "information",
+                  value: "Information",
+                  fields: this.addGroupSimple(null, [
+                    { key: "_type" },
+                    this.addInputInline("descriptions", "Information", {
+                      hideExpression: "formState.hideOptionals",
+                      className: "",
+                    }),
+                  ]),
+                },
+                { key: "url", value: "Verweise", fields: this.urlRefFields() },
+              ],
+              fields: [],
+            }),
+            this.addRepeat("processStep", "Herstellungsprozess", {
+              menuOptions: [
+                {
+                  key: "information",
+                  value: "Information",
+                  fields: this.addGroupSimple(null, [
+                    { key: "_type" },
+                    this.addTextAreaInline(
+                      "description",
+                      "Information",
+                      this.id,
+                      {
+                        className: "",
+                        hideExpression: "formState.hideOptionals",
+                      }
+                    ),
+                  ]),
+                },
+                { key: "url", value: "Verweise", fields: this.urlRefFields() },
+              ],
+              fields: [],
+            }),
           ]),
         ]),
       ]),
@@ -540,5 +522,24 @@ export class GeoDatasetDoctype extends IngridShared {
     uploadService: UploadService
   ) {
     super(codelistService, codelistQuery, uploadService);
+  }
+
+  private symbolInformation() {
+    return this.addGroupSimple(
+      null,
+      [
+        { key: "_type" },
+        this.addInputInline("title", "Titel", {
+          className: "",
+        }),
+        this.addDatepickerInline("date", "Datum", {
+          className: "",
+        }),
+        this.addInputInline("edition", "Version", {
+          className: "",
+        }),
+      ],
+      { fieldGroupClassName: "display-flex" }
+    );
   }
 }
