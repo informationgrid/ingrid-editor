@@ -294,7 +294,28 @@ export abstract class IngridShared extends BaseDoctype {
           null,
           "Durch die Ressource abgedeckte Zeitspanne",
           [
-            this.addSelectInline("resourceDateType", "Typ", {
+            this.addSelect("resourceDateType", null, {
+              className: "flex-1",
+              wrappers: ["form-field"],
+              options: [
+                { label: "", value: undefined },
+                { label: "am", value: "at" },
+                { label: "seit", value: "since" },
+                { label: "bis", value: "till" },
+                { label: "von - bis", value: "range" },
+              ],
+            }),
+            this.addDatepicker("resourceDate", null, {
+              placeholder: "TT.MM.JJJJ",
+              wrappers: ["form-field"],
+              hideExpression:
+                "formState.mainModel.temporal?.resourceDateType?.key === 'range'",
+            }),
+            this.addDateRange("resourceRange", null, {
+              hideExpression:
+                "formState.mainModel.temporal?.resourceDateType?.key !== 'range'",
+            }),
+            /*this.addSelectInline("resourceDateType", "Typ", {
               options: <SelectOptionUi[]>[
                 { label: "am", value: "am" },
                 { label: "bis", value: "bis" },
@@ -306,7 +327,7 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addDatepicker("resourceEndDate", null, {
               wrappers: ["form-field"],
-            }),
+            }),*/
           ],
           { hideExpression: "formState.hideOptionals" }
         ),

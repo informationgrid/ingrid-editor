@@ -217,12 +217,12 @@ export class McloudDoctype extends BaseDoctype {
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key === "range",
+            hideExpression:
+              "formState.mainModel.temporal?.rangeType?.key === 'range'",
           }),
           this.addDateRange("timeSpanRange", null, {
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key !== "range",
+            hideExpression:
+              "formState.mainModel.temporal?.rangeType?.key !== 'range'",
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
