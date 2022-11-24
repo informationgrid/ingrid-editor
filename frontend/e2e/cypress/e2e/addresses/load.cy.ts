@@ -119,6 +119,24 @@ describe('mCLOUD: Load addresses', () => {
     cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
   });
 
+  it('should not be able to replace address with non-published address (#4571)', () => {
+    const unpublishedAddress = 'ggg';
+
+    Tree.openNode(['test_ö, test_ö']);
+
+    // make sure non-published address can not be chosen by click
+    AddressPage.openActionMenu();
+    AddressPage.openReplaceAddressDialog();
+    Tree.openNodeInsideDialog([unpublishedAddress]);
+    cy.contains('ige-replace-address-dialog mat-tree-node', unpublishedAddress).should('not.have.class', 'active');
+
+    // make sure non-published address can not be chosen via search term suggestion (-> siehe bug #4571)
+    cy.get('ige-replace-address-dialog .mat-input-element').clear().click().type(unpublishedAddress);
+    cy.contains('mat-option .doc-item', unpublishedAddress).click();
+    cy.contains('ige-replace-address-dialog mat-tree-node', unpublishedAddress).should('not.have.class', 'active');
+    cy.get('[data-cy="dialog-replace-address"]').should('have.attr', 'disabled');
+  });
+
   it('Meta admin should not be allowed to delete Address if it is still referenced in data records (#3811)', () => {
     cy.logoutClearCookies();
     cy.kcLogin('mcloud-meta-with-groups');
