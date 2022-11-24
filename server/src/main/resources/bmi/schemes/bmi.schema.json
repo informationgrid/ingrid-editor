@@ -137,9 +137,6 @@
         "link": {
           "$ref": "#/definitions/Link"
         },
-        "type": {
-          "$ref": "#/definitions/KeyValue"
-        },
         "title": {
           "type": [
             "string",
@@ -158,8 +155,7 @@
         }
       },
       "required": [
-        "link",
-        "type"
+        "link"
       ],
       "title": "Distribution"
     },

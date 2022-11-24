@@ -38,7 +38,7 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
-          allowedTypes: ["10"],
+          allowedTypes: ["10", "11", "9", "6", "2"],
           validators: {
             needPublisher: {
               expression: (ctrl) =>
@@ -46,6 +46,13 @@ export class BmiDoctype extends BaseDoctype {
                   ? ctrl.value.some((row) => row.type.key === "10")
                   : false,
               message: "Es muss ein Herausgeber als Adresse angegeben sein",
+            },
+            onePublisher: {
+              expression: (ctrl) =>
+                ctrl.value
+                  ? ctrl.value.filter((row) => row.type.key === "10").length < 2
+                  : true,
+              message: "Es darf nur ein Herausgeber angegeben werden",
             },
             publisherPublished: {
               expression: (ctrl) =>
@@ -76,7 +83,7 @@ export class BmiDoctype extends BaseDoctype {
               label: "Titel",
               focus: true,
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Titel",
                 appearance: "outline",
               },
@@ -86,7 +93,7 @@ export class BmiDoctype extends BaseDoctype {
               type: "upload",
               label: "Link",
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Link",
                 appearance: "outline",
                 required: true,
@@ -111,25 +118,11 @@ export class BmiDoctype extends BaseDoctype {
               },
             },
             {
-              key: "type",
-              type: "select",
-              label: "Typ",
-              templateOptions: {
-                label: "Typ",
-                appearance: "outline",
-                required: true,
-                options: this.getCodelistForSelect(20002, null),
-                codelistId: 20002,
-                formatter: (item: any) =>
-                  this.formatCodelistValue("20002", item),
-              },
-            },
-            {
               key: "format",
-              type: "autocomplete",
+              type: "select",
               label: "Datenformat",
               wrappers: ["form-field"],
-              templateOptions: {
+              props: {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
@@ -141,8 +134,7 @@ export class BmiDoctype extends BaseDoctype {
           ],
           validators: {
             requiredColumns: {
-              expression: (ctrl) =>
-                ctrl.value?.every((row) => row.link && row.type),
+              expression: (ctrl) => ctrl.value?.every((row) => row.link),
               message: "Es müssen alle Pflichtspalten ausgefüllt sein",
             },
           },
@@ -160,7 +152,7 @@ export class BmiDoctype extends BaseDoctype {
           key: "events",
           type: "repeat",
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Zeitbezug der Ressource",
           },
           fieldArray: {
@@ -199,12 +191,12 @@ export class BmiDoctype extends BaseDoctype {
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key === "range",
+            hideExpression:
+              "formState.mainModel.temporal?.rangeType?.key === 'range'",
           }),
           this.addDateRange("timeSpanRange", null, {
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key !== "range",
+            hideExpression:
+              "formState.mainModel.temporal?.rangeType?.key !== 'range'",
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
