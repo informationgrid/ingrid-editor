@@ -30,7 +30,11 @@ export class fileDataTransferManagement {
   }
 
   static addFile(filePath: string) {
-    cy.intercept('POST', /api\/upload/, { times: 1 }).as('upload');
+    cy.intercept({
+      method: 'Post',
+      url: /api\/upload/,
+      times: 1
+    }).as('upload');
     cy.get('[type="file"]').attachFile(filePath);
     cy.wait('@upload', { timeout: 10000 });
     cy.get('.upload-content').should('contain', filePath);
@@ -71,9 +75,9 @@ export class fileDataTransferManagement {
     cy.get('[data-mat-icon-name="Entfernen"]').click();
   }
 
-  static DownloadFileAddedToDocument(fileName: string) {
-    cy.intercept('GET', /api\/upload/).as('download');
-    cy.contains('.no-text-transform', fileName).click();
+  static DownloadFileAddedToDocument(fileName: string, uvp = false) {
+    cy.intercept('GET', /api\/upload\/download/).as('download');
+    cy.contains(`${uvp ? '.clickable-text' : '.no-text-transform'}`, fileName).click();
     cy.wait('@download', { timeout: 10000 });
   }
 

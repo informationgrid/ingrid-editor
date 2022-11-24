@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
 import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
@@ -10,6 +16,7 @@ import { PageEvent } from "@angular/material/paginator";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { merge } from "rxjs";
 import { ConfigService } from "../../../services/config/config.service";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -18,7 +25,7 @@ import { ConfigService } from "../../../services/config/config.service";
   styleUrls: ["./referenced-documents-type.component.scss"],
 })
 export class ReferencedDocumentsTypeComponent
-  extends FieldType
+  extends FieldType<FieldTypeConfig>
   implements OnInit
 {
   private referencesElement: ElementRef<HTMLElement>;
@@ -55,7 +62,8 @@ export class ReferencedDocumentsTypeComponent
     private router: Router,
     private researchService: ResearchService,
     private documentService: DocumentService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -92,7 +100,8 @@ export class ReferencedDocumentsTypeComponent
         map((response) =>
           this.documentService.mapToDocumentAbstracts(response.hits)
         ),
-        tap((docs) => (this.docs = docs))
+        tap((docs) => (this.docs = docs)),
+        tap(() => this.cdr.detectChanges())
       );
   }
 

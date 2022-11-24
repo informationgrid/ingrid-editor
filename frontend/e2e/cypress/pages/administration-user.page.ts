@@ -22,7 +22,7 @@ export class AdminUserPage extends BasePage {
     cy.intercept('GET', '/api/users').as('usersCall');
     cy.intercept('GET', '/api/groups').as('groups');
     cy.visit('manage/user');
-    cy.wait('@usersCall', { timeout: 12000 });
+    cy.wait('@usersCall', { timeout: 20000 });
     cy.wait('@groups', { timeout: 9000 });
   }
 
@@ -81,7 +81,7 @@ export class AdminUserPage extends BasePage {
   static applyDialog() {
     cy.intercept('POST', '/api/users?newExternalUser=*').as('correctAttempt');
     cy.get('button').contains('Anlegen').click();
-    cy.wait('@correctAttempt').its('response.statusCode').should('eq', 200);
+    cy.wait('@correctAttempt', { timeout: 8000 }).its('response.statusCode').should('eq', 200);
   }
 
   static searchForUser(searchValue: string, result: string = '', shouldBeExist: boolean = true) {

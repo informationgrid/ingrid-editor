@@ -32,13 +32,13 @@ describe("RepeatDetailListComponent", () => {
           {
             key: "repeatField",
             type: "repeatDetailList",
-            templateOptions: {},
+            props: {},
             fieldArray: {
               fieldGroup: [
                 {
                   key: "type",
                   type: "input",
-                  templateOptions: {
+                  props: {
                     label: "Typ",
                     appearance: "outline",
                   },

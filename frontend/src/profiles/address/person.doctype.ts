@@ -20,7 +20,7 @@ export class PersonDoctype extends AddressShared {
       this.addSection("Persönliche Daten", [
         {
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Anrede",
             required: false,
           },
@@ -54,7 +54,7 @@ export class PersonDoctype extends AddressShared {
         },
         {
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Name",
             required: true,
             contextHelpId: "name",

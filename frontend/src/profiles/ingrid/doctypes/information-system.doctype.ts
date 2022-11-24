@@ -7,6 +7,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
+import { UploadService } from "../../../app/shared/upload/upload.service";
 
 @Injectable({
   providedIn: "root",
@@ -26,15 +27,21 @@ export class InformationSystemDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addGroup(null, "Beschreibung", [
-          this.addSelectInline("serviceType", "Art des Dienstes", {
-            options: this.getCodelistForSelect(5300, "serviceType"),
-            codelistId: 5300,
-          }),
-          this.addRepeatListInline("serviceVersion", "Version", {
-            hideExpression: "formState.hideOptionals",
-          }),
-        ]),
+        this.addGroup(
+          null,
+          "Beschreibung",
+          [
+            this.addSelectInline("serviceType", "Art des Dienstes", {
+              options: this.getCodelistForSelect(5300, "serviceType"),
+              codelistId: 5300,
+            }),
+            this.addRepeatListInline("serviceVersion", "Version", {
+              hideExpression: "formState.hideOptionals",
+            }),
+          ],
+          null,
+          "serviceTypeVersion"
+        ),
         this.addGroup(
           null,
           "Weitere Informationen",
@@ -74,8 +81,9 @@ export class InformationSystemDoctype extends IngridShared {
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
+    uploadService: UploadService
   ) {
-    super(codelistService, codelistQuery);
+    super(codelistService, codelistQuery, uploadService);
   }
 }

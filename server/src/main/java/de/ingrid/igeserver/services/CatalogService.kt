@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
 
+
 @Service
 class CatalogService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
@@ -28,7 +29,7 @@ class CatalogService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
-    private val aclService: AclService,
+    private val igeAclService: IgeAclService,
     private val keycloakService: UserManagementService,
     private val catalogProfiles: List<CatalogProfile>
 ) {
@@ -75,9 +76,8 @@ class CatalogService @Autowired constructor(
         return userData?.recentLogins?.map { Date(it) }?.toMutableList() ?: mutableListOf()
     }
 
-    fun getUserOfCatalog(catalogId: String): List<UserInfo> {
-        return userRepo.findAllByCatalogId(catalogId)
-    }
+    fun getUserOfCatalog(catalogId: String): List<UserInfo> =
+        userRepo.findAllByCatalogId(catalogId)
 
     fun getUser(userId: String): UserInfo? {
         return userRepo.findByUserId(userId)
@@ -354,8 +354,33 @@ class CatalogService @Autowired constructor(
             }
     }
 
+    fun getAllCatalogUserIds(principal: Principal): List<String> {
+        val catalogId = getCurrentCatalogForPrincipal(principal)
+        return userRepo.findAllUserIdsByCatalogId(catalogId)
+    }
+
+    fun canEditUser(principal: Principal, userId: String): Boolean {
+        // admins have access to every user
+        if (authUtils.isAdmin(principal)) return true
+        val requestedUser = userRepo.findByUserId(userId)
+
+        // meta admins don't have access to superadmins and katadmins
+        if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return false
+
+        // if principal has rights to every group of user or user has no groups
+        return requestedUser?.groups?.all { hasRightsForGroup(principal, it) } ?: true
+    }
+
+    fun hasRightsForGroup(
+        principal: Principal,
+        group: Group
+    ) = igeAclService.hasRightsForGroup(
+        principal as Authentication,
+        group
+    )
+
     fun applyIgeUserInfo(user: User, igeUser: UserInfo, catalogId: String): User {
-        user.groups = igeUser.groups.filter{it.catalog?.identifier == catalogId }.sortedBy { it.name }.map { it.id!! }
+        user.groups = igeUser.groups.filter { it.catalog?.identifier == catalogId }.sortedBy { it.name }.map { it.id!! }
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)
         user.role = igeUser.role?.name ?: ""

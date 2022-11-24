@@ -39,7 +39,7 @@ describe('Dashboard', () => {
     Menu.switchTo('DOCUMENTS');
     let docName = 'TestDocResearch1';
     Tree.openNode([docName]);
-    DocumentPage.addDescription('description');
+    DocumentPage.setDescription('description');
     DocumentPage.saveDocument();
     DashboardPage.visit();
     Menu.switchTo('DASHBOARD');

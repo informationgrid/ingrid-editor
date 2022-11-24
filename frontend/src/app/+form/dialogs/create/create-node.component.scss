@@ -53,6 +53,10 @@ mat-radio-button {
   padding-top: 16px;
   padding-bottom: 0;
   margin-bottom: -4px;
+
+  &.no-top-padding {
+    padding-top: 0;
+  }
 }
 
 .mat-dialog-actions button.btn-create {
@@ -74,8 +78,4 @@ mat-radio-button {
     padding-left: 24px;
     padding-right: 24px;
   }
-}
-
-.error-box {
-  padding: 0 24px;
 }

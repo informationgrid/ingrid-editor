@@ -26,17 +26,13 @@
 as-split {
   max-width: 1900px;
   min-height: 600px;
-  margin: 0 auto 0 0;
   overflow: visible;
-  height: auto;
-  flex: 1;
+  background: white;
 }
 
 as-split-area {
   overflow-x: auto !important;
-  background: white;
 }
-
 .header-wrapper {
   max-width: 1900px;
   margin: 0 auto 0 0;

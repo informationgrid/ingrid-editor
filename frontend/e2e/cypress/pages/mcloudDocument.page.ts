@@ -1,19 +1,6 @@
 import { DocumentPage } from './document.page';
-import { BasePage } from './base.page';
 
-export class enterMcloudDocTestData {
-  static setDescription(text: string) {
-    cy.get('[data-cy=description]').find('mat-form-field').type(text);
-    cy.get('[data-cy=description] textarea').should('have.value', text);
-  }
-
-  static setAddress(addressText: string) {
-    cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
-    DocumentPage.AddAddressDialog.searchAndSelect(addressText);
-    cy.get('[data-cy="choose-address-confirm"]').click();
-    cy.get('[data-cy=addresses]').contains(addressText);
-  }
-
+export class McloudDocumentPage extends DocumentPage {
   static checkAddressSelectable(addressText: string, shouldBeSelectable: boolean) {
     cy.get('[data-cy=addresses]').contains('Hinzufügen').click();
     DocumentPage.AddAddressDialog.searchAndSelect(addressText);
@@ -104,35 +91,6 @@ export class enterMcloudDocTestData {
     cy.get('[data-cy="mFUND"] input').eq(0).should('have.value', projectText);
     cy.get('[data-cy=mFUND]').contains('mFUND Förderkennzeichen').parents('.mat-form-field').type(fkzText);
     cy.get('[data-cy="mFUND"] input').eq(1).should('have.value', fkzText);
-  }
-
-  static selectSpatialType(selectType: string) {
-    BasePage.selectOption('spatial-dialog-type', selectType);
-  }
-
-  static setSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
-    cy.get('[data-cy=spatialButton]').click();
-    this.setOpenedSpatialBbox(title, locationText, typeOption);
-    cy.contains('.spatial-title', locationText);
-  }
-
-  static setOpenedSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
-    cy.get('[data-cy=spatial-dialog-title]').clear().type(title);
-    if (typeOption) {
-      this.selectSpatialType('Freier Raumbezug');
-    }
-    cy.get('[data-cy=spatial-dialog-free]')
-      .clear()
-      .type(locationText)
-      .then(() => {
-        cy.intercept('/search/' + locationText + '*').as('waitForSuggestions');
-        cy.wait('@waitForSuggestions', { timeout: 8000 });
-        cy.get('.result-wrapper').should('exist');
-        cy.contains('.result-wrapper mat-list mat-list-item', locationText, { timeout: 8000 }).click();
-      });
-    cy.get('[data-cy=confirm-dialog-save]').click();
-    // give some time to close dialog and update list
-    cy.wait(300);
   }
 
   static openSpatialMenuDoc(spatialName: string) {

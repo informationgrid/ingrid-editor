@@ -47,7 +47,7 @@ export class UvpShared extends BaseDoctype {
       type: "input",
       label: "Titel",
       width: "300px",
-      templateOptions: {
+      props: {
         label: "Titel",
         appearance: "outline",
         required: true,
@@ -57,7 +57,7 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
-      templateOptions: {
+      props: {
         label: "Link",
         appearance: "outline",
         required: true,
@@ -79,7 +79,7 @@ export class UvpShared extends BaseDoctype {
       type: "datepicker",
       label: "Gültig bis",
       width: "100px",
-      templateOptions: {
+      props: {
         label: "Gültig bis",
         appearance: "outline",
         formatter: (item: any) => {
@@ -93,7 +93,7 @@ export class UvpShared extends BaseDoctype {
     return {
       name: "publicDisclosure",
       hideExpression: 'model.type !== "publicDisclosure"',
-      templateOptions: {
+      props: {
         label: "Öffentliche Auslegung",
       },
       fieldGroup: [
@@ -147,7 +147,7 @@ export class UvpShared extends BaseDoctype {
     return {
       name: "publicHearing",
       hideExpression: 'model.type !== "publicHearing"',
-      templateOptions: {
+      props: {
         label: "Erörterungstermin",
       },
       fieldGroup: [
@@ -175,7 +175,7 @@ export class UvpShared extends BaseDoctype {
     return {
       name: "decisionOfAdmission",
       hideExpression: 'model.type !== "decisionOfAdmission"',
-      templateOptions: {
+      props: {
         label: "Entscheidung über die Zulassung",
       },
       fieldGroup: [

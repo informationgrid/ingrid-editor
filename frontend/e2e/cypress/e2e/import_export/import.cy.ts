@@ -2,7 +2,7 @@ import { ImportOptions, ImportPage } from '../../pages/import.page';
 import { Tree } from '../../pages/tree.partial';
 import { DocumentPage } from '../../pages/document.page';
 import { AddressPage } from '../../pages/address.page';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 
 describe('Import Tests', () => {
   beforeEach(() => {
@@ -89,7 +89,7 @@ describe('Import Tests', () => {
     // add address to document
     DocumentPage.visit();
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
-    enterMcloudDocTestData.setAddress('Franken, Adresse');
+    McloudDocumentPage.setAddress('Franken, Adresse');
     AddressPage.saveDocument();
     // import file
     ImportPage.visit();

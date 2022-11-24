@@ -3,7 +3,7 @@ import { AddressPage, ROOT } from '../../pages/address.page';
 import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
 import { BasePage, CatalogsTabmenu } from '../../pages/base.page';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { BehavioursPage } from '../../pages/behaviours.page';
 
 describe('mCLOUD: Load addresses', () => {
@@ -41,9 +41,9 @@ describe('mCLOUD: Load addresses', () => {
   // xit('should open a document from a quick search result', () => {
 
   it('should open an address from a tree search result on form page', () => {
-    DocumentPage.search('Testorganisation');
-    DocumentPage.getSearchResult().contains('Testorganisation').click();
-    cy.get(DocumentPage.title).should('have.text', 'Testorganisation');
+    McloudDocumentPage.search('Testorganisation');
+    McloudDocumentPage.getSearchResult().contains('Testorganisation').click();
+    cy.get(McloudDocumentPage.title).should('have.text', 'Testorganisation');
   });
 
   it('should open the previously selected address when going to another page and returning', () => {
@@ -119,14 +119,32 @@ describe('mCLOUD: Load addresses', () => {
     cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
   });
 
+  it('should not be able to replace address with non-published address (#4571)', () => {
+    const unpublishedAddress = 'ggg';
+
+    Tree.openNode(['test_ö, test_ö']);
+
+    // make sure non-published address can not be chosen by click
+    AddressPage.openActionMenu();
+    AddressPage.openReplaceAddressDialog();
+    Tree.openNodeInsideDialog([unpublishedAddress]);
+    cy.contains('ige-replace-address-dialog mat-tree-node', unpublishedAddress).should('not.have.class', 'active');
+
+    // make sure non-published address can not be chosen via search term suggestion (-> siehe bug #4571)
+    cy.get('ige-replace-address-dialog .mat-input-element').clear().click().type(unpublishedAddress);
+    cy.contains('mat-option .doc-item', unpublishedAddress).click();
+    cy.contains('ige-replace-address-dialog mat-tree-node', unpublishedAddress).should('not.have.class', 'active');
+    cy.get('[data-cy="dialog-replace-address"]').should('have.attr', 'disabled');
+  });
+
   it('Meta admin should not be allowed to delete Address if it is still referenced in data records (#3811)', () => {
     cy.logoutClearCookies();
     cy.kcLogin('mcloud-meta-with-groups');
-    DocumentPage.visit();
+    McloudDocumentPage.visit();
     let addressName = 'address_with_reference_meta';
     Tree.openNode(['Folder1 For Meta2 ', 'Sub Folder', 'document1_meta2']);
-    enterMcloudDocTestData.setAddress(addressName);
-    DocumentPage.saveDocument();
+    McloudDocumentPage.setAddress(addressName);
+    McloudDocumentPage.saveDocument();
     AddressPage.visit();
     Tree.openNode(['Ordner_2.Ebene_C', addressName]);
     AddressPage.deleteLoadedNode(true);
@@ -140,7 +158,7 @@ describe('Load addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('test-catalog-general-test').as('tokens');
-    DocumentPage.visit();
+    McloudDocumentPage.visit();
   });
 
   it('should test sorting of the tree inside catalogue of type test', () => {
@@ -159,7 +177,7 @@ describe('Load addresses', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
     // check new order of the tree
-    DocumentPage.visit();
+    McloudDocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
     cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
     cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
@@ -172,24 +190,24 @@ describe('Load addresses', () => {
     AddressPage.visit();
     // open published document and check for the content
     Tree.openNode(['topreview, address']);
-    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.get(McloudDocumentPage.Toolbar.Preview).click();
 
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Herr');
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Prof.');
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'address', 0, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'topreview', 1, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  ', 'Telefon');
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  input', '123456', 0, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Herr');
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Prof.');
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'address', 0, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'topreview', 1, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  ', 'Telefon');
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  input', '123456', 0, true);
 
     // check for address details
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'unknown', 1, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '2132', 2, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'north pole', 3, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '123', 4, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input ', '123', 5, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'unknown', 1, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '2132', 2, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'north pole', 3, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '123', 4, true);
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input ', '123', 5, true);
 
     // check for country and state
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
+    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
   });
 });

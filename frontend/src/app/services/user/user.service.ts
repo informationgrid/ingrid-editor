@@ -12,8 +12,8 @@ import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/components/formly.field.config";
 import { AuthenticationFactory } from "../../security/auth.factory";
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 
 @Injectable({
   providedIn: "root",

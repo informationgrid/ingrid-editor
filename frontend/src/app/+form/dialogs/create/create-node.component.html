@@ -16,6 +16,23 @@
                     fxLayout="column"
                     [formGroup]="formGroup"
                 >
+                    <div
+                        class="dlg-field-label dlg-create-place no-top-padding"
+                    >
+                        Zielordner
+                    </div>
+                    <ige-breadcrumb
+                        [path]="path"
+                        [rootName]="rootTreeName"
+                        [selectable]="true"
+                        [disableRoot]="!isAdmin"
+                        (select)="quickBreadcrumbChange($event)"
+                    ></ige-breadcrumb>
+                    <div *ngIf="!pathWithWritePermission" class="error-box">
+                        Sie haben keine Schreibrechte auf den Zielordner. Bitte
+                        ändern Sie den Zielordner über "Zielordner ändern"
+                    </div>
+
                     <ige-document-template
                         *ngIf="isFolder || !forAddress; else addressForm"
                         [isFolder]="isFolder"
@@ -31,20 +48,6 @@
                             (create)="handleCreate()"
                         ></ige-address-template>
                     </ng-template>
-
-                    <div class="dlg-field-label dlg-create-place">
-                        Zielordner
-                    </div>
-                    <ige-breadcrumb
-                        [path]="path"
-                        [rootName]="rootTreeName"
-                        [selectable]="true"
-                        [disableRoot]="!isAdmin"
-                        (select)="quickBreadcrumbChange($event)"
-                    ></ige-breadcrumb>
-                    <div *ngIf="!pathWithWritePermission" class="error-box">
-                        Sie haben keine Schreibrechte auf den Zielordner
-                    </div>
                 </div>
             </mat-tab>
 

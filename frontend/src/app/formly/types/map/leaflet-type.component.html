@@ -17,8 +17,7 @@
         color="primary"
         (click)="openSpatialDialog()"
         [ngClass]="{
-            'has-error':
-                formFieldControl.errorState && formControl.errors?.required
+            'has-error': formControl.errors?.required
         }"
     >
         <mat-icon svgIcon="spatial-rect"></mat-icon>
@@ -31,8 +30,7 @@
     </button>
 </div>
 
-<ige-form-error
-    *ngIf="formFieldControl.errorState && formControl.errors?.required"
+<ige-form-error *ngIf="formControl.errors?.required"
     >Bitte erstellen Sie einen Raumbezug</ige-form-error
 >
 

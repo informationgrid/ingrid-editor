@@ -191,7 +191,7 @@ describe('Meta data administrator with a group', () => {
     const description = 'This is the description of document 4_1';
     DocumentPage.visit();
     Tree.openNode(['Ordner_Ebene_2A', 'Ordner_Ebene_3A', 'Datum_Ebene_4_1']);
-    DocumentPage.addDescription(description);
+    DocumentPage.setDescription(description);
     DocumentPage.saveProfile('Datum_Ebene_4_1');
     // open a random document
     Tree.openNode(['Ordner_Ebene_2A', 'Datum_Ebene_3_3']);

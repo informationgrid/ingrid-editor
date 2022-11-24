@@ -1,4 +1,4 @@
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { DocumentPage } from '../../pages/document.page';
 import { Utils } from '../../pages/utils';
 import { Tree } from '../../pages/tree.partial';
@@ -15,7 +15,7 @@ describe('Spatial References', () => {
     const docName = 'spatialbbox-' + Utils.randomString();
 
     DocumentPage.createDocument(docName);
-    enterMcloudDocTestData.setSpatialBbox('create spatial reference, bbox', 'Bremen');
+    McloudDocumentPage.setSpatialBbox('create spatial reference, bbox', 'Bremen');
     DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('Bremen');
   });
@@ -25,7 +25,7 @@ describe('Spatial References', () => {
     const poly = 'POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))';
 
     DocumentPage.createDocument(docName);
-    enterMcloudDocTestData.setSpatialWKT('create spatial reference, wkt-1', poly);
+    McloudDocumentPage.setSpatialWKT('create spatial reference, wkt-1', poly);
     DocumentPage.checkSpatialEntryNumber(1);
     DocumentPage.checkSpatialEntryExists('reference, wkt-1');
   });
@@ -39,7 +39,7 @@ describe('Spatial References', () => {
     DocumentPage.visit();
     Tree.openNode(['api-' + docNameBbox]);
 
-    enterMcloudDocTestData.setSpatialBbox('add spatial reference, bbox', 'Berlin');
+    McloudDocumentPage.setSpatialBbox('add spatial reference, bbox', 'Berlin');
     DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('Berlin');
   });
@@ -54,7 +54,7 @@ describe('Spatial References', () => {
     cy.pageReload('dashboard-docs-header', 'Daten');
     Tree.openNode(['api-' + docNameBbox]);
 
-    enterMcloudDocTestData.setSpatialWKT('add spatial reference, wkt-2', poly);
+    McloudDocumentPage.setSpatialWKT('add spatial reference, wkt-2', poly);
     DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('reference, wkt-2');
 
@@ -76,10 +76,10 @@ describe('Spatial References', () => {
     Tree.openNode(['api-' + docName]);
 
     DocumentPage.checkSpatialEntryNumber(4);
-    enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
-    enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
+    McloudDocumentPage.openSpatialMenuDoc('Berlin');
+    McloudDocumentPage.selectChangeInSpatialMenuDoc();
 
-    enterMcloudDocTestData.setOpenedSpatialBbox('update spatial reference, bbox', 'Hamburg');
+    McloudDocumentPage.setOpenedSpatialBbox('update spatial reference, bbox', 'Hamburg');
     // number should stay the same
     DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('Hamburg');
@@ -94,10 +94,10 @@ describe('Spatial References', () => {
     cy.pageReload('dashboard-docs-header', 'Daten');
     Tree.openNode(['api-' + docName]);
 
-    enterMcloudDocTestData.openSpatialMenuDoc('reference, wkt-1');
-    enterMcloudDocTestData.selectChangeInSpatialMenuDoc();
+    McloudDocumentPage.openSpatialMenuDoc('reference, wkt-1');
+    McloudDocumentPage.selectChangeInSpatialMenuDoc();
 
-    enterMcloudDocTestData.setOpenedSpatialWKT('update spatial reference, wkt', poly);
+    McloudDocumentPage.setOpenedSpatialWKT('update spatial reference, wkt', poly);
     DocumentPage.checkSpatialEntryNumber(4);
     DocumentPage.checkSpatialEntryExists('update spatial reference, wkt');
   });
@@ -112,14 +112,14 @@ describe('Spatial References', () => {
     Tree.openNode(['api-' + docName]);
 
     // delete a bbox entry
-    enterMcloudDocTestData.openSpatialMenuDoc('Berlin');
-    enterMcloudDocTestData.deleteSpatialReference('Berlin');
+    McloudDocumentPage.openSpatialMenuDoc('Berlin');
+    McloudDocumentPage.deleteSpatialReference('Berlin');
 
     DocumentPage.checkSpatialEntryExistsNot('Berlin');
 
     // delete a wkt entry
-    enterMcloudDocTestData.openSpatialMenuDoc('create spatial reference, wkt-1');
-    enterMcloudDocTestData.deleteSpatialReference('create spatial reference, wkt-1');
+    McloudDocumentPage.openSpatialMenuDoc('create spatial reference, wkt-1');
+    McloudDocumentPage.deleteSpatialReference('create spatial reference, wkt-1');
 
     DocumentPage.checkSpatialEntryExistsNot('create spatial reference, wkt-1');
   });
@@ -133,7 +133,7 @@ describe('Spatial References', () => {
 
     Tree.openNode([docNameBbox]);
 
-    enterMcloudDocTestData.setSpatialWKT('create spatial reference, random', poly);
+    McloudDocumentPage.setSpatialWKT('create spatial reference, random', poly);
     DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('reference, random');
 

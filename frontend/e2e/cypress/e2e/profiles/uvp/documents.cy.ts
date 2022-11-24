@@ -1,35 +1,26 @@
-import { DocumentPage, PublishOptions } from '../../../pages/document.page';
+import { PublishOptions } from '../../../pages/document.page';
 import { Utils } from '../../../pages/utils';
 import { Tree } from '../../../pages/tree.partial';
 import { Menu } from '../../../pages/menu';
-import { uvpPage } from '../../../pages/uvp.page';
-import { enterMcloudDocTestData } from '../../../pages/enterMcloudDocTestData';
+import { UvpDocumentPage } from '../../../pages/uvpDocument.page';
 import { ResearchPage } from '../../../pages/research.page';
-import { BasePage } from '../../../pages/base.page';
 import { fileDataTransferManagement } from '../../../pages/fileDataTransferManagement.page';
 
 describe('uvp documents', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('uvpcatalog').as('tokens');
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
   });
 
   it('create a minimal publishable document of type "Linienbestimmung" and publish it', () => {
     Tree.openNode(['Plan_L']);
-
-    // add description
-    uvpPage.setDescription('some description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_6');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Fulda', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('02.12.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.1');
-    // publish
-    DocumentPage.publishNow();
+    UvpDocumentPage.setDescription('some description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_6');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Fulda', false);
+    UvpDocumentPage.setDateOfRequest('02.12.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
+    UvpDocumentPage.publishNow();
 
     // check content of fields
     cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
@@ -44,21 +35,13 @@ describe('uvp documents', () => {
 
   it('create a minimal publishable document of type "Zulassungsverfahren" and publish it', () => {
     Tree.openNode(['Plan_Z']);
-
-    // add description
-    uvpPage.setDescription('some description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_7');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Fulda', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('03.12.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.1');
-    // was there a preliminary assessment?
-    uvpPage.IsPreliminaryAssessment('Ja');
-    // publish
-    DocumentPage.publishNow();
+    UvpDocumentPage.setDescription('some description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_7');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Fulda', false);
+    UvpDocumentPage.setDateOfRequest('03.12.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
+    UvpDocumentPage.setPreliminaryAssessment(true);
+    UvpDocumentPage.publishNow();
 
     // check content of fields
     cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
@@ -75,18 +58,12 @@ describe('uvp documents', () => {
   it('create a minimal publishable document of type "Raumordnungsverfahren" and publish it', () => {
     Tree.openNode(['Plan_R']);
 
-    // add description
-    uvpPage.setDescription('some other description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_8');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Bonn', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('04.12.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.1');
-    // publish
-    DocumentPage.publishNow();
+    UvpDocumentPage.setDescription('some other description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_8');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Bonn', false);
+    UvpDocumentPage.setDateOfRequest('04.12.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
+    UvpDocumentPage.publishNow();
 
     // check content of fields
     cy.get('[data-cy="description"] textarea').should('have.value', 'some other description');
@@ -101,15 +78,10 @@ describe('uvp documents', () => {
 
   it('create a minimal publishable document of type "Ausländisches Vorhaben" and publish it', () => {
     Tree.openNode(['Plan_A']);
-
-    // add description
-    uvpPage.setDescription('some more description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_9');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Olpe', false);
-    // publish
-    DocumentPage.publishNow();
+    UvpDocumentPage.setDescription('some more description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_9');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Olpe', false);
+    UvpDocumentPage.publishNow();
 
     // check content of fields
     cy.get('[data-cy="description"] textarea').should('have.value', 'some more description');
@@ -122,13 +94,9 @@ describe('uvp documents', () => {
 
   it('create a minimal publishable document of type "Negative Vorprüfung" and publish it', () => {
     Tree.openNode(['Plan_N']);
-
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_10');
-    // add arrival date of request
-    uvpPage.setDecisionDate('06.12.2021');
-    // publish
-    DocumentPage.publishNow();
+    UvpDocumentPage.setAddress('Adresse, Organisation_10');
+    UvpDocumentPage.setDecisionDate('06.12.2021');
+    UvpDocumentPage.publishNow();
 
     // check content of fields
     cy.get('[data-cy="pointOfContact"] ige-address-card').should(
@@ -140,54 +108,48 @@ describe('uvp documents', () => {
 
   it('Create a completely filled dataset of type "Linienbestimmung" that can be published', () => {
     Tree.openNode(['Plan_L_1']);
-
-    // add description
-    uvpPage.setDescription('some expressive description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_10');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Sayda', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('02.07.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.1');
+    UvpDocumentPage.setDescription('some expressive description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_10');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Sayda', false);
+    UvpDocumentPage.setDateOfRequest('02.07.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
 
     // add additional steps
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2021');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2021');
 
     fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
     fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
     fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('Test.pdf', true);
 
     fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
-    uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    UvpDocumentPage.addProcedureSteps('Erörterungstermin');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
 
     fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
     fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
-    uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    UvpDocumentPage.addProcedureSteps('Entscheidung über die Zulassung');
+    UvpDocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
     fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
     fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
     fileDataTransferManagement.uploadFile('importtest_4.json', true);
 
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
 
     // check content of fields after saving
     cy.get('[data-cy="description"] textarea').should('have.value', 'some expressive description');
@@ -200,69 +162,62 @@ describe('uvp documents', () => {
     cy.get('.spatial-title').should('contain.text', 'Sayda');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '12.12.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.12.2021');
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
-    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
+    UvpDocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
-    DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
+    UvpDocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
-    DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_5.json');
-    DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_4.json');
+    UvpDocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_5.json');
+    UvpDocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_4.json');
 
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
   });
 
   it('Create a completely filled dataset of type "Zulassungsverfahren" that can be published', () => {
     Tree.openNode(['Plan_Z_1']);
-
-    // add description
-    uvpPage.setDescription('some description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_7');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Annaburg', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('03.10.2020');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.2');
-    // was there a preliminary assessment?
-    uvpPage.IsPreliminaryAssessment('Ja');
+    UvpDocumentPage.setDescription('some description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_7');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Annaburg', false);
+    UvpDocumentPage.setDateOfRequest('03.10.2020');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.2');
+    UvpDocumentPage.setPreliminaryAssessment(true);
 
     // add steps
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '01.01.2021');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
 
     fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
     fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
     fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('Test.pdf', true);
 
     fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
-    uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    UvpDocumentPage.addProcedureSteps('Erörterungstermin');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
 
     fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
     fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
-    uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    UvpDocumentPage.addProcedureSteps('Entscheidung über die Zulassung');
+    UvpDocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
 
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
     fileDataTransferManagement.uploadFile('importtest_4.json', true);
@@ -270,7 +225,7 @@ describe('uvp documents', () => {
     fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
     fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
 
     // check content of fields after saving
     cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
@@ -284,68 +239,62 @@ describe('uvp documents', () => {
     cy.get('[data-cy="prelimAssessment"] mat-radio-button').should('have.class', 'mat-radio-checked');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '01.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
-    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
+    UvpDocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
-    DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
+    UvpDocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
-    DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
-    DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
+    UvpDocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
+    UvpDocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
 
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
   });
 
   it('Create a completely filled dataset of type "Raumordnungsverfahren" that can be published', () => {
     Tree.openNode(['Plan_R_1']);
-
-    // add description
-    uvpPage.setDescription('some description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_8');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Niesky', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('05.12.2020');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.2');
+    UvpDocumentPage.setDescription('some description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_8');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Niesky', false);
+    UvpDocumentPage.setDateOfRequest('05.12.2020');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.2');
 
     // add steps
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('Test.pdf', true);
     fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
-    uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
+    UvpDocumentPage.addProcedureSteps('Erörterungstermin');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2021');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2021');
     fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 1);
     fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
-    uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    UvpDocumentPage.addProcedureSteps('Entscheidung über die Zulassung');
+    UvpDocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 2);
     fileDataTransferManagement.uploadFile('importtest_4.json', true);
     fileDataTransferManagement.openUploadDialog('Entscheidung', 2);
     fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
 
     // check content of fields after saving
     cy.get('[data-cy="description"] textarea').should('have.value', 'some description');
@@ -358,58 +307,58 @@ describe('uvp documents', () => {
     cy.get('.spatial-title').should('contain.text', 'Niesky');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
-    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'Test.pdf');
+    UvpDocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Erörterungstermin'
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="start"]').should('have.value', '12.02.2021');
     cy.get('[data-cy="publicHearingDate"] input[formcontrolname="end"]').should('have.value', '24.02.2021');
-    DocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
+    UvpDocumentPage.checkTableEntry(1, 'Informationen zum Erörterungstermin', 'importtest_1.json');
 
     // check 'Entscheidung über die Zulassung'
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
-    DocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
-    DocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
+    UvpDocumentPage.checkTableEntry(2, 'Auslegungsinformationen', 'importtest_4.json');
+    UvpDocumentPage.checkTableEntry(2, 'Entscheidung', 'importtest_5.json');
 
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
   });
 
   it('Create a completely filled dataset of type "Ausländisches Vorhaben" that can be published', () => {
     Tree.openNode(['Plan_A_1']);
 
     // add description
-    uvpPage.setDescription('descr');
+    UvpDocumentPage.setDescription('descr');
     // add address
-    uvpPage.setAddress('Adresse, Organisation_9');
+    UvpDocumentPage.setAddress('Adresse, Organisation_9');
     // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Barby', false);
+    UvpDocumentPage.setSpatialBbox('information about location', 'Barby', false);
 
     // add steps
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '10.01.2021');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.01.2021');
     fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('importtest_2.json', true);
     fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
-    uvpPage.addProcedureSteps('Entscheidung über die Zulassung');
-    DocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
+    UvpDocumentPage.addProcedureSteps('Entscheidung über die Zulassung');
+    UvpDocumentPage.fillInField('[data-cy="decisionDate"]', 'input', '20.05.2022');
     fileDataTransferManagement.openUploadDialog('Auslegungsinformationen', 1);
     fileDataTransferManagement.uploadFile('importtest_4.json', true);
     fileDataTransferManagement.openUploadDialog('Entscheidung', 1);
     fileDataTransferManagement.uploadFile('importtest_5.json', true);
 
-    DocumentPage.saveDocument();
+    UvpDocumentPage.saveDocument();
 
     // check content of fields after saving
     cy.get('[data-cy="description"] textarea').should('have.value', 'descr');
@@ -420,17 +369,17 @@ describe('uvp documents', () => {
     cy.get('.spatial-title').should('contain.text', 'Barby');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="start"]').should('have.value', '10.01.2021');
     cy.get('[data-cy="disclosureDate"] input[formcontrolname="end"]').should('have.value', '24.01.2021');
-    DocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
-    DocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'importtest_2.json');
-    DocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
+    UvpDocumentPage.checkTableEntry(0, 'Auslegungsinformationen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'UVP Bericht/Antragsunterlagen', 'https://cypress.io');
+    UvpDocumentPage.checkTableEntry(0, 'Berichte und Empfehlungen', 'importtest_2.json');
+    UvpDocumentPage.checkTableEntry(0, 'Weitere Unterlagen', 'https://cypress.io/dashboard');
 
     // check 'Entscheidung über die Zulassung'
     cy.get('[data-cy="decisionDate"] input').should('have.value', '20.05.2022');
-    DocumentPage.checkTableEntry(1, 'Auslegungsinformationen', 'importtest_4.json');
-    DocumentPage.checkTableEntry(1, 'Entscheidung', 'importtest_5.json');
+    UvpDocumentPage.checkTableEntry(1, 'Auslegungsinformationen', 'importtest_4.json');
+    UvpDocumentPage.checkTableEntry(1, 'Entscheidung', 'importtest_5.json');
 
-    DocumentPage.publishNow();
+    UvpDocumentPage.publishNow();
   });
 
   it('should add a maximum one spatial reference (#3747) using JSON schema', () => {
@@ -458,28 +407,28 @@ describe('uvp documents', () => {
         type: 'free'
       }
     ];
-    DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, spacial);
+    UvpDocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, spacial);
     cy.pageReload('mat-tree mat-tree-node', docTitle);
 
     Tree.openNode([docTitle]);
-    DocumentPage.choosePublishOption(PublishOptions.ConfirmPublish, true);
-    BasePage.checkErrorDialogMessage('Es trat ein Fehler bei der JSON-Schema Validierung auf');
+    UvpDocumentPage.choosePublishOption(PublishOptions.ConfirmPublish, true);
+    UvpDocumentPage.checkErrorDialogMessage('Es trat ein Fehler bei der JSON-Schema Validierung auf');
   });
 
   it('should add a maximum one spatial reference (#3747) using UI', () => {
     const docTitle = 'A_mit_2_Raumbezug_UI' + Utils.randomString();
-    DocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, null);
+    UvpDocumentPage.CreateForeignProjectDocumentWithAPI(docTitle, null);
 
     cy.pageReload('ige-document-list-item');
 
     Tree.openNode([docTitle]);
-    enterMcloudDocTestData.setSpatialBbox('add spatial reference uvp', 'Berlin', false);
+    UvpDocumentPage.setSpatialBbox('add spatial reference uvp', 'Berlin', false);
     cy.get('[data-cy="spatialButton"]').should('not.exist');
   });
 
   it('should search for uvp documents according to uvp document type parameter', () => {
     Menu.switchTo('RESEARCH');
-    uvpPage.setSearchParameter('Verfahrenstyp', 'Zulassungsverfahren');
+    UvpDocumentPage.setSearchParameter('Verfahrenstyp', 'Zulassungsverfahren');
     ResearchPage.waitForSearch();
     // make sure search returns only documents of the right type
     cy.get('tbody tr').each(el => {
@@ -489,97 +438,85 @@ describe('uvp documents', () => {
 
   it('should not publish document if date of "Datum des Antrags" is later than begin of "Erste Auslegung"', () => {
     Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
+    UvpDocumentPage.setDescription('description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_10');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Euba', false);
+    UvpDocumentPage.setDateOfRequest('02.07.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
 
-    // add description
-    uvpPage.setDescription('description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_10');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Euba', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('02.07.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.1.1');
-
-    // add step "öffentliche Auslegung"
-    uvpPage.addProcedureSteps('Öffentliche Auslegung');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2020');
-    DocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2020');
+    UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="start"]', '12.12.2020');
+    UvpDocumentPage.fillInField('[data-cy="disclosureDate"]', 'input[formcontrolname="end"]', '24.12.2020');
     fileDataTransferManagement.openAddURLDialog('Auslegungsinformationen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io/quatsch');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openAddURLDialog('UVP Bericht/Antragsunterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some url', 'https://cypress.io');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
     fileDataTransferManagement.openUploadDialog('Berichte und Empfehlungen', 0);
     fileDataTransferManagement.uploadFile('Test.pdf', true);
     fileDataTransferManagement.openAddURLDialog('Weitere Unterlagen', 0);
     fileDataTransferManagement.fillFieldsOfAddURLDialog('some other url', 'https://cypress.io/dashboard');
-    BasePage.closeDialogAndAdoptChoices();
+    UvpDocumentPage.closeDialogAndAdoptChoices();
 
     // try to publish and expect error
-    cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-    cy.get(DocumentPage.Toolbar.PublishNow).click();
+    cy.get(UvpDocumentPage.Toolbar.Publish).should('be.enabled');
+    cy.get(UvpDocumentPage.Toolbar.PublishNow).click();
     cy.hasErrorDialog('Es müssen alle Felder korrekt');
     cy.containsFormErrors(1);
     cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn der ersten Auslegung sein/);
   });
 
   it('should check for the content of preview dialog for UVP catalog data record, (#4269)', function () {
-    DocumentPage.visit();
+    UvpDocumentPage.visit();
     // open published document and check for the content
     Tree.openNode(['Plan_to_preview']);
-    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.get(UvpDocumentPage.Toolbar.Preview).click();
 
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=description] ige-print-type ', 'desc Allgemeine');
-    DocumentPage.checkOfExistingItem(
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=description] ige-print-type ', 'desc Allgemeine');
+    UvpDocumentPage.checkOfExistingItem(
       'mat-dialog-content [data-cy=pointOfContact] ige-print-type ',
       'Adresse, Organisation_1'
     );
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=receiptDate] input ', '04.10.2022', 0, true);
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=eiaNumbers] ', ' UVPG-1.1.1 ');
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=receiptDate] input ', '04.10.2022', 0, true);
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=eiaNumbers] ', ' UVPG-1.1.1 ');
 
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Auslegungsinformationen-table]  ', 'testlink');
-    DocumentPage.checkOfExistingItem(
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Auslegungsinformationen-table]  ', 'testlink');
+    UvpDocumentPage.checkOfExistingItem(
       'mat-dialog-content [data-cy="UVP Bericht/Antragsunterlagen-table"]  ',
       'UVPBericht'
     );
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Berichte und Empfehlungen-table"]  ', 'Emp_desk');
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Weitere Unterlagen-table"]  ', 'other');
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Berichte und Empfehlungen-table"]  ', 'Emp_desk');
+    UvpDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Weitere Unterlagen-table"]  ', 'other');
 
-    DocumentPage.checkOfExistingItem(
+    UvpDocumentPage.checkOfExistingItem(
       'mat-dialog-content [data-cy="Informationen zum Erörterungstermin-table"]  ',
       'info about app'
     );
 
-    DocumentPage.checkOfExistingItem('mat-dialog-content [data-cy="Entscheidung-table"]  ', 'Entscheidung ueber alles');
+    UvpDocumentPage.checkOfExistingItem(
+      'mat-dialog-content [data-cy="Entscheidung-table"]  ',
+      'Entscheidung ueber alles'
+    );
   });
   // validation not yet implemented (09/01/22)
   xit('should not publish document if date of "Datum des Antrags" is later than begin of "Erörterungszeitraum" (#4057)', () => {
     Tree.openNode(['Plan_Ordner_3', 'Plan_L_2']);
-
-    // add description
-    uvpPage.setDescription('description');
-    // add address
-    uvpPage.setAddress('Adresse, Organisation_6');
-    // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information about location', 'Nidda', false);
-    // add arrival date of request
-    uvpPage.setDateOfRequest('12.07.2021');
-    // add uvp number
-    uvpPage.setUVPnumber('UVPG-1.2.1');
-
-    // add step "Erörterungstermin"
-    uvpPage.addProcedureSteps('Erörterungstermin');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2020');
-    DocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2020');
-    // DocumentPage.addTableEntry(0, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
+    UvpDocumentPage.setDescription('description');
+    UvpDocumentPage.setAddress('Adresse, Organisation_6');
+    UvpDocumentPage.setSpatialBbox('information about location', 'Nidda', false);
+    UvpDocumentPage.setDateOfRequest('12.07.2021');
+    UvpDocumentPage.setUVPnumber('UVPG-1.2.1');
+    UvpDocumentPage.addProcedureSteps('Erörterungstermin');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2020');
+    UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="end"]', '24.02.2020');
+    // UvpDocumentPage.addTableEntry(0, 'Informationen zum Erörterungstermin', 'Dateien hochladen');
     fileDataTransferManagement.openUploadDialog('Informationen zum Erörterungstermin', 0);
     fileDataTransferManagement.uploadFile('importtest_1.json', true);
 
     // try to publish and expect error
-    cy.get(DocumentPage.Toolbar.Publish).should('be.enabled');
-    cy.get(DocumentPage.Toolbar.PublishNow).click();
+    cy.get(UvpDocumentPage.Toolbar.Publish).should('be.enabled');
+    cy.get(UvpDocumentPage.Toolbar.PublishNow).click();
     cy.hasErrorDialog('Es müssen alle Felder korrekt');
     cy.containsFormErrors(1);
     cy.contains('.mat-error formly-validation-message', /Datum muss vor dem Beginn des Erörterungstermins sein/);

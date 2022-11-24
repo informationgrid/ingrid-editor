@@ -1,4 +1,4 @@
-import { Permissions } from "../+user/user";
+import { Permissions, User } from "../+user/user";
 
 export class Group {
   id: number;
@@ -21,6 +21,11 @@ export class Group {
 export class FrontendGroup {
   backendGroup: Group;
   currentUserIsMember?: boolean;
+}
+
+export class UserResponse {
+  user: User;
+  readOnly: boolean;
 }
 
 export class GroupData {

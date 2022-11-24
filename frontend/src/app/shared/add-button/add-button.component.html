@@ -1,27 +1,51 @@
 <div class="wrapper">
-    <button
-        *ngIf="buttonType == 'flat'"
-        type="button"
-        color="primary"
-        mat-flat-button
-        class="button-square-icon"
-        [class.padding-btn]="showLabel"
-        [class.error-outline]="showRequiredError"
-        (click)="add.next()"
-    >
-        <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
-    </button>
-    <button
-        *ngIf="buttonType == 'stroked'"
-        type="button"
-        mat-stroked-button
-        class="button-square-icon"
-        [class.padding-btn]="showLabel"
-        [class.error-outline]="showRequiredError"
-        (click)="add.next()"
-    >
-        <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
-    </button>
+    <ng-container *ngIf="_options?.length === 0; else menuButton">
+        <button
+            *ngIf="buttonType == 'flat'"
+            type="button"
+            color="primary"
+            mat-flat-button
+            class="button-square-icon"
+            [class.padding-btn]="showLabel"
+            [class.error-outline]="showRequiredError"
+            (click)="add.next()"
+        >
+            <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+        </button>
+        <button
+            *ngIf="buttonType == 'stroked'"
+            type="button"
+            mat-stroked-button
+            class="button-square-icon"
+            [class.padding-btn]="showLabel"
+            [class.error-outline]="showRequiredError"
+            (click)="add.next()"
+        >
+            <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+        </button>
+    </ng-container>
+
+    <ng-template #menuButton>
+        <button
+            type="button"
+            mat-stroked-button
+            class="button-square-icon"
+            [class.padding-btn]="showLabel"
+            [class.error-outline]="showRequiredError"
+            [matMenuTriggerFor]="menuOptions"
+        >
+            <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+        </button>
+        <mat-menu #menuOptions="matMenu">
+            <button
+                mat-menu-item
+                *ngFor="let option of _options"
+                (click)="add.next(option.key)"
+            >
+                {{ option.value }}
+            </button>
+        </mat-menu>
+    </ng-template>
 
     <mat-error *ngIf="showRequiredError" class="error"
         >Bitte erstellen Sie mindestens einen Eintrag</mat-error

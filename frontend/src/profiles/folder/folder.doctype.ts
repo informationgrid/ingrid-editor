@@ -14,4 +14,8 @@ export class FolderDoctype extends BaseDoctype {
 
   // no extra fields
   documentFields = () => <FormlyFieldConfig[]>[];
+
+  constructor() {
+    super();
+  }
 }

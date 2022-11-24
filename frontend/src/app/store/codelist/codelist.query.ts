@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { QueryEntity } from "@datorama/akita";
 import { CodelistState, CodelistStore } from "./codelist.store";
-import { Codelist } from "./codelist.model";
+import { Codelist, CodelistEntry } from "./codelist.model";
 import { filter, first, map } from "rxjs/operators";
 import { Observable } from "rxjs";
 
@@ -28,7 +28,7 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     return this.getValue().catalogCodelists.find((cl) => cl.id === id);
   }
 
-  getCatalogEntryByKey(
+  getCodelistEntryValueByKey(
     codelistId: string,
     entryKey: string,
     defaultValue?: string
@@ -41,5 +41,12 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     )?.fields;
 
     return entryFields ? entryFields["de"] : defaultValue ?? "";
+  }
+
+  getCodelistEntryByKey(codelistId: string, entryKey: string): CodelistEntry {
+    const entities =
+      this.getCatalogCodelist(codelistId) ??
+      this.getValue().entities[codelistId];
+    return entities?.entries?.find((entry) => entry.id === entryKey);
   }
 }

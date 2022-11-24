@@ -12,7 +12,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   ConfirmDialogComponent,
@@ -26,7 +26,10 @@ import { ConfigService } from "../../../services/config/config.service";
   templateUrl: "./address-type.component.html",
   styleUrls: ["./address-type.component.scss"],
 })
-export class AddressTypeComponent extends FieldType implements OnInit {
+export class AddressTypeComponent
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
+{
   addresses: AddressRef[] = [];
 
   constructor(

@@ -32,7 +32,14 @@
                 showPercentages="true"
             ></ige-chart>
         </div>
-        <ige-card-box fxFlex label="{{ t('form') }}">
+        <ige-card-box
+            fxFlex
+            label="{{
+                form.get('type').value === 'selectAddresses'
+                    ? 'Adressen'
+                    : t('form')
+            }}"
+        >
             <table
                 mat-table
                 [dataSource]="dataSource"

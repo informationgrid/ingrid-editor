@@ -49,7 +49,7 @@ export abstract class AddressShared extends BaseDoctype {
           key: "inheritAddress",
           type: "toggle",
           defaultValue: options.inheritAddress,
-          templateOptions: {
+          props: {
             label: "Anschrift aus übergeordneter Adresse übernehmen",
           },
           hideExpression: (_, formState) =>
@@ -101,7 +101,7 @@ export abstract class AddressShared extends BaseDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: null }
+      { fieldGroupClassName: "" }
     );
   }
 

@@ -1,0 +1,79 @@
+<ige-table-dialog
+    [isNew]="data?.newEntry"
+    [submitDisabled]="form.invalid"
+    (submit)="submit()"
+>
+    <form [formGroup]="form" fxLayout="column">
+        <mat-form-field appearance="outline">
+            <mat-label>Spezifikation der Konformität</mat-label>
+            <mat-select
+                *ngIf="form.controls.isInspire.value === true; else freeSpecs"
+                formControlName="specification"
+                data-cy="conformity-specification-id"
+                [compareWith]="selectFn"
+            >
+                <mat-option
+                    *ngFor="let item of specifications | async"
+                    [value]="item"
+                >
+                    {{ item.label }}
+                </mat-option>
+            </mat-select>
+            <ng-template #freeSpecs>
+                <input
+                    matInput
+                    [matAutocomplete]="specificationAuto"
+                    formControlName="specification"
+                    data-cy="conformity-specification-id"
+                />
+                <mat-autocomplete #specificationAuto [displayWith]="displayFn">
+                    <mat-option
+                        *ngFor="let item of specificationsFree | async"
+                        [value]="item"
+                    >
+                        {{ item.label }}
+                    </mat-option>
+                </mat-autocomplete>
+            </ng-template>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Grad der Konformität</mat-label>
+            <mat-select
+                formControlName="pass"
+                data-cy="conformity-level-id"
+                [compareWith]="selectFn"
+            >
+                <mat-option *ngFor="let item of level | async" [value]="item">
+                    {{ item.label }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Datum</mat-label>
+            <input
+                matInput
+                formControlName="date"
+                data-cy="conformity-date-id"
+                [matDatepicker]="picker"
+            />
+            <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>geprüft mit</mat-label>
+            <input
+                matInput
+                formControlName="verifiedBy"
+                data-cy="conformity-verified-id"
+            />
+        </mat-form-field>
+        <mat-checkbox
+            formControlName="isInspire"
+            data-cy="conformity-is-inspire-id"
+            >Ist INSPIRE Eintrag</mat-checkbox
+        >
+    </form>
+</ige-table-dialog>

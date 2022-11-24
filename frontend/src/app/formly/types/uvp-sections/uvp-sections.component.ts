@@ -17,6 +17,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 })
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};
+  sectionTypes = [];
   constructor(private dialog: MatDialog, private formService: FormularService) {
     super();
   }
@@ -28,16 +29,18 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
         map((values) => this.getLabelFromSections(values))
       )
       .subscribe((value) => this.formService.setAdditionalSections(value));
+
+    this.sectionTypes = (<FormlyFieldConfig>this.field.fieldArray).fieldGroup;
   }
 
   private getLabelFromSections(values: FormlyFieldConfig[]) {
     return values
       .map((value) =>
-        this.field.fieldArray.fieldGroup.find(
+        (<FormlyFieldConfig>this.field.fieldArray).fieldGroup.find(
           (item) => item.name === value.type
         )
       )
-      .map((value) => value?.templateOptions?.label);
+      .map((value) => value?.props?.label);
   }
 
   removeSection(index: number) {

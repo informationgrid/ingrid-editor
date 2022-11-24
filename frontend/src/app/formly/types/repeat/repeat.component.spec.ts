@@ -14,6 +14,7 @@ describe("RepeatComponent", () => {
 
   beforeEach(() => {
     spectator = createHost();
+    // @ts-ignore
     spectator.component.field = {};
   });
 

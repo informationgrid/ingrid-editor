@@ -4,7 +4,6 @@ import { Tree } from '../../pages/tree.partial';
 import { Menu } from '../../pages/menu';
 import { Utils } from '../../pages/utils';
 import { AdminUserPage } from '../../pages/administration-user.page';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
 import { fileDataTransferManagement } from '../../pages/fileDataTransferManagement.page';
 
 describe('mCLOUD: edit documents', function () {
@@ -125,7 +124,7 @@ describe('edit documents', function () {
     DocumentPage.addList('[data-cy="repeatDetailListImage"]', 'image title');
     DocumentPage.addList('[data-cy="repeatDetailListLink"]', 'sometitle', true);
     // add spatial reference
-    enterMcloudDocTestData.setSpatialBbox('information', 'Bonn', false);
+    DocumentPage.setSpatialBbox('information', 'Bonn', false);
 
     // publish
     DocumentPage.publishNow();

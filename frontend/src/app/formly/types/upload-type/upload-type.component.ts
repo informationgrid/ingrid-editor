@@ -4,6 +4,7 @@ import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../models/ige-document";
 import { UntypedFormControl, Validators } from "@angular/forms";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 interface LinkType {
   uri: string;
@@ -17,7 +18,10 @@ interface LinkType {
   templateUrl: "./upload-type.component.html",
   styleUrls: ["./upload-type.component.scss"],
 })
-export class UploadTypeComponent extends FieldType implements OnInit {
+export class UploadTypeComponent
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
+{
   // TODO: refactor and use direct form control to prevent explicit updates
   upload: LinkType;
   @Input() document: IgeDocument;

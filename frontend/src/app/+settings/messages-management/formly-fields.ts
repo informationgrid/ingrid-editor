@@ -4,7 +4,7 @@ export const messagesFields: FormlyFieldConfig[] = [
   {
     key: "messages",
     type: "table",
-    templateOptions: {
+    props: {
       externalLabel: "Benachrichtigungen",
       columns: [
         {
@@ -12,7 +12,7 @@ export const messagesFields: FormlyFieldConfig[] = [
           type: "input",
           label: "Titel",
           width: "300px",
-          templateOptions: {
+          props: {
             label: "Text",
             appearance: "outline",
           },
@@ -22,7 +22,7 @@ export const messagesFields: FormlyFieldConfig[] = [
           type: "datepicker",
           label: "Gültig bis",
           width: "100px",
-          templateOptions: {
+          props: {
             label: "Gültig bis",
             appearance: "outline",
             formatter: (item: any) => {

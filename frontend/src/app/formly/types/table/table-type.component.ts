@@ -22,6 +22,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -30,7 +31,7 @@ import {
   styleUrls: ["table-type.component.scss"],
 })
 export class TableTypeComponent
-  extends FieldType
+  extends FieldType<FieldTypeConfig>
   implements OnInit, AfterViewInit
 {
   readonly preservedValues = {};
@@ -56,7 +57,9 @@ export class TableTypeComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.to.columns.map((column) => column.key);
+    this.displayedColumns = this.to.columns
+      .filter((column) => !column.hidden)
+      .map((column) => column.key);
     this.displayedColumns.push("_actions_");
     this.displayedColumns.forEach(
       (column) => (this.preservedValues[column] = new WeakMap<any, any>())
@@ -108,11 +111,11 @@ export class TableTypeComponent
   editRow(index: number) {
     const newEntry = index === null;
     this.dialog
-      .open(FormDialogComponent, {
+      .open(this.to.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
         minWidth: 550,
         data: {
-          fields: this.to.columns,
+          fields: this.to.columns.filter((column) => !column.hidden),
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
@@ -218,15 +221,15 @@ export class TableTypeComponent
     }
 
     this.to.columns
-      .filter((column) => column.templateOptions.formatter)
+      .filter((column) => column.props.formatter)
       .forEach((column) =>
         value?.forEach((row, index) => {
           this.formattedCell.push({});
-          this.formattedCell[index][column.key] =
-            column.templateOptions.formatter(
-              value[index][column.key],
-              this.form
-            );
+          this.formattedCell[index][column.key] = column.props.formatter(
+            value[index][column.key],
+            this.form,
+            value[index]
+          );
         })
       );
   }
@@ -320,8 +323,7 @@ export class TableTypeComponent
   handleCellClick(index: number, element, $event: MouseEvent) {
     const uploadKey = this.getUploadFieldKey();
     if (!element[uploadKey].asLink) {
-      const options =
-        this.to.columns[this.batchMode ? index - 1 : index].templateOptions;
+      const options = this.to.columns[this.batchMode ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
           this.form.root.get("_uuid").value,

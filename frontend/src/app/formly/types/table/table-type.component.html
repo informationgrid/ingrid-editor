@@ -75,7 +75,7 @@
     </div>
 
     <ige-form-error
-        *ngIf="formFieldControl.errorState && !formControl.errors?.required"
+        *ngIf="formControl.invalid && !formControl.hasError('required')"
         ><formly-validation-message [field]="field"></formly-validation-message
     ></ige-form-error>
 
@@ -86,6 +86,7 @@
         [class.edit-mode]="batchMode"
         [attr.data-cy]="to.externalLabel + '-table'"
         cdkDropList
+        cdkDrag
         [cdkDragDisabled]="dragDisabled"
         (cdkDropListDropped)="dragDisabled = true; drop($event)"
     >
@@ -159,10 +160,7 @@
                 >
                     {{ to.columns[batchMode ? i - 1 : i].label }}
                     <span
-                        *ngIf="
-                            to.columns[batchMode ? i - 1 : i].templateOptions
-                                .required
-                        "
+                        *ngIf="to.columns[batchMode ? i - 1 : i].props.required"
                         >*</span
                     >
                 </mat-header-cell>

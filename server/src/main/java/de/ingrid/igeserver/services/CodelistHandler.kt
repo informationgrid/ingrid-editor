@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
@@ -18,6 +20,33 @@ class CodelistHandler @Autowired constructor(
     private val codeListService: CodeListService
 ) {
 
+    companion object {
+        fun toCodelistEntry(id: String, german: String, data: String? = null): JsonNode {
+            return jacksonObjectMapper().createObjectNode().apply {
+                put("id", id)
+                if (data != null) put("data", data)
+                set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
+                    put("de", german)
+                })
+            }
+        }
+
+    }
+
+    fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
+        codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
+        codelistRepo.flush()
+        codelistRepo.save(codelist)
+    }
+    
+    fun removeAndAddCodelists(catalogId: String, codelists: List<Codelist>) {
+        codelists.forEach { 
+            codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, it.identifier)
+        }
+        codelistRepo.flush()
+        codelistRepo.saveAll(codelists)
+    }
+    
     fun getCodelists(ids: List<String>): List<CodeList> {
 
         return codeListService.codeLists

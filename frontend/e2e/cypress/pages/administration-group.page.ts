@@ -114,10 +114,7 @@ export class AdminGroupPage extends BasePage {
   }
 
   static deleteGroup(groupName: string, deleteConfirm: boolean = true) {
-    cy.contains('.mat-table .mat-row', groupName)
-      .find('button:nth-child(1) > span:nth-child(1) > mat-icon:nth-child(1)')
-      .invoke('show')
-      .click({ force: true });
+    cy.get('.user-title [svgicon="Mehr"]').click();
     cy.contains('button', 'Löschen').click();
     cy.get('mat-dialog-container');
     if (deleteConfirm) {
@@ -128,10 +125,7 @@ export class AdminGroupPage extends BasePage {
   }
 
   static deleteGroupOfOtherUsers(groupName: string) {
-    cy.contains('.mat-table .mat-row', groupName)
-      .find('button:nth-child(1) > span:nth-child(1) > mat-icon:nth-child(1)')
-      .invoke('show')
-      .click({ force: true });
+    cy.get('.user-title [svgicon="Mehr"]').click();
     cy.contains('button', 'Löschen').click();
     cy.get('mat-dialog-content')
       .contains(`Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Benutzer verwendet:`)

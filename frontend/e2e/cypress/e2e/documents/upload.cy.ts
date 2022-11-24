@@ -1,6 +1,6 @@
 import { DocumentPage } from '../../pages/document.page';
 import { Tree } from '../../pages/tree.partial';
-import { enterMcloudDocTestData } from '../../pages/enterMcloudDocTestData';
+import { McloudDocumentPage } from '../../pages/mcloudDocument.page';
 import { FileHandlingOptions, fileDataTransferManagement } from '../../pages/fileDataTransferManagement.page';
 
 describe('mCLOUD: Upload Tests', () => {
@@ -235,7 +235,7 @@ describe('mCLOUD: Upload Tests', () => {
     const url = 'https://docs.cypress.io/guides/overview/why-cypress#In-a-nutshell';
 
     Tree.openNode(['Testdokumente', 'Ordner 2. Ebene', 'Tiefes Dokument']);
-    enterMcloudDocTestData.setAddDownload('open in new tab', url);
+    McloudDocumentPage.setAddDownload('open in new tab', url);
     cy.contains('[data-cy="Downloads-table"] mat-row', url);
     cy.get('mat-cell a')
       .should('have.attr', 'target', '_blank')

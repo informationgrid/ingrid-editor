@@ -99,7 +99,7 @@ export class FormularService {
         mergeMap((items) => items),
         mergeMap((item) => getSectionItem(item)),
         filter((item) => item?.wrappers?.indexOf("section") >= 0),
-        map((item) => item.templateOptions.label),
+        map((item) => item.props.label),
         toArray()
       )
       .subscribe((sections) => {

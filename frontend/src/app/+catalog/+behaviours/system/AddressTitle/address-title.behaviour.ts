@@ -32,7 +32,7 @@ export class AddressTitleBehaviour extends Plugin {
     this.fields.push({
       key: "template",
       type: "input",
-      templateOptions: {
+      props: {
         placeholder: 'firstName ? lastName + ", " + firstName : organization',
         appearance: "outline",
         required: true,
