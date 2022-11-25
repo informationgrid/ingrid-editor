@@ -435,11 +435,15 @@ describe('Meta data administrator with a group', () => {
     cy.get('error-dialog').contains('keine Berechtigung');
   });
 
-  it('meta data admin should not be able to create a root document/address', () => {
+  it('meta data admin should not be able to create a root document/address (#4549)', () => {
     // try to create data folder
     DocumentPage.visit();
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('.root .disabled');
+
+    // try to force creation
+    cy.get('[data-cy=create-title]').type('illegalDocument' + '{enter}');
+    cy.get('[data-cy="create-action"]').should('have.attr', 'disabled');
 
     // try to create address folder
     AddressPage.visit();
