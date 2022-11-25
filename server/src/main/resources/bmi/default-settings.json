@@ -1,34 +1,12 @@
 {
   "analysis": {
     "filter": {
-      "decomp": {
-        "type": "decompound"
-      },
       "german_stemmer": {
         "type": "stemmer",
         "name": "light_german"
-      },
-      "decomp_shingle": {
-        "type": "shingle",
-        "max_shingle_size": "8",
-        "output_unigrams": "false"
-      },
-      "suggest_shingle": {
-        "type": "shingle",
-        "max_shingle_size": "5",
-        "output_unigrams": "true"
       }
     },
     "analyzer": {
-      "decomp": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "decomp",
-          "german_normalization",
-          "lowercase"
-        ]
-      },
       "german_simple": {
         "type": "custom",
         "tokenizer": "standard",
@@ -36,34 +14,6 @@
           "lowercase",
           "german_normalization",
           "german_stemmer"
-        ]
-      },
-      "decomp_german": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "decomp",
-          "german_normalization",
-          "german_stemmer"
-        ]
-      },
-      "decomp_shingles": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "decomp",
-          "german_normalization",
-          "decomp_shingle"
-        ]
-      },
-      "suggest_shingles": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "lowercase",
-          "suggest_shingle"
         ]
       }
     }

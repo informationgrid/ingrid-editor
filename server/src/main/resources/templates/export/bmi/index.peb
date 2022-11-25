@@ -37,33 +37,22 @@
     "distribution": [
     {% for download in model.data.distributions %}
         {
-            "format": ["{{ model.getCodelistValue(catalogId, "20002", download.type.key, download.type.value) }}"],
+            "format": ["{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"],
             {% if download.link.asLink %}
                 "accessURL": "{{ download.link.uri }}",
             {% else %}
                 "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.uri }}",
             {% endif %}
-            "title": "{{ download.title }}",
-            "type": "{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"
+            "title": "{{ download.title }}"
         }{% if not loop.last %},{% endif %}
     {% endfor %}
     ],
     "extras": {
-        "all": null,
         "metadata": {
-            "source": {
-                "attribution": "mCLOUD IGE"
-            },
             "issued": "{{ model.created }}",
-            "modified": "{{ model.modified }}",
-            "harvested": null,
-            "harvesting_errors": null,
-            "is_valid": {{ model.isValid }}
+            "modified": "{{ model.modified }}"
         },
         "generated_id": "{{ model.uuid }}",
-        "subgroups": [
-            "{{ model.data.mCloudCategories | join('","') | raw }}"
-        ],
         "license": {
             "id": "{{ model.getLicenseData().id }}",
             "title": "{{ model.getLicenseData().name }}"
@@ -71,8 +60,6 @@
                 ,"url": "{{ model.getLicenseData().url }}"
             {% endif %}
         },
-        "harvested_data": null,
-        "subsection": null,
         "spatial":
         {% if model.realSpatials is empty %}
         null
@@ -108,18 +95,6 @@
             {% endif %}
             }
          {% endif %}],
-        "groups": null,
-        "display_contact": [{
-            "name": "{{ model.getPublisher().organization.trim() }}",
-            "homepage": "{{ model.getPublisher().getHomepage() }}"
-        }],
-        "realtime": {{ model.data.periodicity == "1" }},
-        {% if  model.data.mfundFKZ %}
-            "mfund_fkz": "{{ model.data.mfundFKZ }}",
-         {% endif %}
-        {% if  model.data.mfundProject %}
-            "mfund_project_title": "{{ model.data.mfundProject }}",
-         {% endif %}
         "citation": null
     }
 }

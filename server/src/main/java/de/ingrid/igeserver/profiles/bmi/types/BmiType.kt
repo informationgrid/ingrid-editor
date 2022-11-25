@@ -13,7 +13,7 @@ import java.net.URLDecoder
 
 @Component
 class BmiType : EntityType() {
-    override val className = "bmiDoc"
+    override val className = "BmiDoc"
     override val profiles = arrayOf("bmi")
 
     val log = logger()

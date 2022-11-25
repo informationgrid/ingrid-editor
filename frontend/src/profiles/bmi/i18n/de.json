@@ -11,7 +11,7 @@
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
   },
   "procedureType": {
-    "bmiDoc": "Datensatz",
+    "BmiDoc": "Datensatz",
     "BmiAddressDoc": "Adresse"
   }
 }

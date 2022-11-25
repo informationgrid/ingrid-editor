@@ -69,7 +69,7 @@ class BmiPublishExport @Autowired constructor(
     private fun indexBmiDoc(context: Context, docId: String) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "portal", docId)
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "index", docId)
 
     }
 }

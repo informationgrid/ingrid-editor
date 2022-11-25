@@ -21,7 +21,7 @@ class BmiIndexExporter : IgeExporter {
         get() {
             return ExportTypeInfo(
                 DocumentCategory.DATA,
-                "portal",
+                "index",
                 "BMI Index",
                 "Export der Adressen für die weitere Verwendung im  Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
