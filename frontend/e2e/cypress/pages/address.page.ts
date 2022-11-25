@@ -196,6 +196,12 @@ export class AddressPage extends DocumentPage {
   static submitReplaceAddress() {
     cy.get('[data-cy="dialog-replace-address"]').click();
   }
+
+  static confirmReplaceAddress() {
+    cy.contains('mat-dialog-content', /Achtung/);
+    cy.get('[data-cy="confirm-dialog-confirm"]').click();
+  }
+
   static openReferencedDocumentsSection() {
     cy.get('ige-referenced-documents-type button').click();
   }

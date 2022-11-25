@@ -110,6 +110,7 @@ describe('mCLOUD: Load addresses', () => {
     AddressPage.openReplaceAddressDialog();
     Tree.openNodeInsideDialog(['Folder_for_replace_address_test', 'second-empty-address']);
     AddressPage.submitReplaceAddress();
+    AddressPage.confirmReplaceAddress();
     cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
     cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
     cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
