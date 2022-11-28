@@ -173,13 +173,15 @@ export class AdminUserPage extends BasePage {
   static addUserButton = '[data-cy="toolbar_add_user"]';
 
   // TODO: select user by unique property like email!
-  static selectUser(name: string) {
+  static selectUser(name: string, dirtyCheck: boolean = false) {
     cy.get('.page-title').contains('Benutzer (');
     cy.get('[data-cy=search]').clear().type(name);
     cy.contains('user-table .mat-row', name).click();
-    // waiting for form to be shown can lead to error when we test dirty check
-    // and a dialog appears which overlays the formUser element
-    // cy.get('#formUser').should('be.visible');
+
+    // make sure the user form will be available if no checks required
+    if (!dirtyCheck) {
+      cy.get('#formUser', { timeout: 8000 }).should('be.visible');
+    }
   }
 
   static clearSearch() {

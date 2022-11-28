@@ -24,12 +24,12 @@ describe('Group', () => {
     // cancel and stay on the same group
     AdminGroupPage.selectGroup(firstGroup);
     AdminGroupPage.updateGroup({ description: descriptionName }, false);
-    AdminGroupPage.selectGroup(secondGroup);
+    AdminGroupPage.selectGroup(secondGroup, true);
     AdminUserPage.cancelChanges();
     AdminGroupPage.checkDescription(descriptionName);
 
     // discard changes and change the group
-    AdminGroupPage.selectGroup(secondGroup);
+    AdminGroupPage.selectGroup(secondGroup, true);
     AdminUserPage.discardChanges();
     AdminGroupPage.selectGroup(firstGroup);
     AdminGroupPage.checkDescription('');
@@ -109,7 +109,7 @@ describe('mCLOUD: Group', () => {
     cy.get('button').contains('Abbrechen').click();
 
     // check titles are unique
-    AdminGroupPage.selectGroupAndWait(groupName2);
+    AdminGroupPage.selectGroup(groupName2);
     AdminGroupPage.updateGroup({ name: groupName }, false);
     // clicking another field is needed to activate the error-message
     cy.get('textarea').click();
@@ -124,7 +124,7 @@ describe('mCLOUD: Group', () => {
     const modifiedGroupName = 'Foodgroup';
     const description = 'Eine Essensgruppe?';
 
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
 
     // modify groupname, add description and save
     cy.get('#formRoles [formcontrolname=name]').clear().type(modifiedGroupName);
@@ -149,12 +149,11 @@ describe('mCLOUD: Group', () => {
     const groupName2 = 'test_gruppe_2';
     const description = 'Irgendeine Änderung';
 
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
 
     cy.get('textarea').click().clear().type(description);
 
-    AdminGroupPage.selectGroup(groupName2);
-    cy.get('mat-dialog-container').contains('Änderungen speichern').should('be.visible');
+    AdminGroupPage.selectGroup(groupName2, true);
     AdminUserPage.discardChanges();
   });
 
@@ -164,15 +163,15 @@ describe('mCLOUD: Group', () => {
     const description = 'Irgendeine Änderung';
 
     // change something (name) and try to click on another user --> discard dialog appears
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.selectGroup(groupName2);
+    AdminGroupPage.selectGroup(groupName2, true);
     AdminUserPage.discardChanges();
 
     cy.get('groups-table .selected').contains(groupName2);
     // check entry is not reverted to the previous value
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     cy.get('textarea').invoke('text').should('not.equal', description);
   });
 
@@ -181,12 +180,12 @@ describe('mCLOUD: Group', () => {
     const groupName2 = 'test_gruppe_2';
     const description = 'Noch eine Änderung';
 
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     // check group is selected
     cy.get('groups-table .selected').contains(groupName);
 
     cy.get('textarea').click().clear().type(description);
-    AdminGroupPage.selectGroup(groupName2);
+    AdminGroupPage.selectGroup(groupName2, true);
     AdminUserPage.cancelChanges();
     AdminGroupPage.clearSearch();
 
@@ -211,7 +210,7 @@ describe('mCLOUD: Group', () => {
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
     cy.get('.page-title').contains('Gruppen');
 
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
 
     // delete the group which we connected
     cy.get('#formRoles [data-mat-icon-name=Mehr]').click();
@@ -237,7 +236,7 @@ describe('mCLOUD: Group', () => {
     const group = 'test_gruppe_1';
     const description = 'eine Beschreibung';
 
-    AdminGroupPage.selectGroupAndWait(group);
+    AdminGroupPage.selectGroup(group);
     cy.get('[data-cy=toolbar_save_group]').should('be.disabled');
 
     cy.get('textarea').click().clear().type(description);
@@ -246,7 +245,7 @@ describe('mCLOUD: Group', () => {
 
   it('should remove a document from a group as soon as deleting action is performed (#3469)', () => {
     // delete address from group
-    AdminGroupPage.selectGroupAndWait('test_gruppe_2');
+    AdminGroupPage.selectGroup('test_gruppe_2');
     AdminGroupPage.deleteDocumentFromGroup('Elsass, Adresse', 'Adressen');
     // make sure address is visually removed from group without prompt to affirm intention to delete document
     cy.get('mat-dialog-container').should('not.exist');
@@ -264,7 +263,7 @@ describe('mCLOUD: Group', () => {
     AdminUserPage.saveUser();
     // jump from group to user
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(group);
+    AdminGroupPage.selectGroup(group);
     cy.contains('.user-title', group, { timeout: 10000 });
     AdminUserPage.selectAssociatedUser(user);
     // make sure group is associated to user
@@ -274,7 +273,7 @@ describe('mCLOUD: Group', () => {
 
   it('should show warning message when user try to delete a group that is assigned to other users', () => {
     let groupName = 'gruppe_mit_datenrechten';
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.deleteGroup(groupName, false);
     cy.get('mat-dialog-content').contains(
       `Möchten Sie die Gruppe "${groupName}" wirklich löschen? Die Gruppe wird von einem Benutzer verwendet`
@@ -285,7 +284,7 @@ describe('mCLOUD: Group', () => {
     const groupName = 'group_10';
     const docName = 'Datum_Ebene_2_3';
     const docPath = 'Daten/Neue Testdokumente';
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     cy.contains('permission-table .mat-row', docName).within(_ => {
       cy.get('ige-breadcrumb').invoke('text').should('equal', docPath);
     });
@@ -294,7 +293,7 @@ describe('mCLOUD: Group', () => {
   it('should show correct information in group header', () => {
     /* 1. last-edited-date */
     // change an existing group and make sure the "last-edited" date is updated
-    AdminGroupPage.selectGroupAndWait('leere_Gruppe');
+    AdminGroupPage.selectGroup('leere_Gruppe');
     // edit group
     AdminGroupPage.addGroupDescription('Gruppe ohne irgendwelche Daten');
     AdminGroupPage.saveGroup();
@@ -312,7 +311,7 @@ describe('mCLOUD: Group', () => {
     // create group and make sure the created-date is correct
     const groupName = 'group' + Utils.randomString();
     AdminGroupPage.addNewGroup(groupName);
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.openUpGroupHeader();
     AdminGroupPage.verifyInfoInHeader(headerKeys.CreationDate, dateOfToday);
   });
@@ -324,12 +323,12 @@ describe('mCLOUD: Group', () => {
 
     DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
     // add read access to document of an assigned group of meta data admin
-    AdminGroupPage.selectGroupAndWait(group1);
+    AdminGroupPage.selectGroup(group1);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // add read access for document to one of meta admin's groups (= those visible to him)
-    AdminGroupPage.selectGroupAndWait(group2);
+    AdminGroupPage.selectGroup(group2);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(documentName, 'Daten');
     AdminGroupPage.saveGroup();
@@ -338,7 +337,7 @@ describe('mCLOUD: Group', () => {
     cy.kcLogin('mcloud-meta-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(group2);
+    AdminGroupPage.selectGroup(group2);
     // check that access right cannot be changed
     cy.get('[data-cy="Berechtigungen Daten"]')
       .contains(documentName)
@@ -352,7 +351,7 @@ describe('mCLOUD: Group', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(group1);
+    AdminGroupPage.selectGroup(group1);
     UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure access right can now be changed by meta data admin
@@ -360,7 +359,7 @@ describe('mCLOUD: Group', () => {
     cy.kcLogin('mcloud-meta-with-groups');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(group2);
+    AdminGroupPage.selectGroup(group2);
     UserAuthorizationPage.changeAccessRightFromReadToWrite(documentName, 'Daten');
   });
 
@@ -370,7 +369,7 @@ describe('mCLOUD: Group', () => {
 
     DocumentPage.CreateSimpleMcloudDocumentWithAPI(documentName, false, null);
     // add document to empty group that belongs to metadata admin
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addDocumentToGroup(documentName, 'Daten');
     AdminGroupPage.saveGroup();
     // make sure meta data admin does not see group

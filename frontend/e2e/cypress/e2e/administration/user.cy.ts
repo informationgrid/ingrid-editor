@@ -98,7 +98,7 @@ describe('mCLOUD: User', () => {
     // change name, then interrupt editing by trying to switch to another user
     // after canceling the prompt to discard changes, we are still in editing mode
     AdminUserPage.updateUser({ firstName: 'Modified' }, false);
-    AdminUserPage.selectUser('Majid');
+    AdminUserPage.selectUser('Majid', true);
     AdminUserPage.cancelChanges();
     AdminUserPage.clearSearch();
 
@@ -109,7 +109,7 @@ describe('mCLOUD: User', () => {
     cy.get('user-table .selected').contains(name);
 
     // try to switch to another user, this time discarding all changes -> changes are undone, new user can be selected
-    AdminUserPage.selectUser('Majid');
+    AdminUserPage.selectUser('Majid', true);
     AdminUserPage.discardChanges();
 
     // go back to original user profile and make sure data is unchanged
@@ -396,7 +396,7 @@ describe('mCLOUD: User', () => {
 
     AdminUserPage.selectUser(username);
     AdminUserPage.updateUser({ firstName: modified }, false);
-    AdminUserPage.selectUser(username2);
+    AdminUserPage.selectUser(username2, true);
 
     // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();
@@ -405,7 +405,7 @@ describe('mCLOUD: User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
 
     // when changes are canceled, save-button is enabled
-    AdminUserPage.selectUser(username);
+    AdminUserPage.selectUser(username, true);
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(modified + ' ' + 'Admin');
@@ -597,12 +597,12 @@ describe('User', () => {
     // cancel and stay on the same user
     AdminUserPage.selectUser(firstUserName);
     AdminUserPage.updateUser({ organisation: orgName }, false);
-    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.selectUser(secondUserName, true);
     AdminUserPage.cancelChanges();
     AdminUserPage.checkOrganisationName(orgName);
 
     // discard changes and change the user
-    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.selectUser(secondUserName, true);
     AdminUserPage.discardChanges();
     AdminUserPage.selectUser(firstUserName);
     AdminUserPage.checkOrganisationName('');
