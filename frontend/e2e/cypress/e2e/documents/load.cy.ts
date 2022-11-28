@@ -70,7 +70,7 @@ describe('mCloud Load documents', () => {
     cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
-    cy.get('ige-form-info ige-breadcrumb .selectable').click();
+    cy.get('ige-form-info ige-breadcrumb .selectable', { timeout: 10000 }).click();
     cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
   });
 

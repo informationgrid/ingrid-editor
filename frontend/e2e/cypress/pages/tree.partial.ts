@@ -92,7 +92,7 @@ export class Tree {
             node.trigger('click');
             if (waitForShownInForm && !isInsideDialog && !nodeIsSelected) {
               // wait for document loaded, otherwise check might fail
-              cy.contains(DocumentPage.title, nodeTitle, { timeout: 15000 }).should('be.visible');
+              cy.contains(DocumentPage.title, nodeTitle, { timeout: 20000 }).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
           } else {
