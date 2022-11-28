@@ -39,8 +39,14 @@ export class LiteratureDoctype extends IngridShared {
               null,
               null,
               [
-                this.addInputInline("publishedIn", "Erschienen in"),
-                this.addInputInline("publishLocation", "Erscheinungsort"),
+                this.addInputInline("publishedIn", "Erschienen in", {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }),
+                this.addInputInline("publishLocation", "Erscheinungsort", {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }),
               ],
               { wrappers: [] }
             ),

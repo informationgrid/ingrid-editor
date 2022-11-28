@@ -27,21 +27,15 @@ export class InformationSystemDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addGroup(
-          null,
-          "Beschreibung",
-          [
-            this.addSelectInline("serviceType", "Art des Dienstes", {
-              options: this.getCodelistForSelect(5300, "serviceType"),
-              codelistId: 5300,
-            }),
-            this.addRepeatListInline("serviceVersion", "Version", {
-              hideExpression: "formState.hideOptionals",
-            }),
-          ],
-          null,
-          "serviceTypeVersion"
-        ),
+        this.addGroup(null, "Beschreibung", [
+          this.addSelectInline("serviceType", "Art des Dienstes", {
+            options: this.getCodelistForSelect(5300, "serviceType"),
+            codelistId: 5300,
+          }),
+          this.addRepeatListInline("serviceVersion", "Version", {
+            hideExpression: "formState.hideOptionals",
+          }),
+        ]),
         this.addGroup(
           null,
           "Weitere Informationen",

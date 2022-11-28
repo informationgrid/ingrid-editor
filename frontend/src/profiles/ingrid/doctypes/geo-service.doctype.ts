@@ -83,8 +83,7 @@ export class GeoServiceDoctype extends IngridShared {
               ],
             }),
           ],
-          null,
-          "shownData"
+          { contextHelpId: "shownData" }
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
           hideExpression: "formState.hideOptionals",

@@ -11,13 +11,7 @@ export class FormFieldHelper {
     };
   }
 
-  addGroup(
-    id: string,
-    label: string,
-    fields: any[],
-    options?,
-    contextHelpId: string = null
-  ) {
+  addGroup(id: string, label: string, fields: any[], options?) {
     return <FormlyFieldConfig>{
       key: id,
       id: id,
@@ -25,7 +19,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       props: {
         externalLabel: label,
-        contextHelpId: contextHelpId,
+        contextHelpId: options?.contextHelpId,
       },
       fieldGroup: fields,
       expressions: { hide: options?.hideExpression },
@@ -76,9 +70,9 @@ export class FormFieldHelper {
     options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
-      ...options,
       wrappers: ["form-field"],
       fieldLabel: label,
+      ...options,
     });
   }
 
@@ -214,9 +208,9 @@ export class FormFieldHelper {
 
   addInputInline(id, label, options = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
-      ...options,
       fieldLabel: label,
       wrappers: ["form-field"],
+      ...options,
     });
   }
 
@@ -247,10 +241,10 @@ export class FormFieldHelper {
 
   addSelectInline(id, label, options: any = {}) {
     return this.addSelect(id, null, {
-      ...options,
       fieldLabel: label,
       wrappers: ["form-field"],
       className: options.className ?? "flex-1",
+      ...options,
     });
   }
 
@@ -314,9 +308,9 @@ export class FormFieldHelper {
 
   addDatepickerInline(id, label, options = {}) {
     return this.addDatepicker(id, null, {
-      ...options,
       fieldLabel: label,
       wrappers: ["form-field"],
+      ...options,
     });
   }
 
@@ -370,9 +364,9 @@ export class FormFieldHelper {
 
   addCheckboxInline(id, label, options = {}) {
     return this.addCheckbox(id, null, {
-      ...options,
       fieldLabel: label,
       wrappers: ["form-field", "inline-help"],
+      ...options,
     });
   }
 
