@@ -11,9 +11,9 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.unbescape.json.JsonEscape
 
 @Service
 class LuceneExporter @Autowired constructor(
@@ -24,7 +24,7 @@ class LuceneExporter @Autowired constructor(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     fun run(doc: Document, catalogId: String): Any {
-        val output: TemplateOutput = XMLStringOutput()
+        val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
         templateEngine.render("uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
         return output.toString()
@@ -48,14 +48,11 @@ class LuceneExporter @Autowired constructor(
         return codelistService.getCodeListValue(codelistId, partner, "ident") ?: ""
     }
 
-    private class XMLStringOutput : StringOutput() {
+    private class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                StringEscapeUtils.escapeXml11(value)
-                    .replace("\n", "&#10;")
-                    .replace("\r", "&#13;")
-                    .replace("\t", "&#9;")
+                JsonEscape.escapeJson(value)
             )
         }
     }
