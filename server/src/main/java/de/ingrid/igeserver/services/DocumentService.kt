@@ -617,17 +617,6 @@ class DocumentService @Autowired constructor(
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
         catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
 
-    fun getDocumentStatistic(catalogId: String): StatisticResponse {
-
-        val allDataDrafts = docWrapperRepo.findAllDrafts(catalogId)
-        val allDataPublished = docWrapperRepo.findAllPublished(catalogId)
-
-        return StatisticResponse(
-            numDrafts = allDataDrafts.size,
-            numPublished = allDataPublished.size,
-        )
-    }
-
     fun isAddress(wrapper: DocumentWrapper): Boolean {
         return wrapper.category == DocumentCategory.ADDRESS.value
     }
