@@ -381,7 +381,7 @@ class UsersApiController : UsersApi {
             val user = keycloakService.getUser(client, id)
             val password = keycloakService.resetPassword(principal, id)
             logger.debug("Reset password for user $id to $password")
-            if (!developmentMode) email.sendWelcomeEmailWithPassword(
+            if (!developmentMode) email.sendResetPasswordEmail(
                 user.email,
                 user.firstName,
                 user.lastName,
