@@ -621,6 +621,10 @@ export class TreeComponent implements OnInit {
   }
 
   selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {
+    if (this.disabledCondition(node)) {
+      // disabled nodes can't be selected
+      return;
+    }
     const id = this.selection.selectNode(node, $event);
 
     if (!id) return;
