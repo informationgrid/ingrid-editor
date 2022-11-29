@@ -46,7 +46,11 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addInputInline(
               "parentIdentifier",
-              "Identifikator des übergeordneten Metadatensatzes"
+              "Identifikator des übergeordneten Metadatensatzes",
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
             this.addInputInline(
               "modifiedMetadata",
@@ -57,6 +61,8 @@ export abstract class IngridShared extends BaseDoctype {
                   // depending on write access, we need to set disabled state dynamically
                   "props.disabled": () => true,
                 },
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
               }
             ),
           ],
@@ -210,7 +216,10 @@ export abstract class IngridShared extends BaseDoctype {
   addSpatialSection() {
     return this.addSection("Raumbezugssystem", [
       this.addGroupSimple("spatial", [
-        this.addSpatial("references", "Raumbezug", { required: true }),
+        this.addSpatial("references", "Raumbezug", {
+          required: true,
+          hasInlineContextHelp: true,
+        }),
         this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
           asSelect: true,
           options: this.getCodelistForSelect(100, "spatialSystems"),

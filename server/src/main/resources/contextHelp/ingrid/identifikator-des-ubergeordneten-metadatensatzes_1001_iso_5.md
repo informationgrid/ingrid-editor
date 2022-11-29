@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
-id: info
-docType: 
+id: parentIdentifier
+docType:
   - InGridDataCollection
   - InGridGeoDataset
   - InGridGeoService

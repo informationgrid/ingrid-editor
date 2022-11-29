@@ -58,6 +58,7 @@ export class FormFieldHelper {
         },
         appearance: "outline",
         required: options?.required,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: { hide: options?.hideExpression },
     };

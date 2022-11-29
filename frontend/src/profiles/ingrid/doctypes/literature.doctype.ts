@@ -54,9 +54,18 @@ export class LiteratureDoctype extends IngridShared {
               null,
               null,
               [
-                this.addInputInline("publishedInIssue", "Band/Heft"),
-                this.addInputInline("publishedInPages", "Seiten"),
-                this.addInputInline("publishedInYear", "Erscheinungsjahr"),
+                this.addInputInline("publishedInIssue", "Band/Heft", {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }),
+                this.addInputInline("publishedInPages", "Seiten", {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }),
+                this.addInputInline("publishedInYear", "Erscheinungsjahr", {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }),
               ],
               { wrappers: [] }
             ),
@@ -92,9 +101,16 @@ export class LiteratureDoctype extends IngridShared {
             this.addTextAreaInline(
               "bibliographicData",
               "Weitere bibliographische Angaben",
-              this.id
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
-            this.addTextAreaInline("explanation", "Erläuterungen", this.id),
+            this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
           { hideExpression: "formState.hideOptionals" }
         ),
