@@ -398,7 +398,8 @@ export class AdminUserPage extends BasePage {
     userRole: string,
     newPassword: string = '',
     userFirstname: string = '',
-    userLastname: string = ''
+    userLastname: string = '',
+    firstTimeAccess: boolean = true
   ) {
     //Here we want to wait after user creation to get the email
     //Because it takes some time to receive welcoming email
@@ -408,7 +409,9 @@ export class AdminUserPage extends BasePage {
     cy.task('getLastEmail', userEmail)
       .its('body')
       .then(body => {
-        expect(body).to.contain('Passwort wurde zurückgesetzt');
+        expect(body).to.contain(
+          `${firstTimeAccess ? 'Herzlich Willkommen beim IGE-NG' : 'Passwort wurde zurückgesetzt'}`
+        );
 
         // Extract the password
         let bodyArray = body.split('Passwort: ');

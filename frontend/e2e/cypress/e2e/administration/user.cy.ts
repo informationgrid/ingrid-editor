@@ -586,7 +586,8 @@ describe('User', () => {
       'Author',
       '123FFffGex@$wfhjfh444',
       'autor',
-      'reset-pass'
+      'reset-pass',
+      false
     );
   });
   it('Should check the functionality of cancel, discard, and save buttons in users section (#4184)', () => {
