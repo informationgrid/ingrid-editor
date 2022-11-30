@@ -408,7 +408,7 @@ export class AdminUserPage extends BasePage {
     cy.task('getLastEmail', userEmail)
       .its('body')
       .then(body => {
-        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+        expect(body).to.contain('Passwort wurde zurückgesetzt');
 
         // Extract the password
         let bodyArray = body.split('Passwort: ');
