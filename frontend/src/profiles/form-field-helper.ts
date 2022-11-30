@@ -59,6 +59,7 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
       },
       expressions: { hide: options?.hideExpression },
     };
@@ -195,6 +196,7 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         appearance: "outline",
         disabled: options?.disabled,
+        contextHelpId: options?.contextHelpId,
       },
       modelOptions: {
         updateOn: "blur",

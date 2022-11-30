@@ -246,6 +246,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "spatialRefAltMeasure"
                   ),
                   codelistId: 102,
+                  hasInlineContextHelp: true,
                 }),
               ],
               { wrappers: [] }
@@ -259,7 +260,7 @@ export abstract class IngridShared extends BaseDoctype {
                   codelistId: 101,
                 }),
               ],
-              { wrappers: [] }
+              { wrappers: [], hasInlineContextHelp: true }
             ),
           ],
           {
@@ -269,6 +270,7 @@ export abstract class IngridShared extends BaseDoctype {
         ),
         this.addTextArea("description", "Erläuterungen", "spatial", {
           hideExpression: "formState.hideOptionals",
+          contextHelpId: "descriptionSpacial",
         }),
       ]),
     ]);
