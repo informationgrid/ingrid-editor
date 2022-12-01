@@ -61,7 +61,7 @@ export class ReplaceAddressDialogComponent implements OnInit {
         data: (<ConfirmDialogData>{
           title: "Adresse ersetzen",
           message:
-            "Achtung! Eine Adresse zu ersetzen ist unumkehrbar. \n Es kann im Nachhinein nicht mehr rekonstruiert werden, welche Adresse einem Dokument zugeordnet war.",
+            "Achtung! Eine Adresse zu ersetzen ist nicht umkehrbar. \n Es kann im Nachhinein nicht mehr rekonstruiert werden, in welchen Datensätzen die Adresse ersetzt wurde.",
           buttons: [
             { text: "Abbrechen" },
             {
