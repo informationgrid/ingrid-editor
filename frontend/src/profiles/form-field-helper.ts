@@ -201,10 +201,7 @@ export class FormFieldHelper {
       modelOptions: {
         updateOn: "blur",
       },
-      expressions: {
-        ...options?.expressionProperties,
-        hide: options?.hideExpression,
-      },
+      expressions: options?.expressionProperties,
       validators: options?.validators,
     };
   }

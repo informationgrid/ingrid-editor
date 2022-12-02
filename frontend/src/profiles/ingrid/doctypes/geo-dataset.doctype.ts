@@ -132,7 +132,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           ],
           hideExpression:
-            'formState.mainModel.spatialRepresentationType?.find(x => x.key === "1") === undefined',
+            '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "1")',
         }),
         this.addGroup(
           "gridSpatialRepresentation",
@@ -149,9 +149,13 @@ export class GeoDatasetDoctype extends IngridShared {
                 ),
                 this.addInputInline(
                   "numberOfDimenstions",
-                  "Anzahl der Dimensionen"
+                  "Anzahl der Dimensionen",
+                  { type: "number" }
                 ),
-                this.addInputInline("cellGeometry", "Zellengeometrie"),
+                this.addSelectInline("cellGeometry", "Zellengeometrie", {
+                  options: this.getCodelistForSelect(509, "cellGeometry"),
+                  codelistId: 509,
+                }),
               ],
               { wrappers: [] }
             ),
@@ -165,7 +169,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   columns: [
                     {
                       key: "name",
-                      type: "input",
+                      type: "select",
                       label: "Achsenbezeichnung",
                       props: {
                         label: "Achsenbezeichnung",
@@ -261,7 +265,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 wrappers: [],
                 fieldGroupClassName: "",
                 hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation.type?.key !== "rectified"',
+                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
               }
             ),
             this.addGroup(
@@ -294,14 +298,14 @@ export class GeoDatasetDoctype extends IngridShared {
                 wrappers: [],
                 fieldGroupClassName: "",
                 hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation.type?.key !== "referenced"',
+                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
               }
             ),
           ],
           {
             fieldGroupClassName: "",
             hideExpression:
-              'formState.mainModel.spatialRepresentationType?.find(x => x.key === "2") === undefined',
+              '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
         this.addTable("resolution", "Erstellungsmaßstab", {
@@ -348,7 +352,7 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(),
+                fields: this.symbolInformation(), // TODO: add autocomplete for title
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
@@ -364,7 +368,7 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(),
+                fields: this.symbolInformation(), // TODO: add autocomplete for title (other codelist)
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
@@ -427,14 +431,17 @@ export class GeoDatasetDoctype extends IngridShared {
             wrappers: ["panel", "form-field"],
             type: "number",
           }),
-          this.addGroup(null, "Genauigkeit", [
-            this.addInput("griddedDataPositionalAccuracy", null, {
-              fieldLabel: "Rasterpositionsgenauigkeit (m)",
-              type: "number",
-              hideExpression:
-                'formState.mainModel.spatialRepresentationType?.find(x => x.key === "2") === undefined',
-            }),
-            this.addGroupSimple("absoluteExternalPositionalAccuracy", [
+          this.addGroup(
+            "absoluteExternalPositionalAccuracy",
+            "Genauigkeit",
+            [
+              this.addInput("griddedDataPositionalAccuracy", null, {
+                fieldLabel: "Rasterpositionsgenauigkeit (m)",
+                type: "number",
+                expressionProperties: {
+                  hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+                },
+              }),
               this.addInput("vertical", null, {
                 fieldLabel: "Höhengenauigkeit (m)",
                 type: "number",
@@ -443,8 +450,9 @@ export class GeoDatasetDoctype extends IngridShared {
                 fieldLabel: "Lagegenauigkeit (m)",
                 type: "number",
               }),
-            ]),
-          ]),
+            ],
+            { fieldGroupClassName: "display-flex" }
+          ),
           this.addTable("qualities", "Qualität", {
             supportUpload: false,
             hideExpression: "formState.hideOptionals",
@@ -528,15 +536,15 @@ export class GeoDatasetDoctype extends IngridShared {
     return this.addGroupSimple(
       null,
       [
-        { key: "_type" },
         this.addInputInline("title", "Titel", {
-          className: "",
+          className: "flex-3",
         }),
+        { key: "_type" },
         this.addDatepickerInline("date", "Datum", {
-          className: "",
+          className: "flex-1",
         }),
         this.addInputInline("edition", "Version", {
-          className: "",
+          className: "flex-1",
         }),
       ],
       { fieldGroupClassName: "display-flex" }

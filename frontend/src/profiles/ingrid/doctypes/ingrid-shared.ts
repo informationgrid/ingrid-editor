@@ -1,9 +1,6 @@
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
+import { CodelistService } from "../../../app/services/codelist/codelist.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";

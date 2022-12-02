@@ -390,9 +390,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.createNewForm();
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    setTimeout(() => {
-      writePermission ? this.form.enable() : this.form.disable();
-    });
+    // setTimeout(() => {
+    writePermission ? this.form.enable() : this.form.disable();
+    // });
   }
 
   async handleDrop(event: any) {
