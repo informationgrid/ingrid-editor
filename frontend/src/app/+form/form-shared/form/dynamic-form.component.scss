@@ -94,6 +94,12 @@ pre {
   z-index: 1;
   user-select: none;
 
+  &.sticky {
+    position: fixed;
+    top: 150px;
+    right: 17px;
+  }
+
   .cover {
     position: absolute;
     width: 1000px;
@@ -117,7 +123,11 @@ pre {
 
   .diagonal {
     width: 46px;
-    background: -webkit-linear-gradient(45deg, #ffffff 45%, $ige-background 0%);
+    background: -webkit-linear-gradient(
+      45deg,
+      #00000000 45%,
+      $ige-background 0%
+    );
   }
 
   mat-slide-toggle {

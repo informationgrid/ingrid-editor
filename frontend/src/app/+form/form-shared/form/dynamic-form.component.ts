@@ -86,6 +86,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
+  isStickyHeader = false;
 
   constructor(
     private formularService: FormularService,
@@ -384,6 +385,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.paddingWithHeader = stickyHeaderInfo.show
       ? stickyHeaderInfo.headerHeight + 20 + "px"
       : 20 + "px";
+    this.isStickyHeader = stickyHeaderInfo.show;
   }
 
   private initializeForm(writePermission: boolean) {
