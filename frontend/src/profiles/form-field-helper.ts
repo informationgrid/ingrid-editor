@@ -15,6 +15,7 @@ export class FormFieldHelper {
     return <FormlyFieldConfig>{
       key: id,
       id: id,
+      className: options?.className,
       fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
       wrappers: options?.wrappers ?? ["panel"],
       props: {
@@ -28,8 +29,9 @@ export class FormFieldHelper {
 
   addGroupSimple(id: string, fields: any[], options?: any) {
     return this.addGroup(id, null, fields, {
-      fieldGroupClassName: options?.fieldGroupClassName ?? "",
+      fieldGroupClassName: "",
       wrappers: [],
+      ...options,
     });
   }
 
@@ -140,7 +142,7 @@ export class FormFieldHelper {
     });
   }
 
-  addRepeat(id, label, options?) {
+  addRepeat(id, label, options?): FormlyFieldConfig {
     return {
       key: id,
       type: "repeat",
@@ -157,6 +159,7 @@ export class FormFieldHelper {
         fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
         fieldGroup: options?.fields,
       },
+      expressions: options?.expressions,
     };
   }
 
@@ -235,7 +238,7 @@ export class FormFieldHelper {
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: options?.expressions,
     };
   }
 

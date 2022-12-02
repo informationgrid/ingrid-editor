@@ -4,8 +4,10 @@ import { CodelistService } from "../../../app/services/codelist/codelist.service
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
+import { toBoolean } from "@datorama/akita";
 
 interface GeneralSectionOptions {
+  additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
   openData?: boolean;
 }
@@ -14,6 +16,7 @@ interface KeywordSectionOptions {
   priorityDataset?: boolean;
   spatialScope?: boolean;
   thesaurusTopics?: boolean;
+  openData?: boolean;
 }
 
 interface AdditionalInformationSectionOptions {
@@ -34,79 +37,9 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
-    return this.addSection(
-      "Allgemeines",
+    return this.addGroupSimple(
+      null,
       [
-        this.addGroup(
-          null,
-          "Info",
-          [
-            this.addInputInline(
-              "parentIdentifier",
-              "Identifikator des übergeordneten Metadatensatzes",
-              {
-                hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
-              }
-            ),
-            this.addInputInline(
-              "modifiedMetadata",
-              "Metadaten-Datum (veröffentlichte Version)",
-              {
-                expressionProperties: {
-                  // since whole form will be disabled/enabled by application
-                  // depending on write access, we need to set disabled state dynamically
-                  "props.disabled": () => true,
-                },
-                hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
-              }
-            ),
-          ],
-          { hideExpression: "formState.hideOptionals" }
-        ),
-        this.addTable("graphicOverviews", "Vorschaugrafik", {
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "fileName",
-              type: "upload",
-              label: "URI",
-              props: {
-                label: "URI",
-                appearance: "outline",
-                onClick: (docUuid, uri, $event) => {
-                  this.uploadService.downloadFile(docUuid, uri, $event);
-                },
-                formatter: (link: any) => {
-                  if (link.asLink) {
-                    return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
-                  } else {
-                    return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
-                  }
-                },
-              },
-            },
-            {
-              key: "fileDescription",
-              type: "input",
-              label: "Beschreibung",
-              props: {
-                label: "Beschreibung",
-                appearance: "outline",
-              },
-            },
-          ],
-        }),
-        this.addInput("alternateTitle", "Kurzbezeichnung", {
-          wrappers: ["panel", "form-field"],
-          hideExpression: "formState.hideOptionals",
-        }),
-        this.addTextArea("description", "Beschreibung", this.id, {
-          required: true,
-        }),
-        this.addAddressCard("pointOfContact", "Adressen"),
         this.addGroup(
           null,
           "Typ",
@@ -132,29 +65,92 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
           ].filter(Boolean)
         ),
-        this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-          hideExpression: "!model.isInspireIdentified",
-          options: [
-            {
-              value: "Ja",
-              id: true,
-            },
-            {
-              value: "Nein",
-              id: false,
-            },
-          ],
-        }),
-        options.openData
-          ? this.addRepeatList("openDataCategories", "Kategorien", {
-              asSelect: true,
-              options: this.getCodelistForSelect(6400, "openDataCategories"),
-              codelistId: 6400,
-              // expressions: { hide: "!model.isOpenData" },
-              // hideExpression: "!model.isOpenData", // repeatList component does not seem to update model!?
-              hideExpression: "!formState.mainModel.isOpenData",
-            })
-          : null,
+        options.additionalGroup ? options.additionalGroup : null,
+        this.addSection("Allgemeines", [
+          this.addGroup(
+            null,
+            "Info",
+            [
+              this.addInputInline(
+                "parentIdentifier",
+                "Identifikator des übergeordneten Metadatensatzes",
+                {
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }
+              ),
+              this.addInputInline(
+                "modifiedMetadata",
+                "Metadaten-Datum (veröffentlichte Version)",
+                {
+                  expressionProperties: {
+                    // since whole form will be disabled/enabled by application
+                    // depending on write access, we need to set disabled state dynamically
+                    "props.disabled": () => true,
+                  },
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
+                }
+              ),
+            ],
+            { hideExpression: "formState.hideOptionals" }
+          ),
+          this.addTable("graphicOverviews", "Vorschaugrafik", {
+            hideExpression: "formState.hideOptionals",
+            columns: [
+              {
+                key: "fileName",
+                type: "upload",
+                label: "URI",
+                props: {
+                  label: "URI",
+                  appearance: "outline",
+                  onClick: (docUuid, uri, $event) => {
+                    this.uploadService.downloadFile(docUuid, uri, $event);
+                  },
+                  formatter: (link: any) => {
+                    if (link.asLink) {
+                      return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
+                    } else {
+                      return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+                    }
+                  },
+                },
+              },
+              {
+                key: "fileDescription",
+                type: "input",
+                label: "Beschreibung",
+                props: {
+                  label: "Beschreibung",
+                  appearance: "outline",
+                },
+              },
+            ],
+          }),
+          this.addInput("alternateTitle", "Kurzbezeichnung", {
+            wrappers: ["panel", "form-field"],
+            hideExpression: "formState.hideOptionals",
+          }),
+          this.addTextArea("description", "Beschreibung", this.id, {
+            required: true,
+          }),
+          this.addAddressCard("pointOfContact", "Adressen"),
+          this.addRadioboxes("isInspireConform", "INSPIRE konform", {
+            hideExpression: "!model.isInspireIdentified",
+            options: [
+              {
+                value: "Ja",
+                id: true,
+              },
+              {
+                value: "Nein",
+                id: false,
+              },
+            ],
+          }),
+        ]),
       ].filter(Boolean)
     );
   }
@@ -175,6 +171,14 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 6100,
           hideExpression: "formState.hideOptionals",
         }),
+        options.openData
+          ? this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
+              asSelect: true,
+              options: this.getCodelistForSelect(6400, "openDataCategories"),
+              codelistId: 6400,
+              hideExpression: "!formState.mainModel.isOpenData",
+            })
+          : null,
         // TODO: output needs to be formatted in a different way
         options.priorityDataset
           ? this.addRepeatList(
@@ -342,14 +346,14 @@ export abstract class IngridShared extends BaseDoctype {
         this.addSelect("status", "Status", {
           options: this.getCodelistForSelect(523, "timeRefStatus"),
           codelistId: 523,
-          hideExpression: "formState.hideOptionals",
+          expressions: { "props.hide": "formState.hideOptionals" },
         }),
       ]),
       this.addGroupSimple("maintenanceInformation", [
         this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
           options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
           codelistId: 518,
-          hideExpression: "formState.hideOptionals",
+          expressions: { "props.hide": "formState.hideOptionals" },
         }),
         this.addGroup(
           "userDefinedMaintenanceFrequency",
@@ -377,37 +381,55 @@ export abstract class IngridShared extends BaseDoctype {
       "Zusatzinformation",
       [
         this.addGroupSimple("metadata", [
-          this.addSelect("language", "Sprache des Metadatensatzes", {
-            options: this.getCodelistForSelect(
-              99999999,
-              "extraInfoLangMetaData"
-            ),
-            codelistId: 99999999,
-            required: true,
-          }),
+          this.addGroup(
+            null,
+            "Sprache / Zeichensatz",
+            [
+              this.addSelectInline("language", "Sprache des Metadatensatzes", {
+                options: this.getCodelistForSelect(
+                  99999999,
+                  "extraInfoLangMetaData"
+                ),
+                codelistId: 99999999,
+                required: true,
+              }),
+              options.extraInfoCharSetData
+                ? this.addGroupSimple(
+                    "metadata",
+                    [
+                      this.addSelectInline(
+                        "characterSet",
+                        "Zeichensatz des Datensatzes",
+                        {
+                          options: this.getCodelistForSelect(
+                            510,
+                            "characterSet"
+                          ),
+                          codelistId: 510,
+                          hideExpression: "formState.hideOptionals",
+                        }
+                      ),
+                    ],
+                    { className: "flex-1" }
+                  )
+                : null,
+            ].filter(Boolean)
+          ),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
           codelistId: 3571,
           required: true,
         }),
-        options.extraInfoCharSetData
-          ? this.addGroupSimple("metadata", [
-              this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
-                options: this.getCodelistForSelect(510, "characterSet"),
-                codelistId: 510,
-                hideExpression: "formState.hideOptionals",
-              }),
-            ])
-          : null,
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
-              this.addRepeatList("languages", "Sprache der Ressource", {
+              this.addRepeatChip("languages", "Sprache der Ressource", {
                 options: this.getCodelistForSelect(
                   99999999,
                   "extraInfoLangData"
                 ),
                 codelistId: 99999999,
+                useDialog: true,
                 required: true,
               }),
             ])
@@ -435,7 +457,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "pass",
+                  key: "result",
                   type: "select",
                   label: "Grad",
                   width: "100px",
@@ -472,7 +494,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "isInspire",
+                  key: "inspire",
                   type: "checkbox",
                   hidden: true,
                   props: {
@@ -483,12 +505,6 @@ export abstract class IngridShared extends BaseDoctype {
             })
           : null,
         this.addGroupSimple("extraInfo", [
-          this.addRepeatList("xmlExportCriteria", "XML-Export-Kriterium", {
-            asSelect: true,
-            options: this.getCodelistForSelect(1370, "extraInfoXMLExportTable"),
-            codelistId: 1370,
-            hideExpression: "formState.hideOptionals",
-          }),
           this.addRepeatList(
             "legalBasicsDescriptions",
             "Weitere Rechtliche Grundlagen",
@@ -557,92 +573,28 @@ export abstract class IngridShared extends BaseDoctype {
         ),
       ]),
       this.addGroupSimple("distribution", [
-        this.addTable("format", "Datenformat", {
-          supportUpload: false,
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "name",
-              type: "select",
-              label: "Name",
-              props: {
-                label: "Name",
-                appearance: "outline",
-                options: this.getCodelistForSelect(1320, "specification"),
-                codelistId: 1320,
-                formatter: (item: any) =>
-                  this.formatCodelistValue("1320", item),
-              },
-            },
-            {
-              key: "version",
-              type: "input",
-              label: "Version",
-              width: "100px",
-              props: {
-                label: "Version",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "compression",
-              type: "input",
-              label: "Kompressionstechnik",
-              width: "100px",
-              props: {
-                label: "Kompressionstechnik",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "specification",
-              type: "input",
-              label: "Spezifikation",
-              width: "200px",
-              props: {
-                label: "Spezifikation",
-                appearance: "outline",
-              },
-            },
+        this.addRepeat("format", "Datenformat", {
+          expressions: { "props.hide": "formState.hideOptionals" },
+          fields: [
+            this.addSelectInline("name", "Name", {
+              options: this.getCodelistForSelect(1320, "specification"),
+              codelistId: 1320,
+            }),
+            this.addInputInline("version", "Version"),
+            this.addInputInline("compression", "Kompressionstechnik"),
+            this.addInputInline("specification", "Spezifikation"),
           ],
         }),
       ]),
-      this.addTable("digitalTransferOptions", "Medienoption", {
-        supportUpload: false,
-        hideExpression: "formState.hideOptionals",
-        columns: [
-          {
-            key: "name",
-            type: "select",
-            label: "Medium",
-            props: {
-              label: "Medium",
-              appearance: "outline",
-              options: this.getCodelistForSelect(520, "specification"),
-              codelistId: 520,
-              formatter: (item: any) => this.formatCodelistValue("520", item),
-            },
-          },
-          {
-            key: "transferSize",
-            type: "input",
-            label: "Datenvolumen (MB)",
-            width: "100px",
-            props: {
-              label: "Datenvolumen (MB)",
-              appearance: "outline",
-            },
-          },
-          {
-            key: "mediumNote",
-            type: "input",
-            label: "Speicherort",
-            width: "100px",
-            props: {
-              label: "Speicherort",
-              appearance: "outline",
-            },
-          },
+      this.addRepeat("digitalTransferOptions", "Medienoption", {
+        expressions: { "props.hide": "formState.hideOptionals" },
+        fields: [
+          this.addSelectInline("name", "Medium", {
+            options: this.getCodelistForSelect(520, "specification"),
+            codelistId: 520,
+          }),
+          this.addInputInline("transferSize", "Datenvolumen (MB)"),
+          this.addInputInline("mediumNote", "Speicherort"),
         ],
       }),
       this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
@@ -655,16 +607,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
-        menuOptions: [
-          {
-            key: "description",
-            value: "Beschreibung",
-            fields: this.docRefDescription(),
-          },
-          { key: "url", value: "URL", fields: this.urlRefFields() },
-          { key: "object", value: "Objekt", fields: this.docRefFields() },
-        ],
-        fields: [],
+        fields: [this.urlRefFields()],
       }),
     ]);
   }

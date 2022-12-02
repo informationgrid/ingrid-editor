@@ -10,25 +10,28 @@ import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 
 const qualityTables = <SelectOptionUi[]>[
-  { label: "Datenüberschuss", value: "dü" },
-  { label: "Konzeptionelle Konsistenz", value: "kk" },
-  { label: "Konsistenz des Wertebereichs", value: "kw" },
-  { label: "Formatkonsistenz", value: "fk" },
-  { label: "Topologische Konsistenz", value: "tk" },
-  { label: "Zeitliche Genauigkeit", value: "zk" },
+  { label: "Datenüberschuss", value: "completenessComission" },
+  { label: "Konzeptionelle Konsistenz", value: "conceptualConsistency" },
+  { label: "Konsistenz des Wertebereichs", value: "domainConsistency" },
+  { label: "Formatkonsistenz", value: "formatConsistency" },
+  { label: "Topologische Konsistenz", value: "topologicalConsistency" },
+  { label: "Zeitliche Genauigkeit", value: "temporalConsistency" },
   {
     label: "Korrektheit der thematischen Klassifizierung",
-    value: "ktk",
+    value: "thematicClassificationCorrectness",
   },
   {
     label: "Genauigkeit nicht-quantitativer Attribute",
-    value: "gnqa",
+    value: "nonQuantitativeAttributeAccuracy",
   },
   {
     label: "Genauigkeit quantitativer Attribute",
-    value: "gqa",
+    value: "quantitativeAttributeAccuracy",
   },
-  { label: "Relative Positionsgenauigkeit", value: "rp" },
+  {
+    label: "Relative Positionsgenauigkeit",
+    value: "relativeInternalPositionalAccuracy",
+  },
 ];
 
 @Injectable({
@@ -45,11 +48,20 @@ export class GeoDatasetDoctype extends IngridShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ inspireRelevant: true, openData: true }),
+      this.addGeneralSection({
+        inspireRelevant: true,
+        openData: true,
+        additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
+          required: true,
+          options: this.getCodelistForSelect(525, "subType"),
+          codelistId: 525,
+        }),
+      }),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,
         thesaurusTopics: true,
+        openData: true,
       }),
 
       this.addSection("Fachbezug", [
@@ -77,11 +89,6 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field"],
-        }),
-        this.addSelect("subType", "Datensatz/Datenserie", {
-          required: true,
-          options: this.getCodelistForSelect(525, "subType"),
-          codelistId: 525,
         }),
         this.addRepeatList(
           "spatialRepresentationType",
@@ -138,76 +145,6 @@ export class GeoDatasetDoctype extends IngridShared {
           "gridSpatialRepresentation",
           "Raster/Gitter",
           [
-            this.addGroup(
-              null,
-              null,
-              [
-                this.addCheckboxInline(
-                  "transformationParameterAvailability",
-                  "Verfügbarkeit von Transformationsparametern",
-                  { className: "flex-3" }
-                ),
-                this.addInputInline(
-                  "numberOfDimenstions",
-                  "Anzahl der Dimensionen",
-                  { type: "number" }
-                ),
-                this.addSelectInline("cellGeometry", "Zellengeometrie", {
-                  options: this.getCodelistForSelect(509, "cellGeometry"),
-                  codelistId: 509,
-                }),
-              ],
-              { wrappers: [] }
-            ),
-            this.addGroup(
-              null,
-              null,
-              [
-                this.addTable("axisDimensionsProperties", null, {
-                  supportUpload: false,
-                  className: "flex-1",
-                  columns: [
-                    {
-                      key: "name",
-                      type: "select",
-                      label: "Achsenbezeichnung",
-                      props: {
-                        label: "Achsenbezeichnung",
-                        appearance: "outline",
-                        options: this.getCodelistForSelect(
-                          514,
-                          "geometricObjectType"
-                        ),
-                        codelistId: 514,
-                        formatter: (item: any) =>
-                          this.formatCodelistValue("514", item),
-                      },
-                    },
-                    {
-                      key: "size",
-                      type: "input",
-                      label: "Elementanzahl",
-                      props: {
-                        label: "Elementanzahl",
-                        type: "number",
-                        appearance: "outline",
-                      },
-                    },
-                    {
-                      key: "resolution",
-                      type: "input",
-                      label: "Auflösung in Meter",
-                      props: {
-                        label: "Auflösung in Meter",
-                        type: "number",
-                        appearance: "outline",
-                      },
-                    },
-                  ],
-                }),
-              ],
-              { wrappers: [] }
-            ),
             this.addSelectInline("type", "Typ", {
               options: <SelectOptionUi[]>[
                 {
@@ -224,6 +161,53 @@ export class GeoDatasetDoctype extends IngridShared {
                 },
               ],
             }),
+            this.addRepeat("axisDimensionsProperties", null, {
+              fields: [
+                this.addSelectInline("name", "Achsenbezeichnung", {
+                  options: this.getCodelistForSelect(514, "name"),
+                  codelistId: 514,
+                }),
+                this.addInputInline("size", "Elementanzahl", {
+                  type: "number",
+                }),
+                this.addInputInline("resolution", "Auflösung in Meter", {
+                  type: "number",
+                }),
+              ],
+              wrappers: [],
+            }),
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addCheckboxInline(
+                  "transformationParameterAvailability",
+                  "Verfügbarkeit von Transformationsparametern",
+                  { className: "flex-2" }
+                ),
+                this.addInputInline(
+                  "numberOfDimenstions",
+                  "Anzahl der Dimensionen",
+                  {
+                    type: "number",
+                    expressionProperties: {
+                      "props.required":
+                        "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
+                    },
+                  }
+                ),
+                this.addSelectInline("cellGeometry", "Zellengeometrie", {
+                  options: this.getCodelistForSelect(509, "cellGeometry"),
+                  codelistId: 509,
+                  expressions: {
+                    // TODO: exception when toggling required field
+                    "props.required":
+                      "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
+                  },
+                }),
+              ],
+              { wrappers: [] }
+            ),
             this.addGroup(
               "georectified",
               null,
@@ -235,7 +219,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addCheckboxInline(
                       "checkPointAvailability",
                       "Kontrollpunktverfügbarkeit",
-                      { className: "flex-3" }
+                      { className: "flex-1" }
                     ),
                     this.addInputInline(
                       "checkPointDescription",
@@ -291,7 +275,8 @@ export class GeoDatasetDoctype extends IngridShared {
                 ),
                 this.addInputInline(
                   "parameters",
-                  "Georeferenzierungsparameter"
+                  "Georeferenzierungsparameter",
+                  { className: "" }
                 ),
               ],
               {
@@ -308,42 +293,18 @@ export class GeoDatasetDoctype extends IngridShared {
               '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
-        this.addTable("resolution", "Erstellungsmaßstab", {
-          supportUpload: false,
-          hideExpression: "formState.hideOptionals",
-          columns: [
-            {
-              key: "equivalentScale",
-              type: "input",
-              label: "Maßstab 1:x",
-              props: {
-                type: "number",
-                label: "Maßstab 1:x",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "distanceMeter",
-              type: "input",
-              label: "Bodenauflösung (m)",
-              width: "300px",
-              props: {
-                type: "number",
-                label: "Bodenauflösung (m)",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "distanceDPI",
-              type: "input",
-              label: "Scanauflösung (DPI)",
-              width: "300px",
-              props: {
-                type: "number",
-                label: "Scanauflösung (DPI)",
-                appearance: "outline",
-              },
-            },
+        this.addRepeat("resolution", "Erstellungsmaßstab", {
+          expressions: { "props.hide": "formState.hideOptionals" },
+          fields: [
+            this.addInputInline("equivalentScale", "Maßstab 1:x", {
+              type: "number",
+            }),
+            this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
+              type: "number",
+            }),
+            this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
+              type: "number",
+            }),
           ],
         }),
         this.addGroupSimple("portrayalCatalogueInfo", [
@@ -427,10 +388,12 @@ export class GeoDatasetDoctype extends IngridShared {
       ]),
       this.addSection("Datenqualität", [
         this.addGroupSimple("dataQuality", [
-          this.addInput("coverage", "Datendefizit", {
-            wrappers: ["panel", "form-field"],
-            type: "number",
-          }),
+          this.addGroupSimple("completenessOmission", [
+            this.addInput("measResult", "Datendefizit", {
+              wrappers: ["panel", "form-field"],
+              type: "number",
+            }),
+          ]),
           this.addGroup(
             "absoluteExternalPositionalAccuracy",
             "Genauigkeit",

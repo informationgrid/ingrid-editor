@@ -4,6 +4,12 @@
     (submit)="submit()"
 >
     <form [formGroup]="form" fxLayout="column">
+        <mat-checkbox
+            style="padding-bottom: 24px"
+            formControlName="isInspire"
+            data-cy="conformity-is-inspire-id"
+            >Ist INSPIRE Eintrag</mat-checkbox
+        >
         <mat-form-field appearance="outline">
             <mat-label>Spezifikation der Konformität</mat-label>
             <mat-select
@@ -70,10 +76,5 @@
                 data-cy="conformity-verified-id"
             />
         </mat-form-field>
-        <mat-checkbox
-            formControlName="isInspire"
-            data-cy="conformity-is-inspire-id"
-            >Ist INSPIRE Eintrag</mat-checkbox
-        >
     </form>
 </ige-table-dialog>

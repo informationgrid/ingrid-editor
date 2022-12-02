@@ -19,14 +19,14 @@
         (removed)="remove(i)"
     >
         <mat-icon
-            *ngIf="to.showLanguage"
+            *ngIf="props.showLanguage"
             class="avatar gray"
             svgIcon="language-24px"
         ></mat-icon>
 
-        <ng-container *ngIf="to.codelistId > -1; else simpleLabel">
+        <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
             <div class="label">
-                {{ model[i] | codelist: to.codelistId | async }}
+                {{ model[i] | codelist: props.codelistId | async }}
             </div>
         </ng-container>
 
@@ -37,7 +37,7 @@
         <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
     </mat-chip>
     <ige-add-button
-        *ngIf="to.useDialog && formControl.enabled"
+        *ngIf="props.useDialog && formControl.enabled"
         [showLabel]="false"
         (add)="openDialog()"
         [showRequiredError]="
@@ -47,21 +47,23 @@
 </mat-chip-list>
 
 <ige-add-button
-    *ngIf="to.useDialog && formControl.enabled && field.fieldGroup.length === 0"
+    *ngIf="
+        props.useDialog && formControl.enabled && field.fieldGroup.length === 0
+    "
     class="add-button-initial"
     [showLabel]="field.fieldGroup.length === 0"
     (add)="openDialog()"
     [showRequiredError]="formControl.invalid && formControl.errors?.required"
 ></ige-add-button>
 
-<ng-container *ngIf="!to.useDialog && formControl.enabled">
+<ng-container *ngIf="!props.useDialog && formControl.enabled">
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput
             placeholder="Bitte eingeben..."
             autocomplete="off"
             [formControl]="inputControl"
-            [required]="to.required && formControl.invalid"
+            [required]="props.required && formControl.invalid"
             (keydown.enter)="addValues(inputControl.value)"
         />
         <button
