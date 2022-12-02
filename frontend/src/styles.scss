@@ -418,6 +418,7 @@ formly-field {
 
   &[class*="flex-"]:first-child {
     padding-left: 0;
+    padding-right: 0;
   }
 
   &[class*="flex-"]:not(:first-child) {
