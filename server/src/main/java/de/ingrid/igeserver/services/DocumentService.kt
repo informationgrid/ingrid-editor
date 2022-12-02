@@ -317,6 +317,8 @@ class DocumentService @Autowired constructor(
         val copy = jacksonObjectMapper().createObjectNode().setAll<ObjectNode>(node)
         listOf(
             FIELD_VERSION,
+            FIELD_CREATED_USER_EXISTS,
+            FIELD_MODIFIED_USER_EXISTS,
             FIELD_CREATED,
             FIELD_MODIFIED,
             FIELD_CREATED_BY,

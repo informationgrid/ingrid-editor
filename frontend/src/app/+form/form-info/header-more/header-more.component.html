@@ -22,7 +22,13 @@
                 model._created | date: "dd.MM.yyyy"
             }}</span>
             <span *ngIf="model._createdBy" [title]="model._createdBy">
-                von {{ model._createdBy }}</span
+                von
+                {{
+                    model._createdBy +
+                        (!model._creatorExists && !this.migrated
+                            ? " (ausgeschieden)"
+                            : "")
+                }}</span
             >
         </div>
     </div>
@@ -33,7 +39,13 @@
                 model._modified | date: "dd.MM.yyyy"
             }}</span>
             <span *ngIf="model._modifiedBy" [title]="model._modifiedBy">
-                von {{ model._modifiedBy }}
+                von
+                {{
+                    model._modifiedBy +
+                        (!model._modifierExists && !this.migrated
+                            ? " (ausgeschieden)"
+                            : "")
+                }}
             </span>
         </div>
     </div>

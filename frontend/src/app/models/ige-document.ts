@@ -25,6 +25,12 @@ export class IgeDocument {
   // the name of the creator
   _createdBy?: string;
 
+  // check if creator of document is still among the users
+  _creatorExists?: boolean;
+
+  // check if modifier of document is still among the users
+  _modifierExists?: boolean;
+
   // the name of the last modifier
   _modifiedBy?: string;
 
