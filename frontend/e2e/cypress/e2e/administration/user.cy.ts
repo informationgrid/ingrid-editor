@@ -242,7 +242,7 @@ describe('mCLOUD: User', () => {
   });
 
   it('should be possible to delete a user', () => {
-    const toDelete = 'todel';
+    const toDelete = 'toDelete inTest';
     AdminUserPage.selectUser(toDelete);
     // delete user
     AdminUserPage.deleteUser();
