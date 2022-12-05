@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: languageInfo
+id: openDataCategories
 docType:
   - InGridDataCollection
   - InGridGeoDataset
@@ -11,20 +11,12 @@ docType:
   - InGridProject
 profile: ingrid
 
+
 # title, used as window title
-title: Sprache des Metadatensatzes
+title: Kategorien
 ---
 
-# Sprache des Metadatensatzes
+# Kategorien
 
-Angabe der Sprache des Metadatensatzes.
+Die Kategorien enthalten eine Auswahl, die das Open Data - Objekt näher bestimmen.
 
-## Beispiel:
-
-Deutsch
-
-# ISO Abbildung
-
-Sprache: zur Dokumentation der Metadaten verwendete Sprache
-
-Domain: 3 (gmd:language)

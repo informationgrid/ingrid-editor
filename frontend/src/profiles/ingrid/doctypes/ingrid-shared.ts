@@ -237,9 +237,13 @@ export abstract class IngridShared extends BaseDoctype {
               [
                 this.addInputInline("minimumValue", "Minimum", {
                   type: "number",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
                 this.addInputInline("maximumValue", "Maximum", {
                   type: "number",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
                 this.addSelectInline("unitOfMeasure", "Maßeinheit", {
                   options: this.getCodelistForSelect(
@@ -341,7 +345,10 @@ export abstract class IngridShared extends BaseDoctype {
               wrappers: ["form-field"],
             }),*/
           ],
-          { hideExpression: "formState.hideOptionals" }
+          {
+            hideExpression: "formState.hideOptionals",
+            contextHelpId: "resourceTime",
+          }
         ),
         this.addSelect("status", "Status", {
           options: this.getCodelistForSelect(523, "timeRefStatus"),
@@ -413,7 +420,8 @@ export abstract class IngridShared extends BaseDoctype {
                     { className: "flex-1" }
                   )
                 : null,
-            ].filter(Boolean)
+            ].filter(Boolean),
+            { hasInlineContextHelp: true, contextHelpId: "languageInfo" }
           ),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
@@ -524,11 +532,18 @@ export abstract class IngridShared extends BaseDoctype {
           "resource",
           "Weiteres",
           [
-            this.addTextAreaInline("purpose", "Herstellungszweck", "dataset"),
+            this.addTextAreaInline("purpose", "Herstellungszweck", "dataset", {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
             this.addTextAreaInline(
               "specificUsage",
               "Eignung/Nutzung",
-              "dataset"
+              "dataset",
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
           ],
           { hideExpression: "formState.hideOptionals" }

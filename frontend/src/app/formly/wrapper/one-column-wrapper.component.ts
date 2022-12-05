@@ -34,8 +34,7 @@ export class OneColumnWrapperComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    // TODO: this.model is not the whole model!!! How to get the _type?
-    this.docType = this.to.docType ?? this.model?._type;
+    this.docType = this.formState.mainModel._type;
     this.fieldId = <string>this.field.key;
   }
 
@@ -44,7 +43,7 @@ export class OneColumnWrapperComponent
       this.profile,
       this.docType,
       this.field.props.contextHelpId || this.fieldId,
-      this.to.externalLabel,
+      this.props.externalLabel,
       infoElement
     );
   }

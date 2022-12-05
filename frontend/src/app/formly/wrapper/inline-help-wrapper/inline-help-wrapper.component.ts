@@ -27,7 +27,7 @@ export class InlineHelpWrapperComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.model?._type;
+    this.docType = this.formState.mainModel._type;
     this.fieldId = <string>this.field.key;
   }
 
