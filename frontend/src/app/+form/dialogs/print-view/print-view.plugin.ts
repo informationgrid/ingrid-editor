@@ -13,6 +13,9 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { FormStateService } from "../../form-state.service";
+import { DocumentDataService } from "../../../services/document/document-data.service";
+import { combineLatest } from "rxjs";
+import { JsonDiffMerge } from "../../../shared/utils";
 
 @UntilDestroy()
 @Injectable()
@@ -27,6 +30,7 @@ export class PrintViewPlugin extends Plugin {
   private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(
+    private documentDataService: DocumentDataService,
     private toolbarService: FormToolbarService,
     private docEvents: DocEventsService,
     private docTreeQuery: TreeQuery,
@@ -78,13 +82,23 @@ export class PrintViewPlugin extends Plugin {
     let openedDocument = this.treeQuery.getOpenedDocument();
     const type = openedDocument._type;
     const profile = this.profileService.getProfile(type);
-
-    this.dialog.open(PrintViewDialogComponent, {
-      width: "80%",
-      data: {
-        model: this.formService.getForm().getRawValue(),
-        fields: profile.fieldsForPrint,
-      },
+    combineLatest([
+      this.documentDataService.load(openedDocument._uuid, true),
+      this.documentDataService.loadPublished(openedDocument._uuid, true),
+    ]).subscribe((result) => {
+      const diff = JsonDiffMerge.jsonDiff(
+        { ...result[0] },
+        { ...result[1] },
+        {}
+      );
+      this.dialog.open(PrintViewDialogComponent, {
+        width: "80%",
+        data: {
+          fields: profile.getFieldsForPrint(diff),
+          model: { ...result[0] },
+          modelPublished: { ...result[1] },
+        },
+      });
     });
   }
 

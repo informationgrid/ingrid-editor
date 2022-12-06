@@ -22,6 +22,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { IgeFormlyModule } from "../../formly/ige-formly.module";
+import { IgeFormlyPreviewModule } from "../../formly/ige-formly-preview.module";
 import { FormInfoComponent } from "../form-info/form-info.component";
 import { HeaderNavigationComponent } from "../form-info/header-navigation/header-navigation.component";
 import { HeaderTitleRowComponent } from "../form-info/header-title-row/header-title-row.component";
@@ -82,6 +83,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatFormFieldModule,
     FlexLayoutModule,
     IgeFormlyModule,
+    IgeFormlyPreviewModule,
     MatTabsModule,
     SharedModule,
     MatTooltipModule,
@@ -115,6 +117,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     FormToolbarComponent,
     FlexLayoutModule,
     IgeFormlyModule,
+    IgeFormlyPreviewModule,
     FormInfoComponent,
     DynamicFormComponent,
     HeaderTitleRowComponent,

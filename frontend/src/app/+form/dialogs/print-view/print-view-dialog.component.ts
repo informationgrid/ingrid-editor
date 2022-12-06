@@ -10,6 +10,8 @@ export class PrintViewDialogComponent {
   profile: any;
   form = new UntypedFormGroup({});
   options: FormlyFormOptions = {};
+  formCompare = new UntypedFormGroup({});
+  compareView = false;
 
   constructor(
     public dialogRef: MatDialogRef<PrintViewDialogComponent>,

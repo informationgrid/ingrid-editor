@@ -213,6 +213,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       : item?.value;
   }
 
+  public getFieldsForPrint(diffObj) {
+    this.addDifferenceFlags(this.fields, diffObj);
+    const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
+    return this.createFieldsForPrint(copy);
+  }
+
   private createFieldsForPrint(
     fields: FormlyFieldConfig[]
   ): FormlyFieldConfig[] {
@@ -261,6 +267,52 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
     });
     return fields;
+  }
+
+  private calcIsDifferent(field, diffObj): boolean {
+    if (!diffObj) return false;
+    const path = this.getKeyPath(field);
+    if (!path.length) return false;
+    let diff = diffObj;
+    for (const key of path) {
+      if (key in diff) {
+        diff = diff[key];
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.addDifferenceFlags(field.fieldGroup, diffObj);
+      }
+      if (field.fieldArray) {
+        this.addDifferenceFlags(
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup,
+          diffObj
+        );
+      }
+      if (this.calcIsDifferent(field, diffObj)) {
+        field.className = field.className
+          ? field.className + " mark-different"
+          : "mark-different";
+      } else {
+        field.className = field.className?.replace("mark-different", "");
+      }
+    });
+  }
+
+  getKeyPath(field): string[] {
+    if (field.parent) {
+      return field.key
+        ? this.getKeyPath(field.parent).concat([field.key.toString()])
+        : this.getKeyPath(field.parent);
+    } else {
+      return field.key ? [field.key.toString()] : [];
+    }
   }
 
   private getFormatterForColumn(

@@ -35,6 +35,18 @@ export class DocumentDataService {
     }
   }
 
+  loadPublished(id: string, useUuid = false): Observable<IgeDocument> {
+    if (useUuid) {
+      return this.http.get<IgeDocument>(
+        this.configuration.backendUrl + "datasetsByUuid/" + id + "?publish=true"
+      );
+    } else {
+      return this.http.get<IgeDocument>(
+        this.configuration.backendUrl + "datasets/" + id + "?publish=true"
+      );
+    }
+  }
+
   save(data: IgeDocument, isAddress?: boolean): Observable<any> {
     const params = isAddress ? "?address=true" : "";
     if (data._id) {

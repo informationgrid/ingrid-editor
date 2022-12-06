@@ -56,6 +56,11 @@ export interface Doctype {
   getFields(): FormlyFieldConfig[];
 
   /**
+   * The field definitions for the print and compare view
+   */
+  getFieldsForPrint(diff: any): FormlyFieldConfig[];
+
+  /**
    * In case we need to determine icon class dynamically, you need to implement this function.
    * @param doc is the document for which the icon shall be determined
    */

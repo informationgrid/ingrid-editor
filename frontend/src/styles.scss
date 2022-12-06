@@ -1153,3 +1153,23 @@ table.big-font {
 .mat-row.readonly {
   cursor: default;
 }
+
+.published .mark-different {
+  ige-print-type,
+  ige-date-range-type,
+  ige-spatial-list,
+  formly-field-mat-datepicker,
+  .mat-radio-group {
+    background: $error-background !important;
+  }
+}
+
+.working .mark-different {
+  ige-print-type,
+  ige-date-range-type,
+  ige-spatial-list,
+  formly-field-mat-datepicker,
+  .mat-radio-group {
+    background: $ige-check-background-color !important;
+  }
+}

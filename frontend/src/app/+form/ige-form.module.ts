@@ -27,6 +27,7 @@ import { PrintViewDialogComponent } from "./dialogs/print-view/print-view-dialog
 import { FormSharedModule } from "./form-shared/form-shared.module";
 import { VersionConflictDialogComponent } from "./dialogs/version-conflict-dialog/version-conflict-dialog.component";
 import { CreateNodeModule } from "./dialogs/create/create-node.module";
+import { AngularSplitModule } from "angular-split";
 
 @NgModule({
   imports: [
@@ -50,6 +51,7 @@ import { CreateNodeModule } from "./dialogs/create/create-node.module";
     FormFieldsModule,
     FormSharedModule,
     CreateNodeModule,
+    AngularSplitModule,
   ],
   declarations: [
     PasteDialogComponent,
