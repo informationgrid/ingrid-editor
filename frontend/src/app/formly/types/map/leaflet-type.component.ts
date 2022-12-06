@@ -60,7 +60,7 @@ export class LeafletTypeComponent
   }
 
   ngAfterViewInit() {
-    this.leaflet.nativeElement.style.height = this.to.height + "px";
+    this.leaflet.nativeElement.style.height = this.props.height + "px";
     this.leaflet.nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
@@ -72,7 +72,7 @@ export class LeafletTypeComponent
       .subscribe(() => this.updateBoundingBox());
 
     try {
-      const options: MapOptions = this.to.mapOptions;
+      const options: MapOptions = this.props.mapOptions;
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,
         { ...options, scrollWheelZoom: false }
@@ -102,13 +102,13 @@ export class LeafletTypeComponent
 
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     // TODO: this.model is not the whole model!!! How to get the _type?
-    this.docType = this.to.docType ?? this.model?._type;
+    this.docType = this.props.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
   private updateLocations(locations: SpatialLocationWithColor[]) {
     this.hasAnyLocations = locations.length > 0;
-    this.maxLocationsReached = locations.length >= this.to.max;
+    this.maxLocationsReached = locations.length >= this.props.max;
     this.locationsWithColor$.next(locations);
   }
 
@@ -167,7 +167,7 @@ export class LeafletTypeComponent
         minWidth: 600,
         data: {
           ...this.locations[locationIndex],
-          limitTypes: this.to.limitTypes,
+          limitTypes: this.props.limitTypes,
         },
       })
       .afterClosed()
@@ -228,7 +228,7 @@ export class LeafletTypeComponent
       this.profile,
       this.docType,
       this.fieldId,
-      this.to.externalLabel,
+      this.props.externalLabel,
       infoElement
     );
   }

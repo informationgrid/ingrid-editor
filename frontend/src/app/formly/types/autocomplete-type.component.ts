@@ -45,7 +45,7 @@ export class AutocompleteTypeComponent
 
     this.addDisableBehaviour();
 
-    let options = this.to.options as Observable<any[]>;
+    let options = this.props.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
       options = of(options);
     }
@@ -89,7 +89,7 @@ export class AutocompleteTypeComponent
   }
 
   private mapOptionToValue(value: any): string {
-    if (this.to.simple) return value;
+    if (this.props.simple) return value;
 
     if (value?.key) {
       return (
@@ -102,7 +102,7 @@ export class AutocompleteTypeComponent
   }
 
   private updateFormControl(value: string) {
-    if (this.to.simple) {
+    if (this.props.simple) {
       this.formControl.setValue(value);
       this.formControl.markAsTouched();
       this.formControl.markAsDirty();
@@ -136,7 +136,7 @@ export class AutocompleteTypeComponent
   }
 
   _filter(value: string): SelectOptionUi[] {
-    if (value === undefined || value === null || this.to.doNotFilter)
+    if (value === undefined || value === null || this.props.doNotFilter)
       return this.parameterOptions;
     const filterValue = value.toLowerCase();
 
@@ -146,7 +146,7 @@ export class AutocompleteTypeComponent
             option.disabled = !option.label.toLowerCase().includes(filterValue);
             return option;
           })
-          .filter((option) => !option.disabled || this.to.highlightMatches)
+          .filter((option) => !option.disabled || this.props.highlightMatches)
       : [];
   }
 

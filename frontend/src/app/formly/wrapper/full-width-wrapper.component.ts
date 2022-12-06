@@ -42,7 +42,7 @@ export class FullWidthWrapperComponent
       this.profile,
       this.docType,
       this.fieldId,
-      this.to.externalLabel,
+      this.props.externalLabel,
       infoElement
     );
   }

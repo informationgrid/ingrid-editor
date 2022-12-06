@@ -10,16 +10,16 @@
         class="small-padding-right"
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
-        [class.image]="to.asImage"
+        [class.image]="props.asImage"
     >
         <div
-            *ngIf="to.asImage"
+            *ngIf="props.asImage"
             mat-list-avatar
             class="avatar"
             [style.background-image]="'url(' + model[i].description + ')'"
         ></div>
         <div
-            *ngIf="!to.asImage"
+            *ngIf="!props.asImage"
             mat-list-avatar
             class="avatar"
             [ngSwitch]="model[i]._type"

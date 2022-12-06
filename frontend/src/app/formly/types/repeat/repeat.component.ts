@@ -22,7 +22,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
         this.canBeDragged =
-          this.formControl.enabled && !this.to.noDrag && value?.length > 1;
+          this.formControl.enabled && !this.props.noDrag && value?.length > 1;
       });
   }
 

@@ -32,13 +32,13 @@ export class InlineHelpWrapperComponent
   }
 
   showContextHelp(evt: MouseEvent) {
-    if (!this.to.hasInlineContextHelp) {
+    if (!this.props.hasInlineContextHelp) {
       return;
     }
 
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
-    const title = this.to.label ?? this.to.externalLabel;
+    const title = this.props.label ?? this.props.externalLabel;
     this.contextHelpService.showContextHelp(
       this.profile,
       this.docType,

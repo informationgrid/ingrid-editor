@@ -1,7 +1,7 @@
 <ng-template #label>
     <div
-        [class.hasContextHelp]="to.hasContextHelp"
-        [class.required]="to.required"
+        [class.hasContextHelp]="props.hasContextHelp"
+        [class.required]="props.required"
     >
         <ige-form-label
             [hasContextHelp]="to?.hasContextHelp"
@@ -63,7 +63,7 @@
         </button>
 
         <button
-            *ngIf="to.batchValidUntil"
+            *ngIf="props.batchValidUntil"
             type="button"
             mat-button
             (click)="setValidUntil()"
@@ -84,7 +84,7 @@
         fxLayout="column"
         [dataSource]="dataSource"
         [class.edit-mode]="batchMode"
-        [attr.data-cy]="to.externalLabel + '-table'"
+        [attr.data-cy]="props.externalLabel + '-table'"
         cdkDropList
         cdkDrag
         [cdkDragDisabled]="dragDisabled"
@@ -155,19 +155,21 @@
             <ng-container *ngSwitchDefault>
                 <mat-header-cell
                     *matHeaderCellDef
-                    [class]="to.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
+                    [class]="props.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
                 >
-                    {{ to.columns[batchMode ? i - 1 : i].label }}
+                    {{ props.columns[batchMode ? i - 1 : i].label }}
                     <span
-                        *ngIf="to.columns[batchMode ? i - 1 : i].props.required"
+                        *ngIf="
+                            props.columns[batchMode ? i - 1 : i].props.required
+                        "
                         >*</span
                     >
                 </mat-header-cell>
                 <mat-cell
                     *matCellDef="let element; let rowIndex = index"
-                    [class]="to.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
+                    [class]="props.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
                 >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     <span
@@ -234,7 +236,7 @@
             >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
 
-        <ng-container *ngIf="to.supportUpload; else simpleAdd">
+        <ng-container *ngIf="props.supportUpload; else simpleAdd">
             <div class="button-wrapper">
                 <button
                     type="button"

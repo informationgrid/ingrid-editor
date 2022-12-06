@@ -125,7 +125,7 @@ export class ReferencedDocumentsTypeComponent
   private prepareSQL(uuid: string): string {
     return this.sql
       .replace("<uuid>", uuid)
-      .replace(/<referenceField>/g, this.to.referenceField);
+      .replace(/<referenceField>/g, this.props.referenceField);
   }
 
   switchPage(pageEvent: PageEvent) {

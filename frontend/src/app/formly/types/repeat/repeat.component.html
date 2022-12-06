@@ -24,7 +24,7 @@
         <formly-field [field]="row" class="flex-1"></formly-field>
         <button
             *ngIf="formControl.enabled"
-            [disabled]="to.minLength && i < to.minLength"
+            [disabled]="props.minLength && i < props.minLength"
             mat-icon-button
             class="close"
             (click)="remove(i)"
@@ -37,6 +37,6 @@
 <ige-add-button
     *ngIf="formControl.enabled"
     (add)="addItem($event)"
-    [options]="to.menuOptions"
+    [options]="props.menuOptions"
     [showRequiredError]="formControl.invalid && formControl.errors?.required"
 ></ige-add-button>

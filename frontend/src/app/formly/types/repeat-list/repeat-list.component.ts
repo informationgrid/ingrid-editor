@@ -38,14 +38,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.to.asSelect && this.to.showSearch) {
+    if (this.props.asSelect && this.props.showSearch) {
       this.filterCtrl = new UntypedFormControl();
       this.filterCtrl.valueChanges
         .pipe(untilDestroyed(this))
         .subscribe((value) => this.manualUpdate.next(value));
     }
-    if (this.to.options instanceof Observable) {
-      this.to.options
+    if (this.props.options instanceof Observable) {
+      this.props.options
         .pipe(
           untilDestroyed(this),
           filter((data) => data !== undefined && data.length > 0),
@@ -54,11 +54,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         )
         .subscribe();
     } else {
-      this.initInputListener(this.to.options);
+      this.initInputListener(this.props.options);
     }
 
-    if (this.to.onItemClick) {
-      this.onItemClick = this.to.onItemClick;
+    if (this.props.onItemClick) {
+      this.onItemClick = this.props.onItemClick;
     }
   }
 
@@ -107,7 +107,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     this.inputControl.setValue(null);
 
-    if (!this.to.asSelect) {
+    if (!this.props.asSelect) {
       // element successfully added when input was blurred
       this.autoCompleteEl.nativeElement.blur();
       this.autoComplete.closePanel();
@@ -149,7 +149,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.remove(index);
     this.manualUpdate.next("");
 
-    if (this.to.asSelect && this.inputControl.disabled) {
+    if (this.props.asSelect && this.inputControl.disabled) {
       this.inputControl.enable();
     }
   }
@@ -177,7 +177,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
 
     this.addToList(option);
-    if (this.to.multiSelect || $event.ctrlKey) {
+    if (this.props.multiSelect || $event.ctrlKey) {
       // don't close the selection panel for multi select or ctrl key selection
     } else {
       this.selector.close();

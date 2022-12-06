@@ -4,7 +4,7 @@
     }}</ng-container>-->
     <ng-container *ngSwitchCase="'repeatListPrint'">
         <div *ngFor="let item of formControl.value">
-            {{ item | codelist: to.codelistId | async }}
+            {{ item | codelist: props.codelistId | async }}
         </div>
     </ng-container>
     <ng-container *ngSwitchCase="'address-cardPrint'">
@@ -34,13 +34,13 @@
         </table>
     </ng-container>-->
     <ng-container *ngSwitchCase="'selectPrint'">{{
-        to.codelistId
-            ? (formControl.value | codelist: to.codelistId | async)
+        props.codelistId
+            ? (formControl.value | codelist: props.codelistId | async)
             : getFromOption(formControl.value)
     }}</ng-container>
     <ng-container *ngSwitchCase="'autocompletePrint'">{{
-        to.codelistId
-            ? (formControl.value | codelist: to.codelistId | async)
+        props.codelistId
+            ? (formControl.value | codelist: props.codelistId | async)
             : getFromOption(formControl.value)
     }}</ng-container>
     <div

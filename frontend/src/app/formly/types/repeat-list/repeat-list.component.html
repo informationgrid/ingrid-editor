@@ -8,14 +8,14 @@
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
-        [cdkDragDisabled]="to.noDrag || formControl.disabled"
+        [cdkDragDisabled]="props.noDrag || formControl.disabled"
         class="clickable list-item"
         (click)="this.onItemClick(model[i]?.key)"
     >
         <span class="list-display-element">
             <mat-icon
-                *ngIf="this.to.elementIcon"
-                [svgIcon]="this.to.elementIcon"
+                *ngIf="this.props.elementIcon"
+                [svgIcon]="this.props.elementIcon"
             ></mat-icon>
             {{ getParameter(model[i]) }}
         </span>
@@ -31,28 +31,31 @@
     </div>
 </div>
 <ng-template #noFieldsSelected>
-    <div *ngIf="this.to.selectionEmptyNotice" class="no-fields-selected-notice">
+    <div
+        *ngIf="this.props.selectionEmptyNotice"
+        class="no-fields-selected-notice"
+    >
         <div class="infoIcon">
             <mat-icon
                 class="material-icons-outlined"
                 svgIcon="info-24px"
             ></mat-icon>
         </div>
-        <span>{{ this.to.selectionEmptyNotice }}</span>
+        <span>{{ this.props.selectionEmptyNotice }}</span>
     </div>
 </ng-template>
 
 <mat-form-field
-    *ngIf="to.asSelect; else templateAutocomplete"
+    *ngIf="props.asSelect; else templateAutocomplete"
     appearance="outline"
     class="width-100"
 >
     <mat-select
-        [placeholder]="to.placeholder"
+        [placeholder]="props.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
     >
-        <mat-option *ngIf="to.showSearch">
+        <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
                 [formControl]="filterCtrl"
             ></ngx-mat-select-search>
@@ -80,10 +83,10 @@
         <input
             type="text"
             #repeatListInput
-            [placeholder]="to.placeholder"
+            [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            [required]="to.required && formControl.invalid"
+            [required]="props.required && formControl.invalid"
             (keydown.enter)="addFreeEntry(repeatListInput.value)"
             [matAutocomplete]="auto"
         />

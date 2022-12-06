@@ -1,13 +1,13 @@
 <div
-    [class.hasContextHelp]="to.hasContextHelp"
+    [class.hasContextHelp]="props.hasContextHelp"
     fxLayout="row"
-    [class.required]="to.required"
+    [class.required]="props.required"
 >
     <ige-form-label
-        [hasContextHelp]="to.hasContextHelp"
+        [hasContextHelp]="props.hasContextHelp"
         (contextHelp)="showContextHelp($event)"
     >
-        {{ to.externalLabel }}<span *ngIf="to.required">*</span>
+        {{ props.externalLabel }}<span *ngIf="props.required">*</span>
     </ige-form-label>
     <ng-container #fieldComponent></ng-container>
 </div>
