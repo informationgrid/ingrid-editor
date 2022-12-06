@@ -434,8 +434,7 @@ formly-field {
   }
 }
 
-formly-form:last-of-type(formly-field)
-  > formly-field:last-of-type(mat-divider) {
+formly-form:last-of-type(formly-field) > formly-field:last-of-type {
   border-top-color: #fff !important;
   height: 0;
 }
