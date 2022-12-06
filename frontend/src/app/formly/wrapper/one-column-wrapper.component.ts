@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   ViewChild,
   ViewContainerRef,
 } from "@angular/core";
@@ -34,7 +33,10 @@ export class OneColumnWrapperComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.formState.mainModel._type;
+    this.docType =
+      this.formState.mainModel?._type ??
+      this.props.docType ??
+      this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
