@@ -25,11 +25,15 @@ export class LiteratureDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addTextArea("author", "Autor/Verfasser", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addInput("publisher", "Herausgeber", {
           wrappers: ["panel", "form-field"],
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addGroup(
           null,
@@ -76,23 +80,33 @@ export class LiteratureDoctype extends IngridShared {
           }
         ),
         this.addTextArea("location", "Standort", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addInput("publishedISBN", "ISBN-Nr.", {
           wrappers: ["panel", "form-field"],
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addInput("publishedPublisher", "Verlag", {
           wrappers: ["panel", "form-field"],
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addAutocomplete("documentType", "Dokumententyp", {
           options: this.getCodelistForSelect(3385, "documentType"),
           codelistId: 3385,
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addTextArea("baseDataText", "Basisdaten", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addGroup(
           null,

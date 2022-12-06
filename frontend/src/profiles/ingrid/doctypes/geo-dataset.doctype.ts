@@ -97,7 +97,7 @@ export class GeoDatasetDoctype extends IngridShared {
             asSelect: true,
             options: this.getCodelistForSelect(526, "priorityDataset"),
             codelistId: 526,
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }
         ),
         this.addTable("vectorSpatialRepresentation", "Topologieinformation", {
@@ -138,8 +138,9 @@ export class GeoDatasetDoctype extends IngridShared {
               },
             },
           ],
-          hideExpression:
-            '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "1")',
+          expressions: {
+            hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "1")',
+          },
         }),
         this.addGroup(
           "gridSpatialRepresentation",
@@ -190,7 +191,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   "Anzahl der Dimensionen",
                   {
                     type: "number",
-                    expressionProperties: {
+                    expressions: {
                       "props.required":
                         "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
                     },
@@ -248,8 +249,9 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
+                expressions: {
+                  hide: 'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
+                },
               }
             ),
             this.addGroup(
@@ -282,15 +284,17 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
+                expressions: {
+                  hide: 'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
+                },
               }
             ),
           ],
           {
             fieldGroupClassName: "",
-            hideExpression:
-              '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+            expressions: {
+              hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+            },
           }
         ),
         this.addRepeat("resolution", "Erstellungsmaßstab", {
@@ -336,11 +340,11 @@ export class GeoDatasetDoctype extends IngridShared {
             fields: [],
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }),
         ]),
         this.addRepeatList("coupledServices", "Darstellender Dienst", {
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
@@ -352,7 +356,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   fields: this.addGroupSimple(null, [
                     { key: "_type" },
                     this.addInputInline("descriptions", "Information", {
-                      hideExpression: "formState.hideOptionals",
+                      expressions: { hide: "formState.hideOptionals" },
                       className: "",
                     }),
                   ]),
@@ -374,7 +378,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       this.id,
                       {
                         className: "",
-                        hideExpression: "formState.hideOptionals",
+                        expressions: { hide: "formState.hideOptionals" },
                       }
                     ),
                   ]),
@@ -401,7 +405,7 @@ export class GeoDatasetDoctype extends IngridShared {
               this.addInput("griddedDataPositionalAccuracy", null, {
                 fieldLabel: "Rasterpositionsgenauigkeit (m)",
                 type: "number",
-                expressionProperties: {
+                expressions: {
                   hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
                 },
               }),
@@ -418,7 +422,7 @@ export class GeoDatasetDoctype extends IngridShared {
           ),
           this.addTable("qualities", "Qualität", {
             supportUpload: false,
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
             columns: [
               {
                 key: "type",

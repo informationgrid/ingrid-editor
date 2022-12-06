@@ -27,7 +27,7 @@ export class DataCollectionDoctype extends IngridShared {
         this.addTable("categoryCatalog", "Objektartenkatalog", {
           supportUpload: false,
           columns: [],
-          hideExpression: "formState.hideOptionals",
+          expressions: "formState.hideOptionals",
         }),
         this.addTable(
           "databaseContent",
@@ -35,14 +35,18 @@ export class DataCollectionDoctype extends IngridShared {
           {
             supportUpload: false,
             columns: [],
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }
         ),
         this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
       ]),
 

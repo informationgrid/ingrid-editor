@@ -43,6 +43,7 @@ export class FormFieldHelper {
    * @param options
    */
   addTextArea(id, label, elementIdPrefix, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "textarea",
@@ -63,7 +64,7 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
     };
   }
 
@@ -81,10 +82,12 @@ export class FormFieldHelper {
   }
 
   addAddressCard(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "address-card",
       wrappers: ["panel"],
+      expressions: expressions,
       props: {
         externalLabel: label,
         required: options?.required,
@@ -96,12 +99,14 @@ export class FormFieldHelper {
   }
 
   addRepeatChip(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       id: id,
       type: "repeatChip",
       wrappers: ["panel"],
       defaultValue: [],
+      expressions: expressions,
       props: {
         externalLabel: label,
         required: options?.required,
@@ -113,12 +118,12 @@ export class FormFieldHelper {
   }
 
   addRepeatList(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      // expressions: options?.expressions,
       defaultValue: [],
       props: {
         externalLabel: label,
@@ -129,7 +134,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
     };
   }
 
@@ -143,6 +148,7 @@ export class FormFieldHelper {
   }
 
   addRepeat(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "repeat",
@@ -159,17 +165,18 @@ export class FormFieldHelper {
         fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
         fieldGroup: options?.fields,
       },
-      expressions: options?.expressions,
+      expressions: expressions,
     };
   }
 
   addAutocomplete(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "autocomplete",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -185,6 +192,7 @@ export class FormFieldHelper {
   }
 
   addInput(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       id: id,
@@ -204,7 +212,7 @@ export class FormFieldHelper {
       modelOptions: {
         updateOn: "blur",
       },
-      expressions: options?.expressionProperties,
+      expressions: expressions,
       validators: options?.validators,
     };
   }
@@ -218,6 +226,7 @@ export class FormFieldHelper {
   }
 
   addSelect(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "select",
@@ -238,7 +247,7 @@ export class FormFieldHelper {
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
       },
-      expressions: options?.expressions,
+      expressions: expressions,
     };
   }
 
@@ -252,6 +261,7 @@ export class FormFieldHelper {
   }
 
   addTable(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "table",
@@ -266,15 +276,17 @@ export class FormFieldHelper {
         dialog: options?.dialog,
       },
       validators: options?.validators,
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
     };
   }
 
   addSpatial(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "leaflet",
       wrappers: [],
+      expressions: expressions,
       props: {
         required: options?.required,
         mapOptions: {},
@@ -287,6 +299,7 @@ export class FormFieldHelper {
   }
 
   addDatepicker(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "datepicker",
@@ -304,7 +317,7 @@ export class FormFieldHelper {
         required: options?.required,
         datepickerOptions: options?.datepickerOptions,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
       validators: options?.validators,
     };
   }
@@ -318,6 +331,7 @@ export class FormFieldHelper {
   }
 
   addDateRange(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "date-range",
@@ -332,7 +346,7 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
       validators: options?.validators ?? {
         required: {
           expression: (ctrl) =>
@@ -350,6 +364,7 @@ export class FormFieldHelper {
   }
 
   addCheckbox(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "checkbox",
@@ -361,7 +376,7 @@ export class FormFieldHelper {
         indeterminate: false,
         required: options?.required,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
     };
   }
 
@@ -374,6 +389,7 @@ export class FormFieldHelper {
   }
 
   addRadioboxes(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "radio",
@@ -387,7 +403,7 @@ export class FormFieldHelper {
         options: options?.options,
         required: options?.required,
       },
-      expressions: { hide: options?.hideExpression },
+      expressions: expressions,
     };
   }
 
@@ -399,6 +415,13 @@ export class FormFieldHelper {
         externalLabel: "Zugeordnete Datensätze",
         referenceField: referenceField,
       },
+    };
+  }
+
+  private initExpressions(expressions = {}) {
+    return {
+      "props.disabled": "formState.disabled",
+      ...expressions,
     };
   }
 }

@@ -40,7 +40,7 @@ export class GeoServiceDoctype extends IngridShared {
           this.addRepeatListInline("serviceVersion", "Version des Dienstes", {
             options: this.getCodelistForSelect(5152, "serviceVersion"),
             codelistId: 5152,
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -50,7 +50,7 @@ export class GeoServiceDoctype extends IngridShared {
         this.addTable("scale", "Erstellungsmaßstab", {
           supportUpload: false,
           columns: [],
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
         this.addGroup(
           null,
@@ -63,17 +63,19 @@ export class GeoServiceDoctype extends IngridShared {
             ),
             this.addTextAreaInline("history", "Historie", this.id),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { expressions: { hide: "formState.hideOptionals" } }
         ),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addGroup(
           null,
           "Dargestellte Daten",
           [
             this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
-              hideExpression: "formState.hideOptionals",
+              expressions: { hide: "formState.hideOptionals" },
             }),
             this.addSelectInline("couplingType", "Kopplungstyp", {
               options: <SelectOptionUi[]>[
@@ -86,7 +88,7 @@ export class GeoServiceDoctype extends IngridShared {
           { contextHelpId: "shownData" }
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
       ]),
 

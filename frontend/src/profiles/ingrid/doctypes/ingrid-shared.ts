@@ -4,7 +4,6 @@ import { CodelistService } from "../../../app/services/codelist/codelist.service
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
-import { toBoolean } from "@datorama/akita";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -83,7 +82,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "modifiedMetadata",
                 "Metadaten-Datum (veröffentlichte Version)",
                 {
-                  expressionProperties: {
+                  expressions: {
                     // since whole form will be disabled/enabled by application
                     // depending on write access, we need to set disabled state dynamically
                     "props.disabled": () => true,
@@ -96,7 +95,7 @@ export abstract class IngridShared extends BaseDoctype {
             { hideExpression: "formState.hideOptionals" }
           ),
           this.addTable("graphicOverviews", "Vorschaugrafik", {
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
             columns: [
               {
                 key: "fileName",
@@ -131,14 +130,14 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }),
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
           }),
           this.addAddressCard("pointOfContact", "Adressen"),
           this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-            hideExpression: "!model.isInspireIdentified",
+            expressions: { hide: "!model.isInspireIdentified" },
             options: [
               {
                 value: "Ja",
@@ -163,20 +162,20 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
         this.addRepeatList("themes", "INSPIRE-Themen", {
           asSelect: true,
           options: this.getCodelistForSelect(6100, "themes"),
           codelistId: 6100,
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
         options.openData
           ? this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
               asSelect: true,
               options: this.getCodelistForSelect(6400, "openDataCategories"),
               codelistId: 6400,
-              hideExpression: "!formState.mainModel.isOpenData",
+              expressions: { hide: "!formState.mainModel.isOpenData" },
             })
           : null,
         // TODO: output needs to be formatted in a different way
@@ -188,7 +187,7 @@ export abstract class IngridShared extends BaseDoctype {
                 asSelect: true,
                 options: this.getCodelistForSelect(6350, "priorityDatasets"),
                 codelistId: 6350,
-                hideExpression: "formState.hideOptionals",
+                expressions: { hide: "formState.hideOptionals" },
               }
             )
           : null,
@@ -274,7 +273,9 @@ export abstract class IngridShared extends BaseDoctype {
           }
         ),
         this.addTextArea("description", "Erläuterungen", "spatial", {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
           contextHelpId: "descriptionSpacial",
         }),
       ]),
@@ -304,7 +305,9 @@ export abstract class IngridShared extends BaseDoctype {
           ],
         }),
         this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
-          hideExpression: "formState.hideOptionals",
+          expressions: {
+            "props.hide": "formState.hideOptionals",
+          },
         }),
         this.addGroup(
           null,
@@ -324,12 +327,14 @@ export abstract class IngridShared extends BaseDoctype {
             this.addDatepicker("resourceDate", null, {
               placeholder: "TT.MM.JJJJ",
               wrappers: ["form-field"],
-              hideExpression:
-                "formState.mainModel.temporal?.resourceDateType?.key === 'range'",
+              expressions: {
+                hide: "formState.mainModel.temporal?.resourceDateType?.key === 'range'",
+              },
             }),
             this.addDateRange("resourceRange", null, {
-              hideExpression:
-                "formState.mainModel.temporal?.resourceDateType?.key !== 'range'",
+              expressions: {
+                hide: "formState.mainModel.temporal?.resourceDateType?.key !== 'range'",
+              },
             }),
             /*this.addSelectInline("resourceDateType", "Typ", {
               options: <SelectOptionUi[]>[
@@ -413,7 +418,7 @@ export abstract class IngridShared extends BaseDoctype {
                             "characterSet"
                           ),
                           codelistId: 510,
-                          hideExpression: "formState.hideOptionals",
+                          expressions: { hide: "formState.hideOptionals" },
                         }
                       ),
                     ],
@@ -445,7 +450,7 @@ export abstract class IngridShared extends BaseDoctype {
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
-              hideExpression: "formState.hideOptionals",
+              expressions: { hide: "formState.hideOptionals" },
               dialog: ConformityDialogComponent,
               columns: [
                 {
@@ -524,7 +529,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "extraInfoLegalBasicsTable"
               ),
               codelistId: 1350,
-              hideExpression: "formState.hideOptionals",
+              expressions: { hide: "formState.hideOptionals" },
             }
           ),
         ]),
@@ -584,7 +589,11 @@ export abstract class IngridShared extends BaseDoctype {
           "useLimitation",
           "Anwendungseinschränkungen",
           "dataset",
-          { hideExpression: "formState.hideOptionals" }
+          {
+            expressions: {
+              "props.hide": "formState.hideOptionals",
+            },
+          }
         ),
       ]),
       this.addGroupSimple("distribution", [
@@ -613,7 +622,9 @@ export abstract class IngridShared extends BaseDoctype {
         ],
       }),
       this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
-        hideExpression: "formState.hideOptionals",
+        expressions: {
+          "props.hide": "formState.hideOptionals",
+        },
       }),
     ]);
   }

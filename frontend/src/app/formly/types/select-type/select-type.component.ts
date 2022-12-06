@@ -65,6 +65,8 @@ export class SelectTypeComponent
       )
       .subscribe();
 
+    this.addDisabledBehaviour();
+
     let options = this.to.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
       options = of(options);
@@ -80,6 +82,20 @@ export class SelectTypeComponent
         tap(() => this.updateSelectField(this.formControl.value))
       )
       .subscribe();
+  }
+
+  private addDisabledBehaviour() {
+    this.formControl.statusChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((status) =>
+        status === "DISABLED"
+          ? this.selectControl.disable()
+          : this.selectControl.enable()
+      );
+
+    if (this.formControl.disabled) {
+      this.selectControl.disable();
+    }
   }
 
   private updateSelectField(value) {

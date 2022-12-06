@@ -38,6 +38,9 @@ Apache
     ProxyRequests Off
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto "https"
+
+    # we need encoded slashes for uploads of extracted zip files
+    AllowEncodedSlashes On
 </VirtualHost>
 ```
 

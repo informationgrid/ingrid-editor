@@ -1,7 +1,4 @@
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
+import { CodelistService } from "../../../app/services/codelist/codelist.service";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
@@ -33,7 +30,7 @@ export class InformationSystemDoctype extends IngridShared {
             codelistId: 5300,
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           }),
         ]),
         this.addGroup(
@@ -47,7 +44,7 @@ export class InformationSystemDoctype extends IngridShared {
             ),
             this.addTextAreaInline("history", "Historie", this.id),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { expressions: { hide: "formState.hideOptionals" } }
         ),
         this.addGroup(
           null,
@@ -56,12 +53,12 @@ export class InformationSystemDoctype extends IngridShared {
             this.addTextAreaInline("baseDataText", "Basisdaten", this.id),
             this.addTextAreaInline("explanation", "Erläuterungen", this.id),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { expressions: { hide: "formState.hideOptionals" } }
         ),
         this.addTable("serviceUrls", "Service-Urls", {
           supportUpload: false,
           columns: [],
-          hideExpression: "formState.hideOptionals",
+          expressions: { hide: "formState.hideOptionals" },
         }),
       ]),
 

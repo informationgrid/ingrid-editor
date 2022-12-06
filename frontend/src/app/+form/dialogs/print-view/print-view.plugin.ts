@@ -13,7 +13,6 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { FormStateService } from "../../form-state.service";
-import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Injectable()
@@ -83,7 +82,7 @@ export class PrintViewPlugin extends Plugin {
     this.dialog.open(PrintViewDialogComponent, {
       width: "80%",
       data: {
-        model: this.formService.getForm().value,
+        model: this.formService.getForm().getRawValue(),
         fields: profile.fieldsForPrint,
       },
     });

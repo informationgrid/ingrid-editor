@@ -49,7 +49,7 @@ export class TestDoctype extends BaseDoctype {
               required: true,
               maxLength: 10,
             },
-            expressionProperties: {
+            expressions: {
               "props.description": '(model.textMaxLength||"").length+" / 10"',
             },
           },
@@ -63,7 +63,7 @@ export class TestDoctype extends BaseDoctype {
               appearance: "outline",
               animation: true,
             },
-            hideExpression: "formState.hideOptionals",
+            expressions: { hide: "formState.hideOptionals" },
           },
           {
             key: "description",

@@ -80,8 +80,9 @@ export class PersonDoctype extends AddressShared {
         this.addCheckbox("hideAddress", null, {
           fieldLabel:
             "für Anzeige Daten der übergeordneten Organisation verwenden",
-          hideExpression:
-            "!(formState.mainModel && formState.mainModel._parent) ||  formState.parentIsFolder",
+          expressions: {
+            hide: "!(formState.mainModel && formState.mainModel._parent) ||  formState.parentIsFolder",
+          },
         }),
       ]),
       this.addSection("Kommunikation", [

@@ -6,7 +6,7 @@ import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { AbstractControl, UntypedFormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
@@ -27,7 +27,7 @@ export class AutocompleteTypeComponent
   filteredOptions: SelectOptionUi[] = [];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
-  input: AbstractControl = new UntypedFormControl();
+  input: FormControl = new UntypedFormControl();
 
   ngOnInit() {
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
@@ -43,6 +43,8 @@ export class AutocompleteTypeComponent
         this.filteredOptions = this._filter(label);
       });
 
+    this.addDisableBehaviour();
+
     let options = this.to.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
       options = of(options);
@@ -55,6 +57,18 @@ export class AutocompleteTypeComponent
         tap((data) => this.initInputListener(data))
       )
       .subscribe();
+  }
+
+  private addDisableBehaviour() {
+    this.formControl.statusChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((status) =>
+        status === "DISABLED" ? this.input.disable() : this.input.enable()
+      );
+
+    if (this.formControl.disabled) {
+      this.input.disable();
+    }
   }
 
   private initInputListener(options: SelectOptionUi[]) {

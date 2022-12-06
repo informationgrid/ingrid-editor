@@ -32,7 +32,6 @@ import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
@@ -61,6 +60,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     formState: {
       forPublish: false,
       hideOptionals: false,
+      disabled: true,
     },
   };
 
@@ -103,7 +103,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private profileQuery: ProfileQuery,
     private codelistQuery: CodelistQuery,
     private router: Router,
-    private authFactory: AuthenticationFactory,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private docEvents: DocEventsService
@@ -392,9 +391,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.createNewForm();
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    setTimeout(() => {
-      writePermission ? this.form.enable() : this.form.disable();
-    });
+    this.formOptions.formState.disabled = !writePermission;
   }
 
   async handleDrop(event: any) {
