@@ -110,6 +110,7 @@ export class LeafletTypeComponent
     this.hasAnyLocations = locations.length > 0;
     this.maxLocationsReached = locations.length >= this.props.max;
     this.locationsWithColor$.next(locations);
+    this._changeDetectionRef.detectChanges();
   }
 
   private updateBoundingBox() {
