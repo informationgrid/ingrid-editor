@@ -40,6 +40,10 @@
                         [forAddress]="address"
                         [sections]="(sections | async) ?? []"
                         [parentContainer]="scrollForm"
+                        [disableTitleEdit]="
+                            formOptions.formState.disabled ||
+                            (address && model._type !== 'FOLDER')
+                        "
                         (showStickyHeader)="updateContentPadding($event)"
                     ></ige-form-info>
                     <div

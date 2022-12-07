@@ -7,6 +7,7 @@
         ></mat-icon>
     </div>
 
+    <!-- TODO: move profile specific text to localisation file -->
     <span
         *ngIf="!showTitleInput"
         fxFlex
@@ -17,10 +18,10 @@
                 ? 'Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.'
                 : 'Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.'
         "
-        [matTooltipDisabled]="!disableEdit"
+        [matTooltipDisabled]="!address || !disableEdit"
         [matTooltipShowDelay]="1000"
-        [class.editable]="!disableEdit && _form.enabled"
-        (click)="!disableEdit && _form.enabled && editTitle()"
+        [class.editable]="!disableEdit"
+        (click)="!disableEdit && editTitle()"
     >
         <span>{{ _form.get("title")?.value || "Kein Titel" }}</span>
         <mat-icon svgIcon="cursor-edit"></mat-icon>

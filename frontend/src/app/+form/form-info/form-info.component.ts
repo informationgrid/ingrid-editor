@@ -62,6 +62,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   @Input() sections: string[] = [];
   @Input() parentContainer: HTMLElement;
   @Input() forAddress = false;
+  @Input() disableTitleEdit = false;
   @Output() showStickyHeader = new EventEmitter<StickyHeaderInfo>();
 
   @ViewChild("host") host: ElementRef;
