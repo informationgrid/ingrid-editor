@@ -1,8 +1,13 @@
 .mat-dialog-content .inline {
-  padding: 0;
   height: 16px;
+  padding: 0 0 8px;
+  font-weight: 400;
 }
 
 .mat-dialog-content ::ng-deep .mat-list-item-content {
   padding: 0 !important;
+}
+
+.mat-dialog-content .mat-list-item {
+  height: 24px;
 }
