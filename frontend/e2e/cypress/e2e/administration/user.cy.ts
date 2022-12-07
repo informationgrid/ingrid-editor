@@ -1,5 +1,5 @@
 import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administration-user.page';
-import { DocumentPage } from '../../pages/document.page';
+import { DocumentPage, headerElements } from '../../pages/document.page';
 import { BasePage, UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
@@ -461,6 +461,50 @@ describe('mCLOUD: User', () => {
     AdminUserPage.createNewUser(userLogIn, userEmail, userRole);
 
     AdminUserPage.userShouldExist(userLogIn + ' ' + userLogIn);
+  });
+
+  it('Should mark created and modificated documents of deleted users(#3874)', () => {
+    let user = 'test-catalog-admin-todelete';
+    let userName = 'Testadmin Todelete';
+    let createdDoc = 'old-users-doc';
+    let alteredDoc = 'Doc_h';
+
+    // login as user
+    cy.logoutClearCookies();
+    cy.kcLogin(user);
+
+    // let user create a document
+    DocumentPage.visit();
+    DocumentPage.createDocument(createdDoc);
+
+    // let user modify a document
+    Tree.openNode([alteredDoc]);
+    DocumentPage.setDescription('modified by old user');
+    DocumentPage.saveDocument();
+
+    // delete user
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.selectUser(user);
+    AdminUserPage.deleteUser();
+    AdminUserPage.userShouldNotExist(user + ' ' + user);
+
+    // check document header of created doc
+    DocumentPage.visit();
+    Tree.openNode([createdDoc]);
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.CreationDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + `${userName} (ausgeschieden)`
+    );
+
+    // check document header of modified doc
+    Tree.openNode([alteredDoc]);
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.EditDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + `${userName} (ausgeschieden)`
+    );
   });
 
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
