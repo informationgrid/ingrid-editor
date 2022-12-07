@@ -71,42 +71,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
     FormlyMatToggleModule,
-    FormlyModule.forChild({
-      types: [
-        /* FOR PREVIEW */
-        {
-          name: "textareaPrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "address-cardPrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "datepickerPrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "repeatListPrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "tablePrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "selectPrint",
-          component: PrintTypeComponent,
-        },
-        {
-          name: "autocompletePrint",
-          component: PrintTypeComponent,
-        },
-      ],
-      extras: {
-        immutable: true,
-      },
-    }),
     FormFieldsModule,
     SharedModule,
     MatMenuModule,
