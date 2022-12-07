@@ -133,6 +133,7 @@ export class FormFieldHelper {
         required: options?.required,
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: expressions,
     };

@@ -40,7 +40,11 @@ export class GeoServiceDoctype extends IngridShared {
           this.addRepeatListInline("serviceVersion", "Version des Dienstes", {
             options: this.getCodelistForSelect(5152, "serviceVersion"),
             codelistId: 5152,
-            expressions: { hide: "formState.hideOptionals" },
+            expressions: {
+              hide: "formState.hideOptionals",
+              hasInlineContextHelp: true,
+              wrappers: ["panel", "inline-help"],
+            },
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -59,9 +63,16 @@ export class GeoServiceDoctype extends IngridShared {
             this.addTextAreaInline(
               "systemEnvironment",
               "Systemumgebung",
-              this.id
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
-            this.addTextAreaInline("history", "Historie", this.id),
+            this.addTextAreaInline("history", "Historie", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
           { expressions: { hide: "formState.hideOptionals" } }
         ),

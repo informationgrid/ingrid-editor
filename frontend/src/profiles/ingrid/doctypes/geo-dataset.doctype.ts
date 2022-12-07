@@ -412,10 +412,14 @@ export class GeoDatasetDoctype extends IngridShared {
               this.addInput("vertical", null, {
                 fieldLabel: "Höhengenauigkeit (m)",
                 type: "number",
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
               }),
               this.addInput("horizontal", null, {
                 fieldLabel: "Lagegenauigkeit (m)",
                 type: "number",
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
               }),
             ],
             { fieldGroupClassName: "display-flex" }

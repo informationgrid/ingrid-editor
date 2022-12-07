@@ -30,7 +30,11 @@ export class InformationSystemDoctype extends IngridShared {
             codelistId: 5300,
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
-            expressions: { hide: "formState.hideOptionals" },
+            expressions: {
+              hide: "formState.hideOptionals",
+              hasInlineContextHelp: true,
+              wrappers: ["panel", "inline-help"],
+            },
           }),
         ]),
         this.addGroup(
@@ -40,9 +44,16 @@ export class InformationSystemDoctype extends IngridShared {
             this.addTextAreaInline(
               "systemEnvironment",
               "Systemumgebung",
-              this.id
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
-            this.addTextAreaInline("history", "Historie", this.id),
+            this.addTextAreaInline("history", "Historie", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
           { expressions: { hide: "formState.hideOptionals" } }
         ),
@@ -50,8 +61,14 @@ export class InformationSystemDoctype extends IngridShared {
           null,
           null,
           [
-            this.addTextAreaInline("baseDataText", "Basisdaten", this.id),
-            this.addTextAreaInline("explanation", "Erläuterungen", this.id),
+            this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
+            this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
           { expressions: { hide: "formState.hideOptionals" } }
         ),
