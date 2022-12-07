@@ -20,10 +20,10 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((value) => {
-        this.canBeDragged =
-          this.formControl.enabled && !this.props.noDrag && value?.length > 1;
-      });
+      .subscribe((value) => this.updateDragState(value));
+
+    // initialize
+    this.updateDragState(this.formControl.value);
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
@@ -70,5 +70,10 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     } else {
       this.add();
     }
+  }
+
+  private updateDragState(value) {
+    this.canBeDragged =
+      this.formControl.enabled && !this.props.noDrag && value?.length > 1;
   }
 }
