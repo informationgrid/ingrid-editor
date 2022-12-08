@@ -135,6 +135,10 @@ describe('Meta data administrator with a group', () => {
     ResearchPage.search('Harz');
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     ResearchPage.getSearchResultCount().should('equal', 1);
+
+    // addresses with read-only access should be greyed out (#2800)
+    ResearchPage.search('Folder_A');
+    cy.contains('.readonly .mat-column-title', 'Folder_A').should('have.css', 'color', 'rgb(151, 151, 151)');
   });
 
   it('meta data administrator should access to meta admin without group', () => {

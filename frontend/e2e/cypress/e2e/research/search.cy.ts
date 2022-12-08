@@ -374,9 +374,11 @@ describe('Research Page', () => {
     ResearchPage.waitForSearch();
 
     // iterate through every result to check date
-    cy.get('tbody tr').each(el => {
-      cy.wrap(el).should('contain', '22.07.2021');
-    });
+    cy.get('tbody tr')
+      .should('not.be.empty')
+      .each(el => {
+        cy.wrap(el).should('contain', '22.07.2021');
+      });
 
     // compare filtered results with number of all search results
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {

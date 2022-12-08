@@ -232,7 +232,6 @@ describe('uvp reports', () => {
       });
   });
 
-  // failing because of bug #4173
   it('should be able to deal with invalid urls that constitute a bad request (#4173)', () => {
     // publish document with problematic url
     Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_Z_III']);
