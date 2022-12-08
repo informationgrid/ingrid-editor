@@ -29,11 +29,13 @@ export class GeoServiceDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addRepeatList("serviceCategories", "Klassifikation des Dienstes", {
           asSelect: true,
+          required: true,
           options: this.getCodelistForSelect(5200, "serviceCategories"),
           codelistId: 5200,
         }),
         this.addGroup(null, null, [
           this.addSelectInline("serviceType", "Art des Dienstes", {
+            required: true,
             options: this.getCodelistForSelect(5100, "serviceType"),
             codelistId: 5100,
           }),
@@ -86,6 +88,7 @@ export class GeoServiceDoctype extends IngridShared {
           "Dargestellte Daten",
           [
             this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
+              required: true,
               expressions: { hide: "formState.hideOptionals" },
             }),
             this.addSelectInline("couplingType", "Kopplungstyp", {
@@ -103,7 +106,7 @@ export class GeoServiceDoctype extends IngridShared {
         }),
       ]),
 
-      this.addSpatialSection(),
+      this.addSpatialSection({ regionKey: true }),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),

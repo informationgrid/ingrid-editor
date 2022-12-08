@@ -42,13 +42,17 @@ class InGridProfile @Autowired constructor(
         val codelist6006 = createCodelist6006(catalogRef)
         val codelist1350 = createCodelist1350(catalogRef)
         val codelist1370 = createCodelist1370(catalogRef)
+        val codelist3535 = createCodelist3535(catalogRef)
+        val codelist3555 = createCodelist3555(catalogRef)
 
         when (codelistId) {
             "6006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6006)
             "1350" -> codelistHandler.removeAndAddCodelist(catalogId, codelist1350)
             "1370" -> codelistHandler.removeAndAddCodelist(catalogId, codelist1370)
+            "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
+            "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
             null -> {
-                codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist6006, codelist1350, codelist1370))
+                codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555))
             }
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
@@ -75,6 +79,30 @@ class InGridProfile @Autowired constructor(
             description = ""
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(CodelistHandler.toCodelistEntry("1", "CDS"))
+            }
+        }
+    }
+
+    private fun createCodelist3555(catalogRef: Catalog): Codelist {
+        return Codelist().apply {
+            identifier = "3555"
+            catalog = catalogRef
+            name = "Symbolkatalog"
+            description = ""
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(CodelistHandler.toCodelistEntry("1", "Ganzflächige Biotopkartierung 94"))
+            }
+        }
+    }
+
+    private fun createCodelist3535(catalogRef: Catalog): Codelist {
+        return Codelist().apply {
+            identifier = "3535"
+            catalog = catalogRef
+            name = "Schlüsselkatalog"
+            description = ""
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(CodelistHandler.toCodelistEntry("1", "von Drachenfels 94"))
             }
         }
     }

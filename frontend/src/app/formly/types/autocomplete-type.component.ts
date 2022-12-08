@@ -77,8 +77,9 @@ export class AutocompleteTypeComponent
     this.input.valueChanges
       .pipe(
         untilDestroyed(this),
+        tap((value) => console.log("value: ", value)),
         startWith(this.mapOptionToValue(this.formControl.value)),
-        distinct(),
+        // distinct(), // will not let through empty value!
         tap((value) => this.updateFormControl(value))
       )
       .subscribe((value) => (this.filteredOptions = this._filter(value)));

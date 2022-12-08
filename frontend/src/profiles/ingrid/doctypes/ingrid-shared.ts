@@ -15,7 +15,10 @@ interface KeywordSectionOptions {
   priorityDataset?: boolean;
   spatialScope?: boolean;
   thesaurusTopics?: boolean;
-  openData?: boolean;
+}
+
+interface SpatialOptions {
+  regionKey?: boolean;
 }
 
 interface AdditionalInformationSectionOptions {
@@ -162,22 +165,27 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
-          expressions: { hide: "formState.hideOptionals" },
+          expressions: {
+            hide: "formState.hideOptionals",
+            "props.required": "formState.mainModel.isAdVCompatible",
+          },
         }),
         this.addRepeatList("themes", "INSPIRE-Themen", {
           asSelect: true,
           options: this.getCodelistForSelect(6100, "themes"),
           codelistId: 6100,
-          expressions: { hide: "formState.hideOptionals" },
+          expressions: {
+            hide: "formState.hideOptionals",
+            "props.required": "formState.mainModel.isInspireIdentified",
+          },
         }),
-        options.openData
-          ? this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
-              asSelect: true,
-              options: this.getCodelistForSelect(6400, "openDataCategories"),
-              codelistId: 6400,
-              expressions: { hide: "!formState.mainModel.isOpenData" },
-            })
-          : null,
+        this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
+          required: true,
+          asSelect: true,
+          options: this.getCodelistForSelect(6400, "openDataCategories"),
+          codelistId: 6400,
+          expressions: { hide: "!formState.mainModel.isOpenData" },
+        }),
         // TODO: output needs to be formatted in a different way
         options.priorityDataset
           ? this.addRepeatList(
@@ -187,7 +195,9 @@ export abstract class IngridShared extends BaseDoctype {
                 asSelect: true,
                 options: this.getCodelistForSelect(6350, "priorityDatasets"),
                 codelistId: 6350,
-                expressions: { hide: "formState.hideOptionals" },
+                expressions: {
+                  hide: "formState.hideOptionals && !formState.mainModel.isInspireIdentified",
+                },
               }
             )
           : null,
@@ -198,6 +208,11 @@ export abstract class IngridShared extends BaseDoctype {
               {
                 options: this.getCodelistForSelect(6360, "spatialScope"),
                 codelistId: 6360,
+                expressions: {
+                  hide: "formState.hideOptionals && (formState.mainModel._type === 'InGridGeoService' || !formState.mainModel.isInspireIdentified)",
+                  "props.required":
+                    "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
+                },
               }
             )
           : null,
@@ -206,6 +221,7 @@ export abstract class IngridShared extends BaseDoctype {
               asSelect: true,
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
+              required: true,
             })
           : null,
         this.addRepeatChip("keywords", "Optionale Schlagworte"),
@@ -213,72 +229,120 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  addSpatialSection() {
+  addSpatialSection(options: SpatialOptions = {}) {
     return this.addSection("Raumbezugssystem", [
-      this.addGroupSimple("spatial", [
-        this.addSpatial("references", "Raumbezug", {
-          required: true,
-          hasInlineContextHelp: true,
-        }),
-        this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
-          asSelect: true,
-          options: this.getCodelistForSelect(100, "spatialSystems"),
-          codelistId: 100,
-          required: true,
-        }),
-        this.addGroup(
-          "verticalExtent",
-          "Höhe",
-          [
-            this.addGroup(
-              null,
-              null,
-              [
-                this.addInputInline("minimumValue", "Minimum", {
-                  type: "number",
-                  hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
-                }),
-                this.addInputInline("maximumValue", "Maximum", {
-                  type: "number",
-                  hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
-                }),
-                this.addSelectInline("unitOfMeasure", "Maßeinheit", {
-                  options: this.getCodelistForSelect(
-                    102,
-                    "spatialRefAltMeasure"
-                  ),
-                  codelistId: 102,
-                  hasInlineContextHelp: true,
-                }),
-              ],
-              { wrappers: [] }
-            ),
-            this.addGroup(
-              null,
-              null,
-              [
-                this.addSelectInline("Datum", "Vertikaldatum", {
-                  options: this.getCodelistForSelect(101, "spatialRefAltVDate"),
-                  codelistId: 101,
-                }),
-              ],
-              { wrappers: [], hasInlineContextHelp: true }
-            ),
-          ],
-          {
-            fieldGroupClassName: "",
-            hideExpression: "formState.hideOptionals",
-          }
-        ),
-        this.addTextArea("description", "Erläuterungen", "spatial", {
-          expressions: {
-            "props.hide": "formState.hideOptionals",
-          },
-          contextHelpId: "descriptionSpacial",
-        }),
-      ]),
+      this.addGroupSimple(
+        "spatial",
+        [
+          this.addSpatial("references", "Raumbezug", {
+            required: true,
+            hasInlineContextHelp: true,
+          }),
+          options.regionKey
+            ? this.addInput("regionKey", "Regionalschlüssel", {
+                wrappers: ["panel", "form-field"],
+                type: "number",
+              })
+            : null,
+          this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
+            asSelect: true,
+            options: this.getCodelistForSelect(100, "spatialSystems"),
+            codelistId: 100,
+            required: true,
+          }),
+          this.addGroup(
+            "verticalExtent",
+            "Höhe",
+            [
+              this.addGroup(
+                null,
+                null,
+                [
+                  this.addInputInline("minimumValue", "Minimum", {
+                    type: "number",
+                    hasInlineContextHelp: true,
+                    wrappers: ["form-field", "inline-help"],
+                    expressions: {
+                      "props.required": (field) =>
+                        Object.keys(field.model ?? {}).some(
+                          (key) => field.model[key] != null
+                        ),
+                    },
+                  }),
+                  this.addInputInline("maximumValue", "Maximum", {
+                    type: "number",
+                    hasInlineContextHelp: true,
+                    wrappers: ["form-field", "inline-help"],
+                    expressions: {
+                      "props.required": (field) =>
+                        Object.keys(field.model ?? {}).some(
+                          (key) => field.model[key] != null
+                        ),
+                    },
+                  }),
+                  this.addSelectInline("unitOfMeasure", "Maßeinheit", {
+                    options: this.getCodelistForSelect(
+                      102,
+                      "spatialRefAltMeasure"
+                    ),
+                    codelistId: 102,
+                    allowNoValue: true,
+                    hasInlineContextHelp: true,
+                    expressions: {
+                      "props.required": (field) =>
+                        Object.keys(field.model ?? {}).some(
+                          (key) => field.model[key] != null
+                        ),
+                    },
+                  }),
+                ],
+                {
+                  wrappers: [],
+                  validators: {
+                    bigger: {
+                      expression: (a, b) => {
+                        return b.model?.minimumValue <= b.model?.maximumValue;
+                      },
+                      message: () => "Der Wert muss größer als Minimum sein",
+                      errorPath: "maximumValue",
+                    },
+                  },
+                }
+              ),
+              this.addGroup(
+                null,
+                null,
+                [
+                  this.addAutoCompleteInline("Datum", "Vertikaldatum", {
+                    options: this.getCodelistForSelect(
+                      101,
+                      "spatialRefAltVDate"
+                    ),
+                    codelistId: 101,
+                    expressions: {
+                      "props.required": (field) =>
+                        Object.keys(field.model ?? {}).some(
+                          (key) => field.model[key] != null
+                        ),
+                    },
+                  }),
+                ],
+                { wrappers: [], hasInlineContextHelp: true }
+              ),
+            ],
+            {
+              fieldGroupClassName: "",
+              hideExpression: "formState.hideOptionals",
+            }
+          ),
+          this.addTextArea("description", "Erläuterungen", "spatial", {
+            expressions: {
+              "props.hide": "formState.hideOptionals",
+            },
+            contextHelpId: "descriptionSpacial",
+          }),
+        ].filter(Boolean)
+      ),
     ]);
   }
 
@@ -450,6 +514,7 @@ export abstract class IngridShared extends BaseDoctype {
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
+              required: true,
               expressions: { hide: "formState.hideOptionals" },
               dialog: ConformityDialogComponent,
               columns: [
@@ -562,6 +627,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple("resource", [
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
           asSelect: true, // TODO: also allow free values
+          required: true,
           options: this.getCodelistForSelect(
             6010,
             "availabilityAccessConstraints"
@@ -598,6 +664,7 @@ export abstract class IngridShared extends BaseDoctype {
       ]),
       this.addGroupSimple("distribution", [
         this.addRepeat("format", "Datenformat", {
+          required: true,
           expressions: { "props.hide": "formState.hideOptionals" },
           fields: [
             this.addSelectInline("name", "Name", {

@@ -21,9 +21,11 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         contextHelpId: options?.contextHelpId,
+        required: options?.required,
       },
       fieldGroup: fields,
       expressions: { hide: options?.hideExpression },
+      validators: options?.validators,
     };
   }
 
@@ -155,7 +157,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? [{}] : null,
+      defaultValue: options?.required ? options?.defaultValue ?? [{}] : null,
       props: {
         externalLabel: label,
         required: options?.required,
@@ -190,6 +192,15 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
       },
     };
+  }
+
+  addAutoCompleteInline(id, label, options = {}) {
+    return this.addAutocomplete(id, null, {
+      fieldLabel: label,
+      wrappers: ["form-field"],
+      className: "flex-1",
+      ...options,
+    });
   }
 
   addInput(id, label, options?): FormlyFieldConfig {

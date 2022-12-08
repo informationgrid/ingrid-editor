@@ -61,12 +61,13 @@ export class GeoDatasetDoctype extends IngridShared {
         priorityDataset: true,
         spatialScope: true,
         thesaurusTopics: true,
-        openData: true,
       }),
 
       this.addSection("Fachbezug", [
         // this.addGroupSimple("lineage", [
         this.addRepeat("lineage", "Fachliche Grundlage", {
+          required: true,
+          defaultValue: [{ _type: "information" }],
           menuOptions: [
             {
               key: "information",
@@ -147,6 +148,7 @@ export class GeoDatasetDoctype extends IngridShared {
           "Raster/Gitter",
           [
             this.addSelectInline("type", "Typ", {
+              defaultValue: { key: "basis" },
               options: <SelectOptionUi[]>[
                 {
                   value: "basis",
@@ -167,9 +169,11 @@ export class GeoDatasetDoctype extends IngridShared {
                 this.addSelectInline("name", "Achsenbezeichnung", {
                   options: this.getCodelistForSelect(514, "name"),
                   codelistId: 514,
+                  required: true,
                 }),
                 this.addInputInline("size", "Elementanzahl", {
                   type: "number",
+                  required: true,
                 }),
                 this.addInputInline("resolution", "Auflösung in Meter", {
                   type: "number",
@@ -192,8 +196,18 @@ export class GeoDatasetDoctype extends IngridShared {
                   {
                     type: "number",
                     expressions: {
-                      "props.required":
-                        "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
+                      "props.required": (a) => {
+                        // "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
+                        const value = a.form.value;
+                        return Object.keys(value).some((key) => {
+                          return (
+                            key !== "type" &&
+                            (value[key] != null ||
+                              value[key] === true ||
+                              value[key]?.length > 1)
+                          );
+                        });
+                      },
                     },
                   }
                 ),
@@ -249,9 +263,8 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                expressions: {
-                  hide: 'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
-                },
+                hideExpression:
+                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
               }
             ),
             this.addGroup(
@@ -284,17 +297,15 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                expressions: {
-                  hide: 'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
-                },
+                hideExpression:
+                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
               }
             ),
           ],
           {
             fieldGroupClassName: "",
-            expressions: {
-              hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
-            },
+            hideExpression:
+              '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
         this.addRepeat("resolution", "Erstellungsmaßstab", {
@@ -317,23 +328,20 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(), // TODO: add autocomplete for title
+                fields: this.symbolInformation(3555), // TODO: add autocomplete for title
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
             fields: [],
           }),
         ]),
-
-        // { fieldGroupClassName: "", wrappers: [] }
-        // ),
         this.addGroupSimple("featureCatalogueDescription", [
           this.addRepeat("citation", "Schlüsselkatalog", {
             menuOptions: [
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(), // TODO: add autocomplete for title (other codelist)
+                fields: this.symbolInformation(3535), // TODO: add autocomplete for title (other codelist)
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
@@ -483,7 +491,7 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
       ]),
 
-      this.addSpatialSection(),
+      this.addSpatialSection({ regionKey: true }),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({
         extraInfoCharSetData: true,
@@ -503,16 +511,21 @@ export class GeoDatasetDoctype extends IngridShared {
     super(codelistService, codelistQuery, uploadService);
   }
 
-  private symbolInformation() {
+  private symbolInformation(codelistForTitle: number) {
     return this.addGroupSimple(
       null,
       [
-        this.addInputInline("title", "Titel", {
+        this.addAutocomplete("title", "Titel", {
           className: "flex-3",
+          wrappers: ["form-field"],
+          required: true,
+          options: this.getCodelistForSelect(codelistForTitle, "title"),
+          codelistId: codelistForTitle,
         }),
         { key: "_type" },
         this.addDatepickerInline("date", "Datum", {
           className: "flex-1",
+          required: true,
         }),
         this.addInputInline("edition", "Version", {
           className: "flex-1",

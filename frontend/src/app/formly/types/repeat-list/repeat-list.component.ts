@@ -94,10 +94,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     // ignore duplicate entries
     const containsCodelistItem =
       option.value &&
-      this.model.map((item) => item.key).indexOf(option.value) !== -1;
+      this.model?.map((item) => item.key)?.indexOf(option.value) !== -1;
     const containsFreeEntry =
       option.label &&
-      this.model.map((item) => item.value).indexOf(option.label) !== -1;
+      this.model?.map((item) => item.value)?.indexOf(option.label) !== -1;
     if (option.value === "" || containsCodelistItem || containsFreeEntry) {
       return;
     }
