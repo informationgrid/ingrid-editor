@@ -70,6 +70,8 @@ export abstract class AddressShared extends BaseDoctype {
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
                   className: "width-100",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
               ],
             },
@@ -78,10 +80,14 @@ export abstract class AddressShared extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
                   className: "flex-3",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
               ],
             },
@@ -90,10 +96,14 @@ export abstract class AddressShared extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-po-box", null, {
                   fieldLabel: "PLZ (Postfach)",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
                 this.addInput("po-box", null, {
                   fieldLabel: "Postfach",
                   className: "flex-3",
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
               ],
             },

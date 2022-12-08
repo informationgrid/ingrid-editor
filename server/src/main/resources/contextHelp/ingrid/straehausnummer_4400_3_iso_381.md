@@ -1,9 +1,7 @@
 ---
 # ID des GUI Elements
-id: address
-docType: 
- - InGridPersonDoc
- - InGridOrganisationDoc
+id: no-address
+
 profile: ingrid
 
 
