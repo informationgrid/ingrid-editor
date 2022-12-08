@@ -66,6 +66,26 @@ export function isObject(x: any) {
   return x != null && typeof x === "object";
 }
 
+export function isEmptyObject(objValue: any, ignoreFields = []) {
+  return Object.keys(objValue).some((key) => {
+    if (ignoreFields.indexOf(key) !== -1) return false;
+    let valueElement = objValue[key];
+    if (valueElement == null) return false; // "==": null OR undefined !!!
+
+    if (Array.isArray(valueElement)) return valueElement.length > 0;
+
+    if (typeof valueElement === "object") {
+      return isEmptyObject(valueElement, ignoreFields);
+    }
+
+    if (typeof valueElement === "boolean") {
+      return valueElement === true;
+    }
+
+    return valueElement !== "";
+  });
+}
+
 /*!
  * JsonDiffMerge Library v1
  * https://debugtopinpoint.wordpress.com/

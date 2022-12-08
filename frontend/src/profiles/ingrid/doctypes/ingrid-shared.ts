@@ -4,6 +4,7 @@ import { CodelistService } from "../../../app/services/codelist/codelist.service
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
+import { isEmptyObject } from "../../../app/shared/utils";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -264,9 +265,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["form-field", "inline-help"],
                     expressions: {
                       "props.required": (field) =>
-                        Object.keys(field.model ?? {}).some(
-                          (key) => field.model[key] != null
-                        ),
+                        isEmptyObject(field.form.value),
                     },
                   }),
                   this.addInputInline("maximumValue", "Maximum", {
@@ -275,9 +274,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["form-field", "inline-help"],
                     expressions: {
                       "props.required": (field) =>
-                        Object.keys(field.model ?? {}).some(
-                          (key) => field.model[key] != null
-                        ),
+                        isEmptyObject(field.form.value),
                     },
                   }),
                   this.addSelectInline("unitOfMeasure", "Maßeinheit", {
@@ -290,9 +287,7 @@ export abstract class IngridShared extends BaseDoctype {
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>
-                        Object.keys(field.model ?? {}).some(
-                          (key) => field.model[key] != null
-                        ),
+                        isEmptyObject(field.form.value),
                     },
                   }),
                 ],
@@ -321,9 +316,7 @@ export abstract class IngridShared extends BaseDoctype {
                     codelistId: 101,
                     expressions: {
                       "props.required": (field) =>
-                        Object.keys(field.model ?? {}).some(
-                          (key) => field.model[key] != null
-                        ),
+                        isEmptyObject(field.form.value),
                     },
                   }),
                 ],
@@ -508,14 +501,21 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 99999999,
                 useDialog: true,
                 required: true,
+                expressions: {
+                  hide: "formState.mainModel._type === 'InGridGeoService' || (formState.hideOptionals && !field.formControl.validator()?.required)",
+                  "props.required":
+                    "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel._type) !== -1",
+                },
               }),
             ])
           : null,
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
-              required: true,
-              expressions: { hide: "formState.hideOptionals" },
+              expressions: {
+                hide: "formState.hideOptionals",
+                "props.required": "formState.mainModel.isInspireIdentified",
+              },
               dialog: ConformityDialogComponent,
               columns: [
                 {
@@ -665,7 +665,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple("distribution", [
         this.addRepeat("format", "Datenformat", {
           required: true,
-          expressions: { "props.hide": "formState.hideOptionals" },
+          expressions: { hide: "formState.hideOptionals" },
           fields: [
             this.addSelectInline("name", "Name", {
               options: this.getCodelistForSelect(1320, "specification"),
@@ -678,7 +678,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ]),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
-        expressions: { "props.hide": "formState.hideOptionals" },
+        expressions: { hide: "formState.hideOptionals" },
         fields: [
           this.addSelectInline("name", "Medium", {
             options: this.getCodelistForSelect(520, "specification"),

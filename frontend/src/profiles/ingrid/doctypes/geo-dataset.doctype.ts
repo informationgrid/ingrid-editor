@@ -8,6 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { isEmptyObject } from "../../../app/shared/utils";
 
 const qualityTables = <SelectOptionUi[]>[
   { label: "Datenüberschuss", value: "completenessComission" },
@@ -196,28 +197,18 @@ export class GeoDatasetDoctype extends IngridShared {
                   {
                     type: "number",
                     expressions: {
-                      "props.required": (a) => {
-                        // "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
-                        const value = a.form.value;
-                        return Object.keys(value).some((key) => {
-                          return (
-                            key !== "type" &&
-                            (value[key] != null ||
-                              value[key] === true ||
-                              value[key]?.length > 1)
-                          );
-                        });
-                      },
+                      "props.required": (field) =>
+                        isEmptyObject(field.form.value, ["type"]),
                     },
                   }
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
                   options: this.getCodelistForSelect(509, "cellGeometry"),
                   codelistId: 509,
+                  allowNoValue: true,
                   expressions: {
-                    // TODO: exception when toggling required field
-                    "props.required":
-                      "formState.mainModel.gridSpatialRepresentation?.transformationParameterAvailability",
+                    "props.required": (field) =>
+                      isEmptyObject(field.form.value, ["type"]),
                   },
                 }),
               ],
@@ -255,6 +246,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       options: this.getCodelistForSelect(2100, "pointInPixel"),
                       codelistId: 2100,
                       className: "flex-3",
+                      allowNoValue: true,
                     }),
                   ],
                   { wrappers: [] }
@@ -309,7 +301,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }
         ),
         this.addRepeat("resolution", "Erstellungsmaßstab", {
-          expressions: { "props.hide": "formState.hideOptionals" },
+          expressions: { hide: "formState.hideOptionals" },
           fields: [
             this.addInputInline("equivalentScale", "Maßstab 1:x", {
               type: "number",
@@ -346,6 +338,10 @@ export class GeoDatasetDoctype extends IngridShared {
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
             fields: [],
+            expressions: {
+              "props.required":
+                "formState.mainModel.featureCatalogueDescription?.featureTypes?.length > 0",
+            },
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             expressions: { hide: "formState.hideOptionals" },
@@ -414,7 +410,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 fieldLabel: "Rasterpositionsgenauigkeit (m)",
                 type: "number",
                 expressions: {
-                  hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+                  hide: 'formState.hideOptionals || !formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
                 },
               }),
               this.addInput("vertical", null, {

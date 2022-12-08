@@ -1,4 +1,28 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Observable } from "rxjs";
+
+export interface Options {
+  wrappers?: string[];
+  className?: string;
+  required?: boolean;
+  defaultValue?: any;
+  expressions?: {
+    hide?;
+    "props.required"?;
+  };
+}
+
+export interface RepeatOptions extends Options {
+  menuOptions?: any[];
+  fieldGroupClassName?: string;
+  fields?: FormlyFieldConfig[];
+}
+
+export interface RepeatChipOptions extends Options {
+  useDialog?: boolean;
+  options?: any[] | Observable<any[]>;
+  codelistId?: number;
+}
 
 export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
@@ -100,7 +124,7 @@ export class FormFieldHelper {
     };
   }
 
-  addRepeatChip(id, label, options?) {
+  addRepeatChip(id, label, options?: RepeatChipOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -150,7 +174,7 @@ export class FormFieldHelper {
     });
   }
 
-  addRepeat(id, label, options?): FormlyFieldConfig {
+  addRepeat(id, label, options?: RepeatOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
