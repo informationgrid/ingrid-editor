@@ -402,8 +402,8 @@ describe('uvp uploads', () => {
   });
 
   it('should use existing file when uploading file that has same name as archived one (#4547)', () => {
-    const file1 = 'first_archived.txt';
-    const file2 = 'duplicateTitle/first_archived.txt';
+    const file1 = 'first_archived_1.txt';
+    const file2 = 'duplicateTitle/first_archived_1.txt';
 
     Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_R_III']);
 
@@ -426,7 +426,7 @@ describe('uvp uploads', () => {
 
     // make sure old file is the current version
     fileDataTransferManagement.DownloadFileAddedToDocument(file1, true);
-    cy.readFile('cypress/downloads/first_archived.txt', { timeout: 15000 }).then(content =>
+    cy.readFile('cypress/downloads/first_archived_1.txt', { timeout: 15000 }).then(content =>
       expect(content.trim()).to.equal('archived first')
     );
   });
