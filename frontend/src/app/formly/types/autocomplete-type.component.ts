@@ -1,13 +1,11 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { MatInput } from "@angular/material/input";
-import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { distinct, filter, map, startWith, tap } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { FormControl, UntypedFormControl } from "@angular/forms";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { BackendOption } from "../../store/codelist/codelist.model";
 
 @UntilDestroy()
 @Component({
@@ -19,31 +17,58 @@ export class AutocompleteTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  @ViewChild(MatInput, { static: true }) formFieldControl: MatInput;
-  @ViewChild(MatAutocompleteTrigger, { static: true })
-  autocomplete: MatAutocompleteTrigger;
+  parameterOptions: BackendOption[] = [];
+  filteredOptions: BackendOption[];
 
-  private parameterOptions: SelectOptionUi[] = [];
-  filteredOptions: SelectOptionUi[] = [];
-  private optionsLoaded$ = new BehaviorSubject<boolean>(false);
+  displayFn(option: BackendOption | string): string {
+    if (this.props.simple) return <string>option;
 
-  input: FormControl = new UntypedFormControl();
+    const opt = <BackendOption>option;
+    if (opt?.key) {
+      return (
+        opt.value ??
+        this.parameterOptions.find((param) => param.key === opt.key)?.value ??
+        "???"
+      );
+    }
+    return opt && opt.value ? opt.value : "";
+  }
 
   ngOnInit() {
-    combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
+    this.formControl.valueChanges
       .pipe(
-        /*distinctUntilChanged(
-          ([a], [b]) => JSON.stringify(a) === JSON.stringify(b)
-        ),*/
-        filter(([_, ready]) => ready),
-        map(([value]) => this.mapOptionToValue(value))
-      )
-      .subscribe((label) => {
-        this.input.setValue(label, { emitEvent: false });
-        this.filteredOptions = this._filter(label);
-      });
+        startWith(<string>this.formControl.value ?? ""),
+        map((value) => {
+          let name = typeof value === "string" ? value : value?.value;
 
-    this.addDisableBehaviour();
+          if (!this.props.simple) {
+            if (typeof value === "string") {
+              const key =
+                this.parameterOptions.find((option) => option.value === value)
+                  ?.key ?? null;
+
+              if (key === null && !value) {
+                this.formControl.setValue(null);
+              } else if (key === null) {
+                this.formControl.setValue({ key: null, value: value });
+              } else {
+                this.formControl.setValue({ key: key });
+              }
+              return null;
+            } else if (value?.key != null && value?.value !== undefined) {
+              this.formControl.setValue({ key: value.key });
+              return;
+            } else if (value?.key != null && value?.value === undefined) {
+              // values should have been filtered already
+              return null;
+            }
+          }
+
+          return name ? this._filter(name) : this.parameterOptions.slice();
+        }),
+        filter((value) => value !== null)
+      )
+      .subscribe((values) => (this.filteredOptions = values));
 
     let options = this.props.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
@@ -59,100 +84,21 @@ export class AutocompleteTypeComponent
       .subscribe();
   }
 
-  private addDisableBehaviour() {
-    this.formControl.statusChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((status) =>
-        status === "DISABLED" ? this.input.disable() : this.input.enable()
-      );
-
-    if (this.formControl.disabled) {
-      this.input.disable();
-    }
-  }
-
   private initInputListener(options: SelectOptionUi[]) {
-    this.parameterOptions = options;
-
-    this.input.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        tap((value) => console.log("value: ", value)),
-        startWith(this.mapOptionToValue(this.formControl.value)),
-        // distinct(), // will not let through empty value!
-        tap((value) => this.updateFormControl(value))
-      )
-      .subscribe((value) => (this.filteredOptions = this._filter(value)));
-
-    this.optionsLoaded$.next(true);
-    const label = this.mapOptionToValue(this.formControl.value);
-    this.input.setValue(label, { emitEvent: false });
-    this.formControl.markAsUntouched();
+    this.parameterOptions = options.map(
+      (option) => <BackendOption>{ key: option.value, value: option.label }
+    );
   }
 
-  private mapOptionToValue(value: any): string {
-    if (this.props.simple) return value;
-
-    if (value?.key) {
-      return (
-        this.parameterOptions.find((option) => option.value === value.key)
-          ?.label ?? ""
-      );
-    } else {
-      return value?.value ?? "";
-    }
-  }
-
-  private updateFormControl(value: string) {
-    if (this.props.simple) {
-      this.formControl.setValue(value);
-      this.formControl.markAsTouched();
-      this.formControl.markAsDirty();
-
-      return;
-    }
-
-    const key =
-      this.parameterOptions.find((option) => option.label === value)?.value ??
-      null;
-
-    const hasSameKey = key !== null && key === this.formControl.value?.key;
-    const hasSameValue =
-      key === null && value === this.formControl.value?.value;
-    const hasSameNullValue = !this.formControl.value && key === null && !value;
-
-    if (hasSameKey || hasSameValue || hasSameNullValue) {
-      return;
-    }
-
-    if (key === null && !value) {
-      this.formControl.setValue(null);
-    } else if (key === null) {
-      this.formControl.setValue({ key: null, value: value });
-    } else {
-      this.formControl.setValue({ key: key });
-    }
-
-    this.formControl.markAsTouched();
-    this.formControl.markAsDirty();
-  }
-
-  _filter(value: string): SelectOptionUi[] {
+  _filter(value: string): BackendOption[] {
     if (value === undefined || value === null || this.props.doNotFilter)
       return this.parameterOptions;
     const filterValue = value.toLowerCase();
 
     return this.parameterOptions
-      ? this.parameterOptions
-          ?.map((option) => {
-            option.disabled = !option.label.toLowerCase().includes(filterValue);
-            return option;
-          })
-          .filter((option) => !option.disabled || this.props.highlightMatches)
+      ? this.parameterOptions.filter((option) =>
+          option.value.toLowerCase().includes(filterValue)
+        )
       : [];
-  }
-
-  openAutocompletePanel() {
-    this.autocomplete.openPanel();
   }
 }

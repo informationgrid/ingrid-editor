@@ -1,34 +1,32 @@
 <input
     matInput
     [matAutocomplete]="auto"
-    [formControl]="input"
+    [formControl]="formControl"
     [formlyAttributes]="field"
     [placeholder]="props.placeholder"
-    (keyup)="_filter(input.value || '')"
-    (click)="openAutocompletePanel()"
     [errorStateMatcher]="errorStateMatcher"
 />
 <ng-template #matSuffix>
     <button
         *ngIf="
-            input.value?.length > 0 && !props.hideDeleteButton && input.enabled
+            formControl.value?.length > 0 &&
+            !props.hideDeleteButton &&
+            formControl.enabled
         "
         mat-icon-button
         type="button"
         class="field-close"
-        (click)="input.setValue('')"
+        (click)="formControl.setValue(null)"
     >
         <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
     </button>
 </ng-template>
-<mat-autocomplete #auto="matAutocomplete">
+<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
     <mat-option
         *ngFor="let option of filteredOptions"
-        [value]="option.label"
-        [class.matching]="
-            props.highlightMatches && !option.disabled && input.value
-        "
+        [value]="option"
+        [class.matching]="props.highlightMatches && formControl.value"
     >
-        {{ option.label }}
+        {{ option.value }}
     </mat-option>
 </mat-autocomplete>
