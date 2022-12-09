@@ -25,11 +25,7 @@ export class AutocompleteTypeComponent
 
     const opt = <BackendOption>option;
     if (opt?.key) {
-      return (
-        opt.value ??
-        this.parameterOptions.find((param) => param.key === opt.key)?.value ??
-        "???"
-      );
+      return opt.value ?? this.getValueFromOptionKey(opt.key) ?? "???";
     }
     return opt && opt.value ? opt.value : "";
   }
@@ -64,7 +60,7 @@ export class AutocompleteTypeComponent
             }
           }
 
-          return name ? this._filter(name) : this.parameterOptions.slice();
+          return this.filterParameterByName(name);
         }),
         filter((value) => value !== null)
       )
@@ -88,6 +84,8 @@ export class AutocompleteTypeComponent
     this.parameterOptions = options.map(
       (option) => <BackendOption>{ key: option.value, value: option.label }
     );
+    const value = this.getFormValueLabel();
+    this.filteredOptions = this.filterParameterByName(value);
   }
 
   _filter(value: string): BackendOption[] {
@@ -100,5 +98,21 @@ export class AutocompleteTypeComponent
           option.value.toLowerCase().includes(filterValue)
         )
       : [];
+  }
+
+  private getFormValueLabel(): string {
+    const formValue = this.formControl.value;
+    if (formValue === undefined || formValue === null) return null;
+    if (this.props.simple) return formValue ?? null;
+
+    return formValue.value ?? this.getValueFromOptionKey(formValue.key);
+  }
+
+  private getValueFromOptionKey(key: string) {
+    return this.parameterOptions.find((param) => param.key === key)?.value;
+  }
+
+  private filterParameterByName(name) {
+    return name ? this._filter(name) : this.parameterOptions.slice();
   }
 }

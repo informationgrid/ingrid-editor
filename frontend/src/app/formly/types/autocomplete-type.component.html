@@ -24,7 +24,7 @@
 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
     <mat-option
         *ngFor="let option of filteredOptions"
-        [value]="option"
+        [value]="props.simple ? option.key : option"
         [class.matching]="props.highlightMatches && formControl.value"
     >
         {{ option.value }}
