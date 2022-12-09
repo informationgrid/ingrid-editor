@@ -56,14 +56,13 @@ export class TestDoctype extends BaseDoctype {
           {
             key: "optionalText",
             type: "input",
-            className: "optional animated",
+            className: "optional",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Optionales Textfeld",
               appearance: "outline",
               animation: true,
             },
-            expressions: { hide: "formState.hideOptionals" },
           },
           {
             key: "description",

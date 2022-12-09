@@ -58,8 +58,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   formOptions: FormlyFormOptions = {
     formState: {
-      forPublish: false,
-      hideOptionals: false,
       disabled: true,
     },
   };
@@ -76,6 +74,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   paddingWithHeader: string;
 
   showValidationErrors = false;
+
+  hideOptionalFields = false;
 
   hasOptionalFields = false;
 
@@ -408,10 +408,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService
       .move(event.srcIds, event.destination, this.address, true)
       .subscribe();
-  }
-
-  toggleOptionals($event: MatSlideToggleChange) {
-    this.formOptions.formState.hideOptionals = !$event.checked;
   }
 
   private createNewForm() {

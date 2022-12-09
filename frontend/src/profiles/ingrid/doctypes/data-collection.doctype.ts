@@ -63,14 +63,10 @@ export class DataCollectionDoctype extends IngridShared {
           }
         ),
         this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
-          expressions: {
-            "props.hide": "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          expressions: {
-            "props.hide": "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
       ]),
 

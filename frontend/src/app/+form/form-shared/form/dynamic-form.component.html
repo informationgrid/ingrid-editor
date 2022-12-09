@@ -54,7 +54,7 @@
                         <div class="diagonal"></div>
                         <mat-slide-toggle
                             checked
-                            (change)="toggleOptionals($event)"
+                            (change)="hideOptionalFields = !hideOptionalFields"
                             >Alle
                         </mat-slide-toggle>
                         <div class="cover"></div>
@@ -67,6 +67,7 @@
                             [formGroup]="form"
                             [style.padding-top]="paddingWithHeader"
                             [class.hide-validation]="!showValidationErrors"
+                            [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
                             <formly-form

@@ -32,9 +32,7 @@ export class InformationSystemDoctype extends IngridShared {
           this.addRepeatListInline("serviceVersion", "Version", {
             hasInlineContextHelp: true,
             wrappers: ["panel", "inline-help"],
-            expressions: {
-              hide: "formState.hideOptionals",
-            },
+            className: "optional",
           }),
         ]),
         this.addGroup(
@@ -55,7 +53,7 @@ export class InformationSystemDoctype extends IngridShared {
               wrappers: ["form-field", "inline-help"],
             }),
           ],
-          { expressions: { hide: "formState.hideOptionals" } }
+          { className: "optional" }
         ),
         this.addGroup(
           null,
@@ -70,12 +68,12 @@ export class InformationSystemDoctype extends IngridShared {
               wrappers: ["form-field", "inline-help"],
             }),
           ],
-          { expressions: { hide: "formState.hideOptionals" } }
+          { className: "optional" }
         ),
         this.addTable("serviceUrls", "Service-Urls", {
           supportUpload: false,
           columns: [],
-          expressions: { hide: "formState.hideOptionals" },
+          className: "optional",
         }),
       ]),
 

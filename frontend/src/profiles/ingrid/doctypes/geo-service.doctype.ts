@@ -46,8 +46,9 @@ export class GeoServiceDoctype extends IngridShared {
                 "isAtomDownload",
                 "Als ATOM-Download Dienst bereitstellen",
                 {
+                  className: "optional",
                   expressions: {
-                    hide: "formState.hideOptionals || formState.mainModel.serviceType?.key !== '3'",
+                    hide: "formState.mainModel.serviceType?.key !== '3'",
                   },
                 }
               ),
@@ -61,9 +62,7 @@ export class GeoServiceDoctype extends IngridShared {
             fieldGroupClassName: "flex-1",
             hasInlineContextHelp: true,
             wrappers: ["inline-help"],
-            expressions: {
-              hide: "formState.hideOptionals",
-            },
+            className: "optional",
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -73,7 +72,7 @@ export class GeoServiceDoctype extends IngridShared {
         this.addTable("scale", "Erstellungsmaßstab", {
           supportUpload: false,
           columns: [],
-          expressions: { hide: "formState.hideOptionals" },
+          className: "optional",
         }),
         this.addGroup(
           null,
@@ -93,12 +92,10 @@ export class GeoServiceDoctype extends IngridShared {
               wrappers: ["form-field", "inline-help"],
             }),
           ],
-          { expressions: { hide: "formState.hideOptionals" } }
+          { className: "optional" }
         ),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addGroup(
           null,
@@ -106,8 +103,8 @@ export class GeoServiceDoctype extends IngridShared {
           [
             this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
               required: true,
+              className: "optional",
               expressions: {
-                hide: "formState.hideOptionals",
                 "props.required":
                   "formState.mainModel.couplingType?.key === 'tight'",
               },
@@ -123,7 +120,7 @@ export class GeoServiceDoctype extends IngridShared {
           { contextHelpId: "shownData" }
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
-          expressions: { hide: "formState.hideOptionals" },
+          className: "optional",
         }),
       ]),
 

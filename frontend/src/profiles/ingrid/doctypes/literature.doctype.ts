@@ -25,15 +25,11 @@ export class LiteratureDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addTextArea("author", "Autor/Verfasser", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addInput("publisher", "Herausgeber", {
           wrappers: ["panel", "form-field"],
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional",
         }),
         this.addGroup(
           null,
@@ -76,37 +72,27 @@ export class LiteratureDoctype extends IngridShared {
           ],
           {
             fieldGroupClassName: "",
-            hideExpression: "formState.hideOptionals",
+            className: "optional",
           }
         ),
         this.addTextArea("location", "Standort", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addInput("publishedISBN", "ISBN-Nr.", {
           wrappers: ["panel", "form-field"],
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional",
         }),
         this.addInput("publishedPublisher", "Verlag", {
           wrappers: ["panel", "form-field"],
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional",
         }),
         this.addAutocomplete("documentType", "Dokumententyp", {
           options: this.getCodelistForSelect(3385, "documentType"),
           codelistId: 3385,
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional",
         }),
         this.addTextArea("baseDataText", "Basisdaten", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addGroup(
           null,
@@ -126,7 +112,7 @@ export class LiteratureDoctype extends IngridShared {
               wrappers: ["form-field", "inline-help"],
             }),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
       ]),
 

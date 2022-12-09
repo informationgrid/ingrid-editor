@@ -409,6 +409,10 @@ sidebar .list-group-item:hover {
   flex: 6;
 }
 
+.hide-optionals .optional:not(:has(.required)) {
+  display: none;
+}
+
 //}
 formly-field {
   &[class*="flex-"] {

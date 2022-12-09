@@ -31,9 +31,6 @@ interface AdditionalInformationSectionOptions {
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
-  isOptionalExceptRequired =
-    "(formState.hideOptionals && !field.formControl.validator()?.required)";
-
   constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
@@ -99,10 +96,10 @@ export abstract class IngridShared extends BaseDoctype {
                 }
               ),
             ],
-            { hideExpression: "formState.hideOptionals" }
+            { className: "optional" }
           ),
           this.addTable("graphicOverviews", "Vorschaugrafik", {
-            expressions: { hide: "formState.hideOptionals" },
+            className: "optional",
             columns: [
               {
                 key: "fileName",
@@ -137,7 +134,7 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],
-            expressions: { hide: "formState.hideOptionals" },
+            className: "optional",
           }),
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
@@ -169,8 +166,8 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
+          className: "optional",
           expressions: {
-            hide: "formState.hideOptionals",
             "props.required": "formState.mainModel.isAdVCompatible",
           },
         }),
@@ -178,8 +175,8 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(6100, "themes"),
           codelistId: 6100,
+          className: "optional",
           expressions: {
-            hide: "formState.hideOptionals",
             "props.required": "formState.mainModel.isInspireIdentified",
           },
         }),
@@ -199,21 +196,23 @@ export abstract class IngridShared extends BaseDoctype {
                 asSelect: true,
                 options: this.getCodelistForSelect(6350, "priorityDatasets"),
                 codelistId: 6350,
+                className: "optional",
                 expressions: {
-                  hide: "formState.hideOptionals && !formState.mainModel.isInspireIdentified",
+                  hide: "!formState.mainModel.isInspireIdentified",
                 },
               }
             )
           : null,
-        options.spatialScope
+        options.spatialScope // TODO: check if hide can be simplified
           ? this.addSelect(
               "spatialScope",
               "INSPIRE - Räumlicher Anwendungsbereich",
               {
                 options: this.getCodelistForSelect(6360, "spatialScope"),
                 codelistId: 6360,
+                className: "optional",
                 expressions: {
-                  hide: "formState.hideOptionals && (formState.mainModel._type === 'InGridGeoService' || !formState.mainModel.isInspireIdentified)",
+                  hide: "(formState.mainModel._type === 'InGridGeoService' || !formState.mainModel.isInspireIdentified)",
                   "props.required":
                     "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
                 },
@@ -328,13 +327,11 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             {
               fieldGroupClassName: "",
-              hideExpression: "formState.hideOptionals",
+              className: "optional",
             }
           ),
           this.addTextArea("description", "Erläuterungen", "spatial", {
-            expressions: {
-              hide: "formState.hideOptionals",
-            },
+            className: "optional flex-1",
             contextHelpId: "descriptionSpacial",
           }),
         ].filter(Boolean)
@@ -365,9 +362,7 @@ export abstract class IngridShared extends BaseDoctype {
           ],
         }),
         this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addGroup(
           null,
@@ -411,21 +406,21 @@ export abstract class IngridShared extends BaseDoctype {
             }),*/
           ],
           {
-            hideExpression: "formState.hideOptionals",
+            className: "optional",
             contextHelpId: "resourceTime",
           }
         ),
         this.addSelect("status", "Status", {
           options: this.getCodelistForSelect(523, "timeRefStatus"),
           codelistId: 523,
-          expressions: { hide: "formState.hideOptionals" },
+          className: "optional",
         }),
       ]),
       this.addGroupSimple("maintenanceInformation", [
         this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
           options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
           codelistId: 518,
-          expressions: { hide: "formState.hideOptionals" },
+          className: "optional",
         }),
         this.addGroup(
           "userDefinedMaintenanceFrequency",
@@ -440,7 +435,7 @@ export abstract class IngridShared extends BaseDoctype {
               className: "flex-3",
             }),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
       ]),
     ]);
@@ -478,7 +473,7 @@ export abstract class IngridShared extends BaseDoctype {
                             "characterSet"
                           ),
                           codelistId: 510,
-                          expressions: { hide: "formState.hideOptionals" },
+                          className: "optional",
                         }
                       ),
                     ],
@@ -504,8 +499,8 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 99999999,
                 useDialog: true,
                 required: true,
+                className: "optional",
                 expressions: {
-                  hide: this.isOptionalExceptRequired,
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel._type) !== -1",
                 },
@@ -515,8 +510,8 @@ export abstract class IngridShared extends BaseDoctype {
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
+              className: "optional",
               expressions: {
-                hide: "formState.hideOptionals",
                 "props.required": "formState.mainModel.isInspireIdentified",
               },
               dialog: ConformityDialogComponent,
@@ -597,7 +592,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "extraInfoLegalBasicsTable"
               ),
               codelistId: 1350,
-              expressions: { hide: "formState.hideOptionals" },
+              className: "optional",
             }
           ),
         ]),
@@ -619,7 +614,7 @@ export abstract class IngridShared extends BaseDoctype {
               }
             ),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
       ].filter(Boolean)
     );
@@ -636,15 +631,15 @@ export abstract class IngridShared extends BaseDoctype {
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
+          className: "optional",
           expressions: {
             "props.required": "formState.mainModel.isInspireIdentified",
-            hide: "formState.hideOptionals",
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          required: true,
+          className: "optional",
           expressions: {
-            hide: "formState.hideOptionals && (formState.mainModel._type !== 'InGridGeoDataset' || formState.mainModel._type !== 'InGridGeoService')",
+            hide: "(formState.mainModel._type !== 'InGridGeoDataset' || formState.mainModel._type !== 'InGridGeoService')",
             "props.required":
               "formState.mainModel._type === 'InGridGeoDataset' || formState.mainModel._type === 'InGridGeoService'",
           },
@@ -668,17 +663,15 @@ export abstract class IngridShared extends BaseDoctype {
           "Anwendungseinschränkungen",
           "dataset",
           {
-            expressions: {
-              hide: "formState.hideOptionals",
-            },
+            className: "optional flex-1",
           }
         ),
       ]),
       this.addGroupSimple("distribution", [
         this.addRepeat("format", "Datenformat", {
-          required: true,
+          className: "optional",
           expressions: {
-            hide: `${this.isOptionalExceptRequired} && formState.mainModel._type !== 'InGridGeoService'`,
+            hide: `formState.mainModel._type !== 'InGridGeoService'`, // TODO: simplify!
             "props.required":
               "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
           },
@@ -694,7 +687,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ]),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
-        expressions: { hide: "formState.hideOptionals" },
+        className: "optional",
         fields: [
           this.addSelectInline("name", "Medium", {
             options: this.getCodelistForSelect(520, "specification"),
@@ -705,9 +698,7 @@ export abstract class IngridShared extends BaseDoctype {
         ],
       }),
       this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
-        expressions: {
-          hide: "formState.hideOptionals",
-        },
+        className: "optional flex-1",
       }),
     ]);
   }
@@ -716,6 +707,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
+        className: "optional",
         fields: [this.urlRefFields()],
       }),
     ]);

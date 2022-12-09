@@ -25,19 +25,13 @@ export class ProjectDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addTextArea("participants", "Beteiligte", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addTextArea("manager", "Projektleiter", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          expressions: {
-            hide: "formState.hideOptionals",
-          },
+          className: "optional flex-1",
         }),
       ]),
 
