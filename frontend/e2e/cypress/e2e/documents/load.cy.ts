@@ -102,7 +102,7 @@ describe('mCloud Load documents', () => {
 
   it('should open the previously selected document when going to another page and returning', function () {
     DocumentPage.visitSingleDoc();
-    cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
+    cy.get(DocumentPage.title, { timeout: 6000 }).should('have.text', 'TestDocResearch2');
     Menu.switchTo('DASHBOARD');
     Menu.switchTo('ADDRESSES');
     Menu.switchTo('DOCUMENTS');

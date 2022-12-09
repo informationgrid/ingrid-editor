@@ -851,6 +851,8 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.exist');
+    // add a little time to allow for the new doc to be listed in sidebar
+    cy.wait(200);
   }
 
   static changeLocation(targetNodePath: string[]) {

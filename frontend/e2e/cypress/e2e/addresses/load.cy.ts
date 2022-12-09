@@ -17,7 +17,7 @@ describe('mCLOUD: Load addresses', () => {
     cy.get('ige-form-dashboard', { timeout: 7000 }).should('contain', 'Adressen').should('contain', 'Neue Adresse');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/address;id=4ff589e1-d83c-4856-8bae-2ae783f69da6');
-    cy.get('ige-form-info ige-breadcrumb .selectable').click();
+    cy.get('ige-form-info ige-breadcrumb .selectable', { timeout: 6000 }).click();
     cy.get('ige-form-dashboard').should('contain', 'Adressen').should('contain', 'Neue Adresse');
   });
 
