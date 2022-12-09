@@ -325,4 +325,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   filterForEndDate = (d: Date | null): boolean => {
     return d >= this.form.get(this.timeGroupId).get("start").value;
   };
+
+  resetDateFields() {
+    this.form.get(this.timeGroupId).get("start").setValue(null);
+    this.form.get(this.timeGroupId).get("end").setValue(null);
+  }
 }

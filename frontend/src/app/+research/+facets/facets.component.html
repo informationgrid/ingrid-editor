@@ -137,6 +137,14 @@
                     ></mat-datepicker-toggle>
                     <mat-datepicker #endDate></mat-datepicker>
                 </mat-form-field>
+                <button
+                    mat-icon-button
+                    matSuffix
+                    (click)="resetDateFields()"
+                    data-cy="clear-date-fields"
+                >
+                    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+                </button>
             </div>
         </div>
 
