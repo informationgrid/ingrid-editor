@@ -56,7 +56,7 @@ describe('mCLOUD: edit documents', function () {
       // planned publish info should be visible
       cy.get('.publish-pending-info').should('be.visible');
       // text fields are disabled
-      cy.get('textarea').each(el => {
+      cy.get('.form-inner textarea').each(el => {
         cy.wrap(el).should('be.disabled');
       });
       // spatial reference cannot be added
