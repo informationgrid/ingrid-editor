@@ -9,6 +9,7 @@ import {
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
+import { clone } from "../app/shared/utils";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fields = <FormlyFieldConfig[]>[
@@ -65,7 +66,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
-  fieldsForPrint: FormlyFieldConfig[];
+  cleanFields: FormlyFieldConfig[];
 
   constructor(
     private codelistService?: CodelistService,
@@ -106,8 +107,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.addCodelistDefaultValues(this.fields);
       this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
-      const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
-      this.fieldsForPrint = this.createFieldsForPrint(copy);
+
+      this.cleanFields = JSON.parse(JSON.stringify(this.fields));
       console.debug(`Document type ${this.id} initialized`);
     });
   }
@@ -214,8 +215,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   public getFieldsForPrint(diffObj) {
-    this.addDifferenceFlags(this.fields, diffObj);
-    const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
+    const copy: FormlyFieldConfig[] = clone(this.cleanFields);
+    if (diffObj) this.addDifferenceFlags(copy, diffObj);
     return this.createFieldsForPrint(copy);
   }
 

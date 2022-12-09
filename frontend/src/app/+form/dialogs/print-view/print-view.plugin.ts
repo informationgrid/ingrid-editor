@@ -14,8 +14,9 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { FormStateService } from "../../form-state.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
-import { combineLatest } from "rxjs";
-import { JsonDiffMerge } from "../../../shared/utils";
+import { combineLatest, of } from "rxjs";
+import { clone, JsonDiffMerge } from "../../../shared/utils";
+import { catchError } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable()
@@ -82,21 +83,29 @@ export class PrintViewPlugin extends Plugin {
     let openedDocument = this.treeQuery.getOpenedDocument();
     const type = openedDocument._type;
     const profile = this.profileService.getProfile(type);
+
     combineLatest([
       this.documentDataService.load(openedDocument._uuid, true),
-      this.documentDataService.loadPublished(openedDocument._uuid, true),
-    ]).subscribe((result) => {
-      const diff = JsonDiffMerge.jsonDiff(
-        { ...result[0] },
-        { ...result[1] },
-        {}
-      );
+      openedDocument._state === "PW"
+        ? this.documentDataService.loadPublished(openedDocument._uuid, true)
+        : of(null),
+    ]).subscribe(([current, published]) => {
+      let fields;
+      let fieldsPublished = null;
+      if (published !== null) {
+        const diff = JsonDiffMerge.jsonDiff(current, published, {});
+        fields = profile.getFieldsForPrint(diff);
+        fieldsPublished = clone(fields);
+      } else {
+        fields = profile.getFieldsForPrint(null);
+      }
       this.dialog.open(PrintViewDialogComponent, {
         width: "80%",
         data: {
-          fields: profile.getFieldsForPrint(diff),
-          model: { ...result[0] },
-          modelPublished: { ...result[1] },
+          fields: fields,
+          fieldsPublished: fieldsPublished,
+          model: current,
+          modelPublished: published,
         },
       });
     });
