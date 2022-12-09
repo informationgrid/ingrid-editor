@@ -523,10 +523,10 @@ cypress-keycloak-commands@^1.2.0:
   resolved "https://registry.npmjs.org/cypress-keycloak-commands/-/cypress-keycloak-commands-1.2.0.tgz"
   integrity sha512-j0THu0XMVlWah7YjDoVlFg2bIwSiBSda6g5Pm8HpC/9U2Glk0Hrp4yLggoseft3ThAlrpIkoLaIKMDbmvtgicw==
 
-cypress@^10.10.0:
-  version "10.10.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-10.10.0.tgz#fd671297b2ca3e64dfffd55fe3857c388cfbb695"
-  integrity sha512-bU8r44x1NIYAUNNXt3CwJpLOVth7HUv2hUhYCxZmgZ1IugowDvuHNpevnoZRQx1KKOEisLvIJW+Xen5Pjn41pg==
+cypress@12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.0.2.tgz#0437abf9d97ad4a972ab554968d58211b0ce4ae5"
+  integrity sha512-WnLx1DpnbF1vbpDBkgP14rK5yS3U+Gvxrv2fsB4Owma26oIyENj7DDRnsJbSZuTfG4mcuUJxAkRHJR2wBqBfMA==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
