@@ -368,6 +368,22 @@ describe('Research Page', () => {
     });
   });
 
+  it('should reset date fields of timerelated search (#3699)', () => {
+    ResearchPage.setDate('start', '01.08.2021');
+    ResearchPage.setDate('end', '20.08.2021');
+    ResearchPage.waitForSearch();
+    ResearchPage.getSearchResultCountZeroIncluded().then(temporallyFiltered => {
+      // reset fields and check content
+      cy.get('[data-cy="clear-date-fields"]').click();
+      cy.get('.mat-input-element[formcontrolname="end"]').should('have.value', '');
+      cy.get('.mat-input-element[formcontrolname="start"]').should('have.value', '');
+
+      // compare values to make sure new search has been triggered
+      ResearchPage.waitForSearch();
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
   it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
     ResearchPage.setDate('start', '22.07.2021');
     ResearchPage.setDate('end', '22.07.2021');
