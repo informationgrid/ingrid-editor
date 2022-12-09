@@ -320,7 +320,7 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(3555), // TODO: add autocomplete for title
+                fields: this.titleDateEditionFields(3555),
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
@@ -333,7 +333,7 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 key: "information",
                 value: "Information",
-                fields: this.symbolInformation(3535), // TODO: add autocomplete for title (other codelist)
+                fields: this.titleDateEditionFields(3535),
               },
               { key: "url", value: "Verweise", fields: this.urlRefFields() },
             ],
@@ -505,29 +505,5 @@ export class GeoDatasetDoctype extends IngridShared {
     uploadService: UploadService
   ) {
     super(codelistService, codelistQuery, uploadService);
-  }
-
-  private symbolInformation(codelistForTitle: number) {
-    return this.addGroupSimple(
-      null,
-      [
-        this.addAutocomplete("title", "Titel", {
-          className: "flex-3",
-          wrappers: ["form-field"],
-          required: true,
-          options: this.getCodelistForSelect(codelistForTitle, "title"),
-          codelistId: codelistForTitle,
-        }),
-        { key: "_type" },
-        this.addDatepickerInline("date", "Datum", {
-          className: "flex-1",
-          required: true,
-        }),
-        this.addInputInline("edition", "Version", {
-          className: "flex-1",
-        }),
-      ],
-      { fieldGroupClassName: "display-flex" }
-    );
   }
 }

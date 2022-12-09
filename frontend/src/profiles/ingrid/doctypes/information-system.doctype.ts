@@ -30,10 +30,10 @@ export class InformationSystemDoctype extends IngridShared {
             codelistId: 5300,
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
+            hasInlineContextHelp: true,
+            wrappers: ["panel", "inline-help"],
             expressions: {
               hide: "formState.hideOptionals",
-              hasInlineContextHelp: true,
-              wrappers: ["panel", "inline-help"],
             },
           }),
         ]),

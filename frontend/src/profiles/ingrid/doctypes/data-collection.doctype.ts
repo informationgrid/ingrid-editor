@@ -24,18 +24,42 @@ export class DataCollectionDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addTable("categoryCatalog", "Objektartenkatalog", {
-          supportUpload: false,
-          columns: [],
-          expressions: "formState.hideOptionals",
+        this.addRepeat("categoryCatalog", "Objektartenkatalog", {
+          className: "optional",
+          expressions: {
+            "props.required": "formState.mainModel.databaseContent?.length > 0",
+          },
+          fields: [
+            this.addAutocomplete("title", "Titel", {
+              className: "flex-3",
+              wrappers: ["form-field"],
+              required: true,
+              options: this.getCodelistForSelect(3535, "title"),
+              codelistId: 3535,
+            }),
+            { key: "_type" },
+            this.addDatepickerInline("date", "Datum", {
+              className: "flex-1",
+              required: true,
+            }),
+            this.addInputInline("edition", "Version", {
+              className: "flex-1",
+            }),
+          ],
         }),
-        this.addTable(
+        this.addRepeat(
           "databaseContent",
           "Inhalte der Datensammlung/Datenbank",
           {
-            supportUpload: false,
-            columns: [],
-            expressions: { hide: "formState.hideOptionals" },
+            className: "optional",
+            fields: [
+              this.addInputInline("parameter", "Parameter", {
+                className: "flex-1",
+              }),
+              this.addInputInline("moreInfo", "Ergänzende Angaben", {
+                className: "flex-1",
+              }),
+            ],
           }
         ),
         this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {

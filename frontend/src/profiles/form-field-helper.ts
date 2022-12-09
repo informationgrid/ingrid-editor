@@ -1,11 +1,13 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
+import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 
 export interface Options {
   wrappers?: string[];
   className?: string;
   required?: boolean;
   defaultValue?: any;
+  hasInlineContextHelp?: boolean;
   expressions?: {
     hide?;
     "props.required"?;
@@ -18,10 +20,32 @@ export interface RepeatOptions extends Options {
   fields?: FormlyFieldConfig[];
 }
 
+export interface RepeatListOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  codelistId?: number;
+  asSelect?: boolean;
+  showSearch?: boolean;
+  fieldGroupClassName?: string; // TODO: move up
+  options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+}
+
 export interface RepeatChipOptions extends Options {
   useDialog?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: number;
+}
+
+export interface TableOptions extends Options {
+  columns?: any[];
+  batchValidUntil?: string;
+  validators?: any;
+  supportUpload?: boolean;
+  dialog?: any;
+}
+
+export interface CheckboxOptions extends Options {
+  fieldLabel?: string;
 }
 
 export class FormFieldHelper {
@@ -143,7 +167,7 @@ export class FormFieldHelper {
     };
   }
 
-  addRepeatList(id, label, options?) {
+  addRepeatList(id, label, options?: RepeatListOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,
@@ -151,9 +175,11 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       defaultValue: [],
+      fieldGroupClassName: options?.fieldGroupClassName,
       props: {
         externalLabel: label,
-        placeholder: options?.fieldLabel ?? "Bitte wählen...",
+        placeholder: options?.placeholder ?? "Bitte wählen...",
+        fieldLabel: options?.fieldLabel,
         options: options?.options,
         codelistId: options?.codelistId,
         required: options?.required,
@@ -165,7 +191,7 @@ export class FormFieldHelper {
     };
   }
 
-  addRepeatListInline(id, label, options = {}) {
+  addRepeatListInline(id, label, options: RepeatListOptions = {}) {
     return this.addRepeatList(id, null, {
       fieldLabel: label,
       wrappers: [],
@@ -296,7 +322,7 @@ export class FormFieldHelper {
     });
   }
 
-  addTable(id, label, options?): FormlyFieldConfig {
+  addTable(id, label, options?: TableOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -399,13 +425,14 @@ export class FormFieldHelper {
     };
   }
 
-  addCheckbox(id, label, options?) {
+  addCheckbox(id, label, options?: CheckboxOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "checkbox",
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
+      defaultValue: options?.defaultValue ?? false,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -416,7 +443,7 @@ export class FormFieldHelper {
     };
   }
 
-  addCheckboxInline(id, label, options = {}) {
+  addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
       wrappers: ["form-field", "inline-help"],

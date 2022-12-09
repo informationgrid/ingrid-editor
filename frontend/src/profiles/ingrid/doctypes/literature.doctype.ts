@@ -26,13 +26,13 @@ export class LiteratureDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addTextArea("author", "Autor/Verfasser", this.id, {
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addInput("publisher", "Herausgeber", {
           wrappers: ["panel", "form-field"],
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addGroup(
@@ -81,31 +81,31 @@ export class LiteratureDoctype extends IngridShared {
         ),
         this.addTextArea("location", "Standort", this.id, {
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addInput("publishedISBN", "ISBN-Nr.", {
           wrappers: ["panel", "form-field"],
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addInput("publishedPublisher", "Verlag", {
           wrappers: ["panel", "form-field"],
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addAutocomplete("documentType", "Dokumententyp", {
           options: this.getCodelistForSelect(3385, "documentType"),
           codelistId: 3385,
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addTextArea("baseDataText", "Basisdaten", this.id, {
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addGroup(

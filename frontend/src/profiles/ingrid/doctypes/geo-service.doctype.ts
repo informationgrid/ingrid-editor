@@ -34,18 +34,35 @@ export class GeoServiceDoctype extends IngridShared {
           codelistId: 5200,
         }),
         this.addGroup(null, null, [
-          this.addSelectInline("serviceType", "Art des Dienstes", {
-            required: true,
-            options: this.getCodelistForSelect(5100, "serviceType"),
-            codelistId: 5100,
-          }),
+          this.addGroupSimple(
+            null,
+            [
+              this.addSelectInline("serviceType", "Art des Dienstes", {
+                required: true,
+                options: this.getCodelistForSelect(5100, "serviceType"),
+                codelistId: 5100,
+              }),
+              this.addCheckboxInline(
+                "isAtomDownload",
+                "Als ATOM-Download Dienst bereitstellen",
+                {
+                  expressions: {
+                    hide: "formState.hideOptionals || formState.mainModel.serviceType?.key !== '3'",
+                  },
+                }
+              ),
+            ],
+            { className: "flex-1" }
+          ),
+
           this.addRepeatListInline("serviceVersion", "Version des Dienstes", {
             options: this.getCodelistForSelect(5152, "serviceVersion"),
             codelistId: 5152,
+            fieldGroupClassName: "flex-1",
+            hasInlineContextHelp: true,
+            wrappers: ["inline-help"],
             expressions: {
               hide: "formState.hideOptionals",
-              hasInlineContextHelp: true,
-              wrappers: ["panel", "inline-help"],
             },
           }),
         ]),
@@ -80,7 +97,7 @@ export class GeoServiceDoctype extends IngridShared {
         ),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addGroup(
@@ -89,7 +106,11 @@ export class GeoServiceDoctype extends IngridShared {
           [
             this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
               required: true,
-              expressions: { hide: "formState.hideOptionals" },
+              expressions: {
+                hide: "formState.hideOptionals",
+                "props.required":
+                  "formState.mainModel.couplingType?.key === 'tight'",
+              },
             }),
             this.addSelectInline("couplingType", "Kopplungstyp", {
               options: <SelectOptionUi[]>[

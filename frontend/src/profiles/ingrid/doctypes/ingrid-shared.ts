@@ -31,6 +31,9 @@ interface AdditionalInformationSectionOptions {
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
+  isOptionalExceptRequired =
+    "(formState.hideOptionals && !field.formControl.validator()?.required)";
+
   constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
@@ -330,7 +333,7 @@ export abstract class IngridShared extends BaseDoctype {
           ),
           this.addTextArea("description", "Erläuterungen", "spatial", {
             expressions: {
-              "props.hide": "formState.hideOptionals",
+              hide: "formState.hideOptionals",
             },
             contextHelpId: "descriptionSpacial",
           }),
@@ -363,7 +366,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
           expressions: {
-            "props.hide": "formState.hideOptionals",
+            hide: "formState.hideOptionals",
           },
         }),
         this.addGroup(
@@ -415,14 +418,14 @@ export abstract class IngridShared extends BaseDoctype {
         this.addSelect("status", "Status", {
           options: this.getCodelistForSelect(523, "timeRefStatus"),
           codelistId: 523,
-          expressions: { "props.hide": "formState.hideOptionals" },
+          expressions: { hide: "formState.hideOptionals" },
         }),
       ]),
       this.addGroupSimple("maintenanceInformation", [
         this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
           options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
           codelistId: 518,
-          expressions: { "props.hide": "formState.hideOptionals" },
+          expressions: { hide: "formState.hideOptionals" },
         }),
         this.addGroup(
           "userDefinedMaintenanceFrequency",
@@ -502,7 +505,7 @@ export abstract class IngridShared extends BaseDoctype {
                 useDialog: true,
                 required: true,
                 expressions: {
-                  hide: "formState.mainModel._type === 'InGridGeoService' || (formState.hideOptionals && !field.formControl.validator()?.required)",
+                  hide: this.isOptionalExceptRequired,
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel._type) !== -1",
                 },
@@ -633,9 +636,18 @@ export abstract class IngridShared extends BaseDoctype {
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
+          expressions: {
+            "props.required": "formState.mainModel.isInspireIdentified",
+            hide: "formState.hideOptionals",
+          },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
           required: true,
+          expressions: {
+            hide: "formState.hideOptionals && (formState.mainModel._type !== 'InGridGeoDataset' || formState.mainModel._type !== 'InGridGeoService')",
+            "props.required":
+              "formState.mainModel._type === 'InGridGeoDataset' || formState.mainModel._type === 'InGridGeoService'",
+          },
           fields: [
             this.addSelect("title", null, {
               options: this.getCodelistForSelect(6500, "license"),
@@ -657,7 +669,7 @@ export abstract class IngridShared extends BaseDoctype {
           "dataset",
           {
             expressions: {
-              "props.hide": "formState.hideOptionals",
+              hide: "formState.hideOptionals",
             },
           }
         ),
@@ -665,7 +677,11 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple("distribution", [
         this.addRepeat("format", "Datenformat", {
           required: true,
-          expressions: { hide: "formState.hideOptionals" },
+          expressions: {
+            hide: `${this.isOptionalExceptRequired} && formState.mainModel._type !== 'InGridGeoService'`,
+            "props.required":
+              "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
+          },
           fields: [
             this.addSelectInline("name", "Name", {
               options: this.getCodelistForSelect(1320, "specification"),
@@ -690,7 +706,7 @@ export abstract class IngridShared extends BaseDoctype {
       }),
       this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
         expressions: {
-          "props.hide": "formState.hideOptionals",
+          hide: "formState.hideOptionals",
         },
       }),
     ]);
@@ -732,6 +748,30 @@ export abstract class IngridShared extends BaseDoctype {
       { key: "_type" },
       this.addInputInline("doc", "Dokument", { className: "" }),
     ]);
+  }
+
+  protected titleDateEditionFields(codelistForTitle: number) {
+    return this.addGroupSimple(
+      null,
+      [
+        this.addAutocomplete("title", "Titel", {
+          className: "flex-3",
+          wrappers: ["form-field"],
+          required: true,
+          options: this.getCodelistForSelect(codelistForTitle, "title"),
+          codelistId: codelistForTitle,
+        }),
+        { key: "_type" },
+        this.addDatepickerInline("date", "Datum", {
+          className: "flex-1",
+          required: true,
+        }),
+        this.addInputInline("edition", "Version", {
+          className: "flex-1",
+        }),
+      ],
+      { fieldGroupClassName: "display-flex" }
+    );
   }
 
   private docRefDescription() {
