@@ -1042,9 +1042,7 @@ export class DocumentPage extends BasePage {
   }
 
   static openUpDocumentHeader() {
-    cy.get('.title').within(_ => {
-      cy.findByText('keyboard_arrow_down').click();
-    });
+    cy.get('.btn-toggle-form-header').click();
   }
 
   static checkEmptyDocumentTree() {
