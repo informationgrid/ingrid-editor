@@ -165,7 +165,7 @@ export class Tree {
   }
 
   static deactivateMultiSelectMode() {
-    cy.get('[data-mat-icon-name=Entfernen]').click({ multiple: true });
+    cy.get('ige-tree-header [data-mat-icon-name=Entfernen]').click();
   }
 
   static checkMultiSelectCheckboxIsVisible() {

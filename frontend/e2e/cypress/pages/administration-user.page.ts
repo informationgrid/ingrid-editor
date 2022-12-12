@@ -85,7 +85,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static searchForUser(searchValue: string, result: string = '', shouldBeExist: boolean = true) {
-    cy.get('ige-search-field').type('t').clear().type(searchValue);
+    cy.get('ige-search-field input').type('t').clear().type(searchValue);
     if (result == '') {
       result = searchValue;
     }

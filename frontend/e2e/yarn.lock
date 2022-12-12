@@ -72,10 +72,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@testing-library/cypress@^8.0.2":
-  version "8.0.3"
-  resolved "https://registry.npmjs.org/@testing-library/cypress/-/cypress-8.0.3.tgz"
-  integrity sha512-nY2YaSbmuPo5k6kL0iLj/pGPPfka3iwb3kpTx8QN/vOCns92Saz9wfACqB8FJzcR7+lfA4d5HUOWqmTddBzczg==
+"@testing-library/cypress@^8.0.7":
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-8.0.7.tgz#18315eba3cf8852808afadf122e4858406384015"
+  integrity sha512-3HTV725rOS+YHve/gD9coZp/UcPK5xhr4H0GMnq/ni6USdtzVtSOG9WBFtd8rYnrXk8rrGD+0toRFYouJNIG0Q==
   dependencies:
     "@babel/runtime" "^7.14.6"
     "@testing-library/dom" "^8.1.0"
@@ -1460,10 +1460,10 @@ mocha@latest:
     yargs-parser "20.2.4"
     yargs-unparser "2.0.0"
 
-mochawesome-merge@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/mochawesome-merge/-/mochawesome-merge-4.2.1.tgz"
-  integrity sha512-G7+LqIKgixShKG4FyWDn1PIrzpKEwCofrJip/VzdqghNGqZl4S5MNoXx5YDfk9KLe+pr4qGa1TOzCc/oVw/8Kw==
+mochawesome-merge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/mochawesome-merge/-/mochawesome-merge-4.2.2.tgz#67164973f8efeefcc206764c3702aa2d5f0ba406"
+  integrity sha512-ZHeZcChGhb3If7fjSVuyB9rmDH86inNtsTb1ONYq1h0L1IduldFu38bJDcow46alMpiYQgJ7cPhv6nwpCwbJQw==
   dependencies:
     fs-extra "^7.0.1"
     glob "^7.1.6"
