@@ -101,14 +101,19 @@ export class GeoServiceDoctype extends IngridShared {
           null,
           "Dargestellte Daten",
           [
-            this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
-              required: true,
+            {
+              key: "coupledResources",
+              type: "couplingService",
               className: "optional",
+              props: {
+                label: "Dargestellte Daten",
+                required: true,
+              },
               expressions: {
                 "props.required":
                   "formState.mainModel.couplingType?.key === 'tight'",
               },
-            }),
+            },
             this.addSelectInline("couplingType", "Kopplungstyp", {
               options: <SelectOptionUi[]>[
                 { label: "loose", value: "loose" },

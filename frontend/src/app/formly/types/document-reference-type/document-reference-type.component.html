@@ -1,0 +1,15 @@
+<div *ngFor="let item of formControl.value">
+    <mat-icon svgIcon="Geodatensatz"></mat-icon>
+    {{ item.uuid }}
+</div>
+<!--{{ formControl.value | json }}-->
+
+<ige-add-button [mat-menu-trigger-for]="menu"></ige-add-button>
+<mat-menu #menu>
+    <button mat-menu-item (click)="showInternalRefDialog()">
+        Geodatensatz auswählen
+    </button>
+    <button mat-menu-item (click)="showExternalRefDialog()">
+        Externen Datensatz angeben
+    </button>
+</mat-menu>

@@ -1,0 +1,8 @@
+<ige-dialog-template title="Dargestellte Daten" (submit)="submit()">
+    <ige-tree
+        content
+        [allowMultiSelectionMode]="false"
+        [disabledCondition]="enableOnlyGeoService()"
+        (selected)="selectDatasets($event)"
+    ></ige-tree>
+</ige-dialog-template>

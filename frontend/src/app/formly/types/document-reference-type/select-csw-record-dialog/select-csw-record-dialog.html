@@ -1,0 +1,16 @@
+<ige-dialog-template
+    title="Externen Datensatz wählen"
+    (submit)="submit()"
+    [disabled]="urlControl.invalid"
+>
+    <mat-form-field appearance="outline">
+        <mat-label>GetRecord-URL</mat-label>
+        <input
+            matInput
+            igeFocus
+            [formControl]="urlControl"
+            data-cy="get-record-url"
+        />
+        <mat-error>Die URL ist nicht gültig</mat-error>
+    </mat-form-field>
+</ige-dialog-template>
