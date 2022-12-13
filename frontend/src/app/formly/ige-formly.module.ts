@@ -84,6 +84,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DocumentReferenceTypeComponent } from "./types/document-reference-type/document-reference-type.component";
 import { SelectServiceDialog } from "./types/document-reference-type/select-service-dialog/select-service.dialog";
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -247,6 +248,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatPaginatorModule,
     AngularSplitModule,
     MatButtonToggleModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

@@ -3,6 +3,12 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 
+export interface SelectServiceResponse {
+  title: string;
+  uuid: string;
+  state: string;
+}
+
 @Component({
   selector: "ige-select-service.dialog.ts",
   templateUrl: "./select-service.dialog.html",
@@ -20,8 +26,12 @@ export class SelectServiceDialog {
   }
 
   submit() {
-    const uuid = this.tree.getEntity(this.selectedNode)._uuid;
-    this.dlgRef.close(uuid);
+    const entity = this.tree.getEntity(this.selectedNode);
+    this.dlgRef.close({
+      title: entity.title,
+      state: entity._state,
+      uuid: entity._uuid,
+    });
   }
 
   selectDatasets(node: string[]) {

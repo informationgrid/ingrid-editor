@@ -104,7 +104,7 @@ export class GeoServiceDoctype extends IngridShared {
             {
               key: "coupledResources",
               type: "couplingService",
-              className: "optional",
+              className: "optional flex-1",
               props: {
                 label: "Dargestellte Daten",
                 required: true,

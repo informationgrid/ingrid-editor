@@ -1,16 +1,25 @@
 <ige-dialog-template
     title="Externen Datensatz wählen"
     (submit)="submit()"
-    [disabled]="urlControl.invalid"
+    [disabled]="phase !== 'valid'"
 >
-    <mat-form-field appearance="outline">
-        <mat-label>GetRecord-URL</mat-label>
-        <input
-            matInput
-            igeFocus
-            [formControl]="urlControl"
-            data-cy="get-record-url"
-        />
-        <mat-error>Die URL ist nicht gültig</mat-error>
-    </mat-form-field>
+    <div content>
+        <mat-form-field appearance="outline" class="width-100 space-bottom">
+            <mat-label>GetRecord-URL</mat-label>
+            <input
+                matInput
+                igeFocus
+                [formControl]="urlControl"
+                data-cy="get-record-url"
+            />
+            <mat-error>Die URL ist nicht gültig</mat-error>
+        </mat-form-field>
+
+        <div *ngIf="phase === 'analyzing'">
+            <span>Die URL wird analysiert</span>
+            <div class="dot-pulse"></div>
+        </div>
+
+        <div *ngIf="phase === 'valid'">Erfolgreich</div>
+    </div>
 </ige-dialog-template>
