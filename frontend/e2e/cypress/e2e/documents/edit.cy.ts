@@ -59,6 +59,16 @@ describe('mCLOUD: edit documents', function () {
       cy.get('.form-inner textarea').each(el => {
         cy.wrap(el).should('be.disabled');
       });
+      // input fields are disabled
+      cy.get('.form-inner input').each(el => {
+        cy.wrap(el).should('be.disabled');
+      });
+      // select fields are disabled
+      cy.get('.form-inner mat-select').each(el => {
+        cy.wrap(el).should('have.attr', 'disabled', 'disabled');
+      });
+      // add buttons should not be present
+      cy.get('.form-inner ige-add-button').should('have.length', 0);
       // spatial reference cannot be added
       cy.get('[data-cy="spatialButton"]').should('not.exist');
       // downloads table cannot be changed
