@@ -140,6 +140,34 @@ describe('Research Page', () => {
     });
   });
 
+  it('should do search with example SQL-query typed in manually and save it #4610', () => {
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
+    cy.get(ResearchPage.SQLField).type(
+      'SELECT document1.*, document_wrapper.*\n' +
+        '            FROM document_wrapper\n' +
+        '                   JOIN document document1 ON\n' +
+        '              CASE\n' +
+        '                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id\n' +
+        '                ELSE document_wrapper.draft = document1.id\n' +
+        '                END\n' +
+        "            WHERE document_wrapper.category = 'address'\n" +
+        "              AND LOWER(title) LIKE '%test%'"
+    );
+    cy.get('button').contains('Suchen').click();
+    cy.intercept('/api/search/querySql').as('query');
+    cy.wait('@query');
+    ResearchPage.getSearchResultCountZeroIncluded().then(manualSQLSearchResult => {
+      cy.get('div.mat-chip-list-wrapper > mat-chip.mat-chip').eq(0).click();
+      ResearchPage.getSearchResultCountZeroIncluded().should('equal', manualSQLSearchResult);
+    });
+
+    ResearchPage.saveSearchProfile('searchBySQL', 'search by SQL query');
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.chooseListItemFromSavedSearches('searchBySQL');
+    //make sure you're in the 'SQL Suche'-tab: this tab should be selected
+    cy.contains('.mat-tab-link  ', 'SQL Suche').should('have.class', 'active-link');
+  });
+
   it('should delete SQL-query and subsequently return 0 results', () => {
     cy.intercept('/api/search/querySql').as('sqlQuery');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
