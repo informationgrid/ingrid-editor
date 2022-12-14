@@ -1,8 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, filter, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
+import {
+  DocumentReferenceService,
+  GetRecordAnalysis,
+} from "../document-reference.service";
+import { Observable, of } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -13,11 +18,16 @@ import { MatDialogRef } from "@angular/material/dialog";
 export class SelectCswRecordDialog implements OnInit {
   urlControl = new FormControl<string>("https://", [
     Validators.required,
-    Validators.pattern("(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?"),
+    Validators.pattern("(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})(/.*)?"),
   ]);
   phase: "analyzing" | "valid" | "invalid";
+  analysis: GetRecordAnalysis;
+  analysisError = null;
 
-  constructor(private dlg: MatDialogRef<any>) {}
+  constructor(
+    private dlg: MatDialogRef<any>,
+    private docRefService: DocumentReferenceService
+  ) {}
 
   ngOnInit(): void {
     this.urlControl.valueChanges
@@ -27,15 +37,28 @@ export class SelectCswRecordDialog implements OnInit {
         filter((_) => this.urlControl.valid),
         tap((_) => (this.phase = "analyzing"))
       )
-      .subscribe((value) => this.analyzeUrl(value));
+      .subscribe((url) => this.analyzeUrl(url));
   }
 
   submit() {
     this.dlg.close(this.urlControl.value);
   }
 
-  private analyzeUrl(value: string) {
+  private analyzeUrl(url: string) {
     console.log("analyze");
-    setTimeout(() => (this.phase = "valid"), 2000);
+    this.analysisError = null;
+    this.docRefService
+      .analyzeGetRecordUrl(url)
+      .pipe(catchError((err) => this.handleError(err)))
+      .subscribe((response: GetRecordAnalysis) => {
+        console.log(response);
+        this.analysis = response;
+        this.phase = response === null ? "invalid" : "valid";
+      });
+  }
+
+  private handleError(err: any): Observable<null> {
+    this.analysisError = err.error?.errorText ?? "Unbekannter Fehler";
+    return of(null);
   }
 }

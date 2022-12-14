@@ -136,10 +136,10 @@ export class DocumentReferenceTypeComponent
 
   private mapToDocumentReference(doc: IgeDocument): DocumentReference {
     return {
-      uuid: doc.uuid,
+      uuid: doc?.uuid,
       isExternalRef: false,
-      title: doc.title,
-      state: doc._state,
+      title: doc?.title,
+      state: doc?._state,
     };
   }
 }

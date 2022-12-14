@@ -5,7 +5,7 @@
 >
     <div content>
         <mat-form-field appearance="outline" class="width-100 space-bottom">
-            <mat-label>GetRecord-URL</mat-label>
+            <mat-label>GetRecordById-URL</mat-label>
             <input
                 matInput
                 igeFocus
@@ -14,12 +14,29 @@
             />
             <mat-error>Die URL ist nicht gültig</mat-error>
         </mat-form-field>
+        <mat-error *ngIf="analysisError"
+            >Die URL konnte nicht analysiert werden:
+            {{analysisError}}</mat-error
+        >
 
         <div *ngIf="phase === 'analyzing'">
             <span>Die URL wird analysiert</span>
             <div class="dot-pulse"></div>
         </div>
 
-        <div *ngIf="phase === 'valid'">Erfolgreich</div>
+        <div *ngIf="analysis">
+            <div class="section-title">Identifier</div>
+            <div class="space-bottom">{{analysis.identifier}}</div>
+
+            <div class="section-title">Titel</div>
+            <div class="space-bottom">{{analysis.title}}</div>
+
+            <div class="section-title">Downloads</div>
+            <ul>
+                <li *ngFor="let download of analysis?.downloadData">
+                    {{download}}
+                </li>
+            </ul>
+        </div>
     </div>
 </ige-dialog-template>

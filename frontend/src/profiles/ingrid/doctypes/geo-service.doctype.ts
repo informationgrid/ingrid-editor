@@ -62,7 +62,7 @@ export class GeoServiceDoctype extends IngridShared {
             fieldGroupClassName: "flex-1",
             hasInlineContextHelp: true,
             wrappers: ["inline-help"],
-            className: "optional",
+            className: "optional flex-1",
           }),
         ]),
         this.addTable("operations", "Operationen", {
