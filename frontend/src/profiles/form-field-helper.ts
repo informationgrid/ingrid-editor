@@ -470,13 +470,22 @@ export class FormFieldHelper {
     };
   }
 
-  addReferencesForAddress(referenceField: string) {
+  addReferencesForAddress(
+    referenceField: string,
+    uuidField: string = null,
+    label = "Zugeordnete Datensätze",
+    showOnStart?: boolean,
+    showToggleButton?: boolean
+  ) {
     return {
       type: "referencedDocuments",
       wrappers: ["panel"],
       props: {
-        externalLabel: "Zugeordnete Datensätze",
+        externalLabel: label,
         referenceField: referenceField,
+        uuidField: uuidField ?? "ref",
+        showOnStart: showOnStart,
+        showToggleButton: showToggleButton,
       },
     };
   }

@@ -6,7 +6,7 @@
     [class.hide-divider]="hideDivider"
 >
     <mat-list-option
-        *ngFor="let doc of docs | async"
+        *ngFor="let doc of docs | async as allDocs; let i = index"
         (click)="makeSelection(doc)"
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
@@ -34,7 +34,7 @@
                 >{{ doc._modified | dateAgo: "DE" }}</span
             >
         </h3>
-        <mat-divider></mat-divider>
+        <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
     </mat-list-option>
 </mat-selection-list>
 

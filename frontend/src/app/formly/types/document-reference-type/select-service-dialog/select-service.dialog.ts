@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 
 export interface SelectServiceResponse {
@@ -15,13 +15,20 @@ export interface SelectServiceResponse {
   styleUrls: ["./select-service.dialog.scss"],
 })
 export class SelectServiceDialog {
-  selectedNode: string;
+  selectedNode: string = null;
 
-  constructor(private dlgRef: MatDialogRef<any>, private tree: TreeQuery) {}
+  constructor(
+    private dlgRef: MatDialogRef<any>,
+    private tree: TreeQuery,
+    @Inject(MAT_DIALOG_DATA) private currentRefs: string[]
+  ) {}
 
   enableOnlyGeoService() {
     return (node: TreeNode) => {
-      return node.type !== "InGridGeoDataset";
+      return (
+        node.type !== "InGridGeoDataset" ||
+        this.currentRefs.indexOf(node._uuid) !== -1
+      );
     };
   }
 

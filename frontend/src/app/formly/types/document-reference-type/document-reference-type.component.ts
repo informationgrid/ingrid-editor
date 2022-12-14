@@ -62,7 +62,7 @@ export class DocumentReferenceTypeComponent
 
   showInternalRefDialog() {
     this.dialog
-      .open(SelectServiceDialog, { minWidth: 400 })
+      .open(SelectServiceDialog, { minWidth: 400, data: this.getRefUuids() })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
         if (item) {
@@ -83,13 +83,13 @@ export class DocumentReferenceTypeComponent
       });
   }
 
-  openReference(item: any) {
+  openReference(item: DocumentReference | UrlReference) {
     if (item.isExternalRef) {
-      window.open(item.url, "_blank");
+      window.open((<UrlReference>item).url, "_blank");
     } else {
       this.router.navigate([
         `${ConfigService.catalogId}/form`,
-        { id: item.uuid },
+        { id: (<DocumentReference>item).uuid },
       ]);
     }
   }
@@ -136,10 +136,16 @@ export class DocumentReferenceTypeComponent
 
   private mapToDocumentReference(doc: IgeDocument): DocumentReference {
     return {
-      uuid: doc?.uuid,
+      uuid: doc?._uuid,
       isExternalRef: false,
       title: doc?.title,
       state: doc?._state,
     };
+  }
+
+  private getRefUuids(): string[] {
+    return this.formControl.value
+      .filter((item) => item.uuid)
+      .map((item) => item.uuid);
   }
 }
