@@ -1,4 +1,8 @@
-<ige-dialog-template title="Dargestellte Daten" (submit)="submit()">
+<ige-dialog-template
+    label="Dargestellte Daten"
+    (submit)="submit()"
+    [disabled]="selectedNode === null"
+>
     <ige-tree
         content
         [allowMultiSelectionMode]="false"
