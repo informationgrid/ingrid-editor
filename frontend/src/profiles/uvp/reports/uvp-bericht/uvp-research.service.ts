@@ -13,6 +13,7 @@ import { BehaviourService } from "../../../../app/services/behavior/behaviour.se
 
 export class UvpReport {
   eiaStatistic: any;
+  procedureCount: number;
   negativePreliminaryAssessments: number;
   positivePreliminaryAssessments: number;
   averageProcedureDuration: number;

@@ -118,6 +118,10 @@ export class UvpBerichtComponent implements AfterViewInit {
     );
     this.dataSourceMiscellaneous.data = [
       {
+        type: "Abgeschlossene Vorhaben",
+        value: report.procedureCount,
+      },
+      {
         type: "Positive Vorprüfungen",
         value: report.positivePreliminaryAssessments,
       },

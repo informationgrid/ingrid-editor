@@ -24,6 +24,26 @@ fun getEiaStatisiticSQL(catalogId: Int, startDate: String?, endDate: String?) = 
 """.trimIndent()
 
 /*
+    Get the count of all datasets in a given time-range of the decision-date.
+    Moreover only datasets of type 'Zulassungsverfahren', 'Linienbestimmung' and 'Raumordnungsverfahren'
+    are considered.
+    The result is filtered by a given time-range on the decision date. If multiple decision-dates
+    exist, the most recent one is used.
+ */
+@Language("PostgreSQL")
+fun getProcedureCountSQL(catalogId: Int, startDate: String?, endDate: String?) = """
+    SELECT Count(distinct document_wrapper.uuid) AS num
+    FROM document_wrapper JOIN document document1 ON document_wrapper.published = document1.id,
+         jsonb_array_elements(document1.data -> 'processingSteps') as steps
+    WHERE document_wrapper.catalog_id = $catalogId
+      AND steps ->>'type' = 'decisionOfAdmission'
+      AND jsonb_array_length(data -> 'eiaNumbers') > 0
+      AND (document_wrapper.type = 'UvpApprovalProcedureDoc' OR document_wrapper.type = 'UvpLineDeterminationDoc' OR document_wrapper.type = 'UvpSpatialPlanningProcedureDoc')
+      ${addDateLimit(startDate, endDate)}
+    ;
+""".trimIndent()
+
+/*
     Count all datasets where preliminary assessment is set to `true`.
     The result is filtered by a given time-range on the decision date. If multiple decision-dates
     exist, the most recent one is used.

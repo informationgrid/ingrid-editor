@@ -20,7 +20,7 @@ class UvpReportApiController @Autowired constructor(
     val entityManager: EntityManager,
     val catalogService: CatalogService,
 ) : UvpReportApi {
-    
+
     override fun getUvpReport(
         principal: Principal,
         from: String?,
@@ -30,6 +30,7 @@ class UvpReportApiController @Autowired constructor(
         val catalogID = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal)).id!!
         val report = UvpReport(
             eiaStatistic = this.getEiaNumberStatistics(catalogID, from, to),
+            procedureCount = this.getProcedureCount(catalogID, from, to),
             negativePreliminaryAssessments = this.getNegativePrelimCount(catalogID, from, to),
             positivePreliminaryAssessments = this.getSuccessfulPrelimCount(catalogID, from, to),
             averageProcedureDuration = this.getAverageProcedureDuration(catalogID, from, to)
@@ -45,6 +46,15 @@ class UvpReportApiController @Autowired constructor(
 
     fun getSuccessfulPrelimCount(catalogID: Int, from: String?, to: String?): Number {
         val nativeQuery = entityManager.createNativeQuery(getSuccessfulPrelimCountSQL(catalogID, from, to))
+        return (nativeQuery.singleResult as Number).toInt()
+    }
+
+    fun getProcedureCount(
+        catalogID: Int,
+        from: String?,
+        to: String?
+    ): Number {
+        val nativeQuery = entityManager.createNativeQuery(getProcedureCountSQL(catalogID, from, to))
         return (nativeQuery.singleResult as Number).toInt()
     }
 
