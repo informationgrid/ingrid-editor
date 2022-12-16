@@ -60,7 +60,6 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
 import { UploadModule } from "../shared/upload/upload.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import {
-  EmailInRepeatValidator,
   EmailValidator,
   IpValidator,
   LowercaseValidator,
@@ -202,7 +201,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
-        { name: "emailInRepeat", validation: EmailInRepeatValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },

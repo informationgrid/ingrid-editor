@@ -2,6 +2,10 @@ import { BaseDoctype } from "../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { map } from "rxjs/operators";
 import { BackendOption } from "../../app/store/codelist/codelist.model";
+import {
+  EmailValidator,
+  UrlValidator,
+} from "../../app/formly/input.validators";
 
 export interface AddressOptions {
   defaultCountry: BackendOption;
@@ -34,7 +38,20 @@ export abstract class AddressShared extends BaseDoctype {
           className: "flex-3",
           required: true,
           validators: {
-            validation: ["emailInRepeat"],
+            validEmail: {
+              expression: (ctrl) => {
+                const type = ctrl.parent.value.type;
+                return type?.key === "3" ? EmailValidator(ctrl) === null : true;
+              },
+              message: "Die Email ist ungültig",
+            },
+            validUrl: {
+              expression: (ctrl) => {
+                const type = ctrl.parent.value.type;
+                return type?.key === "4" ? UrlValidator(ctrl) === null : true;
+              },
+              message: "Die URL ist ungültig",
+            },
           },
         }),
       ],

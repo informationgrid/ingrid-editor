@@ -10,14 +10,9 @@ export function EmailValidator(control: UntypedFormControl): ValidationErrors {
   return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
 }
 
-export function EmailInRepeatValidator(
-  control: UntypedFormControl
-): ValidationErrors {
-  const connectionType = control.parent.value.type;
-  // if connection type is email
-  if (connectionType?.key === "3") {
-    return EmailValidator(control);
-  }
+export function UrlValidator(control: UntypedFormControl): ValidationErrors {
+  const regExp = new RegExp("(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})(/.*)?");
+  return regExp.test(control.value?.trim()) ? null : { url: true };
 }
 
 export function LowercaseValidator(
