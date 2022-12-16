@@ -18,9 +18,9 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
     super(storageService, codelistService, codelistQuery, "addresses");
     this.addressType = "organization";
     this.options = {
-      hideAdministrativeArea: true,
       defaultCountry: { key: "276" },
       inheritAddress: false,
+      requiredField: { administrativeArea: true },
     };
   }
 }

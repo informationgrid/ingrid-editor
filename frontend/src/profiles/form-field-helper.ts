@@ -36,6 +36,15 @@ export interface RepeatChipOptions extends Options {
   codelistId?: number;
 }
 
+export interface SelectOptions extends Options {
+  options?: any[] | Observable<any[]>;
+  codelistId?: number;
+  fieldLabel?: string;
+  externalLabel?: string;
+  showSearch?: boolean;
+  allowNoValue?: boolean;
+}
+
 export interface TableOptions extends Options {
   columns?: any[];
   batchValidUntil?: string;
@@ -287,7 +296,7 @@ export class FormFieldHelper {
     });
   }
 
-  addSelect(id, label, options?) {
+  addSelect(id, label, options?: SelectOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,

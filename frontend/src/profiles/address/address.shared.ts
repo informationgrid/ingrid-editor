@@ -8,6 +8,7 @@ export interface AddressOptions {
   hideCountryAndAdministrativeArea: boolean;
   hideAdministrativeArea: boolean;
   inheritAddress: boolean;
+  requiredField: any;
 }
 
 export abstract class AddressShared extends BaseDoctype {
@@ -134,6 +135,8 @@ export abstract class AddressShared extends BaseDoctype {
       className: "flex-1",
       options: this.getCodelistForSelect(110, "administrativeArea"),
       codelistId: 110,
+      required:
+        options.requiredField && options.requiredField["administrativeArea"],
     });
 
     return options.hideAdministrativeArea

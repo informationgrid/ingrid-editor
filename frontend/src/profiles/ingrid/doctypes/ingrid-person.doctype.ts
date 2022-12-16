@@ -18,9 +18,9 @@ export class IngridPersonDoctype extends PersonDoctype {
     super(storageService, codelistService, codelistQuery, "addresses");
     this.addressType = "person";
     this.options = {
-      hideAdministrativeArea: true,
       defaultCountry: { key: "276" },
       inheritAddress: false,
+      requiredField: { administrativeArea: true },
     };
   }
 }
