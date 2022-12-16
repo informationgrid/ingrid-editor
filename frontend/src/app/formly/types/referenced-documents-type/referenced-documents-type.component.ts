@@ -7,7 +7,13 @@ import {
 } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
-import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  tap,
+} from "rxjs/operators";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
@@ -53,10 +59,11 @@ export class ReferencedDocumentsTypeComponent
                    AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceField>')
                    AND EXISTS(SELECT
                               FROM jsonb_array_elements(data -> '<referenceField>') as s
-                              WHERE (s -> 'ref') = '"<uuid>"')`;
+                              WHERE (s -> '<uuidField>') = '"<uuid>"')`;
 
   private currentUuid: string;
   totalHits: number;
+  showToggleButton: boolean;
 
   constructor(
     private router: Router,
@@ -69,6 +76,10 @@ export class ReferencedDocumentsTypeComponent
   }
 
   ngOnInit(): void {
+    this.currentUuid = this.form.value._uuid;
+    this.showReferences = this.props.showOnStart ?? false;
+    this.showToggleButton = this.props.showToggleButton ?? true;
+
     const loadEvent = this.docEvents.afterLoadAndSet$(true).pipe(
       untilDestroyed(this),
       map((value) => value._uuid),
@@ -84,12 +95,11 @@ export class ReferencedDocumentsTypeComponent
     merge(loadEvent, reloadEvent)
       .pipe(
         untilDestroyed(this),
+        startWith(this.currentUuid),
         filter(() => this.showReferences),
         tap(() => (this.docs = []))
       )
       .subscribe((uuid) => this.searchReferences(uuid).subscribe());
-
-    this.currentUuid = this.form.value._uuid;
   }
 
   searchReferences(uuid: string, page = 1) {
@@ -110,7 +120,12 @@ export class ReferencedDocumentsTypeComponent
     if (this.showReferences) {
       this.docs = [];
       this.searchReferences(this.currentUuid).subscribe(() =>
-        setTimeout(() => this.referencesElement.nativeElement.scrollIntoView())
+        setTimeout(() =>
+          this.referencesElement.nativeElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          })
+        )
       );
     }
   }
@@ -125,6 +140,7 @@ export class ReferencedDocumentsTypeComponent
   private prepareSQL(uuid: string): string {
     return this.sql
       .replace("<uuid>", uuid)
+      .replace("<uuidField>", this.props.uuidField)
       .replace(/<referenceField>/g, this.props.referenceField);
   }
 

@@ -62,7 +62,7 @@ export class GeoServiceDoctype extends IngridShared {
             fieldGroupClassName: "flex-1",
             hasInlineContextHelp: true,
             wrappers: ["inline-help"],
-            className: "optional",
+            className: "optional flex-1",
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -101,14 +101,19 @@ export class GeoServiceDoctype extends IngridShared {
           null,
           "Dargestellte Daten",
           [
-            this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
-              required: true,
-              className: "optional",
+            {
+              key: "coupledResources",
+              type: "couplingService",
+              className: "optional flex-1",
+              props: {
+                label: "Dargestellte Daten",
+                required: true,
+              },
               expressions: {
                 "props.required":
                   "formState.mainModel.couplingType?.key === 'tight'",
               },
-            }),
+            },
             this.addSelectInline("couplingType", "Kopplungstyp", {
               options: <SelectOptionUi[]>[
                 { label: "loose", value: "loose" },

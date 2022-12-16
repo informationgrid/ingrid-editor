@@ -10,31 +10,6 @@ import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { isEmptyObject } from "../../../app/shared/utils";
 
-const qualityTables = <SelectOptionUi[]>[
-  { label: "Datenüberschuss", value: "completenessComission" },
-  { label: "Konzeptionelle Konsistenz", value: "conceptualConsistency" },
-  { label: "Konsistenz des Wertebereichs", value: "domainConsistency" },
-  { label: "Formatkonsistenz", value: "formatConsistency" },
-  { label: "Topologische Konsistenz", value: "topologicalConsistency" },
-  { label: "Zeitliche Genauigkeit", value: "temporalConsistency" },
-  {
-    label: "Korrektheit der thematischen Klassifizierung",
-    value: "thematicClassificationCorrectness",
-  },
-  {
-    label: "Genauigkeit nicht-quantitativer Attribute",
-    value: "nonQuantitativeAttributeAccuracy",
-  },
-  {
-    label: "Genauigkeit quantitativer Attribute",
-    value: "quantitativeAttributeAccuracy",
-  },
-  {
-    label: "Relative Positionsgenauigkeit",
-    value: "relativeInternalPositionalAccuracy",
-  },
-];
-
 @Injectable({
   providedIn: "root",
 })
@@ -46,6 +21,31 @@ export class GeoDatasetDoctype extends IngridShared {
   iconClass = "Geodatensatz";
 
   hasOptionalFields = true;
+
+  private qualityTables = <SelectOptionUi[]>[
+    { label: "Datenüberschuss", value: "completenessComission" },
+    { label: "Konzeptionelle Konsistenz", value: "conceptualConsistency" },
+    { label: "Konsistenz des Wertebereichs", value: "domainConsistency" },
+    { label: "Formatkonsistenz", value: "formatConsistency" },
+    { label: "Topologische Konsistenz", value: "topologicalConsistency" },
+    { label: "Zeitliche Genauigkeit", value: "temporalConsistency" },
+    {
+      label: "Korrektheit der thematischen Klassifizierung",
+      value: "thematicClassificationCorrectness",
+    },
+    {
+      label: "Genauigkeit nicht-quantitativer Attribute",
+      value: "nonQuantitativeAttributeAccuracy",
+    },
+    {
+      label: "Genauigkeit quantitativer Attribute",
+      value: "quantitativeAttributeAccuracy",
+    },
+    {
+      label: "Relative Positionsgenauigkeit",
+      value: "relativeInternalPositionalAccuracy",
+    },
+  ];
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -347,9 +347,13 @@ export class GeoDatasetDoctype extends IngridShared {
             className: "optional",
           }),
         ]),
-        this.addRepeatList("coupledServices", "Darstellender Dienst", {
-          className: "optional",
-        }),
+        this.addReferencesForAddress(
+          "coupledResources",
+          "uuid",
+          "Darstellender Dienst",
+          true,
+          false
+        ),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addRepeat("source", "Datengrundlage", {
@@ -439,9 +443,10 @@ export class GeoDatasetDoctype extends IngridShared {
                 props: {
                   label: "Typ",
                   appearance: "outline",
-                  options: qualityTables,
+                  options: this.qualityTables,
                   formatter: (item: any) =>
-                    qualityTables.find((qt) => qt.value === item.key).label,
+                    this.qualityTables.find((qt) => qt.value === item.key)
+                      .label,
                 },
               },
               {

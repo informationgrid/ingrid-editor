@@ -1,0 +1,12 @@
+<ige-dialog-template
+    label="Dargestellte Daten"
+    (submit)="submit()"
+    [disabled]="selectedNode === null"
+>
+    <ige-tree
+        content
+        [allowMultiSelectionMode]="false"
+        [disabledCondition]="enableOnlyGeoService()"
+        (selected)="selectDatasets($event)"
+    ></ige-tree>
+</ige-dialog-template>
