@@ -178,7 +178,15 @@ export class Tree {
 
   static expandNode(nodeTitle: string) {
     const exactText = this.getRegExp(nodeTitle);
-    cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').click();
+    cy.get('mat-tree-node')
+      .contains(exactText)
+      .parent()
+      .parent()
+      .within(_ => {
+        cy.get('.expander').click();
+        // make sure node really is expanded -> in this case expander is black
+        cy.get('.expander').should('have.css', 'color', 'rgba(0, 0, 0, 0.87)');
+      });
   }
 
   static checkNextNodeIsAChildNode(nodeTitle: string, level: number) {

@@ -43,11 +43,11 @@ describe('uvp reports', () => {
       // create new published document of type "negative Vorprüfung"
       UvpDocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
-      ).then(node => {
-        expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
-      });
+      cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(2)`).then(
+        node => {
+          expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
+        }
+      );
     });
   });
 

@@ -172,7 +172,8 @@ export enum AddressDetails {
 }
 
 export enum UVPmetrics {
-  positiveAudit = 1,
+  completedDocs = 1,
+  positiveAudit,
   negativeAudit,
   averageProcessLength
 }
