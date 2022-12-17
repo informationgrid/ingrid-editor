@@ -185,7 +185,7 @@ export class Tree {
       .within(_ => {
         cy.get('.expander').click();
         // make sure node really is expanded -> in this case expander is black
-        cy.get('.expander').should('have.css', 'color', 'rgba(0, 0, 0, 0.87)');
+        cy.get('.expander', { timeout: 6000 }).should('have.css', 'color', 'rgba(0, 0, 0, 0.87)');
       });
   }
 
