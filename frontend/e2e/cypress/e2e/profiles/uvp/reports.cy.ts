@@ -19,10 +19,8 @@ describe('uvp reports', () => {
       // filter by decision date
       ResearchPage.setDate('start', '30.09.2022');
       cy.wait(2000);
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
-      ).then(node => {
-        expect(parseInt(node.text().trim())).to.be.lessThan(oldValue);
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(newValue => {
+        expect(newValue).to.be.lessThan(oldValue);
       });
     });
   });
@@ -43,11 +41,9 @@ describe('uvp reports', () => {
       // create new published document of type "negative Vorprüfung"
       UvpDocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
-      cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(2)`).then(
-        node => {
-          expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
-        }
-      );
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(newValue => {
+        expect(newValue).to.be.greaterThan(oldValue);
+      });
     });
   });
 
@@ -79,7 +75,8 @@ describe('uvp reports', () => {
       '2018-11-05T23:00:00.000Z',
       '2021-11-05T23:00:00.000Z'
     );
-    Menu.switchTo('REPORTS');
+    //Menu.switchTo('REPORTS');
+    cy.visit('reports/general');
     UvpDocumentPage.goToTabmenu(UVPreports.Report);
     UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
       // create new document of type "negative Vorprüfung"
@@ -90,10 +87,8 @@ describe('uvp reports', () => {
         true
       );
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.averageProcessLength}) :nth-child(2)`
-      ).then(node => {
-        expect(node.text().trim()).not.to.be.equal(oldValue);
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(newValue => {
+        expect(newValue).to.be.equal(oldValue);
       });
     });
   });
@@ -108,11 +103,9 @@ describe('uvp reports', () => {
       // create new document of type "negative Vorprüfung"
       UvpDocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle, true);
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
-      cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.positiveAudit}) :nth-child(2)`).then(
-        node => {
-          expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
-        }
-      );
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.positiveAudit).then(newValue => {
+        expect(newValue).to.be.greaterThan(oldValue);
+      });
     });
   });
 

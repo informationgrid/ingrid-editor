@@ -60,7 +60,7 @@ export class UvpDocumentPage extends DocumentPage {
 
   static getUVPmetrics(category: UVPmetrics): Chainable<any> {
     return cy
-      .get('[label="Kennzahlen"] .mat-column-value')
+      .get('[label="Kennzahlen"] tbody .mat-column-value')
       .eq(category)
       .then(value => {
         return category === UVPmetrics.averageProcessLength ? value.text().trim() : parseInt(value.text().trim());
@@ -172,7 +172,7 @@ export enum AddressDetails {
 }
 
 export enum UVPmetrics {
-  completedDocs = 1,
+  completedDocs = 0,
   positiveAudit,
   negativeAudit,
   averageProcessLength
