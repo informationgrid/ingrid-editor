@@ -40,28 +40,11 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
 
       this.addSection("Fachbezug", [
-        // this.addGroupSimple("lineage", [
-        this.addRepeat("lineage", "Fachliche Grundlage", {
-          required: true,
-          defaultValue: [{ _type: "information" }],
-          menuOptions: [
-            {
-              key: "information",
-              value: "Information",
-              fields: this.addGroupSimple(null, [
-                { key: "_type" },
-                this.addTextAreaInline(
-                  "statement",
-                  "Fachliche Grundlage",
-                  this.id,
-                  { className: "" }
-                ),
-              ]),
-            },
-            { key: "url", value: "Verweise", fields: this.urlRefFields() },
-          ],
-          fields: [],
-        }),
+        this.addGroupSimple("lineage", [
+          this.addTextArea("statement", "Fachliche Grundlage", this.id, {
+            required: true,
+          }),
+        ]),
 
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
@@ -77,43 +60,23 @@ export class GeoDatasetDoctype extends IngridShared {
             className: "optional",
           }
         ),
-        this.addTable("vectorSpatialRepresentation", "Topologieinformation", {
-          supportUpload: false,
-          columns: [
-            {
-              key: "topologyLevel",
-              type: "select",
-              label: "Topologieinformation",
-              props: {
-                label: "Topologieinformation",
-                appearance: "outline",
-                options: this.getCodelistForSelect(528, "topologyLevel"),
-                codelistId: 528,
-                formatter: (item: any) => this.formatCodelistValue("528", item),
+        this.addRepeat("vectorSpatialRepresentation", "Topologieinformation", {
+          fields: [
+            this.addSelectInline("topologyLevel", "Topologieinformation", {
+              options: this.getCodelistForSelect(528, "topologyLevel"),
+              codelistId: 528,
+            }),
+            this.addSelectInline("geometricObjectType", "Geometrietyp", {
+              options: this.getCodelistForSelect(515, "geometricObjectType"),
+              codelistId: 515,
+              expressions: {
+                "props.required": (field) =>
+                  field.model?.geometricObjectCount != null,
               },
-            },
-            {
-              key: "geometricObjectType",
-              type: "select",
-              label: "Geometrietyp",
-              props: {
-                label: "Geometrietyp",
-                appearance: "outline",
-                options: this.getCodelistForSelect(515, "geometricObjectType"),
-                codelistId: 515,
-                formatter: (item: any) => this.formatCodelistValue("515", item),
-              },
-            },
-            {
-              key: "geometricObjectCount",
-              type: "input",
-              label: "Elementanzahl",
-              props: {
-                label: "Elementanzahl",
-                type: "number",
-                appearance: "outline",
-              },
-            },
+            }),
+            this.addInputInline("geometricObjectCount", "Elementanzahl", {
+              type: "number",
+            }),
           ],
           expressions: {
             hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "1")',
@@ -291,28 +254,12 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
-            menuOptions: [
-              {
-                key: "information",
-                value: "Information",
-                fields: this.titleDateEditionFields(3555),
-              },
-              { key: "url", value: "Verweise", fields: this.urlRefFields() },
-            ],
-            fields: [],
+            fields: this.titleDateEditionFields(3555),
           }),
         ]),
         this.addGroupSimple("featureCatalogueDescription", [
           this.addRepeat("citation", "Schlüsselkatalog", {
-            menuOptions: [
-              {
-                key: "information",
-                value: "Information",
-                fields: this.titleDateEditionFields(3535),
-              },
-              { key: "url", value: "Verweise", fields: this.urlRefFields() },
-            ],
-            fields: [],
+            fields: this.titleDateEditionFields(3535),
             expressions: {
               "props.required":
                 "formState.mainModel.featureCatalogueDescription?.featureTypes?.length > 0",
@@ -331,53 +278,31 @@ export class GeoDatasetDoctype extends IngridShared {
         ),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
-            this.addRepeat("source", "Datengrundlage", {
-              menuOptions: [
-                {
-                  key: "information",
-                  value: "Information",
-                  fields: this.addGroupSimple(null, [
-                    { key: "_type" },
-                    this.addInputInline("descriptions", "Information", {
-                      className: "optional",
-                    }),
-                  ]),
-                },
-                { key: "url", value: "Verweise", fields: this.urlRefFields() },
-              ],
-              fields: [],
-            }),
-            this.addRepeat("processStep", "Herstellungsprozess", {
-              menuOptions: [
-                {
-                  key: "information",
-                  value: "Information",
-                  fields: this.addGroupSimple(null, [
-                    { key: "_type" },
-                    this.addTextAreaInline(
-                      "description",
-                      "Information",
-                      this.id,
-                      {
-                        className: "optional",
-                      }
-                    ),
-                  ]),
-                },
-                { key: "url", value: "Verweise", fields: this.urlRefFields() },
-              ],
-              fields: [],
-            }),
+            this.addGroupSimple("source", [
+              this.addRepeatList("descriptions", "Datengrundlage", {
+                className: "optional flex-1",
+              }),
+              this.addGroupSimple("processStep", [
+                this.addTextArea(
+                  "description",
+                  "Herstellungsprozess",
+                  this.id,
+                  {
+                    className: "optional",
+                  }
+                ),
+              ]),
+            ]),
           ]),
         ]),
-      ]),
-      this.addSection("Datenqualität", [
-        this.addGroupSimple("dataQuality", [
-          this.addGroupSimple("completenessOmission", [
-            this.addInput("measResult", "Datendefizit", {
-              wrappers: ["panel", "form-field"],
-              type: "number",
-            }),
+        this.addSection("Datenqualität", [
+          this.addGroupSimple("dataQuality", [
+            this.addGroupSimple("completenessOmission", [
+              this.addInput("measResult", "Datendefizit", {
+                wrappers: ["panel", "form-field"],
+                type: "number",
+              }),
+            ]),
           ]),
           this.addGroup(
             "absoluteExternalPositionalAccuracy",

@@ -64,6 +64,7 @@ export abstract class IngridShared extends BaseDoctype {
                   wrappers: ["form-field", "inline-help"],
                   fieldLabel: "Open Data",
                   className: "flex-1",
+                  click: (field) => this.handleOpenDataClick(field),
                 })
               : null,
           ].filter(Boolean)
@@ -158,6 +159,24 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
+  private handleOpenDataClick(field) {
+    // since value will be set AFTER click, we need to use the future value
+    const willBeChecked = !field.formControl.value;
+    const isInspire = field.model.isInspireIdentified;
+
+    // event.stopImmediatePropagation();
+    if (willBeChecked) {
+      // TODO: show info popup to let changes be confirmed
+
+      if (isInspire) {
+        field.model.resource.accessConstraints = [{ key: "1" }];
+      } else {
+        field.model.resource.accessConstraints = [];
+      }
+      field.options.formState.updateModel();
+    }
+  }
+
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
     return this.addSection(
       "Verschlagwortung",
@@ -212,7 +231,6 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 6360,
                 className: "optional",
                 expressions: {
-                  hide: "(formState.mainModel._type === 'InGridGeoService' || !formState.mainModel.isInspireIdentified)",
                   "props.required":
                     "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
                 },
@@ -709,6 +727,15 @@ export abstract class IngridShared extends BaseDoctype {
         fieldGroupClassName: "display-flex flex-column",
         className: "optional",
         fields: [this.urlRefFields()],
+        validators: {
+          downloadLinkWhenOpenData: {
+            expression: (ctrl, field) =>
+              !field.form.value.isOpenData ||
+              ctrl.value.some((row) => row.type?.key === "9990"), // Datendownload
+            message:
+              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+          },
+        },
       }),
     ]);
   }
@@ -719,13 +746,19 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple(
         null,
         [
-          /*this.addSelectInline("type", "Typ", {
+          this.addSelectInline("type", "Typ", {
             required: true,
             options: this.getCodelistForSelect(2000, "type"),
             codelistId: 2000,
-          }),*/
-          this.addInputInline("title", "Titel"),
-          this.addInputInline("url", "URL"),
+          }),
+          this.addInputInline("title", "Titel", {
+            required: true,
+            className: "flex-2",
+          }),
+          this.addInputInline("url", "URL", {
+            required: true,
+            className: "flex-2",
+          }),
         ],
         { fieldGroupClassName: "display-flex" }
       ),
@@ -743,27 +776,23 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   protected titleDateEditionFields(codelistForTitle: number) {
-    return this.addGroupSimple(
-      null,
-      [
-        this.addAutocomplete("title", "Titel", {
-          className: "flex-3",
-          wrappers: ["form-field"],
-          required: true,
-          options: this.getCodelistForSelect(codelistForTitle, "title"),
-          codelistId: codelistForTitle,
-        }),
-        { key: "_type" },
-        this.addDatepickerInline("date", "Datum", {
-          className: "flex-1",
-          required: true,
-        }),
-        this.addInputInline("edition", "Version", {
-          className: "flex-1",
-        }),
-      ],
-      { fieldGroupClassName: "display-flex" }
-    );
+    return [
+      this.addAutocomplete("title", "Titel", {
+        className: "flex-3",
+        wrappers: ["form-field"],
+        required: true,
+        options: this.getCodelistForSelect(codelistForTitle, "title"),
+        codelistId: codelistForTitle,
+      }),
+      { key: "_type" },
+      this.addDatepickerInline("date", "Datum", {
+        className: "flex-1",
+        required: true,
+      }),
+      this.addInputInline("edition", "Version", {
+        className: "flex-1",
+      }),
+    ];
   }
 
   private docRefDescription() {

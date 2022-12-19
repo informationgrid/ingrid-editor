@@ -59,6 +59,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   formOptions: FormlyFormOptions = {
     formState: {
       disabled: true,
+      updateModel: () => {
+        this.model = { ...this.model };
+        this.formOptions.formState.mainModel = this.model;
+      },
     },
   };
 

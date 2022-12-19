@@ -4,9 +4,11 @@
         formControl.errors &&
         !formControl.hasError('required')
     "
-    >Dieser Fehler bezieht sich auf die gesamten Einträge
-    {{ formControl.errors | json }}</ige-form-error
 >
+    <div *ngFor="let error of formControl.errors | keyvalue">
+        {{ error.value.message }}
+    </div>
+</ige-form-error>
 
 <div>
     <div

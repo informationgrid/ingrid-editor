@@ -17,7 +17,10 @@
 
 <mat-spinner *ngIf="refreshing" diameter="30"></mat-spinner>
 
-<ige-add-button [mat-menu-trigger-for]="menu"></ige-add-button>
+<ige-add-button
+    [mat-menu-trigger-for]="menu"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">
         Geodatensatz auswählen

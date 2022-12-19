@@ -35,7 +35,7 @@ interface UrlReference extends Reference {
   styleUrls: ["./document-reference-type.component.scss"],
 })
 export class DocumentReferenceTypeComponent
-  extends FieldArrayType<any>
+  extends FieldArrayType
   implements OnInit
 {
   myModel: (DocumentReference | UrlReference)[];

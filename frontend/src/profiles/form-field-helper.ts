@@ -11,6 +11,7 @@ export interface Options {
   expressions?: {
     hide?;
     "props.required"?;
+    "props.disabled"?;
   };
 }
 
@@ -18,6 +19,7 @@ export interface RepeatOptions extends Options {
   menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
+  validators?: { [x: string]: { expression: any; message: string } };
 }
 
 export interface RepeatListOptions extends Options {
@@ -55,6 +57,15 @@ export interface TableOptions extends Options {
 
 export interface CheckboxOptions extends Options {
   fieldLabel?: string;
+  click?: ((field: FormlyFieldConfig, event?: any) => void) | any;
+}
+
+export interface InputOptions extends Options {
+  type?: "number";
+  fieldLabel?: string;
+  disabled?: boolean;
+  contextHelpId?: string;
+  validators?: any;
 }
 
 export class FormFieldHelper {
@@ -228,6 +239,7 @@ export class FormFieldHelper {
         fieldGroup: options?.fields,
       },
       expressions: expressions,
+      validators: options?.validators,
     };
   }
 
@@ -262,7 +274,7 @@ export class FormFieldHelper {
     });
   }
 
-  addInput(id, label, options?): FormlyFieldConfig {
+  addInput(id, label, options?: InputOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -288,7 +300,7 @@ export class FormFieldHelper {
     };
   }
 
-  addInputInline(id, label, options = {}): FormlyFieldConfig {
+  addInputInline(id, label, options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
       fieldLabel: label,
       wrappers: ["form-field"],
@@ -322,7 +334,7 @@ export class FormFieldHelper {
     };
   }
 
-  addSelectInline(id, label, options: any = {}) {
+  addSelectInline(id, label, options: SelectOptions = {}) {
     return this.addSelect(id, null, {
       fieldLabel: label,
       wrappers: ["form-field"],
@@ -434,7 +446,7 @@ export class FormFieldHelper {
     };
   }
 
-  addCheckbox(id, label, options?: CheckboxOptions) {
+  addCheckbox(id, label, options?: CheckboxOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -447,6 +459,7 @@ export class FormFieldHelper {
         label: options?.fieldLabel,
         indeterminate: false,
         required: options?.required,
+        click: options?.click,
       },
       expressions: expressions,
     };

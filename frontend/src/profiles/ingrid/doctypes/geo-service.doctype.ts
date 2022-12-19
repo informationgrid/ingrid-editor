@@ -8,6 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -101,17 +102,29 @@ export class GeoServiceDoctype extends IngridShared {
           null,
           "Dargestellte Daten",
           [
-            {
+            <FormlyFieldConfig>{
               key: "coupledResources",
               type: "couplingService",
               className: "optional flex-1",
               props: {
                 label: "Dargestellte Daten",
                 required: true,
+                /*change: (field) => {
+                  field.model.couplingType = { key: "tight" };
+                  field.options.formState.updateModel();
+                },*/
               },
               expressions: {
                 "props.required":
                   "formState.mainModel.couplingType?.key === 'tight'",
+              },
+              hooks: {
+                onInit: (field) =>
+                  field.formControl.valueChanges.pipe(
+                    tap((value) =>
+                      this.handleCoupledDatasetsChange(field, value)
+                    )
+                  ),
               },
             },
             this.addSelectInline("couplingType", "Kopplungstyp", {
@@ -135,6 +148,16 @@ export class GeoServiceDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
+    const model = field.options.formState.mainModel;
+    if (model.couplingType?.key === "mixed") return;
+
+    model.couplingType = {
+      key: value.length > 0 ? "tight" : "loose",
+    };
+    field.options.formState.updateModel();
+  }
 
   constructor(
     storageService: DocumentService,

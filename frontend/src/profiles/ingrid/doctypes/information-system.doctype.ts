@@ -70,10 +70,13 @@ export class InformationSystemDoctype extends IngridShared {
           ],
           { className: "optional" }
         ),
-        this.addTable("serviceUrls", "Service-Urls", {
-          supportUpload: false,
-          columns: [],
+        this.addRepeat("serviceUrls", "Service-Urls", {
           className: "optional",
+          fields: [
+            this.addInputInline("name", "Name", { required: true }),
+            this.addInputInline("url", "URL", { required: true }),
+            this.addInputInline("description", "Erläuterung"),
+          ],
         }),
       ]),
 
