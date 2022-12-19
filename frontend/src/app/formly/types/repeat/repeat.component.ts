@@ -6,7 +6,8 @@ import {
 } from "@ngx-formly/core";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { clone } from "../../../shared/utils";
+import { clone, groupByWithIndexReference } from "../../../shared/utils";
+import { startWith, tap } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -17,13 +18,24 @@ import { clone } from "../../../shared/utils";
 export class RepeatComponent extends FieldArrayType implements OnInit {
   canBeDragged = false;
 
-  ngOnInit(): void {
-    this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((value) => this.updateDragState(value));
+  groupedFields;
+  groupedFieldsKeys: string[] = [];
+  menuSections: any;
 
-    // initialize
-    this.updateDragState(this.formControl.value);
+  ngOnInit(): void {
+    this.menuSections =
+      this.field.props.menuOptions?.reduce((res, cur) => {
+        res[cur.key] = cur.value;
+        return res;
+      }, {}) ?? null;
+
+    this.formControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(this.formControl.value as any[]),
+        tap((value) => this.createGroupedFields(value))
+      )
+      .subscribe((value) => this.updateDragState(value));
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
@@ -38,6 +50,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
       this.field.fieldGroup[i].key = `${i}`;
     }
     this.options.build(this.field);
+    this.createGroupedFields(this.formControl.value);
   }
 
   onPopulate(field: FieldArrayTypeConfig) {
@@ -61,7 +74,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
     type: string
   ) {
-    return field.props.menuOptions.find((opt) => opt.key === type).fields;
+    return field.props.menuOptions.find((opt) => opt.key === type)?.fields;
   }
 
   addItem(type?: string) {
@@ -74,6 +87,14 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
 
   private updateDragState(value) {
     this.canBeDragged =
-      this.formControl.enabled && !this.props.noDrag && value?.length > 1;
+      this.formControl.enabled &&
+      !this.field.props.menuOptions &&
+      !this.props.noDrag &&
+      value?.length > 1;
+  }
+
+  private createGroupedFields(value: any[]) {
+    this.groupedFields = groupByWithIndexReference(value, (i) => i._type);
+    this.groupedFieldsKeys = Object.keys(this.groupedFields);
   }
 }

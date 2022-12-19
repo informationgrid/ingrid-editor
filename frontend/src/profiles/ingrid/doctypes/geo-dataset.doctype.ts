@@ -22,31 +22,6 @@ export class GeoDatasetDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
-  private qualityTables = <SelectOptionUi[]>[
-    { label: "Datenüberschuss", value: "completenessComission" },
-    { label: "Konzeptionelle Konsistenz", value: "conceptualConsistency" },
-    { label: "Konsistenz des Wertebereichs", value: "domainConsistency" },
-    { label: "Formatkonsistenz", value: "formatConsistency" },
-    { label: "Topologische Konsistenz", value: "topologicalConsistency" },
-    { label: "Zeitliche Genauigkeit", value: "temporalConsistency" },
-    {
-      label: "Korrektheit der thematischen Klassifizierung",
-      value: "thematicClassificationCorrectness",
-    },
-    {
-      label: "Genauigkeit nicht-quantitativer Attribute",
-      value: "nonQuantitativeAttributeAccuracy",
-    },
-    {
-      label: "Genauigkeit quantitativer Attribute",
-      value: "quantitativeAttributeAccuracy",
-    },
-    {
-      label: "Relative Positionsgenauigkeit",
-      value: "relativeInternalPositionalAccuracy",
-    },
-  ];
-
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection({
@@ -431,60 +406,58 @@ export class GeoDatasetDoctype extends IngridShared {
             ],
             { fieldGroupClassName: "display-flex" }
           ),
-          this.addTable("qualities", "Qualität", {
-            supportUpload: false,
+          this.addRepeat("qualities", "Qualität", {
             className: "optional",
-            columns: [
+            menuOptions: [
               {
-                key: "type",
-                type: "select",
-                label: "Typ",
-                width: "300px",
-                props: {
-                  label: "Typ",
-                  appearance: "outline",
-                  options: this.qualityTables,
-                  formatter: (item: any) =>
-                    this.qualityTables.find((qt) => qt.value === item.key)
-                      .label,
-                },
+                key: "completenessComission",
+                value: "Datenüberschuss",
+                fields: this.getQualityFields(7109),
               },
               {
-                key: "measureType",
-                type: "select",
-                label: "Art der Messung",
-                width: "300px",
-                props: {
-                  label: "Art der Messung",
-                  appearance: "outline",
-                  options: this.getCodelistForSelect(
-                    7109,
-                    "extraInfoLangMetaData"
-                  ),
-                  codelistId: 7109, // TODO: codelistId changes for each type!
-                  formatter: (item: any) =>
-                    this.formatCodelistValue("7109", item),
-                },
+                key: "conceptualConsistency",
+                value: "Konzeptionelle Konsistenz",
+                fields: this.getQualityFields(7112),
               },
               {
-                key: "value",
-                type: "input",
-                label: "Wert",
-                width: "300px",
-                props: {
-                  label: "Wert",
-                  appearance: "outline",
-                },
+                key: "domainConsistency",
+                value: "Konsistenz des Wertebereichs",
+                fields: this.getQualityFields(7113),
               },
               {
-                key: "parameter",
-                type: "input",
-                label: "Parameter",
-                width: "300px",
-                props: {
-                  label: "Parameter",
-                  appearance: "outline",
-                },
+                key: "formatConsistency",
+                value: "Formatkonsistenz",
+                fields: this.getQualityFields(7114),
+              },
+              {
+                key: "topologicalConsistency",
+                value: "Topologische Konsistenz",
+                fields: this.getQualityFields(7115),
+              },
+              {
+                key: "temporalConsistency",
+                value: "Zeitliche Genauigkeit",
+                fields: this.getQualityFields(7120),
+              },
+              {
+                key: "thematicClassificationCorrectness",
+                value: "Korrektheit der thematischen Klassifizierung",
+                fields: this.getQualityFields(7125),
+              },
+              {
+                key: "nonQuantitativeAttributeAccuracy",
+                value: "Genauigkeit nicht-quantitativer Attribute",
+                fields: this.getQualityFields(7126),
+              },
+              {
+                key: "quantitativeAttributeAccuracy",
+                value: "Genauigkeit quantitativer Attribute",
+                fields: this.getQualityFields(7127),
+              },
+              {
+                key: "relativeInternalPositionalAccuracy",
+                value: "Relative Positionsgenauigkeit",
+                fields: this.getQualityFields(7128),
               },
             ],
           }),
@@ -509,5 +482,26 @@ export class GeoDatasetDoctype extends IngridShared {
     uploadService: UploadService
   ) {
     super(codelistService, codelistQuery, uploadService);
+  }
+
+  private getQualityFields(codelistId: number) {
+    return this.addGroupSimple(
+      null,
+      [
+        { key: "_type" },
+        this.addSelectInline("measureType", "Art der Messung", {
+          required: true,
+          options: this.getCodelistForSelect(codelistId, "measureType"),
+          codelistId: codelistId,
+          className: "flex-2",
+        }),
+        this.addInputInline("value", "Wert", {
+          required: true,
+          type: "number",
+        }),
+        this.addInputInline("parameter", "Parameter"),
+      ],
+      { fieldGroupClassName: "display-flex" }
+    );
   }
 }

@@ -2,6 +2,21 @@ import { TemplateRef } from "@angular/core";
 import { isObservable } from "rxjs";
 import { AbstractControl } from "@angular/forms";
 
+export const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
+  arr.reduce((groups, item) => {
+    (groups[key(item)] ||= []).push(item);
+    return groups;
+  }, {} as Record<K, T[]>);
+
+export const groupByWithIndexReference = <T, K extends keyof any>(
+  arr: T[],
+  key: (i: T) => number
+) =>
+  arr.reduce((groups, item, index) => {
+    (groups[key(item)] ||= []).push(index);
+    return groups;
+  }, {} as Record<K, T[]>);
+
 export function clone(value: any): any {
   if (
     !isObject(value) ||

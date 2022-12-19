@@ -15,7 +15,7 @@ export interface Options {
 }
 
 export interface RepeatOptions extends Options {
-  menuOptions?: any[];
+  menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
 }
@@ -296,7 +296,7 @@ export class FormFieldHelper {
     });
   }
 
-  addSelect(id, label, options?: SelectOptions) {
+  addSelect(id, label, options?: SelectOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,

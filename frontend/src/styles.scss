@@ -1181,3 +1181,8 @@ table.big-font {
 .space-bottom {
   padding-bottom: 12px;
 }
+
+.mat-menu-panel.mat-menu-panel,
+.mat-select-panel.mat-select-panel {
+  max-width: 400px;
+}
