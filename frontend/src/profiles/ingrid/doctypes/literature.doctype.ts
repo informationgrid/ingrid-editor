@@ -5,6 +5,8 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { MatDialog } from "@angular/material/dialog";
+import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -127,8 +129,10 @@ export class LiteratureDoctype extends IngridShared {
     storageService: DocumentService,
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    uploadService: UploadService
+    uploadService: UploadService,
+    dialog: MatDialog,
+    cookieService: CookieService
   ) {
-    super(codelistService, codelistQuery, uploadService);
+    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
   }
 }

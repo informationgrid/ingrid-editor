@@ -5,6 +5,12 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
 import { isEmptyObject } from "../../../app/shared/utils";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { CookieService } from "../../../app/services/cookie.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -31,10 +37,12 @@ interface AdditionalInformationSectionOptions {
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
-  constructor(
+  protected constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private dialog: MatDialog,
+    private cookieService: CookieService
   ) {
     super(codelistService, codelistQuery);
   }
@@ -162,12 +170,12 @@ export abstract class IngridShared extends BaseDoctype {
   private handleOpenDataClick(field) {
     // since value will be set AFTER click, we need to use the future value
     const willBeChecked = !field.formControl.value;
+    if (!willBeChecked) return;
+
+    const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
 
-    // event.stopImmediatePropagation();
-    if (willBeChecked) {
-      // TODO: show info popup to let changes be confirmed
-
+    function executeAction() {
       if (isInspire) {
         field.model.resource.accessConstraints = [{ key: "1" }];
       } else {
@@ -175,6 +183,27 @@ export abstract class IngridShared extends BaseDoctype {
       }
       field.options.formState.updateModel();
     }
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction();
+      return;
+    }
+
+    const message = isInspire
+      ? "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'Es gelten keine Zugriffsbeschränkungen' ersetzt. Möchten Sie fortfahren?"
+      : "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "ok") executeAction();
+        else field.formControl.setValue(false);
+      });
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
@@ -780,13 +809,6 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  protected docRefFields() {
-    return this.addGroupSimple(null, [
-      { key: "_type" },
-      this.addInputInline("doc", "Dokument", { className: "" }),
-    ]);
-  }
-
   protected titleDateEditionFields(codelistForTitle: number) {
     return [
       this.addAutocomplete("title", "Titel", {
@@ -805,14 +827,5 @@ export abstract class IngridShared extends BaseDoctype {
         className: "flex-1",
       }),
     ];
-  }
-
-  private docRefDescription() {
-    return this.addGroupSimple(null, [
-      { key: "_type" },
-      this.addTextAreaInline("description", "Beschreibung", "dataset", {
-        className: "",
-      }),
-    ]);
   }
 }
