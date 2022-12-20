@@ -41,6 +41,14 @@ class CatalogService @Autowired constructor(
         return getCurrentCatalogForUser(userId)
     }
 
+    fun getCatalogsForPrincipal(principal: Principal): List<Catalog> {
+        if (authUtils.isSuperAdmin(principal)) return this.getCatalogs()
+
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        return user.catalogs.toList()
+    }
+
 
     fun getDbUserFromPrincipal(principal: Principal): UserInfo? {
         principal as Authentication

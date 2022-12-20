@@ -42,6 +42,9 @@ export class CatalogService {
         map((catalogs) =>
           catalogs.map((cat) => CatalogService.mapCatalog(cat))
         ),
+        map((catalogs) =>
+          catalogs.sort((a, b) => a.label.localeCompare(b.label))
+        ),
         tap((catalogs) => this.catalogStore.set(catalogs)),
         tap((catalogs) => this.handleCatalogStatistics(catalogs))
       );
@@ -71,8 +74,7 @@ export class CatalogService {
           }
           err.error = httpError;
           throw err;
-        }),
-        tap(() => this.getCatalogs().subscribe())
+        })
       );
   }
 
