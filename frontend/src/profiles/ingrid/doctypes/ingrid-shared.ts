@@ -392,21 +392,33 @@ export abstract class IngridShared extends BaseDoctype {
               options: [
                 { label: "", value: undefined },
                 { label: "am", value: "at" },
-                { label: "seit", value: "since" },
                 { label: "bis", value: "till" },
-                { label: "von - bis", value: "range" },
+                { label: "von", value: "since" },
               ],
+            }),
+            this.addSelect("resourceDateTypeSince", null, {
+              className: "flex-1",
+              wrappers: ["form-field"],
+              options: [
+                { label: "", value: undefined },
+                { label: "bis: unbekannter Zeitpunkt", value: "unknown" },
+                { label: "bis: Zeitpunkt des Abrufs", value: "requestTime" },
+                { label: "bis: genaues Datum", value: "exactDate" },
+              ],
+              expressions: {
+                hide: "formState.mainModel.temporal?.resourceDateType?.key !== 'since'",
+              },
             }),
             this.addDatepicker("resourceDate", null, {
               placeholder: "TT.MM.JJJJ",
               wrappers: ["form-field"],
               expressions: {
-                hide: "formState.mainModel.temporal?.resourceDateType?.key === 'range'",
+                hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key === 'exactDate'",
               },
             }),
             this.addDateRange("resourceRange", null, {
               expressions: {
-                hide: "formState.mainModel.temporal?.resourceDateType?.key !== 'range'",
+                hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
               },
             }),
             /*this.addSelectInline("resourceDateType", "Typ", {
