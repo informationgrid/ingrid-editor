@@ -32,7 +32,6 @@ export class HeaderMoreComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() showMore = false;
   hideFields: any;
-  catCreateDate: Date;
   migrated: boolean;
 
   constructor(
@@ -49,10 +48,10 @@ export class HeaderMoreComponent implements OnInit {
           return acc;
         }, {}) ?? {};
 
-    this.catCreateDate =
-      this.configService.$userInfo.getValue().currentCatalog?.created;
+    const catCreateDate =
+      this.configService.$userInfo.getValue().currentCatalog.created;
     // compare the creation dates of document and catalog
-    this.migrated = new Date(this.model._created) < this.catCreateDate;
+    this.migrated = new Date(this.model._created) < catCreateDate;
   }
 
   getState(state: DocumentState) {
