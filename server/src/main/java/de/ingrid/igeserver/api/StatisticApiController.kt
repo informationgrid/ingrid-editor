@@ -27,7 +27,7 @@ class StatisticApiController @Autowired constructor(
     private lateinit var catalogService: CatalogService
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
-        val documentFilter = BoolFilter("AND", listOf("selectDocuments"), null, null, true)
+        val documentFilter = BoolFilter("AND", listOf("selectDocuments","exceptFolders"), null, null, true)
         val emptyQuery =  ResearchQuery(null, documentFilter)
         val result = getStatisticForQuery(principal, emptyQuery)
         return ResponseEntity.ok(result)
