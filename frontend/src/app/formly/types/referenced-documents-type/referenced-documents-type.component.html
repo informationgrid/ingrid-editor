@@ -18,7 +18,7 @@
     ></mat-paginator>
 
     <p *ngIf="totalHits === 0">
-        Es existieren keine Referenzen auf diese Adresse
+        {{ messageNoReferences }}
     </p>
 
     <ige-document-list-item
@@ -27,4 +27,8 @@
         [removeSelectionAfter]="true"
         (select)="openReference($event)"
     ></ige-document-list-item>
+
+    <mat-hint *ngIf="referencesHint && docs.length > 0">
+        {{ referencesHint }}
+    </mat-hint>
 </ng-container>

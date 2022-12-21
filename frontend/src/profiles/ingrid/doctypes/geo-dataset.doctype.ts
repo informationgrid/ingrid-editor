@@ -276,7 +276,9 @@ export class GeoDatasetDoctype extends IngridShared {
           "uuid",
           "Darstellender Dienst",
           true,
-          false
+          false,
+          "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
+          "Die Referenz kann nur vom darstellenden Dienst entfernt werden"
         ),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [

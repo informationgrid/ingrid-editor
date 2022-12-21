@@ -497,7 +497,9 @@ export class FormFieldHelper {
     uuidField: string = null,
     label = "Zugeordnete Datensätze",
     showOnStart?: boolean,
-    showToggleButton?: boolean
+    showToggleButton?: boolean,
+    messageNoReferences?: string,
+    referencesHint?: string
   ) {
     return {
       type: "referencedDocuments",
@@ -508,6 +510,8 @@ export class FormFieldHelper {
         uuidField: uuidField ?? "ref",
         showOnStart: showOnStart,
         showToggleButton: showToggleButton,
+        messageNoReferences: messageNoReferences,
+        referencesHint: referencesHint,
       },
     };
   }

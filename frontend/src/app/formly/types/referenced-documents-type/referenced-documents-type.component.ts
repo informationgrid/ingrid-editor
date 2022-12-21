@@ -64,6 +64,8 @@ export class ReferencedDocumentsTypeComponent
   private currentUuid: string;
   totalHits: number;
   showToggleButton: boolean;
+  messageNoReferences: string;
+  referencesHint: string;
 
   constructor(
     private router: Router,
@@ -79,6 +81,10 @@ export class ReferencedDocumentsTypeComponent
     this.currentUuid = this.form.value._uuid;
     this.showReferences = this.props.showOnStart ?? false;
     this.showToggleButton = this.props.showToggleButton ?? true;
+    this.referencesHint = this.props.referencesHint ?? null;
+    this.messageNoReferences =
+      this.props.messageNoReferences ??
+      "Es existieren keine Referenzen auf diese Adresse";
 
     const loadEvent = this.docEvents.afterLoadAndSet$(true).pipe(
       untilDestroyed(this),

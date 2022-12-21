@@ -13,14 +13,3 @@
   background: linear-gradient(90deg, $ige-background-bar, $ige-background);
   margin: 40px -24px 20px -36px;
 }
-
-:host {
-  ::ng-deep h3 {
-    color: $ige-primary;
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-weight: normal;
-    font-size: 24px;
-    cursor: default;
-  }
-}

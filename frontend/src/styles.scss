@@ -160,6 +160,15 @@ h1 {
   }
 }
 
+ige-section-wrapper > h3 {
+  color: $ige-primary;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-weight: normal;
+  font-size: 24px;
+  cursor: default;
+}
+
 .mat-button.link-button {
   font-weight: normal;
   letter-spacing: 0.4px;
