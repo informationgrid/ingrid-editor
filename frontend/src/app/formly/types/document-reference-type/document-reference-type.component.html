@@ -11,7 +11,7 @@
         <ng-template #showDocumentIcon>
             <ige-document-icon [doc]="item" mat-list-icon></ige-document-icon>
         </ng-template>
-        <span>{{ item.isExternalRef ? item.url : item.title }}</span>
+        <span>{{ item.title }}</span>
     </div>
     <button mat-icon-button (click)="removeItem(i)">
         <mat-icon>clear</mat-icon>

@@ -9,6 +9,11 @@ import {
 } from "../document-reference.service";
 import { Observable, of } from "rxjs";
 
+export interface SelectCswRecordResponse {
+  title: string;
+  url: string;
+}
+
 @UntilDestroy()
 @Component({
   selector: "ige-select-csw-record-dialog",
@@ -25,7 +30,7 @@ export class SelectCswRecordDialog implements OnInit {
   analysisError = null;
 
   constructor(
-    private dlg: MatDialogRef<any>,
+    private dlg: MatDialogRef<SelectCswRecordResponse>,
     private docRefService: DocumentReferenceService
   ) {}
 
@@ -41,11 +46,13 @@ export class SelectCswRecordDialog implements OnInit {
   }
 
   submit() {
-    this.dlg.close(this.urlControl.value);
+    this.dlg.close({
+      title: this.analysis.title,
+      url: this.urlControl.value,
+    });
   }
 
   private analyzeUrl(url: string) {
-    console.log("analyze");
     this.analysisError = null;
     this.docRefService
       .analyzeGetRecordUrl(url)

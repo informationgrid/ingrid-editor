@@ -5,7 +5,10 @@ import {
   SelectGeoDatasetDialog,
   SelectServiceResponse,
 } from "./select-service-dialog/select-geo-dataset-dialog.component";
-import { SelectCswRecordDialog } from "./select-csw-record-dialog/select-csw-record-dialog";
+import {
+  SelectCswRecordDialog,
+  SelectCswRecordResponse,
+} from "./select-csw-record-dialog/select-csw-record-dialog";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -27,6 +30,7 @@ interface DocumentReference extends Reference {
 }
 
 interface UrlReference extends Reference {
+  title: string;
   url: string;
 }
 
@@ -83,9 +87,13 @@ export class DocumentReferenceTypeComponent
     this.dialog
       .open(SelectCswRecordDialog, { minWidth: 400 })
       .afterClosed()
-      .subscribe((url) => {
-        if (url) {
-          this.add(null, { url: url, isExternalRef: true });
+      .subscribe((item: SelectCswRecordResponse) => {
+        if (item) {
+          this.add(null, {
+            title: item.title,
+            url: item.url,
+            isExternalRef: true,
+          });
         }
       });
   }
@@ -120,6 +128,7 @@ export class DocumentReferenceTypeComponent
 
   private mapExternalRef(item): UrlReference {
     return {
+      title: item.title ?? item.url,
       url: item.url,
       isExternalRef: true,
     };
