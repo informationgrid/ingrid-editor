@@ -143,9 +143,11 @@ export function ConfigLoader(
         return;
       }
 
-      throw new IgeError(
+      const error = new IgeError(
         `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`
       );
+      error.showActionButton = true;
+      throw error;
     }
   }
 

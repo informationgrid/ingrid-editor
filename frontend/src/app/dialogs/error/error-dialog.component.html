@@ -41,6 +41,14 @@
         href="mailto:{{ supportEmail }}"
         >Bericht senden</a
     >
+    <button
+        *ngIf="errors[0].showActionButton"
+        mat-stroked-button
+        color="primary"
+        (click)="goToCurrentCatalog()"
+    >
+        Zum aktuellen Katalog
+    </button>
 </mat-dialog-actions>
 
 <ng-template #errorPart let-error="error">
