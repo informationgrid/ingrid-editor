@@ -243,7 +243,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addRepeat("resolution", "Erstellungsmaßstab", {
           className: "optional",
           fields: [
-            this.addInputInline("equivalentScale", "Maßstab 1:x", {
+            this.addInputInline("denominator", "Maßstab 1:x", {
               type: "number",
             }),
             this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
@@ -299,98 +299,98 @@ export class GeoDatasetDoctype extends IngridShared {
             ]),
           ]),
         ]),
-        this.addSection("Datenqualität", [
-          this.addGroupSimple("dataQuality", [
-            this.addGroupSimple("completenessOmission", [
-              this.addInput("measResult", "Datendefizit", {
-                wrappers: ["panel", "form-field"],
-                type: "number",
-              }),
-            ]),
+      ]),
+      this.addSection("Datenqualität", [
+        this.addGroupSimple("dataQuality", [
+          this.addGroupSimple("completenessOmission", [
+            this.addInput("measResult", "Datendefizit", {
+              wrappers: ["panel", "form-field"],
+              type: "number",
+            }),
           ]),
-          this.addGroup(
-            "absoluteExternalPositionalAccuracy",
-            "Genauigkeit",
-            [
-              this.addInput("griddedDataPositionalAccuracy", null, {
-                fieldLabel: "Rasterpositionsgenauigkeit (m)",
-                type: "number",
-                className: "optional",
-                expressions: {
-                  hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
-                },
-              }),
-              this.addInput("vertical", null, {
-                fieldLabel: "Höhengenauigkeit (m)",
-                type: "number",
-                hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
-              }),
-              this.addInput("horizontal", null, {
-                fieldLabel: "Lagegenauigkeit (m)",
-                type: "number",
-                hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
-              }),
-            ],
-            { fieldGroupClassName: "display-flex" }
-          ),
-          this.addRepeat("qualities", "Qualität", {
-            className: "optional",
-            menuOptions: [
-              {
-                key: "completenessComission",
-                value: "Datenüberschuss",
-                fields: this.getQualityFields(7109),
-              },
-              {
-                key: "conceptualConsistency",
-                value: "Konzeptionelle Konsistenz",
-                fields: this.getQualityFields(7112),
-              },
-              {
-                key: "domainConsistency",
-                value: "Konsistenz des Wertebereichs",
-                fields: this.getQualityFields(7113),
-              },
-              {
-                key: "formatConsistency",
-                value: "Formatkonsistenz",
-                fields: this.getQualityFields(7114),
-              },
-              {
-                key: "topologicalConsistency",
-                value: "Topologische Konsistenz",
-                fields: this.getQualityFields(7115),
-              },
-              {
-                key: "temporalConsistency",
-                value: "Zeitliche Genauigkeit",
-                fields: this.getQualityFields(7120),
-              },
-              {
-                key: "thematicClassificationCorrectness",
-                value: "Korrektheit der thematischen Klassifizierung",
-                fields: this.getQualityFields(7125),
-              },
-              {
-                key: "nonQuantitativeAttributeAccuracy",
-                value: "Genauigkeit nicht-quantitativer Attribute",
-                fields: this.getQualityFields(7126),
-              },
-              {
-                key: "quantitativeAttributeAccuracy",
-                value: "Genauigkeit quantitativer Attribute",
-                fields: this.getQualityFields(7127),
-              },
-              {
-                key: "relativeInternalPositionalAccuracy",
-                value: "Relative Positionsgenauigkeit",
-                fields: this.getQualityFields(7128),
-              },
-            ],
-          }),
         ]),
+        this.addGroup(
+          "absoluteExternalPositionalAccuracy",
+          "Genauigkeit",
+          [
+            this.addInput("griddedDataPositionalAccuracy", null, {
+              fieldLabel: "Rasterpositionsgenauigkeit (m)",
+              type: "number",
+              className: "optional",
+              expressions: {
+                hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+              },
+            }),
+            this.addInput("vertical", null, {
+              fieldLabel: "Höhengenauigkeit (m)",
+              type: "number",
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
+            this.addInput("horizontal", null, {
+              fieldLabel: "Lagegenauigkeit (m)",
+              type: "number",
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
+          ],
+          { fieldGroupClassName: "display-flex" }
+        ),
+        this.addRepeat("qualities", "Qualität", {
+          className: "optional",
+          menuOptions: [
+            {
+              key: "completenessComission",
+              value: "Datenüberschuss",
+              fields: this.getQualityFields(7109),
+            },
+            {
+              key: "conceptualConsistency",
+              value: "Konzeptionelle Konsistenz",
+              fields: this.getQualityFields(7112),
+            },
+            {
+              key: "domainConsistency",
+              value: "Konsistenz des Wertebereichs",
+              fields: this.getQualityFields(7113),
+            },
+            {
+              key: "formatConsistency",
+              value: "Formatkonsistenz",
+              fields: this.getQualityFields(7114),
+            },
+            {
+              key: "topologicalConsistency",
+              value: "Topologische Konsistenz",
+              fields: this.getQualityFields(7115),
+            },
+            {
+              key: "temporalConsistency",
+              value: "Zeitliche Genauigkeit",
+              fields: this.getQualityFields(7120),
+            },
+            {
+              key: "thematicClassificationCorrectness",
+              value: "Korrektheit der thematischen Klassifizierung",
+              fields: this.getQualityFields(7125),
+            },
+            {
+              key: "nonQuantitativeAttributeAccuracy",
+              value: "Genauigkeit nicht-quantitativer Attribute",
+              fields: this.getQualityFields(7126),
+            },
+            {
+              key: "quantitativeAttributeAccuracy",
+              value: "Genauigkeit quantitativer Attribute",
+              fields: this.getQualityFields(7127),
+            },
+            {
+              key: "relativeInternalPositionalAccuracy",
+              value: "Relative Positionsgenauigkeit",
+              fields: this.getQualityFields(7128),
+            },
+          ],
+        }),
       ]),
 
       this.addSpatialSection({ regionKey: true }),
