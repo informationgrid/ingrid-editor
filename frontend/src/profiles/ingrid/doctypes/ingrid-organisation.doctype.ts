@@ -15,7 +15,7 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
     codelistService: CodelistService,
     codelistQuery: CodelistQuery
   ) {
-    super(storageService, codelistService, codelistQuery, "addresses");
+    super(storageService, codelistService, codelistQuery, "pointOfContact");
     this.addressType = "organization";
     this.options = {
       defaultCountry: { key: "276" },
