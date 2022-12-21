@@ -19,6 +19,7 @@
     "newDocument": "Neuer Datensatz",
     "importDocument": "Datensatz importieren",
     "mostRecent": "Zuletzt bearbeitet im Katalog",
+    "mostRecentPublished": "Zuletzt veröffentlicht im Katalog",
     "form": "Daten",
     "formSingular": "Datensatz"
   },

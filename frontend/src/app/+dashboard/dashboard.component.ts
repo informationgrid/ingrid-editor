@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
 
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
+  recentPublishedDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = new Subject<number[]>();
   messages$: BehaviorSubject<Message[]>;
 
@@ -49,6 +50,9 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
       map((docs) => docs.slice(0, 5))
+    );
+    this.recentPublishedDocs$ = this.recentDocs$.pipe(
+      map((docs) => docs.filter((el) => el._state === "P").slice(0, 5))
     );
     this.fetchStatistic();
     this.fetchData();
