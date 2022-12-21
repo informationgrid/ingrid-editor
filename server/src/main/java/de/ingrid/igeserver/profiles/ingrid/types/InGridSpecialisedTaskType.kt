@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class InGridSpecialisedTaskType @Autowired constructor() : EntityType() {
-    override val profiles = arrayOf("ingrid")
-    
+class InGridSpecialisedTaskType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridSpecialisedTask"
 
 //    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"
