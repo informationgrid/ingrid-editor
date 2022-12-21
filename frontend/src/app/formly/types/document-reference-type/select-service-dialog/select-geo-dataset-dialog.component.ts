@@ -10,11 +10,10 @@ export interface SelectServiceResponse {
 }
 
 @Component({
-  selector: "ige-select-service.dialog.ts",
-  templateUrl: "./select-service.dialog.html",
-  styleUrls: ["./select-service.dialog.scss"],
+  templateUrl: "./select-geo-dataset-dialog.component.html",
+  styleUrls: ["./select-geo-dataset-dialog.component.scss"],
 })
-export class SelectServiceDialog {
+export class SelectGeoDatasetDialog {
   selectedNode: string = null;
 
   constructor(

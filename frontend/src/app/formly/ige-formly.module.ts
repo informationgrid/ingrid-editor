@@ -81,9 +81,10 @@ import { PrintViewDialogComponent } from "../+form/dialogs/print-view/print-view
 import { AngularSplitModule } from "angular-split";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DocumentReferenceTypeComponent } from "./types/document-reference-type/document-reference-type.component";
-import { SelectServiceDialog } from "./types/document-reference-type/select-service-dialog/select-service.dialog";
+import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -247,6 +248,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     AngularSplitModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
+    DocumentIconModule,
   ],
   providers: [
     {
@@ -301,7 +303,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     PrintTypeComponent,
     PrintViewDialogComponent,
     DocumentReferenceTypeComponent,
-    SelectServiceDialog,
+    SelectGeoDatasetDialog,
     SelectCswRecordDialog,
   ],
   exports: [

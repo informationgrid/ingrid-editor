@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
-  SelectServiceDialog,
+  SelectGeoDatasetDialog,
   SelectServiceResponse,
-} from "./select-service-dialog/select-service.dialog";
+} from "./select-service-dialog/select-geo-dataset-dialog.component";
 import { SelectCswRecordDialog } from "./select-csw-record-dialog/select-csw-record-dialog";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
@@ -22,6 +22,8 @@ interface DocumentReference extends Reference {
   title: string;
   uuid: string;
   state: DocumentState;
+  type: string;
+  icon: "Geodatensatz";
 }
 
 interface UrlReference extends Reference {
@@ -62,12 +64,17 @@ export class DocumentReferenceTypeComponent
 
   showInternalRefDialog() {
     this.dialog
-      .open(SelectServiceDialog, { minWidth: 400, data: this.getRefUuids() })
+      .open(SelectGeoDatasetDialog, { minWidth: 400, data: this.getRefUuids() })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
         if (item) {
-          this.add(null, { uuid: item.uuid, isExternalRef: false });
-          // this.myModel.push({ ...item, isExternalRef: false });
+          this.add(null, {
+            uuid: item.uuid,
+            isExternalRef: false,
+            state: item.state,
+            type: "InGridGeoDataset",
+            icon: "Geodatensatz",
+          });
         }
       });
   }
@@ -140,6 +147,8 @@ export class DocumentReferenceTypeComponent
       isExternalRef: false,
       title: doc?.title,
       state: doc?._state,
+      type: doc?._type,
+      icon: "Geodatensatz",
     };
   }
 
