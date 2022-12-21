@@ -10,6 +10,7 @@ export interface Options {
   hasInlineContextHelp?: boolean;
   expressions?: {
     hide?;
+    className?;
     "props.required"?;
     "props.disabled"?;
   };

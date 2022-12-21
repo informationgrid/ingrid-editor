@@ -60,6 +60,7 @@ export abstract class IngridShared extends BaseDoctype {
                   wrappers: ["form-field", "inline-help"],
                   fieldLabel: "INSPIRE-relevant",
                   className: "flex-1",
+                  click: (field) => this.handleInspireIdentifiedClick(field),
                 })
               : null,
             this.addCheckbox("isAdVCompatible", "AdV kompatibel", {
@@ -244,9 +245,11 @@ export abstract class IngridShared extends BaseDoctype {
                 asSelect: true,
                 options: this.getCodelistForSelect(6350, "priorityDatasets"),
                 codelistId: 6350,
-                className: "optional",
                 expressions: {
-                  hide: "!formState.mainModel.isInspireIdentified",
+                  className: (model) =>
+                    model.options.formState.mainModel.isInspireIdentified
+                      ? ""
+                      : "optional",
                 },
               }
             )
@@ -258,10 +261,15 @@ export abstract class IngridShared extends BaseDoctype {
               {
                 options: this.getCodelistForSelect(6360, "spatialScope"),
                 codelistId: 6360,
-                className: "optional",
                 expressions: {
                   "props.required":
                     "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
+                  className: (model) =>
+                    !model.options.formState.mainModel.isInspireIdentified &&
+                    model.options.formState.mainModel._type ===
+                      "InGridGeoService"
+                      ? "optional"
+                      : "",
                 },
               }
             )
@@ -487,11 +495,18 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addInputInline("number", "Anzahl", {
               type: "number",
+              expressions: {
+                "props.required": (field) => isEmptyObject(field.form.value),
+              },
             }),
             this.addSelectInline("unit", "Einheit", {
               options: this.getCodelistForSelect(1230, "timeRefStatus"),
               codelistId: 1230,
               className: "flex-3",
+              allowNoValue: true,
+              expressions: {
+                "props.required": (field) => isEmptyObject(field.form.value),
+              },
             }),
           ],
           { className: "optional" }
@@ -827,5 +842,19 @@ export abstract class IngridShared extends BaseDoctype {
         className: "flex-1",
       }),
     ];
+  }
+
+  private handleInspireIdentifiedClick(field) {
+    // since value will be set AFTER click, we need to use the future value
+    const willBeChecked = !field.formControl.value;
+    if (!willBeChecked) return;
+
+    const cookieId = "HIDE_INSPIRE_INFO";
+    const isGeodataset = field.model._type === "InGridGeoDataset";
+
+    if (willBeChecked && isGeodataset) {
+      field.model.spatialScope = { key: "885989663" };
+      field.options.formState.updateModel();
+    }
   }
 }
