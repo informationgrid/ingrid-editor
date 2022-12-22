@@ -307,25 +307,23 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(null)
     }
 
-    private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
+    fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
 
         var user = userRepo.findByUserId(userIdent)
-
-        val isNewEntry = user == null
         val catalog = catalogService.getCatalogById(catalogName)
 
-        if (isNewEntry) {
+        if (user == null) {
+            // new user
             user = UserInfo().apply {
                 userId = userIdent
                 data = UserInfoData()
                 catalogs.add(catalog)
             }
         } else {
-            // make list to hashset
-            user?.catalogs?.add(catalog)
+            user.catalogs.add(catalog)
         }
 
-        userRepo.save(user!!)
+        userRepo.save(user)
     }
 
     override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
@@ -342,8 +340,6 @@ class UsersApiController : UsersApi {
 
         val user = userRepo.findByUserId(userId)?.apply {
             curCatalog = catalogService.getCatalogById(catalogId)
-            // if not assigned yet, then do it now
-            if (!catalogs.contains(curCatalog)) catalogs.add(curCatalog!!)
         } ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         userRepo.save(user)
