@@ -1195,3 +1195,55 @@ table.big-font {
 .mat-select-panel.mat-select-panel {
   max-width: 400px;
 }
+
+// top level deep selector acceptable as ige-inline-help-wrapper is unique
+ige-inline-help-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  formly-field-mat-input,
+  formly-field-mat-textarea,
+  ige-repeat-list {
+    flex: 1;
+  }
+
+  formly-field-mat-input + .mat-icon-button.menu-button {
+    margin-top: -3px;
+    margin-bottom: -3px;
+    margin-left: 0.75em;
+  }
+
+  formly-field-mat-textarea + .mat-icon-button.menu-button {
+    position: absolute;
+    right: 0;
+  }
+
+  ige-repeat-list {
+    margin-top: 0 !important;
+
+    & + .mat-icon-button.menu-button {
+      position: absolute;
+      right: 10px;
+      bottom: 28px;
+    }
+  }
+
+  .mat-icon-button.menu-button {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
+    background-color: $ige-background;
+    margin-top: 0.15em;
+
+    .mat-button-wrapper {
+      * {
+        vertical-align: unset;
+      }
+    }
+  }
+
+  formly-field-mat-radio {
+    margin-top: 0.2em;
+  }
+}
