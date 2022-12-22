@@ -10,13 +10,14 @@ open class IndexException: ServerException {
 
     companion object {
         private const val ERROR_CODE = "INDEXING_ERROR"
+        private const val ERROR_CODE_CANCEL = "INDEXING_CANCELED"
         private const val ERROR_TEXT_MISSING = "Value '\${valueName}' is missing or empty."
 
         /**
          * Factory method for missing configuration value
          */
         fun wasCancelled() : IndexException {
-            return IndexException(STATUS_CODE, ERROR_CODE, "Indexing was cancelled")
+            return IndexException(STATUS_CODE, ERROR_CODE_CANCEL, "Indexing was cancelled")
         }
 
         /**
