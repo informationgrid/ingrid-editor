@@ -60,6 +60,9 @@ export class GeoDatasetDoctype extends IngridShared {
             options: this.getCodelistForSelect(526, "priorityDataset"),
             codelistId: 526,
             className: "optional",
+            expressions: {
+              "props.required": "formState.mainModel.isInspireConform",
+            },
           }
         ),
         this.addRepeat("vectorSpatialRepresentation", "Topologieinformation", {

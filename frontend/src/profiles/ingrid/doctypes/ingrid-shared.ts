@@ -850,11 +850,33 @@ export abstract class IngridShared extends BaseDoctype {
     if (!willBeChecked) return;
 
     const cookieId = "HIDE_INSPIRE_INFO";
-    const isGeodataset = field.model._type === "InGridGeoDataset";
 
-    if (willBeChecked && isGeodataset) {
-      field.model.spatialScope = { key: "885989663" };
-      field.options.formState.updateModel();
+    if (willBeChecked) {
+      const executeAction = () => {
+        field.model.isInspireConform = true;
+
+        const isGeodataset = field.model._type === "InGridGeoDataset";
+        if (isGeodataset) {
+          field.model.spatialScope = { key: "885989663" }; // Regional
+          field.options.formState.updateModel();
+        }
+      };
+
+      const message =
+        "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+      this.dialog
+        .open(ConfirmDialogComponent, {
+          data: <ConfirmDialogData>{
+            title: "Hinweis",
+            message: message,
+            cookieId: cookieId,
+          },
+        })
+        .afterClosed()
+        .subscribe((decision) => {
+          if (decision === "ok") executeAction();
+          else field.formControl.setValue(false);
+        });
     }
   }
 }
