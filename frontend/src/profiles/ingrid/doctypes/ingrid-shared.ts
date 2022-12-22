@@ -353,7 +353,10 @@ export abstract class IngridShared extends BaseDoctype {
                   validators: {
                     bigger: {
                       expression: (a, b) => {
-                        return b.model?.minimumValue <= b.model?.maximumValue;
+                        return (
+                          !b.model?.minimumValue ||
+                          b.model?.minimumValue <= b.model?.maximumValue
+                        );
                       },
                       message: () => "Der Wert muss größer als Minimum sein",
                       errorPath: "maximumValue",
