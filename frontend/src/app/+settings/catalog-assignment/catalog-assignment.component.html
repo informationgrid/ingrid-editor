@@ -1,0 +1,34 @@
+<page-template label="Katalogzuweisung">
+    <div left-side>
+        Auf dieser Seite können Sie existierenden Benutzern weitere Kataloge
+        zuweisen.
+    </div>
+
+    <div main-content fxFlex fxLayoutAlign="start" fxLayout="column">
+        <ige-filter-select
+            [options]="userIds$"
+            class="white-bg"
+            style="flex: 1; max-width: 460px"
+            placeholder="Nutzer auswählen..."
+            (reset)="selectedUserId = null"
+            (optionSelect)="selectedUserId = $event.label"
+        ></ige-filter-select>
+        <ige-filter-select
+            [options]="catalogs$"
+            class="white-bg"
+            style="flex: 1; max-width: 460px"
+            placeholder="Katalog auswählen..."
+            (reset)="selectedCatalogId = null"
+            (optionSelect)="selectedCatalogId = $event.label"
+        ></ige-filter-select>
+        <button
+            style="flex: 1; max-width: 460px"
+            mat-flat-button
+            color="primary"
+            [disabled]="!(selectedCatalogId && selectedUserId)"
+            (click)="assignCatalog()"
+        >
+            Katalog zuweisen
+        </button>
+    </div>
+</page-template>

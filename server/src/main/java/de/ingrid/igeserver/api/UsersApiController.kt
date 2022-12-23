@@ -307,6 +307,19 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(null)
     }
 
+    override fun assignUserToCatalog(
+        principal: Principal,
+        userId: String,
+        catalogId: String
+    ): ResponseEntity<Void> {
+        val catalog = catalogService.getCatalogById(catalogId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+
+        user.catalogs.add(catalog)
+        userRepo.save(user)
+        return ResponseEntity.ok().build()
+    }
+
     fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
 
         var user = userRepo.findByUserId(userIdent)
@@ -362,6 +375,11 @@ class UsersApiController : UsersApi {
 
         return ResponseEntity.ok(filteredUsers)
 
+    }
+
+    override fun listInternal(principal: Principal): ResponseEntity<List<String>> {
+        val allIgeUserIds = catalogService.getAllIgeUserIds()
+        return ResponseEntity.ok(allIgeUserIds)
     }
 
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {

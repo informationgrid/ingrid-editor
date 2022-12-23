@@ -254,4 +254,37 @@ interface UsersApi {
         ) @PathVariable("id") id: String
     ): ResponseEntity<Void>
 
+
+    @GetMapping(
+        value = ["/internalUsers"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Returns the list of all registered user ids"
+        )]
+    )
+    fun listInternal(principal: Principal): ResponseEntity<List<String>>
+
+    @PostMapping(
+        value = ["/user/{userId}/assignCatalog/{catalogId}"],
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Assign catalog to user"
+        )]
+    )
+    fun assignUserToCatalog(
+        principal: Principal, @Parameter(
+            description = "The user login of which the catalog will be assigned.",
+            required = true
+        ) @PathVariable("userId") userId: String, @Parameter(
+            description = "The catalogId to assign",
+            required = true
+        ) @PathVariable("catalogId") catalogId: String
+    ): ResponseEntity<Void>
 }

@@ -35,12 +35,14 @@ import { NewMessageDialogComponent } from "./messages-management/new-message-dia
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 @NgModule({
   declarations: [
     SettingsComponent,
     GeneralSettingsComponent,
     CodelistsComponent,
     CatalogManagementComponent,
+    CatalogAssignmentComponent,
     CatalogDetailComponent,
     IBusManagementComponent,
     MessagesManagementComponent,

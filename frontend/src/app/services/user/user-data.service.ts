@@ -69,6 +69,20 @@ export class UserDataService {
     );
   }
 
+  getAllUserIds() {
+    return this.http.get<String[]>(
+      this.configuration.backendUrl + "internalUsers"
+    );
+  }
+
+  assignUserToCatalog(userId: string, catalogId: string) {
+    return this.http.post<void>(
+      this.configuration.backendUrl +
+        `user/${userId}/assignCatalog/${catalogId}`,
+      null
+    );
+  }
+
   sendPasswordChangeRequest(login: string) {
     return this.http.post<void>(
       this.configuration.backendUrl +

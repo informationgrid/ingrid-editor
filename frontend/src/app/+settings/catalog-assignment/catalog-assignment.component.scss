@@ -1,0 +1,68 @@
+@import "src/variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 24px;
+  flex: 1;
+  overflow: auto;
+}
+
+.modal-body input {
+  width: 100%;
+}
+
+.mat-card-title {
+  color: $ige-primary;
+}
+
+.card-header {
+  padding-bottom: 12px;
+
+  .profile {
+    padding-left: 12px;
+    line-height: 24px;
+  }
+}
+
+.menu {
+  visibility: hidden;
+}
+
+.mat-card {
+  &.selected {
+    border: 1px solid $ige-primary;
+  }
+
+  &:hover {
+    .menu {
+      visibility: visible;
+    }
+  }
+}
+
+.button-add {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.catalog-wrapper {
+  min-width: 340px;
+}
+
+.section-title {
+  padding-bottom: 12px;
+}
+
+.selected {
+  background-color: $ige-mark-color;
+}
+
+.content {
+  font-size: 16px;
+}
+
+.mat-spinner {
+  display: inline-block;
+}

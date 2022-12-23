@@ -54,6 +54,14 @@ export class UserService {
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
+  getUserIdsFromAllCatalogs(): Observable<String[]> {
+    return this.dataService.getAllUserIds();
+  }
+
+  assignUserToCatalog(userId: string, catalogId: string): Observable<void> {
+    return this.dataService.assignUserToCatalog(userId, catalogId);
+  }
+
   getCatAdmins(): Observable<FrontendUser[]> {
     return this.dataService
       .getCatAdmins()
