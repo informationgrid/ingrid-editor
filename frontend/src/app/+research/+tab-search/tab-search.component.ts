@@ -143,4 +143,8 @@ export class TabSearchComponent implements OnInit {
       .pipe(tap((filters) => (this.facets = filters)))
       .toPromise();
   }
+
+  resetSearchField() {
+    this.form.controls["query"].setValue("");
+  }
 }

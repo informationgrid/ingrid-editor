@@ -9,6 +9,7 @@
         [facets]="facets"
         [forAddresses]="form.get('type').value === 'selectAddresses'"
         [refreshView]="facetViewRefresher"
+        (resetWholeQuery)="resetSearchField()"
     ></ige-facets>
 
     <div main-header fxFlex fxLayout="column">
@@ -37,6 +38,16 @@
                     placeholder="Begriff, ID oder feldbezogene Suche eingeben ..."
                     formControlName="query"
                 />
+                <button
+                    *ngIf="form.value.query !== ''"
+                    mat-icon-button
+                    matSuffix
+                    class="close"
+                    data-cy="clear-tabsearch-field"
+                    (click)="resetSearchField()"
+                >
+                    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+                </button>
                 <!-- TODO add when implemented
                 <mat-hint
                     >Für feldbezogene Suche den Feldtitel im Format

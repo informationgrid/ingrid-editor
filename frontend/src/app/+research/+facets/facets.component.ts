@@ -5,6 +5,7 @@ import {
   forwardRef,
   Input,
   OnInit,
+  Output,
   ViewChild,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
@@ -60,6 +61,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   @Input() refreshView: EventEmitter<void>;
 
+  @Output() resetWholeQuery = new EventEmitter<string>();
+
   @Input()
   set forAddresses(addresses: boolean) {
     this._forAddresses = addresses;
@@ -87,7 +90,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private allFacets: Facets;
   private boxes: Rectangle[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
-  private timeGroupId: string;
+  timeGroupId: string;
 
   form: UntypedFormGroup = this.fb.group({});
 
@@ -329,5 +332,11 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   resetDateFields() {
     this.form.get(this.timeGroupId).get("start").setValue(null);
     this.form.get(this.timeGroupId).get("end").setValue(null);
+  }
+
+  resetSearch() {
+    this.form.reset("");
+    this.removeLocation();
+    this.resetWholeQuery.emit();
   }
 }

@@ -138,8 +138,13 @@
                     <mat-datepicker #endDate></mat-datepicker>
                 </mat-form-field>
                 <button
+                    *ngIf="
+                        form.get(timeGroupId).get('start').value !== null ||
+                        form.get(timeGroupId).get('end').value !== null
+                    "
                     mat-icon-button
                     matSuffix
+                    class="close"
                     (click)="resetDateFields()"
                     data-cy="clear-date-fields"
                 >
@@ -187,4 +192,9 @@
             </mat-form-field>
         </div>
     </div>
+</div>
+<div class="reset-form-button">
+    <button mat-button color="primary" (click)="resetSearch()">
+        Suchparameter zurücksetzen
+    </button>
 </div>
