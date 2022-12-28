@@ -128,7 +128,7 @@ describe('uvp reports', () => {
     // trigger validation and make sure it concludes with a result
     cy.contains('button', 'Prüfung starten').click();
     cy.contains('.main-header span', 'Laufende Prüfung').should('exist');
-    cy.get('mat-progress-spinner circle', { timeout: 15000 }).should('not.exist');
+    cy.get('mat-progress-spinner circle', { timeout: 60000 }).should('not.exist');
 
     // inspect details of validation and compare numbers of valid and invalid urls
     cy.get('.main-header .menu-button').click();
