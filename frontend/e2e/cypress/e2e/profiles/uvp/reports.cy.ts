@@ -235,6 +235,6 @@ describe('uvp reports', () => {
     UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
     cy.contains('button', 'Prüfung starten').click();
     cy.contains('.main-header span', 'Laufende Prüfung').should('exist');
-    cy.get('mat-progress-spinner circle', { timeout: 15000 }).should('not.exist');
+    cy.get('mat-progress-spinner circle', { timeout: 20000 }).should('not.exist');
   });
 });
