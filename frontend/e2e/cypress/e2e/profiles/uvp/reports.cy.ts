@@ -75,8 +75,7 @@ describe('uvp reports', () => {
       '2018-11-05T23:00:00.000Z',
       '2021-11-05T23:00:00.000Z'
     );
-    //Menu.switchTo('REPORTS');
-    cy.visit('reports/general');
+    Menu.switchTo('REPORTS');
     UvpDocumentPage.goToTabmenu(UVPreports.Report);
     UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(oldValue => {
       // create new document of type "negative Vorprüfung"
@@ -88,7 +87,7 @@ describe('uvp reports', () => {
       );
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
       UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(newValue => {
-        expect(newValue).to.be.equal(oldValue);
+        expect(newValue).not.to.be.equal(oldValue);
       });
     });
   });
