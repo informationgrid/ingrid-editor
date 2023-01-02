@@ -24,6 +24,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import {
   MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialog,
   MatDialogModule,
 } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -50,7 +51,10 @@ import {
 import { MatRadioModule } from "@angular/material/radio";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { SectionWrapper } from "./formly/wrapper/section-wrapper.component";
-import { ConfirmDialogComponent } from "./dialogs/confirm/confirm-dialog.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "./dialogs/confirm/confirm-dialog.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
@@ -93,7 +97,8 @@ export function ConfigLoader(
   configService: ConfigService,
   authFactory: AuthenticationFactory,
   router: Router,
-  http: HttpClient
+  http: HttpClient,
+  dialog: MatDialog
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -107,7 +112,10 @@ export function ConfigLoader(
     return commands;
   }
 
-  async function redirectToCatalogSpecificRoute(router: Router) {
+  async function redirectToCatalogSpecificRoute(
+    router: Router,
+    dialog: MatDialog
+  ) {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
     const urlPath = document.location.pathname;
@@ -143,11 +151,18 @@ export function ConfigLoader(
         return;
       }
 
-      const error = new IgeError(
-        `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`
-      );
-      error.showActionButton = true;
-      throw error;
+      dialog
+        .open(ConfirmDialogComponent, {
+          data: {
+            title: "Fehler",
+            message: `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`,
+            confirmButtonText: "Zum aktuellen Katalog",
+          } as ConfirmDialogData,
+        })
+        .afterClosed()
+        .subscribe(() => {
+          router.navigate([`${ConfigService.catalogId}/dashboard`]);
+        });
     }
   }
 
@@ -156,7 +171,7 @@ export function ConfigLoader(
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
-      .then(() => redirectToCatalogSpecificRoute(router))
+      .then(() => redirectToCatalogSpecificRoute(router, dialog))
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
@@ -271,7 +286,13 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, AuthenticationFactory, Router, HttpClient],
+      deps: [
+        ConfigService,
+        AuthenticationFactory,
+        Router,
+        HttpClient,
+        MatDialog,
+      ],
       multi: true,
     },
     // set locale for dates
