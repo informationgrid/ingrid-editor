@@ -537,14 +537,14 @@ describe('mCLOUD: User', () => {
     cy.kcLogin('mcloud-catalog-switch-catalog');
     // reload with changed user loginn
     AdminUserPage.visit();
-    AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
+    AdminUserPage.userShouldNotExist('switch_catalog_user@test.com');
     // switch catalog
     Menu.switchToGeneral('CATALOG_MANAGEMENT');
 
-    ManageCatalogPage.switchToCatalog('Test_Mass_Data');
+    ManageCatalogPage.switchToCatalog('catalog_with_one_user');
     // a cat admin assigned to the same catalog should be visible
     Menu.switchTo('USERS');
-    AdminUserPage.userShouldExist('masstest@something.com');
+    AdminUserPage.userShouldExist('switch_catalog_user@test.com');
     // cat admins not belonging to catalog should not be visible
     AdminUserPage.userShouldNotExist('me@wemove.com');
   });
