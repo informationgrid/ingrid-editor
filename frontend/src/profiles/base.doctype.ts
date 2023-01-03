@@ -140,7 +140,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         if (!field.model?._type) field.props.docType = this.id;
 
         // automatically add inline help info when special wrapper is used
-        if (field.wrappers?.indexOf("inline-help") !== -1) {
+        if (field.wrappers && field.wrappers.indexOf("inline-help") !== -1) {
           field.props.hasInlineContextHelp = true;
         }
         if (!field.props.hasInlineContextHelp) {
