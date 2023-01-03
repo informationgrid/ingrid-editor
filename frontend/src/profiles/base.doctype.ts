@@ -105,7 +105,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.fields.push(...this.documentFields());
       this.hasOptionalFields = this.hasOptionals(this.fields);
       this.addCodelistDefaultValues(this.fields);
-      this.addContextHelp(this.fields);
+      if (this.helpIds.length > 0) this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
 
       this.cleanFields = JSON.parse(JSON.stringify(this.fields));
@@ -139,9 +139,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.props.docType = this.id;
 
-        if (field.type === "checkbox") {
+        // automatically add inline help info when special wrapper is used
+        if (field.wrappers?.indexOf("inline-help") !== -1) {
           field.props.hasInlineContextHelp = true;
-        } else if (!field.props.hasInlineContextHelp) {
+        }
+        if (!field.props.hasInlineContextHelp) {
           field.props.hasContextHelp = true;
         }
       } else if (

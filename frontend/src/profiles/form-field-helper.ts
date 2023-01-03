@@ -8,6 +8,7 @@ export interface Options {
   required?: boolean;
   defaultValue?: any;
   hasInlineContextHelp?: boolean;
+  contextHelpId?: string;
   expressions?: {
     hide?;
     className?;
@@ -453,7 +454,7 @@ export class FormFieldHelper {
       key: id,
       type: "checkbox",
       className: options?.className,
-      wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
       defaultValue: options?.defaultValue ?? false,
       props: {
         externalLabel: label,
@@ -461,6 +462,7 @@ export class FormFieldHelper {
         indeterminate: false,
         required: options?.required,
         click: options?.click,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: expressions,
     };

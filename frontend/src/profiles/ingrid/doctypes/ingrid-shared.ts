@@ -56,22 +56,20 @@ export abstract class IngridShared extends BaseDoctype {
           "Typ",
           [
             options.inspireRelevant
-              ? this.addCheckbox("isInspireIdentified", "INSPIRE-relevant", {
-                  wrappers: ["form-field", "inline-help"],
-                  fieldLabel: "INSPIRE-relevant",
-                  className: "flex-1",
-                  click: (field) => this.handleInspireIdentifiedClick(field),
-                })
+              ? this.addCheckboxInline(
+                  "isInspireIdentified",
+                  "INSPIRE-relevant",
+                  {
+                    className: "flex-1",
+                    click: (field) => this.handleInspireIdentifiedClick(field),
+                  }
+                )
               : null,
-            this.addCheckbox("isAdVCompatible", "AdV kompatibel", {
-              wrappers: ["form-field", "inline-help"],
-              fieldLabel: "AdV kompatibel",
+            this.addCheckboxInline("isAdVCompatible", "AdV kompatibel", {
               className: "flex-1",
             }),
             options.openData
-              ? this.addCheckbox("isOpenData", "Open Data", {
-                  wrappers: ["form-field", "inline-help"],
-                  fieldLabel: "Open Data",
+              ? this.addCheckboxInline("isOpenData", "Open Data", {
                   className: "flex-1",
                   click: (field) => this.handleOpenDataClick(field),
                 })

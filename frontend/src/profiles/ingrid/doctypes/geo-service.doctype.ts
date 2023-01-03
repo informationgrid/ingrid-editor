@@ -141,6 +141,7 @@ export class GeoServiceDoctype extends IngridShared {
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
           className: "optional",
+          wrappers: ["panel", "form-field"],
         }),
       ]),
 
