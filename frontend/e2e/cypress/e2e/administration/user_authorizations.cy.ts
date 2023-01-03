@@ -10,6 +10,7 @@ import { AdminGroupPage } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
+import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
@@ -918,5 +919,32 @@ describe('Catalogue admin', () => {
     AdminUserPage.visit();
     AdminUserPage.selectUser('mclould-author-profile');
     AdminUserPage.changeUserRole('Autor', true);
+  });
+
+  it('catalog-admin should not access\\change to other catalogs created by other catalog-admins', () => {
+    ManageCatalogPage.visit();
+    // the catalog belong to another catalog-admin
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('not.exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+
+    // try to access another catalog using URL
+    ManageCatalogPage.visit('catalog_with_one_user');
+    cy.get('mat-dialog-content').contains('ist dem eingeloggten Benutzer nicht zugeordne');
+
+    // log in with another catalog-admin
+    cy.logoutClearCookies();
+    cy.kcLogin('mcloud-catalog-switch-catalog');
+    ManageCatalogPage.visit();
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+    ManageCatalogPage.getCatalog('uvp_catalog').should('not.exist');
+
+    // log in as super-admin that can access to all catalog
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    ManageCatalogPage.visit();
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+    ManageCatalogPage.getCatalog('uvp_catalog').should('exist');
   });
 });

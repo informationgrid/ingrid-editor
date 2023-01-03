@@ -1,6 +1,9 @@
+import Chainable = Cypress.Chainable;
+
 export class ManageCatalogPage {
-  static visit() {
-    cy.visit('settings/catalog');
+  static visit(catalog: string = '') {
+    let path = catalog != '' ? catalog + '/settings/catalog' : 'settings/catalog';
+    cy.visit(path);
     cy.get('ige-catalog-management .page-title', { timeout: 10000 }).should('contain.text', 'Katalogverwaltung');
   }
 
@@ -19,6 +22,10 @@ export class ManageCatalogPage {
     cy.get('button.mat-menu-item').contains('Aktivieren').click();
     // wait a bit longer since page will be reloaded
     cy.wait(4000);
+  }
+
+  static getCatalog(title: string): Chainable {
+    return cy.get(`[data-cy="${title}"]`, { timeout: 10000 });
   }
 
   static getNumberOfDatasetsInCatalog(catalogTitle: string) {
