@@ -32,7 +32,7 @@
     "formWithPronoun": "Dieses Vorhaben"
   },
 
-  "procedureType": {
+  "docType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
     "UvpLineDeterminationDoc": "Linienbestimmung",
