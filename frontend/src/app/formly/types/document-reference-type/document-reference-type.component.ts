@@ -109,7 +109,8 @@ export class DocumentReferenceTypeComponent
     }
   }
 
-  removeItem(index: number) {
+  removeItem(index: number, event: MouseEvent) {
+    event.stopImmediatePropagation();
     this.remove(index);
   }
 
