@@ -37,11 +37,11 @@
     "distribution": [
     {% for download in model.data.distributions %}
         {
-            "format": ["{{ model.getCodelistValue(catalogId, "20003", download.format.key, download.format.value) }}"],
+            "format": ["{{ download.format.key }}"],
             {% if download.link.asLink %}
-                "accessURL": "{{ download.link.uri }}",
+                "accessURL": "{{ download.link.value }}",
             {% else %}
-                "accessURL": "/downloads/{{ catalogId }}/{{ model.uuid }}/{{ download.link.uri }}",
+                "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
             {% endif %}
             "title": "{{ download.title }}"
         }{% if not loop.last %},{% endif %}
@@ -52,7 +52,6 @@
             "issued": "{{ model.created }}",
             "modified": "{{ model.modified }}"
         },
-        "generated_id": "{{ model.uuid }}",
         "license": {
             "id": "{{ model.getLicenseData().id }}",
             "title": "{{ model.getLicenseData().name }}"
