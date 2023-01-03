@@ -20,9 +20,9 @@ export class UserDataService {
     );
   }
 
-  getCatAdmins(): Observable<BackendUser[]> {
+  getCatAdmins(catalogId: String): Observable<BackendUser[]> {
     return this.http.get<BackendUser[]>(
-      this.configuration.backendUrl + "users/admins"
+      this.configuration.backendUrl + `users/admins/${catalogId}`
     );
   }
 

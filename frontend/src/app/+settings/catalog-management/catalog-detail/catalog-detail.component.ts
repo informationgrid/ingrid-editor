@@ -27,10 +27,7 @@ export interface CatalogDetailResponse {
   styleUrls: ["./catalog-detail.component.scss"],
 })
 export class CatalogDetailComponent implements OnInit {
-  users: User[];
   catAdmins: User[];
-
-  private assignedUsers: string[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
@@ -41,13 +38,8 @@ export class CatalogDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    forkJoin([
-      this.userService.getUsers(),
-      this.userService.getAssignedUsers(this.catalog.id),
-    ]).subscribe(([users, assignedUsers]) => {
-      this.users = users;
-      this.assignedUsers = assignedUsers;
-      this.setCatAdminsFromAssignedUsers();
+    this.userService.getCatAdmins(this.catalog.id).subscribe((catAdmins) => {
+      this.catAdmins = catAdmins;
     });
 
     this.catalogService.getCatalog(this.catalog.id);
@@ -86,13 +78,5 @@ export class CatalogDetailComponent implements OnInit {
           this.dialogRef.close(response);
         }
       });
-  }
-
-  private setCatAdminsFromAssignedUsers() {
-    this.catAdmins = this.users.filter(
-      (user) =>
-        this.assignedUsers.indexOf(user.login) !== -1 &&
-        ["ige-super-admin", "cat-admin"].indexOf(user.role) !== -1
-    );
   }
 }

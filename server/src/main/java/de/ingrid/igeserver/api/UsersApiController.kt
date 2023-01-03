@@ -181,8 +181,8 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
-        val filteredUsers = catalogService.getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
+    override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
+        val filteredUsers = catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
 

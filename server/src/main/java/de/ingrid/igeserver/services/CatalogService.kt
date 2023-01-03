@@ -350,9 +350,14 @@ class CatalogService @Autowired constructor(
             isFolder && hasAnyWritePermission
         }
 
+    /**
+     *  get all users of active catalog
+     */
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
-
+        return getAllCatalogUsers(principal, catalogId)
+    }
+    fun getAllCatalogUsers(principal: Principal, catalogId: String): List<User> {
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
         val catalogUsers = getUserOfCatalog(catalogId)
         return keyCloakUsers

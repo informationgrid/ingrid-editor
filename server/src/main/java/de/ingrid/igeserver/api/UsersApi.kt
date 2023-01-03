@@ -89,17 +89,18 @@ interface UsersApi {
     ): ResponseEntity<List<User>>
 
     @GetMapping(
-        value = ["/users/admins"],
+        value = ["/users/admins/{catalogId}"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(
         value = [ApiResponse(
             responseCode = "200",
-            description = "Returns the list of users who are Catalog-Admins"
+            description = "Returns the list of users who are Catalog-Admins for a specific Catalog"
         )]
     )
-    fun listCatAdmins(principal: Principal): ResponseEntity<List<User>>
+    fun listCatAdmins(principal: Principal, @Parameter(description = "Id of the catalog.", required = true) @PathVariable("catalogId") catalogId: String,
+    ): ResponseEntity<List<User>>
 
     @PutMapping(
         value = ["/users/{id}"],
