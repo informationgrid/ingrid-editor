@@ -56,7 +56,7 @@ export class DocumentPage extends BasePage {
 
   static AddAddressDialog = class {
     static search(searchString: string) {
-      cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').click();
+      cy.get('[data-cy="choose-address-tree"]', { timeout: 6000 }).findByPlaceholderText('Suchen').click();
       cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').type(searchString);
     }
 
