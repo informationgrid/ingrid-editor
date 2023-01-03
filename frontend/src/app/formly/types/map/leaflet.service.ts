@@ -51,7 +51,7 @@ export class LeafletService {
   private defaultLayer = () =>
     new TileLayer("//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png", {
       attribution:
-        '&copy; <a href="https://openstreetmap.de">OpenStreetMap</a> contributors',
+        '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
   constructor() {
@@ -87,11 +87,13 @@ export class LeafletService {
 
   initMap(mapElement: any, matOptions: MapOptions) {
     const defaults = { ...this.defaultOptions };
-    return new Map(mapElement, {
+    let map = new Map(mapElement, {
       layers: [this.defaultLayer()],
       ...defaults,
       ...matOptions,
     });
+    map.attributionControl.setPrefix(false);
+    return map;
   }
 
   drawSpatialRefs(
