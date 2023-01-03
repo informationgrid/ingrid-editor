@@ -25,7 +25,7 @@
 
                 <span *ngIf="!isRunning; else running"
                     >Letzte Prüfung erfolgte am
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
+                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-template #running>
                     <span fxLayout>
@@ -37,7 +37,7 @@
                     </span>
                     <span>
                         Laufende Prüfung seit:
-                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
                     >
                 </ng-template>
                 <button
@@ -70,9 +70,9 @@
 
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="liveLog | async as log">
-            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>
-                &nbsp;Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                &nbsp;Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}
             </div>
             <br />
             <div>Analysierte URLs: {{ analyzedUrls }}</div>

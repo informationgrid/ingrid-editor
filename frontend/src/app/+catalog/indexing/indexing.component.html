@@ -77,7 +77,7 @@
 
                 <span *ngIf="log.endTime"
                     >Letzte Indizierung erfolgte am
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
+                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-container *ngIf="!log.endTime">
                     <span fxLayout>
@@ -96,7 +96,7 @@
                     </span>
                     <span
                         >Laufende Indizierung seit:
-                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
                     >
                 </ng-container>
                 <button

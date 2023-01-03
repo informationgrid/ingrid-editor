@@ -108,10 +108,10 @@
         <mat-card-title>{{ cat.label }}</mat-card-title>
         <mat-card-subtitle *ngIf="cat.lastDocModification">
             Letzte Änderung am
-            {{ cat.lastDocModification | date: "dd.LL.yyyy HH:mm" }}
+            {{ cat.lastDocModification | date : "dd.LL.yyyy HH:mm" }}
         </mat-card-subtitle>
         <mat-card-subtitle *ngIf="!cat.lastDocModification">
-            Erstellt am {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
+            Erstellt am {{ cat.created | date : "dd.LL.yyyy HH:mm" }}
         </mat-card-subtitle>
         <mat-card-content
             *ngIf="cat.countDocuments !== undefined; else spinner"

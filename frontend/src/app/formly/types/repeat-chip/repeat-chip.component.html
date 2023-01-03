@@ -26,7 +26,7 @@
 
         <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
             <div class="label">
-                {{ model[i] | codelist: props.codelistId | async }}
+                {{ model[i] | codelist : props.codelistId | async }}
             </div>
         </ng-container>
 
