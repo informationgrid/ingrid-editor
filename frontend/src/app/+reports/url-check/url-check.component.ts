@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
-import { RxStompService } from "@stomp/ng2-stompjs";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
@@ -16,6 +15,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { IgeError } from "../../models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
+import { RxStompService } from "../../rx-stomp.service";
 
 @Component({
   selector: "ige-url-check",

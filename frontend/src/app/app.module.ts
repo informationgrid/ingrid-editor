@@ -71,12 +71,6 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatSnackBarModule,
 } from "@angular/material/snack-bar";
-import {
-  InjectableRxStompConfig,
-  RxStompService,
-  rxStompServiceFactory,
-} from "@stomp/ng2-stompjs";
-import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
@@ -90,6 +84,8 @@ import { SharedModule } from "./shared/shared.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { Catalog } from "./+catalog/services/catalog.model";
+import { rxStompServiceFactory } from "./rx-stomp-service-factory";
+import { RxStompService } from "./rx-stomp.service";
 
 registerLocaleData(de);
 
@@ -346,14 +342,9 @@ export function animationExtension(field: FormlyFieldConfig) {
 
     // WebSocket
     {
-      provide: InjectableRxStompConfig,
-      useClass: IgeStompConfig,
-      deps: [ConfigService],
-    },
-    {
       provide: RxStompService,
       useFactory: rxStompServiceFactory,
-      deps: [InjectableRxStompConfig],
+      deps: [ConfigService],
     },
 
     // PLUGINS

@@ -45,7 +45,7 @@
     "@ngneat/until-destroy": "^9.2.2",
     "@ngx-formly/core": "6.0.4",
     "@ngx-formly/material": "6.0.4",
-    "@stomp/ng2-stompjs": "^8.0.0",
+    "@stomp/rx-stomp": "^1.2.0",
     "angular-split": "^14.1.0",
     "cronstrue": "^2.21.0",
     "file-saver": "^2.0.5",
