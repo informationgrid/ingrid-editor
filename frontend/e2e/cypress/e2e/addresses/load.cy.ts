@@ -216,6 +216,6 @@ describe('Load addresses', () => {
     AddressPage.visit();
     Tree.openNode(['topreview, address']);
     cy.get('[data-cy="toggle-ref-docs-btn"]').should('not.exist');
-    cy.get('[data-cy="no-refs-doc-hint"]').should('exist');
+    cy.get('[data-cy="no-ref-docs-hint"]').should('exist');
   });
 });
