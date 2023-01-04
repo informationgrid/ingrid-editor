@@ -110,6 +110,8 @@ pre {
 
   .mat-slide-toggle {
     background: $ige-background;
+    margin-right: -24px;
+    padding-right: 24px;
   }
 
   ::ng-deep .mat-slide-toggle.mat-disabled {

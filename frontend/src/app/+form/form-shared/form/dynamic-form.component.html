@@ -45,20 +45,22 @@
                             (address && model._type !== 'FOLDER')
                         "
                         (showStickyHeader)="updateContentPadding($event)"
-                    ></ige-form-info>
-                    <div
-                        [class.hide]="!hasOptionalFields"
-                        [class.sticky]="isStickyHeader"
-                        class="optional-fields-toggle"
                     >
-                        <div class="diagonal"></div>
-                        <mat-slide-toggle
-                            checked
-                            (change)="hideOptionalFields = !hideOptionalFields"
-                            >Alle
-                        </mat-slide-toggle>
-                        <div class="cover"></div>
-                    </div>
+                        <div
+                            [class.hide]="!hasOptionalFields"
+                            class="optional-fields-toggle"
+                        >
+                            <div class="diagonal"></div>
+                            <mat-slide-toggle
+                                checked
+                                (change)="
+                                    hideOptionalFields = !hideOptionalFields
+                                "
+                                >Alle
+                            </mat-slide-toggle>
+                            <div class="cover"></div>
+                        </div>
+                    </ige-form-info>
                     <div
                         class="form-inner"
                         [class.hide]="model._type === 'FOLDER'"
