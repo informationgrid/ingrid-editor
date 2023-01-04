@@ -42,6 +42,7 @@ export class AddressPage extends DocumentPage {
 
   static chooseRootInAddressCreateDialog() {
     cy.get('[data-cy=create-changeLocation]').click();
+    cy.contains('ige-destination-selection', /Zielordner wählen/, { timeout: 6000 }).should('exist');
     cy.get('ige-destination-selection mat-list-option').click();
     //check if 'Adressen' is chosen
     cy.get('[aria-selected=true]').contains('Adressen');
