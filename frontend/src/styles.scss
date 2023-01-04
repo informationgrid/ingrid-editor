@@ -1,6 +1,6 @@
 @import "./variables.scss";
 @import "./material.override.scss";
-@import "./material-fields.override.scss";
+//@import "./material-fields.override.scss";
 @import "./styles-print.scss";
 
 html,
@@ -169,27 +169,27 @@ ige-section-wrapper > h3 {
   cursor: default;
 }
 
-.mat-mdc-button.link-button {
+/*.mat-mdc-button.link-button {
   font-weight: normal;
   letter-spacing: 0.4px;
 
   color: $ige-secondary;
   padding: 0 10px;
   text-transform: none;
-}
+}*/
 
 .shortcut {
   padding-bottom: 24px;
   color: $ige-secondary;
   /*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
-  .mat-button-wrapper {
+  /*.mat-button-wrapper {
     letter-spacing: 1.25px;
     text-transform: uppercase;
 
-    /*.mat-icon {
+    !*.mat-icon {
       vertical-align: text-bottom;
-    }*/
-  }
+    }*!
+  }*/
 }
 
 .btn-title {
@@ -199,14 +199,14 @@ ige-section-wrapper > h3 {
   vertical-align: middle;
 }
 
-.mat-mdc-header-row {
+/*.mat-mdc-header-row {
   min-height: 40px;
 }
 
 .mat-mdc-row {
   //padding: 0 10px;
   min-height: 32px;
-}
+}*/
 
 main-menu .mat-toolbar-row {
   height: 50px;
@@ -460,10 +460,10 @@ formly-form:last-of-type(formly-field) > formly-field:last-of-type {
 }
 
 /* Disabled material icon SVG */
-.mat-mdc-button[disabled] .mat-icon[data-mat-icon-type="svg"],
+/*.mat-mdc-button[disabled] .mat-icon[data-mat-icon-type="svg"],
 .mat-mdc-icon-button[disabled] .mat-icon {
   opacity: 0.26;
-}
+}*/
 
 ige-root .mat-drawer-container {
   background-color: $ige-background;
@@ -583,17 +583,17 @@ ige-form-label + * {
   }
 }
 
-.mat-mdc-form-field {
+/*.mat-mdc-form-field {
   line-height: 1.25 !important;
-}
+}*/
 
 /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-.mat-form-field-appearance-outline .mat-form-field-outline {
+/*.mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
-}
+}*/
 
 // Context Buttons
-.mat-mdc-icon-button {
+/*.mat-mdc-icon-button {
   &.table-options {
     background-color: #ffffff;
     line-height: 32px;
@@ -620,7 +620,7 @@ ige-form-label + * {
       }
     }
   }
-}
+}*/
 
 // Icons
 .infoIcon {
@@ -667,112 +667,79 @@ ige-form-label + * {
     background-color: $ige-secondary !important;
   }
 
-  .mat-mdc-form-field-error {
+  /*  .mat-mdc-form-field-error {
     opacity: 0;
     height: 0;
     display: none;
-  }
+  }*/
 
-  .mat-form-field-invalid .mat-mdc-input-element {
+  /*.mat-form-field-invalid .mat-mdc-input-element {
     caret-color: initial !important;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
     .mat-form-field-outline {
     opacity: 1;
     color: $ige-comment-color !important;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
   .mat-form-field-appearance-outline:not(.mat-form-field-disabled)
     .mat-form-field-flex:hover
     .mat-form-field-outline-thick {
     opacity: 1;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
   .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
     .mat-form-field-outline-thick {
     color: initial;
     opacity: 0;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*!
   .mat-select-invalid .mat-select-placeholder {
     color: $ige-comment-color !important;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
   .mat-mdc-form-field.mat-form-field-invalid .mat-form-field-label {
     color: $ige-placeholder-color !important;
-    /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+    !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
     &.mat-accent,
     .mat-form-field-required-marker {
       color: $ige-placeholder-color !important;
     }
   }
-}
+}*/
 
-.dlg-field-label {
-  padding-bottom: 4px;
+  .dlg-field-label {
+    padding-bottom: 4px;
 
-  &.required {
-    font-weight: 500;
-  }
-}
-
-/* Material Tabs */
-.page-tabs-routing {
-  &.mat-mdc-tab-nav-bar {
-    border-bottom: none;
-  }
-
-  .mat-mdc-tab-links {
-    background-color: $ige-secondary-dark;
-  }
-
-  .mat-mdc-tab-link {
-    //background-color: #161234;
-    border-bottom: none;
-    height: 56px;
-
-    color: #ffffff;
-    letter-spacing: 1.25px;
-    text-transform: uppercase;
-    opacity: 0.75;
-
-    &.active-link {
-      opacity: 1;
-      color: #4ba7d0;
+    &.required {
+      font-weight: 500;
     }
   }
 
-  .mat-ink-bar {
-    background-color: $ige-background !important;
-    height: 6px;
-  }
-}
+  /* Material Tabs */
+  .page-tabs-routing {
+    &.mat-mdc-tab-nav-bar {
+      border-bottom: none;
+    }
 
-.page-tabs {
-  height: 100%;
+    .mat-mdc-tab-links {
+      background-color: $ige-secondary-dark;
+    }
 
-  & > .mat-mdc-tab-header {
-    background-color: $ige-secondary-dark;
-    border-bottom: none;
-    height: 56px;
-    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-    .mat-tab-label {
+    .mat-mdc-tab-link {
+      //background-color: #161234;
+      border-bottom: none;
+      height: 56px;
+
       color: #ffffff;
       letter-spacing: 1.25px;
       text-transform: uppercase;
       opacity: 0.75;
-      height: 56px;
-      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-      &.mat-tab-label-active {
+
+      &.active-link {
         opacity: 1;
-        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-        .mat-tab-label-content {
-          color: #4ba7d0;
-        }
+        color: #4ba7d0;
       }
     }
 
@@ -781,179 +748,88 @@ ige-form-label + * {
       height: 6px;
     }
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-  & > .mat-tab-body-wrapper {
-    flex: 1;
-  }
-}
 
-.page-tabs,
-.page-tabs-routing ~ * {
-  .status {
-    padding: 30px;
-    margin-bottom: 24px;
-    background-color: rgb(223, 223, 223);
+  .page-tabs {
+    height: 100%;
 
-    .log {
-      overflow: auto;
-      max-height: 300px;
+    & > .mat-mdc-tab-header {
+      background-color: $ige-secondary-dark;
+      border-bottom: none;
+      height: 56px;
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      .mat-tab-label {
+        color: #ffffff;
+        letter-spacing: 1.25px;
+        text-transform: uppercase;
+        opacity: 0.75;
+        height: 56px;
+        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+        &.mat-tab-label-active {
+          opacity: 1;
+          /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+          .mat-tab-label-content {
+            color: #4ba7d0;
+          }
+        }
+      }
+
+      .mat-ink-bar {
+        background-color: $ige-background !important;
+        height: 6px;
+      }
+    }
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    & > .mat-tab-body-wrapper {
+      flex: 1;
     }
   }
-}
 
-/* LEAFLET */
+  .page-tabs,
+  .page-tabs-routing ~ * {
+    .status {
+      padding: 30px;
+      margin-bottom: 24px;
+      background-color: rgb(223, 223, 223);
 
-.leaflet-control-attribution a {
-  font-size: 11px;
-}
-
-.leaflet-control a {
-  text-transform: none;
-}
-
-.passive .leaflet-control-zoom {
-  visibility: hidden;
-}
-
-.leaflet-areaselect-shade {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.leaflet-areaselect-handle {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #666;
-  -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-  width: 14px;
-  height: 14px;
-  cursor: move;
-}
-
-/* Form Fields */
-.white-bg {
-  margin-bottom: 12px;
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-  .mat-form-field-outline-start,
-  .mat-form-field-outline-gap,
-  .mat-form-field-outline-end {
-    background-color: #ffffff;
-  }
-
-  .prefix {
-    color: $ige-comment-color;
-    padding-right: 5px;
-  }
-}
-
-/* Form Field enhancements */
-/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-.straight-border-right.mat-form-field-appearance-outline
-  .mat-form-field-outline-end {
-  border-radius: 0;
-  border-right: none;
-}
-
-/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-.straight-border-left.mat-form-field-appearance-outline
-  .mat-form-field-outline-start {
-  border-radius: 0;
-}
-
-/*TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
-mat-selection-list.with-menu .mat-list-text {
-  align-items: center;
-  flex-direction: row !important;
-
-  .menu-button {
-    margin-left: 40px;
-  }
-}
-
-.ige-form-field {
-  padding-top: 6px;
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-    margin-bottom: 0;
-    /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-    .mat-form-field-flex {
-      align-items: center;
-      height: 40px;
-    }
-    /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-    .mat-form-field-outline {
-      top: 0;
-      background-color: #ffffff;
-      border-radius: 4px;
-    }
-    /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-    .mat-form-field-prefix,
-    .mat-form-field-suffix {
-      top: 0;
-    }
-    /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-    .mat-form-field-infix {
-      display: flex;
-      align-items: center;
-      padding: 0;
-
-      input {
-        height: 100%;
+      .log {
+        overflow: auto;
+        max-height: 300px;
       }
     }
   }
-}
 
-/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-ige-sidebar
-  ige-tree-header
-  .ige-form-field
-  .mat-form-field-wrapper
-  .mat-form-field-outline:not(.mat-form-field-outline-thick)
-  > div {
-  border: none;
-}
+  /* LEAFLET */
 
-.quicksearch-auto-tree {
-  padding: 12px;
-  /*TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version.*/
-  mat-option {
-    padding: 0 !important;
-  }
-  /*TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version.*/
-  mat-option,
-  .doc-item {
-    height: 40px !important;
-  }
-}
-.quicksearch-auto {
-  max-height: unset !important;
-  width: 510px !important;
-  padding: 24px 24px 12px;
-
-  &.option-no-padding mat-option {
-    padding: 0 !important;
+  .leaflet-control-attribution a {
+    font-size: 11px;
   }
 
-  &.option-no-padding mat-option,
-  &.option-no-padding .doc-item {
-    height: 40px !important;
-
-    &.multiline {
-      height: auto !important;
-      white-space: normal;
-      padding-top: 6px;
-      padding-bottom: 6px;
-      align-items: flex-start !important;
-    }
+  .leaflet-control a {
+    text-transform: none;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of autocomplete that may no longer apply for the MDC version.*/
-  &.mat-autocomplete-hidden {
-    display: none !important;
+
+  .passive .leaflet-control-zoom {
+    visibility: hidden;
+  }
+
+  .leaflet-areaselect-shade {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .leaflet-areaselect-handle {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #666;
+    -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+    width: 14px;
+    height: 14px;
+    cursor: move;
   }
 
   .doc-item {
@@ -1040,9 +916,9 @@ mat-icon.wide-icon-26px {
   flex-direction: column;
   margin-top: 12px;
   /*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-  mat-radio-button {
+  /*mat-radio-button {
     margin: 5px 0;
-  }
+  }*/
 }
 
 .comment {
@@ -1099,15 +975,15 @@ mat-icon.wide-icon-26px {
 }*/
 
 /* Slide toggle (stretched) */
-.mat-mdc-slide-toggle.stretch {
+/*.mat-mdc-slide-toggle.stretch {
   display: block;
-  /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*!
   .mat-slide-toggle-label {
     justify-content: space-between;
   }
-}
+}*/
 
-.info-menu {
+/*.info-menu {
   &.mat-mdc-menu-panel {
     max-width: 350px;
   }
@@ -1143,7 +1019,7 @@ mat-icon.wide-icon-26px {
     line-height: 18px;
     padding: 16px;
   }
-}
+}*/
 
 .test-instance {
   position: fixed;
@@ -1207,17 +1083,17 @@ table.big-font {
 }
 
 // top level deep selector acceptable as ige-inline-help-wrapper is unique
-ige-inline-help-wrapper {
+/*ige-inline-help-wrapper {
   display: flex;
   align-items: center;
   position: relative;
-  /*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
   formly-field-mat-input,
   formly-field-mat-textarea,
   ige-repeat-list {
     flex: 1;
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
   formly-field-mat-input + .mat-mdc-icon-button.menu-button {
     margin-top: -3px;
     margin-bottom: -3px;
@@ -1245,15 +1121,15 @@ ige-inline-help-wrapper {
     margin-left: 12px;
     background-color: $ige-background;
     margin-top: 0.15em;
-    /*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
+    !*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*!
     .mat-button-wrapper {
       * {
         vertical-align: unset;
       }
     }
   }
-  /*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
+  !*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*!
   formly-field-mat-radio {
     margin-top: 0.2em;
   }
-}
+}*/

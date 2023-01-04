@@ -1,5 +1,5 @@
 <div class="search-content">
-    <mat-form-field class="search" appearance="outline">
+    <mat-form-field class="search white-bg" appearance="outline">
         <input
             matInput
             placeholder="Suchbegriff eingeben"
@@ -7,19 +7,20 @@
             [formControl]="query"
             [matAutocomplete]="auto"
         />
-        <mat-spinner
-            *ngIf="searchSub && !searchSub.closed"
-            [diameter]="20"
-        ></mat-spinner>
-        <button
-            *ngIf="query.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            class="field-close"
-            (click)="resetSearch()"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
+        <div matSuffix>
+            <mat-spinner
+                *ngIf="searchSub && !searchSub.closed"
+                [diameter]="24"
+            ></mat-spinner>
+            <button
+                *ngIf="query.value?.length > 0"
+                mat-icon-button
+                class="field-close"
+                (click)="resetSearch()"
+            >
+                <mat-icon class="gray">close</mat-icon>
+            </button>
+        </div>
     </mat-form-field>
     <mat-autocomplete
         #auto="matAutocomplete"
@@ -94,7 +95,7 @@
     <button
         mat-flat-button
         color="primary"
-        class="btn-search upper-case"
+        class="input-field-button btn-search"
         (click)="openResearchPage($event)"
     >
         <mat-icon>search</mat-icon>

@@ -4,6 +4,11 @@
   padding-bottom: 30px;
 }
 
+mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
 .search-content {
   display: flex;
   align-items: flex-start;
@@ -22,21 +27,21 @@
     margin-right: auto;
   }
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-  ::ng-deep .mat-form-field-flex {
+  /*::ng-deep .mat-form-field-flex {
     align-items: center;
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
   ::ng-deep .mat-form-field-outline {
     top: 0;
     background-color: #ffffff;
     border-radius: 4px;
-    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
     &:not(.mat-form-field-outline-thick) > div {
       border: none;
     }
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
   ::ng-deep .mat-form-field-suffix {
     top: 0;
     margin-right: -5px;
@@ -45,11 +50,11 @@
       height: 24px;
     }
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0;
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
   ::ng-deep .mat-form-field-infix {
     display: flex;
     align-items: center;
@@ -57,7 +62,7 @@
     margin: 0;
     padding: 0;
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
   ::ng-deep .mat-form-field-infix input {
     height: 100%;
   }
@@ -67,12 +72,12 @@
   }
 
   ::ng-deep mat-form-field {
-    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
     .mat-form-field-subscript-wrapper,
     .mat-form-field-underline {
       position: absolute;
     }
-  }
+  }*/
 }
 
 .result-header {
@@ -104,8 +109,15 @@
   }
 }
 
+::ng-deep .search-content .search .mdc-notched-outline__trailing {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
 .btn-search {
-  margin-left: -6px;
+  height: 40px;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
 
   &:hover {
     background-color: lighten($ige-secondary, 8%);
