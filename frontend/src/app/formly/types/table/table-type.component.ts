@@ -267,7 +267,7 @@ export class TableTypeComponent
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = {
-      title: file.file,
+      title: this.prepareTitleFromFile(file.file),
     };
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
@@ -350,5 +350,14 @@ export class TableTypeComponent
         this.selection.selected.forEach((row) => (row.validUntil = dateObj));
         this.updateTableDataToForm(this.dataSource.data);
       });
+  }
+
+  private prepareTitleFromFile(file: string) {
+    const lastDotPos = file.lastIndexOf(".");
+    const name = file.substring(
+      0,
+      lastDotPos === -1 ? file.length : lastDotPos
+    );
+    return decodeURI(name);
   }
 }
