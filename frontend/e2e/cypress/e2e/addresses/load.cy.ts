@@ -211,4 +211,11 @@ describe('Load addresses', () => {
     McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
     McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
   });
+
+  it('should not display toggle button for referenced documents if there are none', () => {
+    AddressPage.visit();
+    Tree.openNode(['topreview, address']);
+    cy.get('[data-cy="toggle-ref-docs-btn"]').should('not.exist');
+    cy.get('[data-cy="no-refs-doc-hint"]').should('exist');
+  });
 });
