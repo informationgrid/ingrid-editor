@@ -46,8 +46,6 @@ export class ReferencedDocumentsTypeComponent
 
   docs: DocumentAbstract[];
 
-  showReferences = false;
-
   private sql = `SELECT document1.*, document_wrapper.*
                  FROM document_wrapper
                         JOIN document document1 ON
@@ -63,6 +61,7 @@ export class ReferencedDocumentsTypeComponent
 
   private currentUuid: string;
   totalHits: number;
+  showReferences: boolean;
   showToggleButton: boolean;
   messageNoReferences: string;
   referencesHint: string;
@@ -102,7 +101,6 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(this.currentUuid),
-        filter(() => this.showReferences),
         tap(() => (this.docs = []))
       )
       .subscribe((uuid) => this.searchReferences(uuid).subscribe());
@@ -113,6 +111,7 @@ export class ReferencedDocumentsTypeComponent
       .searchBySQL(this.prepareSQL(uuid), page, this.pageSize)
       .pipe(
         tap((response) => (this.totalHits = response.totalHits)),
+        tap(() => (this.showToggleButton = this.totalHits > 0)),
         map((response) =>
           this.documentService.mapToDocumentAbstracts(response.hits)
         ),
