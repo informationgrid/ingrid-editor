@@ -64,3 +64,7 @@ ige-add-button {
   margin-top: 10px;
   color: $ige-placeholder-color;
 }
+
+[data-cy="clear-date-fields"] {
+  padding: 0 8px;
+}
