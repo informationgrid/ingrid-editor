@@ -9,7 +9,7 @@
   padding: 10px 0 0;
   line-height: 36px;
   transition: all 0.1s linear;
-
+  /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
   a ::ng-deep .mat-button-wrapper {
     text-transform: none;
   }

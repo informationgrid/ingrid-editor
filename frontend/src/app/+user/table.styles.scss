@@ -27,11 +27,11 @@ td {
 table {
   cursor: pointer;
 
-  td.mat-cell:last-of-type {
+  td.mat-mdc-cell:last-of-type {
     text-align: left;
     padding-right: 24px !important;
   }
-  td.mat-cell:first-of-type {
+  td.mat-mdc-cell:first-of-type {
     padding-left: 24px !important;
   }
 
@@ -41,19 +41,19 @@ table {
     }
   }
 
-  .mat-header-cell:first-of-type {
+  .mat-mdc-header-cell:first-of-type {
     ::ng-deep .mat-sort-header-content {
       padding-left: 0 !important;
     }
   }
 }
 
-.mat-row .menu-button {
+.mat-mdc-row .menu-button {
   visibility: hidden;
   margin-right: 7px;
 }
 
-.mat-row:hover .menu-button {
+.mat-mdc-row:hover .menu-button {
   visibility: visible;
 }
 

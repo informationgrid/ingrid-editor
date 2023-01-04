@@ -11,7 +11,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { filter, map, tap } from "rxjs/operators";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { UserComponent } from "./user/user.component";
 import { GroupComponent } from "./group/group.component";
 

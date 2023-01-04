@@ -35,7 +35,8 @@ ige-form-label {
 }
 
 :host {
-  ::ng-deep .mat-checkbox .mat-checkbox-ripple {
+  /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+  ::ng-deep .mat-mdc-checkbox .mat-checkbox-ripple {
     height: 32px;
     width: 32px;
     left: calc(50% - 16px);
@@ -68,7 +69,7 @@ mat-header-row {
 .select-controls {
   padding-right: 4px;
 
-  .mat-checkbox {
+  .mat-mdc-checkbox {
     height: 18px;
   }
 

@@ -7,11 +7,11 @@ import {
 import { QuickSearchComponent } from "./quick-search.component";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
-import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatCardModule } from "@angular/material/card";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("QuickSearchComponent", () => {

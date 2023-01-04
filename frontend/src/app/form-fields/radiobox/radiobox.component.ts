@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatLegacyRadioChange as MatRadioChange } from "@angular/material/legacy-radio";
+import { MatRadioChange } from "@angular/material/radio";
 
 export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,

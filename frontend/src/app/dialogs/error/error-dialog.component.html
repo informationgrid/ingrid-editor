@@ -58,7 +58,11 @@
             Details
         </button>
         <div>
-            <mat-card *ngIf="error.showDetails" class="hover-elevate">
+            <mat-card
+                appearance="outlined"
+                *ngIf="error.showDetails"
+                class="hover-elevate"
+            >
                 <mat-card-header>
                     <div fxFlex></div>
                     <div>

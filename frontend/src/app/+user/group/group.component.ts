@@ -16,7 +16,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";

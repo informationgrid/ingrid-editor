@@ -1,6 +1,6 @@
 import { TreeComponent } from "./tree.component";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule, MatIconRegistry } from "@angular/material/icon";
 import { MatTreeModule } from "@angular/material/tree";
 import {
@@ -19,8 +19,8 @@ import {
 } from "../../../_test-data/documents";
 import { of, Subject } from "rxjs";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
-import { MatLegacySlideToggleModule as MatSlideToggleModule } from "@angular/material/legacy-slide-toggle";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormFieldsModule } from "../../../form-fields/form-fields.module";
 import { fakeAsync, tick } from "@angular/core/testing";
 import { UpdateType } from "../../../models/update-type.enum";
@@ -30,7 +30,7 @@ import {
 } from "../../../store/document/document.model";
 import { delay } from "rxjs/operators";
 import { DynamicDatabase } from "./dynamic.database";
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { EmptyNavigationComponent } from "./empty-navigation/empty-navigation.component";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -39,12 +39,12 @@ import { FakeMatIconRegistry } from "@angular/material/icon/testing";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfigService } from "../../../services/config/config.service";
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
-import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSelectModule } from "@angular/material/select";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {

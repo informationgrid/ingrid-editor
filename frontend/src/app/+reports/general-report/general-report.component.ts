@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
 import { Subject } from "rxjs";
 import { MatSort } from "@angular/material/sort";
-import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
+import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
 import { Facets, ResearchService } from "../../+research/research.service";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";

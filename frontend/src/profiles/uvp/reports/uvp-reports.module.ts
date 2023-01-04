@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
-import { MatLegacyTableModule as MatTableModule } from "@angular/material/legacy-table";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { ReactiveFormsModule } from "@angular/forms";

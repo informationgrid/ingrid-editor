@@ -5,7 +5,7 @@ import { UntypedFormControl } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Clipboard } from "@angular/cdk/clipboard";
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";

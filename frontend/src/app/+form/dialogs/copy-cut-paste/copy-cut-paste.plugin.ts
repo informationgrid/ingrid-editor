@@ -12,7 +12,7 @@ import {
   PasteDialogOptions,
 } from "./paste-dialog.component";
 import { Observable } from "rxjs";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";

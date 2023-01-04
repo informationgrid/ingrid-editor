@@ -10,7 +10,7 @@ import { FieldType } from "@ngx-formly/material";
 import { MapOptions, Rectangle } from "leaflet";
 import { ModalService } from "../../../services/modal/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
 import { LeafletService } from "./leaflet.service";
 import {

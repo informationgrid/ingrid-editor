@@ -1,6 +1,9 @@
 // fix for bottom aligned actions buttons in dialog
 // see: https://github.com/angular/components/issues/4609
+/* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version.*/
+/* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version.*/
 .mat-dialog-override {
+  /* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version.*/
   mat-dialog-container {
     > :first-child,
     .cdk-drag:not(mat-row) {
@@ -31,7 +34,7 @@
   }
 }
 
-.mat-dialog-actions {
+.mat-mdc-dialog-actions {
   border-top: 1px solid $ige-background-bar;
   margin-left: -24px;
   margin-right: -24px;
@@ -40,11 +43,13 @@
 
 // all buttons shall be uppercase
 // align text in buttons centered with icon
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
 button:not(.default-button) .mat-button-wrapper {
   text-transform: uppercase;
   letter-spacing: 1.25px;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
 button .mat-button-wrapper {
   letter-spacing: 0.4px;
 
@@ -53,17 +58,17 @@ button .mat-button-wrapper {
   }
 }
 
-.mat-button-base.button-square-icon {
+.mat-mdc-button-base.button-square-icon {
   padding: 0;
   min-width: 36px;
   background-color: $ige-background;
 }
 
-.shortcut .mat-button mat-icon + span {
+.shortcut .mat-mdc-button mat-icon + span {
   padding-left: 5px;
 }
 
-.mat-dialog-container {
+.mat-mdc-dialog-container {
   display: flex !important;
   flex-direction: column;
   flex: 1;
@@ -85,7 +90,7 @@ button .mat-button-wrapper {
       background-color: #cd0909;
     }
 
-    .mat-dialog-title {
+    .mat-mdc-dialog-title {
       margin: 0;
       color: white;
 
@@ -100,7 +105,7 @@ button .mat-button-wrapper {
     }
   }
 
-  .mat-dialog-content {
+  .mat-mdc-dialog-content {
     box-sizing: border-box;
     padding-top: 24px;
     padding-bottom: 24px;
@@ -123,13 +128,13 @@ button .mat-button-wrapper {
   }
 }
 
-ige-root .mat-card {
+ige-root .mat-mdc-card {
   border-radius: 5px;
 }
 
 /* TOOLTIPS */
-.mat-tooltip-panel {
-  .mat-tooltip {
+.mat-mdc-tooltip-panel {
+  .mat-mdc-tooltip {
     background-color: #333333;
     font-size: 12px;
     border-radius: 24px;
@@ -137,7 +142,7 @@ ige-root .mat-card {
 }
 
 /* Checkboxes, radio btns */
-.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent
+.mat-mdc-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent
   .mat-checkbox-background,
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
   .mat-checkbox-background,
@@ -149,7 +154,8 @@ ige-root .mat-card {
   background-color: $ige-check-color !important;
 }
 
-.mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
+.mat-mdc-radio-button.mat-accent:not(.mat-radio-disabled)
+  .mat-radio-inner-circle,
 .mat-radio-button.mat-accent
   .mat-radio-ripple
   .mat-ripple-element:not(.mat-radio-persistent-ripple),
@@ -160,11 +166,13 @@ ige-root .mat-card {
   background-color: $ige-check-color !important;
 }
 
-.mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
+/* TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
+.mat-mdc-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
   background-color: #{$ige-check-color + "8a"} !important;
 }
 
-.mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled)
+/* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
+.mat-mdc-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled)
   .mat-radio-outer-circle {
   border-color: $ige-check-color !important;
 }
@@ -187,14 +195,14 @@ ige-root .mat-card {
 }
 
 /* Table */
-.mat-table:not(.no-action-column) {
-  .mat-header-cell:last-of-type,
-  .mat-cell:last-of-type {
+.mat-mdc-table:not(.no-action-column) {
+  .mat-mdc-header-cell:last-of-type,
+  .mat-mdc-cell:last-of-type {
     padding-right: 12px;
     text-align: end;
   }
 
-  .disabled .mat-cell {
+  .disabled .mat-mdc-cell {
     &,
     a {
       color: $ige-comment-color;
@@ -203,6 +211,7 @@ ige-root .mat-card {
 }
 
 /* Progress Bar */
+/* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version.*/
 .wrapper .mat-progress-bar-buffer {
   background-color: $ige-mark-color;
 }

@@ -5,7 +5,7 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { NominatimService } from "../../nominatim.service";
-import { MatLegacyListModule as MatListModule } from "@angular/material/legacy-list";
+import { MatListModule } from "@angular/material/list";
 
 describe("FreeSpatialComponent", () => {
   let spectator: Spectator<FreeSpatialComponent>;

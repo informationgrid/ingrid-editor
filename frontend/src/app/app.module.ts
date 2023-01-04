@@ -19,18 +19,18 @@ import {
   HttpClientModule,
   HttpClientXsrfModule,
 } from "@angular/common/http";
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
 import {
-  MAT_LEGACY_DIALOG_DEFAULT_OPTIONS as MAT_DIALOG_DEFAULT_OPTIONS,
-  MatLegacyDialog as MatDialog,
-  MatLegacyDialogModule as MatDialogModule,
-} from "@angular/material/legacy-dialog";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialog,
+  MatDialogModule,
+} from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
-import { MatLegacyListModule as MatListModule } from "@angular/material/legacy-list";
+import { MatInputModule } from "@angular/material/input";
+import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { FlexLayoutModule } from "@angular/flex-layout";
@@ -45,19 +45,19 @@ import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.c
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
 import {
-  MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS as MAT_TOOLTIP_DEFAULT_OPTIONS,
-  MatLegacyTooltipModule as MatTooltipModule,
-} from "@angular/material/legacy-tooltip";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+  MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MatTooltipModule,
+} from "@angular/material/tooltip";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { SectionWrapper } from "./formly/wrapper/section-wrapper.component";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "./dialogs/confirm/confirm-dialog.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
-import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
-import { MatLegacyMenuModule as MatMenuModule } from "@angular/material/legacy-menu";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatMenuModule } from "@angular/material/menu";
 import { AuthInterceptor } from "./security/keycloak/auth.interceptor";
 import { SharedDocumentItemModule } from "./shared/shared-document-item.module";
 import { pluginProvider } from "./plugin.provider";
@@ -68,9 +68,9 @@ import { SessionTimeoutInfoComponent } from "./main-header/session-timeout-info/
 import { TimePipe } from "./directives/time.pipe";
 import { FormFieldsModule } from "./form-fields/form-fields.module";
 import {
-  MAT_LEGACY_SNACK_BAR_DEFAULT_OPTIONS as MAT_SNACK_BAR_DEFAULT_OPTIONS,
-  MatLegacySnackBarModule as MatSnackBarModule,
-} from "@angular/material/legacy-snack-bar";
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBarModule,
+} from "@angular/material/snack-bar";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";

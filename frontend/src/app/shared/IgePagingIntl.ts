@@ -1,4 +1,4 @@
-import { MatLegacyPaginatorIntl as MatPaginatorIntl } from "@angular/material/legacy-paginator";
+import { MatPaginatorIntl } from "@angular/material/paginator";
 
 export class IgePagingIntl extends MatPaginatorIntl {
   itemsPerPageLabel = "Anzeige";

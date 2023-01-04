@@ -4,7 +4,7 @@ import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { IgeDocument } from "../../../models/ige-document";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { catchError, finalize } from "rxjs/operators";
 import { FormStateService } from "../../form-state.service";

@@ -12,18 +12,18 @@ import { DataCollectionDoctype } from "./ingrid/doctypes/data-collection.doctype
 import { InformationSystemDoctype } from "./ingrid/doctypes/information-system.doctype";
 import { ConformityDialogComponent } from "./ingrid/dialogs/conformity-dialog.component";
 import { MatIconModule } from "@angular/material/icon";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatInputModule } from "@angular/material/input";
 import { AsyncPipe, JsonPipe, NgForOf, NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FlexModule } from "@angular/flex-layout";
-import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
+import { MatSelectModule } from "@angular/material/select";
 import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.component";
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 @Component({
   template: "",

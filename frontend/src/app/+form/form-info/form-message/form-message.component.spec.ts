@@ -7,7 +7,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { fakeAsync, tick } from "@angular/core/testing";
 import { FormMessageService } from "../../../services/form-message.service";
 import { FlexLayoutModule } from "@angular/flex-layout";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatButtonModule } from "@angular/material/button";
 
 describe("FormMessageComponent", () => {
   const INFO_MESSAGE: FormMessageType = {

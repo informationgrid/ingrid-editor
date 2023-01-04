@@ -5,13 +5,13 @@
             erweiterte Suche nicht ausreicht.
         </p>
         <p>Hier sind ein paar Beispiele:</p>
-        <mat-chip-list>
-            <mat-chip
+        <mat-chip-listbox>
+            <mat-chip-option
                 *ngFor="let example of sqlExamples"
                 (click)="updateSqlControl(example.value)"
-                >{{ example.label }}</mat-chip
+                >{{ example.label }}</mat-chip-option
             >
-        </mat-chip-list>
+        </mat-chip-listbox>
     </div>
 
     <div main-header fxFlex>

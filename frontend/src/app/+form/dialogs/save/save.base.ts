@@ -6,7 +6,7 @@ import {
 } from "../version-conflict-dialog/version-conflict-dialog.component";
 import { IgeError } from "../../../models/ige-error";
 import { FormMessageService } from "../../../services/form-message.service";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { SessionStore } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";

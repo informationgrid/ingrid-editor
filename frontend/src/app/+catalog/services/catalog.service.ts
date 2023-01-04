@@ -10,7 +10,7 @@ import { CatalogDataService } from "./catalog-data.service";
 import { HttpClient } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export interface Profile {
   id: string;

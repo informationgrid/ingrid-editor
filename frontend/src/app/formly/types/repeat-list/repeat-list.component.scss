@@ -43,7 +43,7 @@
     }
   }
 
-  .mat-icon-button {
+  .mat-mdc-icon-button {
     display: none;
     width: 24px;
     height: 24px;
@@ -51,15 +51,17 @@
   }
 
   &:hover {
-    .mat-icon-button {
+    .mat-mdc-icon-button {
       display: block;
     }
   }
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
 :host ::ng-deep .mat-form-field-flex {
   align-items: center;
-
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
   .mat-form-field-prefix,
   .mat-form-field-suffix {
     top: 0.125em;

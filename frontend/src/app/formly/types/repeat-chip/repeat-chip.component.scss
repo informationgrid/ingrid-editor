@@ -4,6 +4,7 @@
   margin-top: 15px;
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
 .mat-chip-list {
   display: block;
   //padding-top: 10px;
@@ -19,7 +20,7 @@
   margin-bottom: 11px;
 }
 
-.mat-chip {
+.mat-mdc-chip {
   max-width: calc(100% - 32px);
   height: auto;
   min-height: 36px;

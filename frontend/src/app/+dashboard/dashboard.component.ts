@@ -8,7 +8,7 @@ import { DocumentAbstract } from "../store/document/document.model";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { SessionQuery } from "../store/session.query";
 import { Router } from "@angular/router";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import {
   CreateNodeComponent,
   CreateOptions,

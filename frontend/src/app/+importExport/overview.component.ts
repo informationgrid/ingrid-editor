@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { SessionService, Tab } from "../services/session.service";
-import { MatLegacyTabNav as MatTabNav } from "@angular/material/legacy-tabs";
+import { MatTabNav } from "@angular/material/tabs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ActivatedRoute, Router } from "@angular/router";
 import { filter } from "rxjs/operators";

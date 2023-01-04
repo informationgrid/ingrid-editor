@@ -1,6 +1,6 @@
 @import "src/variables";
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   resize: both;
   padding-top: 0;
   color: $ige-text-color;
@@ -31,7 +31,7 @@
   }
 }
 
-.mat-dialog-title {
+.mat-mdc-dialog-title {
   margin-bottom: 10px;
   margin-top: -14px;
   margin-left: -14px;
@@ -47,7 +47,7 @@
     font-weight: normal;
   }
 
-  .mat-icon-button {
+  .mat-mdc-icon-button {
     height: 24px;
     width: 24px;
     line-height: 24px;
@@ -55,7 +55,7 @@
   }
 }
 
-.mat-dialog-actions {
+.mat-mdc-dialog-actions {
   ::ng-deep .mat-icon svg path {
     fill: $ige-secondary;
   }

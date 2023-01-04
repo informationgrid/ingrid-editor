@@ -1,7 +1,7 @@
 import { Component, forwardRef, Input } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { PermissionAddDialogComponent } from "../permission-add-dialog/permission-add-dialog.component";
 import { DynamicDatabase } from "../../../+form/sidebars/tree/dynamic.database";
 import { DocumentService } from "../../../services/document/document.service";

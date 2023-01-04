@@ -11,7 +11,7 @@ import { Observable, of, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocumentUtils } from "../../services/document.utils";
-import { MatLegacySelectionList as MatSelectionList } from "@angular/material/legacy-list";
+import { MatSelectionList } from "@angular/material/list";
 
 @UntilDestroy()
 @Component({

@@ -1,7 +1,7 @@
 import { Spectator, createComponentFactory } from "@ngneat/spectator";
 
 import { VersionConflictDialogComponent } from "./version-conflict-dialog.component";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 import { SharedModule } from "../../../shared/shared.module";
 
 describe("VersionConflictDialogComponent", () => {

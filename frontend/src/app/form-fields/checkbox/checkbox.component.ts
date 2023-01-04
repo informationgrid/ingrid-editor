@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, OnInit, Output } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 import { Subject } from "rxjs";
 
 export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {

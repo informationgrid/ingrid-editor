@@ -26,7 +26,7 @@ export interface ConfirmDialogButton {
   templateUrl: "confirm-dialog.component.html",
   styles: [
     `
-      .mat-dialog-content p {
+      .mat-mdc-dialog-content p {
         white-space: normal;
       }
     `,

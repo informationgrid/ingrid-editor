@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { forkJoin } from "rxjs";
 import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialog as MatDialog,
-  MatLegacyDialogRef as MatDialogRef,
-} from "@angular/material/legacy-dialog";
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { Catalog } from "../../../+catalog/services/catalog.model";
 import { User } from "../../../+user/user";
 import { UserService } from "../../../services/user/user.service";

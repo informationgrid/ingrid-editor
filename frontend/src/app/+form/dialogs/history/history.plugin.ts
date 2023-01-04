@@ -18,7 +18,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormUtils } from "../../form.utils";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormStateService } from "../../form-state.service";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
 
 @Injectable()

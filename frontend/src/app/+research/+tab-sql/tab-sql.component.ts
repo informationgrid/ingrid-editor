@@ -4,8 +4,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, tap } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { SqlQuery } from "../../store/query/query.model";
 import { UntypedFormControl } from "@angular/forms";
 

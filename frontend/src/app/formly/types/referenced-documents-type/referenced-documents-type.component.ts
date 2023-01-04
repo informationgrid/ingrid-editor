@@ -18,7 +18,7 @@ import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { LegacyPageEvent as PageEvent } from "@angular/material/legacy-paginator";
+import { PageEvent } from "@angular/material/paginator";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { merge } from "rxjs";
 import { ConfigService } from "../../../services/config/config.service";

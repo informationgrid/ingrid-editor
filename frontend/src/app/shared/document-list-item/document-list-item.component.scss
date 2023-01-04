@@ -18,12 +18,13 @@
     margin: 0;
     align-items: center;
 
-    .mat-list-icon {
+    .mat-mdc-list-item-icon {
       align-self: unset;
     }
   }
 
   &.dense {
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
     mat-list-option {
       height: 40px !important;
     }
@@ -64,6 +65,7 @@
   }
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
 .hide-bg-selection.mat-list-single-selected-option {
   background: #00000000;
 }

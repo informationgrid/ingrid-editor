@@ -16,7 +16,7 @@
 }
 
 :host ::ng-deep ige-repeat {
-  .mat-icon-button[disabled][disabled] {
+  .mat-mdc-icon-button[disabled][disabled] {
     opacity: 0;
   }
 }

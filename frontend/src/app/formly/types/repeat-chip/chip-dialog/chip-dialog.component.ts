@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from "@angular/material/legacy-dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../../../../services/codelist/codelist.service";
-import { MatLegacyListOption as MatListOption } from "@angular/material/legacy-list";
+import { MatListOption } from "@angular/material/list";
 
 export interface ChipDialogData {
   options: Observable<SelectOptionUi[]>;

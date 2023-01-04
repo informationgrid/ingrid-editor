@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ConfigService } from "../../services/config/config.service";
 import { CatalogQuery } from "../../store/catalog/catalog.query";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import {
   CatalogService,

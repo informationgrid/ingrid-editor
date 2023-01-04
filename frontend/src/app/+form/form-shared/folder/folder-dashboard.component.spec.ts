@@ -3,7 +3,7 @@ import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { RouterTestingModule } from "@angular/router/testing";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 
 describe("FolderDashboardComponent", () => {
   let spectator: Spectator<FolderDashboardComponent>;

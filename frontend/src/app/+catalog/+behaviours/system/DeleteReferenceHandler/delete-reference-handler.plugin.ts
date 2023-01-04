@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { filter } from "rxjs/operators";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import {
   ReplaceAddressDialogComponent,
   ReplaceAddressDialogData,

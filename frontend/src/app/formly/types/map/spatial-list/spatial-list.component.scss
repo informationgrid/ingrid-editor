@@ -13,15 +13,15 @@ h4 > span {
   line-height: 40px;
 }
 
-.mat-list-base {
-  .mat-list-item {
+.mat-mdc-list-base {
+  .mat-mdc-list-item {
     border-bottom: 2px solid #fff;
 
     &:hover {
       background-color: darken($ige-background, 5%);
     }
 
-    .mat-list-icon {
+    .mat-mdc-list-item-icon {
       width: 24px;
       height: 24px;
       margin-left: 8px;

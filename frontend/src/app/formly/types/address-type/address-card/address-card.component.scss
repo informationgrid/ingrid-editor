@@ -1,5 +1,8 @@
 @import "src/variables";
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card {
   padding: 12px 12px 12px 16px;
   background-color: $ige-background;
@@ -12,11 +15,11 @@ mat-card {
     color: $ige-comment-color;
   }
 
-  .mat-card-header {
+  .mat-mdc-card-header {
     align-content: center;
     margin-bottom: 8px;
 
-    .mat-card-avatar {
+    .mat-mdc-card-avatar {
       width: 28px;
       height: 28px;
       background: #fff;
@@ -24,12 +27,13 @@ mat-card {
       align-items: center;
       justify-content: center;
     }
-
+    /* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
     ::ng-deep .mat-card-header-text {
       margin-left: 8px;
       overflow: hidden;
 
-      .mat-card-title {
+      .mat-mdc-card-title {
         font-size: 16px;
         font-weight: 400;
         margin: 0;
@@ -45,13 +49,13 @@ mat-card {
     }
   }
 
-  .mat-card-subtitle {
+  .mat-mdc-card-subtitle {
     font-weight: 500;
     font-size: 16px;
     color: $ige-text-color;
   }
 
-  .mat-card-content > div {
+  .mat-mdc-card-content > div {
     overflow: hidden;
     text-overflow: ellipsis;
 

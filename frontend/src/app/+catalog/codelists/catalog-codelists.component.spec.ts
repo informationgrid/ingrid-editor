@@ -6,9 +6,9 @@ import {
   mockProvider,
   Spectator,
 } from "@ngneat/spectator";
-import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
 import { CodelistPresenterModule } from "../../shared/codelist-presenter/codelist-presenter.module";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";

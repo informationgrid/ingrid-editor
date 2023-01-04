@@ -16,8 +16,8 @@ import {
 import { QueryQuery } from "../../store/query/query.query";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { ActivatedRoute } from "@angular/router";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FacetQuery } from "../../store/query/query.model";
 

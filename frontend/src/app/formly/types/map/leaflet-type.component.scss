@@ -32,7 +32,7 @@
     left: calc(50% - 28px);
     margin-top: -28px;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
   ::ng-deep .mat-button-wrapper {
     padding: 0;
   }
@@ -75,6 +75,7 @@
   display: block;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 mat-selection-list {
   flex-grow: 1;
   margin: 10px 0;

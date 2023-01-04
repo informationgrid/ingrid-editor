@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, ViewChild } from "@angular/core";
-import { MatLegacyInput as MatInput } from "@angular/material/legacy-input";
+import { MatInput } from "@angular/material/input";
 
 @Component({
   selector: "ige-search-field",

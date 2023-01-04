@@ -155,7 +155,7 @@ mat-tree-node {
       line-clamp: 4;
       -webkit-box-orient: vertical;
     }
-
+    /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version.*/
     mat-checkbox {
       padding-right: 10px;
     }
@@ -167,7 +167,7 @@ mat-tree-node {
       line-height: 0;
     }
 
-    .mat-spinner {
+    .mat-mdc-progress-spinner {
       margin-left: 12px;
       margin-top: 3px;
     }

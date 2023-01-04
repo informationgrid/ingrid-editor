@@ -6,7 +6,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 
 export type SpatialLocationType = "free" | "wkt" | "geo-name";
 

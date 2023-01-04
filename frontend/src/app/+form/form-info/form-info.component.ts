@@ -31,7 +31,7 @@ import { DocumentUtils } from "../../services/document.utils";
 import { TreeService } from "../sidebars/tree/tree.service";
 import { FormUtils } from "../form.utils";
 import { DocumentService } from "../../services/document/document.service";
-import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";

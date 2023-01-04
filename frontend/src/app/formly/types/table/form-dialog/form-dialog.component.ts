@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy } from "@angular/core";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { UntypedFormGroup } from "@angular/forms";
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from "@angular/material/legacy-dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 export interface FormDialogData {
   fields: FormlyFieldConfig[];

@@ -4,10 +4,10 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { MatIconModule } from "@angular/material/icon";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatButtonModule } from "@angular/material/button";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatDividerModule } from "@angular/material/divider";
-import { MatLegacyMenuModule as MatMenuModule } from "@angular/material/legacy-menu";
+import { MatMenuModule } from "@angular/material/menu";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import {
   FormToolbarService,
@@ -17,9 +17,9 @@ import {
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormToolbarComponent } from "./form-toolbar.component";
 import { Subject } from "rxjs";
-import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
-import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
-import { MatLegacyTooltipModule as MatTooltipModule } from "@angular/material/legacy-tooltip";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 let spectator: Spectator<FormToolbarComponent>;
 const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();

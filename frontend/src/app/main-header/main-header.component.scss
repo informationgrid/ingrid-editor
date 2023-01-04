@@ -45,6 +45,7 @@ ige-session-timeout-info {
   }
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
 .link-button ::ng-deep .mat-button-wrapper {
   text-transform: none;
 }
@@ -156,11 +157,12 @@ ige-session-timeout-info {
   font-size: 14px !important;
 }
 
-.mat-menu-item .mat-icon {
+.mat-mdc-menu-item .mat-icon {
   padding-bottom: 4px !important;
   margin-right: 0;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card-title {
   font-weight: normal;
 }
