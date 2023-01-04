@@ -91,7 +91,7 @@ export class UvpShared extends BaseDoctype {
   addPublicDisclosure() {
     return {
       name: "publicDisclosure",
-      expressions: { hide: 'model.type !== "publicDisclosure"' },
+      expressions: { hide: 'model?.type !== "publicDisclosure"' },
       props: {
         label: "Öffentliche Auslegung",
       },
@@ -145,7 +145,7 @@ export class UvpShared extends BaseDoctype {
   addPublicHearing() {
     return {
       name: "publicHearing",
-      expressions: { hide: 'model.type !== "publicHearing"' },
+      expressions: { hide: 'model?.type !== "publicHearing"' },
       props: {
         label: "Erörterungstermin",
       },
@@ -173,7 +173,7 @@ export class UvpShared extends BaseDoctype {
   addDecisionOfAdmission() {
     return {
       name: "decisionOfAdmission",
-      expressions: { hide: 'model.type !== "decisionOfAdmission"' },
+      expressions: { hide: 'model?.type !== "decisionOfAdmission"' },
       props: {
         label: "Entscheidung über die Zulassung",
       },
