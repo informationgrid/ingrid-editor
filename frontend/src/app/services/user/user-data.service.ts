@@ -51,7 +51,7 @@ export class UserDataService {
     return this.http.delete(this.configuration.backendUrl + "users/" + login);
   }
 
-  getUser(id: string): Observable<BackendUser> {
+  getUser(id: number): Observable<BackendUser> {
     return this.http.get<BackendUser>(
       this.configuration.backendUrl + "users/" + id
     );

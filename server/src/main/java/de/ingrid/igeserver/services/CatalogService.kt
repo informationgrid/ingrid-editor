@@ -394,6 +394,7 @@ class CatalogService @Autowired constructor(
     )
 
     fun applyIgeUserInfo(user: User, igeUser: UserInfo, catalogId: String): User {
+        user.id = igeUser.id
         user.groups = igeUser.groups.filter { it.catalog?.identifier == catalogId }.sortedBy { it.name }.map { it.id!! }
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)

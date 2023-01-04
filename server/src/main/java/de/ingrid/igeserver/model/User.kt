@@ -18,4 +18,5 @@ data class User(
     var creationDate: Date = Date(0),
     var modificationDate: Date = Date(0),
     var latestLogin: Date? = null,
+    var id: Int? = null
 )

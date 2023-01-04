@@ -58,7 +58,7 @@
                     [query]="searchQuery"
                     [users]="users"
                     [selectedUser]="userService.selectedUser$"
-                    (onUserSelect)="loadUser($event.login)"
+                    (onUserSelect)="loadUser($event.id)"
                 ></user-table>
             </as-split-area>
             <as-split-area

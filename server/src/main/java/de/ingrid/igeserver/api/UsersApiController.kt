@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -131,19 +132,20 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun getUser(principal: Principal, userId: String): ResponseEntity<User> {
-        if (!catalogService.canEditUser(principal, userId)) {
+    override fun getUser(principal: Principal, userId: Int): ResponseEntity<User> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+
+        if (!catalogService.canEditUser(principal, frontendUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
         keycloakService.getClient(principal).use { client ->
 
-            val user = keycloakService.getUser(client, userId)
+            val login = frontendUser.userId
+            val user = keycloakService.getUser(client, login)
 
-            val frontendUser =
-                userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
-
-            user.latestLogin = this.getMostRecentLoginForUser(userId)
+            user.latestLogin = this.getMostRecentLoginForUser(login)
 
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
@@ -187,7 +189,7 @@ class UsersApiController : UsersApi {
     }
 
 
-    override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal, user: User): ResponseEntity<Void> {
         if (!catalogService.canEditUser(principal, user.login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }

@@ -73,7 +73,7 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
+        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<User>
 
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -115,7 +115,6 @@ interface UsersApi {
     )
     fun updateUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(
             description = "Save the user data into the database.",
             required = true
