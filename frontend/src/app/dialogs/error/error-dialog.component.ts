@@ -1,11 +1,7 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
-import {
-  ConfigService,
-  Configuration,
-} from "../../services/config/config.service";
-import { Router } from "@angular/router";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "error-dialog",
@@ -19,8 +15,7 @@ export class ErrorDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
     private dlgRef: MatDialogRef<ErrorDialogComponent>,
-    configService: ConfigService,
-    private router: Router
+    configService: ConfigService
   ) {
     this.supportEmail = configService.getConfiguration()?.supportEmail;
     if (data instanceof Array) {
@@ -32,9 +27,5 @@ export class ErrorDialogComponent {
 
   close() {
     this.dlgRef.close();
-  }
-
-  goToCurrentCatalog() {
-    location.href = `/${ConfigService.catalogId}/dashboard`;
   }
 }
