@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MatTabsModule } from "@angular/material/tabs";
-import { MatTableModule } from "@angular/material/table";
+import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
+import { MatLegacyTableModule as MatTableModule } from "@angular/material/legacy-table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -12,7 +12,7 @@ import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { UploadCheckComponent } from "./upload-check/upload-check.component";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
 
 const routes: Routes = [
   {

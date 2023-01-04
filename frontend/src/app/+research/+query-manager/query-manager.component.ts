@@ -5,11 +5,11 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { Query, QueryUI } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
-import { MatSelectionList } from "@angular/material/list";
+import { MatLegacySelectionList as MatSelectionList } from "@angular/material/legacy-list";
 import { filter, map } from "rxjs/operators";
 import { logAction } from "@datorama/akita";
 import { Router } from "@angular/router";

@@ -2,18 +2,18 @@ import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import {
-  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-  MatAutocompleteModule,
-} from "@angular/material/autocomplete";
-import { MatButtonModule } from "@angular/material/button";
+  MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY as MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+  MatLegacyAutocompleteModule as MatAutocompleteModule,
+} from "@angular/material/legacy-autocomplete";
+import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
-import { MatInputModule } from "@angular/material/input";
-import { MatListModule } from "@angular/material/list";
-import { MatSelectModule } from "@angular/material/select";
-import { MatTableModule } from "@angular/material/table";
+import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatLegacyListModule as MatListModule } from "@angular/material/legacy-list";
+import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
+import { MatLegacyTableModule as MatTableModule } from "@angular/material/legacy-table";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { FormlyModule } from "@ngx-formly/core";
 import { ContextHelpComponent } from "../shared/context-help/context-help.component";
@@ -28,9 +28,9 @@ import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
 import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
-import { MatCardModule } from "@angular/material/card";
+import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
 import { CodelistPipe } from "../directives/codelist.pipe";
-import { MatMenuModule } from "@angular/material/menu";
+import { MatLegacyMenuModule as MatMenuModule } from "@angular/material/legacy-menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
 import { WktSpatialComponent } from "./types/map/spatial-dialog/wkt-spatial/wkt-spatial.component";
@@ -39,20 +39,20 @@ import { NameSpatialComponent } from "./types/map/spatial-dialog/name-spatial/na
 import { RepeatListComponent } from "./types/repeat-list/repeat-list.component";
 import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { FormDialogComponent } from "./types/table/form-dialog/form-dialog.component";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
 import { RepeatComponent } from "./types/repeat/repeat.component";
 import { SelectOptionPipe } from "../directives/selectOption.pipe";
 import { RepeatChipComponent } from "./types/repeat-chip/repeat-chip.component";
-import { MatChipsModule } from "@angular/material/chips";
+import { MatLegacyChipsModule as MatChipsModule } from "@angular/material/legacy-chips";
 import { ChipDialogComponent } from "./types/repeat-chip/chip-dialog/chip-dialog.component";
 import { DateRangeTypeComponent } from "./types/date-range-type/date-range-type.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatRadioModule } from "@angular/material/radio";
+import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
 import { RepeatDetailListComponent } from "./types/repeat-detail-list/repeat-detail-list.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CloseScrollStrategy, Overlay } from "@angular/cdk/overlay";
 import { UploadTypeComponent } from "./types/upload-type/upload-type.component";
-import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatLegacySlideToggleModule as MatSlideToggleModule } from "@angular/material/legacy-slide-toggle";
 import { GermanDateAdapter } from "../services/german-date.adapter";
 import { LinkDialogComponent } from "./types/table/link-dialog/link-dialog.component";
 import { UploadFilesDialogComponent } from "./types/table/upload-files-dialog/upload-files-dialog.component";
@@ -70,9 +70,9 @@ import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.componen
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { ReferencedDocumentsTypeComponent } from "./types/referenced-documents-type/referenced-documents-type.component";
 import {
-  MatPaginatorIntl,
-  MatPaginatorModule,
-} from "@angular/material/paginator";
+  MatLegacyPaginatorIntl as MatPaginatorIntl,
+  MatLegacyPaginatorModule as MatPaginatorModule,
+} from "@angular/material/legacy-paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { ValidUntilDialogComponent } from "./types/table/valid-until-dialog/valid-until-dialog.component";
@@ -83,7 +83,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DocumentReferenceTypeComponent } from "./types/document-reference-type/document-reference-type.component";
 import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {

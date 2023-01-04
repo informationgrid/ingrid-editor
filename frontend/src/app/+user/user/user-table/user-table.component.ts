@@ -9,8 +9,8 @@ import {
 } from "@angular/core";
 import { User } from "../../user";
 import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatPaginator } from "@angular/material/paginator";
+import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
+import { MatLegacyPaginator as MatPaginator } from "@angular/material/legacy-paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
@@ -21,7 +21,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 
 @Component({
   selector: "user-table",

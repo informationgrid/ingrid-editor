@@ -6,14 +6,14 @@ import {
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import { delay, filter, map, tap } from "rxjs/operators";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { UntypedFormControl } from "@angular/forms";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 
 @Component({
   selector: "ige-catalog-codelists",

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { RadioboxComponent } from "./radiobox.component";
-import { MatRadioModule } from "@angular/material/radio";
+import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
 import { FormsModule } from "@angular/forms";
 
 describe("RadioboxComponent", () => {

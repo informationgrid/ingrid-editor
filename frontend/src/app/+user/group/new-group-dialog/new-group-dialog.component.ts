@@ -7,7 +7,7 @@ import {
 import { GroupService } from "../../../services/role/group.service";
 import { Group } from "../../../models/user-group";
 import { ModalService } from "../../../services/modal/modal.service";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MatLegacyDialogRef as MatDialogRef } from "@angular/material/legacy-dialog";
 import { GroupQuery } from "../../../store/group/group.query";
 
 @Component({

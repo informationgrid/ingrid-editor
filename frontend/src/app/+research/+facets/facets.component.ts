@@ -11,7 +11,7 @@ import {
 import { FacetGroup, Facets, ResearchService } from "../research.service";
 import { Map, Rectangle } from "leaflet";
 import { LeafletService } from "../../formly/types/map/leaflet.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";

@@ -11,7 +11,7 @@ import {
   Configuration,
 } from "../services/config/config.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
 
 describe("CatalogService", () => {
   let spectator: SpectatorService<CatalogService>;

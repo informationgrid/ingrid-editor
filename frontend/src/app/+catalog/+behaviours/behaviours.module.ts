@@ -3,17 +3,17 @@ import { CommonModule } from "@angular/common";
 import { BehavioursComponent } from "./behaviours.component";
 import { SharedModule } from "../../shared/shared.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatInputModule } from "@angular/material/input";
-import { MatTabsModule } from "@angular/material/tabs";
+import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatLegacyTabsModule as MatTabsModule } from "@angular/material/legacy-tabs";
 import { FormFieldsModule } from "../../form-fields/form-fields.module";
 import { FormlyModule } from "@ngx-formly/core";
 import { FormlyMaterialModule } from "@ngx-formly/material";
-import { MatCardModule } from "@angular/material/card";
+import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
 import { FormSharedModule } from "../../+form/form-shared/form-shared.module";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
-import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatLegacySlideToggleModule as MatSlideToggleModule } from "@angular/material/legacy-slide-toggle";
 import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.component";
 
 @NgModule({

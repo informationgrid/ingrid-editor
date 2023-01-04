@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { AddressRef } from "./address-card/address-card.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import {
   ChooseAddressDialogComponent,
   ChooseAddressDialogData,
@@ -13,7 +13,7 @@ import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,

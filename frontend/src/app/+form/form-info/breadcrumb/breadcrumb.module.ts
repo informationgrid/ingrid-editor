@@ -3,7 +3,7 @@ import {
   BreadcrumbComponent,
   BreadCrumbTooltipPipe,
 } from "./breadcrumb.component";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatLegacyTooltipModule as MatTooltipModule } from "@angular/material/legacy-tooltip";
 import { MatIconModule } from "@angular/material/icon";
 import { CommonModule } from "@angular/common";
 import { TranslocoModule } from "@ngneat/transloco";

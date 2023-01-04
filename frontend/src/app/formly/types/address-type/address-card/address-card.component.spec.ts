@@ -1,9 +1,9 @@
 import { AddressCardComponent } from "./address-card.component";
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
-import { MatCardModule } from "@angular/material/card";
+import { MatLegacyCardModule as MatCardModule } from "@angular/material/legacy-card";
 import { CodelistPipe } from "../../../../directives/codelist.pipe";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { ProfileService } from "../../../../services/profile.service";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 

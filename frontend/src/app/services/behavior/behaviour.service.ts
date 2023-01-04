@@ -10,7 +10,7 @@ import { PluginToken } from "../../tokens/plugin.token";
 import { ConfigService } from "../config/config.service";
 import { Behaviour } from "./behaviour";
 import { catchError, filter, mergeMap, take, tap } from "rxjs/operators";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 
 export interface BehaviourFormatBackend {
   _id: string;

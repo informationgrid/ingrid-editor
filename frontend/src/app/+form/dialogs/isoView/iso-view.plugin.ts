@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 
 @Injectable()

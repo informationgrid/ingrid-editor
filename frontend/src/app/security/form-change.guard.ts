@@ -8,7 +8,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";

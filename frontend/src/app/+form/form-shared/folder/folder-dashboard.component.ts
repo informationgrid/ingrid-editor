@@ -6,7 +6,7 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { FormStateService } from "../../form-state.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";

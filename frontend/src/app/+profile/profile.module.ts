@@ -4,9 +4,9 @@ import { ProfileComponent } from "./profile/profile.component";
 import { routing } from "./profile.routing";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
 import { SharedModule } from "../shared/shared.module";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
 import { ChangeNameDialogComponent } from "./change-name-dialog/change-name-dialog.component";
 import { EmailformComponent } from "../emailform/emailform.component";
 

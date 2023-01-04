@@ -6,15 +6,15 @@ import {
 } from "@ngneat/spectator";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from "@angular/material/dialog";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogModule as MatDialogModule,
+  MatLegacyDialogRef as MatDialogRef,
+} from "@angular/material/legacy-dialog";
+import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
 import { FormFieldsModule } from "../../../../form-fields/form-fields.module";
-import { MatSelectModule } from "@angular/material/select";
+import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
 
 describe("SpatialDialogComponent", () => {
   let spectator: Spectator<SpatialDialogComponent>;

@@ -1,5 +1,5 @@
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { MatCheckboxChange } from "@angular/material/checkbox";
+import { MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
 import { SelectionModel } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
 

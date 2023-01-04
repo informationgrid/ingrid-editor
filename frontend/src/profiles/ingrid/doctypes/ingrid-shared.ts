@@ -5,7 +5,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
 import { isEmptyObject } from "../../../app/shared/utils";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,

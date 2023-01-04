@@ -11,7 +11,7 @@ import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.
 import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 import { AuthenticationFactory } from "../../security/auth.factory";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 

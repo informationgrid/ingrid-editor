@@ -6,7 +6,7 @@ import {
 import { throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";

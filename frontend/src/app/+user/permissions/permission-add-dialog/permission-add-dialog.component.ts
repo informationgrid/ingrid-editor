@@ -1,14 +1,14 @@
 import { Component, Inject, Input, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { MatListOption } from "@angular/material/list";
+import { MatLegacyListOption as MatListOption } from "@angular/material/legacy-list";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from "@angular/material/dialog";
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogRef as MatDialogRef,
+} from "@angular/material/legacy-dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,

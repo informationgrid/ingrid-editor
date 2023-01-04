@@ -1,7 +1,7 @@
 import { TreeHeaderComponent } from "./tree-header.component";
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { DynamicDatabase } from "../dynamic.database";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
 
 describe("TreeHeaderComponent", () => {
   let spectator: Spectator<TreeHeaderComponent>;

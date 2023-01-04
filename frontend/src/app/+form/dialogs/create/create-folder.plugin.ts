@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";

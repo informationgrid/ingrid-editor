@@ -9,9 +9,9 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
 import { MatSort } from "@angular/material/sort";
-import { MatPaginator } from "@angular/material/paginator";
+import { MatLegacyPaginator as MatPaginator } from "@angular/material/legacy-paginator";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
@@ -22,7 +22,7 @@ import {
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../services/document/document.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { ConfigService } from "../../services/config/config.service";
 
 @Component({

@@ -3,7 +3,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
 import { MatSort } from "@angular/material/sort";
 import { saveAs } from "file-saver";
 

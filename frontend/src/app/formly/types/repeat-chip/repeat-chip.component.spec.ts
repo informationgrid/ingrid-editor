@@ -1,7 +1,7 @@
 import { RepeatChipComponent } from "./repeat-chip.component";
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
-import { MatDialogModule } from "@angular/material/dialog";
-import { MatChipsModule } from "@angular/material/chips";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
+import { MatLegacyChipsModule as MatChipsModule } from "@angular/material/legacy-chips";
 
 describe("RepeatChipComponent", () => {
   let spectator: Spectator<RepeatChipComponent>;

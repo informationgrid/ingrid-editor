@@ -5,9 +5,9 @@ import {
   UntypedFormGroup,
   Validators,
 } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MatLegacyDialogRef as MatDialogRef } from "@angular/material/legacy-dialog";
 import { MessageService } from "../../../services/messages/message.service";
-import { MatSlideToggleChange } from "@angular/material/slide-toggle";
+import { MatLegacySlideToggleChange as MatSlideToggleChange } from "@angular/material/legacy-slide-toggle";
 import {
   ConfigService,
   UserInfo,

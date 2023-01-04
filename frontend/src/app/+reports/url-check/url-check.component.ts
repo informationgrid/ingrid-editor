@@ -1,19 +1,19 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatLegacyTableDataSource as MatTableDataSource } from "@angular/material/legacy-table";
 import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { Router } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import {
   ListDatasetsDialogComponent,
   ListDatasetsDialogData,
 } from "./list-datasets-dialog/list-datasets-dialog.component";
-import { MatPaginator } from "@angular/material/paginator";
+import { MatLegacyPaginator as MatPaginator } from "@angular/material/legacy-paginator";
 import { IgeError } from "../../models/ige-error";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { RxStompService } from "../../rx-stomp.service";
 

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
-import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
+import { MatLegacyAutocompleteTrigger as MatAutocompleteTrigger } from "@angular/material/legacy-autocomplete";
 import { filter, map, startWith, take, tap } from "rxjs/operators";
 import { merge, Observable, of, Subject } from "rxjs";
 import {
@@ -10,7 +10,7 @@ import {
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { MatSelect } from "@angular/material/select";
+import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
 
 @UntilDestroy()
 @Component({

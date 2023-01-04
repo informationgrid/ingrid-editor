@@ -14,7 +14,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MatLegacyDialogRef as MatDialogRef } from "@angular/material/legacy-dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";

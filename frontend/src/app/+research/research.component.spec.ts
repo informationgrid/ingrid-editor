@@ -4,7 +4,7 @@ import { ResearchService } from "./research.service";
 import { RouterTestingModule } from "@angular/router/testing";
 import { LeafletService } from "../formly/types/map/leaflet.service";
 import { ProfileService } from "../services/profile.service";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe("ResearchComponent", () => {

@@ -1,13 +1,13 @@
 import { Spectator, createComponentFactory } from "@ngneat/spectator";
 
 import { FilterSelectComponent } from "./filter-select.component";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatLegacyAutocompleteModule as MatAutocompleteModule } from "@angular/material/legacy-autocomplete";
 import { ReactiveFormsModule } from "@angular/forms";
 import { of } from "rxjs";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { MatLegacyFormFieldModule as MatFormFieldModule } from "@angular/material/legacy-form-field";
+import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
 import { MatIconModule } from "@angular/material/icon";
-import { MatButtonModule } from "@angular/material/button";
+import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("FilterSelectComponent", () => {

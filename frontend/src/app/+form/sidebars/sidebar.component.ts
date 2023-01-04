@@ -5,7 +5,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { FormUtils } from "../form.utils";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { DocumentService } from "../../services/document/document.service";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";

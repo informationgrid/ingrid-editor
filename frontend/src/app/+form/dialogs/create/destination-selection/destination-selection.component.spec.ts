@@ -2,7 +2,7 @@ import { DestinationSelectionComponent } from "./destination-selection.component
 import { PageTemplateModule } from "../../../../shared/page-template/page-template.module";
 import { SharedModule } from "../../../../shared/shared.module";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatLegacyDialogModule as MatDialogModule } from "@angular/material/legacy-dialog";
 import { RouterTestingModule } from "@angular/router/testing";
 import {
   createComponentFactory,
@@ -13,7 +13,7 @@ import { DynamicDatabase } from "../../../sidebars/tree/dynamic.database";
 import { ConfigService } from "../../../../services/config/config.service";
 import { of, Subject } from "rxjs";
 import { recentDocuments } from "../../../../_test-data/documents";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatLegacySnackBarModule as MatSnackBarModule } from "@angular/material/legacy-snack-bar";
 
 describe("DestinationSelectionComponent", () => {
   let spectator: Spectator<DestinationSelectionComponent>;

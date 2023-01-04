@@ -5,7 +5,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog";
 import { UntypedFormGroup } from "@angular/forms";
 
 export class FormUtils {
