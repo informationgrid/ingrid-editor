@@ -100,6 +100,8 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   createUser() {
     this.form.disable();
     const user = this.model;
+    // make sure login is trimmed
+    user.login = user.login.trim();
 
     this.userService
       .createUser(user, !this.importExternal)
