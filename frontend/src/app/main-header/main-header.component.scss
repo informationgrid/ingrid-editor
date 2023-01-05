@@ -105,7 +105,7 @@ ige-session-timeout-info {
   color: $ige-primary;
   margin-left: 12px;
 
-  .mat-icon {
+  /*.mat-icon {
     line-height: 22px;
   }
 
@@ -115,15 +115,15 @@ ige-session-timeout-info {
 
   ::ng-deep .mat-icon path {
     fill: $ige-primary;
-  }
+  }*/
 
   &[aria-expanded="true"] {
     background-color: $ige-primary;
     color: #ffffff;
 
-    ::ng-deep .mat-icon path {
+    /*::ng-deep .mat-icon path {
       fill: #ffffff;
-    }
+    }*/
 
     &:hover {
       background-color: lighten($ige-primary, 8%);
@@ -146,10 +146,6 @@ ige-session-timeout-info {
   button {
     width: 100%;
   }
-}
-
-::ng-deep .user-popup-menu {
-  margin: 12px 0 0;
 }
 
 .label {

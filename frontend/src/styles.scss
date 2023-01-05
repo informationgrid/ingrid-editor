@@ -32,6 +32,14 @@ a {
   }
 }
 
+.mat-mdc-menu-panel.user-popup-menu {
+  margin: 12px 0 0;
+
+  span.mdc-list-item {
+    font-size: 14px;
+  }
+}
+
 .leaflet-control-attribution a {
   font-size: 11px;
 }
@@ -706,40 +714,76 @@ ige-form-label + * {
     .mat-form-field-required-marker {
       color: $ige-placeholder-color !important;
     }
+  }*/
+}
+
+.dlg-field-label {
+  padding-bottom: 4px;
+
+  &.required {
+    font-weight: 500;
   }
-}*/
+}
 
-  .dlg-field-label {
-    padding-bottom: 4px;
+/* Material Tabs */
+.page-tabs-routing {
+  &.mat-mdc-tab-nav-bar {
+    border-bottom: none;
+  }
 
-    &.required {
-      font-weight: 500;
+  .mat-mdc-tab-links {
+    background-color: $ige-secondary-dark;
+  }
+
+  .mat-mdc-tab-link {
+    //background-color: #161234;
+    border-bottom: none;
+    height: 56px !important;
+
+    .mdc-tab__text-label {
+      color: #ffffff !important;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    &.active-link .mdc-tab__text-label {
+      opacity: 1;
+      color: #4ba7d0 !important;
     }
   }
 
-  /* Material Tabs */
-  .page-tabs-routing {
-    &.mat-mdc-tab-nav-bar {
-      border-bottom: none;
-    }
+  .mdc-tab-indicator__content {
+    border-color: $ige-background !important;
+    background-color: $ige-background !important;
+    height: 6px;
+  }
+}
 
-    .mat-mdc-tab-links {
-      background-color: $ige-secondary-dark;
-    }
+.page-tabs {
+  height: 100%;
 
-    .mat-mdc-tab-link {
-      //background-color: #161234;
-      border-bottom: none;
-      height: 56px;
-
+  & > .mat-mdc-tab-header {
+    background-color: $ige-secondary-dark;
+    border-bottom: none;
+    height: 56px;
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    .mat-tab-label {
       color: #ffffff;
       letter-spacing: 1.25px;
       text-transform: uppercase;
       opacity: 0.75;
-
-      &.active-link {
+      height: 56px;
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      &.mat-tab-label-active {
         opacity: 1;
-        color: #4ba7d0;
+        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+        .mat-tab-label-content {
+          color: #4ba7d0;
+        }
       }
     }
 
@@ -748,105 +792,72 @@ ige-form-label + * {
       height: 6px;
     }
   }
-
-  .page-tabs {
-    height: 100%;
-
-    & > .mat-mdc-tab-header {
-      background-color: $ige-secondary-dark;
-      border-bottom: none;
-      height: 56px;
-      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-      .mat-tab-label {
-        color: #ffffff;
-        letter-spacing: 1.25px;
-        text-transform: uppercase;
-        opacity: 0.75;
-        height: 56px;
-        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-        &.mat-tab-label-active {
-          opacity: 1;
-          /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-          .mat-tab-label-content {
-            color: #4ba7d0;
-          }
-        }
-      }
-
-      .mat-ink-bar {
-        background-color: $ige-background !important;
-        height: 6px;
-      }
-    }
-    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
-    & > .mat-tab-body-wrapper {
-      flex: 1;
-    }
-  }
-
-  .page-tabs,
-  .page-tabs-routing ~ * {
-    .status {
-      padding: 30px;
-      margin-bottom: 24px;
-      background-color: rgb(223, 223, 223);
-
-      .log {
-        overflow: auto;
-        max-height: 300px;
-      }
-    }
-  }
-
-  /* LEAFLET */
-
-  .leaflet-control-attribution a {
-    font-size: 11px;
-  }
-
-  .leaflet-control a {
-    text-transform: none;
-  }
-
-  .passive .leaflet-control-zoom {
-    visibility: hidden;
-  }
-
-  .leaflet-areaselect-shade {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.4);
-  }
-
-  .leaflet-areaselect-handle {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #666;
-    -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-    box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-    width: 14px;
-    height: 14px;
-    cursor: move;
-  }
-
-  .doc-item {
-    .mat-icon {
-      margin-top: -2px !important;
-    }
-
-    .mat-line {
-      line-height: 22px !important;
-    }
-  }
-
-  .show-all-link + .spacing,
-  .mat-mdc-option + .spacing {
-    padding-bottom: 35px;
+  /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+  & > .mat-tab-body-wrapper {
+    flex: 1;
   }
 }
+
+.page-tabs,
+.page-tabs-routing ~ * {
+  .status {
+    padding: 30px;
+    margin-bottom: 24px;
+    background-color: rgb(223, 223, 223);
+
+    .log {
+      overflow: auto;
+      max-height: 300px;
+    }
+  }
+}
+
+/* LEAFLET */
+
+.leaflet-control-attribution a {
+  font-size: 11px;
+}
+
+.leaflet-control a {
+  text-transform: none;
+}
+
+.passive .leaflet-control-zoom {
+  visibility: hidden;
+}
+
+.leaflet-areaselect-shade {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-areaselect-handle {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #666;
+  -moz-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  width: 14px;
+  height: 14px;
+  cursor: move;
+}
+
+.doc-item {
+  .mat-icon {
+    margin-top: -2px !important;
+  }
+
+  .mat-line {
+    line-height: 22px !important;
+  }
+}
+
+.show-all-link + .spacing,
+.mat-mdc-option + .spacing {
+  padding-bottom: 35px;
+}
+//}
 
 /* DRAG N DROP ANIMIATION */
 /* Animate items as they're being sorted. */
@@ -983,12 +994,12 @@ mat-icon.wide-icon-26px {
   }
 }*/
 
-/*.info-menu {
+.info-menu {
   &.mat-mdc-menu-panel {
-    max-width: 350px;
+    max-width: 350px !important;
   }
 
-  .mat-mdc-card-title {
+  /*.mat-mdc-card-title {
     font-size: 24px;
     margin: 0;
   }
@@ -1001,17 +1012,17 @@ mat-icon.wide-icon-26px {
 
   a.mat-mdc-menu-item {
     text-transform: unset;
-  }
+  }*/
 
   .category-item {
-    color: $ige-hint-color;
+    //color: $ige-hint-color;
     font-size: 14px;
     text-transform: uppercase;
   }
 
-  .category-item ~ .category-item {
+  /*  .category-item ~ .category-item {
     padding-top: 16px;
-  }
+  }*/
 
   .versioninfo {
     color: $ige-hint-color;
@@ -1019,7 +1030,7 @@ mat-icon.wide-icon-26px {
     line-height: 18px;
     padding: 16px;
   }
-}*/
+}
 
 .test-instance {
   position: fixed;

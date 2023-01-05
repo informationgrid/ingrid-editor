@@ -83,3 +83,8 @@ ige-side-menu {
 @include mat.sidenav-theme($ige-form-theme);
 @include mat.list-theme($ige-form-theme);
 @include mat.card-theme($ige-theme);
+//@include mat.menu-theme($ige-theme);
+@include mat.divider-theme($ige-theme);
+@include mat.expansion-theme($ige-theme);
+//@include mat.button-toggle-theme($ige-theme);
+@include mat.tabs-theme($ige-theme);
