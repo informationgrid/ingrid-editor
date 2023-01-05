@@ -109,7 +109,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
         catchError((error) => this.handleCreateUserError(error)),
         filter((user) => user)
       )
-      .subscribe(() => this.dialogRef.close(user));
+      .subscribe((u) => this.dialogRef.close(u));
   }
 
   private handleCreateUserError(error: any): Observable<any> {
