@@ -7,13 +7,46 @@ $mat-ige-purple: (
   700: #1c1840,
   contrast: (
     100: rgba(black, 0.87),
-    500: rgba(black, 0.87),
-    700: rgba(black, 0.87),
+    500: rgba(white, 0.87),
+    700: rgba(white, 0.87),
+  ),
+);
+
+$mat-ige-green: (
+  50: #e7f1e6,
+  100: #c4ddc2,
+  200: #9cc699,
+  300: #74af70,
+  400: #579d51,
+  500: #398c32,
+  600: #33842d,
+  700: #2c7926,
+  800: #246f1f,
+  900: #175c13,
+  A100: #99ff95,
+  A200: #69ff62,
+  A400: #38ff2f,
+  A700: #20ff15,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
   ),
 );
 
 $my-primary: mat.define-palette($mat-ige-purple);
-$my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$my-accent: mat.define-palette($mat-ige-green);
 $my-typography: mat.define-typography-config();
 
 // Create the theme object (a Sass map containing all of the palettes).
@@ -25,6 +58,7 @@ $ige-form-theme: mat.define-light-theme(
       //warn: $candy-app-warn,
     ),
     density: -4,
+    typography: $my-typography,
   )
 );
 $ige-theme: mat.define-light-theme(
@@ -77,7 +111,6 @@ ige-side-menu {
 //@include mat.input-theme($ige-theme);
 @include mat.button-theme($ige-theme);
 @include mat.icon-button-theme($ige-form-theme);
-@include mat.autocomplete-theme($ige-form-theme);
 @include mat.form-field-theme($ige-form-theme);
 @include mat.progress-spinner-theme($ige-form-theme);
 @include mat.sidenav-theme($ige-form-theme);
@@ -86,5 +119,15 @@ ige-side-menu {
 //@include mat.menu-theme($ige-theme);
 @include mat.divider-theme($ige-theme);
 @include mat.expansion-theme($ige-theme);
-//@include mat.button-toggle-theme($ige-theme);
 @include mat.tabs-theme($ige-theme);
+@include mat.checkbox-theme($ige-theme);
+@include mat.datepicker-theme($ige-form-theme);
+@include mat.table-theme($ige-form-theme);
+@include mat.select-theme($ige-form-theme);
+@include mat.autocomplete-theme($ige-form-theme);
+@include mat.chips-theme($ige-theme);
+@include mat.button-toggle-theme($ige-theme);
+@include mat.slide-toggle-theme($ige-theme);
+@include mat.tooltip-theme($ige-theme);
+@include mat.stepper-theme($ige-theme);
+@include mat.radio-theme($ige-theme);

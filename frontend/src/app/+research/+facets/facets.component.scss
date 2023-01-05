@@ -47,12 +47,10 @@ ige-add-button {
 }
 
 .timespan {
-  .mat-mdc-form-field {
-    display: flex;
-    gap: 20px;
-  }
+  display: flex;
+  gap: 20px;
 
-  :nth-child(1) {
+  .mat-mdc-form-field {
     flex: 1;
   }
 }

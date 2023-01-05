@@ -40,6 +40,47 @@ a {
   }
 }
 
+form-toolbar .mdc-button > .mat-icon {
+  height: 24px;
+  width: 24px;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.right-sharp-corner .mdc-notched-outline__trailing {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.left-sharp-corner .mdc-notched-outline__leading {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+mat-checkbox.small-checkbox-spacing {
+  margin-bottom: -10px !important;
+
+  .mdc-form-field {
+    font-size: 16px;
+  }
+}
+
+button.button-next-to-input {
+  height: 40px !important;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+
+  &:hover {
+    background-color: lighten($ige-secondary, 8%);
+  }
+}
+
+mat-button-toggle.mat-button-toggle-checked {
+  background-color: $ige-check-color !important;
+  color: white !important;
+  font-weight: 500;
+}
+
 .leaflet-control-attribution a {
   font-size: 11px;
 }

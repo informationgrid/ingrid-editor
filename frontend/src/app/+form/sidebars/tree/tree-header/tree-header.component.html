@@ -32,7 +32,6 @@
         <div class="multi-select" *ngIf="showMultiSelectButton">
             <mat-checkbox
                 data-cy="edit-button"
-                class="default-button"
                 matTooltip="Mehrfachauswahl"
                 (click)="activateMultiSelection()"
             >
@@ -64,14 +63,10 @@
 
     <mat-form-field
         *ngIf="showSearch"
-        class="ige-form-field"
+        class="ige-form-field white-bg"
         appearance="outline"
         data-cy="tree-search-field"
     >
-        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix
-            >search
-        </mat-icon>
-
         <input
             matInput
             placeholder="Suchen"
@@ -81,20 +76,24 @@
             (click)="query.value?.length || search('')"
         />
 
-        <mat-spinner
-            *ngIf="this.searchSub && !this.searchSub.closed"
-            [diameter]="18"
-        ></mat-spinner>
-        <button
-            *ngIf="query.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            class="close"
-            (click)="resetForm()"
-            data-cy="clear-tree-search-field"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
+        <div matSuffix>
+            <mat-icon *ngIf="query.value?.length === 0" class="passive"
+                >search
+            </mat-icon>
+            <mat-spinner
+                *ngIf="this.searchSub && !this.searchSub.closed"
+                [diameter]="24"
+            ></mat-spinner>
+            <button
+                *ngIf="query.value?.length > 0"
+                mat-icon-button
+                class="close"
+                (click)="resetForm()"
+                data-cy="clear-tree-search-field"
+            >
+                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            </button>
+        </div>
 
         <mat-autocomplete
             #searchAuto="matAutocomplete"

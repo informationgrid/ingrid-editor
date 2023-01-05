@@ -17,9 +17,9 @@
             <mat-form-field
                 appearance="outline"
                 style="min-width: 220px"
-                class="straight-border-right prefix-text"
+                class="right-sharp-corner prefix-text"
             >
-                <span matPrefix class="prefix">Suche nach:</span>
+                <span matTextPrefix class="prefix">Suche nach:</span>
                 <mat-select formControlName="type">
                     <mat-option value="selectDocuments">{{
                         t("form")
@@ -30,7 +30,7 @@
 
             <mat-form-field
                 appearance="outline"
-                class="width-100 straight-border-left straight-border-right"
+                class="width-100 right-sharp-corner left-sharp-corner"
             >
                 <!--                        <mat-label>Suche</mat-label>-->
                 <input
@@ -55,11 +55,12 @@
                 </mat-hint>
             -->
             </mat-form-field>
-            <div class="do-search-button">
+            <div class="button-next-to-input">
                 <button
                     mat-flat-button
                     mat-button
                     color="primary"
+                    class="button-next-to-input"
                     (click)="startSearch()"
                 >
                     Suchen

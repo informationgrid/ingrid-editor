@@ -108,18 +108,3 @@ mat-spinner {
     padding-bottom: 4px;
   }
 }
-
-::ng-deep .search-content .search .mdc-notched-outline__trailing {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-}
-
-.btn-search {
-  height: 40px;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-
-  &:hover {
-    background-color: lighten($ige-secondary, 8%);
-  }
-}
