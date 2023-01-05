@@ -48,11 +48,12 @@ ige-add-button {
 
 .timespan {
   .mat-mdc-form-field {
-    width: 50%;
+    display: flex;
+    gap: 20px;
   }
 
   :nth-child(1) {
-    padding-right: 20px;
+    flex: 1;
   }
 }
 
@@ -63,8 +64,4 @@ ige-add-button {
 .toggle {
   margin-top: 10px;
   color: $ige-placeholder-color;
-}
-
-[data-cy="clear-date-fields"] {
-  padding: 0 8px;
 }

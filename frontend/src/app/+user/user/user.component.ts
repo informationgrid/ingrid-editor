@@ -187,9 +187,9 @@ export class UserComponent
     });
   }
 
-  private updateUsersAndLoad(result) {
+  private updateUsersAndLoad(result: User) {
     if (result) {
-      this.fetchUsers().subscribe(() => this.loadUser(result.login));
+      this.fetchUsers().subscribe(() => this.loadUser(result.id));
     } else {
       this.fetchUsers().subscribe();
     }

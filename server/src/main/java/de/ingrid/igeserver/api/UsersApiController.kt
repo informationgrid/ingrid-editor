@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
@@ -70,11 +71,11 @@ class UsersApiController : UsersApi {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
-    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<String?> {
+    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
 
         // user login must be lowercase
         if (user.login != user.login.lowercase()) {
-            return ResponseEntity.badRequest().body("user.login must be lowercase")
+            throw ClientException.withReason("user.login must be lowercase")
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -86,18 +87,19 @@ class UsersApiController : UsersApi {
 
         logger.debug("Create user ${user.login} (exists in keycloak: $userExists)")
 
-        if (userExists) {
+        val createdUser = if (userExists) {
             keycloakService.updateUser(principal, user)
             keycloakService.addRoles(principal, user.login, listOf(user.role))
-            catalogService.createUser(catalogId, user)
+            val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to existing user '${user.login}' (${user.email})")
                 email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
             }
+            createdUser
 
         } else {
             val password = keycloakService.createUser(principal, user)
-            catalogService.createUser(catalogId, user)
+            val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to '${user.login}' (${user.email})")
                 email.sendWelcomeEmailWithPassword(
@@ -108,11 +110,12 @@ class UsersApiController : UsersApi {
                     user.login
                 )
             }
-
+            createdUser
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
-        return ResponseEntity.ok().build()
+        user.id = createdUser.id
+        return ResponseEntity.ok(user)
     }
 
     @Transactional
@@ -184,7 +187,8 @@ class UsersApiController : UsersApi {
     }
 
     override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
-        val filteredUsers = catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
+        val filteredUsers =
+            catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
 

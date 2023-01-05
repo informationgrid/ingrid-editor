@@ -412,6 +412,29 @@ describe('Research Page', () => {
     });
   });
 
+  it('should reset all search parameters (#3699)', () => {
+    // set search parameters
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    ResearchPage.createSpatialReference('Deutschland');
+    ResearchPage.setDate('start', '05.08.2021');
+    ResearchPage.setDate('end', '22.08.2021');
+    ResearchPage.search('d');
+    ResearchPage.getSearchResultCountZeroIncluded().then(filtered => {
+      // reset fields
+      cy.get('.reset-form-button').click();
+      // check parameter fields
+      cy.get(FilterExtendedSearch.NoFolders).should('not.be.checked');
+      cy.get('ige-add-button').should('exist');
+      cy.get('.mat-input-element[formcontrolname="end"]').should('have.value', '');
+      cy.get('.mat-input-element[formcontrolname="start"]').should('have.value', '');
+      cy.get('.main-header input').should('have.value', '');
+
+      // compare values to make sure new search with no search parameters has been triggered
+      ResearchPage.waitForSearch();
+      ResearchPage.getSearchResultCount().should('be.greaterThan', filtered);
+    });
+  });
+
   it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
     ResearchPage.setDate('start', '22.07.2021');
     ResearchPage.setDate('end', '22.07.2021');

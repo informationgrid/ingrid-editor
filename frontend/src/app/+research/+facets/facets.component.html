@@ -104,11 +104,7 @@
             fxLayout="column"
             fxLayoutGap="10px"
         >
-            <div
-                *ngFor="let filter of group.filter"
-                style="display: flex"
-                class="timespan"
-            >
+            <div *ngFor="let filter of group.filter" class="timespan">
                 <mat-form-field>
                     <input
                         formControlName="start"
