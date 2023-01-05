@@ -47,6 +47,7 @@ ige-add-button {
 }
 
 .timespan {
+  display: flex;
   gap: 20px;
 
   .mat-form-field {
