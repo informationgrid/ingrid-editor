@@ -26,8 +26,8 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
-import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
+import { MatSelect } from "@angular/material/select";
 
 export interface ChooseAddressDialogData {
   address: AddressRef;

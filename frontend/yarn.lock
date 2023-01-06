@@ -8217,10 +8217,10 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ngx-mat-select-search@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/ngx-mat-select-search/-/ngx-mat-select-search-5.0.0.tgz#3f5793c5a83594efbf7e8043161899166626b86a"
-  integrity sha512-w9NLIhN/b6aDpvwdrvxttNm6eYbcnalyCIOPaFPTpK8Ub8graHmL6qQdWzIw54Qxyzlr7A0DvpMgywcs4eGSYA==
+ngx-mat-select-search@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-mat-select-search/-/ngx-mat-select-search-7.0.0.tgz#a8389af8cbeaee995f136217954e3ae44a1238b6"
+  integrity sha512-6bXiyI7FgzLsxDEZsecmEDZRT7JMdg2vSPQnowoWVqjAjqqE9KmaIDlrwRzgbZDdz5EKiAtTBdnL9+owJ+KnxA==
   dependencies:
     tslib "^2.4.0"
 

@@ -28,7 +28,8 @@
             class="close gray"
             (click)="removeItem(i)"
         >
-            <mat-icon svgIcon="Entfernen"></mat-icon>
+            <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 </div>
@@ -72,6 +73,7 @@
             </div>
         </mat-option>
     </mat-select>
+    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 
 <ng-template #templateAutocomplete>
@@ -120,8 +122,6 @@
         <mat-hint *ngIf="!parameterOptions"
             >Eingabe mit RETURN bestätigen
         </mat-hint>
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
 </ng-template>
-<mat-error *ngIf="formControl.errors?.required"
-    >Bitte erstellen Sie mindestens einen Eintrag
-</mat-error>

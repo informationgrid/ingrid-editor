@@ -100,7 +100,7 @@ export class UvpShared extends BaseDoctype {
           { key: "type" },
           this.addDateRange("disclosureDate", "Zeitraum der Auslegung", {
             required: true,
-            wrappers: ["panel", "form-field"],
+            wrappers: ["panel"],
           }),
           this.addTable("announcementDocs", "Auslegungsinformationen", {
             required: true,

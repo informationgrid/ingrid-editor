@@ -1,27 +1,26 @@
-<mat-date-range-input
-    [rangePicker]="picker"
-    [formGroup]="rangeFormGroup"
-    [disabled]="formControl.disabled"
->
-    <input
-        matStartDate
-        placeholder="TT.MM.JJJJ"
-        formControlName="start"
-        (change)="updateFormControl()"
-    />
-    <input
-        matEndDate
-        placeholder="TT.MM.JJJJ"
-        formControlName="end"
-        (change)="updateFormControl()"
-    />
-</mat-date-range-input>
-<mat-datepicker-toggle
-    *ngIf="!disabled"
-    matIconSuffix
-    [for]="picker"
-></mat-datepicker-toggle>
-<mat-date-range-picker
-    #picker
-    (closed)="updateFormControl()"
-></mat-date-range-picker>
+<mat-form-field [appearance]="props.appearance">
+    <mat-label *ngIf="props.label">{{ props.label }}</mat-label>
+
+    <mat-date-range-input
+        [formGroup]="formControl"
+        [rangePicker]="picker"
+        [disabled]="formControl.disabled"
+    >
+        <input matStartDate placeholder="TT.MM.JJJJ" formControlName="start" />
+        <input matEndDate placeholder="TT.MM.JJJJ" formControlName="end" />
+    </mat-date-range-input>
+    <mat-datepicker-toggle
+        *ngIf="!disabled"
+        matIconSuffix
+        [for]="picker"
+    ></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    <!--<mat-error
+        *ngIf="field.fieldGroup[0].formControl.hasError('matStartDateInvalid')"
+        >Invalid start date</mat-error
+    >-->
+    <mat-error *ngIf="formControl.hasError('matEndDateInvalid')">
+        Das Enddatum liegt vor dem Startdatum
+    </mat-error>
+</mat-form-field>

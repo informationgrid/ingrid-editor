@@ -388,7 +388,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "datepicker",
-      className: "flex-1",
+      className: "flex-1 ige-date-picker",
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -415,16 +415,22 @@ export class FormFieldHelper {
     });
   }
 
-  addDateRange(id, label, options?) {
+  addDateRange(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "date-range",
       className:
-        options?.className === undefined ? "flex-1" : options?.className,
+        options?.className === undefined
+          ? "flex-1 ige-date-picker"
+          : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
       defaultValue: null,
+      fieldGroup: [
+        { type: "input", key: "start" },
+        { type: "input", key: "end" },
+      ],
       props: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,
@@ -438,12 +444,6 @@ export class FormFieldHelper {
             !options?.required ||
             !(ctrl.value?.start === null && ctrl.value?.end === null),
         },
-        validStartEnd: {
-          expression: (ctrl) =>
-            (ctrl.value?.start === null && ctrl.value?.end === null) ||
-            (ctrl.value?.start && ctrl.value?.end),
-          message: "Das Start- und Enddatum muss gültig sein",
-        },
       },
     };
   }
@@ -454,7 +454,7 @@ export class FormFieldHelper {
       key: id,
       type: "checkbox",
       className: options?.className,
-      wrappers: options?.wrappers ?? ["panel", "form-field"],
+      wrappers: options?.wrappers ?? ["panel"],
       defaultValue: options?.defaultValue ?? false,
       props: {
         externalLabel: label,

@@ -1,7 +1,7 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { CookieService } from "../../services/cookie.service";
-import { MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 export interface ConfirmDialogData {
   title: string;

@@ -7,10 +7,33 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import { UntypedFormControl } from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+  UntypedFormControl,
+  ValidationErrors,
+  Validators,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MatSelect } from "@angular/material/select";
+import { ErrorStateMatcher } from "@angular/material/core";
+
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(
+    control: FormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(
+      control &&
+      control.invalid &&
+      (control.dirty || control.touched || isSubmitted)
+    );
+  }
+}
 
 @UntilDestroy()
 @Component({
@@ -32,6 +55,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();
   filterCtrl: UntypedFormControl;
   private manualUpdate = new Subject<string>();
+
+  matcher = new MyErrorStateMatcher();
 
   constructor() {
     super();
@@ -68,6 +93,15 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
+    if (this.props.required) {
+      this.inputControl.addValidators(
+        (control: AbstractControl): ValidationErrors | null => {
+          return this.props.required && this.formControl.value.length > 0
+            ? null
+            : { required: "Pflicht!" };
+        }
+      );
+    }
 
     this.formControl.statusChanges
       .pipe(untilDestroyed(this))

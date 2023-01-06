@@ -131,3 +131,4 @@ ige-side-menu {
 @include mat.tooltip-theme($ige-theme);
 @include mat.stepper-theme($ige-theme);
 @include mat.radio-theme($ige-theme);
+@include mat.dialog-theme($ige-theme);

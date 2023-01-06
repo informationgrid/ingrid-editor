@@ -24,7 +24,7 @@
                     [attr.data-cy]="catalog.label"
                     *ngIf="activeCatalog | async as catalog"
                 >
-                    <div class="card-header">
+                    <mat-card-header>
                         <mat-icon>article</mat-icon>
                         <span class="profile">{{ catalog.type }}</span>
                         <div fxFlex></div>
@@ -43,7 +43,7 @@
                                 Bearbeiten
                             </button>
                         </mat-menu>
-                    </div>
+                    </mat-card-header>
 
                     <ng-container
                         [ngTemplateOutlet]="catContent"
@@ -68,7 +68,7 @@
                     [attr.data-cy]="cat.label"
                     [class.selected]="cat.id === currentCatalog"
                 >
-                    <div class="card-header">
+                    <mat-card-header>
                         <mat-icon>article</mat-icon>
                         <span class="profile">{{ cat.type }}</span>
                         <div fxFlex></div>
@@ -93,7 +93,7 @@
                                 Aktivieren
                             </button>
                         </mat-menu>
-                    </div>
+                    </mat-card-header>
 
                     <ng-container
                         [ngTemplateOutlet]="catContent"

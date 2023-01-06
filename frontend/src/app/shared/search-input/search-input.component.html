@@ -1,0 +1,45 @@
+<mat-form-field
+    class="white-bg no-input-border"
+    [class.right-sharp-corner]="withButton"
+    [style.min-width]="minWidth"
+    appearance="outline"
+>
+    <input
+        matInput
+        [placeholder]="placeholder"
+        aria-label="Search"
+        [formControl]="query"
+        [matAutocomplete]="autocompleteRef"
+    />
+    <div matSuffix>
+        <mat-spinner
+            *ngIf="searchSub && !searchSub.closed"
+            [diameter]="24"
+        ></mat-spinner>
+        <button
+            *ngIf="query.value?.length > 0"
+            mat-icon-button
+            class="field-close"
+            (click)="resetSearch()"
+        >
+            <mat-icon class="gray">close</mat-icon>
+        </button>
+        <mat-icon
+            *ngIf="showSearchIcon && query.value?.length === 0"
+            class="search-icon passive"
+        >
+            search
+        </mat-icon>
+    </div>
+</mat-form-field>
+
+<button
+    *ngIf="withButton"
+    mat-flat-button
+    color="primary"
+    class="button-next-to-input"
+    (click)="buttonClick.next(query.value)"
+>
+    <mat-icon>search</mat-icon>
+    Suchen
+</button>

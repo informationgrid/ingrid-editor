@@ -59,7 +59,7 @@ export class QuickSearchComponent implements OnInit {
 
   openResearchPage(event: Event, inAddresses?: boolean) {
     // TODO: activate after research page is implemented
-    event.preventDefault();
+    // event.preventDefault();
 
     this.router.navigate([
       `${ConfigService.catalogId}/research/search`,
@@ -68,11 +68,6 @@ export class QuickSearchComponent implements OnInit {
         type: inAddresses ? "selectAddresses" : "selectDocuments",
       },
     ]);
-  }
-
-  resetSearch() {
-    this.query.reset("");
-    this.searchSub?.unsubscribe();
   }
 
   private highlightResult(

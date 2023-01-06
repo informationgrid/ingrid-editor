@@ -45,9 +45,6 @@
 
   .mat-mdc-icon-button {
     display: none;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
   }
 
   &:hover {
@@ -76,8 +73,4 @@
     padding-right: 12px;
     line-height: 16px;
   }
-}
-
-mat-error {
-  margin-top: -14px;
 }
