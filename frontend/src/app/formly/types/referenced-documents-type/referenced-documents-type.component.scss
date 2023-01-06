@@ -9,3 +9,14 @@
 mat-hint {
   font-size: 12px;
 }
+
+mat-spinner {
+  display: inline-block;
+  margin-left: 12px;
+}
+
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 50.21px;
+}

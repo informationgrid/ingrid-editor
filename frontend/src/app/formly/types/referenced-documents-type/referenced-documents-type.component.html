@@ -1,13 +1,18 @@
-<button
-    *ngIf="showToggleButton; else noReferences"
-    mat-stroked-button
-    class="toggle-ref-docs-btn"
-    (click)="toggleList()"
-    color="primary"
-    data-cy="toggle-ref-docs-btn"
->
-    {{ showReferences ? "Ausblenden" : "Anzeigen" }}
-</button>
+<div class="spinner-wrapper">
+    <button
+        *ngIf="docs.length > 0; else noReferences"
+        mat-stroked-button
+        class="toggle-ref-docs-btn"
+        (click)="toggleList()"
+        color="primary"
+    >
+        {{ totalHits }} {{ showReferences ? "Ausblenden" : "Anzeigen" }}
+    </button>
+
+    <ng-container *ngIf="isLoading">
+        <mat-spinner diameter="24"></mat-spinner>
+    </ng-container>
+</div>
 
 <ng-container *ngIf="showReferences">
     <mat-paginator
@@ -31,7 +36,7 @@
 </ng-container>
 
 <ng-template #noReferences>
-    <p *ngIf="totalHits === 0" data-cy="no-ref-docs-hint">
+    <p *ngIf="isLoading === false" data-cy="no-ref-docs-hint">
         {{ messageNoReferences }}
     </p>
 </ng-template>

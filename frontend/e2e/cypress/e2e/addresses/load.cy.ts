@@ -215,7 +215,7 @@ describe('Load addresses', () => {
   it('should not display toggle button for referenced documents if there are none', () => {
     AddressPage.visit();
     Tree.openNode(['topreview, address']);
-    cy.get('[data-cy="toggle-ref-docs-btn"]').should('not.exist');
+    cy.get('.toggle-ref-docs-btn').should('not.exist');
     cy.get('[data-cy="no-ref-docs-hint"]').should('exist');
   });
 });

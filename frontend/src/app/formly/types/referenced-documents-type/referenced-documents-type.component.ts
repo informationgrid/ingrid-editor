@@ -12,6 +12,7 @@ import {
   filter,
   map,
   startWith,
+  switchMap,
   tap,
 } from "rxjs/operators";
 import { FieldType } from "@ngx-formly/material";
@@ -60,11 +61,13 @@ export class ReferencedDocumentsTypeComponent
                               WHERE (s -> '<uuidField>') = '"<uuid>"')`;
 
   private currentUuid: string;
-  totalHits: number;
+  totalHits = 0;
   showReferences: boolean;
   showToggleButton: boolean;
   messageNoReferences: string;
   referencesHint: string;
+  isLoading: boolean;
+  firstLoaded: boolean;
 
   constructor(
     private router: Router,
@@ -84,6 +87,7 @@ export class ReferencedDocumentsTypeComponent
     this.messageNoReferences =
       this.props.messageNoReferences ??
       "Es existieren keine Referenzen auf diese Adresse";
+    this.isLoading = false;
 
     const loadEvent = this.docEvents.afterLoadAndSet$(true).pipe(
       untilDestroyed(this),
@@ -101,28 +105,31 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(this.currentUuid),
-        tap(() => (this.docs = []))
+        tap(() => (this.docs = [])),
+        tap(() => (this.firstLoaded = true)),
+        switchMap((uuid) => this.searchReferences(uuid))
       )
-      .subscribe((uuid) => this.searchReferences(uuid).subscribe());
+      .subscribe();
   }
 
   searchReferences(uuid: string, page = 1) {
+    this.isLoading = true;
     return this.researchService
       .searchBySQL(this.prepareSQL(uuid), page, this.pageSize)
       .pipe(
         tap((response) => (this.totalHits = response.totalHits)),
-        tap(() => (this.showToggleButton = this.totalHits > 0)),
         map((response) =>
           this.documentService.mapToDocumentAbstracts(response.hits)
         ),
         tap((docs) => (this.docs = docs)),
+        tap(() => (this.isLoading = false)),
         tap(() => this.cdr.detectChanges())
       );
   }
 
   toggleList() {
     this.showReferences = !this.showReferences;
-    if (this.showReferences) {
+    if (this.showReferences && !this.firstLoaded) {
       this.docs = [];
       this.searchReferences(this.currentUuid).subscribe(() =>
         setTimeout(() =>
@@ -133,6 +140,7 @@ export class ReferencedDocumentsTypeComponent
         )
       );
     }
+    this.firstLoaded = false;
   }
 
   openReference(doc: DocumentAbstract) {
