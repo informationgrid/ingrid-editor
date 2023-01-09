@@ -8,6 +8,12 @@ button.mdc-button {
   text-transform: uppercase;
 }
 
+mat-form-field:hover .mdc-notched-outline__leading,
+mat-form-field:hover .mdc-notched-outline__trailing {
+  //border-color: #979797;
+  //border-width: 2px !important;
+}
+
 ige-side-menu .mat-mdc-list-item {
   &.light {
     background-color: $ige-secondary;

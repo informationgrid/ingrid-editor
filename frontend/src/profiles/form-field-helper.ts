@@ -388,7 +388,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "datepicker",
-      className: "flex-1 ige-date-picker",
+      className: "ige-date-picker",
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -422,7 +422,7 @@ export class FormFieldHelper {
       type: "date-range",
       className:
         options?.className === undefined
-          ? "flex-1 ige-date-picker"
+          ? "ige-date-picker"
           : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
@@ -460,7 +460,6 @@ export class FormFieldHelper {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
-        required: options?.required,
         click: options?.click,
         hasInlineContextHelp: options?.hasInlineContextHelp,
       },

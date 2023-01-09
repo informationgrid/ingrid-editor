@@ -123,7 +123,6 @@ export class TestDoctype extends BaseDoctype {
           {
             key: "date",
             type: "datepicker",
-            className: "flex-1",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Date",
@@ -132,28 +131,14 @@ export class TestDoctype extends BaseDoctype {
               required: true,
             },
           },
-          {
-            key: "range",
-            type: "date-range",
-            wrappers: ["panel", "form-field"],
-            props: {
-              externalLabel: "Date-Range",
-              placeholder: "Bitte wählen",
-              appearance: "outline",
-              required: true,
-            },
-          },
-          {
-            key: "checkbox",
-            type: "checkbox",
-            wrappers: ["panel", "form-field", "inline-help"],
-            props: {
-              externalLabel: "Checkbox",
-              label: "Open Data",
-              indeterminate: false,
-              required: true,
-            },
-          },
+          this.addDateRange("range", "Date-Range", {
+            required: true,
+            wrappers: ["panel"],
+          }),
+          this.addCheckbox("checkbox", "Checkbox", {
+            wrappers: ["panel", "inline-help"],
+            fieldLabel: "Open Data",
+          }),
         ],
       },
       {

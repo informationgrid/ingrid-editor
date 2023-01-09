@@ -40,6 +40,23 @@ a {
   }
 }
 
+button.button-with-text {
+  padding: 0 4px 0;
+  min-width: 36px;
+
+  .mdc-button__label {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.error {
+  font-size: 12px;
+  padding-left: 16px;
+  letter-spacing: 0.4px;
+  overflow: visible;
+}
+
 form-toolbar .mdc-button > .mat-icon {
   height: 24px;
   width: 24px;
@@ -520,7 +537,7 @@ sidebar .list-group-item:hover {
 }
 
 //}
-formly-field {
+/*formly-field {
   &[class*="flex-"] {
     padding-left: 10px;
     padding-right: 10px;
@@ -547,7 +564,7 @@ formly-field {
 formly-form:last-of-type(formly-field) > formly-field:last-of-type {
   border-top-color: #fff !important;
   height: 0;
-}
+}*/
 
 /* Split gutter style */
 .as-split-gutter-icon {
@@ -666,8 +683,10 @@ ige-side-menu {
 ige-form-label + * {
   flex: 1;
   min-width: 0;
+  padding-bottom: 12px;
 }
 
+/*
 #form {
   ige-form-label + formly-wrapper-mat-form-field {
     display: block;
@@ -678,6 +697,7 @@ ige-form-label + * {
     margin-top: 11px;
   }
 }
+*/
 
 /*.mat-mdc-form-field {
   line-height: 1.25 !important;

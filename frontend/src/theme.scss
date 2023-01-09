@@ -45,8 +45,42 @@ $mat-ige-green: (
   ),
 );
 
+$mat-ige-red: (
+  50: #f6e0e4,
+  100: #e7b3bc,
+  200: #d88090,
+  300: #c84d63,
+  400: #bc2641,
+  500: #b00020,
+  600: #a9001c,
+  700: #a00018,
+  800: #970013,
+  900: #87000b,
+  A100: #ffb3b6,
+  A200: #ff8085,
+  A400: #ff4d53,
+  A700: #ff343b,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #ffffff,
+  ),
+);
+
 $my-primary: mat.define-palette($mat-ige-purple);
 $my-accent: mat.define-palette($mat-ige-green);
+$my-warn: mat.define-palette($mat-ige-red);
 $my-typography: mat.define-typography-config();
 
 // Create the theme object (a Sass map containing all of the palettes).
@@ -55,7 +89,7 @@ $ige-form-theme: mat.define-light-theme(
     color: (
       primary: $my-primary,
       accent: $my-accent,
-      //warn: $candy-app-warn,
+      warn: $my-warn,
     ),
     density: -4,
     typography: $my-typography,
@@ -66,7 +100,7 @@ $ige-theme: mat.define-light-theme(
     color: (
       primary: $my-primary,
       accent: $my-accent,
-      //warn: $candy-app-warn,
+      warn: $my-warn,
     ),
     //density: -2,
     typography: $my-typography,
