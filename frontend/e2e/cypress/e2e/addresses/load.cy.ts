@@ -98,11 +98,12 @@ describe('mCLOUD: Load addresses', () => {
   it('should replace address contains referenced documents with another address (#3811)', () => {
     // open second address and make sure that it does contains any referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
-    AddressPage.openReferencedDocumentsSection();
+    // AddressPage.openReferencedDocumentsSection();
     cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
 
     // open the first address and check for referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'first-address-with-reference-data']);
+    AddressPage.openReferencedDocumentsSection();
     cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
 
     // replace the first address with the second
