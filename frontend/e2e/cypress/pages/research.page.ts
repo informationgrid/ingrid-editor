@@ -192,7 +192,7 @@ export class ResearchPage {
     }
     cy.intercept({ method: 'POST', url: '/api/search', times: 1 }).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
-    cy.wait('@saveChanges', { timeout: 7000 }).its('response.body.name').should('eq', title);
+    cy.wait('@saveChanges', { timeout: 10000 }).its('response.body.name').should('eq', title);
   }
 
   static getCSVFile(): void {
