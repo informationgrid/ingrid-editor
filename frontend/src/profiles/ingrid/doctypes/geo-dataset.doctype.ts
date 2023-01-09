@@ -269,6 +269,7 @@ export class GeoDatasetDoctype extends IngridShared {
               "props.required":
                 "formState.mainModel.featureCatalogueDescription?.featureTypes?.length > 0",
             },
+            contextHelpId: "citation_2",
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             className: "optional",

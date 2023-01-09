@@ -339,6 +339,7 @@ export abstract class IngridShared extends BaseDoctype {
                     ),
                     codelistId: 102,
                     allowNoValue: true,
+                    wrappers: ["form-field", "inline-help"],
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>

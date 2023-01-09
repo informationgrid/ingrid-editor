@@ -235,6 +235,8 @@ export class FormFieldHelper {
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
         menuOptions: options?.menuOptions,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
@@ -263,6 +265,8 @@ export class FormFieldHelper {
         hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
         codelistId: options?.codelistId,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
       },
     };
   }

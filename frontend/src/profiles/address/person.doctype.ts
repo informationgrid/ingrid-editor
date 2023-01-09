@@ -29,7 +29,7 @@ export class PersonDoctype extends AddressShared {
               fieldGroupClassName: "display-flex width-50",
               fieldGroup: [
                 this.addAutocomplete("salutation", null, {
-                  wrappers: ["form-field"],
+                  wrappers: ["form-field", "inline-help"],
                   className: "flex-1",
                   fieldLabel: "Anrede",
                   highlightMatches: true,
@@ -37,9 +37,10 @@ export class PersonDoctype extends AddressShared {
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                   codelistId: 4300,
+                  hasInlineContextHelp: true,
                 }),
                 this.addAutocomplete("academic-title", null, {
-                  wrappers: ["form-field"],
+                  wrappers: ["form-field", "inline-help"],
                   className: "flex-1 pad-right",
                   fieldLabel: "Titel",
                   highlightMatches: true,
@@ -47,6 +48,7 @@ export class PersonDoctype extends AddressShared {
                   placeholder: "",
                   options: this.getCodelistForSelect(4305, "academic-title"),
                   codelistId: 4305,
+                  hasInlineContextHelp: true,
                 }),
               ],
             },
