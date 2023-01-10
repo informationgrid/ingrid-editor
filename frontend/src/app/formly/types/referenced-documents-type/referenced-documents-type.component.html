@@ -1,6 +1,6 @@
 <div class="spinner-wrapper">
     <button
-        *ngIf="docs.length > 0; else noReferences"
+        *ngIf="showToggleButton && docs.length > 0"
         mat-stroked-button
         class="toggle-ref-docs-btn"
         (click)="toggleList()"
@@ -35,8 +35,6 @@
     </mat-hint>
 </ng-container>
 
-<ng-template #noReferences>
-    <p *ngIf="isLoading === false" data-cy="no-ref-docs-hint">
-        {{ messageNoReferences }}
-    </p>
-</ng-template>
+<p *ngIf="docs.length === 0 && !isLoading" data-cy="no-ref-docs-hint">
+    {{ messageNoReferences }}
+</p>
