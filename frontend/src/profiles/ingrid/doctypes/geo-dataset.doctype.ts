@@ -324,6 +324,8 @@ export class GeoDatasetDoctype extends IngridShared {
               expressions: {
                 hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
               },
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
             }),
             this.addInput("vertical", null, {
               fieldLabel: "Höhengenauigkeit (m)",

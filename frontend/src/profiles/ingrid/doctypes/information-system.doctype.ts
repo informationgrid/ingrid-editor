@@ -30,6 +30,8 @@ export class InformationSystemDoctype extends IngridShared {
           this.addSelectInline("serviceType", "Art des Dienstes", {
             options: this.getCodelistForSelect(5300, "serviceType"),
             codelistId: 5300,
+            hasInlineContextHelp: true,
+            wrappers: ["form-field", "inline-help"],
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
             hasInlineContextHelp: true,

@@ -335,6 +335,7 @@ export class FormFieldHelper {
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: expressions,
     };

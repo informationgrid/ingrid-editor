@@ -808,20 +808,29 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             options: this.getCodelistForSelect(2000, "type"),
             codelistId: 2000,
+            wrappers: ["form-field", "inline-help"],
+            hasInlineContextHelp: true,
           }),
           this.addInputInline("title", "Titel", {
             required: true,
             className: "flex-2",
+            wrappers: ["form-field", "inline-help"],
+            hasInlineContextHelp: true,
           }),
           this.addInputInline("url", "URL", {
             required: true,
             className: "flex-2",
+            wrappers: ["form-field", "inline-help"],
+            hasInlineContextHelp: true,
           }),
         ],
         { fieldGroupClassName: "display-flex" }
       ),
       this.addGroupSimple(null, [
-        this.addInputInline("explanation", "Erläuterungen", {}),
+        this.addInputInline("explanation", "Erläuterungen", {
+          wrappers: ["form-field", "inline-help"],
+          hasInlineContextHelp: true,
+        }),
       ]),
     ]);
   }
