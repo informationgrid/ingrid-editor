@@ -106,6 +106,17 @@ $ige-theme: mat.define-light-theme(
     typography: $my-typography,
   )
 );
+$ige-table-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+      warn: $my-warn,
+    ),
+    density: -2,
+    typography: $my-typography,
+  )
+);
 
 /*.input-field-button {
   $special-primary: mat.define-palette(mat.$orange-palette);
@@ -156,7 +167,7 @@ ige-side-menu {
 @include mat.tabs-theme($ige-theme);
 @include mat.checkbox-theme($ige-theme);
 @include mat.datepicker-theme($ige-form-theme);
-@include mat.table-theme($ige-form-theme);
+@include mat.table-theme($ige-table-theme);
 @include mat.select-theme($ige-form-theme);
 @include mat.autocomplete-theme($ige-form-theme);
 @include mat.chips-theme($ige-theme);

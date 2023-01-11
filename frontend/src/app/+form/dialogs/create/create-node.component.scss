@@ -5,7 +5,12 @@
 }
 
 :host {
-  flex: 1 1 auto; // IE 11
+  display: flex;
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  top: 0;
 
   .mat-mdc-dialog-content {
     padding: 24px 0;
@@ -26,6 +31,12 @@
   ::ng-deep ige-tree {
     max-height: 550px;
   }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .mat-mdc-form-field {

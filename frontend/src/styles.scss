@@ -65,12 +65,12 @@ form-toolbar .mdc-button > .mat-icon {
   margin-left: 0;
 }
 
-.right-sharp-corner .mdc-notched-outline__trailing {
+.right-sharp-corner .mat-mdc-text-field-wrapper {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
-.left-sharp-corner .mdc-notched-outline__leading {
+.left-sharp-corner .mat-mdc-text-field-wrapper {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -84,7 +84,7 @@ mat-checkbox.small-checkbox-spacing {
 }
 
 button.button-next-to-input {
-  height: 40px !important;
+  height: 44px !important;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 
@@ -93,34 +93,18 @@ button.button-next-to-input {
   }
 }
 
-.mat-mdc-dialog-container .dialog-title-wrapper {
-  //margin: -24px -24px 0;
-  background-color: $ige-secondary;
-  padding: 9px 0;
-
-  .mat-mdc-dialog-title {
-    display: flex;
-    align-items: end;
-    margin: 0;
-    color: #fff;
-    font-size: 24px;
-    font-weight: 400;
-
-    .mat-mdc-icon-button {
-      margin-left: -12px;
-      margin-right: 24px;
-    }
-  }
-}
-
 .quicksearch-auto {
   max-height: unset !important;
   width: 563px !important;
   padding: 24px 24px 12px !important;
+}
 
-  .mat-mdc-option {
-    min-height: 36px;
-  }
+.dense mat-option {
+  min-height: 40px !important;
+}
+
+.ultra-dense mat-option {
+  min-height: 36px !important;
 }
 
 .no-input-border {
@@ -277,14 +261,18 @@ ige-section-wrapper > h3 {
   cursor: default;
 }
 
-/*.mat-mdc-button.link-button {
+.mat-mdc-button.link-button {
   font-weight: normal;
   letter-spacing: 0.4px;
 
-  color: $ige-secondary;
+  color: $ige-secondary !important;
   padding: 0 10px;
   text-transform: none;
-}*/
+}
+
+ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
+  height: 6px;
+}
 
 .shortcut {
   padding-bottom: 24px;
@@ -680,7 +668,7 @@ svg {
 }
 
 ige-side-menu {
-  .coloring {
+  svg .coloring {
     fill: #ffffff;
   }
 

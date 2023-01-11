@@ -100,30 +100,15 @@ ige-session-timeout-info {
 .user-popup {
   height: 32px;
   width: 32px;
-  line-height: 32px;
+  font-size: 14px;
+  line-height: 24px;
   background-color: $ige-background;
   color: $ige-primary;
   margin-left: 12px;
 
-  /*.mat-icon {
-    line-height: 22px;
-  }
-
-  &:hover {
-    background-color: darken($ige-background, 5%);
-  }
-
-  ::ng-deep .mat-icon path {
-    fill: $ige-primary;
-  }*/
-
   &[aria-expanded="true"] {
     background-color: $ige-primary;
     color: #ffffff;
-
-    /*::ng-deep .mat-icon path {
-      fill: #ffffff;
-    }*/
 
     &:hover {
       background-color: lighten($ige-primary, 8%);
@@ -159,9 +144,9 @@ ige-session-timeout-info {
   margin-right: 0;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card-title {
-  font-weight: normal;
+  font-weight: 400;
+  font-size: 24px;
 }
 
 .last-login {

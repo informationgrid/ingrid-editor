@@ -30,12 +30,16 @@ mat-divider {
     }
   }
 
-  /*&.dense {
-    !* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. *!
+  mat-list-option {
+    height: 48px;
+  }
+
+  &.dense {
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
     mat-list-option {
       height: 40px !important;
     }
-  }*/
+  }
 
   .mat-icon {
     //display: flex;
