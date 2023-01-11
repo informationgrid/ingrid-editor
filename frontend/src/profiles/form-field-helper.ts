@@ -470,7 +470,7 @@ export class FormFieldHelper {
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field", "inline-help"],
+      wrappers: ["inline-help"],
       ...options,
     });
   }

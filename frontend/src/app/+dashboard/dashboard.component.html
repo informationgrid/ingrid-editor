@@ -20,6 +20,7 @@
         <div class="shortcut">
             <button
                 mat-button
+                color="primary"
                 (click)="createNewDocument()"
                 [disabled]="!canCreateDataset"
             >
@@ -31,6 +32,7 @@
             </button>
             <button
                 mat-button
+                color="primary"
                 (click)="createNewFolder()"
                 [disabled]="!canCreateDataset"
             >
@@ -41,8 +43,9 @@
                 <span>Neuer Ordner</span>
             </button>
             <button
-                mat-button
                 *ngIf="canImport"
+                mat-button
+                color="primary"
                 (click)="gotoImportPage()"
                 [disabled]="!canImport"
             >
@@ -53,6 +56,7 @@
             </button>
             <button
                 mat-button
+                color="primary"
                 (click)="createNewAddress()"
                 [disabled]="!canCreateAddress"
             >

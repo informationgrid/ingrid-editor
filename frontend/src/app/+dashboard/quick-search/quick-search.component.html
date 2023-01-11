@@ -9,10 +9,7 @@
     >
     </ige-search-input>
 
-    <mat-autocomplete
-        #auto="matAutocomplete"
-        class="quicksearch-auto dense option-no-padding"
-    >
+    <mat-autocomplete #auto="matAutocomplete" class="quicksearch-auto">
         <div
             fxFlex
             fxLayout="row"
@@ -34,8 +31,8 @@
         <div class="result-title">Daten ({{ numDocs }})</div>
 
         <mat-option
-            class="multiline"
             *ngFor="let doc of docs"
+            class="multiline no-padding"
             (onSelectionChange)="selectDoc.next(doc._uuid)"
         >
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
@@ -59,6 +56,7 @@
         <div class="result-title">Adressen ({{ numAddresses }})</div>
         <mat-option
             *ngFor="let address of addresses"
+            class="multiline no-padding"
             (onSelectionChange)="selectAddress.next(address._uuid)"
         >
             <ige-document-list-item [doc]="address"></ige-document-list-item>

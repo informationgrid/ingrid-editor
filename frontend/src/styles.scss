@@ -60,6 +60,7 @@ button.button-with-text {
 form-toolbar .mdc-button > .mat-icon {
   height: 24px;
   width: 24px;
+  font-size: 24px;
   margin-right: 0;
   margin-left: 0;
 }
@@ -114,7 +115,7 @@ button.button-next-to-input {
 
 .quicksearch-auto {
   max-height: unset !important;
-  width: 510px !important;
+  width: 563px !important;
   padding: 24px 24px 12px !important;
 
   .mat-mdc-option {
@@ -192,14 +193,14 @@ h1 {
   letter-spacing: 1.25px;
 }
 
-.text-card-title.mat-mdc-card-title {
+/*.text-card-title.mat-mdc-card-title {
   color: $ige-primary;
   text-align: center;
   letter-spacing: 0.74px;
   padding: 2px 0 6px;
   line-height: 30px;
   font-weight: 400;
-}
+}*/
 
 .upper-case {
   text-transform: uppercase;
@@ -327,8 +328,7 @@ main-menu .mat-toolbar-multiple-rows {
   background-color: #c9e4ff;
 }
 
-/*TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
-.mat-list-option.selected {
+mat-list-option.selected {
   background-color: $ige-mark-color !important;
 
   &:hover {
@@ -494,6 +494,15 @@ sidebar .list-group-item:hover {
 
 .nav-tabs li {
   cursor: pointer;
+}
+
+ige-one-column-wrapper formly-group {
+  //display: flex;
+  gap: 10px;
+
+  /* & > * {
+    flex: 1;
+  }*/
 }
 
 /* ngx-formly layout classes */
@@ -709,7 +718,7 @@ ige-form-label + * {
 }*/
 
 // Context Buttons
-/*.mat-mdc-icon-button {
+.mat-mdc-icon-button {
   &.table-options {
     background-color: #ffffff;
     line-height: 32px;
@@ -718,9 +727,13 @@ ige-form-label + * {
   }
 
   &.menu-button {
-    width: 26px;
-    height: 26px;
+    width: 26px !important;
+    height: 26px !important;
     line-height: 24px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 0 !important;
   }
 
   &.menu-button:enabled {
@@ -736,21 +749,33 @@ ige-form-label + * {
       }
     }
   }
-}*/
+}
+
+ige-context-help .mat-mdc-dialog-content {
+  h1,
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  h2 {
+    color: #000000de;
+    margin-bottom: 0;
+
+    & + p {
+      margin-top: 0;
+    }
+  }
+}
 
 // Icons
-.infoIcon {
-  display: inline-block;
-  background-color: $ige-background;
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  margin-right: 4px;
-  margin-top: -1px;
-
+/*.infoIcon {
   .mat-icon svg rect {
     fill: $ige-secondary;
   }
+}*/
+
+mat-icon.mark-color .coloring {
+  fill: $ige-check-color;
 }
 
 .mat-icon.big-icon {
@@ -827,10 +852,23 @@ ige-form-label + * {
 
 .dlg-field-label {
   padding-bottom: 4px;
+  color: #000000;
 
   &.required {
     font-weight: 500;
   }
+}
+
+.dlg-field-hero-label {
+  color: $ige-primary;
+  font-size: 24px;
+  line-height: 30px;
+  padding: 24px 0;
+}
+
+ige-dialog-template .mat-mdc-text-field-wrapper {
+  border-width: 1px;
+  border-style: solid;
 }
 
 /* Material Tabs */

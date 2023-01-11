@@ -6,13 +6,17 @@
 
 .search-content {
   display: flex;
-  padding-bottom: 24px;
+  padding-bottom: 2px;
   justify-content: center;
+}
+
+.no-padding {
+  padding: 0;
 }
 
 .result-header {
   font-weight: 500;
-  padding-bottom: 20px;
+  padding-bottom: 16px;
 
   .mat-icon {
     height: 16px;
