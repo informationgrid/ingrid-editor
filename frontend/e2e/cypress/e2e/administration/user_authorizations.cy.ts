@@ -834,6 +834,12 @@ describe('Catalogue admin', () => {
     AdminGroupPage.selectGroup('leere_Gruppe');
   });
 
+  it('catalogue admin can not assign catalogs (#4644)', () => {
+    cy.visit('settings/general');
+    cy.contains('.page-title', 'Allgemein');
+    cy.get('[data-cy="catalogAssignment"]').should('not.exist');
+  });
+
   it('catalogue admin is warned when assigning groups different rights in the same hierarchy tree (#2764)', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);

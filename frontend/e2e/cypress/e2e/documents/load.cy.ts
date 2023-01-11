@@ -202,4 +202,36 @@ describe('mCloud Load documents', () => {
       Utils.getFormattedDate(new Date()) + ' von ' + 'Katalog Admin1'
     );
   });
+
+  it('should compare working version and published version (#4635)', function () {
+    DocumentPage.visit();
+    Tree.openNode(['Veröffentlichter Datensatz mit Bearbeitungsversion']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.contains('.mat-dialog-title', 'Vorschau').should('exist');
+    cy.contains('button[name="compareView"]', 'Vergleichsansicht').click();
+
+    // check preview has been opened with split view for comparison
+    cy.get('mat-dialog-container .working').should('exist');
+    cy.get('mat-dialog-container .published').should('exist');
+
+    // check versions differ
+    cy.get('.published [data-cy="description"] ige-print-type').then(published_descr => {
+      cy.get('.working [data-cy="description"] ige-print-type').then(draft_descr => {
+        cy.wrap(draft_descr.text()).should('not.equal', published_descr.text());
+      });
+    });
+  });
+
+  it('should not open comparative view when opening unchanged published doc (#4635)', function () {
+    // open published document without changes after publishing
+    DocumentPage.visit();
+    Tree.openNode(['TestDocResearch4']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.contains('.mat-dialog-title', 'Vorschau').should('exist');
+    cy.contains('button[name="compareView"]', 'Vergleichsansicht').should('not.exist');
+
+    // check preview has not been opened with split view
+    cy.get('mat-dialog-container').should('exist');
+    cy.get('mat-dialog-container .working').should('not.exist');
+  });
 });
