@@ -507,7 +507,8 @@ export class FormFieldHelper {
     showOnStart?: boolean,
     showToggleButton?: boolean,
     messageNoReferences?: string,
-    referencesHint?: string
+    referencesHint?: string,
+    options?
   ) {
     return {
       type: "referencedDocuments",
@@ -520,6 +521,8 @@ export class FormFieldHelper {
         showToggleButton: showToggleButton,
         messageNoReferences: messageNoReferences,
         referencesHint: referencesHint,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
       },
     };
   }

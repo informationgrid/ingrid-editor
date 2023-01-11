@@ -143,6 +143,8 @@ export class GeoDatasetDoctype extends IngridShared {
                       "props.required": (field) =>
                         isEmptyObject(field.form.value, ["type"]),
                     },
+                    hasInlineContextHelp: true,
+                    wrappers: ["form-field", "inline-help"],
                   }
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
@@ -153,6 +155,8 @@ export class GeoDatasetDoctype extends IngridShared {
                     "props.required": (field) =>
                       isEmptyObject(field.form.value, ["type"]),
                   },
+                  hasInlineContextHelp: true,
+                  wrappers: ["form-field", "inline-help"],
                 }),
               ],
               { wrappers: [] }
@@ -168,12 +172,20 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addCheckboxInline(
                       "checkPointAvailability",
                       "Kontrollpunktverfügbarkeit",
-                      { className: "flex-1" }
+                      {
+                        className: "flex-1",
+                        hasInlineContextHelp: true,
+                        wrappers: ["form-field", "inline-help"],
+                      }
                     ),
                     this.addInputInline(
                       "checkPointDescription",
                       "Kontrollpunktbeschreibung",
-                      { className: "flex-1" }
+                      {
+                        className: "flex-1",
+                        hasInlineContextHelp: true,
+                        wrappers: ["form-field", "inline-help"],
+                      }
                     ),
                   ],
                   { wrappers: [] }
@@ -184,12 +196,16 @@ export class GeoDatasetDoctype extends IngridShared {
                   [
                     this.addInputInline("cornerPoints", "Eckpunkte", {
                       className: "flex-3",
+                      hasInlineContextHelp: true,
+                      wrappers: ["form-field", "inline-help"],
                     }),
                     this.addSelectInline("pointInPixel", "Punkt im Pixel", {
                       options: this.getCodelistForSelect(2100, "pointInPixel"),
                       codelistId: 2100,
                       className: "flex-3",
                       allowNoValue: true,
+                      hasInlineContextHelp: true,
+                      wrappers: ["form-field", "inline-help"],
                     }),
                   ],
                   { wrappers: [] }
@@ -218,7 +234,11 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addCheckboxInline(
                       "controlPointAvaliability",
                       "Passpunktverfügbarkeit",
-                      { className: "flex-3" }
+                      {
+                        className: "flex-3",
+                        hasInlineContextHelp: true,
+                        wrappers: ["form-field", "inline-help"],
+                      }
                     ),
                   ],
                   { wrappers: [] }
@@ -226,7 +246,11 @@ export class GeoDatasetDoctype extends IngridShared {
                 this.addInputInline(
                   "parameters",
                   "Georeferenzierungsparameter",
-                  { className: "" }
+                  {
+                    className: "",
+                    hasInlineContextHelp: true,
+                    wrappers: ["form-field", "inline-help"],
+                  }
                 ),
               ],
               {
@@ -282,7 +306,10 @@ export class GeoDatasetDoctype extends IngridShared {
           true,
           false,
           "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
-          "Die Referenz kann nur vom darstellenden Dienst entfernt werden"
+          "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
+          {
+            contextHelpId: "coupledResources",
+          }
         ),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [

@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: coupledServices
+id: coupledResources
 docType: InGridGeoDataset
 profile: ingrid
 

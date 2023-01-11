@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: publishedISBN
+id: isbn
 docType: InGridLiterature
 profile: ingrid
 

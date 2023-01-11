@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: publishLocation
+id: placeOfPublication
 docType: InGridLiterature
 profile: ingrid
 
