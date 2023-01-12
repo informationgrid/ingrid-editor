@@ -286,7 +286,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
-    return this.addSection("Raumbezugssystem", [
+    return this.addSection("Raumbezug", [
       this.addGroupSimple(
         "spatial",
         [
