@@ -176,7 +176,7 @@ export class AdminUserPage extends BasePage {
   static selectUser(name: string, dirtyCheck: boolean = false) {
     cy.contains('.page-title', 'Benutzer (', { timeout: 6000 });
     cy.get('[data-cy=search]').clear().type(name);
-    cy.contains('user-table .mat-row', name).click();
+    cy.contains('user-table .mat-row', name, { timeout: 8000 }).click();
 
     // make sure the user form will be available if no checks required
     if (!dirtyCheck) {
