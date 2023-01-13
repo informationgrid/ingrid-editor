@@ -7,6 +7,10 @@ export class ingridDocumentPage {
     cy.get(`${areaID}`).should('have.value', text);
   }
 
+  static addNewField(identifier: string) {
+    cy.get(`${identifier} ige-add-button`).click({ force: true });
+  }
+
   static setSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
     cy.get('[data-cy=spatialButton]').click({ force: true });
     UvpDocumentPage.setOpenedSpatialBbox(title, locationText, typeOption);
@@ -35,5 +39,13 @@ export class ingridDocumentPage {
     cy.contains('[data-cy="chip-dialog-option-list"] .mat-list-item', text).click();
     cy.get('[data-cy="chip-dialog-confirm"]').click();
     cy.contains(`${identifier} .mat-chip`, text);
+  }
+
+  static setAddress(addressText: string, assignTo: string) {
+    cy.get('[data-cy="pointOfContact"]').contains('Hinzufügen').click({ force: true });
+    DocumentPage.AddAddressDialog.searchAndSelect(addressText);
+    cy.get('[data-cy="choose-address-next-step"]').click();
+    cy.contains('.card-title', assignTo).click();
+    cy.get('[data-cy="choose-address-confirm"]').click();
   }
 }

@@ -1,6 +1,8 @@
 import { DocumentPage } from '../../../pages/document.page';
 import { Tree } from '../../../pages/tree.partial';
 import { ingridDocumentPage } from '../../../pages/ingridDocuments.page';
+import { fileDataTransferManagement } from '../../../pages/fileDataTransferManagement.page';
+import { UvpDocumentPage } from '../../../pages/uvpDocument.page';
 
 describe('ingrid documents', () => {
   beforeEach(() => {
@@ -172,5 +174,63 @@ describe('ingrid documents', () => {
     cy.contains(`[data-cy="events"] .mat-select-trigger`, 'Publikation');
     cy.contains(`[data-cy="Sprache / Zeichensatz"] .mat-select-trigger`, 'Dänisch');
     cy.contains(`[data-cy="extraInfoPublishArea"] .mat-select-trigger`, 'amtsintern');
+  });
+
+  it('create a minimal publishable document of type "Literatur" and publish it (#4643)', () => {
+    Tree.openNode(['literatur_1']);
+
+    ingridDocumentPage.setDescription('[data-cy="description"].required textarea', 'random description');
+    ingridDocumentPage.setSpatialBbox('information about location', 'Heyda', false);
+    ingridDocumentPage.chooseSelect(
+      '[data-cy="spatialSystems"]',
+      '.mat-select-trigger',
+      'DE_ETRS89 / UTM',
+      '.list-item'
+    );
+    ingridDocumentPage.fillInField('[data-cy="events"]', 'input', '13.11.2020');
+    ingridDocumentPage.chooseSelect('[data-cy="events"]', '.mat-select-trigger', 'Publikation');
+    ingridDocumentPage.chooseSelect('[data-cy="Sprache / Zeichensatz"]', '.mat-select-trigger', 'Russisch');
+    ingridDocumentPage.chooseSelect('[data-cy="extraInfoPublishArea"]', '.mat-select-trigger', 'amtsintern');
+    ingridDocumentPage.setChips('[data-cy="languages"]', 'Lettisch');
+
+    DocumentPage.publishNow();
+
+    // check content of fields
+    cy.get('[data-cy="description"] textarea').should('have.value', 'random description');
+    cy.get('.spatial-title').should('contain.text', 'Heyda');
+    cy.contains(`[data-cy="spatialSystems"] .list-item`, 'DE_ETRS89 / UTM');
+    cy.get('[data-cy="events"] input').should('have.value', '13.11.2020');
+    cy.contains(`[data-cy="events"] .mat-select-trigger`, 'Publikation');
+    cy.contains(`[data-cy="Sprache / Zeichensatz"] .mat-select-trigger`, 'Russisch');
+    cy.contains(`[data-cy="extraInfoPublishArea"] .mat-select-trigger`, 'amtsintern');
+    cy.contains(`[data-cy="languages"] .mat-chip`, 'Lettisch');
+  });
+
+  it('create a minimal publishable document of type "Projekt" and publish it (#4643)', () => {
+    Tree.openNode(['projekt_1']);
+
+    ingridDocumentPage.setDescription('[data-cy="description"].required textarea', 'some random description');
+    ingridDocumentPage.setSpatialBbox('information about location', 'Kahla', false);
+    ingridDocumentPage.chooseSelect(
+      '[data-cy="spatialSystems"]',
+      '.mat-select-trigger',
+      'DE_DHDN / GK_3_BW100',
+      '.list-item'
+    );
+    ingridDocumentPage.fillInField('[data-cy="events"]', 'input', '13.10.2020');
+    ingridDocumentPage.chooseSelect('[data-cy="events"]', '.mat-select-trigger', 'Publikation');
+    ingridDocumentPage.chooseSelect('[data-cy="Sprache / Zeichensatz"]', '.mat-select-trigger', 'Finnisch');
+    ingridDocumentPage.chooseSelect('[data-cy="extraInfoPublishArea"]', '.mat-select-trigger', 'Intranet');
+
+    DocumentPage.publishNow();
+
+    // check content of fields
+    cy.get('[data-cy="description"] textarea').should('have.value', 'some random description');
+    cy.get('.spatial-title').should('contain.text', 'Kahla');
+    cy.contains(`[data-cy="spatialSystems"] .list-item`, 'DE_DHDN / GK_3_BW100');
+    cy.get('[data-cy="events"] input').should('have.value', '13.10.2020');
+    cy.contains(`[data-cy="events"] .mat-select-trigger`, 'Publikation');
+    cy.contains(`[data-cy="Sprache / Zeichensatz"] .mat-select-trigger`, 'Finnisch');
+    cy.contains(`[data-cy="extraInfoPublishArea"] .mat-select-trigger`, 'Intranet');
   });
 });
