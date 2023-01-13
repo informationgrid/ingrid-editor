@@ -16,7 +16,7 @@ class Spatial : QuickFilter() {
     override val filter = ""
 
     @Language("PostgreSQL")
-    override fun filter(parameter: List<*>?) = """jsonb_path_exists(jsonb_strip_nulls(data), '$.spatial')
+    override fun filter(parameter: List<*>?) = """jsonb_path_exists(jsonb_strip_nulls(data), '$.spatial') AND (jsonb_typeof(data -> 'spatial') = 'array')
   AND EXISTS(SELECT
              FROM jsonb_array_elements(data -> 'spatial') as s
              WHERE CAST((s -> 'value' ->> 'lat1') as numeric) >= ${parameter?.get(0)} - $errorMargin
