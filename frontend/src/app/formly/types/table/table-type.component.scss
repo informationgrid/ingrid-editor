@@ -13,9 +13,13 @@
   flex: unset;
 }
 
-.button-wrapper {
-  margin-top: 1.1em;
-  padding-bottom: 18px;
+.container {
+  padding-bottom: 8px;
+
+  .button-wrapper {
+    margin-top: 3px;
+    padding-bottom: 22px;
+  }
 }
 
 .table-header {
@@ -80,7 +84,7 @@ mat-header-row {
 
 ige-add-button {
   display: block;
-  margin: 11px 0;
+  margin: 3px 0 22px;
 }
 
 .cdk-drag-handle {

@@ -680,8 +680,18 @@ ige-side-menu {
 ige-form-label + * {
   flex: 1;
   min-width: 0;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
+
+ige-inline-help-wrapper > formly-field-mat-checkbox + button.infoIcon {
+  position: relative;
+  right: 0;
+  top: 6px;
+  margin-left: 10px;
+}
+/*ige-inline-help-wrapper > formly-wrapper-mat-form-field {
+  flex: 1;
+}*/
 
 /*
 #form {

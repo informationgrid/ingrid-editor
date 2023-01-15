@@ -230,7 +230,7 @@
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div>
+    <div class="container">
         <ige-form-error
             *ngIf="formControl.invalid && formControl.hasError('required')"
             >Es wird mindestens ein Eintrag erwartet</ige-form-error

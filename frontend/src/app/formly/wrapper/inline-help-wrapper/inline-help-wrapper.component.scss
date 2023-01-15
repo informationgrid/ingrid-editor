@@ -1,3 +1,9 @@
+:host {
+  //display: flex;
+  //gap: 10px;
+  position: relative;
+}
+
 button {
   background-color: #f3f3f3;
   border-radius: 50%;
@@ -5,6 +11,7 @@ button {
   height: 24px !important;
   width: 24px !important;
   position: absolute;
-  right: 0;
+  right: 8px;
+  top: -3px;
   display: inline-block !important;
 }

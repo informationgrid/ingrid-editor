@@ -87,7 +87,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "Identifikator des übergeordneten Metadatensatzes",
                 {
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }
               ),
               this.addInputInline(
@@ -100,7 +100,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "props.disabled": () => true,
                   },
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }
               ),
             ],
@@ -317,7 +317,7 @@ export abstract class IngridShared extends BaseDoctype {
                   this.addInputInline("minimumValue", "Minimum", {
                     type: "number",
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
                         isEmptyObject(field.form.value),
@@ -326,7 +326,7 @@ export abstract class IngridShared extends BaseDoctype {
                   this.addInputInline("maximumValue", "Maximum", {
                     type: "number",
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
                         isEmptyObject(field.form.value),
@@ -677,7 +677,7 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addTextAreaInline("purpose", "Herstellungszweck", "dataset", {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addTextAreaInline(
               "specificUsage",
@@ -685,7 +685,7 @@ export abstract class IngridShared extends BaseDoctype {
               "dataset",
               {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }
             ),
           ],

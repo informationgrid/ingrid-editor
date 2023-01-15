@@ -16,6 +16,7 @@ h4 > span {
 .mat-mdc-list-base {
   .mat-mdc-list-item {
     border-bottom: 2px solid #fff;
+    height: 88px;
 
     &:hover {
       background-color: darken($ige-background, 5%);
