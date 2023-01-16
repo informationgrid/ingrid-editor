@@ -782,63 +782,6 @@ mat-icon.mark-color .coloring {
   color: $error-color;
 }
 
-/* validation error hide conditionally */
-
-.hide-validation {
-  ige-form-error {
-    display: none;
-  }
-
-  button.error-outline {
-    border-color: rgba(0, 0, 0, 0.12) !important;
-  }
-
-  .has-error {
-    background-color: $ige-secondary !important;
-  }
-
-  /*  .mat-mdc-form-field-error {
-    opacity: 0;
-    height: 0;
-    display: none;
-  }*/
-
-  /*.mat-form-field-invalid .mat-mdc-input-element {
-    caret-color: initial !important;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
-    .mat-form-field-outline {
-    opacity: 1;
-    color: $ige-comment-color !important;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
-  .mat-form-field-appearance-outline:not(.mat-form-field-disabled)
-    .mat-form-field-flex:hover
-    .mat-form-field-outline-thick {
-    opacity: 1;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
-    .mat-form-field-outline-thick {
-    color: initial;
-    opacity: 0;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*!
-  .mat-select-invalid .mat-select-placeholder {
-    color: $ige-comment-color !important;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
-  .mat-mdc-form-field.mat-form-field-invalid .mat-form-field-label {
-    color: $ige-placeholder-color !important;
-    !*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*!
-    &.mat-accent,
-    .mat-form-field-required-marker {
-      color: $ige-placeholder-color !important;
-    }
-  }*/
-}
-
 .dlg-field-label {
   padding-bottom: 4px;
   color: #000000;

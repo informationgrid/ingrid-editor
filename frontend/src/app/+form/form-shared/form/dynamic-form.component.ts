@@ -57,6 +57,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   fields: FormlyFieldConfig[] = [];
 
   formOptions: FormlyFormOptions = {
+    showError: (field) => {
+      return this.showValidationErrors && field.formControl?.invalid;
+    },
     formState: {
       disabled: true,
       updateModel: () => {
