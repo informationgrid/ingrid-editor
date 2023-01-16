@@ -1,7 +1,11 @@
 @import "src/variables";
 
+.padding-bottom {
+  padding-bottom: 12px;
+}
+
 .mat-column-_actions_ {
-  width: 40px;
+  width: 52px;
   min-width: 40px;
   flex: unset;
   display: flex;
@@ -24,9 +28,6 @@
 
 .table-header {
   white-space: nowrap;
-  button {
-    margin-top: 15px;
-  }
 }
 
 .table-batch-edit-row {
@@ -35,7 +36,7 @@
 }
 
 ige-form-label {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 :host {

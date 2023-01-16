@@ -5,6 +5,27 @@
   display: block;
 }
 
+.wrapper {
+  display: flex;
+  align-items: center;
+  height: 88px;
+  border-bottom: 2px solid #ffffff;
+
+  & > mat-icon {
+    margin: 0 24px;
+  }
+
+  .description {
+    flex: 1;
+  }
+
+  .menu-button {
+    margin-right: 12px;
+  }
+}
+
+/*
+
 .coordinates > span {
   padding-right: 16px;
 }
@@ -67,3 +88,4 @@ h4 > span {
     }
   }
 }
+*/

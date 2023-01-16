@@ -43,7 +43,7 @@
     </ng-container>
 </div>
 
-<div fxLayout="column">
+<div [class.padding-bottom]="dataSource?.data?.length > 0">
     <div *ngIf="batchMode" class="table-batch-edit-row">
         <mat-checkbox
             (change)="$event ? masterToggle() : null"

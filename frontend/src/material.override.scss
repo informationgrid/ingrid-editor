@@ -74,3 +74,16 @@ mat-icon svg .coloring {
 mat-checkbox .mdc-form-field {
   font-size: 16px;
 }
+
+.mat-mdc-header-row {
+  min-height: 40px;
+}
+
+.mat-mdc-row {
+  min-height: 32px;
+}
+
+mat-table mat-header-cell.mat-mdc-header-cell {
+  color: #0000008a;
+  font-size: 12px;
+}
