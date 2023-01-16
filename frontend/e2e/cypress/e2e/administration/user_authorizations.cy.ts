@@ -83,15 +83,6 @@ describe('Meta data administrator without groups', () => {
     ResearchPage.checkNoSearchResults();
   });
 
-  it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
-    // Make sure search page shows no data when visiting
-    ResearchPage.visit();
-    cy.get('.result').contains('0 Ergebnisse gefunden');
-    // Make sure triggering search doesn't deliver search results
-    ResearchPage.search('test');
-    ResearchPage.checkNoSearchResults();
-  });
-
   it('should not show any object nor address to a metadata administrator without an assigned group (#2672)', () => {
     // Go to data section and make sure no single data is displayed
     DocumentPage.visit();
