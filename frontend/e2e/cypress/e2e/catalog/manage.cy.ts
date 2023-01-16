@@ -173,7 +173,8 @@ describe('Catalog assignment', () => {
     cy.kcLogin(user);
 
     // check that catalog is available
-    DashboardPage.visit();
+    // navigate to specific catalog
+    DashboardPage.visit('test');
     cy.get('.catalog-title').click();
     cy.contains('.mat-menu-panel span', catalog);
   });
