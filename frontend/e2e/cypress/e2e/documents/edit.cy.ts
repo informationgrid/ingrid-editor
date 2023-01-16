@@ -85,13 +85,13 @@ describe('mCLOUD: edit documents', function () {
     it('should not be possible to stop planned publishing if user has read-only access (#3562)', () => {
       // assign groups with read-only access to document
       Menu.switchTo('USERS');
-      AdminUserPage.selectUser('mcloud-author-without-group');
+      AdminUserPage.selectUser('mcloud-author-without-group-2');
       AdminUserPage.addGroupToUser('group_10');
       AdminUserPage.addGroupToUser('test_gruppe_5');
       AdminUserPage.saveUser();
       // log in as user that is assigned read-only access
       cy.logoutClearCookies();
-      cy.kcLogin('mcloud-author-without-group');
+      cy.kcLogin('mcloud-author-without-group-2');
       // open document
       DocumentPage.visit();
       Tree.openNode(['Datum_Ebene_2_3']);
