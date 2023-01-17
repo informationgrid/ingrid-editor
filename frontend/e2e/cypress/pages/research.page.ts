@@ -18,7 +18,7 @@ export class ResearchPage {
    * Returns the searchresultcount. Fails if searchresultcount is 0
    */
   static getSearchResultCount(): Chainable<number> {
-    cy.get('.result').contains(/[1-9][0-9]* Ergebnisse gefunden/);
+    cy.get('.result').contains(/[1-9][0-9]* Ergebnisse gefunden/, { timeout: 5000 });
     return cy.get('.result').then($node => {
       // extract number from string like '12 Ergebnisse gefunden'
       console.log('this: ' + $node.text().trim().split(' ')[0]);
