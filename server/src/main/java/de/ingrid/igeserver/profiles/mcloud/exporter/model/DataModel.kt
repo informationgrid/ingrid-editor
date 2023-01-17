@@ -2,7 +2,10 @@ package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.exports.interfaces.dcat.Download
+import de.ingrid.igeserver.exporter.model.AddressRefModel
+import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.exporter.model.TimeSpanModel
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressRefModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.RangeModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
+import de.ingrid.igeserver.exporter.model.AddressRefModel
+import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.exporter.model.RangeModel
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext

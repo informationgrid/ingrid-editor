@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.uvp.exporter.model
+package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -15,7 +15,7 @@ import java.time.OffsetDateTime
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class UVPModel(
+data class IngridModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_type") val type: String,
     val title: String,
@@ -30,19 +30,19 @@ data class UVPModel(
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
 
-    val spatialTitle = data.spatials?.get(0)?.title
-
     var documentType = mapDocumentType()
 
     val contentField: MutableList<String> = mutableListOf()
 
     private fun mapDocumentType(): String {
         return when (type) {
-            "UvpApprovalProcedureDoc" -> "10"
-            "UvpNegativePreliminaryAssessmentDoc" -> "12"
-            "UvpForeignProjectDoc" -> "11"
-            "UvpSpatialPlanningProcedureDoc" -> "13"
-            "UvpLineDeterminationDoc" -> "14"
+            "InGridSpecialisedTask" -> "0"
+            "InGridGeoDataset" -> "1"
+            "InGridLiterature" -> "2"
+            "InGridGeoService" -> "3"
+            "InGridProject" -> "4"
+            "InGridDataCollection" -> "5"
+            "InGridInformationSystem" -> "6"
             else -> throw ServerException.withReason("Could not map document type: $type")
         }
     }
@@ -74,69 +74,12 @@ data class UVPModel(
 
     }
 
-    fun getSpatial(): String? {
-        return data.spatials
-            ?.map { prepareSpatialString(it) }
-            ?.getOrNull(0)
-    }
-
-    fun getSpatial(field: String): Float? {
-        val value = getSpatialBoundingBox() ?: return null
-
-        return when (field) {
-            "lat1" -> value.lat1
-            "lon1" -> value.lon1
-            "lat2" -> value.lat2
-            "lon2" -> value.lon2
-            else -> null
-        }
-    }
-
-    private fun getSpatialBoundingBox(): SpatialModel.BoundingBoxModel? {
-        return data.spatials
-            ?.getOrNull(0)
-            ?.value
-    }
-
-    fun getSpatialLatCenter(): Float? {
-        val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lat1 + (bbox.lat2 - bbox.lat1) / 2
-    }
-
-    fun getSpatialLonCenter(): Float? {
-        val bbox = getSpatialBoundingBox() ?: return null
-        return bbox.lon1 + (bbox.lon2 - bbox.lon1) / 2
-    }
 
     private fun prepareSpatialString(spatial: SpatialModel): String {
         val coordinates =
             "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
         val title = spatial.title ?: ""
         return "${title}: $coordinates"
-    }
-
-    val steps = data.steps
-
-    fun getStepsAsPhases(): List<String> {
-        return steps
-            .map {
-                when (it) {
-                    is StepPublicDisclosure -> "phase1"
-                    is StepPublicHearing -> "phase2"
-                    is StepDecisionOfAdmission -> "phase3"
-                    else -> "???"
-                }
-            }
-    }
-
-    fun getDecisionDate(): List<String> {
-
-        val decisionDates = data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
-        if (data.decisionDate != null) decisionDates += data.decisionDate
-
-        return decisionDates
-            .map { OffsetDateTime.parse(it) }
-            .map { formatDate(formatterNoSeparator, it) }
     }
 
     companion object {
@@ -154,15 +97,6 @@ data class UVPModel(
         return codelistHandler?.getCodelistValue(codelistId, entry.key) ?: "???"
     }
 
-    fun getUvpNumbers(): List<UVPNumber> = data.uvpNumbers
-
-    fun getUvpCategories(): List<String> {
-        return getUvpNumbers().map { it.category }.filter { it.isNotEmpty() }
-    }
-
-    fun getUvpCategoryTypes(): List<String> {
-        return getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
-    }
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
@@ -172,26 +106,6 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<AddressModel> =
-        if (pointOfContact!!.parent == null) emptyList() else getUvpAddressParents(pointOfContact!!.parent!!)
-
-    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
-        if (pointOfContact == null) emptyList() else getUvpAddressParents(pointOfContact!!.id).map { getAddressShort(it) }
-
-    private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
-        if (pointOfContact == null) return emptyList()
-
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent)
-    }
-
-
-    fun getAddressShort(address: AddressModel): AddressShort {
-        return if (address.organization == null) {
-            AddressShort(address.uuid, getPersonStringFromJson(address))
-        } else {
-            AddressShort(address.uuid, address.organization)
-        }
-    }
 
     private fun getPersonStringFromJson(address: AddressModel): String {
         return listOfNotNull(

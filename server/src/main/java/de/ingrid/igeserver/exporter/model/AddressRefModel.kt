@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.mcloud.exporter.model
+package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

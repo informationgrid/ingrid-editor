@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.uvp.exporter
+package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -6,7 +6,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
@@ -18,31 +18,22 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.StringReader
-import java.io.StringWriter
-import javax.xml.XMLConstants
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.Source
-import javax.xml.transform.Transformer
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.stream.StreamResult
-import javax.xml.transform.stream.StreamSource
 
 
 @Service
-@Profile("uvp")
-class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
+@Profile("ingrid")
+class IngridIDFExporter @Autowired constructor(val config: Config) : IgeExporter {
 
     val log = logger()
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "uvpIDF",
-        "UVP IDF",
-        "Export von UVP Verfahren ins IDF Format für die Anzeige im Portal.",
+        "ingridIDF",
+        "Ingrid IDF",
+        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
         "text/xml",
         "xml",
-        listOf("uvp")
+        listOf("ingrid")
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -58,21 +49,21 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         return prettyXml
     }
 
+
+
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
-            "UvpApprovalProcedureDoc" -> "uvp/idf-approval.jte"
-            "UvpNegativePreliminaryAssessmentDoc" -> "uvp/idf-negative.jte"
-            "UvpForeignProjectDoc" -> "uvp/idf-foreign.jte"
-            "UvpSpatialPlanningProcedureDoc" -> "uvp/idf-spatialOrLine.jte"
-            "UvpLineDeterminationDoc" -> "uvp/idf-spatialOrLine.jte"
+            "InGridSpecialisedTask" -> "ingrid/shared-general.jte"
+            "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
+            "InGridLiterature" -> "ingrid/shared-general.jte"
+            "InGridGeoService" -> "ingrid/shared-general.jte"
+            "InGridProject" -> "ingrid/shared-general.jte"
+            "InGridDataCollection" -> "ingrid/shared-general.jte"
+            "InGridInformationSystem" -> "ingrid/shared-general.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }
         }
-    }
-
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
@@ -80,7 +71,7 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
-                "model" to mapper.convertValue(json, UVPModel::class.java),
+                "model" to mapper.convertValue(json, IngridModel::class.java),
                 "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl)
             )
         )

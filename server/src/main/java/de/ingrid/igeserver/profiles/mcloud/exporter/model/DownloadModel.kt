@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.mcloud.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exports.interfaces.dcat.Download
 import de.ingrid.igeserver.exports.interfaces.dcat.LinkType
 
