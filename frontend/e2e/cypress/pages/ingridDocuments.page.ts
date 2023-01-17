@@ -48,4 +48,27 @@ export class ingridDocumentPage {
     cy.contains('.card-title', assignTo).click();
     cy.get('[data-cy="choose-address-confirm"]').click();
   }
+
+  static selectDataRepresentationOption(option: string) {
+    // TODO
+    // remove force from click
+    cy.get('[data-cy="Dargestellte Daten"]  button ').contains('Hinzufügen').click({ force: true });
+    cy.get('button ').contains(option).click();
+  }
+
+  static searchAndSelectGeoDataSet(documentName: string) {
+    // TODO
+    // refactor the code to be global
+    cy.get('mat-dialog-content [data-cy="tree-search-field"]', { timeout: 6000 })
+      .findByPlaceholderText('Suchen')
+      .click({ force: true });
+    cy.get('mat-dialog-content [data-cy="tree-search-field"]').findByPlaceholderText('Suchen').type(documentName);
+    cy.wait(1000);
+    cy.contains('ige-document-list-item', documentName, { timeout: 8000 }).click();
+    cy.contains('button', 'Übernehmen').click();
+  }
+
+  static checkForGeoDataServiceReference(documentName: string) {
+    cy.get('[data-cy="Darstellender Dienst"] ').contains(documentName);
+  }
 }
