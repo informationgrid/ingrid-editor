@@ -78,7 +78,7 @@
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
-        <mat-label>{{ props.fieldLabel }}</mat-label>
+        <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
         <mat-icon
             *ngIf="parameterOptions && repeatListInput.value.length === 0"
             class="search-icon gray"
@@ -91,10 +91,6 @@
             [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            [required]="
-                (props.required && formControl.invalid) ||
-                formControl.validator({})?.required
-            "
             (keydown.enter)="addFreeEntry(repeatListInput.value)"
             [matAutocomplete]="auto"
         />

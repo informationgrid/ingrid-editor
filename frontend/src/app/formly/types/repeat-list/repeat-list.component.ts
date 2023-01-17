@@ -96,11 +96,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     if (this.props.required) {
       this.inputControl.addValidators(
         (control: AbstractControl): ValidationErrors | null => {
-          return this.props.required && this.formControl.value.length > 0
+          return !this.showError ||
+            (this.props.required && this.formControl.value.length > 0)
             ? null
             : { required: "Pflicht!" };
         }
       );
+      // this.inputControl.addValidators(this.formControl.validator);
     }
 
     this.formControl.statusChanges

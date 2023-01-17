@@ -1,5 +1,11 @@
 @import "src/variables";
 
+ige-add-button {
+  display: block;
+  margin-top: 3px;
+  padding-bottom: 22px;
+}
+
 .mat-mdc-list-base {
   background-color: $ige-background;
   padding-top: 0;

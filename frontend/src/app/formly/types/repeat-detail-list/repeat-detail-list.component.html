@@ -1,4 +1,5 @@
 <mat-list
+    *ngIf="field.fieldGroup.length > 0"
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
@@ -62,5 +63,7 @@
 <ige-add-button
     *ngIf="formControl.enabled"
     (add)="addItem()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>

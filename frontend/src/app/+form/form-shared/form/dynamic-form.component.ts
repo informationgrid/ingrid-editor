@@ -166,8 +166,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         } else {
           this.showValidationErrors = false;
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         }
       });
 
