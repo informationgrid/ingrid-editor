@@ -98,3 +98,20 @@ mat-table mat-header-cell.mat-mdc-header-cell {
 mat-hint {
   color: #0009;
 }
+
+.mat-mdc-icon-button[disabled] .mat-icon {
+  opacity: 0.26;
+}
+
+mat-dialog-container.mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    display: flex;
+  }
+  .mat-mdc-tab-body-content {
+    overflow: auto !important;
+  }
+}
+
+.cdk-overlay-container .mat-mdc-dialog-container .mdc-dialog__content {
+  color: $ige-text-color;
+}

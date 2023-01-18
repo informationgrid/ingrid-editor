@@ -425,7 +425,7 @@ export abstract class IngridShared extends BaseDoctype {
           "Durch die Ressource abgedeckte Zeitspanne",
           [
             this.addSelect("resourceDateType", null, {
-              className: "flex-1",
+              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
                 { label: "", value: undefined },
@@ -435,7 +435,7 @@ export abstract class IngridShared extends BaseDoctype {
               ],
             }),
             this.addSelect("resourceDateTypeSince", null, {
-              className: "flex-1",
+              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
                 { label: "", value: undefined },
@@ -455,6 +455,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDateRange("resourceRange", null, {
+              wrappers: [],
               expressions: {
                 hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
               },

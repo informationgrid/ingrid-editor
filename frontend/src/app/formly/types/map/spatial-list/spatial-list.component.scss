@@ -13,6 +13,14 @@
 
   & > mat-icon {
     margin: 0 24px;
+    border: 3px solid currentColor;
+    width: 18px;
+    height: 18px;
+  }
+
+  .spatial-type {
+    line-height: 22px;
+    font-size: 14px;
   }
 
   .description {
@@ -22,70 +30,9 @@
   .menu-button {
     margin-right: 12px;
   }
-}
 
-/*
-
-.coordinates > span {
-  padding-right: 16px;
-}
-
-h4 > span {
-  line-height: 40px;
-}
-
-.mat-mdc-list-base {
-  .mat-mdc-list-item {
-    border-bottom: 2px solid #fff;
-    height: 88px;
-
-    &:hover {
-      background-color: darken($ige-background, 5%);
-    }
-
-    .mat-mdc-list-item-icon {
-      width: 24px;
-      height: 24px;
-      margin-left: 8px;
-      padding: 0;
-      border-radius: 0;
-
-      &.mat-icon-no-color {
-        color: $ige-icon-color;
-      }
-      div {
-        width: 24px;
-        height: 24px;
-        padding: 0;
-        border-radius: 0;
-        border: 3px solid currentColor;
-        box-sizing: border-box;
-      }
-    }
-
-    .list-item-wrapper {
-      width: calc(100% - 32px);
-
-      .list-item-content {
-        width: calc(100% - 50px);
-        padding-left: 24px;
-
-        .mat-line {
-          width: 100%;
-          line-height: 22px;
-
-          &.spatial-type {
-            font-size: 14px;
-          }
-          &:not(.spatial-type) {
-            font-size: 16px !important;
-          }
-          &.spatial-title {
-            font-weight: 500;
-          }
-        }
-      }
-    }
+  .coordinates {
+    display: flex;
+    gap: 16px;
   }
 }
-*/

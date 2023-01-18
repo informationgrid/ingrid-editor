@@ -70,6 +70,15 @@ export interface InputOptions extends Options {
   validators?: any;
 }
 
+export interface AutocompleteOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  highlightMatches?: boolean;
+  hideDeleteButton?: boolean;
+  options?: any[] | Observable<any[]>;
+  codelistId?: number;
+}
+
 export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
     return {
@@ -245,7 +254,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutocomplete(id, label, options?) {
+  addAutocomplete(id, label, options?: AutocompleteOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -263,11 +272,12 @@ export class FormFieldHelper {
         hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
         codelistId: options?.codelistId,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
       },
     };
   }
 
-  addAutoCompleteInline(id, label, options = {}) {
+  addAutoCompleteInline(id, label, options: AutocompleteOptions = {}) {
     return this.addAutocomplete(id, null, {
       fieldLabel: label,
       wrappers: ["form-field"],

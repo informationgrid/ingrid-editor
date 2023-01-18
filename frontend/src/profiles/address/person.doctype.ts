@@ -28,20 +28,19 @@ export class PersonDoctype extends AddressShared {
             {
               fieldGroupClassName: "display-flex width-50",
               fieldGroup: [
-                this.addAutocomplete("salutation", null, {
-                  wrappers: ["form-field"],
-                  className: "flex-1",
-                  fieldLabel: "Anrede",
+                this.addAutoCompleteInline("salutation", "Anrede", {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                   codelistId: 4300,
                 }),
-                this.addAutocomplete("academic-title", null, {
-                  wrappers: ["form-field"],
+                this.addAutoCompleteInline("academic-title", "Titel", {
+                  wrappers: ["inline-help", "form-field"],
                   className: "flex-1 pad-right",
-                  fieldLabel: "Titel",
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",

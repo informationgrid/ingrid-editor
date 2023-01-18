@@ -1,5 +1,7 @@
 <ige-form-error
-    *ngIf="formControl.invalid && !formControl.hasError('required')"
+    *ngIf="
+        showError && formControl.invalid && !formControl.hasError('required')
+    "
     >{{ getFirstError() }}</ige-form-error
 >
 

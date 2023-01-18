@@ -1,10 +1,17 @@
+@import "src/variables";
+
 .close {
   margin-top: 3px;
 }
 
 .cdk-drag-handle {
   cursor: move;
-  margin-top: 12px;
+  margin-top: 8px;
+  color: $ige-background-bar;
+
+  &:hover {
+    color: inherit;
+  }
 }
 
 .cdk-drag-preview {

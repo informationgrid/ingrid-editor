@@ -1,10 +1,9 @@
 @import "src/variables";
 
-/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
-/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
-/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card {
   padding: 12px 12px 12px 16px;
+  border-radius: 5px;
+  border-width: 0;
   background-color: $ige-background;
 
   &.warning {
@@ -15,44 +14,26 @@ mat-card {
     color: $ige-comment-color;
   }
 
-  .mat-mdc-card-header {
-    align-content: center;
+  .header {
+    align-items: center;
     margin-bottom: 8px;
+    padding: 0;
+    gap: 8px;
 
-    .mat-mdc-card-avatar {
-      width: 28px;
-      height: 28px;
+    .avatar {
       background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
-    /* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
-    ::ng-deep .mat-card-header-text {
-      margin-left: 8px;
-      overflow: hidden;
+      padding: 2px;
+      border-radius: 50%;
 
-      .mat-mdc-card-title {
-        font-size: 16px;
-        font-weight: 400;
-        margin: 0;
-        align-self: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        &.error {
-          color: $error-color;
-        }
+      mat-icon {
+        width: 24px;
+        height: 24px;
       }
     }
   }
 
-  .mat-mdc-card-subtitle {
-    font-weight: 500;
-    font-size: 16px;
-    color: $ige-text-color;
+  .mat-mdc-card-content {
+    padding: 0;
   }
 
   .mat-mdc-card-content > div {
