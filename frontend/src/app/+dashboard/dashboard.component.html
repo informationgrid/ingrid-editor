@@ -5,7 +5,7 @@
     class="allPageScroll"
 >
     <div class="welcome" data-cy="welcome-message">
-        <div>{{ t("welcome") }}</div>
+        <div class="greetings">{{ t("welcome") }}</div>
         <div *ngFor="let message of messages$ | async" class="message">
             <span>{{ message.text }}</span>
         </div>

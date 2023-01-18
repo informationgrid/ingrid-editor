@@ -15,13 +15,13 @@
     >
         <div
             *ngIf="props.asImage"
-            mat-list-avatar
+            matListItemAvatar
             class="avatar"
             [style.background-image]="'url(' + model[i].description + ')'"
         ></div>
         <div
             *ngIf="!props.asImage"
-            mat-list-avatar
+            matListItemAvatar
             class="avatar"
             [ngSwitch]="model[i]._type"
         >
@@ -39,9 +39,9 @@
             </div>
         </div>
 
-        <div mat-line class="type">{{ model[i].type }}</div>
-        <div mat-line class="title">{{ model[i].title }}</div>
-        <div mat-line class="description">{{ model[i].description }}</div>
+        <div matLine class="type">{{ model[i].type }}</div>
+        <div matLine class="title">{{ model[i].title }}</div>
+        <div matLine class="description">{{ model[i].description }}</div>
 
         <button
             *ngIf="formControl.enabled"

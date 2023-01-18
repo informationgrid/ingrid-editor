@@ -438,7 +438,8 @@ dynamic-form select,
 dynamic-form textarea {
   width: 100%;
 }*/
-ige-form-wrapper formly-field mat-form-field {
+formly-field ige-one-column-wrapper mat-form-field,
+formly-wrapper-mat-form-field > mat-form-field {
   width: 100%;
 }
 ige-form-wrapper formly-field.ige-date-picker mat-form-field {
@@ -488,6 +489,10 @@ ige-one-column-wrapper formly-group {
 .display-flex {
   display: flex;
   flex: 1;
+}
+
+.gap {
+  gap: 8px;
 }
 
 .flex-column {

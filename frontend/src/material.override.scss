@@ -1,12 +1,19 @@
 @import "src/variables";
 
-.white-bg .mat-mdc-text-field-wrapper {
-  background-color: white;
-  border-radius: 4px;
-  border: 2px solid #ffffff;
+.white-bg {
+  &.white-border {
+    .mat-mdc-text-field-wrapper {
+      border: 2px solid #ffffff;
 
-  &:hover {
-    border: 2px solid $ige-comment-color;
+      &:hover {
+        border: 2px solid $ige-comment-color;
+      }
+    }
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: white;
+    border-radius: 4px;
   }
 }
 
@@ -86,4 +93,8 @@ mat-checkbox .mdc-form-field {
 mat-table mat-header-cell.mat-mdc-header-cell {
   color: #0000008a;
   font-size: 12px;
+}
+
+mat-hint {
+  color: #0009;
 }

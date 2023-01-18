@@ -17,39 +17,15 @@
     <div main-content>
         <div class="section-title">Aktiver Katalog</div>
         <div fxLayout="row" style="padding-bottom: 48px">
-            <div fxFlex="25" class="catalog-wrapper">
-                <mat-card
-                    appearance="outlined"
-                    class="hover-elevate selected"
-                    [attr.data-cy]="catalog.label"
-                    *ngIf="activeCatalog | async as catalog"
-                >
-                    <mat-card-header>
-                        <mat-icon>article</mat-icon>
-                        <span class="profile">{{ catalog.type }}</span>
-                        <div fxFlex></div>
-                        <button
-                            mat-icon-button
-                            class="menu dark menu-button"
-                            [matMenuTriggerFor]="catMenu"
-                        >
-                            <mat-icon svgIcon="Mehr"></mat-icon>
-                        </button>
-                        <mat-menu #catMenu>
-                            <button
-                                mat-menu-item
-                                (click)="showCatalogDetail(catalog)"
-                            >
-                                Bearbeiten
-                            </button>
-                        </mat-menu>
-                    </mat-card-header>
-
-                    <ng-container
-                        [ngTemplateOutlet]="catContent"
-                        [ngTemplateOutletContext]="{ cat: catalog }"
-                    ></ng-container>
-                </mat-card>
+            <div
+                *ngIf="activeCatalog | async as catalog"
+                fxFlex="25"
+                class="catalog-wrapper"
+            >
+                <ng-container
+                    [ngTemplateOutlet]="catContent"
+                    [ngTemplateOutletContext]="{ cat: catalog }"
+                ></ng-container>
             </div>
         </div>
 
@@ -62,44 +38,10 @@
                 "
                 class="catalog-wrapper"
             >
-                <mat-card
-                    appearance="outlined"
-                    class="hover-elevate"
-                    [attr.data-cy]="cat.label"
-                    [class.selected]="cat.id === currentCatalog"
-                >
-                    <mat-card-header>
-                        <mat-icon>article</mat-icon>
-                        <span class="profile">{{ cat.type }}</span>
-                        <div fxFlex></div>
-                        <button
-                            mat-icon-button
-                            class="menu dark menu-button"
-                            [matMenuTriggerFor]="catMenu"
-                        >
-                            <mat-icon svgIcon="Mehr"></mat-icon>
-                        </button>
-                        <mat-menu #catMenu>
-                            <button
-                                mat-menu-item
-                                (click)="showCatalogDetail(cat)"
-                            >
-                                Bearbeiten
-                            </button>
-                            <button
-                                mat-menu-item
-                                (click)="chooseCatalog(cat.id)"
-                            >
-                                Aktivieren
-                            </button>
-                        </mat-menu>
-                    </mat-card-header>
-
-                    <ng-container
-                        [ngTemplateOutlet]="catContent"
-                        [ngTemplateOutletContext]="{ cat: cat }"
-                    ></ng-container>
-                </mat-card>
+                <ng-container
+                    [ngTemplateOutlet]="catContent"
+                    [ngTemplateOutletContext]="{ cat: cat }"
+                ></ng-container>
             </div>
 
             <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
@@ -107,24 +49,55 @@
     </div>
 
     <ng-template #catContent let-cat="cat">
-        <mat-card-title>{{ cat.label }}</mat-card-title>
-        <mat-card-subtitle *ngIf="cat.lastDocModification">
-            Letzte Änderung am
-            {{ cat.lastDocModification | date : "dd.LL.yyyy HH:mm" }}
-        </mat-card-subtitle>
-        <mat-card-subtitle *ngIf="!cat.lastDocModification">
-            Erstellt am {{ cat.created | date : "dd.LL.yyyy HH:mm" }}
-        </mat-card-subtitle>
-        <mat-card-content
-            *ngIf="cat.countDocuments !== undefined; else spinner"
+        <mat-card
+            appearance="outlined"
+            class="hover-elevate"
+            [attr.data-cy]="cat.label"
+            [class.selected]="cat.id === currentCatalog"
         >
-            <div class="content">
-                {{ cat.countDocuments | number }} Datensätze
-            </div>
-        </mat-card-content>
-        <ng-template #spinner>
-            <mat-spinner diameter="18"></mat-spinner>
-            Hole Statistik
-        </ng-template>
+            <mat-card-content>
+                <div class="header">
+                    <mat-icon>article</mat-icon>
+                    <div class="profile">{{ cat.type }}</div>
+                    <div fxFlex></div>
+                    <button
+                        mat-icon-button
+                        class="menu dark menu-button"
+                        [matMenuTriggerFor]="catMenu"
+                    >
+                        <mat-icon svgIcon="Mehr"></mat-icon>
+                    </button>
+                    <mat-menu #catMenu>
+                        <button mat-menu-item (click)="showCatalogDetail(cat)">
+                            Bearbeiten
+                        </button>
+                        <button mat-menu-item (click)="chooseCatalog(cat.id)">
+                            Aktivieren
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <div class="title">{{ cat.label }}</div>
+                <div *ngIf="cat.lastDocModification" class="subtitle">
+                    Letzte Änderung am
+                    {{ cat.lastDocModification | date : "dd.LL.yyyy HH:mm" }}
+                </div>
+                <div *ngIf="!cat.lastDocModification" class="subtitle">
+                    Erstellt am
+                    {{ cat.created | date : "dd.LL.yyyy HH:mm" }}
+                </div>
+
+                <div
+                    *ngIf="cat.countDocuments !== undefined; else spinner"
+                    class="content"
+                >
+                    {{ cat.countDocuments | number }} Datensätze
+                </div>
+                <ng-template #spinner>
+                    <mat-spinner diameter="18"></mat-spinner>
+                    Hole Statistik
+                </ng-template>
+            </mat-card-content>
+        </mat-card>
     </ng-template>
 </page-template>

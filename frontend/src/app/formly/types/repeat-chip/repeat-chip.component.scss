@@ -2,8 +2,9 @@
 
 /*TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
 mat-chip-listbox {
+  padding-bottom: 8px;
   ige-add-button {
-    margin-left: 6px;
+    margin-left: 8px;
     line-height: 42px;
   }
 }
