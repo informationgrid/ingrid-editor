@@ -146,7 +146,7 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:5.15.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-codelist-service:6.0.0') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -166,9 +166,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:5.15.0-SNAPSHOT')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:6.0.0')
 
-    implementation('de.ingrid:ingrid-ibus-client:5.13.0') {
+    implementation('de.ingrid:ingrid-ibus-client:6.0.0') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
