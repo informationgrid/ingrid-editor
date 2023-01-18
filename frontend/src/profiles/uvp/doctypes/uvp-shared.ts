@@ -229,6 +229,10 @@ export class UvpShared extends BaseDoctype {
                 : false,
             message: "Alle Adressen müssen veröffentlicht sein",
           },
+          maxPublisher: {
+            expression: (ctrl) => ctrl.value?.length === 1,
+            message: "Es darf maximal nur ein Kontakt angegeben sein",
+          },
         },
       }
     );
