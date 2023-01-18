@@ -65,12 +65,14 @@ form-toolbar .mdc-button > .mat-icon {
   margin-left: 0;
 }
 
-.right-sharp-corner .mat-mdc-text-field-wrapper {
+.right-sharp-corner .mat-mdc-text-field-wrapper,
+.right-sharp-corner .mdc-notched-outline__trailing {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
 
-.left-sharp-corner .mat-mdc-text-field-wrapper {
+.left-sharp-corner .mat-mdc-text-field-wrapper,
+.left-sharp-corner .mdc-notched-outline__leading {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }

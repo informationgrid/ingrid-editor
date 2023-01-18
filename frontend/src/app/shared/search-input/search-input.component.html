@@ -1,16 +1,29 @@
 <mat-form-field
-    class="white-bg no-input-border white-border"
-    [class.right-sharp-corner]="withButton"
+    class="white-bg"
+    [class.flex-1]="flexWidth"
+    [class.white-border]="withWhiteBorder"
+    [class.no-input-border]="withWhiteBorder"
+    [class.right-sharp-corner]="rectangular || withButton"
+    [class.left-sharp-corner]="rectangular"
     [style.min-width]="minWidth"
     appearance="outline"
 >
     <input
+        *ngIf="autocompleteRef; else noAutocomplete"
         matInput
         [placeholder]="placeholder"
         aria-label="Search"
         [formControl]="query"
         [matAutocomplete]="autocompleteRef"
     />
+    <ng-template #noAutocomplete>
+        <input
+            matInput
+            [placeholder]="placeholder"
+            aria-label="Search"
+            [formControl]="query"
+        />
+    </ng-template>
     <div matSuffix>
         <mat-spinner
             *ngIf="searchSub && !searchSub.closed"
@@ -31,6 +44,7 @@
             search
         </mat-icon>
     </div>
+    <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
 </mat-form-field>
 
 <button
@@ -38,6 +52,7 @@
     mat-flat-button
     color="primary"
     class="search-btn button-next-to-input"
+    [class.small]="!withWhiteBorder"
     (click)="buttonClick.next(query.value)"
 >
     <mat-icon>search</mat-icon>

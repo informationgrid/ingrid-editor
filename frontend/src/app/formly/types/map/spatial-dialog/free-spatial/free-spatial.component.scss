@@ -13,7 +13,12 @@
   }
 
   .mat-mdc-radio-button {
-    height: 26px !important;
+    height: auto;
+  }
+
+  ige-search-input {
+    display: block;
+    flex: none;
   }
 }
 

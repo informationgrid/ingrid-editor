@@ -178,3 +178,4 @@ ige-side-menu {
 @include mat.radio-theme($ige-theme);
 @include mat.dialog-theme($ige-theme);
 @include mat.menu-theme($ige-theme);
+@include mat.paginator-theme($ige-theme);

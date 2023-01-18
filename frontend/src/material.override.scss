@@ -115,3 +115,7 @@ mat-dialog-container.mat-mdc-dialog-container {
 .cdk-overlay-container .mat-mdc-dialog-container .mdc-dialog__content {
   color: $ige-text-color;
 }
+
+mat-tab-nav-panel {
+  overflow: auto;
+}

@@ -4,7 +4,7 @@
         [searchSub]="searchSub"
         [autocompleteRef]="auto"
         withButton="true"
-        (buttonClick)="openResearchPage($event)"
+        (buttonClick)="openResearchPage()"
         minWidth="564px"
     >
     </ige-search-input>
@@ -21,7 +21,7 @@
         >
             <div>Suchvorschläge</div>
             <div class="extra-large-spacing link-text">
-                <a href="#" (click)="openResearchPage($event)">
+                <a href="#" (click)="openResearchPage()">
                     <mat-icon
                         svgIcon="Recherche"
                         class="research-icon"
@@ -45,11 +45,7 @@
             *ngIf="numDocs > 5"
             class="show-all-link link-text extra-large-spacing"
         >
-            <a
-                href="#"
-                (click)="openResearchPage($event)"
-                data-cy="all-link-data"
-            >
+            <a href="#" (click)="openResearchPage()" data-cy="all-link-data">
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>
@@ -71,7 +67,7 @@
         >
             <a
                 href="#"
-                (click)="openResearchPage($event, true)"
+                (click)="openResearchPage(true)"
                 data-cy="all-link-address"
             >
                 <mat-icon>keyboard_arrow_right</mat-icon>

@@ -1,5 +1,10 @@
 :host {
   display: flex;
+  flex: 1;
+}
+
+input {
+  flex: 1;
 }
 
 mat-spinner {
@@ -11,8 +16,13 @@ mat-spinner {
   margin-right: 10px;
 }
 
-.search-btn mat-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
+.search-btn {
+  &.small {
+    height: 40px !important;
+  }
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
 }

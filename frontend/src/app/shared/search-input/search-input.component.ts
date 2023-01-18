@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Subscription } from "rxjs";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormControl } from "@angular/forms";
 import { MatAutocomplete } from "@angular/material/autocomplete";
 
 @Component({
@@ -11,12 +11,16 @@ import { MatAutocomplete } from "@angular/material/autocomplete";
 export class SearchInputComponent {
   @Input() searchSub: Subscription;
 
-  @Input() query: FormControl;
+  @Input() query: AbstractControl;
   @Input() autocompleteRef: MatAutocomplete;
-  @Input() minWidth = "100%";
+  @Input() minWidth = "100px";
+  @Input() flexWidth = false;
   @Input() withButton = false;
+  @Input() rectangular = false;
   @Input() placeholder = "Suchbegriff eingeben";
   @Input() showSearchIcon = false;
+  @Input() hint: string;
+  @Input() withWhiteBorder = true;
   @Output() buttonClick = new EventEmitter<string>();
 
   resetSearch() {

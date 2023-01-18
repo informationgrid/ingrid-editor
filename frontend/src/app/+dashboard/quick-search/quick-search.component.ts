@@ -57,10 +57,7 @@ export class QuickSearchComponent implements OnInit {
     });
   }
 
-  openResearchPage(event: Event, inAddresses?: boolean) {
-    // TODO: activate after research page is implemented
-    // event.preventDefault();
-
+  openResearchPage(inAddresses?: boolean) {
     this.router.navigate([
       `${ConfigService.catalogId}/research/search`,
       {
