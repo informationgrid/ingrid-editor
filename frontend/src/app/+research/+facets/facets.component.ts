@@ -61,7 +61,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   @Input() refreshView: EventEmitter<void>;
 
-  @Output() resetWholeQuery = new EventEmitter<string>();
+  @Output() resetQuery = new EventEmitter<void>();
 
   @Input()
   set forAddresses(addresses: boolean) {
@@ -96,8 +96,6 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   private onChange: (x: any) => {};
   onTouched = () => {};
-
-  touched = false;
 
   disabled = false;
 
@@ -332,11 +330,5 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   resetDateFields() {
     this.form.get(this.timeGroupId).get("start").setValue(null);
     this.form.get(this.timeGroupId).get("end").setValue(null);
-  }
-
-  resetSearch() {
-    this.form.reset("");
-    this.removeLocation();
-    this.resetWholeQuery.emit();
   }
 }
