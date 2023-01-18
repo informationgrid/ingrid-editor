@@ -1,5 +1,6 @@
 import { DocumentPage } from './document.page';
 import { UvpDocumentPage } from './uvpDocument.page';
+import { Tree } from './tree.partial';
 
 export class ingridDocumentPage {
   static setDescription(areaID: string, text: string) {
@@ -57,14 +58,7 @@ export class ingridDocumentPage {
   }
 
   static searchAndSelectGeoDataSet(documentName: string) {
-    // TODO
-    // refactor the code to be global
-    cy.get('mat-dialog-content [data-cy="tree-search-field"]', { timeout: 6000 })
-      .findByPlaceholderText('Suchen')
-      .click({ force: true });
-    cy.get('mat-dialog-content [data-cy="tree-search-field"]').findByPlaceholderText('Suchen').type(documentName);
-    cy.wait(1000);
-    cy.contains('ige-document-list-item', documentName, { timeout: 8000 }).click();
+    Tree.searchAndSelectDocument('mat-dialog-content [data-cy="tree-search-field"]', documentName);
     cy.contains('button', 'Übernehmen').click();
   }
 

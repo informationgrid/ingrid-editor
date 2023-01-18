@@ -256,4 +256,11 @@ export class Tree {
       cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(node);
     });
   }
+
+  static searchAndSelectDocument(selector: string, documentName: string) {
+    cy.get(selector, { timeout: 6000 }).findByPlaceholderText('Suchen').click({ force: true });
+    cy.get(selector).findByPlaceholderText('Suchen').type(documentName);
+    cy.wait(1000);
+    cy.contains('ige-document-list-item', documentName, { timeout: 8000 }).click();
+  }
 }
