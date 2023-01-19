@@ -28,6 +28,7 @@ pipeline {
                 }
             }*/
             steps {
+                updateGitlabCommitStatus name: 'build', state: 'running'
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
                     // so we use here a modified postgres image for the tests
@@ -101,6 +102,15 @@ pipeline {
                         body: '${DEFAULT_CONTENT}',
                         subject: '${DEFAULT_SUBJECT}',
                         to: '${DEFAULT_RECIPIENTS}')
+            }
+            failure {
+                updateGitlabCommitStatus name: 'build', state: 'failed'
+            }
+            success {
+                updateGitlabCommitStatus name: 'build', state: 'success'
+            }
+            aborted {
+                updateGitlabCommitStatus name: 'build', state: 'canceled'
             }
         }
     }
