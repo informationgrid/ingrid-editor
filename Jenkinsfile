@@ -104,15 +104,15 @@ pipeline {
                         subject: '${DEFAULT_SUBJECT}',
                         to: '${DEFAULT_RECIPIENTS}')
             }
-            failure {
-                updateGitlabCommitStatus name: 'build', state: 'failed'
-            }
-            success {
-                updateGitlabCommitStatus name: 'build', state: 'success'
-            }
-            aborted {
-                updateGitlabCommitStatus name: 'build', state: 'canceled'
-            }
+        }
+        failure {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        aborted {
+            updateGitlabCommitStatus name: 'build', state: 'canceled'
         }
     }
 }
