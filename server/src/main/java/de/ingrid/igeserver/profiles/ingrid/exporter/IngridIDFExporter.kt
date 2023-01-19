@@ -53,7 +53,7 @@ class IngridIDFExporter @Autowired constructor(val config: Config) : IgeExporter
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
-            "InGridSpecialisedTask" -> "ingrid/shared-general.jte"
+            "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
             "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
             "InGridLiterature" -> "ingrid/shared-general.jte"
             "InGridGeoService" -> "ingrid/shared-general.jte"
