@@ -429,8 +429,6 @@ describe('mCLOUD: User', () => {
         cy.logoutClearCookies();
         cy.kcLogin('mcloud-catalog-authorization');
         AdminUserPage.visit();
-        cy.intercept('GET', '/api/users').as('usersCall');
-        cy.wait('@usersCall');
         cy.get('.page-title')
           .contains('Benutzer (')
           .then($txtCatalog => {

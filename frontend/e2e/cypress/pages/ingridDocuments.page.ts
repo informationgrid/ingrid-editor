@@ -1,5 +1,6 @@
 import { DocumentPage } from './document.page';
 import { UvpDocumentPage } from './uvpDocument.page';
+import { Tree } from './tree.partial';
 
 export class ingridDocumentPage {
   static setDescription(areaID: string, text: string) {
@@ -47,5 +48,21 @@ export class ingridDocumentPage {
     cy.get('[data-cy="choose-address-next-step"]').click();
     cy.contains('.card-title', assignTo).click();
     cy.get('[data-cy="choose-address-confirm"]').click();
+  }
+
+  static selectDataRepresentationOption(option: string) {
+    // TODO
+    // remove force from click
+    cy.get('[data-cy="Dargestellte Daten"]  button ').contains('Hinzufügen').click({ force: true });
+    cy.get('button ').contains(option).click();
+  }
+
+  static searchAndSelectGeoDataSet(documentName: string) {
+    Tree.searchAndSelectDocument('mat-dialog-content [data-cy="tree-search-field"]', documentName);
+    cy.contains('button', 'Übernehmen').click();
+  }
+
+  static checkForGeoDataServiceReference(documentName: string) {
+    cy.get('[data-cy="Darstellender Dienst"] ').contains(documentName);
   }
 }

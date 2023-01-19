@@ -25,12 +25,13 @@ Die Zeitspanne kann auf unterschiedliche Weise
 ausgedrückt werden. Zur Auswahl stehen:
 
 
-| Auswahl                     | Bedeutung                                                                                                                             |
-| --------------------------- |---------------------------------------------------------------------------------------------------------------------------------------| 
-| seit (bis: Zeitpunkt des Abrufs) | Für Ressourcen, deren Datenbestand fortlaufend in kurzen regelmäßigen Zeitabschnitten aktualisiert oder angereichert wird. Das Ende der Zeitspanne entspricht dem Zeitpunkt des Abrufs der Ressource. Anstelle einer konkreten Datumsangabe für des Ende der Zeitpanne erfolgt der Eintrag "now".|
-| seit (bis: unbekannter Zeitpunkt) | Nur der Beginn der Zeitspanne ist bekannt. Das Ende der Zeitspanne ist unbekannt und kann in der Vergangenheit, Gegenwart oder Zukunft liegen. Anstelle einer konkreten Datumsangabe für das Ende der Zeitpanne erfolgt der Eintrag "unknown".|
-| von - bis                   | Beginn und Ende der Zeitspanne sind bekannt.                                                                                                               |
-| bis                         | Nur das Ende der Zeitspanne ist bekannt. Anstelle einer konkreten Datumsangabe für den Beginn der Zeitpanne erfolgt der Eintrag "unknown".                                                                                                    |
+| Auswahl&nbsp;1 | Auswahl 2                  | Bedeutung                                                                                                                                                                                                                                                                                           |
+|----------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| am             |                            | Angabe eine Zeitpunktes                                                                                                                                                                                                                                                                             |
+| bis            |                            | Nur das Ende der Zeitspanne ist bekannt. Anstelle einer konkreten Datumsangabe für den Beginn der Zeitspanne erfolgt "unknown".                                                                                                                                                                     |
+| von            | bis: unbekannter Zeitpunkt | Nur der Beginn der Zeitspanne ist bekannt. Das Ende der Zeitspanne ist unbekannt und kann in der Vergangenheit, Gegenwart oder Zukunft liegen. Anstelle einer konkreten Datumsangabe für das Ende der Zeitpanne erfolgt der Eintrag "unknown".                                                      |
+| von            | bis: Zeitpunkt des Abrufs  | Für Ressourcen, deren Datenbestand fortlaufend in kurzen regelmäßigen Zeitabschnitten aktualisiert oder angereichert wird. Das Ende der Zeitspanne entspricht dem Zeitpunkt des Abrufs der Ressource. Anstelle einer konkreten Datumsangabe für des Ende der Zeitpanne erfolgt der Eintrag "now".   |
+| von            | bis: genaues Datum         | Beginn und Ende der Zeitspanne sind bekannt.                                                                                                                                                                                                                                                        |
 
 # ISO Abbildung
 

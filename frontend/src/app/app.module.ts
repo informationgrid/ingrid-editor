@@ -114,10 +114,14 @@ export function ConfigLoader(
   ) {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
+    const contextPath = configService.getConfiguration().contextPath;
     const urlPath = document.location.pathname;
     // FIXME: what about IGE-NG installed behind a context path? check configuration!
     // get first part of the path without any parameters separated by ";"
-    const rootPath = urlPath.split("/")[1].split(";")[0];
+    const rootPath = urlPath
+      .substring(contextPath.length) // remove context path
+      .split("/")[0] // split paths
+      .split(";")[0]; // split parameters
     if (rootPath !== catalogId) {
       // check if no catalogId is in requested URL
       const hasNoCatalogId =

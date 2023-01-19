@@ -138,7 +138,9 @@ export class UvpShared extends BaseDoctype {
   addPublishConditionCheckbox(id: string) {
     return this.addCheckbox(id + "PublishDuringDisclosure", null, {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
-      expressions: { hide: `!model["${id}"] || model["${id}"].length === 0` },
+      expressions: {
+        hide: `!model || !model["${id}"] || model["${id}"].length === 0`,
+      },
     });
   }
 
@@ -228,6 +230,10 @@ export class UvpShared extends BaseDoctype {
                 ? ctrl.value.every((row) => row.ref._state === "P")
                 : false,
             message: "Alle Adressen müssen veröffentlicht sein",
+          },
+          maxPublisher: {
+            expression: (ctrl) => ctrl.value?.length === 1,
+            message: "Es darf maximal nur ein Kontakt angegeben sein",
           },
         },
       }

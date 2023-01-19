@@ -108,6 +108,9 @@ pipeline {
         failure {
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
         }

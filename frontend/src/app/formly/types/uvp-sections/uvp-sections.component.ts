@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -15,7 +15,10 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
   templateUrl: "./uvp-sections.component.html",
   styleUrls: ["./uvp-sections.component.scss"],
 })
-export class UvpSectionsComponent extends FieldArrayType implements OnInit {
+export class UvpSectionsComponent
+  extends FieldArrayType
+  implements OnInit, OnDestroy
+{
   markSection = {};
   sectionTypes = [];
 
@@ -33,6 +36,10 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
       .subscribe((value) => this.formService.setAdditionalSections(value));
 
     this.sectionTypes = (<FormlyFieldConfig>this.field.fieldArray).fieldGroup;
+  }
+
+  ngOnDestroy() {
+    this.formService.setAdditionalSections([]);
   }
 
   private getLabelFromSections(values: FormlyFieldConfig[]) {

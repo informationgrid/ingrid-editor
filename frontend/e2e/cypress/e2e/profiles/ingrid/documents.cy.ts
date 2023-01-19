@@ -234,3 +234,26 @@ describe('ingrid documents', () => {
     cy.contains(`[data-cy="extraInfoPublishArea"] .mat-select-trigger`, 'Intranet');
   });
 });
+
+describe('ingrid documents with linked data sets', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('ingridcatalog').as('tokens');
+    DocumentPage.visit();
+  });
+
+  it('Add multiple "Geodatensatz" as reference in "Geodatendienst" document and check for the "Geodatendienst" document in the added "Geodatensatz" documents', () => {
+    Tree.openNode(['test_geodatensatz_ref', 'Geodatendienst_ref_datensatz']);
+
+    ingridDocumentPage.selectDataRepresentationOption('Geodatensatz auswählen');
+    ingridDocumentPage.searchAndSelectGeoDataSet('Geodatensatz_ref_1');
+    ingridDocumentPage.selectDataRepresentationOption('Geodatensatz auswählen');
+    ingridDocumentPage.searchAndSelectGeoDataSet('Geodatensatz_ref_2');
+
+    DocumentPage.saveDocument();
+    Tree.openNode(['test_geodatensatz_ref', 'Geodatensatz_ref_1']);
+    ingridDocumentPage.checkForGeoDataServiceReference('Geodatendienst_ref_datensatz');
+    Tree.openNode(['test_geodatensatz_ref', 'Geodatensatz_ref_2']);
+    ingridDocumentPage.checkForGeoDataServiceReference('Geodatendienst_ref_datensatz');
+  });
+});
