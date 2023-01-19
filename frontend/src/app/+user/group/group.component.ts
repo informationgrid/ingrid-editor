@@ -5,6 +5,7 @@ import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
 import {
   AbstractControl,
+  FormControl,
   UntypedFormBuilder,
   UntypedFormGroup,
   ValidatorFn,
@@ -36,7 +37,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     .selectAll()
     .pipe(tap((response) => (this._groups = response)));
   userGroupNames: string[];
-  searchQuery: string;
 
   userInfo$ = this.configService.$userInfo;
   userHasRootReadPermission: boolean = false;
@@ -49,6 +49,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
   showMore = false;
   tableWidth: number;
   groupUsers: User[];
+  query = new FormControl<string>("");
   private _groups: Group[];
   private previousGroupId: number;
 
@@ -64,7 +65,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     private session: SessionQuery,
     public groupQuery: GroupQuery
   ) {
-    this.searchQuery = "";
     this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 

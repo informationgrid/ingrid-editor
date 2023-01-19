@@ -11,7 +11,7 @@
 td {
   font-size: 16px;
   font-weight: 400;
-  padding: 10px 12px !important;
+  //padding: 10px 12px !important;
 
   div {
     font-weight: 500;
@@ -26,26 +26,6 @@ td {
 
 table {
   cursor: pointer;
-
-  td.mat-mdc-cell:last-of-type {
-    text-align: left;
-    padding-right: 24px !important;
-  }
-  td.mat-mdc-cell:first-of-type {
-    padding-left: 24px !important;
-  }
-
-  ::ng-deep {
-    .mat-sort-header-content {
-      padding: 0 12px;
-    }
-  }
-
-  .mat-mdc-header-cell:first-of-type {
-    ::ng-deep .mat-sort-header-content {
-      padding-left: 0 !important;
-    }
-  }
 }
 
 .mat-mdc-row .menu-button {

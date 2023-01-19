@@ -257,7 +257,7 @@ h1 {
 ige-section-wrapper > h3 {
   color: $ige-primary;
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   font-weight: normal;
   font-size: 24px;
   cursor: default;
@@ -531,7 +531,10 @@ ige-one-column-wrapper formly-group {
   display: none;
 }
 
-//}
+formly-field {
+  min-width: 130px;
+}
+
 /*formly-field {
   &[class*="flex-"] {
     padding-left: 10px;
@@ -1044,6 +1047,8 @@ mat-icon.wide-icon-26px {
   .infoIcon {
     background-color: white;
     margin-right: 15px;
+    height: 24px;
+    border-radius: 50%;
   }
 }
 
@@ -1172,6 +1177,16 @@ table.big-font {
 
 .space-bottom {
   padding-bottom: 12px;
+}
+
+.space-bottom-field {
+  display: block;
+  padding-bottom: 22px;
+}
+
+.negative-space-top-field {
+  display: block;
+  margin-top: -22px;
 }
 
 .mat-mdc-menu-panel.mat-menu-panel,

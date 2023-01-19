@@ -119,3 +119,7 @@ mat-dialog-container.mat-mdc-dialog-container {
 mat-tab-nav-panel {
   overflow: auto;
 }
+
+.mat-mdc-tab-links > a {
+  min-width: 160px;
+}

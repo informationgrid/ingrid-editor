@@ -63,6 +63,7 @@
                     </ige-form-info>
                     <div
                         class="form-inner"
+                        [class.extra-space-toggle-button]="hasOptionalFields"
                         [class.hide]="model._type === 'FOLDER'"
                     >
                         <form

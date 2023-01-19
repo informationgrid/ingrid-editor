@@ -37,7 +37,12 @@ mat-divider {
   }
 
   mat-list-option {
-    height: 48px;
+    height: auto !important;
+    min-height: 48px;
+
+    h3 {
+      margin: 8px 0;
+    }
   }
 
   &.dense {

@@ -138,6 +138,7 @@ export class UvpShared extends BaseDoctype {
   addPublishConditionCheckbox(id: string) {
     return this.addCheckbox(id + "PublishDuringDisclosure", null, {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
+      className: "space-bottom-field negative-space-top-field",
       expressions: { hide: `!model["${id}"] || model["${id}"].length === 0` },
     });
   }
@@ -154,7 +155,7 @@ export class UvpShared extends BaseDoctype {
           { key: "type" },
           this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
             required: true,
-            wrappers: ["panel", "form-field"],
+            wrappers: ["panel"],
           }),
           this.addTable(
             "considerationDocs",
