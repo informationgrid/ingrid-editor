@@ -138,7 +138,9 @@ export class UvpShared extends BaseDoctype {
   addPublishConditionCheckbox(id: string) {
     return this.addCheckbox(id + "PublishDuringDisclosure", null, {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
-      expressions: { hide: `!model["${id}"] || model["${id}"].length === 0` },
+      expressions: {
+        hide: `!model || !model["${id}"] || model["${id}"].length === 0`,
+      },
     });
   }
 
