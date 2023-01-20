@@ -215,7 +215,7 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 8010,
           className: "optional",
           expressions: {
-            "props.required": "formState.mainModel.isAdVCompatible",
+            "props.required": "formState.mainModel?.isAdVCompatible",
           },
         }),
         this.addRepeatList("themes", "INSPIRE-Themen", {
@@ -224,7 +224,7 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 6100,
           className: "optional",
           expressions: {
-            "props.required": "formState.mainModel.isInspireIdentified",
+            "props.required": "formState.mainModel?.isInspireIdentified",
           },
         }),
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
@@ -232,7 +232,7 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           options: this.getCodelistForSelect(6400, "openDataCategories"),
           codelistId: 6400,
-          expressions: { hide: "!formState.mainModel.isOpenData" },
+          expressions: { hide: "!formState.mainModel?.isOpenData" },
         }),
         // TODO: output needs to be formatted in a different way
         options.priorityDataset
@@ -245,7 +245,7 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 6350,
                 expressions: {
                   className: (model) =>
-                    model.options.formState.mainModel.isInspireIdentified
+                    model.options.formState.mainModel?.isInspireIdentified
                       ? ""
                       : "optional",
                 },
@@ -261,10 +261,10 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 6360,
                 expressions: {
                   "props.required":
-                    "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
+                    "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
                   className: (model) =>
-                    !model.options.formState.mainModel.isInspireIdentified &&
-                    model.options.formState.mainModel._type ===
+                    !model.options.formState.mainModel?.isInspireIdentified &&
+                    model.options.formState.mainModel?._type ===
                       "InGridGeoService"
                       ? "optional"
                       : "",
@@ -447,19 +447,19 @@ export abstract class IngridShared extends BaseDoctype {
                 { label: "bis: genaues Datum", value: "exactDate" },
               ],
               expressions: {
-                hide: "formState.mainModel.temporal?.resourceDateType?.key !== 'since'",
+                hide: "formState.mainModel?.temporal?.resourceDateType?.key !== 'since'",
               },
             }),
             this.addDatepicker("resourceDate", null, {
               placeholder: "TT.MM.JJJJ",
               wrappers: ["form-field"],
               expressions: {
-                hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key === 'exactDate'",
+                hide: "formState.mainModel?.temporal?.resourceDateTypeSince?.key === 'exactDate'",
               },
             }),
             this.addDateRange("resourceRange", null, {
               expressions: {
-                hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
+                hide: "formState.mainModel?.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
               },
             }),
             /*this.addSelectInline("resourceDateType", "Typ", {
@@ -580,7 +580,7 @@ export abstract class IngridShared extends BaseDoctype {
                 className: "optional",
                 expressions: {
                   "props.required":
-                    "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel._type) !== -1",
+                    "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
                 },
               }),
             ])
@@ -590,7 +590,7 @@ export abstract class IngridShared extends BaseDoctype {
               supportUpload: false,
               className: "optional",
               expressions: {
-                "props.required": "formState.mainModel.isInspireIdentified",
+                "props.required": "formState.mainModel?.isInspireIdentified",
               },
               dialog: ConformityDialogComponent,
               columns: [
@@ -711,15 +711,15 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 6010,
           className: "optional",
           expressions: {
-            "props.required": "formState.mainModel.isInspireIdentified",
+            "props.required": "formState.mainModel?.isInspireIdentified",
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
           className: "optional",
           expressions: {
-            hide: "(formState.mainModel._type !== 'InGridGeoDataset' || formState.mainModel._type !== 'InGridGeoService')",
+            hide: "(formState.mainModel?._type !== 'InGridGeoDataset' || formState.mainModel?._type !== 'InGridGeoService')",
             "props.required":
-              "formState.mainModel._type === 'InGridGeoDataset' || formState.mainModel._type === 'InGridGeoService'",
+              "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
           },
           fields: [
             this.addSelect("title", null, {
@@ -749,9 +749,9 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeat("format", "Datenformat", {
           className: "optional",
           expressions: {
-            hide: `formState.mainModel._type !== 'InGridGeoService'`, // TODO: simplify!
+            hide: `formState.mainModel?._type !== 'InGridGeoService'`, // TODO: simplify!
             "props.required":
-              "formState.mainModel._type === 'InGridGeoDataset' && formState.mainModel.isInspireIdentified",
+              "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
           },
           fields: [
             this.addSelectInline("name", "Name", {

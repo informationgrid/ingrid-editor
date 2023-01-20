@@ -61,7 +61,7 @@ export class GeoDatasetDoctype extends IngridShared {
             codelistId: 526,
             className: "optional",
             expressions: {
-              "props.required": "formState.mainModel.isInspireConform",
+              "props.required": "formState.mainModel?.isInspireConform",
             },
           }
         ),
@@ -84,7 +84,7 @@ export class GeoDatasetDoctype extends IngridShared {
             }),
           ],
           expressions: {
-            hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "1")',
+            hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "1")',
           },
         }),
         this.addGroup(
@@ -215,7 +215,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 wrappers: [],
                 fieldGroupClassName: "",
                 hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "rectified"',
+                  'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "rectified"',
               }
             ),
             this.addGroup(
@@ -257,14 +257,14 @@ export class GeoDatasetDoctype extends IngridShared {
                 wrappers: [],
                 fieldGroupClassName: "",
                 hideExpression:
-                  'formState.mainModel.gridSpatialRepresentation?.type?.key !== "referenced"',
+                  'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "referenced"',
               }
             ),
           ],
           {
             fieldGroupClassName: "",
             hideExpression:
-              '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+              '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
         this.addRepeat("resolution", "Erstellungsmaßstab", {
@@ -291,7 +291,7 @@ export class GeoDatasetDoctype extends IngridShared {
             fields: this.titleDateEditionFields(3535),
             expressions: {
               "props.required":
-                "formState.mainModel.featureCatalogueDescription?.featureTypes?.length > 0",
+                "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
             },
             contextHelpId: "citation_2",
           }),
@@ -349,7 +349,7 @@ export class GeoDatasetDoctype extends IngridShared {
               type: "number",
               className: "optional",
               expressions: {
-                hide: '!formState.mainModel.spatialRepresentationType?.find(x => x.key === "2")',
+                hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
               },
               hasInlineContextHelp: true,
               wrappers: ["form-field", "inline-help"],
