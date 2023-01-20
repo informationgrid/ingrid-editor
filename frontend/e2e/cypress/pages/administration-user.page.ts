@@ -2,7 +2,6 @@ import { BasePage, UserAndRights } from './base.page';
 import { DashboardPage } from './dashboard.page';
 import { ProfilePage } from './profile.page';
 import Chainable = Cypress.Chainable;
-import { Utils } from './utils';
 
 export interface UserFormData {
   login: string;
@@ -20,14 +19,11 @@ export class AdminUserPage extends BasePage {
   }
 
   static visit() {
-    // user random wait names in case of calling visit multiple times with different users after login
-    let userCall = 'usersCall' + Utils.randomString();
-    let groupCall = 'groups' + Utils.randomString();
-    cy.intercept('GET', '/api/users').as(userCall);
-    cy.intercept('GET', '/api/groups').as(groupCall);
+    cy.intercept({ method: 'GET', url: '/api/users', times: 1 }).as('usersCall');
+    cy.intercept({ method: 'GET', url: '/api/groups', times: 1 }).as('groups');
     cy.visit('manage/user');
-    cy.wait('@' + userCall, { timeout: 20000 });
-    cy.wait('@' + groupCall, { timeout: 9000 });
+    cy.wait('@usersCall', { timeout: 20000 });
+    cy.wait('@groups', { timeout: 9000 });
   }
 
   static addNewUserLogin(login: string) {
