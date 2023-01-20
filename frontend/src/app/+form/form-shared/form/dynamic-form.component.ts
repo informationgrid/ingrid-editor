@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -109,7 +110,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private cdr: ChangeDetectorRef
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -339,24 +341,28 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     try {
       // switch to the right profile depending on the data
+      this.initializeForm(data.hasWritePermission && !this.readonly);
       if (needsProfileSwitch) {
         this.formStateService.unobserveTextareaHeights();
 
         // switch to the right profile depending on the data
         this.fields = this.switchProfile(profile);
+        this.model = { ...data };
+        this.cdr.detectChanges();
 
         this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
         this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields =
           this.profileQuery.getProfile(profile).hasOptionalFields;
+      } else {
+        this.model = { ...data };
+        this.cdr.detectChanges();
       }
 
-      this.model = { ...data };
       this.formOptions.formState.mainModel = this.model;
       this.formOptions.formState.parentIsFolder = data._parentIsFolder;
 
-      this.initializeForm(data.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);
