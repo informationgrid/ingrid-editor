@@ -99,7 +99,7 @@ export class DocumentPage extends BasePage {
     this.fillDialog(folderName);
   }
 
-  private static fillDialog(title: string) {
+  static fillDialog(title: string) {
     let beforeLength = 0;
     Tree.getNumberOfNodes().then(length => {
       beforeLength = length;

@@ -1,5 +1,4 @@
 import { DocumentPage } from './document.page';
-import { UvpDocumentPage } from './uvpDocument.page';
 import { Tree } from './tree.partial';
 
 export class ingridDocumentPage {
@@ -14,7 +13,7 @@ export class ingridDocumentPage {
 
   static setSpatialBbox(title: string, locationText: string, typeOption: boolean = true) {
     cy.get('[data-cy=spatialButton]').click({ force: true });
-    UvpDocumentPage.setOpenedSpatialBbox(title, locationText, typeOption);
+    DocumentPage.setOpenedSpatialBbox(title, locationText, typeOption);
     cy.contains('.spatial-title', locationText);
   }
 
