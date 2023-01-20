@@ -2,7 +2,18 @@ import { DocumentPage } from './document.page';
 import Chainable = Cypress.Chainable;
 
 export class UvpDocumentPage extends DocumentPage {
-  static setDateOfRequest(date: string) {
+  static createUVPDocument(name: string, procedureType: ProcedureTypes) {
+    const type = this.getProcedureString(procedureType).toLowerCase().replace(' ', '_');
+    cy.log('Create Document: ' + name);
+    cy.get(DocumentPage.Toolbar.NewDoc, { timeout: 18000 }).click();
+    cy.get(`[data-cy="${type}"]`).click();
+    DocumentPage.fillDialog(name);
+    // wait, since creation of node leads to activation and navigation, which will result
+    // in jumping back to form (in case we jump to another page after creation)
+    cy.wait(500);
+  }
+
+  static setRequestDate(date: string) {
     cy.get('[data-cy="receiptDate"] input').clear().type(date);
   }
 
@@ -19,9 +30,8 @@ export class UvpDocumentPage extends DocumentPage {
   }
 
   static setUVPnumber(UVPnumber: string) {
-    cy.get('[data-cy="eiaNumbers"] mat-select')
-      .click()
-      .type(UVPnumber + '{enter}');
+    cy.get('[data-cy="eiaNumbers"] mat-select').click().type(UVPnumber);
+    cy.get('mat-option').contains(UVPnumber).click();
     cy.get('[data-cy="eiaNumbers"]').should('contain', UVPnumber);
     cy.get('[data-cy="eiaNumbers"] mat-select').invoke('attr', 'aria-expanded').should('eq', 'false');
   }
@@ -60,7 +70,7 @@ export class UvpDocumentPage extends DocumentPage {
 
   static getUVPmetrics(category: UVPmetrics): Chainable<any> {
     return cy
-      .get('[label="Kennzahlen"] .mat-column-value')
+      .get('[label="Kennzahlen"] tbody .mat-column-value')
       .eq(category)
       .then(value => {
         return category === UVPmetrics.averageProcessLength ? value.text().trim() : parseInt(value.text().trim());
@@ -163,6 +173,23 @@ export class UvpDocumentPage extends DocumentPage {
   static getNumberOfInvalidURLs(): Chainable<number> {
     return cy.get('.mat-column-url.mat-cell').then(coll => coll.length);
   }
+
+  static getProcedureString(procedure: ProcedureTypes): string {
+    switch (procedure) {
+      case 'Zulassungsverfahren':
+        return 'Zulassungsverfahren';
+      case 'Negative Vorprüfung':
+        return 'Negative Vorprüfung';
+      case 'Raumordnungsverfahren':
+        return 'Raumordnungsverfahren';
+      case 'Linienbestimmung':
+        return 'Linienbestimmung';
+      case 'Ausländisches Vorhaben':
+        return 'Ausländisches Vorhaben';
+      case 'Bauleitplanung':
+        return 'Bauleitplanung';
+    }
+  }
 }
 
 export enum AddressDetails {
@@ -172,7 +199,8 @@ export enum AddressDetails {
 }
 
 export enum UVPmetrics {
-  positiveAudit = 1,
+  completedDocs = 0,
+  positiveAudit,
   negativeAudit,
   averageProcessLength
 }
@@ -183,3 +211,11 @@ export enum UVPreports {
   URLmanagement = 'url-check',
   UploadCheck = 'uvp-upload-check'
 }
+
+export type ProcedureTypes =
+  | 'Zulassungsverfahren'
+  | 'Negative Vorprüfung'
+  | 'Raumordnungsverfahren'
+  | 'Linienbestimmung'
+  | 'Ausländisches Vorhaben'
+  | 'Bauleitplanung';

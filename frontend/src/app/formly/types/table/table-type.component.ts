@@ -57,7 +57,7 @@ export class TableTypeComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.to.columns
+    this.displayedColumns = this.props.columns
       .filter((column) => !column.hidden)
       .map((column) => column.key);
     this.displayedColumns.push("_actions_");
@@ -76,12 +76,15 @@ export class TableTypeComponent
         (value) => (this.dataSource = new MatTableDataSource<any>(value || []))
       );
 
+    // init with formatted values
+    this.prepareFormattedValues(this.formControl.value);
+
     this.dataSource = new MatTableDataSource<any>(this.formControl.value || []);
   }
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.to.docType ?? this.model?._type;
+    this.docType = this.props.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
@@ -90,7 +93,7 @@ export class TableTypeComponent
       this.profile,
       this.docType,
       this.fieldId,
-      this.to.externalLabel,
+      this.props.externalLabel,
       infoElement
     );
   }
@@ -111,11 +114,11 @@ export class TableTypeComponent
   editRow(index: number) {
     const newEntry = index === null;
     this.dialog
-      .open(this.to.dialog ?? FormDialogComponent, {
+      .open(this.props.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
         minWidth: 550,
         data: {
-          fields: this.to.columns.filter((column) => !column.hidden),
+          fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry
             ? {}
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
@@ -220,7 +223,7 @@ export class TableTypeComponent
       return;
     }
 
-    this.to.columns
+    this.props.columns
       .filter((column) => column.props.formatter)
       .forEach((column) =>
         value?.forEach((row, index) => {
@@ -259,12 +262,12 @@ export class TableTypeComponent
   }
 
   private getUploadFieldKey(): string {
-    return this.to.columns.find((column) => column.type === "upload")?.key;
+    return this.props.columns.find((column) => column.type === "upload")?.key;
   }
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = {
-      title: file.file,
+      title: this.prepareTitleFromFile(file.file),
     };
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
@@ -294,7 +297,7 @@ export class TableTypeComponent
         maxWidth: 600,
         hasBackdrop: true,
         data: {
-          fields: this.to.columns,
+          fields: this.props.columns,
           model: {},
           newEntry: true,
         } as FormDialogData,
@@ -321,9 +324,12 @@ export class TableTypeComponent
   }
 
   handleCellClick(index: number, element, $event: MouseEvent) {
+    if (!this.props.supportUpload) return;
+
     const uploadKey = this.getUploadFieldKey();
     if (!element[uploadKey].asLink) {
-      const options = this.to.columns[this.batchMode ? index - 1 : index].props;
+      const options =
+        this.props.columns[this.batchMode ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
           this.form.root.get("_uuid").value,
@@ -344,5 +350,14 @@ export class TableTypeComponent
         this.selection.selected.forEach((row) => (row.validUntil = dateObj));
         this.updateTableDataToForm(this.dataSource.data);
       });
+  }
+
+  private prepareTitleFromFile(file: string) {
+    const lastDotPos = file.lastIndexOf(".");
+    const name = file.substring(
+      0,
+      lastDotPos === -1 ? file.length : lastDotPos
+    );
+    return decodeURI(name);
   }
 }

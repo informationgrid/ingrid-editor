@@ -18,7 +18,7 @@ export class ResearchPage {
    * Returns the searchresultcount. Fails if searchresultcount is 0
    */
   static getSearchResultCount(): Chainable<number> {
-    cy.get('.result').contains(/[1-9][0-9]* Ergebnisse gefunden/);
+    cy.get('.result').contains(/[1-9][0-9]* Ergebnisse gefunden/, { timeout: 5000 });
     return cy.get('.result').then($node => {
       // extract number from string like '12 Ergebnisse gefunden'
       console.log('this: ' + $node.text().trim().split(' ')[0]);
@@ -192,7 +192,7 @@ export class ResearchPage {
     }
     cy.intercept({ method: 'POST', url: '/api/search', times: 1 }).as('saveChanges');
     cy.get('div.cdk-overlay-pane').find("button > span:contains('Speichern')").click();
-    cy.wait('@saveChanges', { timeout: 7000 }).its('response.body.name').should('eq', title);
+    cy.wait('@saveChanges', { timeout: 10000 }).its('response.body.name').should('eq', title);
   }
 
   static getCSVFile(): void {

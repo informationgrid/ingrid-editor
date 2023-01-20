@@ -1,5 +1,5 @@
 import { AdminUserPage, keysInHeader, UserFormData } from '../../pages/administration-user.page';
-import { DocumentPage } from '../../pages/document.page';
+import { DocumentPage, headerElements } from '../../pages/document.page';
 import { BasePage, UserAndRights } from '../../pages/base.page';
 import { Utils } from '../../pages/utils';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
@@ -98,7 +98,7 @@ describe('mCLOUD: User', () => {
     // change name, then interrupt editing by trying to switch to another user
     // after canceling the prompt to discard changes, we are still in editing mode
     AdminUserPage.updateUser({ firstName: 'Modified' }, false);
-    AdminUserPage.selectUser('Majid');
+    AdminUserPage.selectUser('Majid', true);
     AdminUserPage.cancelChanges();
     AdminUserPage.clearSearch();
 
@@ -109,7 +109,7 @@ describe('mCLOUD: User', () => {
     cy.get('user-table .selected').contains(name);
 
     // try to switch to another user, this time discarding all changes -> changes are undone, new user can be selected
-    AdminUserPage.selectUser('Majid');
+    AdminUserPage.selectUser('Majid', true);
     AdminUserPage.discardChanges();
 
     // go back to original user profile and make sure data is unchanged
@@ -242,7 +242,7 @@ describe('mCLOUD: User', () => {
   });
 
   it('should be possible to delete a user', () => {
-    const toDelete = 'todel';
+    const toDelete = 'toDelete inTest';
     AdminUserPage.selectUser(toDelete);
     // delete user
     AdminUserPage.deleteUser();
@@ -396,7 +396,7 @@ describe('mCLOUD: User', () => {
 
     AdminUserPage.selectUser(username);
     AdminUserPage.updateUser({ firstName: modified }, false);
-    AdminUserPage.selectUser(username2);
+    AdminUserPage.selectUser(username2, true);
 
     // when save-button is disabled all changes are reverted
     AdminUserPage.discardChanges();
@@ -405,7 +405,7 @@ describe('mCLOUD: User', () => {
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
 
     // when changes are canceled, save-button is enabled
-    AdminUserPage.selectUser(username);
+    AdminUserPage.selectUser(username, true);
     AdminUserPage.cancelChanges();
     cy.get('[data-cy=toolbar_save_user]').should('be.enabled');
     cy.get('.user-title').contains(modified + ' ' + 'Admin');
@@ -429,8 +429,6 @@ describe('mCLOUD: User', () => {
         cy.logoutClearCookies();
         cy.kcLogin('mcloud-catalog-authorization');
         AdminUserPage.visit();
-        cy.intercept('GET', '/api/users').as('usersCall');
-        cy.wait('@usersCall');
         cy.get('.page-title')
           .contains('Benutzer (')
           .then($txtCatalog => {
@@ -463,6 +461,50 @@ describe('mCLOUD: User', () => {
     AdminUserPage.userShouldExist(userLogIn + ' ' + userLogIn);
   });
 
+  it('Should mark created and modificated documents of deleted users(#3874)', () => {
+    let user = 'test-catalog-admin-todelete';
+    let userName = 'Testadmin Todelete';
+    let createdDoc = 'old-users-doc';
+    let alteredDoc = 'Doc_h';
+
+    // login as user
+    cy.logoutClearCookies();
+    cy.kcLogin(user);
+
+    // let user create a document
+    DocumentPage.visit();
+    DocumentPage.createDocument(createdDoc);
+
+    // let user modify a document
+    Tree.openNode([alteredDoc]);
+    DocumentPage.setDescription('modified by old user');
+    DocumentPage.saveDocument();
+
+    // delete user
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    AdminUserPage.visit();
+    AdminUserPage.selectUser(user);
+    AdminUserPage.deleteUser();
+    AdminUserPage.userShouldNotExist(user + ' ' + user);
+
+    // check document header of created doc
+    DocumentPage.visit();
+    Tree.openNode([createdDoc]);
+    DocumentPage.openUpDocumentHeader();
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.CreationDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + `${userName} (ausgeschieden)`
+    );
+
+    // check document header of modified doc
+    Tree.openNode([alteredDoc]);
+    DocumentPage.verifyInfoInDocumentHeader(
+      headerElements.EditDate,
+      Utils.getFormattedDate(new Date()) + ' von ' + `${userName} (ausgeschieden)`
+    );
+  });
+
   it('should be possible to create users for a newly created metadata administrator (#2669)', () => {
     const uid1 = Utils.randomDoubleDigitString();
     const uid2 = Utils.randomDoubleDigitString();
@@ -493,14 +535,14 @@ describe('mCLOUD: User', () => {
     cy.kcLogin('mcloud-catalog-switch-catalog');
     // reload with changed user loginn
     AdminUserPage.visit();
-    AdminUserPage.userShouldNotExist('andre.wallat@wemove.com');
+    AdminUserPage.userShouldNotExist('switch_catalog_user@test.com');
     // switch catalog
     Menu.switchToGeneral('CATALOG_MANAGEMENT');
 
-    ManageCatalogPage.switchToCatalog('Test_Mass_Data');
+    ManageCatalogPage.switchToCatalog('catalog_with_one_user');
     // a cat admin assigned to the same catalog should be visible
     Menu.switchTo('USERS');
-    AdminUserPage.userShouldExist('masstest@something.com');
+    AdminUserPage.userShouldExist('switch_catalog_user@test.com');
     // cat admins not belonging to catalog should not be visible
     AdminUserPage.userShouldNotExist('me@wemove.com');
   });
@@ -586,7 +628,8 @@ describe('User', () => {
       'Author',
       '123FFffGex@$wfhjfh444',
       'autor',
-      'reset-pass'
+      'reset-pass',
+      false
     );
   });
   it('Should check the functionality of cancel, discard, and save buttons in users section (#4184)', () => {
@@ -597,12 +640,12 @@ describe('User', () => {
     // cancel and stay on the same user
     AdminUserPage.selectUser(firstUserName);
     AdminUserPage.updateUser({ organisation: orgName }, false);
-    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.selectUser(secondUserName, true);
     AdminUserPage.cancelChanges();
     AdminUserPage.checkOrganisationName(orgName);
 
     // discard changes and change the user
-    AdminUserPage.selectUser(secondUserName);
+    AdminUserPage.selectUser(secondUserName, true);
     AdminUserPage.discardChanges();
     AdminUserPage.selectUser(firstUserName);
     AdminUserPage.checkOrganisationName('');

@@ -1,7 +1,7 @@
 <div class="timeout-wrapper" [class.warn]="timeout < 300">
     <span class="label">Logout in&nbsp;</span>
     <span *ngIf="timeout >= 300" class="time"
-        >{{ timeout | time: "short" }}&nbsp;Minuten</span
+        >{{ timeout | time : "short" }}&nbsp;Minuten</span
     >
     <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
     <div class="separator"></div>

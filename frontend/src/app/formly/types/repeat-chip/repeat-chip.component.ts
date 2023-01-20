@@ -32,7 +32,7 @@ export class RepeatChipComponent extends FieldArrayType {
     this.dialog
       .open(ChipDialogComponent, {
         data: <ChipDialogData>{
-          options: this.to.options,
+          options: this.props.options,
           model: this.model,
         },
         hasBackdrop: true,

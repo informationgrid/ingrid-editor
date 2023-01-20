@@ -9,5 +9,7 @@ data class MailProperties(
     val from: String,
     val subject: String,
     val body: String,
-    val bodyWithPassword: String
+    val bodyWithPassword: String,
+    val subjectResetPassword: String,
+    val bodyResetPassword: String
 )

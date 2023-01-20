@@ -5,6 +5,8 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { MatDialog } from "@angular/material/dialog";
+import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -25,13 +27,13 @@ export class ProjectDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addTextArea("participants", "Beteiligte", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
         this.addTextArea("manager", "Projektleiter", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
       ]),
 
@@ -46,8 +48,10 @@ export class ProjectDoctype extends IngridShared {
     storageService: DocumentService,
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    uploadService: UploadService
+    uploadService: UploadService,
+    dialog: MatDialog,
+    cookieService: CookieService
   ) {
-    super(codelistService, codelistQuery, uploadService);
+    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
   }
 }

@@ -66,6 +66,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       organisation: "",
       department: "",
       role: "",
+      id: null,
     };
     this.importExternal = false;
 
@@ -99,6 +100,8 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   createUser() {
     this.form.disable();
     const user = this.model;
+    // make sure login is trimmed
+    user.login = user.login.trim();
 
     this.userService
       .createUser(user, !this.importExternal)
@@ -106,7 +109,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
         catchError((error) => this.handleCreateUserError(error)),
         filter((user) => user)
       )
-      .subscribe(() => this.dialogRef.close(user));
+      .subscribe((u) => this.dialogRef.close(u));
   }
 
   private handleCreateUserError(error: any): Observable<any> {

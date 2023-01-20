@@ -6,6 +6,7 @@ import { CatalogManagementComponent } from "./catalog-management/catalog-managem
 import { AuthGuard } from "../security/auth.guard";
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
+import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -54,6 +55,14 @@ export const routing = RouterModule.forChild([
           title: "Benachrichtigungen",
           roles: ["admin"],
           permission: "manage_messages",
+        },
+      },
+      {
+        path: "catalogAssignment",
+        component: CatalogAssignmentComponent,
+        data: {
+          title: "Katalogzuweisung",
+          permission: "manage_all_catalogs",
         },
       },
     ],

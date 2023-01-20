@@ -39,6 +39,7 @@ export class TabSearchComponent implements OnInit {
   facetViewRefresher = new EventEmitter<void>();
 
   facets: Facets;
+  private initialValue: any;
 
   constructor(
     private queryQuery: QueryQuery,
@@ -53,6 +54,8 @@ export class TabSearchComponent implements OnInit {
     this.initForm();
 
     await this.initFacets();
+
+    setTimeout(() => (this.initialValue = this.form.value));
 
     this.form.valueChanges
       .pipe(untilDestroyed(this), debounceTime(300))
@@ -142,5 +145,9 @@ export class TabSearchComponent implements OnInit {
       .getQuickFilter()
       .pipe(tap((filters) => (this.facets = filters)))
       .toPromise();
+  }
+
+  resetSearchField() {
+    this.form.reset(this.initialValue);
   }
 }

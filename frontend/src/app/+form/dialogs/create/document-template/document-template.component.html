@@ -1,6 +1,6 @@
 <div [formGroup]="form" fxLayout="column">
-    <div class="dlg-field-label required">Titel*</div>
-    <mat-form-field appearance="outline">
+    <div class="dlg-field-label required">Titel</div>
+    <mat-form-field appearance="outline" class="space-bottom">
         <input
             igeFocus
             matInput
@@ -14,8 +14,12 @@
         <mat-error>Bitte geben Sie einen Titel ein</mat-error>
     </mat-form-field>
 
+    <ng-content></ng-content>
+
     <ng-container *ngIf="documentTypes?.length > 1">
-        <div class="dlg-create-place" id="doc-type">Datensatztyp wählen:</div>
+        <div class="dlg-create-place dlg-field-label required" id="doc-type">
+            Datensatztyp wählen:
+        </div>
         <ige-document-list-item
             [docs]="documentTypes"
             showSelection="true"

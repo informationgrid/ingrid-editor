@@ -2,6 +2,7 @@ import { SelectOption } from "../services/codelist/codelist.service";
 import { Group } from "../models/user-group";
 
 export abstract class User {
+  id: number;
   login: string;
   firstName: string;
   lastName: string;

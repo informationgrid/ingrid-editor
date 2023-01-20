@@ -1,10 +1,7 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
-import {
-  ConfigService,
-  Configuration,
-} from "../../services/config/config.service";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "error-dialog",

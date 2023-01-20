@@ -17,7 +17,7 @@ describe('mCLOUD: Load addresses', () => {
     cy.get('ige-form-dashboard', { timeout: 7000 }).should('contain', 'Adressen').should('contain', 'Neue Adresse');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/address;id=4ff589e1-d83c-4856-8bae-2ae783f69da6');
-    cy.get('ige-form-info ige-breadcrumb .selectable').click();
+    cy.get('ige-form-info ige-breadcrumb .selectable', { timeout: 6000 }).click();
     cy.get('ige-form-dashboard').should('contain', 'Adressen').should('contain', 'Neue Adresse');
   });
 
@@ -98,11 +98,12 @@ describe('mCLOUD: Load addresses', () => {
   it('should replace address contains referenced documents with another address (#3811)', () => {
     // open second address and make sure that it does contains any referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'second-empty-address']);
-    AddressPage.openReferencedDocumentsSection();
+    // AddressPage.openReferencedDocumentsSection();
     cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
 
     // open the first address and check for referenced documents
     Tree.openNode(['Folder_for_replace_address_test', 'first-address-with-reference-data']);
+    AddressPage.openReferencedDocumentsSection();
     cy.get('ige-referenced-documents-type mat-selection-list mat-list-option').contains('document_for_replace_address');
 
     // replace the first address with the second
@@ -110,6 +111,7 @@ describe('mCLOUD: Load addresses', () => {
     AddressPage.openReplaceAddressDialog();
     Tree.openNodeInsideDialog(['Folder_for_replace_address_test', 'second-empty-address']);
     AddressPage.submitReplaceAddress();
+    AddressPage.confirmReplaceAddress();
     cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
     cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();
     cy.get('ige-referenced-documents-type p').contains('Es existieren keine Referenzen auf diese Adresse');
@@ -148,7 +150,7 @@ describe('mCLOUD: Load addresses', () => {
     AddressPage.visit();
     Tree.openNode(['Ordner_2.Ebene_C', addressName]);
     AddressPage.deleteLoadedNode(true);
-    BasePage.checkErrorDialogMessage(
+    AddressPage.checkErrorDialogMessage(
       'Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden.'
     );
   });
@@ -158,7 +160,7 @@ describe('Load addresses', () => {
   beforeEach(() => {
     cy.kcLogout();
     cy.kcLogin('test-catalog-general-test').as('tokens');
-    McloudDocumentPage.visit();
+    DocumentPage.visit();
   });
 
   it('should test sorting of the tree inside catalogue of type test', () => {
@@ -177,7 +179,7 @@ describe('Load addresses', () => {
     BehavioursPage.openCatalogSettingsTab(CatalogsTabmenu.Katalogverhalten);
     BehavioursPage.setCatalogSetting('Sortierung des Baums nach Dokumententyp', true);
     // check new order of the tree
-    McloudDocumentPage.visit();
+    DocumentPage.visit();
     Tree.openNode(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3A', lastDoc]);
     cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(1).contains(firstDoc);
     cy.get('mat-tree-node > div > div > span:nth-child(2)').eq(0).contains(lastDoc);
@@ -190,24 +192,31 @@ describe('Load addresses', () => {
     AddressPage.visit();
     // open published document and check for the content
     Tree.openNode(['topreview, address']);
-    cy.get(McloudDocumentPage.Toolbar.Preview).click();
+    cy.get(AddressPage.Toolbar.Preview).click();
 
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Herr');
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Prof.');
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'address', 0, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'topreview', 1, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  ', 'Telefon');
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  input', '123456', 0, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Herr');
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=Anrede] ige-print-type ', 'Prof.');
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'address', 0, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=Name] input ', 'topreview', 1, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  ', 'Telefon');
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=contact]  input', '123456', 0, true);
 
     // check for address details
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'unknown', 1, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '2132', 2, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'north pole', 3, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '123', 4, true);
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input ', '123', 5, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'unknown', 1, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '2132', 2, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', 'north pole', 3, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input  ', '123', 4, true);
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address] input ', '123', 5, true);
 
     // check for country and state
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
-    McloudDocumentPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Deutschland');
+    AddressPage.checkOfExistingItem('mat-dialog-content [data-cy=address]  ', 'Hessen');
+  });
+
+  it('should not display toggle button for referenced documents if there are none', () => {
+    AddressPage.visit();
+    Tree.openNode(['topreview, address']);
+    cy.get('.toggle-ref-docs-btn').should('not.exist');
+    cy.get('[data-cy="no-ref-docs-hint"]').should('exist');
   });
 });

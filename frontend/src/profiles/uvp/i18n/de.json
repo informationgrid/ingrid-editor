@@ -10,6 +10,7 @@
     "newDocument": "Neues Vorhaben",
     "importDocument": "Vorhaben importieren",
     "mostRecent": "Zuletzt bearbeitete Vorhaben",
+    "mostRecentPublished": "Zuletzt veröffentlichte Vorhaben",
     "form": "Vorhaben",
     "formSingular": "Vorhaben"
   },
@@ -31,7 +32,7 @@
     "formWithPronoun": "Dieses Vorhaben"
   },
 
-  "procedureType": {
+  "docType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
     "UvpLineDeterminationDoc": "Linienbestimmung",

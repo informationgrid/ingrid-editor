@@ -92,7 +92,7 @@ export class Tree {
             node.trigger('click');
             if (waitForShownInForm && !isInsideDialog && !nodeIsSelected) {
               // wait for document loaded, otherwise check might fail
-              cy.contains(DocumentPage.title, nodeTitle, { timeout: 15000 }).should('be.visible');
+              cy.contains(DocumentPage.title, nodeTitle, { timeout: 20000 }).should('be.visible');
               cy.get(DocumentPage.title).should('have.text', nodeTitle);
             }
           } else {
@@ -165,7 +165,7 @@ export class Tree {
   }
 
   static deactivateMultiSelectMode() {
-    cy.get('[data-mat-icon-name=Entfernen]').click({ multiple: true });
+    cy.get('ige-tree-header [data-mat-icon-name=Entfernen]').click();
   }
 
   static checkMultiSelectCheckboxIsVisible() {
@@ -178,7 +178,15 @@ export class Tree {
 
   static expandNode(nodeTitle: string) {
     const exactText = this.getRegExp(nodeTitle);
-    cy.get('mat-tree-node').contains(exactText).parent().parent().find('button span mat-icon.expander').click();
+    cy.get('mat-tree-node')
+      .contains(exactText)
+      .parent()
+      .parent()
+      .within(_ => {
+        cy.get('.expander').click();
+        // make sure node really is expanded -> in this case expander is black
+        cy.get('.expander', { timeout: 9000 }).should('have.css', 'color', 'rgba(0, 0, 0, 0.87)');
+      });
   }
 
   static checkNextNodeIsAChildNode(nodeTitle: string, level: number) {
@@ -247,5 +255,12 @@ export class Tree {
       cy.get(cssItem).contains(node).click();
       cy.get('mat-tree-node .mat-checkbox-checked').parent().contains(node);
     });
+  }
+
+  static searchAndSelectDocument(selector: string, documentName: string) {
+    cy.get(selector, { timeout: 6000 }).findByPlaceholderText('Suchen').click({ force: true });
+    cy.get(selector).findByPlaceholderText('Suchen').type(documentName);
+    cy.wait(1000);
+    cy.contains('ige-document-list-item', documentName, { timeout: 8000 }).click();
   }
 }

@@ -22,6 +22,7 @@ export interface SessionState {
   latestDocuments: DocumentAbstract[];
   latestAddresses: DocumentAbstract[];
   recentAddresses: { [catalogId: string]: DocumentAbstract[] };
+  latestPublishedDocs: DocumentAbstract[];
   serverValidationErrors: ValidationError[];
 }
 
@@ -50,6 +51,7 @@ export function createInitialState(): SessionState {
     },
     latestDocuments: [],
     latestAddresses: [],
+    latestPublishedDocs: [],
     recentAddresses: {},
     serverValidationErrors: [],
   };

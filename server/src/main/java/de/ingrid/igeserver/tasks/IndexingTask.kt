@@ -107,64 +107,83 @@ class IndexingTask @Autowired constructor(
         val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident")
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
-        categories.forEach categoryLoop@{ category ->
-            val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
+        run indexingLoop@{
+            categories.forEach categoryLoop@{ category ->
+                val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
 
-            val exporter = try {
-                indexService.getExporter(category, format)
-            } catch (ex: ConfigurationException) {
-                log.debug("No exporter defined for '${format}' and category '${category.value}'")
-                // add plugdescription for correct usage in iBus, since data and address index have the same
-                // plugId, both need the plugdescription info
-                val plugInfo = IPlugInfo(elasticsearchAlias, null, "none", category.value, partner, provider, catalogId)
-                updateIBusInformation(plugInfo)
-                return@categoryLoop
+                val exporter = try {
+                    indexService.getExporter(category, format)
+                } catch (ex: ConfigurationException) {
+                    log.debug("No exporter defined for '${format}' and category '${category.value}'")
+                    // add plugdescription for correct usage in iBus, since data and address index have the same
+                    // plugId, both need the plugdescription info
+                    val plugInfo =
+                        IPlugInfo(elasticsearchAlias, null, "none", category.value, partner, provider, catalogId)
+                    updateIBusInformation(plugInfo)
+                    return@categoryLoop
+                }
+
+                log.info("Indexing category: " + category.value)
+
+                // pre phase
+                val info = try {
+                    indexPrePhase(categoryAlias, catalog.type, format, elasticsearchAlias)
+                } catch (ex: Exception) {
+                    notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
+                    return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
+                }
+
+                // TODO: configure index name
+                val indexInfo = IndexInfo().apply {
+                    realIndexName = info.second
+                    toType = "base"
+                    toAlias = categoryAlias
+                    docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
+                }
+
+                var page = -1
+                try {
+                    do {
+                        page++
+                        val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
+                        // isLast function sometimes delivers the next to last page without a total count, so we write our own
+                        val isLast =
+                            (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
+                        updateMessageWithDocumentInfo(message, category, docsToPublish)
+
+                        exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
+                    } while (!isLast)
+
+                    notify.sendMessage(message.apply { this.message = "Post Phase" })
+
+                    // post phase
+                    val plugInfo = IPlugInfo(
+                        elasticsearchAlias,
+                        info.first,
+                        info.second,
+                        category.value,
+                        partner,
+                        provider,
+                        catalogId
+                    )
+                    indexPostPhase(plugInfo)
+                    log.debug("Task finished: Indexing for $catalogId")
+
+                } catch (ex: IndexException) {
+                    log.info("Indexing was cancelled")
+                    removeOldIndices(info.first)
+                    return@indexingLoop
+                } catch (ex: Exception) {
+                    notify.addAndSendMessageError(message, ex, "Error during indexing: ")
+                }
             }
-
-            // pre phase
-            val info = try {
-                indexPrePhase(categoryAlias, catalog.type, format, elasticsearchAlias)
-            } catch (ex: Exception) {
-                notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
-                return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
-            }
-
-            // TODO: configure index name
-            val indexInfo = IndexInfo().apply {
-                realIndexName = info.second
-                toType = "base"
-                toAlias = categoryAlias
-                docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
-            }
-
-            var page = -1
-            try {
-                do {
-                    page++
-                    val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
-                    // isLast function sometimes delivers the next to last page without a total count, so we write our own
-                    val isLast = (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
-                    updateMessageWithDocumentInfo(message, category, docsToPublish)
-
-                    exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
-                } while (!isLast)
-            } catch (ex: Exception) {
-                notify.addAndSendMessageError(message, ex, "Error during indexing: ")
-            }
-
-            notify.sendMessage(message.apply { this.message = "Post Phase" })
-
-            // post phase
-            val plugInfo = IPlugInfo(elasticsearchAlias, info.first, info.second, category.value, partner, provider, catalogId)
-            indexPostPhase(plugInfo)
-            log.debug("Task finished: Indexing for $catalogId")
         }
 
         // make sure to write everything to elasticsearch
         // if another indexing starts right afterwards, then the previous index could still be there
         indexManager.flush()
 
-        log.debug("Indexing finished")
+        log.info("Indexing finished")
         notify.sendMessage(message.apply {
             this.endTime = Date()
             this.message = "Indexing finished"

@@ -1,13 +1,12 @@
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
+import { CodelistService } from "../../../app/services/codelist/codelist.service";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { MatDialog } from "@angular/material/dialog";
+import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -27,21 +26,19 @@ export class InformationSystemDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addGroup(
-          null,
-          "Beschreibung",
-          [
-            this.addSelectInline("serviceType", "Art des Dienstes", {
-              options: this.getCodelistForSelect(5300, "serviceType"),
-              codelistId: 5300,
-            }),
-            this.addRepeatListInline("serviceVersion", "Version", {
-              hideExpression: "formState.hideOptionals",
-            }),
-          ],
-          null,
-          "serviceTypeVersion"
-        ),
+        this.addGroup(null, "Beschreibung", [
+          this.addSelectInline("serviceType", "Art des Dienstes", {
+            options: this.getCodelistForSelect(5300, "serviceType"),
+            codelistId: 5300,
+            hasInlineContextHelp: true,
+            wrappers: ["form-field", "inline-help"],
+          }),
+          this.addRepeatListInline("serviceVersion", "Version", {
+            hasInlineContextHelp: true,
+            wrappers: ["panel", "inline-help"],
+            className: "optional",
+          }),
+        ]),
         this.addGroup(
           null,
           "Weitere Informationen",
@@ -49,25 +46,41 @@ export class InformationSystemDoctype extends IngridShared {
             this.addTextAreaInline(
               "systemEnvironment",
               "Systemumgebung",
-              this.id
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
-            this.addTextAreaInline("history", "Historie", this.id),
+            this.addTextAreaInline("history", "Historie", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
         this.addGroup(
           null,
           null,
           [
-            this.addTextAreaInline("baseDataText", "Basisdaten", this.id),
-            this.addTextAreaInline("explanation", "Erläuterungen", this.id),
+            this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
+            this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
-        this.addTable("serviceUrls", "Service-Urls", {
-          supportUpload: false,
-          columns: [],
-          hideExpression: "formState.hideOptionals",
+        this.addRepeat("serviceUrls", "Service-Urls", {
+          className: "optional",
+          fields: [
+            this.addInputInline("name", "Name", { required: true }),
+            this.addInputInline("url", "URL", { required: true }),
+            this.addInputInline("description", "Erläuterung"),
+          ],
         }),
       ]),
 
@@ -82,8 +95,10 @@ export class InformationSystemDoctype extends IngridShared {
     storageService: DocumentService,
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    uploadService: UploadService
+    uploadService: UploadService,
+    dialog: MatDialog,
+    cookieService: CookieService
   ) {
-    super(codelistService, codelistQuery, uploadService);
+    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
   }
 }

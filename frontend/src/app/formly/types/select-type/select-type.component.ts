@@ -65,7 +65,9 @@ export class SelectTypeComponent
       )
       .subscribe();
 
-    let options = this.to.options as Observable<any[]>;
+    this.addDisabledBehaviour();
+
+    let options = this.props.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
       options = of(options);
     }
@@ -82,8 +84,22 @@ export class SelectTypeComponent
       .subscribe();
   }
 
+  private addDisabledBehaviour() {
+    this.formControl.statusChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((status) =>
+        status === "DISABLED"
+          ? this.selectControl.disable()
+          : this.selectControl.enable()
+      );
+
+    if (this.formControl.disabled) {
+      this.selectControl.disable();
+    }
+  }
+
   private updateSelectField(value) {
-    if (this.to.simple) {
+    if (this.props.simple) {
       this.selectControl.setValue(value, { emitEvent: false });
     } else {
       this.selectControl.setValue(value?.key, {
@@ -114,10 +130,10 @@ export class SelectTypeComponent
   }
 
   change($event: MatSelectChange) {
-    if (this.to.change) {
-      this.to.change(this.field, $event);
+    if (this.props.change) {
+      this.props.change(this.field, $event);
     }
-    if (this.to.simple) {
+    if (this.props.simple) {
       this.formControl.setValue($event.value);
     } else {
       this.formControl.setValue(
@@ -129,8 +145,8 @@ export class SelectTypeComponent
   }
 
   _getAriaLabelledby(): string {
-    if (this.to.attributes && this.to.attributes["aria-labelledby"]) {
-      return this.to.attributes["aria-labelledby"] + "";
+    if (this.props.attributes && this.props.attributes["aria-labelledby"]) {
+      return this.props.attributes["aria-labelledby"] + "";
     }
 
     if (this.formField && this.formField._labelId) {
@@ -141,7 +157,9 @@ export class SelectTypeComponent
   }
 
   _getAriaLabel() {
-    return this.to.attributes ? this.to.attributes["aria-label"] : undefined;
+    return this.props.attributes
+      ? this.props.attributes["aria-label"]
+      : undefined;
   }
 
   private getSelectAllValue(options: any[]) {

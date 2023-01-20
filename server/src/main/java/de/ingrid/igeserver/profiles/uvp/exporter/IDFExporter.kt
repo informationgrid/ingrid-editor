@@ -114,7 +114,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml11(value)
+            StringEscapeUtils.escapeXml10(value)
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

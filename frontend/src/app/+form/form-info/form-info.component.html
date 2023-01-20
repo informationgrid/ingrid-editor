@@ -14,7 +14,7 @@
             [form]="form"
             [model]="_model"
             [sections]="sections"
-            [disableEdit]="forAddress && _model._type !== 'FOLDER'"
+            [disableEdit]="disableTitleEdit"
             [address]="forAddress"
         ></ige-header-title-row>
     </div>
@@ -47,4 +47,6 @@
     </div>
 
     <ige-form-message></ige-form-message>
+
+    <ng-content></ng-content>
 </div>

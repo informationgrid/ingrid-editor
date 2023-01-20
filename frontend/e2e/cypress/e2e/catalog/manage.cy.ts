@@ -6,6 +6,7 @@ import { Menu } from '../../pages/menu';
 import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 import { ResearchPage } from '../../pages/research.page';
 import { AddressPage } from '../../pages/address.page';
+import { CatalogAssignmentPage } from '../../pages/catalog-assignment.page';
 
 describe('Catalog management', () => {
   beforeEach(() => {
@@ -132,6 +133,72 @@ describe('Catalog management', () => {
     Menu.switchTo('RESEARCH');
     ResearchPage.search('a');
     ResearchPage.getSearchResultCount().should('be.greaterThan', 0);
+  });
+
+  // make sure we use the correct catalog for the other tests
+  // send an API call to set current catalog to 'test'
+  after(() => {
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin').as('tokens');
+    cy.get('@tokens').then((tokens: any) => {
+      cy.request({
+        url: `${Cypress.config('baseUrl')}/api/user/catalog/test`,
+        method: 'POST',
+        auth: {
+          bearer: tokens.access_token
+        }
+      });
+    });
+  });
+});
+
+describe('Catalog assignment', () => {
+  beforeEach(() => {
+    cy.kcLogout();
+    cy.kcLogin('super-admin').as('tokens');
+    CatalogAssignmentPage.visit();
+  });
+
+  it('should admit user to new catalog (#4644)', () => {
+    const user = 'author-universal-read';
+    const catalog = 'uvp_catalog';
+
+    // assign user to new catalog
+    CatalogAssignmentPage.chooseUser(user, 'user');
+    CatalogAssignmentPage.chooseCatalog(catalog, 'catalog');
+    CatalogAssignmentPage.assign();
+
+    // log in with user
+    cy.logoutClearCookies();
+    cy.kcLogin(user);
+
+    // check that catalog is available
+    // navigate to specific catalog
+    DashboardPage.visit('test');
+    cy.get('.catalog-title').click();
+    cy.contains('.mat-menu-panel span', catalog);
+  });
+
+  it('admitting user to already assigned catalog should have no consequences (#4644)', () => {
+    const user = 'uvpcatalog';
+    const catalog = 'uvp_catalog';
+
+    // assign user to catalog
+    CatalogAssignmentPage.chooseUser(user, 'user');
+    CatalogAssignmentPage.chooseCatalog(catalog, 'catalog');
+    CatalogAssignmentPage.assign();
+
+    // no error after assigning catalog
+    cy.get('error-dialog').should('not.exist');
+
+    // log in with user
+    cy.logoutClearCookies();
+    cy.kcLogin(user);
+
+    // catalog is still assigned
+    DashboardPage.visit();
+    cy.contains('.catalog-title', catalog);
+    cy.url().should('include', `/${catalog}/`);
   });
 
   // make sure we use the correct catalog for the other tests

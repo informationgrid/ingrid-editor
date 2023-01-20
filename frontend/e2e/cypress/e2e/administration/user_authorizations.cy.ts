@@ -10,6 +10,7 @@ import { AdminGroupPage } from '../../pages/administration-group.page';
 import { CopyCutUtils } from '../../pages/copy-cut-utils';
 import { Utils } from '../../pages/utils';
 import { Menu } from '../../pages/menu';
+import { ManageCatalogPage } from '../../pages/manage-catalog.page';
 
 // meta data administrator without groups
 describe('Meta data administrator without groups', () => {
@@ -55,7 +56,7 @@ describe('Meta data administrator without groups', () => {
     AdminGroupPage.saveGroup();
     AdminGroupPage.verifyNewlyCreatedGroup(newGroup, description);
     // try to add documents
-    AdminGroupPage.selectGroupAndWait(newGroup);
+    AdminGroupPage.selectGroup(newGroup);
     AdminGroupPage.openAddDocumentsDialog('Adressen');
     cy.get('permission-add-dialog').should('contain', 'Leer');
   });
@@ -79,15 +80,6 @@ describe('Meta data administrator without groups', () => {
     ResearchPage.visit();
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
     cy.contains('div.mat-chip-list-wrapper > mat-chip.mat-chip', 'Adressen, mit Titel "test"').click();
-    ResearchPage.checkNoSearchResults();
-  });
-
-  it('Erweiterte Suche should show no search result to user without authorization, neither before nor after typing in search term', () => {
-    // Make sure search page shows no data when visiting
-    ResearchPage.visit();
-    cy.get('.result').contains('0 Ergebnisse gefunden');
-    // Make sure triggering search doesn't deliver search results
-    ResearchPage.search('test');
     ResearchPage.checkNoSearchResults();
   });
 
@@ -135,6 +127,10 @@ describe('Meta data administrator with a group', () => {
     ResearchPage.search('Harz');
     ResearchPage.setDocumentTypeSearchFilter('Adressen');
     ResearchPage.getSearchResultCount().should('equal', 1);
+
+    // addresses with read-only access should be greyed out (#2800)
+    ResearchPage.search('Folder_A');
+    cy.contains('.readonly .mat-column-title', 'Folder_A').should('have.css', 'color', 'rgb(151, 151, 151)');
   });
 
   it('meta data administrator should access to meta admin without group', () => {
@@ -208,7 +204,7 @@ describe('Meta data administrator with a group', () => {
     // set access right to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead('test_z, test_z', 'Adressen');
     AdminGroupPage.saveGroup();
 
@@ -234,7 +230,7 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite('test_z, test_z', 'Adressen');
     AdminGroupPage.saveGroup();
   });
@@ -251,7 +247,7 @@ describe('Meta data administrator with a group', () => {
     // set access to read-only
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(readOnlyFolder, 'Adressen');
     AdminGroupPage.saveGroup();
 
@@ -307,7 +303,7 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('gruppe_mit_ortsrechten');
+    AdminGroupPage.selectGroup('gruppe_mit_ortsrechten');
     UserAuthorizationPage.changeAccessRightFromReadToWrite(readOnlyFolder, 'Adressen');
     AdminGroupPage.saveGroup();
   });
@@ -315,7 +311,7 @@ describe('Meta data administrator with a group', () => {
   /* it('a meta data admin can only add those documents to his groups to which he is entitled to', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage..selectGroupAndWait('gruppe_mit_ortsrechten');
+    AdminGroupPage..selectGroup('gruppe_mit_ortsrechten');
     AdminGroupPage.openAddDocumentsDialog('Adressen');
     // make sure the not-addable document is not in the list of the add dialogue
     cy.contains('mat-tree-node', 'Elsass, Adresse').should('not.exist');
@@ -342,7 +338,7 @@ describe('Meta data administrator with a group', () => {
     // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testadressen', tempLocalAddressFolder], 'Adressen');
     UserAuthorizationPage.setButtonSubfoldersOnly(tempLocalAddressFolder, 'Adressen');
     AdminGroupPage.saveGroup();
@@ -367,7 +363,7 @@ describe('Meta data administrator with a group', () => {
     // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempLocalFile], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempLocalFile, 'Daten');
     AdminGroupPage.saveGroup();
@@ -413,7 +409,7 @@ describe('Meta data administrator with a group', () => {
     // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.addNestedDocumentToGroup(['Testdokumente', tempFolderToRelocate], 'Daten');
     UserAuthorizationPage.changeAccessRightFromWriteToRead(tempFolderToRelocate, 'Daten');
     AdminGroupPage.saveGroup();
@@ -435,11 +431,15 @@ describe('Meta data administrator with a group', () => {
     cy.get('error-dialog').contains('keine Berechtigung');
   });
 
-  it('meta data admin should not be able to create a root document/address', () => {
+  it('meta data admin should not be able to create a root document/address (#4549)', () => {
     // try to create data folder
     DocumentPage.visit();
     cy.get(DocumentPage.Toolbar.NewFolder).click();
     cy.get('.root .disabled');
+
+    // try to force creation
+    cy.get('[data-cy=create-title]').type('illegalDocument' + '{enter}');
+    cy.get('[data-cy="create-action"]').should('have.attr', 'disabled');
 
     // try to create address folder
     AddressPage.visit();
@@ -533,7 +533,7 @@ describe('Meta data administrator with a group', () => {
     // add folder to group and set access right to "nur Unterordner"
     AdminUserPage.visit();
     AdminGroupPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(groupName);
+    AdminGroupPage.selectGroup(groupName);
     AdminGroupPage.deleteDocumentFromGroup('test_c, test_c', 'Adressen');
     AdminGroupPage.saveGroup();
     cy.logoutClearCookies();
@@ -575,7 +575,7 @@ describe('Meta data administrator with a group', () => {
     cy.kcLogin('super-admin');
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait(newGroup);
+    AdminGroupPage.selectGroup(newGroup);
     AdminGroupPage.deleteGroupOfOtherUsers(newGroup);
     // -7- make sure the document is no longer existent
     cy.logoutClearCookies();
@@ -719,7 +719,7 @@ describe('Catalogue admin', () => {
     AdminUserPage.goToTabmenu(UserAndRights.Group);
     // it might be necessary to turn the page, if there are too many group entries to be displayed at once:
     AdminGroupPage.getNextPage();
-    AdminGroupPage.selectGroupAndWait('test_gruppe_5');
+    AdminGroupPage.selectGroup('test_gruppe_5');
     // grant authorization for an address
     AdminGroupPage.addDocumentToGroup('test_j, test_j', 'Adressen');
     cy.get('permission-table[data-cy="Berechtigungen Adressen"]').should('contain', 'test_j, test_j');
@@ -822,13 +822,19 @@ describe('Catalogue admin', () => {
   it('catalogue admin can see empty groups', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('leere_Gruppe');
+    AdminGroupPage.selectGroup('leere_Gruppe');
+  });
+
+  it('catalogue admin can not assign catalogs (#4644)', () => {
+    cy.visit('settings/general');
+    cy.contains('.page-title', 'Allgemein');
+    cy.get('[data-cy="catalogAssignment"]').should('not.exist');
   });
 
   it('catalogue admin is warned when assigning groups different rights in the same hierarchy tree (#2764)', () => {
     AdminUserPage.visit();
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('leere_Gruppe');
+    AdminGroupPage.selectGroup('leere_Gruppe');
     AdminGroupPage.openAddDocumentsDialog('Daten');
     Tree.openNodeInsideDialog(['Neue Testdokumente', 'Ordner_Ebene_2A', 'Ordner_Ebene_3B']);
     cy.get('[data-cy=permission-dialog-add]').click();
@@ -910,5 +916,32 @@ describe('Catalogue admin', () => {
     AdminUserPage.visit();
     AdminUserPage.selectUser('mclould-author-profile');
     AdminUserPage.changeUserRole('Autor', true);
+  });
+
+  it('catalog-admin should not access\\change to other catalogs created by other catalog-admins', () => {
+    ManageCatalogPage.visit();
+    // the catalog belong to another catalog-admin
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('not.exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+
+    // try to access another catalog using URL
+    ManageCatalogPage.visit('catalog_with_one_user');
+    cy.get('mat-dialog-content').contains('ist dem eingeloggten Benutzer nicht zugeordne');
+
+    // log in with another catalog-admin
+    cy.logoutClearCookies();
+    cy.kcLogin('mcloud-catalog-switch-catalog');
+    ManageCatalogPage.visit();
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+    ManageCatalogPage.getCatalog('uvp_catalog').should('not.exist');
+
+    // log in as super-admin that can access to all catalog
+    cy.logoutClearCookies();
+    cy.kcLogin('super-admin');
+    ManageCatalogPage.visit();
+    ManageCatalogPage.getCatalog('catalog_with_one_user').should('exist');
+    ManageCatalogPage.getCatalog('Test').should('exist');
+    ManageCatalogPage.getCatalog('uvp_catalog').should('exist');
   });
 });

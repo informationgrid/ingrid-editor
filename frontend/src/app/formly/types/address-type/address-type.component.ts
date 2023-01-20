@@ -112,7 +112,7 @@ export class AddressTypeComponent
           minWidth: 500,
           data: <ChooseAddressDialogData>{
             address: address,
-            allowedTypes: this.to.allowedTypes,
+            allowedTypes: this.props.allowedTypes,
           },
           hasBackdrop: true,
         })

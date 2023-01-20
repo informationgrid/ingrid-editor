@@ -82,6 +82,7 @@ export class UploadComponent implements OnInit {
       target: this.target,
       testChunks: false,
       forceChunkSize: false,
+      maxChunkRetries: 2,
     };
   }
 

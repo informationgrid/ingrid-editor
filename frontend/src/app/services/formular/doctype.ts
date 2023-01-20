@@ -44,7 +44,7 @@ export interface Doctype {
    */
   fieldsMap: SelectOptionUi[];
 
-  fieldsForPrint: FormlyFieldConfig[];
+  cleanFields: FormlyFieldConfig[];
 
   behaviours?: any[];
 
@@ -54,6 +54,11 @@ export interface Doctype {
    * The field definitions for the formular, which also contains the layout classes and the validation.
    */
   getFields(): FormlyFieldConfig[];
+
+  /**
+   * The field definitions for the print and compare view
+   */
+  getFieldsForPrint(diff: any): FormlyFieldConfig[];
 
   /**
    * In case we need to determine icon class dynamically, you need to implement this function.

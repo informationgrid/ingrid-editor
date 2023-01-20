@@ -41,6 +41,14 @@ class CatalogService @Autowired constructor(
         return getCurrentCatalogForUser(userId)
     }
 
+    fun getCatalogsForPrincipal(principal: Principal): List<Catalog> {
+        if (authUtils.isSuperAdmin(principal)) return this.getCatalogs()
+
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        return user.catalogs.toList()
+    }
+
 
     fun getDbUserFromPrincipal(principal: Principal): UserInfo? {
         principal as Authentication
@@ -259,6 +267,7 @@ class CatalogService @Autowired constructor(
     val superAdminPermissions = listOf(
         Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
+        Permissions.manage_all_catalogs.name,
         Permissions.manage_users.name,
         Permissions.can_write_root.name,
         Permissions.can_read_root.name,
@@ -341,9 +350,14 @@ class CatalogService @Autowired constructor(
             isFolder && hasAnyWritePermission
         }
 
+    /**
+     *  get all users of active catalog
+     */
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
-
+        return getAllCatalogUsers(principal, catalogId)
+    }
+    fun getAllCatalogUsers(principal: Principal, catalogId: String): List<User> {
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
         val catalogUsers = getUserOfCatalog(catalogId)
         return keyCloakUsers
@@ -380,6 +394,7 @@ class CatalogService @Autowired constructor(
     )
 
     fun applyIgeUserInfo(user: User, igeUser: UserInfo, catalogId: String): User {
+        user.id = igeUser.id
         user.groups = igeUser.groups.filter { it.catalog?.identifier == catalogId }.sortedBy { it.name }.map { it.id!! }
         user.creationDate = igeUser.data?.creationDate ?: Date(0)
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)

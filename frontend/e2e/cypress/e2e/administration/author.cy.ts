@@ -116,6 +116,7 @@ describe('author with groups', () => {
   });
 
   it('Section "Benutzer und Rechte" should not be visible to an author (#2670)', () => {
+    DashboardPage.visit();
     UserAuthorizationPage.checkUsersTabExist(false);
   });
 

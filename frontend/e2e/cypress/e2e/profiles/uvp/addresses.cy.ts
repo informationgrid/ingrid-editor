@@ -174,7 +174,7 @@ describe('uvp addresses', () => {
 
     Menu.switchTo('USERS');
     AdminUserPage.goToTabmenu(UserAndRights.Group);
-    AdminGroupPage.selectGroupAndWait('group_1');
+    AdminGroupPage.selectGroup('group_1');
     AdminGroupPage.addDocumentToGroup(addressName, 'Adressen');
     AdminGroupPage.addDocumentToGroup(organizationName, 'Adressen');
     cy.contains('permission-table tr', addressName).find('[data-mat-icon-name="Freie-Adresse"]');

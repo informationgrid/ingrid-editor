@@ -30,7 +30,9 @@
     </ng-container>
     <div style="display: flex; justify-content: center">
         <button
-            *ngIf="formControl.enabled"
+            *ngIf="
+                !(formState.disabled || props.disabled || formControl.disabled)
+            "
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn add-button"
@@ -45,7 +47,9 @@
     <ige-section-wrapper>
         <h3>Verfahrenschritte</h3>
         <button
-            *ngIf="formControl.enabled"
+            *ngIf="
+                !(formState.disabled || props.disabled || formControl.disabled)
+            "
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn"

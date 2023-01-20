@@ -5,7 +5,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { filter, map, tap } from "rxjs/operators";
+import { debounceTime, filter, map, startWith } from "rxjs/operators";
 import { FormularService } from "../../../+form/formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -18,6 +18,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};
   sectionTypes = [];
+
   constructor(private dialog: MatDialog, private formService: FormularService) {
     super();
   }
@@ -26,6 +27,8 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        debounceTime(100),
+        startWith(this.formControl.value),
         map((values) => this.getLabelFromSections(values))
       )
       .subscribe((value) => this.formService.setAdditionalSections(value));

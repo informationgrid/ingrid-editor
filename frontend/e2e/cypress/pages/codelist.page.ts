@@ -5,6 +5,8 @@ export class CodelistPage {
     cy.intercept('GET', 'api/codelist/manage').as('GetCodeList');
     cy.visit('catalogs');
     cy.wait('@GetCodeList', { timeout: 20000 });
+    // animation can be slow sometimes
+    cy.contains('.page-title', 'Katalogspezifische Codelisten').should('be.visible');
   }
 
   static resetCodelistEntries() {

@@ -12,7 +12,7 @@
             ></mat-icon>
         </div>
         <mat-card-title fxFlex>{{
-            address.type | codelist: "505" | async
+            address.type | codelist : "505" | async
         }}</mat-card-title>
         <div fxFlex></div>
         <div>
@@ -63,7 +63,9 @@
             <div class="title">
                 <span
                     >{{
-                        address.ref["academic-title"] | codelist: "4305" | async
+                        address.ref["academic-title"]
+                            | codelist : "4305"
+                            | async
                     }} </span
                 >{{ content.title }}
             </div>

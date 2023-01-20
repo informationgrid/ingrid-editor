@@ -1,11 +1,13 @@
 {
-  "procedureType": {
+  "docType": {
     "InGridSpecialisedTask": "Fachaufgabe",
     "InGridGeoDataset": "Geodatensatz",
     "InGridLiterature": "Literatur",
     "InGridGeoService": "Geodatendienst",
     "InGridProject": "Projekt",
     "InGridDataCollection": "Datensammlung",
-    "InGridInformationSystem": "Informationssystem"
+    "InGridInformationSystem": "Informationssystem",
+    "InGridOrganisationDoc": "Organisation",
+    "InGridPersonDoc": "Person"
   }
 }

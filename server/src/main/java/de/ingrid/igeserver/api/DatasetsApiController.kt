@@ -102,6 +102,8 @@ class DatasetsApiController @Autowired constructor(
         resultDoc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
         resultDoc.data.put(FIELD_PARENT, wrapper.parent?.id)
         resultDoc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
+        resultDoc.data.put(FIELD_CREATED_USER_EXISTS, resultDoc.createdByUser != null)
+        resultDoc.data.put(FIELD_MODIFIED_USER_EXISTS, resultDoc.modifiedByUser != null)
         resultDoc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
         resultDoc.hasWritePermission = wrapper.hasWritePermission
         resultDoc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission

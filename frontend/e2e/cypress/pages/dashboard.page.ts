@@ -3,9 +3,10 @@ import Chainable = Cypress.Chainable;
 export class DashboardPage {
   static url = '/dashboard';
 
-  static visit() {
+  static visit(catalog: string = '') {
     cy.intercept({ method: 'GET', url: 'api/statistic', times: 1 }).as('getStatistic');
-    cy.visit('/dashboard');
+    let path = catalog != '' ? catalog + '/dashboard' : '/dashboard';
+    cy.visit(path);
     cy.wait('@getStatistic', { timeout: 12000 });
   }
 

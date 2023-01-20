@@ -60,7 +60,6 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
 import { UploadModule } from "../shared/upload/upload.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import {
-  EmailInRepeatValidator,
   EmailValidator,
   IpValidator,
   LowercaseValidator,
@@ -78,6 +77,14 @@ import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { ValidUntilDialogComponent } from "./types/table/valid-until-dialog/valid-until-dialog.component";
 import { PrintTypeComponent } from "./types/print/print-type.component";
+import { PrintViewDialogComponent } from "../+form/dialogs/print-view/print-view-dialog.component";
+import { AngularSplitModule } from "angular-split";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { DocumentReferenceTypeComponent } from "./types/document-reference-type/document-reference-type.component";
+import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
+import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -157,6 +164,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "referencedDocuments",
           component: ReferencedDocumentsTypeComponent,
         },
+        {
+          name: "couplingService",
+          component: DocumentReferenceTypeComponent,
+        },
         /* FOR PREVIEW */
         {
           name: "textareaPrint",
@@ -191,7 +202,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
-        { name: "emailInRepeat", validation: EmailInRepeatValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
@@ -235,6 +245,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlySelectModule,
     NgxMatSelectSearchModule,
     MatPaginatorModule,
+    AngularSplitModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    DocumentIconModule,
   ],
   providers: [
     {
@@ -287,12 +301,17 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
     PrintTypeComponent,
+    PrintViewDialogComponent,
+    DocumentReferenceTypeComponent,
+    SelectGeoDatasetDialog,
+    SelectCswRecordDialog,
   ],
   exports: [
     ReactiveFormsModule,
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
+    CodelistPipe,
   ],
 })
 export class IgeFormlyModule {}

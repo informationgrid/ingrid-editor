@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@4tw/cypress-drag-drop@^2.1.0":
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/@4tw/cypress-drag-drop/-/cypress-drag-drop-2.2.1.tgz"
-  integrity sha512-+ioJSnEwx70IiMyb4pLEjOS5u6AMWRIVCV20toCY7lb0YcvA0ipbjQBa9DdxEI7Zg2E2jtcIj7Rx0e3WNUbk/w==
+"@4tw/cypress-drag-drop@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@4tw/cypress-drag-drop/-/cypress-drag-drop-2.2.3.tgz#4040ec85f7a5e3405113949e7b17bbbe005d7581"
+  integrity sha512-ADMNoELeQdcGLPjfTJ5jWupBKU3rmQAnTqaRhuEa3hQGZ6suR49Ya5SReUrwvJnfAR4pgMcnSkqLqi1F4EPuwA==
 
 "@babel/code-frame@^7.10.4":
   version "7.18.6"
@@ -72,10 +72,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@testing-library/cypress@^8.0.2":
-  version "8.0.3"
-  resolved "https://registry.npmjs.org/@testing-library/cypress/-/cypress-8.0.3.tgz"
-  integrity sha512-nY2YaSbmuPo5k6kL0iLj/pGPPfka3iwb3kpTx8QN/vOCns92Saz9wfACqB8FJzcR7+lfA4d5HUOWqmTddBzczg==
+"@testing-library/cypress@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-9.0.0.tgz#3facad49c4654a99bbd138f83f33b415d2d6f097"
+  integrity sha512-c1XiCGeHGGTWn0LAU12sFUfoX3qfId5gcSE2yHode+vsyHDWraxDPALjVnHd4/Fa3j4KBcc5k++Ccy6A9qnkMA==
   dependencies:
     "@babel/runtime" "^7.14.6"
     "@testing-library/dom" "^8.1.0"
@@ -523,10 +523,10 @@ cypress-keycloak-commands@^1.2.0:
   resolved "https://registry.npmjs.org/cypress-keycloak-commands/-/cypress-keycloak-commands-1.2.0.tgz"
   integrity sha512-j0THu0XMVlWah7YjDoVlFg2bIwSiBSda6g5Pm8HpC/9U2Glk0Hrp4yLggoseft3ThAlrpIkoLaIKMDbmvtgicw==
 
-cypress@^10.10.0:
-  version "10.10.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-10.10.0.tgz#fd671297b2ca3e64dfffd55fe3857c388cfbb695"
-  integrity sha512-bU8r44x1NIYAUNNXt3CwJpLOVth7HUv2hUhYCxZmgZ1IugowDvuHNpevnoZRQx1KKOEisLvIJW+Xen5Pjn41pg==
+cypress@12.3.0:
+  version "12.3.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.3.0.tgz#ae3fb0540aef4b5eab1ef2bcd0760caf2992b8bf"
+  integrity sha512-ZQNebibi6NBt51TRxRMYKeFvIiQZ01t50HSy7z/JMgRVqBUey3cdjog5MYEbzG6Ktti5ckDt1tfcC47lmFwXkw==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
@@ -1460,10 +1460,10 @@ mocha@latest:
     yargs-parser "20.2.4"
     yargs-unparser "2.0.0"
 
-mochawesome-merge@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/mochawesome-merge/-/mochawesome-merge-4.2.1.tgz"
-  integrity sha512-G7+LqIKgixShKG4FyWDn1PIrzpKEwCofrJip/VzdqghNGqZl4S5MNoXx5YDfk9KLe+pr4qGa1TOzCc/oVw/8Kw==
+mochawesome-merge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/mochawesome-merge/-/mochawesome-merge-4.2.2.tgz#67164973f8efeefcc206764c3702aa2d5f0ba406"
+  integrity sha512-ZHeZcChGhb3If7fjSVuyB9rmDH86inNtsTb1ONYq1h0L1IduldFu38bJDcow46alMpiYQgJ7cPhv6nwpCwbJQw==
   dependencies:
     fs-extra "^7.0.1"
     glob "^7.1.6"

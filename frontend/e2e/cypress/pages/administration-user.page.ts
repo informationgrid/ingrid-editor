@@ -19,8 +19,8 @@ export class AdminUserPage extends BasePage {
   }
 
   static visit() {
-    cy.intercept('GET', '/api/users').as('usersCall');
-    cy.intercept('GET', '/api/groups').as('groups');
+    cy.intercept({ method: 'GET', url: '/api/users', times: 1 }).as('usersCall');
+    cy.intercept({ method: 'GET', url: '/api/groups', times: 1 }).as('groups');
     cy.visit('manage/user');
     cy.wait('@usersCall', { timeout: 20000 });
     cy.wait('@groups', { timeout: 9000 });
@@ -85,7 +85,7 @@ export class AdminUserPage extends BasePage {
   }
 
   static searchForUser(searchValue: string, result: string = '', shouldBeExist: boolean = true) {
-    cy.get('ige-search-field').type('t').clear().type(searchValue);
+    cy.get('ige-search-field input').type('t').clear().type(searchValue);
     if (result == '') {
       result = searchValue;
     }
@@ -173,13 +173,15 @@ export class AdminUserPage extends BasePage {
   static addUserButton = '[data-cy="toolbar_add_user"]';
 
   // TODO: select user by unique property like email!
-  static selectUser(name: string) {
-    cy.get('.page-title').contains('Benutzer (');
+  static selectUser(name: string, dirtyCheck: boolean = false) {
+    cy.contains('.page-title', 'Benutzer (', { timeout: 6000 });
     cy.get('[data-cy=search]').clear().type(name);
-    cy.contains('user-table .mat-row', name).click();
-    // waiting for form to be shown can lead to error when we test dirty check
-    // and a dialog appears which overlays the formUser element
-    // cy.get('#formUser').should('be.visible');
+    cy.contains('user-table .mat-row', name, { timeout: 8000 }).click();
+
+    // make sure the user form will be available if no checks required
+    if (!dirtyCheck) {
+      cy.get('#formUser', { timeout: 8000 }).should('be.visible');
+    }
   }
 
   static clearSearch() {
@@ -396,7 +398,8 @@ export class AdminUserPage extends BasePage {
     userRole: string,
     newPassword: string = '',
     userFirstname: string = '',
-    userLastname: string = ''
+    userLastname: string = '',
+    firstTimeAccess: boolean = true
   ) {
     //Here we want to wait after user creation to get the email
     //Because it takes some time to receive welcoming email
@@ -406,7 +409,9 @@ export class AdminUserPage extends BasePage {
     cy.task('getLastEmail', userEmail)
       .its('body')
       .then(body => {
-        expect(body).to.contain('Herzlich Willkommen beim IGE-NG');
+        expect(body).to.contain(
+          `${firstTimeAccess ? 'Herzlich Willkommen beim IGE-NG' : 'Passwort wurde zurückgesetzt'}`
+        );
 
         // Extract the password
         let bodyArray = body.split('Passwort: ');

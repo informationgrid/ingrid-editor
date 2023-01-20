@@ -127,7 +127,7 @@ export class UserComponent
             const previousId = this.selectedUser?.login;
             this.selectedUser = user;
             if (user && previousId !== user.login) {
-              this.loadUser(user.login);
+              this.loadUser(user.id);
             }
             this.selectedUserRole = user.role;
           }),
@@ -138,7 +138,7 @@ export class UserComponent
 
     // load previously selected user
     if (this.userService.selectedUser$.value) {
-      this.loadUser(this.userService.selectedUser$.value.login);
+      this.loadUser(this.userService.selectedUser$.value.id);
     }
   }
 
@@ -158,12 +158,12 @@ export class UserComponent
     );
   }
 
-  loadUser(login: string) {
+  loadUser(id: number) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.showLoading();
         this.userService
-          .getUser(login)
+          .getUser(id)
           .pipe(finalize(() => this.hideLoading()))
           .subscribe((user) => {
             this.selectedUser = user;
@@ -187,9 +187,9 @@ export class UserComponent
     });
   }
 
-  private updateUsersAndLoad(result) {
+  private updateUsersAndLoad(result: User) {
     if (result) {
-      this.fetchUsers().subscribe(() => this.loadUser(result.login));
+      this.fetchUsers().subscribe(() => this.loadUser(result.id));
     } else {
       this.fetchUsers().subscribe();
     }
@@ -227,7 +227,7 @@ export class UserComponent
         if (loadUser) {
           this.fetchUsers().subscribe();
           this.form.markAsPristine();
-          this.loadUser(user.login);
+          this.loadUser(user.id);
         }
       });
   }
@@ -239,7 +239,7 @@ export class UserComponent
 
     this.fetchUsers().subscribe();
     this.form.markAsPristine();
-    this.loadUser(user.login);
+    this.loadUser(user.id);
   }
 
   // on error:

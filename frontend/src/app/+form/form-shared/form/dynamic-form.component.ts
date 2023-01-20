@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -32,7 +33,6 @@ import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AuthenticationFactory } from "../../../security/auth.factory";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
@@ -59,8 +59,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   formOptions: FormlyFormOptions = {
     formState: {
-      forPublish: false,
-      hideOptionals: false,
+      disabled: true,
+      updateModel: () => {
+        this.model = { ...this.model };
+        this.formOptions.formState.mainModel = this.model;
+      },
     },
   };
 
@@ -77,6 +80,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showValidationErrors = false;
 
+  hideOptionalFields = false;
+
   hasOptionalFields = false;
 
   private formStateName: "document" | "address";
@@ -86,6 +91,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
+  isStickyHeader = false;
 
   constructor(
     private formularService: FormularService,
@@ -102,10 +108,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private profileQuery: ProfileQuery,
     private codelistQuery: CodelistQuery,
     private router: Router,
-    private authFactory: AuthenticationFactory,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private cdr: ChangeDetectorRef
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -335,24 +341,28 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     try {
       // switch to the right profile depending on the data
+      this.initializeForm(data.hasWritePermission && !this.readonly);
       if (needsProfileSwitch) {
         this.formStateService.unobserveTextareaHeights();
 
         // switch to the right profile depending on the data
         this.fields = this.switchProfile(profile);
+        this.model = { ...data };
+        this.cdr.detectChanges();
 
         this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
         this.formularService.getSectionsFromProfile(this.fields);
         this.hasOptionalFields =
           this.profileQuery.getProfile(profile).hasOptionalFields;
+      } else {
+        this.model = { ...data };
+        this.cdr.detectChanges();
       }
 
-      this.model = { ...data };
       this.formOptions.formState.mainModel = this.model;
       this.formOptions.formState.parentIsFolder = data._parentIsFolder;
 
-      this.initializeForm(data.hasWritePermission && !this.readonly);
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);
@@ -384,15 +394,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.paddingWithHeader = stickyHeaderInfo.show
       ? stickyHeaderInfo.headerHeight + 20 + "px"
       : 20 + "px";
+    this.isStickyHeader = stickyHeaderInfo.show;
   }
 
   private initializeForm(writePermission: boolean) {
     this.createNewForm();
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    setTimeout(() => {
-      writePermission ? this.form.enable() : this.form.disable();
-    });
+    this.formOptions.formState.disabled = !writePermission;
   }
 
   async handleDrop(event: any) {
@@ -409,10 +418,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService
       .move(event.srcIds, event.destination, this.address, true)
       .subscribe();
-  }
-
-  toggleOptionals($event: MatSlideToggleChange) {
-    this.formOptions.formState.hideOptionals = !$event.checked;
   }
 
   private createNewForm() {

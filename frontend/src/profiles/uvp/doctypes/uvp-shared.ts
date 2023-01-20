@@ -1,4 +1,3 @@
-import { FormGroup } from "@angular/forms";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import {
@@ -92,7 +91,7 @@ export class UvpShared extends BaseDoctype {
   addPublicDisclosure() {
     return {
       name: "publicDisclosure",
-      hideExpression: 'model.type !== "publicDisclosure"',
+      expressions: { hide: 'model?.type !== "publicDisclosure"' },
       props: {
         label: "Öffentliche Auslegung",
       },
@@ -139,14 +138,16 @@ export class UvpShared extends BaseDoctype {
   addPublishConditionCheckbox(id: string) {
     return this.addCheckbox(id + "PublishDuringDisclosure", null, {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
-      hideExpression: `!model["${id}"] || model["${id}"].length === 0`,
+      expressions: {
+        hide: `!model || !model["${id}"] || model["${id}"].length === 0`,
+      },
     });
   }
 
   addPublicHearing() {
     return {
       name: "publicHearing",
-      hideExpression: 'model.type !== "publicHearing"',
+      expressions: { hide: 'model?.type !== "publicHearing"' },
       props: {
         label: "Erörterungstermin",
       },
@@ -174,7 +175,7 @@ export class UvpShared extends BaseDoctype {
   addDecisionOfAdmission() {
     return {
       name: "decisionOfAdmission",
-      hideExpression: 'model.type !== "decisionOfAdmission"',
+      expressions: { hide: 'model?.type !== "decisionOfAdmission"' },
       props: {
         label: "Entscheidung über die Zulassung",
       },
@@ -229,6 +230,10 @@ export class UvpShared extends BaseDoctype {
                 ? ctrl.value.every((row) => row.ref._state === "P")
                 : false,
             message: "Alle Adressen müssen veröffentlicht sein",
+          },
+          maxPublisher: {
+            expression: (ctrl) => ctrl.value?.length === 1,
+            message: "Es darf maximal nur ein Kontakt angegeben sein",
           },
         },
       }

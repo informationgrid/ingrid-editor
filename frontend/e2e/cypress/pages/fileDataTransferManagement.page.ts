@@ -1,5 +1,5 @@
 export class fileDataTransferManagement {
-  static openUploadDialog(name: string = '', indexOfSection: number = 0) {
+  static openUploadDialog(name: string = '', indexOfSection: number = 0, forceClick: boolean = false) {
     if (name != '') {
       cy.get('.steps')
         .eq(indexOfSection)
@@ -7,7 +7,9 @@ export class fileDataTransferManagement {
         .contains('button', 'Dateien hochladen')
         .click();
     } else {
-      cy.contains('button', 'Dateien hochladen').click();
+      forceClick
+        ? cy.contains('button', 'Dateien hochladen').click({ force: true })
+        : cy.contains('button', 'Dateien hochladen').click();
     }
   }
 

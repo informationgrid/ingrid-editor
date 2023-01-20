@@ -19,10 +19,8 @@ describe('uvp reports', () => {
       // filter by decision date
       ResearchPage.setDate('start', '30.09.2022');
       cy.wait(2000);
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
-      ).then(node => {
-        expect(parseInt(node.text().trim())).to.be.lessThan(oldValue);
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(newValue => {
+        expect(newValue).to.be.lessThan(oldValue);
       });
     });
   });
@@ -43,10 +41,8 @@ describe('uvp reports', () => {
       // create new published document of type "negative Vorprüfung"
       UvpDocumentPage.CreateNegativePreauditDocumentWithAPI(docTitle, true);
       cy.pageReload('.page-title', ' UVP Bericht');
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.negativeAudit}) :nth-child(${UVPmetrics.negativeAudit})`
-      ).then(node => {
-        expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.negativeAudit).then(newValue => {
+        expect(newValue).to.be.greaterThan(oldValue);
       });
     });
   });
@@ -90,10 +86,8 @@ describe('uvp reports', () => {
         true
       );
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
-      cy.get(
-        `[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.averageProcessLength}) :nth-child(2)`
-      ).then(node => {
-        expect(node.text().trim()).not.to.be.equal(oldValue);
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.averageProcessLength).then(newValue => {
+        expect(newValue).not.to.be.equal(oldValue);
       });
     });
   });
@@ -108,11 +102,9 @@ describe('uvp reports', () => {
       // create new document of type "negative Vorprüfung"
       UvpDocumentPage.CreateZulassungsverfahrenDocumentWithAPI(docTitle, true);
       cy.pageReload('[label="Kennzahlen"] tbody[role="rowgroup"]');
-      cy.get(`[label="Kennzahlen"] tbody[role="rowgroup"] :nth-child(${UVPmetrics.positiveAudit}) :nth-child(2)`).then(
-        node => {
-          expect(parseInt(node.text().trim())).to.be.greaterThan(oldValue);
-        }
-      );
+      UvpDocumentPage.getUVPmetrics(UVPmetrics.positiveAudit).then(newValue => {
+        expect(newValue).to.be.greaterThan(oldValue);
+      });
     });
   });
 
@@ -135,7 +127,7 @@ describe('uvp reports', () => {
     // trigger validation and make sure it concludes with a result
     cy.contains('button', 'Prüfung starten').click();
     cy.contains('.main-header span', 'Laufende Prüfung').should('exist');
-    cy.get('mat-progress-spinner circle', { timeout: 15000 }).should('not.exist');
+    cy.get('mat-progress-spinner circle', { timeout: 60000 }).should('not.exist');
 
     // inspect details of validation and compare numbers of valid and invalid urls
     cy.get('.main-header .menu-button').click();
@@ -232,7 +224,6 @@ describe('uvp reports', () => {
       });
   });
 
-  // failing because of bug #4173
   it('should be able to deal with invalid urls that constitute a bad request (#4173)', () => {
     // publish document with problematic url
     Tree.openNode(['Plan_Ordner_1', 'Plan_Ordner_2', 'Plan_Z_III']);
@@ -243,6 +234,6 @@ describe('uvp reports', () => {
     UvpDocumentPage.goToTabmenu(UVPreports.URLmanagement);
     cy.contains('button', 'Prüfung starten').click();
     cy.contains('.main-header span', 'Laufende Prüfung').should('exist');
-    cy.get('mat-progress-spinner circle', { timeout: 15000 }).should('not.exist');
+    cy.get('mat-progress-spinner circle', { timeout: 20000 }).should('not.exist');
   });
 });

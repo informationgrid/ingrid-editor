@@ -40,7 +40,7 @@ export class ConformityDialogComponent implements OnInit {
   }
 
   selectFn(option: SelectOptionUi, value: SelectOptionUi): boolean {
-    return option?.value === value.value;
+    return option?.value === value?.value;
   }
 
   constructor(

@@ -13,21 +13,26 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "11.0.1",
+    "cypress": "12.3.0",
     "gremlins.js": "^2.2.0",
     "mocha": "^9.1.3",
     "mochawesome": "^7.1.3",
-    "mochawesome-merge": "^4.2.1",
+    "mochawesome-merge": "^4.2.2",
     "mochawesome-report-generator": "^6.2.0",
     "smtp-tester": "^1.2.0",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "@4tw/cypress-drag-drop": "^2.1.0",
-    "@testing-library/cypress": "^8.0.2",
+    "@4tw/cypress-drag-drop": "^2.2.3",
+    "@testing-library/cypress": "^9.0.0",
     "@types/node": "^18.6.2",
     "cypress-file-upload": "^5.0.8",
     "cypress-intellij-reporter": "^0.0.7",
     "cypress-keycloak-commands": "^1.2.0"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.0",
+    "node": ">= 14.0.0"
   }
 }

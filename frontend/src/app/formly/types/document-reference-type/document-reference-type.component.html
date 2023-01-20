@@ -1,0 +1,35 @@
+<div
+    *ngFor="let item of myModel; let i = index"
+    class="item clickable"
+    (click)="openReference(item)"
+>
+    <div class="title">
+        <mat-icon
+            *ngIf="item.isExternalRef; else showDocumentIcon"
+            svgIcon="download-link"
+        ></mat-icon>
+        <ng-template #showDocumentIcon>
+            <ige-document-icon [doc]="item" mat-list-icon></ige-document-icon>
+        </ng-template>
+        <span>{{ item.title }}</span>
+    </div>
+    <button mat-icon-button (click)="removeItem(i, $event)">
+        <mat-icon>clear</mat-icon>
+    </button>
+</div>
+<!--{{ formControl.value | json }}-->
+
+<mat-spinner *ngIf="refreshing" diameter="30"></mat-spinner>
+
+<ige-add-button
+    [mat-menu-trigger-for]="menu"
+    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+></ige-add-button>
+<mat-menu #menu>
+    <button mat-menu-item (click)="showInternalRefDialog()">
+        Geodatensatz auswählen
+    </button>
+    <button mat-menu-item (click)="showExternalRefDialog()">
+        Externen Datensatz angeben
+    </button>
+</mat-menu>

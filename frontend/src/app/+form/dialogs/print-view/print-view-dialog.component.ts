@@ -1,6 +1,7 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
-import { FormGroup, UntypedFormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
+import { FormlyFormOptions } from "@ngx-formly/core";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
@@ -8,12 +9,18 @@ import { FormGroup, UntypedFormGroup } from "@angular/forms";
 export class PrintViewDialogComponent {
   profile: any;
   form = new UntypedFormGroup({});
+  options: FormlyFormOptions = {};
+  formCompare = new UntypedFormGroup({});
+  compareView = false;
 
   constructor(
     public dialogRef: MatDialogRef<PrintViewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    setTimeout(() => this.form.disable());
+    this.options.formState = {
+      disabled: true,
+      mainModel: data.model,
+    };
   }
 
   print() {

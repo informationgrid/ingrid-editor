@@ -8,6 +8,9 @@ import { BaseDoctype } from "../base.doctype";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
 import { of } from "rxjs";
+import { UntypedFormGroup } from "@angular/forms";
+import { UploadService } from "../../app/shared/upload/upload.service";
+import { ConfigService } from "../../app/services/config/config.service";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -49,21 +52,20 @@ export class TestDoctype extends BaseDoctype {
               required: true,
               maxLength: 10,
             },
-            expressionProperties: {
+            expressions: {
               "props.description": '(model.textMaxLength||"").length+" / 10"',
             },
           },
           {
             key: "optionalText",
             type: "input",
-            className: "optional animated",
+            className: "optional",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Optionales Textfeld",
               appearance: "outline",
               animation: true,
             },
-            hideExpression: "formState.hideOptionals",
           },
           {
             key: "description",
@@ -236,21 +238,40 @@ export class TestDoctype extends BaseDoctype {
               required: true,
               columns: [
                 {
-                  key: "col1",
+                  key: "title",
                   type: "input",
-                  label: "Spalte 1",
+                  label: "Titel",
                   props: {
-                    label: "Spalte 1",
+                    label: "Titel",
                     appearance: "outline",
                   },
                 },
                 {
-                  key: "col2",
-                  type: "input",
-                  label: "Spalte 2",
+                  key: "link",
+                  type: "upload",
+                  label: "Link",
                   props: {
-                    label: "Spalte 2",
+                    label: "Link",
                     appearance: "outline",
+                    required: true,
+                    onClick: (docUuid, uri, $event) => {
+                      this.uploadService.downloadFile(docUuid, uri, $event);
+                    },
+                    formatter: (link: any, form: UntypedFormGroup) => {
+                      if (link.asLink) {
+                        return `
+                         <a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri} </a> `;
+                      } else {
+                        return `<a href="${
+                          this.configService.getConfiguration().backendUrl
+                        }upload/${form.get("_uuid").value}/${
+                          link.uri
+                        }" class="no-text-transform icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${
+                          link.uri
+                        }</a>`;
+                      }
+                    },
                   },
                 },
                 {
@@ -427,7 +448,9 @@ export class TestDoctype extends BaseDoctype {
   constructor(
     storageService?: DocumentService,
     codelistService?: CodelistService,
-    codelistQuery?: CodelistQuery
+    codelistQuery?: CodelistQuery,
+    private uploadService?: UploadService,
+    private configService?: ConfigService
   ) {
     super(codelistService, codelistQuery);
   }

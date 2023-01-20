@@ -58,7 +58,7 @@ export class UploadTypeComponent
 
   private setControl() {
     const validators = [Validators.pattern(this.URL_REGEXP)];
-    if (this.to.required) {
+    if (this.props.required) {
       validators.push(Validators.required);
     }
 

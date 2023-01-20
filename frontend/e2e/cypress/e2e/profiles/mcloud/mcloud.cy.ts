@@ -40,6 +40,10 @@ describe('mCLOUD documents', function () {
       McloudDocumentPage.enterNecessaryData();
 
       McloudDocumentPage.publishNow();
+
+      // check dashboard for latest published doc
+      Menu.switchTo('DASHBOARD', true);
+      cy.get('[data-cy="recent-published-docs"] .mat-list-item').first().should('contain', docName);
     });
 
     it('after adding address to document, the document can not be accessed anymore by users not authorized to access address', () => {

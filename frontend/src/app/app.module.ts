@@ -24,6 +24,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import {
   MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialog,
   MatDialogModule,
 } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -50,7 +51,10 @@ import {
 import { MatRadioModule } from "@angular/material/radio";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { SectionWrapper } from "./formly/wrapper/section-wrapper.component";
-import { ConfirmDialogComponent } from "./dialogs/confirm/confirm-dialog.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "./dialogs/confirm/confirm-dialog.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
@@ -67,12 +71,6 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
   MatSnackBarModule,
 } from "@angular/material/snack-bar";
-import {
-  InjectableRxStompConfig,
-  RxStompService,
-  rxStompServiceFactory,
-} from "@stomp/ng2-stompjs";
-import { IgeStompConfig } from "./ige-stomp.config";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
 import { AuthenticationFactory } from "./security/auth.factory";
@@ -86,6 +84,8 @@ import { SharedModule } from "./shared/shared.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { Catalog } from "./+catalog/services/catalog.model";
+import { rxStompServiceFactory } from "./rx-stomp-service-factory";
+import { RxStompService } from "./rx-stomp.service";
 
 registerLocaleData(de);
 
@@ -93,7 +93,8 @@ export function ConfigLoader(
   configService: ConfigService,
   authFactory: AuthenticationFactory,
   router: Router,
-  http: HttpClient
+  http: HttpClient,
+  dialog: MatDialog
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -107,13 +108,20 @@ export function ConfigLoader(
     return commands;
   }
 
-  async function redirectToCatalogSpecificRoute(router: Router) {
+  async function redirectToCatalogSpecificRoute(
+    router: Router,
+    dialog: MatDialog
+  ) {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
+    const contextPath = configService.getConfiguration().contextPath;
     const urlPath = document.location.pathname;
     // FIXME: what about IGE-NG installed behind a context path? check configuration!
     // get first part of the path without any parameters separated by ";"
-    const rootPath = urlPath.split("/")[1].split(";")[0];
+    const rootPath = urlPath
+      .substring(contextPath.length) // remove context path
+      .split("/")[0] // split paths
+      .split(";")[0]; // split parameters
     if (rootPath !== catalogId) {
       // check if no catalogId is in requested URL
       const hasNoCatalogId =
@@ -143,9 +151,18 @@ export function ConfigLoader(
         return;
       }
 
-      throw new IgeError(
-        `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`
-      );
+      dialog
+        .open(ConfirmDialogComponent, {
+          data: {
+            title: "Fehler",
+            message: `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`,
+            confirmButtonText: "Zum aktuellen Katalog",
+          } as ConfirmDialogData,
+        })
+        .afterClosed()
+        .subscribe(() => {
+          router.navigate([`${ConfigService.catalogId}/dashboard`]);
+        });
     }
   }
 
@@ -154,7 +171,7 @@ export function ConfigLoader(
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
-      .then(() => redirectToCatalogSpecificRoute(router))
+      .then(() => redirectToCatalogSpecificRoute(router, dialog))
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
@@ -269,7 +286,13 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
-      deps: [ConfigService, AuthenticationFactory, Router, HttpClient],
+      deps: [
+        ConfigService,
+        AuthenticationFactory,
+        Router,
+        HttpClient,
+        MatDialog,
+      ],
       multi: true,
     },
     // set locale for dates
@@ -323,14 +346,9 @@ export function animationExtension(field: FormlyFieldConfig) {
 
     // WebSocket
     {
-      provide: InjectableRxStompConfig,
-      useClass: IgeStompConfig,
-      deps: [ConfigService],
-    },
-    {
       provide: RxStompService,
       useFactory: rxStompServiceFactory,
-      deps: [InjectableRxStompConfig],
+      deps: [ConfigService],
     },
 
     // PLUGINS

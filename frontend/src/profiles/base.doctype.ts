@@ -9,6 +9,7 @@ import {
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
+import { clone } from "../app/shared/utils";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fields = <FormlyFieldConfig[]>[
@@ -65,7 +66,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
-  fieldsForPrint: FormlyFieldConfig[];
+  cleanFields: FormlyFieldConfig[];
 
   constructor(
     private codelistService?: CodelistService,
@@ -104,10 +105,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.fields.push(...this.documentFields());
       this.hasOptionalFields = this.hasOptionals(this.fields);
       this.addCodelistDefaultValues(this.fields);
-      this.addContextHelp(this.fields);
+      if (this.helpIds.length > 0) this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
-      const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
-      this.fieldsForPrint = this.createFieldsForPrint(copy);
+
+      this.cleanFields = JSON.parse(JSON.stringify(this.fields));
       console.debug(`Document type ${this.id} initialized`);
     });
   }
@@ -138,9 +139,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (this.helpIds.indexOf(fieldKey) > -1) {
         if (!field.model?._type) field.props.docType = this.id;
 
-        if (field.type === "checkbox") {
+        // automatically add inline help info when special wrapper is used
+        if (field.wrappers && field.wrappers.indexOf("inline-help") !== -1) {
           field.props.hasInlineContextHelp = true;
-        } else if (!field.props.hasInlineContextHelp) {
+        }
+        if (!field.props.hasInlineContextHelp) {
           field.props.hasContextHelp = true;
         }
       } else if (
@@ -213,6 +216,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       : item?.value;
   }
 
+  public getFieldsForPrint(diffObj) {
+    const copy: FormlyFieldConfig[] = clone(this.cleanFields);
+    if (diffObj) this.addDifferenceFlags(copy, diffObj);
+    return this.createFieldsForPrint(copy);
+  }
+
   private createFieldsForPrint(
     fields: FormlyFieldConfig[]
   ): FormlyFieldConfig[] {
@@ -261,6 +270,52 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
     });
     return fields;
+  }
+
+  private calcIsDifferent(field, diffObj): boolean {
+    if (!diffObj) return false;
+    const path = this.getKeyPath(field);
+    if (!path.length) return false;
+    let diff = diffObj;
+    for (const key of path) {
+      if (key in diff) {
+        diff = diff[key];
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.addDifferenceFlags(field.fieldGroup, diffObj);
+      }
+      if (field.fieldArray) {
+        this.addDifferenceFlags(
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup,
+          diffObj
+        );
+      }
+      if (this.calcIsDifferent(field, diffObj)) {
+        field.className = field.className
+          ? field.className + " mark-different"
+          : "mark-different";
+      } else {
+        field.className = field.className?.replace("mark-different", "");
+      }
+    });
+  }
+
+  getKeyPath(field): string[] {
+    if (field.parent) {
+      return field.key
+        ? this.getKeyPath(field.parent).concat([field.key.toString()])
+        : this.getKeyPath(field.parent);
+    } else {
+      return field.key ? [field.key.toString()] : [];
+    }
   }
 
   private getFormatterForColumn(

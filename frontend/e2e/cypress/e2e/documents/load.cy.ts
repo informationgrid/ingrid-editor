@@ -70,7 +70,7 @@ describe('mCloud Load documents', () => {
     cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
     // expect(cy.get('ige-form-dashboard')).to.contain('text');
     cy.visit('/form;id=a0df9837-512a-4594-b2ef-2814f7c55c81');
-    cy.get('ige-form-info ige-breadcrumb .selectable').click();
+    cy.get('ige-form-info ige-breadcrumb .selectable', { timeout: 10000 }).click();
     cy.get('ige-form-dashboard').should('contain', 'Daten').should('contain', 'Neuer Datensatz');
   });
 
@@ -102,7 +102,7 @@ describe('mCloud Load documents', () => {
 
   it('should open the previously selected document when going to another page and returning', function () {
     DocumentPage.visitSingleDoc();
-    cy.get(DocumentPage.title).should('have.text', 'TestDocResearch2');
+    cy.get(DocumentPage.title, { timeout: 6000 }).should('have.text', 'TestDocResearch2');
     Menu.switchTo('DASHBOARD');
     Menu.switchTo('ADDRESSES');
     Menu.switchTo('DOCUMENTS');
@@ -201,5 +201,37 @@ describe('mCloud Load documents', () => {
       headerElements.EditDate,
       Utils.getFormattedDate(new Date()) + ' von ' + 'Katalog Admin1'
     );
+  });
+
+  it('should compare working version and published version (#4635)', function () {
+    DocumentPage.visit();
+    Tree.openNode(['Veröffentlichter Datensatz mit Bearbeitungsversion']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.contains('.mat-dialog-title', 'Vorschau').should('exist');
+    cy.contains('button[name="compareView"]', 'Vergleichsansicht').click();
+
+    // check preview has been opened with split view for comparison
+    cy.get('mat-dialog-container .working').should('exist');
+    cy.get('mat-dialog-container .published').should('exist');
+
+    // check versions differ
+    cy.get('.published [data-cy="description"] ige-print-type').then(published_descr => {
+      cy.get('.working [data-cy="description"] ige-print-type').then(draft_descr => {
+        cy.wrap(draft_descr.text()).should('not.equal', published_descr.text());
+      });
+    });
+  });
+
+  it('should not open comparative view when opening unchanged published doc (#4635)', function () {
+    // open published document without changes after publishing
+    DocumentPage.visit();
+    Tree.openNode(['TestDocResearch4']);
+    cy.get(DocumentPage.Toolbar.Preview).click();
+    cy.contains('.mat-dialog-title', 'Vorschau').should('exist');
+    cy.contains('button[name="compareView"]', 'Vergleichsansicht').should('not.exist');
+
+    // check preview has not been opened with split view
+    cy.get('mat-dialog-container').should('exist');
+    cy.get('mat-dialog-container .working').should('not.exist');
   });
 });

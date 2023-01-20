@@ -40,20 +40,27 @@
                         [forAddress]="address"
                         [sections]="(sections | async) ?? []"
                         [parentContainer]="scrollForm"
+                        [disableTitleEdit]="
+                            formOptions.formState.disabled ||
+                            (address && model._type !== 'FOLDER')
+                        "
                         (showStickyHeader)="updateContentPadding($event)"
-                    ></ige-form-info>
-                    <div
-                        [class.hide]="!hasOptionalFields"
-                        class="optional-fields-toggle"
                     >
-                        <div class="diagonal"></div>
-                        <mat-slide-toggle
-                            checked
-                            (change)="toggleOptionals($event)"
-                            >Alle
-                        </mat-slide-toggle>
-                        <div class="cover"></div>
-                    </div>
+                        <div
+                            [class.hide]="!hasOptionalFields"
+                            class="optional-fields-toggle"
+                        >
+                            <div class="diagonal"></div>
+                            <mat-slide-toggle
+                                checked
+                                (change)="
+                                    hideOptionalFields = !hideOptionalFields
+                                "
+                                >Alle
+                            </mat-slide-toggle>
+                            <div class="cover"></div>
+                        </div>
+                    </ige-form-info>
                     <div
                         class="form-inner"
                         [class.hide]="model._type === 'FOLDER'"
@@ -62,6 +69,7 @@
                             [formGroup]="form"
                             [style.padding-top]="paddingWithHeader"
                             [class.hide-validation]="!showValidationErrors"
+                            [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
                             <formly-form

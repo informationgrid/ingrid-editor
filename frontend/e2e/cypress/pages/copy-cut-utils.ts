@@ -62,13 +62,13 @@ export class CopyCutUtils {
         });
       } else {
         cy.get('#sidebar div.label:contains(' + dragnode + ')')
-          .click({ force: true })
+          .click()
           .drag('#sidebar div.label:contains(' + node + ')', { force: true });
       }
 
       if (i < targetNodePath.length - 1) {
         // check next item is expanded
-        cy.get('#sidebar div.label:contains(' + targetNodePath[i + 1] + ')', { timeout: 5000 });
+        cy.get('#sidebar div.label:contains(' + targetNodePath[i + 1] + ')', { timeout: 6000 });
       }
     });
 

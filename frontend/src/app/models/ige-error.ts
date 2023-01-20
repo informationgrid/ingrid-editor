@@ -8,6 +8,7 @@ export class IgeError {
   actions?: any[];
   unhandledException?: boolean;
   showDetails?: boolean;
+  showActionButton?: boolean;
 
   constructor(error?: HttpErrorResponse | string) {
     if (error instanceof HttpErrorResponse) {

@@ -44,7 +44,7 @@ interface UsersApi {
         ) @RequestBody user: @Valid User,
         @Parameter(description = "With this option an external user is tried to be created")
         @RequestParam(value = "newExternalUser", required = false) newExternalUser: Boolean = false
-    ): ResponseEntity<String?>
+    ): ResponseEntity<User>
 
     @DeleteMapping(
         value = ["/users/{id}"],
@@ -73,7 +73,7 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
+        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<User>
 
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -89,17 +89,18 @@ interface UsersApi {
     ): ResponseEntity<List<User>>
 
     @GetMapping(
-        value = ["/users/admins"],
+        value = ["/users/admins/{catalogId}"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation
     @ApiResponses(
         value = [ApiResponse(
             responseCode = "200",
-            description = "Returns the list of users who are Catalog-Admins"
+            description = "Returns the list of users who are Catalog-Admins for a specific Catalog"
         )]
     )
-    fun listCatAdmins(principal: Principal): ResponseEntity<List<User>>
+    fun listCatAdmins(principal: Principal, @Parameter(description = "Id of the catalog.", required = true) @PathVariable("catalogId") catalogId: String,
+    ): ResponseEntity<List<User>>
 
     @PutMapping(
         value = ["/users/{id}"],
@@ -114,7 +115,6 @@ interface UsersApi {
     )
     fun updateUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") id: String,
         @Parameter(
             description = "Save the user data into the database.",
             required = true
@@ -254,4 +254,37 @@ interface UsersApi {
         ) @PathVariable("id") id: String
     ): ResponseEntity<Void>
 
+
+    @GetMapping(
+        value = ["/internalUsers"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Returns the list of all registered user ids"
+        )]
+    )
+    fun listInternal(principal: Principal): ResponseEntity<List<String>>
+
+    @PostMapping(
+        value = ["/user/{userId}/assignCatalog"],
+    )
+    @Operation
+    @ApiResponses(
+        value = [ApiResponse(
+            responseCode = "200",
+            description = "Assign catalog to user"
+        )]
+    )
+    fun assignUserToCatalog(
+        principal: Principal, @Parameter(
+            description = "The user login of which the catalog will be assigned.",
+            required = true
+        ) @PathVariable("userId") userId: String, @Parameter(
+            description = "The catalogId to assign",
+            required = true
+        ) @RequestBody catalogId: @Valid String
+    ): ResponseEntity<Void>
 }

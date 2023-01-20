@@ -295,7 +295,7 @@ export class ResearchService {
     if (asSql) {
       return <SqlQuery>{
         ...base,
-        sql: model.ui.sql.query,
+        sql: model,
         type: "sql",
       };
     } else {

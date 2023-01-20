@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class InGridLiteratureType @Autowired constructor() : EntityType() {
-    override val profiles = arrayOf("ingrid")
-    
+class InGridLiteratureType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridLiterature"
 
 //    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"

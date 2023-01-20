@@ -28,7 +28,7 @@ class PlannedPublishTask(val documentService: DocumentService, val catalogServic
         val principal = getAuthentication()
 
         catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
-        log.debug("Task finished: Planned-Publish")
+        log.info("Task finished: Planned-Publish")
     }
 
 

@@ -7,7 +7,6 @@ docType:
   - InGridGeoService
   - InGridSpecialisedTask
   - InGridInformationSystem
-  - InGridLiterature
   - InGridProject
 profile: ingrid
 

@@ -6,11 +6,12 @@
     [class.hide-divider]="hideDivider"
 >
     <mat-list-option
-        *ngFor="let doc of docs | async"
+        *ngFor="let doc of docs | async as allDocs; let i = index"
         (click)="makeSelection(doc)"
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
         [class.disabled]="doc.hasWritePermission === false"
+        [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
     >
         <ige-document-icon
             *ngIf="showIcons"
@@ -30,11 +31,11 @@
             <span
                 *ngIf="!hideDate"
                 class="date"
-                [matTooltip]="doc._modified | date: 'dd.LL.yyyy HH:mm'"
-                >{{ doc._modified | dateAgo: "DE" }}</span
+                [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
+                >{{ doc._modified | dateAgo : "DE" }}</span
             >
         </h3>
-        <mat-divider></mat-divider>
+        <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
     </mat-list-option>
 </mat-selection-list>
 
@@ -61,8 +62,8 @@
         <span
             *ngIf="!hideDate"
             class="date"
-            [matTooltip]="doc._modified | date: 'dd.LL.yyyy HH:mm'"
-            >{{ doc._modified | dateAgo: "DE" }}</span
+            [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
+            >{{ doc._modified | dateAgo : "DE" }}</span
         >
     </span>
 </div>

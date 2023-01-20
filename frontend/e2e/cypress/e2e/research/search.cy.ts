@@ -140,6 +140,34 @@ describe('Research Page', () => {
     });
   });
 
+  it('should do search with example SQL-query typed in manually and save it #4610', () => {
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
+    cy.get(ResearchPage.SQLField).type(
+      'SELECT document1.*, document_wrapper.*\n' +
+        '            FROM document_wrapper\n' +
+        '                   JOIN document document1 ON\n' +
+        '              CASE\n' +
+        '                WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id\n' +
+        '                ELSE document_wrapper.draft = document1.id\n' +
+        '                END\n' +
+        "            WHERE document_wrapper.category = 'address'\n" +
+        "              AND LOWER(title) LIKE '%test%'"
+    );
+    cy.get('button').contains('Suchen').click();
+    cy.intercept('/api/search/querySql').as('query');
+    cy.wait('@query');
+    ResearchPage.getSearchResultCountZeroIncluded().then(manualSQLSearchResult => {
+      cy.get('div.mat-chip-list-wrapper > mat-chip.mat-chip').eq(0).click();
+      ResearchPage.getSearchResultCountZeroIncluded().should('equal', manualSQLSearchResult);
+    });
+
+    ResearchPage.saveSearchProfile('searchBySQL', 'search by SQL query');
+    ResearchPage.openSearchOptionTab(SearchOptionTabs.SavedSearches);
+    ResearchPage.chooseListItemFromSavedSearches('searchBySQL');
+    //make sure you're in the 'SQL Suche'-tab: this tab should be selected
+    cy.contains('.mat-tab-link  ', 'SQL Suche').should('have.class', 'active-link');
+  });
+
   it('should delete SQL-query and subsequently return 0 results', () => {
     cy.intercept('/api/search/querySql').as('sqlQuery');
     ResearchPage.openSearchOptionTab(SearchOptionTabs.SQLSearch);
@@ -368,15 +396,56 @@ describe('Research Page', () => {
     });
   });
 
+  it('should reset date fields of timerelated search (#3699)', () => {
+    ResearchPage.setDate('start', '01.08.2021');
+    ResearchPage.setDate('end', '20.08.2021');
+    ResearchPage.waitForSearch();
+    ResearchPage.getSearchResultCountZeroIncluded().then(temporallyFiltered => {
+      // reset fields and check content
+      cy.get('[data-cy="clear-date-fields"]').click();
+      cy.get('.mat-input-element[formcontrolname="end"]').should('have.value', '');
+      cy.get('.mat-input-element[formcontrolname="start"]').should('have.value', '');
+
+      // compare values to make sure new search has been triggered
+      ResearchPage.waitForSearch();
+      ResearchPage.getSearchResultCount().should('be.greaterThan', temporallyFiltered);
+    });
+  });
+
+  it('should reset all search parameters (#3699)', () => {
+    // set search parameters
+    ResearchPage.activateCheckboxSearchFilter(FilterExtendedSearch.NoFolders);
+    ResearchPage.createSpatialReference('Deutschland');
+    ResearchPage.setDate('start', '05.08.2021');
+    ResearchPage.setDate('end', '22.08.2021');
+    ResearchPage.search('d');
+    ResearchPage.getSearchResultCountZeroIncluded().then(filtered => {
+      // reset fields
+      cy.get('.reset-form-button').click();
+      // check parameter fields
+      cy.get(FilterExtendedSearch.NoFolders).should('not.be.checked');
+      cy.get('ige-add-button').should('exist');
+      cy.get('.mat-input-element[formcontrolname="end"]').should('have.value', '');
+      cy.get('.mat-input-element[formcontrolname="start"]').should('have.value', '');
+      cy.get('.main-header input').should('have.value', '');
+
+      // compare values to make sure new search with no search parameters has been triggered
+      ResearchPage.waitForSearch();
+      ResearchPage.getSearchResultCount().should('be.greaterThan', filtered);
+    });
+  });
+
   it('time-related search with same start date and end date should return only documents belonging to this date (#3040)', () => {
     ResearchPage.setDate('start', '22.07.2021');
     ResearchPage.setDate('end', '22.07.2021');
     ResearchPage.waitForSearch();
 
     // iterate through every result to check date
-    cy.get('tbody tr').each(el => {
-      cy.wrap(el).should('contain', '22.07.2021');
-    });
+    cy.get('tbody tr')
+      .should('not.be.empty')
+      .each(el => {
+        cy.wrap(el).should('contain', '22.07.2021');
+      });
 
     // compare filtered results with number of all search results
     ResearchPage.getSearchResultCount().then(temporallyFiltered => {

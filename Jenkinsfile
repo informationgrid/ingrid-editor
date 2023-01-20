@@ -12,6 +12,7 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        gitLabConnection('GitLab (wemove)')
     }
 
 
@@ -28,6 +29,7 @@ pipeline {
                 }
             }*/
             steps {
+                updateGitlabCommitStatus name: 'build', state: 'running'
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
                     // so we use here a modified postgres image for the tests
@@ -102,6 +104,18 @@ pipeline {
                         subject: '${DEFAULT_SUBJECT}',
                         to: '${DEFAULT_RECIPIENTS}')
             }
+        }
+        failure {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        aborted {
+            updateGitlabCommitStatus name: 'build', state: 'canceled'
         }
     }
 }

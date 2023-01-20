@@ -401,6 +401,7 @@ describe('create/delete/edit addresses', () => {
     cy.get('[data-cy=dialog-choose-address]').click();
     Tree.openNodeInsideDialog(['address_to _be_replaced_catalog_admin']);
     AddressPage.submitReplaceAddress();
+    AddressPage.confirmReplaceAddress();
 
     cy.get('ige-replace-address-dialog').contains('Die Adresse wurde erfolgreich ersetzt.');
     cy.get('ige-replace-address-dialog mat-dialog-actions button').contains('Schließen').click();

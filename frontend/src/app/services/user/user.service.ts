@@ -54,15 +54,23 @@ export class UserService {
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
-  getCatAdmins(): Observable<FrontendUser[]> {
+  getUserIdsFromAllCatalogs(): Observable<String[]> {
+    return this.dataService.getAllUserIds();
+  }
+
+  assignUserToCatalog(userId: string, catalogId: string): Observable<void> {
+    return this.dataService.assignUserToCatalog(userId, catalogId);
+  }
+
+  getCatAdmins(catalogId: String): Observable<FrontendUser[]> {
     return this.dataService
-      .getCatAdmins()
+      .getCatAdmins(catalogId)
       .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
   }
 
-  getUser(login: string): Observable<FrontendUser> {
+  getUser(id: number): Observable<FrontendUser> {
     return this.dataService
-      .getUser(login)
+      .getUser(id)
       .pipe(map((user) => new FrontendUser(user)));
   }
 

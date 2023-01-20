@@ -85,6 +85,17 @@
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
             </ige-card-box>
+            <ige-card-box
+                fxFlex
+                data-cy="recent-published-docs"
+                label="{{ t('mostRecentPublished') }}"
+            >
+                <ige-document-list-item
+                    [docs]="recentPublishedDocs$"
+                    [hideDate]="false"
+                    (select)="openDocument($event._uuid)"
+                ></ige-document-list-item>
+            </ige-card-box>
         </div>
     </div>
 </div>

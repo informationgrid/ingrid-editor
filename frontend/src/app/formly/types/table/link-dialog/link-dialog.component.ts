@@ -73,7 +73,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   private prepareResult(value: any) {
     const uploadKey = this.formData.fields.find(
       (field) => field.type === "upload"
-    ).key as string;
+    )?.key as string;
     const result = {
       ...value,
     };

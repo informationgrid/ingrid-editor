@@ -65,7 +65,7 @@ class UvpProfile @Autowired constructor(
                 viewComponent = ViewComponent.TIMESPAN
             ),
             FacetGroup(
-                "procedureType", "Verfahrenstyp", arrayOf(
+                "docType", "Verfahrenstyp", arrayOf(
                     ProcedureTypes()
                 ),
                 viewComponent = ViewComponent.SELECT

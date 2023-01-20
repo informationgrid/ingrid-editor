@@ -5,6 +5,8 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { MatDialog } from "@angular/material/dialog";
+import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -24,25 +26,49 @@ export class DataCollectionDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addTable("categoryCatalog", "Objektartenkatalog", {
-          supportUpload: false,
-          columns: [],
-          hideExpression: "formState.hideOptionals",
+        this.addRepeat("categoryCatalog", "Objektartenkatalog", {
+          className: "optional",
+          expressions: {
+            "props.required": "formState.mainModel.databaseContent?.length > 0",
+          },
+          fields: [
+            this.addAutocomplete("title", "Titel", {
+              className: "flex-3",
+              wrappers: ["form-field"],
+              required: true,
+              options: this.getCodelistForSelect(3535, "title"),
+              codelistId: 3535,
+            }),
+            { key: "_type" },
+            this.addDatepickerInline("date", "Datum", {
+              className: "flex-1",
+              required: true,
+            }),
+            this.addInputInline("edition", "Version", {
+              className: "flex-1",
+            }),
+          ],
         }),
-        this.addTable(
+        this.addRepeat(
           "databaseContent",
           "Inhalte der Datensammlung/Datenbank",
           {
-            supportUpload: false,
-            columns: [],
-            hideExpression: "formState.hideOptionals",
+            className: "optional",
+            fields: [
+              this.addInputInline("parameter", "Parameter", {
+                className: "flex-1",
+              }),
+              this.addInputInline("moreInfo", "Ergänzende Angaben", {
+                className: "flex-1",
+              }),
+            ],
           }
         ),
         this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
       ]),
 
@@ -57,8 +83,10 @@ export class DataCollectionDoctype extends IngridShared {
     storageService: DocumentService,
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    uploadService: UploadService
+    uploadService: UploadService,
+    dialog: MatDialog,
+    cookieService: CookieService
   ) {
-    super(codelistService, codelistQuery, uploadService);
+    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
   }
 }

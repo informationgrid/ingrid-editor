@@ -74,6 +74,8 @@ describe('Toolbar behavior', () => {
       ['NewDoc', 'NewFolder', 'Copy', 'Revert', 'Delete', 'Save', 'Publish', 'Preview'],
       ['PublishNow']
     );
+    // make sure toolbar is fully rendered
+    cy.get('.standard-toolbar-button').should('have.length', 6);
     cy.get(DocumentPage.Toolbar.Copy).click();
     cy.get('[data-cy=copyMenu_COPY]').should('be.enabled');
     cy.get('[data-cy=copyMenu_COPYTREE]').should('be.disabled'); // only folders

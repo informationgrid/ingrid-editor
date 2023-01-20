@@ -4,11 +4,11 @@ import cronstrue from "cronstrue/i18n";
 import { UntypedFormControl } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { RxStompService } from "@stomp/ng2-stompjs";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
+import { RxStompService } from "../../rx-stomp.service";
 
 @UntilDestroy()
 @Component({

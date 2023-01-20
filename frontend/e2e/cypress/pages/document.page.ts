@@ -56,7 +56,7 @@ export class DocumentPage extends BasePage {
 
   static AddAddressDialog = class {
     static search(searchString: string) {
-      cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').click();
+      cy.get('[data-cy="choose-address-tree"]', { timeout: 6000 }).findByPlaceholderText('Suchen').click();
       cy.get('[data-cy="choose-address-tree"]').findByPlaceholderText('Suchen').type(searchString);
     }
 
@@ -99,7 +99,7 @@ export class DocumentPage extends BasePage {
     this.fillDialog(folderName);
   }
 
-  private static fillDialog(title: string) {
+  static fillDialog(title: string) {
     let beforeLength = 0;
     Tree.getNumberOfNodes().then(length => {
       beforeLength = length;
@@ -851,6 +851,8 @@ export class DocumentPage extends BasePage {
     cy.get('[data-cy=create-title]').type(objectName);
     cy.get('[data-cy=create-action]').click();
     cy.get('[data-cy=create-action]').should('not.exist');
+    // add a little time to allow for the new doc to be listed in sidebar
+    cy.wait(200);
   }
 
   static changeLocation(targetNodePath: string[]) {
@@ -1040,9 +1042,7 @@ export class DocumentPage extends BasePage {
   }
 
   static openUpDocumentHeader() {
-    cy.get('.title').within(_ => {
-      cy.findByText('keyboard_arrow_down').click();
-    });
+    cy.get('.btn-toggle-form-header').click();
   }
 
   static checkEmptyDocumentTree() {

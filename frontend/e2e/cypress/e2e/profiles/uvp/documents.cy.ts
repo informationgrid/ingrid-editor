@@ -18,7 +18,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some description');
     UvpDocumentPage.setAddress('Adresse, Organisation_6');
     UvpDocumentPage.setSpatialBbox('information about location', 'Fulda', false);
-    UvpDocumentPage.setDateOfRequest('02.12.2021');
+    UvpDocumentPage.setRequestDate('02.12.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
     UvpDocumentPage.publishNow();
 
@@ -38,7 +38,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some description');
     UvpDocumentPage.setAddress('Adresse, Organisation_7');
     UvpDocumentPage.setSpatialBbox('information about location', 'Fulda', false);
-    UvpDocumentPage.setDateOfRequest('03.12.2021');
+    UvpDocumentPage.setRequestDate('03.12.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
     UvpDocumentPage.setPreliminaryAssessment(true);
     UvpDocumentPage.publishNow();
@@ -61,7 +61,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some other description');
     UvpDocumentPage.setAddress('Adresse, Organisation_8');
     UvpDocumentPage.setSpatialBbox('information about location', 'Bonn', false);
-    UvpDocumentPage.setDateOfRequest('04.12.2021');
+    UvpDocumentPage.setRequestDate('04.12.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
     UvpDocumentPage.publishNow();
 
@@ -111,7 +111,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some expressive description');
     UvpDocumentPage.setAddress('Adresse, Organisation_10');
     UvpDocumentPage.setSpatialBbox('information about location', 'Sayda', false);
-    UvpDocumentPage.setDateOfRequest('02.07.2021');
+    UvpDocumentPage.setRequestDate('02.07.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
 
     // add additional steps
@@ -185,7 +185,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some description');
     UvpDocumentPage.setAddress('Adresse, Organisation_7');
     UvpDocumentPage.setSpatialBbox('information about location', 'Annaburg', false);
-    UvpDocumentPage.setDateOfRequest('03.10.2020');
+    UvpDocumentPage.setRequestDate('03.10.2020');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.2');
     UvpDocumentPage.setPreliminaryAssessment(true);
 
@@ -262,7 +262,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('some description');
     UvpDocumentPage.setAddress('Adresse, Organisation_8');
     UvpDocumentPage.setSpatialBbox('information about location', 'Niesky', false);
-    UvpDocumentPage.setDateOfRequest('05.12.2020');
+    UvpDocumentPage.setRequestDate('05.12.2020');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.2');
 
     // add steps
@@ -441,7 +441,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('description');
     UvpDocumentPage.setAddress('Adresse, Organisation_10');
     UvpDocumentPage.setSpatialBbox('information about location', 'Euba', false);
-    UvpDocumentPage.setDateOfRequest('02.07.2021');
+    UvpDocumentPage.setRequestDate('02.07.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.1.1');
 
     UvpDocumentPage.addProcedureSteps('Öffentliche Auslegung');
@@ -505,7 +505,7 @@ describe('uvp documents', () => {
     UvpDocumentPage.setDescription('description');
     UvpDocumentPage.setAddress('Adresse, Organisation_6');
     UvpDocumentPage.setSpatialBbox('information about location', 'Nidda', false);
-    UvpDocumentPage.setDateOfRequest('12.07.2021');
+    UvpDocumentPage.setRequestDate('12.07.2021');
     UvpDocumentPage.setUVPnumber('UVPG-1.2.1');
     UvpDocumentPage.addProcedureSteps('Erörterungstermin');
     UvpDocumentPage.fillInField('[data-cy="publicHearingDate"]', 'input[formcontrolname="start"]', '12.02.2020');

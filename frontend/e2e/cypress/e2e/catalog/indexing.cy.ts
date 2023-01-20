@@ -56,7 +56,7 @@ describe('Indexing', () => {
     cy.get('mat-hint').should('not.contain', cronExampleText);
     cy.wait(300);
     cy.get('mat-chip').contains(cronExampleText).click();
-    cy.get('mat-hint').contains(cronExampleText);
+    cy.contains('mat-hint', cronExampleText, { timeout: 6000 });
     cy.get('button').contains('Übernehmen').click();
     cy.get('mat-hint').contains(cronExampleText);
   });

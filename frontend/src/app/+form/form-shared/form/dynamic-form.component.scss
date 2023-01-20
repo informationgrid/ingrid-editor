@@ -87,12 +87,17 @@ pre {
   flex-direction: row;
   justify-content: flex-end;
   height: 36px;
-  min-width: 536px;
   max-width: 1260px;
   margin: 0 0 -36px;
   font-size: 14px;
   z-index: 1;
   user-select: none;
+
+  &.sticky {
+    position: fixed;
+    top: 150px;
+    right: 17px;
+  }
 
   .cover {
     position: absolute;
@@ -105,6 +110,8 @@ pre {
 
   .mat-slide-toggle {
     background: $ige-background;
+    margin-right: -24px;
+    padding-right: 24px;
   }
 
   ::ng-deep .mat-slide-toggle.mat-disabled {
@@ -117,7 +124,11 @@ pre {
 
   .diagonal {
     width: 46px;
-    background: -webkit-linear-gradient(45deg, #ffffff 45%, $ige-background 0%);
+    background: -webkit-linear-gradient(
+      45deg,
+      #00000000 45%,
+      $ige-background 0%
+    );
   }
 
   mat-slide-toggle {

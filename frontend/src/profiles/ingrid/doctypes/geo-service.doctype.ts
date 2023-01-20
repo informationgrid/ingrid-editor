@@ -8,6 +8,9 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { tap } from "rxjs/operators";
+import { MatDialog } from "@angular/material/dialog";
+import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -29,18 +32,42 @@ export class GeoServiceDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addRepeatList("serviceCategories", "Klassifikation des Dienstes", {
           asSelect: true,
+          required: true,
           options: this.getCodelistForSelect(5200, "serviceCategories"),
           codelistId: 5200,
         }),
         this.addGroup(null, null, [
-          this.addSelectInline("serviceType", "Art des Dienstes", {
-            options: this.getCodelistForSelect(5100, "serviceType"),
-            codelistId: 5100,
-          }),
+          this.addGroupSimple(
+            null,
+            [
+              this.addSelectInline("serviceType", "Art des Dienstes", {
+                required: true,
+                options: this.getCodelistForSelect(5100, "serviceType"),
+                codelistId: 5100,
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }),
+              this.addCheckboxInline(
+                "isAtomDownload",
+                "Als ATOM-Download Dienst bereitstellen",
+                {
+                  className: "optional",
+                  expressions: {
+                    hide: "formState.mainModel.serviceType?.key !== '3'",
+                  },
+                }
+              ),
+            ],
+            { className: "flex-1" }
+          ),
+
           this.addRepeatListInline("serviceVersion", "Version des Dienstes", {
             options: this.getCodelistForSelect(5152, "serviceVersion"),
             codelistId: 5152,
-            hideExpression: "formState.hideOptionals",
+            fieldGroupClassName: "flex-1",
+            hasInlineContextHelp: true,
+            wrappers: ["inline-help"],
+            className: "optional flex-1",
           }),
         ]),
         this.addTable("operations", "Operationen", {
@@ -50,7 +77,7 @@ export class GeoServiceDoctype extends IngridShared {
         this.addTable("scale", "Erstellungsmaßstab", {
           supportUpload: false,
           columns: [],
-          hideExpression: "formState.hideOptionals",
+          className: "optional",
         }),
         this.addGroup(
           null,
@@ -59,51 +86,94 @@ export class GeoServiceDoctype extends IngridShared {
             this.addTextAreaInline(
               "systemEnvironment",
               "Systemumgebung",
-              this.id
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["form-field", "inline-help"],
+              }
             ),
-            this.addTextAreaInline("history", "Historie", this.id),
+            this.addTextAreaInline("history", "Historie", this.id, {
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
+            }),
           ],
-          { hideExpression: "formState.hideOptionals" }
+          { className: "optional" }
         ),
         this.addTextArea("explanation", "Erläuterungen", this.id, {
-          hideExpression: "formState.hideOptionals",
+          className: "optional flex-1",
         }),
         this.addGroup(
           null,
           "Dargestellte Daten",
           [
-            this.addRepeatListInline("coupledResources", "Dargestellte Daten", {
-              hideExpression: "formState.hideOptionals",
-            }),
+            <FormlyFieldConfig>{
+              key: "coupledResources",
+              type: "couplingService",
+              className: "optional flex-1",
+              props: {
+                label: "Dargestellte Daten",
+                required: true,
+                /*change: (field) => {
+                  field.model.couplingType = { key: "tight" };
+                  field.options.formState.updateModel();
+                },*/
+              },
+              expressions: {
+                "props.required":
+                  "formState.mainModel.couplingType?.key === 'tight'",
+              },
+              hooks: {
+                onInit: (field) =>
+                  field.formControl.valueChanges.pipe(
+                    tap((value) =>
+                      this.handleCoupledDatasetsChange(field, value)
+                    )
+                  ),
+              },
+            },
             this.addSelectInline("couplingType", "Kopplungstyp", {
               options: <SelectOptionUi[]>[
                 { label: "loose", value: "loose" },
                 { label: "mixed", value: "mixed" },
                 { label: "tight", value: "tight" },
               ],
+              hasInlineContextHelp: true,
+              wrappers: ["form-field", "inline-help"],
             }),
           ],
-          null,
-          "shownData"
+          { contextHelpId: "shownData" }
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
-          hideExpression: "formState.hideOptionals",
+          className: "optional",
+          wrappers: ["panel", "form-field"],
         }),
       ]),
 
-      this.addSpatialSection(),
+      this.addSpatialSection({ regionKey: true }),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
 
+  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
+    const model = field.options.formState.mainModel;
+    if (model.couplingType?.key === "mixed") return;
+
+    model.couplingType = {
+      key: value.length > 0 ? "tight" : "loose",
+    };
+    field.options.formState.updateModel();
+  }
+
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
-    uploadService: UploadService
+    uploadService: UploadService,
+    dialog: MatDialog,
+    cookieService: CookieService
   ) {
-    super(codelistService, codelistQuery, uploadService);
+    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
   }
 }

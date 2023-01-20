@@ -5,6 +5,7 @@ import {
   forwardRef,
   Input,
   OnInit,
+  Output,
   ViewChild,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
@@ -60,6 +61,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   @Input() refreshView: EventEmitter<void>;
 
+  @Output() resetQuery = new EventEmitter<void>();
+
   @Input()
   set forAddresses(addresses: boolean) {
     this._forAddresses = addresses;
@@ -87,14 +90,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private allFacets: Facets;
   private boxes: Rectangle[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
-  private timeGroupId: string;
+  timeGroupId: string;
 
   form: UntypedFormGroup = this.fb.group({});
 
   private onChange: (x: any) => {};
   onTouched = () => {};
-
-  touched = false;
 
   disabled = false;
 
@@ -325,4 +326,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   filterForEndDate = (d: Date | null): boolean => {
     return d >= this.form.get(this.timeGroupId).get("start").value;
   };
+
+  resetDateFields() {
+    this.form.get(this.timeGroupId).get("start").setValue(null);
+    this.form.get(this.timeGroupId).get("end").setValue(null);
+  }
 }

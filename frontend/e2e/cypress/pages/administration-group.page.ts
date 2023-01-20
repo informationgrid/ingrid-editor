@@ -71,16 +71,14 @@ export class AdminGroupPage extends BasePage {
     }
   }
 
-  static selectGroup(name: string) {
+  static selectGroup(name: string, dirtyCheck: boolean = false) {
     cy.get('[data-cy=search]').clear().type(name);
     cy.get('groups-table').contains(name).click();
-  }
 
-  static selectGroupAndWait(name: string) {
-    this.selectGroup(name);
-    cy.contains('.user-title', name, { timeout: 8000 }).should('exist');
-    // wait for filling form and end of animation (slider)
-    cy.wait(300);
+    // make sure the user form will be available if no checks required
+    if (!dirtyCheck) {
+      cy.get('#formRoles', { timeout: 8000 }).should('be.visible');
+    }
   }
 
   static clearSearch() {
