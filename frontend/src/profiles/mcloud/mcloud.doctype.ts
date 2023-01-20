@@ -219,12 +219,12 @@ export class McloudDoctype extends BaseDoctype {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
             expressions: {
-              hide: "formState.mainModel.temporal?.rangeType?.key === 'range'",
+              hide: "formState.mainModel?.temporal?.rangeType?.key === 'range'",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
             expressions: {
-              hide: "formState.mainModel.temporal?.rangeType?.key !== 'range'",
+              hide: "formState.mainModel?.temporal?.rangeType?.key !== 'range'",
             },
           }),
         ]),

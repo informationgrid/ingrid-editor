@@ -72,13 +72,13 @@ export abstract class AddressShared extends BaseDoctype {
           },
           hideExpression: (_, formState) =>
             !options.inheritAddress ||
-            !formState.mainModel._parent ||
+            !formState.mainModel?._parent ||
             formState.parentIsFolder,
         },
         {
           hideExpression: (model, formState) =>
             options.inheritAddress &&
-            formState.mainModel._parent &&
+            formState.mainModel?._parent &&
             !formState.parentIsFolder &&
             model.inheritAddress,
           fieldGroup: [

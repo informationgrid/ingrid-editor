@@ -53,7 +53,7 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   className: "optional",
                   expressions: {
-                    hide: "formState.mainModel.serviceType?.key !== '3'",
+                    hide: "formState.mainModel?.serviceType?.key !== '3'",
                   },
                 }
               ),
@@ -120,7 +120,7 @@ export class GeoServiceDoctype extends IngridShared {
               },
               expressions: {
                 "props.required":
-                  "formState.mainModel.couplingType?.key === 'tight'",
+                  "formState.mainModel?.couplingType?.key === 'tight'",
               },
               hooks: {
                 onInit: (field) =>
