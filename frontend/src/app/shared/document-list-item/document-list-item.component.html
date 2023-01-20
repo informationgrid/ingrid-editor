@@ -11,6 +11,7 @@
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
         [class.disabled]="doc.hasWritePermission === false"
+        [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
     >
         <ige-document-icon
             *ngIf="showIcons"
