@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { filter, map, startWith } from "rxjs/operators";
+import { debounceTime, filter, map, startWith } from "rxjs/operators";
 import { FormularService } from "../../../+form/formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -15,10 +15,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
   templateUrl: "./uvp-sections.component.html",
   styleUrls: ["./uvp-sections.component.scss"],
 })
-export class UvpSectionsComponent
-  extends FieldArrayType
-  implements OnInit, OnDestroy
-{
+export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};
   sectionTypes = [];
 
@@ -30,16 +27,13 @@ export class UvpSectionsComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        debounceTime(100),
         startWith(this.formControl.value),
         map((values) => this.getLabelFromSections(values))
       )
       .subscribe((value) => this.formService.setAdditionalSections(value));
 
     this.sectionTypes = (<FormlyFieldConfig>this.field.fieldArray).fieldGroup;
-  }
-
-  ngOnDestroy() {
-    this.formService.setAdditionalSections([]);
   }
 
   private getLabelFromSections(values: FormlyFieldConfig[]) {
