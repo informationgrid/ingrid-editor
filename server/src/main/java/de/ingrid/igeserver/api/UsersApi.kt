@@ -269,7 +269,7 @@ interface UsersApi {
     fun listInternal(principal: Principal): ResponseEntity<List<String>>
 
     @PostMapping(
-        value = ["/user/{userId}/assignCatalog/{catalogId}"],
+        value = ["/user/{userId}/assignCatalog"],
     )
     @Operation
     @ApiResponses(
@@ -285,6 +285,6 @@ interface UsersApi {
         ) @PathVariable("userId") userId: String, @Parameter(
             description = "The catalogId to assign",
             required = true
-        ) @PathVariable("catalogId") catalogId: String
+        ) @RequestBody catalogId: @Valid String
     ): ResponseEntity<Void>
 }
