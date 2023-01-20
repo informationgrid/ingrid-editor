@@ -77,9 +77,8 @@ export class UserDataService {
 
   assignUserToCatalog(userId: string, catalogId: string) {
     return this.http.post<void>(
-      this.configuration.backendUrl +
-        `user/${userId}/assignCatalog/${catalogId}`,
-      null
+      this.configuration.backendUrl + `user/${userId}/assignCatalog`,
+      catalogId
     );
   }
 
