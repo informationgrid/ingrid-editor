@@ -191,12 +191,14 @@ export class BmiDoctype extends BaseDoctype {
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
-            hideExpression:
-              "formState.mainModel.temporal?.rangeType?.key === 'range'",
+            expressions: {
+              hide: "formState.mainModel?.temporal?.rangeType?.key === 'range'",
+            },
           }),
           this.addDateRange("timeSpanRange", null, {
-            hideExpression:
-              "formState.mainModel.temporal?.rangeType?.key !== 'range'",
+            expressions: {
+              hide: "formState.mainModel?.temporal?.rangeType?.key !== 'range'",
+            },
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
