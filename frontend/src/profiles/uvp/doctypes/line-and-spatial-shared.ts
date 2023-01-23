@@ -58,8 +58,11 @@ export class LineAndSpatialShared extends UvpShared {
             validators: {
               consistent: (control, field) => {
                 const missingType = field.model?.some((item) => !item.type);
-                if (missingType)
+                if (missingType) {
                   alert("Datensatz inkonsistent. Bitte neu laden.");
+                  return false;
+                }
+                return true;
               },
             },
           },
