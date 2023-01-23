@@ -1,16 +1,17 @@
 {
   "menu": {
-    "application": "BMI",
+    "application": "Open Data",
+    "application-surfix": "Bund",
     "logo": "assets/profiles/bmi/assets/icons/logo.svg"
   },
   "dashboard": {
-    "welcome": "Willkommen im BMI Opendata Editor",
-    "application": "BMI"
+    "welcome": "Willkommen beim Open Data Editor Bund",
+    "application": "Open Data"
   },
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
   },
-  "procedureType": {
+  "docType": {
     "BmiDoc": "Datensatz",
     "BmiAddressDoc": "Adresse"
   }
