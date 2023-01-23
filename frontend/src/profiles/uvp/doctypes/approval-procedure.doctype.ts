@@ -84,6 +84,13 @@ export class ApprovalProcedureDoctype extends UvpShared {
                 this.addDecisionOfAdmission(),
               ],
             },
+            validators: {
+              consistent: (control, field) => {
+                const missingType = field.model?.some((item) => !item.type);
+                if (missingType)
+                  alert("Datensatz inkonsistent. Bitte neu laden.");
+              },
+            },
           },
         ],
       },
