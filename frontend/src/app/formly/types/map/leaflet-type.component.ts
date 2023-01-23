@@ -161,7 +161,7 @@ export class LeafletTypeComponent
 
   openSpatialDialog(locationIndex?: number) {
     console.log(
-      "The Location index array size after adding\\updating: ",
+      "The Location index array size before adding / updating: ",
       this.locations.length
     );
     this.dialog
@@ -185,7 +185,7 @@ export class LeafletTypeComponent
             this.locations.push(result);
           }
           console.log(
-            "The Location index array size after adding\\updating: ",
+            "The Location index array size after adding / updating: ",
             this.locations.length
           );
           this.formControl.setValue(this.locations);
