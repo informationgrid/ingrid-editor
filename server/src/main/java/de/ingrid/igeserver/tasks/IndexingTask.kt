@@ -138,7 +138,7 @@ class IndexingTask @Autowired constructor(
                     realIndexName = info.second
                     toType = "base"
                     toAlias = categoryAlias
-                    docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
+                    docIdField = "uuid" //if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
                 }
 
                 var page = -1
