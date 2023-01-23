@@ -54,6 +54,9 @@ describe('Spatial References', () => {
     cy.pageReload('dashboard-docs-header', 'Daten');
     Tree.openNode(['api-' + docNameBbox]);
 
+    // add logs to see in debug.log file
+    console.log('should add additional a spatial reference (WKT)');
+
     McloudDocumentPage.setSpatialWKT('add spatial reference, wkt-2', poly);
     DocumentPage.checkSpatialEntryNumber(2);
     DocumentPage.checkSpatialEntryExists('reference, wkt-2');
@@ -78,6 +81,9 @@ describe('Spatial References', () => {
     DocumentPage.checkSpatialEntryNumber(4);
     McloudDocumentPage.openSpatialMenuDoc('Berlin');
     McloudDocumentPage.selectChangeInSpatialMenuDoc();
+
+    // add logs to see in debug.log file
+    console.log('should update a spatial reference (bbox)');
 
     McloudDocumentPage.setOpenedSpatialBbox('update spatial reference, bbox', 'Hamburg');
     // number should stay the same

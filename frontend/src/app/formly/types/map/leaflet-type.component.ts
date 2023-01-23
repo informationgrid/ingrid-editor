@@ -160,6 +160,10 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
+    console.log(
+      "The Location index array size after adding\\updating: ",
+      this.locations.length
+    );
     this.dialog
       .open(SpatialDialogComponent, {
         width: "90%",
@@ -180,6 +184,10 @@ export class LeafletTypeComponent
           } else {
             this.locations.push(result);
           }
+          console.log(
+            "The Location index array size after adding\\updating: ",
+            this.locations.length
+          );
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
           this.updateBoundingBox();
