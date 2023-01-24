@@ -157,12 +157,13 @@ export class GeoServiceDoctype extends IngridShared {
     ];
 
   private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
-    const model = field.options.formState.mainModel;
-    if (model.couplingType?.key === "mixed") return;
+    if (field.parent.model.couplingType?.key === "mixed") return;
 
-    model.couplingType = {
+    field.parent.model.couplingType = {
       key: value.length > 0 ? "tight" : "loose",
     };
+    // update model to reflect changes
+    // TODO: maybe use formOptions.detectChanges(field)?
     field.options.formState.updateModel();
   }
 
