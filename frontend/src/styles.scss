@@ -32,6 +32,10 @@ a {
   }
 }
 
+.user-popup mat-icon path {
+  fill: $ige-primary;
+}
+
 .mat-mdc-menu-panel.user-popup-menu {
   margin: 12px 0 0;
 
@@ -47,6 +51,7 @@ button.button-with-text {
   .mdc-button__label {
     display: flex;
     align-items: center;
+    color: $ige-secondary;
   }
 }
 
@@ -295,6 +300,7 @@ ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
   font-size: 14px;
   font-weight: 500;
   vertical-align: middle;
+  //color: $ige-secondary;
 }
 
 main-menu .mat-toolbar-row {

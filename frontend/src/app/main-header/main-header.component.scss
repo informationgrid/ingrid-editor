@@ -105,6 +105,8 @@ ige-session-timeout-info {
   background-color: $ige-background;
   color: $ige-primary;
   margin-left: 12px;
+  font-weight: 500;
+  font-family: "Roboto";
 
   &[aria-expanded="true"] {
     background-color: $ige-primary;
