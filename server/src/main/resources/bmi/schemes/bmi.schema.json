@@ -277,6 +277,7 @@
       "oneOf": [
         {
           "additionalProperties": false,
+          "required": ["timeSpanDate"],
           "properties": {
             "rangeType": {
               "oneOf": [
@@ -299,6 +300,7 @@
         },
         {
           "additionalProperties": false,
+          "required": ["timeSpanRange"],
           "properties": {
             "rangeType": {
               "oneOf": [
@@ -319,6 +321,14 @@
                   "$ref": "#/definitions/Range"
                 }
               ]
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "rangeType": {
+              "type": "null"
             }
           }
         }
