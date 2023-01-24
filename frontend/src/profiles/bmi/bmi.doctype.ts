@@ -139,7 +139,7 @@ export class BmiDoctype extends BaseDoctype {
             },
           },
         }),
-        this.addAutocomplete("license", "Lizenz", {
+        this.addSelect("license", "Lizenz", {
           required: true,
           options: this.getCodelistForSelect(6500, "license"),
           codelistId: 6500,
