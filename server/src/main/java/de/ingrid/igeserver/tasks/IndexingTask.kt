@@ -321,7 +321,7 @@ class IndexingTask @Autowired constructor(
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
-            docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
+            docIdField = "uuid"; //if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
         }
     }
 
