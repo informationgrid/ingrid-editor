@@ -193,14 +193,14 @@ export class BmiDoctype extends BaseDoctype {
             wrappers: ["form-field"],
             required: true,
             expressions: {
-              hide: "formState.mainModel?.temporal?.rangeType?.key == null || formState.mainModel?.temporal?.rangeType?.key === 'range'",
+              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
             wrappers: ["form-field"],
             required: true,
             expressions: {
-              hide: "formState.mainModel?.temporal?.rangeType?.key !== 'range'",
+              hide: "model?.rangeType?.key !== 'range'",
             },
           }),
         ]),
