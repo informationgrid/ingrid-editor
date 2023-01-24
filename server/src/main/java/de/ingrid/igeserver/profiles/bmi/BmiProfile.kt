@@ -31,7 +31,7 @@ class BmiProfile @Autowired constructor(
 ) : CatalogProfile {
 
     override val identifier = "bmi"
-    override val title = "BMI Opendata Katalog"
+    override val title = "Open Data Katalog"
     override val description = null
     override val indexExportFormatID = "index"
 

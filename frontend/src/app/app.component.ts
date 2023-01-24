@@ -57,8 +57,8 @@ export class AppComponent implements OnInit {
       this.favIcon.href = "/assets/profiles/uvp/assets/icons/favicon.ico";
       titleService.setTitle("UVP Editor");
     } else if (profile == "bmi") {
-      //this.favIcon.href = "/assets/profiles/mcloud/assets/icons/favicon.ico";
-      titleService.setTitle("BMI Opendata Editor");
+      //this.favIcon.href = "/assets/profiles/bmi/assets/icons/favicon.ico";
+      titleService.setTitle("Open Data Editor Bund");
     }
 
     this.showTestBadge =

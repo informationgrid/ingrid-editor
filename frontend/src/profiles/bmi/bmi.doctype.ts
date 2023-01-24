@@ -16,7 +16,7 @@ import { ConfigService } from "../../app/services/config/config.service";
 export class BmiDoctype extends BaseDoctype {
   id = "BmiDoc";
 
-  label = "BMI Opendata";
+  label = "Open Data Dokument";
 
   iconClass = "Fachaufgabe";
 
