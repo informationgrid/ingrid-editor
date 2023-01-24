@@ -348,6 +348,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // switch to the right profile depending on the data
         this.fields = this.switchProfile(profile);
         this.model = { ...data };
+        // handle changes immediately, see below comment in else branch
         this.cdr.detectChanges();
 
         this.formStateService.restoreAndObserveTextareaHeights(this.fields);
@@ -357,6 +358,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.profileQuery.getProfile(profile).hasOptionalFields;
       } else {
         this.model = { ...data };
+        // we need to detect changes manually to make sure form is created
+        // correctly with the new data, especially complex repeatable would
+        // modify the loaded data while form is built (UVP processing steps)
         this.cdr.detectChanges();
       }
 

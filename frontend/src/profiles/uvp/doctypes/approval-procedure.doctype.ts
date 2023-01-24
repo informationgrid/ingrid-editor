@@ -87,8 +87,12 @@ export class ApprovalProcedureDoctype extends UvpShared {
             validators: {
               consistent: (control, field) => {
                 const missingType = field.model?.some((item) => !item.type);
-                if (missingType)
-                  alert("Datensatz inkonsistent. Bitte neu laden.");
+                if (missingType) {
+                  throw new Error(
+                    "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut."
+                  );
+                }
+                return true;
               },
             },
           },
