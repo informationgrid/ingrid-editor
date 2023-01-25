@@ -28,7 +28,6 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { combineLatest, merge, Observable, Subscription } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
-import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
@@ -70,6 +69,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   sections: Observable<string[]> = this.formularService.sections$;
 
   form = new UntypedFormGroup({});
+
+  // initial model for form info header
+  formInfoModel: any = null;
 
   behaviours: Behaviour[];
   error = false;
@@ -331,47 +333,49 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const profile = data._type;
 
     if (profile === null) {
-      console.error("This document does not have any profile");
-      return;
+      throw new Error("Dieses Dokument hat keinen Dokumententyp!");
     }
 
-    const needsProfileSwitch =
-      this.fields.length === 0 ||
-      this.formularService.currentProfile !== profile;
-
     try {
-      // switch to the right profile depending on the data
-      this.initializeForm(data.hasWritePermission && !this.readonly);
-      if (needsProfileSwitch) {
-        this.formStateService.unobserveTextareaHeights();
-
-        // switch to the right profile depending on the data
-        this.fields = this.switchProfile(profile);
-        this.model = { ...data };
-        // handle changes immediately, see below comment in else branch
-        this.cdr.detectChanges();
-
-        this.formStateService.restoreAndObserveTextareaHeights(this.fields);
-
-        this.formularService.getSectionsFromProfile(this.fields);
-        this.hasOptionalFields =
-          this.profileQuery.getProfile(profile).hasOptionalFields;
-      } else {
-        this.model = { ...data };
-        // we need to detect changes manually to make sure form is created
-        // correctly with the new data, especially complex repeatable would
-        // modify the loaded data while form is built (UVP processing steps)
+      if (this.needProfileSwitch(profile)) {
+        this.handleProfileSwitch(profile);
+        // make sure to create a new form to prevent data coming from another
+        // form type into the new form
+        this.createNewForm();
+        // do change detection to update formly component with new fields and form
         this.cdr.detectChanges();
       }
 
-      this.formOptions.formState.mainModel = this.model;
-      this.formOptions.formState.parentIsFolder = data._parentIsFolder;
+      this.formOptions.resetModel(data);
+      this.prepareForm(data.hasWritePermission && !this.readonly);
+
+      this.formInfoModel = { ...this.model };
 
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
+  }
+
+  private needProfileSwitch(profile: string): boolean {
+    return (
+      this.fields.length === 0 ||
+      this.formularService.currentProfile !== profile
+    );
+  }
+
+  private handleProfileSwitch(profile: string) {
+    this.formStateService.unobserveTextareaHeights();
+
+    // switch to the right profile depending on the data
+    this.fields = this.switchProfile(profile);
+
+    this.formStateService.restoreAndObserveTextareaHeights(this.fields);
+
+    this.formularService.getSectionsFromProfile(this.fields);
+    this.hasOptionalFields =
+      this.profileQuery.getProfile(profile).hasOptionalFields;
   }
 
   /**
@@ -401,11 +405,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isStickyHeader = stickyHeaderInfo.show;
   }
 
-  private initializeForm(writePermission: boolean) {
-    this.createNewForm();
+  private prepareForm(writePermission: boolean) {
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    this.formOptions.formState.disabled = !writePermission;
+    this.formOptions.formState = {
+      ...this.formOptions.formState,
+      disabled: !writePermission,
+      mainModel: this.model,
+      parentIsFolder: this.model._parentIsFolder,
+    };
   }
 
   async handleDrop(event: any) {
