@@ -53,7 +53,7 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   className: "optional",
                   expressions: {
-                    hide: "formState.mainModel.serviceType?.key !== '3'",
+                    hide: "formState.mainModel?.serviceType?.key !== '3'",
                   },
                 }
               ),
@@ -120,7 +120,7 @@ export class GeoServiceDoctype extends IngridShared {
               },
               expressions: {
                 "props.required":
-                  "formState.mainModel.couplingType?.key === 'tight'",
+                  "formState.mainModel?.couplingType?.key === 'tight'",
               },
               hooks: {
                 onInit: (field) =>
@@ -157,12 +157,13 @@ export class GeoServiceDoctype extends IngridShared {
     ];
 
   private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
-    const model = field.options.formState.mainModel;
-    if (model.couplingType?.key === "mixed") return;
+    if (field.parent.model.couplingType?.key === "mixed") return;
 
-    model.couplingType = {
+    field.parent.model.couplingType = {
       key: value.length > 0 ? "tight" : "loose",
     };
+    // update model to reflect changes
+    // TODO: maybe use formOptions.detectChanges(field)?
     field.options.formState.updateModel();
   }
 

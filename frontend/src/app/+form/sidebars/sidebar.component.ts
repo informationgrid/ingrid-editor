@@ -105,6 +105,7 @@ export class SidebarComponent implements OnInit {
     // reset scroll position when loading a new document
     this.treeStore.update({ scrollPosition: 0 });
 
+    // TODO: should be handled in form-change.guard.ts, where it's also already used
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService.getForm(),
       this.documentService,

@@ -29,7 +29,8 @@ export class DataCollectionDoctype extends IngridShared {
         this.addRepeat("categoryCatalog", "Objektartenkatalog", {
           className: "optional",
           expressions: {
-            "props.required": "formState.mainModel.databaseContent?.length > 0",
+            "props.required":
+              "formState.mainModel?.databaseContent?.length > 0",
           },
           fields: [
             this.addAutocomplete("title", "Titel", {
