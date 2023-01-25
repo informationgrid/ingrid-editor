@@ -1,7 +1,7 @@
 {
   "menu": {
     "application": "Open Data",
-    "application-surfix": "Bund",
+    "application-suffix": "Bund",
     "logo": "assets/profiles/bmi/assets/icons/logo.svg"
   },
   "dashboard": {
