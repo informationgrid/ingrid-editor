@@ -160,17 +160,7 @@
           }
         },
         "license": {
-          "properties": {
-            "id": {
-              "type": "keyword"
-            },
-            "title": {
-              "type": "keyword"
-            },
-            "url": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "spatial": {
           "type": "geo_shape"

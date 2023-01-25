@@ -306,11 +306,55 @@ class BmiProfile @Autowired constructor(
                 add(toCodelistEntry("HTML5", "HTML5"))
             }
         }
+        val codelist20004 = Codelist().apply {
+            identifier = "20004"
+            catalog = catalogRef
+            name = "Lizenzen"
+            description = "Liste der Lizenzen die von GovData unterstützt werden."
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/dl-zero-de/2.0", "Datenlizenz Deutschland – Zero – Version 2.0"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/dl-by-de/2.0", "Datenlizenz Deutschland Namensnennung 2.0"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by/4.0", "Creative Commons Namensnennung – 4.0 International (CC BY 4.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/apache", "Freie Softwarelizenz der Apache Software Foundation"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/bsd", "BSD Lizenz"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by", "Creative Commons Namensnennung (CC-BY)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-de/3.0", "Creative Commons Namensnennung 3.0 Deutschland (CC BY 3.0 DE)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-sa", "Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen (CC-BY-SA)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-sa-de/3.0", "Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 3.0 Deutschland (CC BY-SA 3.0 DE)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-sa/4.0", "Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International (CC-BY-SA 4.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/ccpdm/1.0", "Public Domain Mark 1.0 (PDM)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-zero", "Creative Commons CC Zero License (cc-zero)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/dl-by-de/1.0", "Datenlizenz Deutschland Namensnennung 1.0"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/geonutz/20130319", "Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/geoNutz/20131001", "Nutzungsbestimmungen für die Bereitstellung von Geodaten des Landes Berlin"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/gfdl", "GNU Free Documentation License (GFDL)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/gpl/3.0", "GNU General Public License version 3.0 (GPLv3)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/mozilla", "Mozilla Public License 2.0 (MPL)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/odbl", "Open Data Commons Open Database License (ODbL)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/odby", "Open Data Commons Attribution License (ODC-BY 1.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/odcpddl", "Open Data Commons Public Domain Dedication and Licence (ODC PDDL)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/officialWork", "Amtliches Werk, lizenzfrei nach §5 Abs. 1 UrhG"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-open", "Andere offene Lizenz"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-opensource", "Andere Open Source Lizenz"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nc", "Creative Commons Namensnennung - Nicht kommerziell (CC BY-NC)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nc-de/3.0", "Creative Commons Namensnennung - Nicht kommerziell 3.0 Deutschland (CC BY-NC 3.0 DE)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nc/4.0", "Creative Commons Namensnennung - Nicht kommerziell 4.0 International (CC BY-NC 4.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nd", "Creative Commons Namensnennung - Keine Bearbeitung (CC BY-ND)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nd/3.0", "Creative Commons Namensnennung - Keine Bearbeitung 3.0 Unported (CC BY-ND 3.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/cc-by-nd/4.0", "Creative Commons Namensnennung - Keine Bearbeitung 4.0 International (CC BY-ND 4.0)"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/dl-by-nc-de/1.0", "Datenlizenz Deutschland Namensnennung nicht-kommerziell 1.0"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-closed", "Andere geschlossene Lizenz"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-commercial", "Andere kommerzielle Lizenz"))
+                add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-freeware", "Andere Freeware Lizenz"))
+
+            }
+        }
 
         when (codelistId) {
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
             "20002" -> removeAndAddCodelist(catalogId, codelist20002)
             "20003" -> removeAndAddCodelist(catalogId, codelist20003)
+            "20004" -> removeAndAddCodelist(catalogId, codelist20004)
             null -> {
                 removeAndAddCodelist(catalogId, codelist20001)
                 codelistRepo.save(codelist20001)
@@ -318,6 +362,8 @@ class BmiProfile @Autowired constructor(
                 codelistRepo.save(codelist20002)
                 removeAndAddCodelist(catalogId, codelist20003)
                 codelistRepo.save(codelist20003)
+                removeAndAddCodelist(catalogId, codelist20004)
+                codelistRepo.save(codelist20004)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }

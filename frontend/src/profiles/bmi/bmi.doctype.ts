@@ -141,8 +141,8 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addSelect("license", "Lizenz", {
           required: true,
-          options: this.getCodelistForSelect(6500, "license"),
-          codelistId: 6500,
+          options: this.getCodelistForSelect(20004, "null"),
+          codelistId: 20004,
         }),
         this.addTextArea("origin", "Quellenvermerk", this.id),
       ]),

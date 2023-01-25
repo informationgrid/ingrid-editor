@@ -52,13 +52,7 @@
             "issued": "{{ model.created }}",
             "modified": "{{ model.modified }}"
         },
-        "license": {
-            "id": "{{ model.getLicenseData().id }}",
-            "title": "{{ model.getLicenseData().name }}"
-            {% if model.getLicenseData().url %}
-                ,"url": "{{ model.getLicenseData().url }}"
-            {% endif %}
-        },
+        "license": "{{ model.getLicenseData().id }}",
         "spatial":
         {% if model.realSpatials is empty %}
         null
