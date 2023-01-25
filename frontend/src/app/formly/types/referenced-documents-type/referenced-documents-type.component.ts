@@ -89,9 +89,9 @@ export class ReferencedDocumentsTypeComponent
       "Es existieren keine Referenzen auf diese Adresse";
     this.isLoading = false;
 
-    const loadEvent = this.docEvents.afterLoadAndSet$(true).pipe(
+    const loadEvent = this.form.get("_uuid").valueChanges.pipe(
       untilDestroyed(this),
-      map((value) => value._uuid),
+      filter((value) => value),
       distinctUntilChanged(),
       tap((uuid) => (this.currentUuid = uuid))
     );
