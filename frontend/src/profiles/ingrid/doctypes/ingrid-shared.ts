@@ -460,19 +460,6 @@ export abstract class IngridShared extends BaseDoctype {
                 hide: "formState.mainModel.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
               },
             }),
-            /*this.addSelectInline("resourceDateType", "Typ", {
-              options: <SelectOptionUi[]>[
-                { label: "am", value: "am" },
-                { label: "bis", value: "bis" },
-                { label: "von", value: "fromType" },
-              ],
-            }),
-            this.addDatepicker("resourceStartDate", null, {
-              wrappers: ["form-field"],
-            }),
-            this.addDatepicker("resourceEndDate", null, {
-              wrappers: ["form-field"],
-            }),*/
           ],
           {
             className: "optional",

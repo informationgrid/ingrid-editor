@@ -541,6 +541,10 @@ formly-field {
   min-width: 130px;
 }
 
+formly-field:empty {
+  display: none;
+}
+
 /*formly-field {
   &[class*="flex-"] {
     padding-left: 10px;
