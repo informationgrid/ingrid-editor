@@ -36,20 +36,21 @@
 
         <div>
             Beispiele:
-            <mat-chip-list>
-                <mat-chip (click)="cronField.setValue('0 */30 * * * *')"
+            <mat-chip-listbox>
+                <mat-chip-option (click)="cronField.setValue('0 */30 * * * *')"
                     >Alle 30 Minuten
-                </mat-chip>
-                <mat-chip (click)="cronField.setValue('0 0 3 * * *')"
+                </mat-chip-option>
+                <mat-chip-option (click)="cronField.setValue('0 0 3 * * *')"
                     >Täglich um 3 Uhr
-                </mat-chip>
-                <mat-chip (click)="cronField.setValue('0 0 23 * * 6,7')"
+                </mat-chip-option>
+                <mat-chip-option (click)="cronField.setValue('0 0 23 * * 6,7')"
                     >23 Uhr am Wochenende
-                </mat-chip>
-                <mat-chip (click)="cronField.setValue('0 0 8,11 * * 1-5')"
+                </mat-chip-option>
+                <mat-chip-option
+                    (click)="cronField.setValue('0 0 8,11 * * 1-5')"
                     >Mo-Fr 8 und 11 Uhr
-                </mat-chip>
-            </mat-chip-list>
+                </mat-chip-option>
+            </mat-chip-listbox>
         </div>
 
         <p>
@@ -157,7 +158,7 @@
                 />
                 <mat-hint>{{ hint }}</mat-hint>
             </mat-form-field>
-            <div>
+            <div class="button-bar">
                 <button
                     mat-stroked-button
                     (click)="deactivateIndexing()"

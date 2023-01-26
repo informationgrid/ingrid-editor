@@ -78,12 +78,11 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getEmailOrTelephone(address: any) {
-    // TODO: type is a string but should be number?
-    const email = address.contact?.filter((item) => item.type === "3");
+    const email = address.contact?.filter((item) => item?.type?.key === "3");
     if (email && email.length > 0) {
       return email[0].connection;
     } else {
-      const phone = address.contact?.filter((item) => item.type === "1");
+      const phone = address.contact?.filter((item) => item?.type?.key === "1");
       return phone && phone.length > 0 ? phone[0].connection : "";
     }
   }

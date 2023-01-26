@@ -50,6 +50,7 @@ import { PublishPendingComponent } from "../form-info/publish-pending/publish-pe
 import { CreateNodeModule } from "../dialogs/create/create-node.module";
 import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
 import { TranslocoModule } from "@ngneat/transloco";
+import { ActionButtonModule } from "../../shared/action-button/action-button.module";
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     CreateNodeModule,
     BreadcrumbModule,
     TranslocoModule,
+    ActionButtonModule,
   ],
   providers: [
     FormToolbarService,

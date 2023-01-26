@@ -1,9 +1,5 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
 import { of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
 import {
@@ -29,7 +25,6 @@ import { FacetQuery } from "../../store/query/query.model";
 })
 export class TabSearchComponent implements OnInit {
   form: UntypedFormGroup;
-  query = new UntypedFormControl("");
 
   result: ResearchResponse;
 

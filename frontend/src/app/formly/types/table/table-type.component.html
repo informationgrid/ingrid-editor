@@ -4,10 +4,10 @@
         [class.required]="props.required"
     >
         <ige-form-label
-            [hasContextHelp]="to?.hasContextHelp"
+            [hasContextHelp]="props?.hasContextHelp"
             (contextHelp)="showContextHelp($event)"
         >
-            {{ to?.externalLabel }}<span *ngIf="to?.required">*</span>
+            {{ props?.externalLabel }}<span *ngIf="props?.required">*</span>
         </ige-form-label>
     </div>
 </ng-template>
@@ -16,7 +16,7 @@
     *ngIf="dataSource?.data?.length > 0"
     class="table-header"
     fxLayout
-    [attr.data-cy]="to?.externalLabel + '-header'"
+    [attr.data-cy]="props?.externalLabel + '-header'"
 >
     <ng-container *ngTemplateOutlet="label"></ng-container>
 
@@ -43,7 +43,7 @@
     </ng-container>
 </div>
 
-<div fxLayout="column">
+<div [class.padding-bottom]="dataSource?.data?.length > 0">
     <div *ngIf="batchMode" class="table-batch-edit-row">
         <mat-checkbox
             (change)="$event ? masterToggle() : null"
@@ -230,9 +230,13 @@
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div>
+    <div class="container">
         <ige-form-error
-            *ngIf="formControl.invalid && formControl.hasError('required')"
+            *ngIf="
+                showError &&
+                formControl.invalid &&
+                formControl.hasError('required')
+            "
             >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
 

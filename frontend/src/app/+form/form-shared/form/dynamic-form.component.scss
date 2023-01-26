@@ -48,6 +48,10 @@
       margin: 0 auto;
       padding-top: 0 !important;
     }
+
+    &.extra-space-toggle-button {
+      padding-top: 48px;
+    }
   }
 }
 
@@ -108,15 +112,15 @@ pre {
     z-index: 1;
   }
 
-  .mat-slide-toggle {
+  .mat-mdc-slide-toggle {
     background: $ige-background;
     margin-right: -24px;
     padding-right: 24px;
   }
 
-  ::ng-deep .mat-slide-toggle.mat-disabled {
+  ::ng-deep .mat-mdc-slide-toggle.mat-disabled {
     opacity: 1;
-
+    /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
     .mat-slide-toggle-label {
       opacity: 0.38;
     }
@@ -130,7 +134,7 @@ pre {
       $ige-background 0%
     );
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
   mat-slide-toggle {
     padding-right: 23px;
     height: inherit;

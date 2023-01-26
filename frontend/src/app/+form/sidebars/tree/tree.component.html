@@ -84,6 +84,7 @@
             <div class="label">
                 <mat-checkbox
                     *ngIf="selection.multiSelectionModeEnabled"
+                    [class.docNode]="node.level !== 0"
                     [checked]="selection.isSelected(node)"
                     (click)="$event.stopImmediatePropagation()"
                     (change)="selection.nodeSelectionToggle(node, $event)"

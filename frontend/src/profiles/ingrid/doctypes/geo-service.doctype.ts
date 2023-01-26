@@ -89,12 +89,12 @@ export class GeoServiceDoctype extends IngridShared {
               this.id,
               {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }
             ),
             this.addTextAreaInline("history", "Historie", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           { className: "optional" }
@@ -145,7 +145,6 @@ export class GeoServiceDoctype extends IngridShared {
         ),
         this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
           className: "optional",
-          wrappers: ["panel", "form-field"],
         }),
       ]),
 

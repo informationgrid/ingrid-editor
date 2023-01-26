@@ -64,11 +64,11 @@
                     </ige-form-info>
                     <div
                         class="form-inner"
+                        [class.extra-space-toggle-button]="hasOptionalFields"
                         [class.hide]="model._type === 'FOLDER'"
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
-                            [class.hide-validation]="!showValidationErrors"
                             [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
@@ -100,7 +100,7 @@
 
         <as-split-area *ngIf="showJson">
             <pre
-                >{{ model | json }}
+                >{{ form.value | json }}
            </pre
             >
         </as-split-area>

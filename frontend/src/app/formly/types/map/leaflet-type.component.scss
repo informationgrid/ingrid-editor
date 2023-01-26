@@ -2,6 +2,7 @@
 
 :host {
   padding-top: 10px;
+  padding-bottom: 32px;
   position: relative;
   display: block;
 }
@@ -14,7 +15,7 @@
 }
 
 .spatialHelpText {
-  margin-top: 24px;
+  margin-top: 16px;
 
   a {
     cursor: pointer;
@@ -32,7 +33,7 @@
     left: calc(50% - 28px);
     margin-top: -28px;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
   ::ng-deep .mat-button-wrapper {
     padding: 0;
   }
@@ -43,6 +44,8 @@
   }
 
   .spatialBtn {
+    background-color: $ige-secondary;
+
     ::ng-deep .coloring {
       fill: #ffffff;
     }
@@ -75,6 +78,7 @@
   display: block;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 mat-selection-list {
   flex-grow: 1;
   margin: 10px 0;

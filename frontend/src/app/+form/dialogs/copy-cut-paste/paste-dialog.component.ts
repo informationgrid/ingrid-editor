@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
+import { DialogRef } from "@angular/cdk/dialog";
 
 export interface PasteDialogOptions {
   buttonText: string;
@@ -27,7 +28,8 @@ export class PasteDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions,
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
-    private config: ConfigService
+    private config: ConfigService,
+    private dlgRef: DialogRef
   ) {
     this.query = data.forAddress ? addressTreeQuery : treeQuery;
   }
@@ -36,5 +38,9 @@ export class PasteDialogComponent implements OnInit {
 
   handleSelected(evt: any) {
     this.selection = evt;
+  }
+
+  submit() {
+    this.dlgRef.close({ selection: this.selection, path: this.path });
   }
 }

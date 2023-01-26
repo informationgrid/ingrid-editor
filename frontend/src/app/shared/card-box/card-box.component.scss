@@ -1,8 +1,27 @@
-.mat-card {
-  padding: 16px 24px 24px;
+@import "src/variables";
+
+.mat-mdc-card {
+  padding: 16px 24px 8px;
+  border-color: #ffffff;
+  border-radius: 5px;
+
   .mat-divider-horizontal {
     left: 24px;
     right: 24px;
     width: auto;
+  }
+
+  mat-card-title {
+    font-size: 24px;
+    color: $ige-primary;
+    text-align: center;
+    letter-spacing: 0.74px;
+    padding-bottom: 16px;
+    line-height: 30px;
+    font-weight: 400;
+  }
+
+  mat-card-content {
+    padding: 0;
   }
 }

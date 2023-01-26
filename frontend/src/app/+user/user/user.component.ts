@@ -12,7 +12,11 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import {
+  FormControl,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -49,12 +53,12 @@ export class UserComponent
 
   selectedUser: User;
   showMore = false;
-  searchQuery: string;
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
   model: User;
   tableWidth: number;
   selectedUserRole: string;
+  query = new FormControl<string>("");
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -70,7 +74,6 @@ export class UserComponent
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
-    this.searchQuery = "";
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,

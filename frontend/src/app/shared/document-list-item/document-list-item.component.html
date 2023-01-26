@@ -13,20 +13,19 @@
         [class.disabled]="doc.hasWritePermission === false"
         [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
     >
-        <ige-document-icon
-            *ngIf="showIcons"
-            [doc]="doc"
-            mat-list-icon
-        ></ige-document-icon>
         <mat-icon
             *ngIf="showSelection"
             [class.invisible]="currentSelection?.id !== doc.id"
-            class="marker"
-            [class.add-padding-right]="showIcons"
-            matListIcon
+            class="marker mark-color"
+            matListItemIcon
             svgIcon="baseline-check-24px"
         ></mat-icon>
-        <h3 matLine>
+        <ige-document-icon
+            *ngIf="showIcons"
+            [doc]="doc"
+            matListItemIcon
+        ></ige-document-icon>
+        <h3 matListItemTitle class="doc-item-content">
             <span class="card-title">{{ doc.title }}</span>
             <span
                 *ngIf="!hideDate"
@@ -50,13 +49,13 @@
             showSelection && currentSelection && currentSelection.id === doc.id
         "
         class="marker"
-        matListIcon
+        matListItemIcon
         svgIcon="baseline-check-24px"
     ></mat-icon>
 
-    <ige-document-icon [doc]="doc" mat-list-icon></ige-document-icon>
+    <ige-document-icon [doc]="doc" matListItemIcon></ige-document-icon>
 
-    <span matLine>
+    <span matListItemTitle>
         <!-- in case we want to style title, we need to add it as innerHTML -->
         <span [innerHTML]="doc.title"></span>
         <span
