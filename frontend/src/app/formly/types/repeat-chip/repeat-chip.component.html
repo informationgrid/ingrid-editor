@@ -51,6 +51,9 @@
         props.useDialog && formControl.enabled && field.fieldGroup.length === 0
     "
     class="add-button-initial"
+    [class.error-btn]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
     [showLabel]="field.fieldGroup.length === 0"
     (add)="openDialog()"
     [showRequiredError]="

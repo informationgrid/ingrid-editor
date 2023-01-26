@@ -36,7 +36,6 @@ export class PersonDoctype extends AddressShared {
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                   codelistId: 4300,
-                  hasInlineContextHelp: true,
                 }),
                 this.addAutoCompleteInline("academic-title", "Titel", {
                   wrappers: ["inline-help", "form-field"],
@@ -47,7 +46,6 @@ export class PersonDoctype extends AddressShared {
                   placeholder: "",
                   options: this.getCodelistForSelect(4305, "academic-title"),
                   codelistId: 4305,
-                  hasInlineContextHelp: true,
                 }),
               ],
             },
