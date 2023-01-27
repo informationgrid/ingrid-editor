@@ -12,6 +12,7 @@
         *ngIf="autocompleteRef; else noAutocomplete"
         matInput
         [placeholder]="placeholder"
+        data-cy="search"
         aria-label="Search"
         [formControl]="query"
         [matAutocomplete]="autocompleteRef"
@@ -20,6 +21,7 @@
         <input
             matInput
             [placeholder]="placeholder"
+            data-cy="search"
             aria-label="Search"
             [formControl]="query"
         />
