@@ -14,7 +14,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatSortModule } from "@angular/material/sort";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatSelectModule } from "@angular/material/select";
-import { MatTableExporterModule } from "mat-table-exporter";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import {
@@ -43,6 +42,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
 import { TranslocoModule } from "@ngneat/transloco";
+import { Angular2CsvModule } from "angular2-csv";
 
 @NgModule({
   declarations: [
@@ -68,7 +68,6 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatSortModule,
     MatMenuModule,
     MatSelectModule,
-    MatTableExporterModule,
     ReactiveFormsModule,
     MatIconModule,
     MatListModule,
@@ -87,6 +86,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatProgressSpinnerModule,
     MatSnackBarModule,
     TranslocoModule,
+    Angular2CsvModule,
   ],
   providers: [
     {
