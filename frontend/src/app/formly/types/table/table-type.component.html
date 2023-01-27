@@ -75,7 +75,11 @@
     </div>
 
     <ige-form-error
-        *ngIf="formControl.invalid && !formControl.hasError('required')"
+        *ngIf="
+            showError &&
+            formControl.invalid &&
+            !formControl.hasError('required')
+        "
         ><formly-validation-message [field]="field"></formly-validation-message
     ></ige-form-error>
 

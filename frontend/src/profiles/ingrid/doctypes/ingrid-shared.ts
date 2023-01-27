@@ -147,7 +147,9 @@ export abstract class IngridShared extends BaseDoctype {
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
           }),
-          this.addAddressCard("pointOfContact", "Adressen"),
+          this.addAddressCard("pointOfContact", "Adressen", {
+            required: true,
+          }),
           this.addRadioboxes("isInspireConform", "INSPIRE konform", {
             expressions: { hide: "!model.isInspireIdentified" },
             options: [

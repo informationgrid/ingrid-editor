@@ -60,6 +60,7 @@ button.button-with-text {
   padding-left: 16px;
   letter-spacing: 0.4px;
   overflow: visible;
+  -webkit-font-smoothing: antialiased;
 }
 
 form-toolbar .mdc-button > .mat-icon {
