@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
@@ -29,7 +29,7 @@ export class PasteDialogComponent implements OnInit {
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
     private config: ConfigService,
-    private dlgRef: DialogRef
+    private dlgRef: MatDialogRef<PasteDialogComponent>
   ) {
     this.query = data.forAddress ? addressTreeQuery : treeQuery;
   }
