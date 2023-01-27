@@ -7,6 +7,7 @@ import {
   debounceTime,
   filter,
   finalize,
+  startWith,
   tap,
 } from "rxjs/operators";
 import { QueryQuery } from "../../store/query/query.query";
@@ -53,7 +54,7 @@ export class TabSearchComponent implements OnInit {
     setTimeout(() => (this.initialValue = this.form.value));
 
     this.form.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe(() => this.startSearch());
 
     this.queryQuery
