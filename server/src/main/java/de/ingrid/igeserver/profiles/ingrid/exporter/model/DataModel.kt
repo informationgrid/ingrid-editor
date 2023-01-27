@@ -13,11 +13,16 @@ import java.util.*
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
     val description: String?,
-    val _parent: String?,
+    val parentIdentifier: String?,
     val pointOfContact: List<AddressRefModel>?,
-    @JsonProperty("spatial") val spatial: IngridSpatial?,
-
-    ) {
+    val spatial: IngridSpatial?,
+    val metadata: IngridMetadata,
+    val advProductGroups: List<KeyValueModel>?,
+    val alternateTitle: String?,
+    val themes: List<KeyValueModel>?,
+    val keywords: List<String>?,
+    val dataset: Dataset?,
+) {
 
 
     companion object {
@@ -30,11 +35,21 @@ data class DataModel(
     }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Dataset(
+    val languages: List<String>?
+)
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class IngridMetadata(
+    val language: KeyValueModel,
+    val characterSet: KeyValueModel?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridSpatial(
-    @JsonProperty("references")
     val references: List<SpatialModel>?,
-    @JsonProperty("spatialSystems")
     val spatialSystems: List<KeyValueModel>?,
-    @JsonProperty("verticalExtent")
     val verticalExtent: Any?
 )

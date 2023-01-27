@@ -56,7 +56,7 @@ class Iso19115Exporter : IgeExporter {
             val keyword = Keyword(getStringOf(next, "name"), getStringOf(next, "link"))
             keywords.add(keyword)
         }
-        val thesaurus = Thesaurus("Mein Thesaurus", "10.10.1978", keywords)
+        val thesaurus = Thesaurus("Mein Thesaurus", "10.10.1978", keywords = keywords)
         thesauruses.add(thesaurus)
         return thesauruses
     }

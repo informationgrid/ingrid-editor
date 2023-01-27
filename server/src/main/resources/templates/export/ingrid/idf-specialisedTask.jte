@@ -5,7 +5,6 @@
 @param Map<String, Object> map
 
 !{var page = ((IngridModel)map.get("model"));}
-!{var docInfo = ((DocInfo)map.get("docInfo"));}
 
 @template.template-idf(content = @`
     @template.ingrid.shared-general(page = page)

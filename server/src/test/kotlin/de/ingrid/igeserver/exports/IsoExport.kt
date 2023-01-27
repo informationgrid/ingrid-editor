@@ -45,7 +45,7 @@ class IsoExport : AnnotationSpec() {
             }
         }
         val result = (exporter.run(doc, "test") as String).replace("\n\\s+".toRegex(), "")
-        
+
         result shouldContain "<gmx:Anchor xlink:href=\"http://abc.de/xyz\">test-keyword 1</gmx:Anchor>"
         result shouldContain "<gmd:title><gco:CharacterString>Mein Thesaurus</gco:CharacterString></gmd:title>"
         result shouldContain "<gco:Date>10.10.1978</gco:Date>"
