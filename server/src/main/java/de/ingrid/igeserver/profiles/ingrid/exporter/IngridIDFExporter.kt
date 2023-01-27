@@ -8,7 +8,6 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ingrid")
-class IngridIDFExporter @Autowired constructor(val config: Config) : IgeExporter {
+class IngridIDFExporter @Autowired constructor() : IgeExporter {
 
     val log = logger()
 
@@ -50,7 +49,6 @@ class IngridIDFExporter @Autowired constructor(val config: Config) : IgeExporter
     }
 
 
-
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
             "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
@@ -73,8 +71,9 @@ class IngridIDFExporter @Autowired constructor(val config: Config) : IgeExporter
         model.initialize(catalogId)
         return mapOf(
             "map" to mapOf(
-                "model" to model),
-            )
+                "model" to model
+            ),
+        )
 
     }
 }
