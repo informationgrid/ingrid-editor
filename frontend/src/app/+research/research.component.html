@@ -6,7 +6,7 @@
 >
     <a
         *ngFor="let tab of tabs; let i = index"
-        [attr.data-cy]="'tab' - tab.path"
+        [attr.data-cy]="'tab-' + tab.path"
         mat-tab-link
         #rla="routerLinkActive"
         routerLinkActive="active-link"
