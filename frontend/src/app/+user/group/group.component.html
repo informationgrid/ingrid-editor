@@ -89,6 +89,7 @@
 
                             <button
                                 mat-icon-button
+                                data-cy="btn-expand-header"
                                 class="dark menu-button"
                                 [class.expanded]="showMore"
                                 (click)="this.showMore = !this.showMore"
@@ -99,6 +100,7 @@
                             </button>
                             <button
                                 mat-icon-button
+                                data-cy="more-actions"
                                 class="menu dark menu-button"
                                 [matMenuTriggerFor]="groupMoreMenu"
                             >

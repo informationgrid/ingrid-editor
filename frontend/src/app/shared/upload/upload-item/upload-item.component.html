@@ -24,6 +24,7 @@
     <ng-container *ngIf="!showOnlyProgress">
         <button
             *ngIf="file.transfer.complete; else pauseButton"
+            data-cy="btn-remove"
             mat-icon-button
             (click)="cancelFile()"
         >
