@@ -440,7 +440,7 @@ export class FormFieldHelper {
           : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
-      defaultValue: null,
+      // defaultValue: null,
       fieldGroup: [
         { type: "input", key: "start" },
         { type: "input", key: "end" },

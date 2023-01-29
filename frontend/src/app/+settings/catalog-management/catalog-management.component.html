@@ -3,10 +3,7 @@
 
     <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
         <div *ngIf="profiles">
-            <ige-add-button
-                buttonType="flat"
-                (add)="showCreateCatalogDialog()"
-            ></ige-add-button>
+            <ige-add-button (add)="showCreateCatalogDialog()"></ige-add-button>
         </div>
         <p *ngIf="noAssignedCatalogs">
             Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog
