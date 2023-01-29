@@ -21,7 +21,7 @@
         >
             <div>Suchvorschläge</div>
             <div class="extra-large-spacing link-text">
-                <a href="#" (click)="openResearchPage()">
+                <a class="link-text" (click)="openResearchPage()">
                     <mat-icon
                         svgIcon="Recherche"
                         class="research-icon"
@@ -45,7 +45,11 @@
             *ngIf="numDocs > 5"
             class="show-all-link link-text extra-large-spacing"
         >
-            <a href="#" (click)="openResearchPage()" data-cy="all-link-data">
+            <a
+                class="link-text"
+                (click)="openResearchPage()"
+                data-cy="all-link-data"
+            >
                 <mat-icon>keyboard_arrow_right</mat-icon>
                 Alle
             </a>
@@ -66,7 +70,7 @@
             class="show-all-link link-text extra-large-spacing"
         >
             <a
-                href="#"
+                class="link-text"
                 (click)="openResearchPage(true)"
                 data-cy="all-link-address"
             >

@@ -216,6 +216,7 @@ h1 {
 }
 
 .link-text {
+  cursor: pointer;
   a:hover {
     color: $ige-primary;
   }
