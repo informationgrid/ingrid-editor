@@ -7,17 +7,11 @@
         ></mat-icon>
     </div>
 
-    <!-- TODO: move profile specific text to localisation file -->
     <span
         *ngIf="!showTitleInput"
         fxFlex
         class="label"
-        [matTooltip]="
-            _model._type === 'UvpOrganisationDoc' ||
-            _model._type === 'McloudAddressDoc'
-                ? 'Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.'
-                : 'Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.'
-        "
+        [matTooltip]="t('address.address-title.' + _model._type)"
         [matTooltipDisabled]="!address || !disableEdit"
         [matTooltipShowDelay]="1000"
         [class.editable]="!disableEdit"
