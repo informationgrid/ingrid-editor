@@ -1,9 +1,5 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
 import { of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
 import {
@@ -11,6 +7,7 @@ import {
   debounceTime,
   filter,
   finalize,
+  startWith,
   tap,
 } from "rxjs/operators";
 import { QueryQuery } from "../../store/query/query.query";
@@ -29,7 +26,6 @@ import { FacetQuery } from "../../store/query/query.model";
 })
 export class TabSearchComponent implements OnInit {
   form: UntypedFormGroup;
-  query = new UntypedFormControl("");
 
   result: ResearchResponse;
 
@@ -58,7 +54,7 @@ export class TabSearchComponent implements OnInit {
     setTimeout(() => (this.initialValue = this.form.value));
 
     this.form.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe(() => this.startSearch());
 
     this.queryQuery

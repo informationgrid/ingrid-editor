@@ -13,18 +13,19 @@ export const iBusFields: FormlyFieldConfig[] = [
         {
           key: "url",
           type: "input",
+          className: "white-bg",
           props: {
             label: "URL",
             appearance: "outline",
           },
         },
         {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "display-flex gap",
           fieldGroup: [
             {
               key: "ip",
               type: "input",
-              className: "flex-1",
+              className: "flex-1 white-bg",
               props: {
                 label: "IP",
                 appearance: "outline",
@@ -33,7 +34,7 @@ export const iBusFields: FormlyFieldConfig[] = [
             {
               key: "port",
               type: "input",
-              className: "flex-1",
+              className: "flex-1 white-bg",
               props: {
                 type: "number",
                 label: "Port",

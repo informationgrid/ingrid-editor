@@ -1,5 +1,6 @@
 <ige-form-error
     *ngIf="
+        showError &&
         formControl.invalid &&
         formControl.errors &&
         !formControl.hasError('required')
@@ -49,5 +50,7 @@
     *ngIf="!formState.disabled && formControl.enabled"
     (add)="addItem($event)"
     [options]="props.menuOptions"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>

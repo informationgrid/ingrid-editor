@@ -12,7 +12,7 @@
   width: 100%;
 }
 
-.mat-card-title {
+.mat-mdc-card-title {
   color: $ige-primary;
 }
 
@@ -29,7 +29,7 @@
   visibility: hidden;
 }
 
-.mat-card {
+.mat-mdc-card {
   &.selected {
     border: 1px solid $ige-primary;
   }
@@ -63,6 +63,6 @@
   font-size: 16px;
 }
 
-.mat-spinner {
+.mat-mdc-progress-spinner {
   display: inline-block;
 }

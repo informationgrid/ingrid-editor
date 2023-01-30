@@ -164,12 +164,12 @@ export class McloudDoctype extends BaseDoctype {
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
           this.addInput("mfundFKZ", null, {
             fieldLabel: "mFUND Förderkennzeichen",
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
         ]),
       ]),

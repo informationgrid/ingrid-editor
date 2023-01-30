@@ -8,7 +8,7 @@
         <ige-filter-select
             [options]="userIds$"
             class="white-bg"
-            style="flex: 1; max-width: 460px"
+            style="max-width: 460px"
             placeholder="Nutzer auswählen..."
             (reset)="selectedUserId = null"
             (optionSelect)="selectedUserId = $event.label"
@@ -16,13 +16,13 @@
         <ige-filter-select
             [options]="catalogs$"
             class="white-bg"
-            style="flex: 1; max-width: 460px"
+            style="max-width: 460px"
             placeholder="Katalog auswählen..."
             (reset)="selectedCatalogId = null"
             (optionSelect)="selectedCatalogId = $event.id"
         ></ige-filter-select>
         <button
-            style="flex: 1; max-width: 460px"
+            style="max-width: 460px"
             mat-flat-button
             color="primary"
             [disabled]="!(selectedCatalogId && selectedUserId)"

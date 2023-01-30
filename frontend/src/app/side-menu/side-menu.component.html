@@ -1,6 +1,4 @@
 <mat-nav-list
-    fxFlex
-    fxLayout="column"
     [class.collapsed]="!menuIsExpanded"
     *transloco="let t; read: 'menu'"
 >
@@ -18,8 +16,8 @@
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
     >
-        <mat-icon mat-list-icon [svgIcon]="item.data?.icon"> </mat-icon>
-        <p mat-line>{{ t(item.path) }}</p>
+        <mat-icon matListItemIcon [svgIcon]="item.data?.icon"> </mat-icon>
+        <p matListItemTitle>{{ t(item.path) }}</p>
     </a>
 
     <div class="fillVertical"></div>
@@ -37,14 +35,14 @@
     >
         <mat-icon
             *ngIf="!menuIsExpanded"
-            mat-list-icon
+            matListItemIcon
             svgIcon="Nav-auf"
         ></mat-icon>
         <mat-icon
             *ngIf="menuIsExpanded"
-            mat-list-icon
+            matListItemIcon
             svgIcon="Nav-zu"
         ></mat-icon>
-        <p mat-line>Verkleinern</p>
+        <p matListItemTitle>Verkleinern</p>
     </a>
 </mat-nav-list>

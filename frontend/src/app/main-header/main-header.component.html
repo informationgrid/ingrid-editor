@@ -45,7 +45,7 @@
             </mat-menu>
         </div>
 
-        <span *ngIf="userInfo$ | async as userInfo">
+        <span *ngIf="userInfo$ | async as userInfo" class="display-flex">
             <button
                 type="button"
                 class="user-popup pad-right"
@@ -99,7 +99,6 @@
                     <button
                         mat-button
                         color="primary"
-                        class="upper-case"
                         (click)="logout()"
                         data-cy="logout-button"
                     >

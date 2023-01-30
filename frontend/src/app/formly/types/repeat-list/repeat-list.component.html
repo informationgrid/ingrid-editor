@@ -28,7 +28,8 @@
             class="close gray"
             (click)="removeItem(i)"
         >
-            <mat-icon svgIcon="Entfernen"></mat-icon>
+            <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 </div>
@@ -72,14 +73,15 @@
             </div>
         </mat-option>
     </mat-select>
+    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
-        <mat-label>{{ props.fieldLabel }}</mat-label>
+        <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
         <mat-icon
             *ngIf="parameterOptions && repeatListInput.value.length === 0"
-            class="gray"
+            class="search-icon gray"
             matPrefix
             >search
         </mat-icon>
@@ -89,10 +91,6 @@
             [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            [required]="
-                (props.required && formControl.invalid) ||
-                formControl.validator({})?.required
-            "
             (keydown.enter)="addFreeEntry(repeatListInput.value)"
             [matAutocomplete]="auto"
         />
@@ -120,8 +118,6 @@
         <mat-hint *ngIf="!parameterOptions"
             >Eingabe mit RETURN bestätigen
         </mat-hint>
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
 </ng-template>
-<mat-error *ngIf="formControl.errors?.required"
-    >Bitte erstellen Sie mindestens einen Eintrag
-</mat-error>

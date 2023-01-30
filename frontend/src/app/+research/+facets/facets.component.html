@@ -46,6 +46,7 @@
         >
             <mat-checkbox
                 *ngFor="let filter of group.filter"
+                class="small-checkbox-spacing"
                 [formControlName]="filter.id"
                 [name]="filter.id"
                 >{{ filter.label }}</mat-checkbox

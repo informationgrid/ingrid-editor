@@ -52,6 +52,10 @@ describe("DateRangeTypeComponent", () => {
             key: "dateRange",
             type: "dateRange",
             props: {},
+            fieldGroup: [
+              { type: "input", key: "start" },
+              { type: "input", key: "end" },
+            ],
           },
         ] as FormlyFieldConfig[],
       },

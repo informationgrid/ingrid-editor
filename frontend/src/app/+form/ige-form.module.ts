@@ -27,6 +27,7 @@ import { FormSharedModule } from "./form-shared/form-shared.module";
 import { VersionConflictDialogComponent } from "./dialogs/version-conflict-dialog/version-conflict-dialog.component";
 import { CreateNodeModule } from "./dialogs/create/create-node.module";
 import { AngularSplitModule } from "angular-split";
+import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 
 @NgModule({
   imports: [
@@ -51,6 +52,7 @@ import { AngularSplitModule } from "angular-split";
     FormSharedModule,
     CreateNodeModule,
     AngularSplitModule,
+    DialogTemplateModule,
   ],
   declarations: [
     PasteDialogComponent,

@@ -57,6 +57,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   fields: FormlyFieldConfig[] = [];
 
   formOptions: FormlyFormOptions = {
+    showError: (field) => {
+      return this.showValidationErrors && field.formControl?.invalid;
+    },
     formState: {
       disabled: true,
       updateModel: () => {
@@ -167,8 +170,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         } else {
           this.showValidationErrors = false;
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         }
       });
 

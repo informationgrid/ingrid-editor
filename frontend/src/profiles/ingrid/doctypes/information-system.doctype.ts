@@ -49,12 +49,12 @@ export class InformationSystemDoctype extends IngridShared {
               this.id,
               {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }
             ),
             this.addTextAreaInline("history", "Historie", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           { className: "optional" }
@@ -65,11 +65,11 @@ export class InformationSystemDoctype extends IngridShared {
           [
             this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           { className: "optional" }
