@@ -9,5 +9,11 @@
     "InGridInformationSystem": "Informationssystem",
     "InGridOrganisationDoc": "Organisation",
     "InGridPersonDoc": "Person"
+  },
+  "address": {
+    "address-title": {
+      "InGridOrganisationDoc": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.",
+      "InGridPersonDoc": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname."
+    }
   }
 }

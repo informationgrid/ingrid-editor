@@ -46,12 +46,5 @@
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",
     "reference-error-multiple-files": "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden."
-  },
-
-  "address": {
-    "address-title": {
-      "InGridOrganisationDoc": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.",
-      "InGridPersonDoc": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname."
-    }
   }
 }
