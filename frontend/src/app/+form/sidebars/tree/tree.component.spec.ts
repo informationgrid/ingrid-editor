@@ -188,6 +188,8 @@ describe("TreeComponent", () => {
     const treeNode = spectator.component.dataSource.data;
     expect(treeNode[0]._id).toBe("1");
     expect(treeNode[1]._id).toBe("3");
+
+    tick(1000);
   }));
 
   it("should add a new child node", fakeAsync(() => {
@@ -316,6 +318,8 @@ describe("TreeComponent", () => {
     nodeImageHasClass(2, "workingWithPublished");
     nodeImageHasNotClass(2, "working");
     nodeImageHasNotClass(2, "published");
+
+    tick(1000);
   }));
 
   it("should initially expand to a deeply nested node", fakeAsync(() => {

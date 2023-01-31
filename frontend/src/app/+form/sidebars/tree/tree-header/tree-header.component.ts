@@ -6,9 +6,9 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { Subject, Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { debounceTime, map } from "rxjs/operators";
+import { debounceTime, map, startWith } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -37,7 +37,7 @@ export class TreeHeaderComponent implements OnInit {
   @Output() edit = new EventEmitter<boolean>();
   @Output() toggleAllSelection = new EventEmitter<boolean>();
   @Output() toggleView = new EventEmitter<boolean>();
-  searchResult = new Subject<TreeNode[]>();
+  searchResult = new BehaviorSubject<TreeNode[]>([]);
   query = new UntypedFormControl("");
   searchSub: Subscription;
 
@@ -46,7 +46,7 @@ export class TreeHeaderComponent implements OnInit {
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component
     this.query.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe((query) => this.search(query));
   }
 
@@ -82,11 +82,6 @@ export class TreeHeaderComponent implements OnInit {
   activateMultiSelection() {
     this.multiSelectionModeEnabled = true;
     this.edit.next(true);
-  }
-
-  resetForm() {
-    this.query.reset("");
-    this.searchSub.unsubscribe();
   }
 
   deactivateMultiSelection() {

@@ -441,10 +441,10 @@ export class FormFieldHelper {
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
       // defaultValue: null,
-      fieldGroup: [
+      /*fieldGroup: [
         { type: "input", key: "start" },
         { type: "input", key: "end" },
-      ],
+      ],*/
       props: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,

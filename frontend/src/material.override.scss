@@ -78,6 +78,10 @@ mat-icon svg .coloring {
   fill: $ige-secondary;
 }
 
+form-toolbar mat-icon svg .coloring {
+  fill: #000000;
+}
+
 mat-checkbox .mdc-form-field {
   font-size: 16px;
 }

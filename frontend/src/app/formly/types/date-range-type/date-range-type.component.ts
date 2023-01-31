@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
@@ -13,13 +14,19 @@ export class DateRangeTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
+  rangeFormGroup = new UntypedFormGroup({
+    start: new UntypedFormControl(null),
+    end: new UntypedFormControl(null),
+  });
+
   ngOnInit(): void {
+    this.rangeFormGroup.setValue(
+      this.formControl.value ?? { start: null, end: null }
+    );
+
     this.formControl.addValidators([
       (ctrl) => {
-        if (
-          this.field.fieldGroup[1].formControl.hasError("matEndDateInvalid") ||
-          this.field.fieldGroup[0].formControl.hasError("matStartDateInvalid")
-        ) {
+        if (this.rangeFormGroup.controls.end.hasError("matEndDateInvalid")) {
           return {
             matEndDateInvalid: {
               message: "Das Enddatum liegt vor dem Startdatum",
@@ -28,5 +35,22 @@ export class DateRangeTypeComponent
         } else return null;
       },
     ]);
+
+    this.formControl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value) => {
+        this.rangeFormGroup.setValue(
+          value ?? {
+            start: null,
+            end: null,
+          }
+        );
+      });
+  }
+
+  updateFormControl() {
+    this.formControl.setValue(this.rangeFormGroup.value);
+    this.formControl.markAsTouched();
+    this.formControl.markAsDirty();
   }
 }

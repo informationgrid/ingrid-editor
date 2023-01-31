@@ -62,7 +62,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   csvOptions: Options = {
     filename: "",
     fieldSeparator: ",",
-    quoteStrings: '"',
+    quoteStrings: "",
     decimalseparator: ".",
     showLabels: false,
     headers: ["Typ", "Titel", "Aktualität"],

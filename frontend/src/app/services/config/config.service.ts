@@ -19,7 +19,8 @@ export class Configuration {
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public menuGroups: any
+    public menuGroups: any,
+    public mapTileUrl: string
   ) {}
 }
 

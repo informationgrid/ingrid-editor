@@ -50,14 +50,17 @@
         </div>
 
         <ng-container *ngIf="address.ref?.organization; else person">
-            <div class="title" [class.error]="invalidAddressReference">
+            <div
+                class="title address-title"
+                [class.error]="invalidAddressReference"
+            >
                 {{ content.title }}
             </div>
             <div class="organization-person">{{ content.secondTitle }}</div>
         </ng-container>
 
         <ng-template #person>
-            <div class="title">
+            <div class="title address-title">
                 <span
                     >{{
                         address.ref["academic-title"]
