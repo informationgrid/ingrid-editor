@@ -56,7 +56,6 @@ export class TreeHeaderComponent implements OnInit {
 
   search(value: string) {
     if (!value || value.length === 0) {
-      console.log("this.emptySearchResults", this.emptySearchResults);
       this.searchResult.next(this.emptySearchResults ?? []);
       return;
     }
