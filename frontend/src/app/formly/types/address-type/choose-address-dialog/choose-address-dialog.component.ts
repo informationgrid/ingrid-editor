@@ -93,6 +93,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         tap(() => (this.placeholder = "Bitte wählen ..."))
       )
       .subscribe();
+
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
       map((allRecent) => {
