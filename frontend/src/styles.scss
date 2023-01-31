@@ -53,6 +53,10 @@ button.button-with-text {
     align-items: center;
     color: $ige-secondary;
   }
+
+  &.primary .mdc-button__label {
+    color: #ffffff;
+  }
 }
 
 .error {
