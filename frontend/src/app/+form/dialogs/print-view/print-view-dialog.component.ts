@@ -5,6 +5,13 @@ import { FormlyFormOptions } from "@ngx-formly/core";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
+  styles: [
+    `
+      mat-button-toggle-group {
+        font-size: 14px;
+      }
+    `,
+  ],
 })
 export class PrintViewDialogComponent {
   profile: any;
