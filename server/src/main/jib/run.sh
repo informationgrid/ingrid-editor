@@ -15,5 +15,9 @@ if [[ -n "${SHOW_TEST_BADGE}" ]]; then
   sed -i -r "s@showTestBadge\":.*@showTestBadge\": \"SHOW_TEST_BADGE\",@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${MAP_TILE_URL}" ]]; then
+  sed -i -r "s@mapTileUrl\":.*@mapTileUrl\": \"MAP_TILE_URL\",@" /app/resources/static/assets/config.json
+fi
+
 echo "Run original entrypoint command"
 java -cp $( cat /app/jib-classpath-file ) $( cat /app/jib-main-class-file )
