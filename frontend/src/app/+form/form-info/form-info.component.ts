@@ -142,7 +142,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     fromEvent(element, "scroll")
       .pipe(
         untilDestroyed(this),
-        debounceTime(10), // do not handle all events
+        // debounceTime(10), // do not handle all events
         map((top): boolean => this.determineToggleState(element.scrollTop)),
         map((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently
