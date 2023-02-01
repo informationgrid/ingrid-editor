@@ -40,53 +40,21 @@
                         [form]="form"
                         [model]="formInfoModel"
                         [forAddress]="address"
-                        [sections]="(sections | async) ?? []"
-                        [parentContainer]="scrollForm"
                         [disableTitleEdit]="
-                            formOptions.formState.disabled ||
+                            formOptions.formState.disabled === true ||
                             (address && model._type !== 'FOLDER')
                         "
                     >
                     </ige-form-info>
-                    <div
+                    <!--                                      [scrollHeaderOffsetLeft]="scrollHeaderOffsetLeft" -->
+                    <ige-quick-navbar
                         #sticky_header
-                        class="navigation-header"
+                        *ngIf="formInfoModel !== null"
                         [class.sticky-header]="isStickyHeader"
-                        [style.left]="scrollHeaderOffsetLeft + 'px'"
-                    >
-                        <div>
-                            <div class="document-type">
-                                <mat-icon
-                                    [svgIcon]="docIcon"
-                                    [title]="form?.get('title')?.value"
-                                    [matTooltip]="form?.get('title')?.value"
-                                    [ngClass]="['document-icon', state ?? '']"
-                                ></mat-icon>
-                            </div>
-
-                            <ige-header-navigation
-                                fxFlex
-                                [sections]="(sections | async) ?? []"
-                            ></ige-header-navigation>
-                        </div>
-
-                        <ige-form-message></ige-form-message>
-
-                        <div
-                            [class.hide]="!hasOptionalFields"
-                            class="optional-fields-toggle"
-                        >
-                            <div class="diagonal"></div>
-                            <mat-slide-toggle
-                                checked
-                                (change)="
-                                    hideOptionalFields = !hideOptionalFields
-                                "
-                                >Alle
-                            </mat-slide-toggle>
-                            <div class="cover"></div>
-                        </div>
-                    </div>
+                        [model]="model"
+                        [sections]="sections | async"
+                        [hasOptionalFields]="hasOptionalFields"
+                    ></ige-quick-navbar>
 
                     <div
                         class="form-inner"

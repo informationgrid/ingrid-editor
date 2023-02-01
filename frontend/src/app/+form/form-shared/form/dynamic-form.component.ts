@@ -22,14 +22,7 @@ import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  startWith,
-  tap,
-} from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   combineLatest,
@@ -113,8 +106,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
   isStickyHeader = false;
-  docIcon: string;
-  state: string;
 
   constructor(
     private formularService: FormularService,
@@ -259,33 +250,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((finished) => (this.showBlocker = !finished));
 
-    setTimeout(() => this.initResizeBehavior(), 500);
-
     this.initScrollBehavior();
   }
 
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
-  }
-
-  private initResizeBehavior() {
-    combineLatest([
-      this.session.isSidebarExpanded$,
-      this.session.sidebarWidth$,
-      fromEvent(window, "resize").pipe(startWith(0)),
-    ])
-      .pipe(untilDestroyed(this))
-      .subscribe((result) => {
-        const offsetLeft = this.scrollForm.nativeElement.offsetLeft;
-        const menuWidth = result[0] ? 300 : 56;
-        const newValue = offsetLeft + menuWidth;
-        if (this.scrollHeaderOffsetLeft !== newValue) {
-          this.scrollHeaderOffsetLeft = newValue;
-          this.cdr.markForCheck();
-          // TODO: update height of hiddenHeader
-        }
-      });
   }
 
   private initScrollBehavior() {
@@ -295,29 +265,35 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         untilDestroyed(this),
         // debounceTime(10), // do not handle all events
         map((top): boolean => this.determineToggleState(element.scrollTop)),
-        map((show) => this.toggleStickyHeader(show)),
+        tap((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently
         tap((top) =>
           this.treeService.updateScrollPositionInStore(
             this.address,
             element.scrollTop
           )
-        ),
-        distinctUntilChanged()
+        )
       )
       .subscribe();
-  }
-
-  private toggleStickyHeader(show: boolean) {
-    this.isStickyHeader = show;
-
-    let height = this.stickyHeaderRef.nativeElement.clientHeight;
-    this.paddingWithHeader = show ? height + "px" : "0";
   }
 
   private determineToggleState(top) {
     // when we scroll more than the non-sticky area then it should become sticky
     return top > this.formInfoRef.nativeElement.clientHeight;
+  }
+
+  private toggleStickyHeader(show: boolean) {
+    this.isStickyHeader = show;
+
+    if (show) {
+      // update dom with changes before we continue and need new client height
+      this.cdr.detectChanges();
+
+      this.paddingWithHeader =
+        this.stickyHeaderRef.nativeElement.clientHeight + "px";
+    } else {
+      this.paddingWithHeader = "0px";
+    }
   }
 
   /**
@@ -435,9 +411,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formInfoModel = { ...this.model };
 
       this.documentService.setDocLoadingState(false, this.address);
-
-      this.docIcon = this.profileService.getDocumentIcon(data);
-      this.state = DocumentUtils.getStateClass(data._state, data._type);
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);

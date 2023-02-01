@@ -40,8 +40,6 @@ export class FormInfoComponent implements OnInit {
     this._model = value;
   }
 
-  @Input() sections: string[] = [];
-  @Input() parentContainer: HTMLElement;
   @Input() forAddress = false;
   @Input() disableTitleEdit = false;
 
