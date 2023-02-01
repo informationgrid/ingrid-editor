@@ -54,6 +54,59 @@
   }
 }
 
+.navigation-header {
+  & > div {
+    max-width: 1260px;
+    margin: 0 auto;
+    align-items: center;
+    padding: 0 24px 0 36px;
+    //background-color: $ige-background;
+  }
+
+  .document-type {
+    opacity: 0;
+    transition: opacity 0.2s linear;
+    display: inline-block;
+    background-color: white;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+
+    mat-icon {
+      line-height: 32px;
+      color: $state-working-color;
+      font-size: 16px;
+      padding-left: 2px;
+      padding-top: 2px;
+    }
+  }
+
+  &.sticky-header {
+    position: fixed;
+    top: 104px;
+    right: 0;
+    z-index: 2000;
+
+    background-color: $ige-background;
+    box-shadow: 0 2px 2px -2px #666666;
+
+    .document-type {
+      opacity: 1;
+    }
+
+    a {
+      color: $ige-secondary;
+      //font-size: 13px;
+      padding: 0 10px;
+      text-transform: none;
+    }
+
+    .menu {
+      opacity: 1;
+    }
+  }
+}
+
 .form-content ige-form-info {
   display: block;
   margin-bottom: 0;

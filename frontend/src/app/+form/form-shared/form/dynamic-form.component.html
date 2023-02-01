@@ -35,6 +35,7 @@
 
                 <div [class.hide]="fields.length === 0">
                     <ige-form-info
+                        #formInfo
                         *ngIf="formInfoModel !== null"
                         [form]="form"
                         [model]="formInfoModel"
@@ -45,8 +46,32 @@
                             formOptions.formState.disabled ||
                             (address && model._type !== 'FOLDER')
                         "
-                        (showStickyHeader)="updateContentPadding($event)"
                     >
+                    </ige-form-info>
+                    <div
+                        #sticky_header
+                        class="navigation-header"
+                        [class.sticky-header]="isStickyHeader"
+                        [style.left]="scrollHeaderOffsetLeft + 'px'"
+                    >
+                        <div>
+                            <div class="document-type">
+                                <mat-icon
+                                    [svgIcon]="docIcon"
+                                    [title]="form?.get('title')?.value"
+                                    [matTooltip]="form?.get('title')?.value"
+                                    [ngClass]="['document-icon', state ?? '']"
+                                ></mat-icon>
+                            </div>
+
+                            <ige-header-navigation
+                                fxFlex
+                                [sections]="(sections | async) ?? []"
+                            ></ige-header-navigation>
+                        </div>
+
+                        <ige-form-message></ige-form-message>
+
                         <div
                             [class.hide]="!hasOptionalFields"
                             class="optional-fields-toggle"
@@ -61,7 +86,8 @@
                             </mat-slide-toggle>
                             <div class="cover"></div>
                         </div>
-                    </ige-form-info>
+                    </div>
+
                     <div
                         class="form-inner"
                         [class.extra-space-toggle-button]="hasOptionalFields"
