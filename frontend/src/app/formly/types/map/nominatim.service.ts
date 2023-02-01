@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { ConfigService } from "../../../services/config/config.service";
 
 export interface NominatimResult {
   display_name: string;
@@ -15,10 +16,12 @@ export interface NominatimResult {
   providedIn: "root",
 })
 export class NominatimService {
-  url = "https://nominatim.openstreetmap.org";
+  url: string;
   searchInCountries = "de";
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, config: ConfigService) {
+    this.url = config.getConfiguration().nominatimUrl;
+  }
 
   search(query: string): Observable<NominatimResult[]> {
     return this.http.get<NominatimResult[]>(

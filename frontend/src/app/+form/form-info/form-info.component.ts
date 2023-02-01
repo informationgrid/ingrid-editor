@@ -39,7 +39,7 @@ import { ConfigService } from "../../services/config/config.service";
 
 export interface StickyHeaderInfo {
   show: boolean;
-  headerHeight: number;
+  headerHeight?: number;
 }
 
 @UntilDestroy()
@@ -75,7 +75,6 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
   rootName: string;
   docIcon: string;
   state: string;
-  private initialHeaderOffset: number;
   private store: AddressTreeStore | TreeStore;
   private query: AddressTreeQuery | TreeQuery;
 
@@ -128,15 +127,13 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     ])
       .pipe(untilDestroyed(this))
       .subscribe((result) => {
-        setTimeout(() => {
-          const offsetLeft = this.host.nativeElement.offsetLeft;
-          const menuWidth = result[0] ? 300 : 56;
-          const newValue = offsetLeft + menuWidth;
-          if (this.scrollHeaderOffsetLeft !== newValue) {
-            this.scrollHeaderOffsetLeft = newValue;
-            this.cdr.markForCheck();
-          }
-        }, 100);
+        const offsetLeft = this.host.nativeElement.offsetLeft;
+        const menuWidth = result[0] ? 300 : 56;
+        const newValue = offsetLeft + menuWidth;
+        if (this.scrollHeaderOffsetLeft !== newValue) {
+          this.scrollHeaderOffsetLeft = newValue;
+          this.cdr.markForCheck();
+        }
       });
   }
 
@@ -145,7 +142,7 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
     fromEvent(element, "scroll")
       .pipe(
         untilDestroyed(this),
-        debounceTime(10), // do not handle all events
+        // debounceTime(10), // do not handle all events
         map((top): boolean => this.determineToggleState(element.scrollTop)),
         map((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently
@@ -157,15 +154,19 @@ export class FormInfoComponent implements OnInit, AfterViewInit {
 
   private toggleStickyHeader(show: boolean) {
     this.showScrollHeader = show;
+    if (!show) {
+      this.showStickyHeader.next({ show: false });
+      return;
+    }
+
     this.showStickyHeader.next({
-      show,
+      show: true,
       headerHeight: this.stickyHeader.nativeElement.clientHeight,
     });
   }
 
   private determineToggleState(top) {
-    this.initialHeaderOffset = this.stickyHeader.nativeElement.offsetTop - 56;
-    return top > this.initialHeaderOffset;
+    return top > this.host.nativeElement.clientHeight;
   }
 
   private updateScrollPositionInStore(top) {

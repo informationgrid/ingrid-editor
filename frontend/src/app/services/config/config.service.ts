@@ -20,7 +20,8 @@ export class Configuration {
     public brokerUrl: string,
     public supportEmail: string,
     public menuGroups: any,
-    public mapTileUrl: string
+    public mapTileUrl: string,
+    public nominatimUrl: string
   ) {}
 }
 

@@ -8,28 +8,12 @@
     background-color: $ige-background;
     box-shadow: 0 2px 2px -2px #666666;
     left: 0;
-    right: 17px;
+    right: 0;
     top: 104px;
     z-index: 2000;
 
-    ::ng-deep .anchor-navigation {
-      margin-left: 0;
-      padding: 8px 0 4px;
-    }
-
     .document-type {
       opacity: 1;
-    }
-
-    .anchor-navigation {
-      text-align: center;
-      padding: 10px 0 0;
-      line-height: 36px;
-
-      .mat-mdc-button {
-        font-weight: 400;
-        letter-spacing: 0.4px;
-      }
     }
 
     a {
