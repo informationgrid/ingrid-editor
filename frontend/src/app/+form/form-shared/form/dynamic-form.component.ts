@@ -407,8 +407,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateContentPadding(stickyHeaderInfo: StickyHeaderInfo) {
     this.paddingWithHeader = stickyHeaderInfo.show
-      ? stickyHeaderInfo.headerHeight + 20 + "px"
-      : 20 + "px";
+      ? stickyHeaderInfo.headerHeight + "px"
+      : "0";
     this.isStickyHeader = stickyHeaderInfo.show;
   }
 
