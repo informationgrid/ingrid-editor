@@ -20,7 +20,7 @@
     <div class="diagonal"></div>
     <mat-slide-toggle
         checked
-        (change)="hideOptionalFields = !hideOptionalFields"
+        (change)="toggleOptionalFields.next($event.checked)"
         >Alle
     </mat-slide-toggle>
     <div class="cover"></div>

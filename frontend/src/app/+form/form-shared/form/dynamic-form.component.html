@@ -54,6 +54,7 @@
                         [model]="model"
                         [sections]="sections | async"
                         [hasOptionalFields]="hasOptionalFields"
+                        (toggleOptionalFields)="hideOptionalFields = !$event"
                     ></ige-quick-navbar>
 
                     <div

@@ -3,8 +3,10 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   HostBinding,
   Input,
+  Output,
 } from "@angular/core";
 import { combineLatest, fromEvent } from "rxjs";
 import { startWith } from "rxjs/operators";
@@ -30,13 +32,13 @@ export class QuickNavbarComponent implements AfterViewInit {
     this.state = DocumentUtils.getStateClass(value._state, value._type);
   }
 
+  @Output() toggleOptionalFields = new EventEmitter<boolean>();
+
   @HostBinding("style.left") leftOffset = "0";
 
   title: string;
   docIcon: string;
   state: string;
-
-  hideOptionalFields = false;
 
   constructor(
     private elRef: ElementRef,
