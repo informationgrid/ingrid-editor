@@ -69,6 +69,7 @@
   font-size: 14px;
   z-index: 1;
   user-select: none;
+  pointer-events: none;
 
   &.sticky {
     position: fixed;
