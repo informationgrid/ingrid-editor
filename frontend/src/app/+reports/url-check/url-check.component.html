@@ -222,16 +222,15 @@
                         >Bitte wählen Sie zuerst eine URL aus
                     </mat-hint>
                 </mat-form-field>
-                <div style="padding-top: 7px">
-                    <button
-                        mat-stroked-button
-                        color="primary"
-                        [disabled]="selection.isEmpty()"
-                        (click)="replaceUrl(url.value.trim())"
-                    >
-                        Ersetzen
-                    </button>
-                </div>
+                <button
+                    class="replace-btn"
+                    mat-stroked-button
+                    color="primary"
+                    [disabled]="selection.isEmpty()"
+                    (click)="replaceUrl(url.value.trim())"
+                >
+                    Ersetzen
+                </button>
             </div>
         </div>
     </div>

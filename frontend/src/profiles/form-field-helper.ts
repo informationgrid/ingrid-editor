@@ -70,6 +70,15 @@ export interface InputOptions extends Options {
   validators?: any;
 }
 
+export interface AutocompleteOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  highlightMatches?: boolean;
+  hideDeleteButton?: boolean;
+  options?: any[] | Observable<any[]>;
+  codelistId?: number;
+}
+
 export class FormFieldHelper {
   addSection(label: string, fields: any[]) {
     return {
@@ -247,7 +256,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutocomplete(id, label, options?) {
+  addAutocomplete(id, label, options?: AutocompleteOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -271,7 +280,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutoCompleteInline(id, label, options = {}) {
+  addAutoCompleteInline(id, label, options: AutocompleteOptions = {}) {
     return this.addAutocomplete(id, null, {
       fieldLabel: label,
       wrappers: ["form-field"],
@@ -393,7 +402,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "datepicker",
-      className: "flex-1",
+      className: "ige-date-picker",
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -420,16 +429,22 @@ export class FormFieldHelper {
     });
   }
 
-  addDateRange(id, label, options?) {
+  addDateRange(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "date-range",
       className:
-        options?.className === undefined ? "flex-1" : options?.className,
+        options?.className === undefined
+          ? "ige-date-picker"
+          : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
-      defaultValue: null,
+      // defaultValue: null,
+      /*fieldGroup: [
+        { type: "input", key: "start" },
+        { type: "input", key: "end" },
+      ],*/
       props: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,
@@ -443,12 +458,6 @@ export class FormFieldHelper {
             !options?.required ||
             !(ctrl.value?.start === null && ctrl.value?.end === null),
         },
-        validStartEnd: {
-          expression: (ctrl) =>
-            (ctrl.value?.start === null && ctrl.value?.end === null) ||
-            (ctrl.value?.start && ctrl.value?.end),
-          message: "Das Start- und Enddatum muss gültig sein",
-        },
       },
     };
   }
@@ -459,13 +468,12 @@ export class FormFieldHelper {
       key: id,
       type: "checkbox",
       className: options?.className,
-      wrappers: options?.wrappers ?? ["panel", "form-field"],
+      wrappers: options?.wrappers ?? ["panel"],
       defaultValue: options?.defaultValue ?? false,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
-        required: options?.required,
         click: options?.click,
         hasInlineContextHelp: options?.hasInlineContextHelp,
       },
@@ -476,7 +484,7 @@ export class FormFieldHelper {
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field", "inline-help"],
+      wrappers: ["inline-help"],
       ...options,
     });
   }
@@ -486,7 +494,7 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "radio",
-      wrappers: ["panel", "form-field", "inline-help"],
+      wrappers: ["panel", "inline-help"],
       className: "ige-radios",
       props: {
         label: options?.fieldLabel,

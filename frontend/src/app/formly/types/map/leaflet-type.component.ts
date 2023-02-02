@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { MapOptions, Rectangle } from "leaflet";
+import { Map, MapOptions, Rectangle } from "leaflet";
 import { ModalService } from "../../../services/modal/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
@@ -78,7 +78,10 @@ export class LeafletTypeComponent
         { ...options, scrollWheelZoom: false }
       );
 
-      // (<MyMap>this.leafletReference)._onResize();
+      // when switching from a folder to a document with leaflet map then we need
+      // to call resize event to prevent incorrect map display
+      // @ts-ignore
+      (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => (this.mapHasMoved = true));
 
       this.locations = this.formControl.value || [];
@@ -160,6 +163,10 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
+    console.log(
+      "The Location index array size before adding / updating: ",
+      this.locations.length
+    );
     this.dialog
       .open(SpatialDialogComponent, {
         width: "90%",
@@ -180,6 +187,10 @@ export class LeafletTypeComponent
           } else {
             this.locations.push(result);
           }
+          console.log(
+            "The Location index array size after adding / updating: ",
+            this.locations.length
+          );
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
           this.updateBoundingBox();

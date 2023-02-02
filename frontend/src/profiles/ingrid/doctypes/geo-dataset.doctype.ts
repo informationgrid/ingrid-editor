@@ -358,13 +358,13 @@ export class GeoDatasetDoctype extends IngridShared {
               fieldLabel: "Höhengenauigkeit (m)",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addInput("horizontal", null, {
               fieldLabel: "Lagegenauigkeit (m)",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           { fieldGroupClassName: "display-flex" }

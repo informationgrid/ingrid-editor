@@ -1,0 +1,27 @@
+<div class="navigation-bar">
+    <div class="document-type">
+        <mat-icon
+            [svgIcon]="docIcon"
+            [title]="title"
+            [matTooltip]="title"
+            [ngClass]="['document-icon', state ?? '']"
+        ></mat-icon>
+    </div>
+
+    <ige-header-navigation
+        fxFlex
+        [sections]="sections ?? []"
+    ></ige-header-navigation>
+</div>
+
+<ige-form-message></ige-form-message>
+
+<div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
+    <div class="diagonal"></div>
+    <mat-slide-toggle
+        checked
+        (change)="toggleOptionalFields.next($event.checked)"
+        >Alle
+    </mat-slide-toggle>
+    <div class="cover"></div>
+</div>

@@ -62,4 +62,12 @@ export class TreeService {
       });
     }
   }
+
+  updateScrollPositionInStore(isAddress: boolean, top) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    store.update({
+      scrollPosition: top,
+    });
+  }
 }

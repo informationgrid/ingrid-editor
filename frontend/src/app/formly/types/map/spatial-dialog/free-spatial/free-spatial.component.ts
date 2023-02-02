@@ -7,6 +7,7 @@ import { LatLng, LatLngBounds, Layer, Map, Rectangle } from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
+import { Subscription } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -28,6 +29,7 @@ export class FreeSpatialComponent implements OnInit {
 
   drawnBBox: Layer;
   spatialSelection: NominatimResult = null;
+  searchSubscribe: Subscription;
 
   constructor(
     private nominatimService: NominatimService,
@@ -56,7 +58,7 @@ export class FreeSpatialComponent implements OnInit {
     }
     this.showWelcome = false;
 
-    this.nominatimService
+    this.searchSubscribe = this.nominatimService
       .search(query)
       .subscribe((response: NominatimResult[]) => {
         response = response

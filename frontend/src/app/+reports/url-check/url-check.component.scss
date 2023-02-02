@@ -12,8 +12,12 @@ mat-progress-spinner {
   padding-left: 24px;
 }
 
-.mat-cell,
-.mat-header-cell {
+.replace-btn {
+  margin-top: 2px;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
   padding: 0 10px;
 }
 

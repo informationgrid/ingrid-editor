@@ -87,7 +87,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "Identifikator des übergeordneten Metadatensatzes",
                 {
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }
               ),
               this.addInputInline(
@@ -100,7 +100,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "props.disabled": () => true,
                   },
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }
               ),
             ],
@@ -147,7 +147,9 @@ export abstract class IngridShared extends BaseDoctype {
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
           }),
-          this.addAddressCard("pointOfContact", "Adressen"),
+          this.addAddressCard("pointOfContact", "Adressen", {
+            required: true,
+          }),
           this.addRadioboxes("isInspireConform", "INSPIRE konform", {
             expressions: { hide: "!model.isInspireIdentified" },
             options: [
@@ -317,7 +319,7 @@ export abstract class IngridShared extends BaseDoctype {
                   this.addInputInline("minimumValue", "Minimum", {
                     type: "number",
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
                         isEmptyObject(field.form.value),
@@ -326,7 +328,7 @@ export abstract class IngridShared extends BaseDoctype {
                   this.addInputInline("maximumValue", "Maximum", {
                     type: "number",
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
                         isEmptyObject(field.form.value),
@@ -428,7 +430,7 @@ export abstract class IngridShared extends BaseDoctype {
           "Durch die Ressource abgedeckte Zeitspanne",
           [
             this.addSelect("resourceDateType", null, {
-              className: "flex-1",
+              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
                 { label: "", value: undefined },
@@ -438,7 +440,7 @@ export abstract class IngridShared extends BaseDoctype {
               ],
             }),
             this.addSelect("resourceDateTypeSince", null, {
-              className: "flex-1",
+              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
                 { label: "", value: undefined },
@@ -458,23 +460,11 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDateRange("resourceRange", null, {
+              wrappers: [],
               expressions: {
                 hide: "formState.mainModel?.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
               },
             }),
-            /*this.addSelectInline("resourceDateType", "Typ", {
-              options: <SelectOptionUi[]>[
-                { label: "am", value: "am" },
-                { label: "bis", value: "bis" },
-                { label: "von", value: "fromType" },
-              ],
-            }),
-            this.addDatepicker("resourceStartDate", null, {
-              wrappers: ["form-field"],
-            }),
-            this.addDatepicker("resourceEndDate", null, {
-              wrappers: ["form-field"],
-            }),*/
           ],
           {
             className: "optional",
@@ -680,7 +670,7 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addTextAreaInline("purpose", "Herstellungszweck", "dataset", {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addTextAreaInline(
               "specificUsage",
@@ -688,7 +678,7 @@ export abstract class IngridShared extends BaseDoctype {
               "dataset",
               {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }
             ),
           ],

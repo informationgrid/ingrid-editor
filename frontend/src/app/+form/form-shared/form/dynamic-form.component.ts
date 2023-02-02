@@ -22,13 +22,17 @@ import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { filter, map, tap } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { combineLatest, merge, Observable, Subscription } from "rxjs";
+import {
+  combineLatest,
+  fromEvent,
+  merge,
+  Observable,
+  Subscription,
+} from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
-import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
@@ -38,6 +42,8 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocumentUtils } from "../../../services/document.utils";
+import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -52,12 +58,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
+  @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
+  @ViewChild("sticky_header", { read: ElementRef }) stickyHeaderRef: ElementRef;
 
   sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
 
   formOptions: FormlyFormOptions = {
+    showError: (field) => {
+      return this.showValidationErrors && field.formControl?.invalid;
+    },
     formState: {
       disabled: true,
       updateModel: () => {
@@ -70,6 +81,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   sections: Observable<string[]> = this.formularService.sections$;
 
   form = new UntypedFormGroup({});
+
+  // initial model for form info header
+  formInfoModel: any = null;
 
   behaviours: Behaviour[];
   error = false;
@@ -106,6 +120,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
+    private profileService: ProfileService,
     private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
@@ -165,8 +180,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         } else {
           this.showValidationErrors = false;
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         }
       });
 
@@ -213,6 +232,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // noinspection JSUnusedGlobalSymbols
+  scrollHeaderOffsetLeft: number;
+
   ngAfterViewInit(): any {
     // show blocker div to prevent user from modifying data or calling functions
     // during save
@@ -228,11 +249,51 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
       .subscribe((finished) => (this.showBlocker = !finished));
+
+    this.initScrollBehavior();
   }
 
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
+  }
+
+  private initScrollBehavior() {
+    const element = this.scrollForm.nativeElement;
+    fromEvent(element, "scroll")
+      .pipe(
+        untilDestroyed(this),
+        // debounceTime(10), // do not handle all events
+        map((top): boolean => this.determineToggleState(element.scrollTop)),
+        tap((show) => this.toggleStickyHeader(show)),
+        debounceTime(300), // update store less frequently
+        tap((top) =>
+          this.treeService.updateScrollPositionInStore(
+            this.address,
+            element.scrollTop
+          )
+        )
+      )
+      .subscribe();
+  }
+
+  private determineToggleState(top) {
+    // when we scroll more than the non-sticky area then it should become sticky
+    return top > this.formInfoRef.nativeElement.clientHeight;
+  }
+
+  private toggleStickyHeader(show: boolean) {
+    this.isStickyHeader = show;
+
+    if (show) {
+      // update dom with changes before we continue and need new client height
+      this.cdr.detectChanges();
+
+      this.paddingWithHeader =
+        this.stickyHeaderRef.nativeElement.clientHeight + "px";
+    } else {
+      this.paddingWithHeader = "0px";
+    }
   }
 
   /**
@@ -331,43 +392,49 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const profile = data._type;
 
     if (profile === null) {
-      console.error("This document does not have any profile");
-      return;
+      throw new Error("Dieses Dokument hat keinen Dokumententyp!");
     }
 
-    const needsProfileSwitch =
-      this.fields.length === 0 ||
-      this.formularService.currentProfile !== profile;
-
     try {
-      // switch to the right profile depending on the data
-      this.initializeForm(data.hasWritePermission && !this.readonly);
-      if (needsProfileSwitch) {
-        this.formStateService.unobserveTextareaHeights();
-
-        // switch to the right profile depending on the data
-        this.fields = this.switchProfile(profile);
-        this.model = { ...data };
-        this.cdr.detectChanges();
-
-        this.formStateService.restoreAndObserveTextareaHeights(this.fields);
-
-        this.formularService.getSectionsFromProfile(this.fields);
-        this.hasOptionalFields =
-          this.profileQuery.getProfile(profile).hasOptionalFields;
-      } else {
-        this.model = { ...data };
+      if (this.needProfileSwitch(profile)) {
+        this.handleProfileSwitch(profile);
+        // make sure to create a new form to prevent data coming from another
+        // form type into the new form
+        this.createNewForm();
+        // do change detection to update formly component with new fields and form
         this.cdr.detectChanges();
       }
 
-      this.formOptions.formState.mainModel = this.model;
-      this.formOptions.formState.parentIsFolder = data._parentIsFolder;
+      this.formOptions.resetModel(data);
+      this.prepareForm(data.hasWritePermission && !this.readonly);
+
+      this.formInfoModel = { ...this.model };
 
       this.documentService.setDocLoadingState(false, this.address);
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
+  }
+
+  private needProfileSwitch(profile: string): boolean {
+    return (
+      this.fields.length === 0 ||
+      this.formularService.currentProfile !== profile
+    );
+  }
+
+  private handleProfileSwitch(profile: string) {
+    this.formStateService.unobserveTextareaHeights();
+
+    // switch to the right profile depending on the data
+    this.fields = this.switchProfile(profile);
+
+    this.formStateService.restoreAndObserveTextareaHeights(this.fields);
+
+    this.formularService.getSectionsFromProfile(this.fields);
+    this.hasOptionalFields =
+      this.profileQuery.getProfile(profile).hasOptionalFields;
   }
 
   /**
@@ -390,18 +457,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
 
-  updateContentPadding(stickyHeaderInfo: StickyHeaderInfo) {
-    this.paddingWithHeader = stickyHeaderInfo.show
-      ? stickyHeaderInfo.headerHeight + 20 + "px"
-      : 20 + "px";
-    this.isStickyHeader = stickyHeaderInfo.show;
-  }
-
-  private initializeForm(writePermission: boolean) {
-    this.createNewForm();
+  private prepareForm(writePermission: boolean) {
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    this.formOptions.formState.disabled = !writePermission;
+    this.formOptions.formState = {
+      ...this.formOptions.formState,
+      disabled: !writePermission,
+      mainModel: this.model,
+      parentIsFolder: this.model._parentIsFolder,
+    };
   }
 
   async handleDrop(event: any) {

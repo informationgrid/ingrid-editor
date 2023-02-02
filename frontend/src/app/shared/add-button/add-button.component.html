@@ -5,7 +5,7 @@
             type="button"
             color="primary"
             mat-flat-button
-            class="button-square-icon"
+            class="button-with-text primary"
             [class.padding-btn]="showLabel"
             [class.error-outline]="showRequiredError"
             (click)="add.next()"
@@ -16,7 +16,7 @@
             *ngIf="buttonType == 'stroked'"
             type="button"
             mat-stroked-button
-            class="button-square-icon"
+            class="button-with-text"
             [class.padding-btn]="showLabel"
             [class.error-outline]="showRequiredError"
             (click)="add.next()"
@@ -29,7 +29,7 @@
         <button
             type="button"
             mat-stroked-button
-            class="button-square-icon"
+            class="button-with-text"
             [class.padding-btn]="showLabel"
             [class.error-outline]="showRequiredError"
             [matMenuTriggerFor]="menuOptions"

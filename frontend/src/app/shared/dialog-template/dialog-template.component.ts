@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 })
 export class DialogTemplateComponent implements OnInit {
   @Input() label: string;
+  @Input() submitLabel = "Übernehmen";
   @Input() disabled = false;
   @Input() contentColor = "#ffffff";
   @Output() submit = new EventEmitter();

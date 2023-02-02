@@ -1,6 +1,6 @@
 @import "./variables.scss";
 @import "./material.override.scss";
-@import "./material-fields.override.scss";
+//@import "./material-fields.override.scss";
 @import "./styles-print.scss";
 
 html,
@@ -32,6 +32,110 @@ a {
   }
 }
 
+.user-popup mat-icon path {
+  fill: $ige-primary;
+}
+
+.mat-mdc-menu-panel.user-popup-menu {
+  margin: 12px 0 0;
+
+  span.mdc-list-item {
+    font-size: 14px;
+  }
+}
+
+button.button-with-text {
+  padding: 0 4px 0;
+  min-width: 36px;
+
+  .mdc-button__label {
+    display: flex;
+    align-items: center;
+    color: $ige-secondary;
+  }
+
+  &.primary .mdc-button__label {
+    color: #ffffff;
+  }
+}
+
+.error {
+  font-size: 12px;
+  padding-left: 16px;
+  letter-spacing: 0.4px;
+  overflow: visible;
+  -webkit-font-smoothing: antialiased;
+}
+
+form-toolbar .mdc-button > .mat-icon {
+  height: 24px;
+  width: 24px;
+  font-size: 24px;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.right-sharp-corner .mat-mdc-text-field-wrapper,
+.right-sharp-corner .mdc-notched-outline__trailing {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.left-sharp-corner .mat-mdc-text-field-wrapper,
+.left-sharp-corner .mdc-notched-outline__leading {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+mat-checkbox.small-checkbox-spacing {
+  margin-bottom: -10px !important;
+
+  .mdc-form-field {
+    font-size: 16px;
+  }
+}
+
+button.button-next-to-input {
+  height: 44px !important;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+
+  &:hover {
+    background-color: lighten($ige-secondary, 8%);
+  }
+}
+
+.quicksearch-auto {
+  max-height: unset !important;
+  width: 563px !important;
+  padding: 24px 24px 12px !important;
+}
+
+.dense mat-option {
+  min-height: 40px !important;
+}
+
+.ultra-dense mat-option {
+  min-height: 36px !important;
+}
+
+.no-input-border {
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__leading,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__notch,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__trailing {
+    border-color: white !important;
+  }
+}
+
+mat-button-toggle.mat-button-toggle-checked {
+  background-color: $ige-check-color !important;
+  color: white !important;
+  font-weight: 500;
+}
+
 .leaflet-control-attribution a {
   font-size: 11px;
 }
@@ -50,9 +154,9 @@ h1 {
   background-color: $ige-mark-color;
 }
 
-.mat-card {
+.mat-mdc-card {
   &.hover-elevate {
-    &.mat-card {
+    &.mat-mdc-card {
       box-shadow: none;
       -webkit-box-shadow: none;
       -moz-box-shadow: none;
@@ -71,8 +175,8 @@ h1 {
   }
 }
 
-.mat-list.hover-list {
-  .mat-list-item:hover {
+.mat-mdc-list.hover-list {
+  .mat-mdc-list-item:hover {
     background-color: darken(white, 4%);
   }
 }
@@ -85,14 +189,14 @@ h1 {
   letter-spacing: 1.25px;
 }
 
-.text-card-title.mat-card-title {
+/*.text-card-title.mat-mdc-card-title {
   color: $ige-primary;
   text-align: center;
   letter-spacing: 0.74px;
   padding: 2px 0 6px;
   line-height: 30px;
   font-weight: 400;
-}
+}*/
 
 .upper-case {
   text-transform: uppercase;
@@ -116,6 +220,7 @@ h1 {
 }
 
 .link-text {
+  cursor: pointer;
   a:hover {
     color: $ige-primary;
   }
@@ -163,33 +268,37 @@ h1 {
 ige-section-wrapper > h3 {
   color: $ige-primary;
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   font-weight: normal;
   font-size: 24px;
   cursor: default;
 }
 
-.mat-button.link-button {
+.mat-mdc-button.link-button {
   font-weight: normal;
   letter-spacing: 0.4px;
 
-  color: $ige-secondary;
+  color: $ige-secondary !important;
   padding: 0 10px;
   text-transform: none;
+}
+
+ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
+  height: 6px;
 }
 
 .shortcut {
   padding-bottom: 24px;
   color: $ige-secondary;
-
-  .mat-button-wrapper {
+  /*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
+  /*.mat-button-wrapper {
     letter-spacing: 1.25px;
     text-transform: uppercase;
 
-    /*.mat-icon {
+    !*.mat-icon {
       vertical-align: text-bottom;
-    }*/
-  }
+    }*!
+  }*/
 }
 
 .btn-title {
@@ -197,15 +306,7 @@ ige-section-wrapper > h3 {
   font-size: 14px;
   font-weight: 500;
   vertical-align: middle;
-}
-
-.mat-header-row {
-  min-height: 40px;
-}
-
-.mat-row {
-  //padding: 0 10px;
-  min-height: 32px;
+  //color: $ige-secondary;
 }
 
 main-menu .mat-toolbar-row {
@@ -220,7 +321,7 @@ main-menu .mat-toolbar-multiple-rows {
   background-color: #c9e4ff;
 }
 
-.mat-list-option.selected {
+mat-list-option.selected {
   background-color: $ige-mark-color !important;
 
   &:hover {
@@ -299,7 +400,7 @@ form-toolbar + div {
   }
 }
 
-.hide-tab-header .mat-tab-header {
+.hide-tab-header .mat-mdc-tab-header {
   display: none !important;
 }
 
@@ -344,12 +445,19 @@ dyn-field {
   display: inline-block;
 }
 
-dynamic-form input[type="text"],
+/*dynamic-form input[type="text"],
 dynamic-form input[type="date"],
 dynamic-form input[type="number"],
 dynamic-form select,
 dynamic-form textarea {
   width: 100%;
+}*/
+formly-field ige-one-column-wrapper mat-form-field,
+formly-wrapper-mat-form-field > mat-form-field {
+  width: 100%;
+}
+ige-form-wrapper formly-field.ige-date-picker mat-form-field {
+  width: inherit;
 }
 
 ::placeholder {
@@ -382,10 +490,23 @@ sidebar .list-group-item:hover {
   cursor: pointer;
 }
 
+ige-one-column-wrapper formly-group {
+  //display: flex;
+  gap: 10px;
+
+  /* & > * {
+    flex: 1;
+  }*/
+}
+
 /* ngx-formly layout classes */
 .display-flex {
   display: flex;
   flex: 1;
+}
+
+.gap {
+  gap: 8px;
 }
 
 .flex-column {
@@ -422,8 +543,15 @@ sidebar .list-group-item:hover {
   display: none;
 }
 
-//}
 formly-field {
+  min-width: 130px;
+}
+
+formly-field:empty {
+  display: none;
+}
+
+/*formly-field {
   &[class*="flex-"] {
     padding-left: 10px;
     padding-right: 10px;
@@ -450,7 +578,7 @@ formly-field {
 formly-form:last-of-type(formly-field) > formly-field:last-of-type {
   border-top-color: #fff !important;
   height: 0;
-}
+}*/
 
 /* Split gutter style */
 .as-split-gutter-icon {
@@ -459,10 +587,10 @@ formly-form:last-of-type(formly-field) > formly-field:last-of-type {
 }
 
 /* Disabled material icon SVG */
-.mat-button[disabled] .mat-icon[data-mat-icon-type="svg"],
-.mat-icon-button[disabled] .mat-icon {
+/*.mat-mdc-button[disabled] .mat-icon[data-mat-icon-type="svg"],
+.mat-mdc-icon-button[disabled] .mat-icon {
   opacity: 0.26;
-}
+}*/
 
 ige-root .mat-drawer-container {
   background-color: $ige-background;
@@ -557,7 +685,7 @@ svg {
 }
 
 ige-side-menu {
-  .coloring {
+  svg .coloring {
     fill: #ffffff;
   }
 
@@ -569,8 +697,20 @@ ige-side-menu {
 ige-form-label + * {
   flex: 1;
   min-width: 0;
+  padding-bottom: 8px;
 }
 
+ige-inline-help-wrapper > formly-field-mat-checkbox + button.infoIcon {
+  position: relative;
+  right: 0;
+  top: 6px;
+  margin-left: 10px;
+}
+/*ige-inline-help-wrapper > formly-wrapper-mat-form-field {
+  flex: 1;
+}*/
+
+/*
 #form {
   ige-form-label + formly-wrapper-mat-form-field {
     display: block;
@@ -581,17 +721,19 @@ ige-form-label + * {
     margin-top: 11px;
   }
 }
+*/
 
-.mat-form-field {
+/*.mat-mdc-form-field {
   line-height: 1.25 !important;
-}
+}*/
 
-.mat-form-field-appearance-outline .mat-form-field-outline {
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+/*.mat-form-field-appearance-outline .mat-form-field-outline {
   color: $ige-comment-color !important;
-}
+}*/
 
 // Context Buttons
-.mat-icon-button {
+.mat-mdc-icon-button {
   &.table-options {
     background-color: #ffffff;
     line-height: 32px;
@@ -600,9 +742,13 @@ ige-form-label + * {
   }
 
   &.menu-button {
-    width: 26px;
-    height: 26px;
+    width: 26px !important;
+    height: 26px !important;
     line-height: 24px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 0 !important;
   }
 
   &.menu-button:enabled {
@@ -620,19 +766,31 @@ ige-form-label + * {
   }
 }
 
-// Icons
-.infoIcon {
-  display: inline-block;
-  background-color: $ige-background;
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  margin-right: 4px;
-  margin-top: -1px;
+ige-context-help .mat-mdc-dialog-content {
+  h1,
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  h2 {
+    color: #000000de;
+    margin-bottom: 0;
 
+    & + p {
+      margin-top: 0;
+    }
+  }
+}
+
+// Icons
+/*.infoIcon {
   .mat-icon svg rect {
     fill: $ige-secondary;
   }
+}*/
+
+mat-icon.mark-color .coloring {
+  fill: $ige-check-color;
 }
 
 .mat-icon.big-icon {
@@ -650,98 +808,52 @@ ige-form-label + * {
   color: $error-color;
 }
 
-/* validation error hide conditionally */
-
-.hide-validation {
-  ige-form-error {
-    display: none;
-  }
-
-  button.error-outline {
-    border-color: rgba(0, 0, 0, 0.12) !important;
-  }
-
-  .has-error {
-    background-color: $ige-secondary !important;
-  }
-
-  .mat-error {
-    opacity: 0;
-    height: 0;
-    display: none;
-  }
-
-  .mat-form-field-invalid .mat-input-element {
-    caret-color: initial !important;
-  }
-
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
-    .mat-form-field-outline {
-    opacity: 1;
-    color: $ige-comment-color !important;
-  }
-
-  .mat-form-field-appearance-outline:not(.mat-form-field-disabled)
-    .mat-form-field-flex:hover
-    .mat-form-field-outline-thick {
-    opacity: 1;
-  }
-
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid
-    .mat-form-field-outline-thick {
-    color: initial;
-    opacity: 0;
-  }
-
-  .mat-select-invalid .mat-select-placeholder {
-    color: $ige-comment-color !important;
-  }
-
-  .mat-form-field.mat-form-field-invalid .mat-form-field-label {
-    color: $ige-placeholder-color !important;
-
-    &.mat-accent,
-    .mat-form-field-required-marker {
-      color: $ige-placeholder-color !important;
-    }
-  }
-}
-
 .dlg-field-label {
   padding-bottom: 4px;
+  color: #000000;
 
   &.required {
     font-weight: 500;
   }
 }
 
+.dlg-field-hero-label {
+  color: $ige-primary;
+  font-size: 24px;
+  line-height: 30px;
+  padding: 24px 0;
+}
+
 /* Material Tabs */
 .page-tabs-routing {
-  &.mat-tab-nav-bar {
+  &.mat-mdc-tab-nav-bar {
     border-bottom: none;
   }
 
-  .mat-tab-links {
+  .mat-mdc-tab-links {
     background-color: $ige-secondary-dark;
   }
 
-  .mat-tab-link {
+  .mat-mdc-tab-link {
     //background-color: #161234;
     border-bottom: none;
-    height: 56px;
+    height: 56px !important;
 
-    color: #ffffff;
-    letter-spacing: 1.25px;
-    text-transform: uppercase;
-    opacity: 0.75;
+    .mdc-tab__text-label {
+      color: #ffffff !important;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
 
-    &.active-link {
+    &.active-link .mdc-tab__text-label {
       opacity: 1;
-      color: #4ba7d0;
+      color: #4ba7d0 !important;
     }
   }
 
-  .mat-ink-bar {
+  .mdc-tab-indicator__content {
+    border-color: $ige-background !important;
     background-color: $ige-background !important;
     height: 6px;
   }
@@ -750,21 +862,24 @@ ige-form-label + * {
 .page-tabs {
   height: 100%;
 
-  & > .mat-tab-header {
+  & > .mat-mdc-tab-header {
     background-color: $ige-secondary-dark;
     border-bottom: none;
     height: 56px;
-
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+    /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
     .mat-tab-label {
       color: #ffffff;
       letter-spacing: 1.25px;
       text-transform: uppercase;
       opacity: 0.75;
       height: 56px;
-
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+      /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
       &.mat-tab-label-active {
         opacity: 1;
-
+        /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
         .mat-tab-label-content {
           color: #4ba7d0;
         }
@@ -776,7 +891,7 @@ ige-form-label + * {
       height: 6px;
     }
   }
-
+  /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
   & > .mat-tab-body-wrapper {
     flex: 1;
   }
@@ -827,140 +942,21 @@ ige-form-label + * {
   cursor: move;
 }
 
-/* Form Fields */
-.white-bg {
-  margin-bottom: 12px;
-
-  .mat-form-field-outline-start,
-  .mat-form-field-outline-gap,
-  .mat-form-field-outline-end {
-    background-color: #ffffff;
+.doc-item {
+  .mat-icon {
+    margin-top: -2px !important;
   }
 
-  .prefix {
-    color: $ige-comment-color;
-    padding-right: 5px;
+  .mat-line {
+    line-height: 22px !important;
   }
 }
 
-/* Form Field enhancements */
-.straight-border-right.mat-form-field-appearance-outline
-  .mat-form-field-outline-end {
-  border-radius: 0;
-  border-right: none;
+.show-all-link + .spacing,
+.mat-mdc-option + .spacing {
+  padding-bottom: 35px;
 }
-
-.straight-border-left.mat-form-field-appearance-outline
-  .mat-form-field-outline-start {
-  border-radius: 0;
-}
-
-mat-selection-list.with-menu .mat-list-text {
-  align-items: center;
-  flex-direction: row !important;
-
-  .menu-button {
-    margin-left: 40px;
-  }
-}
-
-.ige-form-field {
-  padding-top: 6px;
-
-  .mat-form-field-wrapper {
-    padding-bottom: 0;
-    margin-bottom: 0;
-
-    .mat-form-field-flex {
-      align-items: center;
-      height: 40px;
-    }
-
-    .mat-form-field-outline {
-      top: 0;
-      background-color: #ffffff;
-      border-radius: 4px;
-    }
-
-    .mat-form-field-prefix,
-    .mat-form-field-suffix {
-      top: 0;
-    }
-
-    .mat-form-field-infix {
-      display: flex;
-      align-items: center;
-      padding: 0;
-
-      input {
-        height: 100%;
-      }
-    }
-  }
-}
-
-ige-sidebar
-  ige-tree-header
-  .ige-form-field
-  .mat-form-field-wrapper
-  .mat-form-field-outline:not(.mat-form-field-outline-thick)
-  > div {
-  border: none;
-}
-
-.quicksearch-auto-tree {
-  padding: 12px;
-
-  mat-option {
-    padding: 0 !important;
-  }
-
-  mat-option,
-  .doc-item {
-    height: 40px !important;
-  }
-}
-.quicksearch-auto {
-  max-height: unset !important;
-  width: 510px !important;
-  padding: 24px 24px 12px;
-
-  &.option-no-padding mat-option {
-    padding: 0 !important;
-  }
-
-  &.option-no-padding mat-option,
-  &.option-no-padding .doc-item {
-    height: 40px !important;
-
-    &.multiline {
-      height: auto !important;
-      white-space: normal;
-      padding-top: 6px;
-      padding-bottom: 6px;
-      align-items: flex-start !important;
-    }
-  }
-
-  &.mat-autocomplete-hidden {
-    display: none !important;
-  }
-
-  .doc-item {
-    .mat-icon {
-      margin-top: -2px !important;
-    }
-
-    .mat-line {
-      line-height: 22px !important;
-    }
-  }
-
-  .show-all-link + .spacing,
-  .mat-option + .spacing {
-    padding-bottom: 35px;
-  }
-}
+//}
 
 /* DRAG N DROP ANIMIATION */
 /* Animate items as they're being sorted. */
@@ -1007,7 +1003,7 @@ mat-icon.wide-icon-26px {
 }
 
 /* TABLE */
-.mat-table .mat-row:hover {
+.mat-mdc-table .mat-mdc-row:hover {
   background-color: darken(#ffffff, 5%);
 
   .menu-button {
@@ -1015,12 +1011,12 @@ mat-icon.wide-icon-26px {
   }
 }
 
-.mat-table.dark .mat-row:hover {
+.mat-mdc-table.dark .mat-mdc-row:hover {
   background-color: darken($ige-background, 5%);
 }
 
 /* RADIO */
-.mat-radio-group {
+.mat-mdc-radio-group {
   display: flex;
   gap: 12px;
 }
@@ -1029,13 +1025,14 @@ mat-icon.wide-icon-26px {
   display: flex;
   flex-direction: column;
   margin-top: 12px;
-
-  mat-radio-button {
+  /*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
+  /*mat-radio-button {
     margin: 5px 0;
-  }
+  }*/
 }
 
 .comment {
+  font-size: 14px;
   line-height: 22px;
   color: $ige-hint-color;
 }
@@ -1061,6 +1058,8 @@ mat-icon.wide-icon-26px {
   .infoIcon {
     background-color: white;
     margin-right: 15px;
+    height: 24px;
+    border-radius: 50%;
   }
 }
 
@@ -1089,43 +1088,43 @@ mat-icon.wide-icon-26px {
 }*/
 
 /* Slide toggle (stretched) */
-.mat-slide-toggle.stretch {
+/*.mat-mdc-slide-toggle.stretch {
   display: block;
-
+  !*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*!
   .mat-slide-toggle-label {
     justify-content: space-between;
   }
-}
+}*/
 
 .info-menu {
-  &.mat-menu-panel {
-    max-width: 350px;
+  &.mat-mdc-menu-panel {
+    max-width: 350px !important;
   }
 
-  .mat-card-title {
+  /*.mat-mdc-card-title {
     font-size: 24px;
     margin: 0;
   }
 
-  .mat-menu-item {
+  .mat-mdc-menu-item {
     font-size: 16px;
     color: $ige-text-color;
     height: 44px;
   }
 
-  a.mat-menu-item {
+  a.mat-mdc-menu-item {
     text-transform: unset;
-  }
+  }*/
 
   .category-item {
-    color: $ige-hint-color;
+    //color: $ige-hint-color;
     font-size: 14px;
     text-transform: uppercase;
   }
 
-  .category-item ~ .category-item {
+  /*  .category-item ~ .category-item {
     padding-top: 16px;
-  }
+  }*/
 
   .versioninfo {
     color: $ige-hint-color;
@@ -1157,13 +1156,13 @@ mat-icon.wide-icon-26px {
 }
 
 table.big-font {
-  .mat-cell,
+  .mat-mdc-cell,
   a {
     font-size: 16px;
   }
 }
 
-.mat-row.readonly {
+.mat-mdc-row.readonly {
   cursor: default;
 }
 
@@ -1172,7 +1171,7 @@ table.big-font {
   ige-date-range-type,
   ige-spatial-list,
   formly-field-mat-datepicker,
-  .mat-radio-group {
+  .mat-mdc-radio-group {
     background: $error-background !important;
   }
 }
@@ -1182,7 +1181,7 @@ table.big-font {
   ige-date-range-type,
   ige-spatial-list,
   formly-field-mat-datepicker,
-  .mat-radio-group {
+  .mat-mdc-radio-group {
     background: $ige-check-background-color !important;
   }
 }
@@ -1191,30 +1190,40 @@ table.big-font {
   padding-bottom: 12px;
 }
 
-.mat-menu-panel.mat-menu-panel,
+.space-bottom-field {
+  display: block;
+  padding-bottom: 22px;
+}
+
+.negative-space-top-field {
+  display: block;
+  margin-top: -22px;
+}
+
+.mat-mdc-menu-panel.mat-menu-panel,
 .mat-select-panel.mat-select-panel {
   max-width: 400px;
 }
 
 // top level deep selector acceptable as ige-inline-help-wrapper is unique
-ige-inline-help-wrapper {
+/*ige-inline-help-wrapper {
   display: flex;
   align-items: center;
   position: relative;
-
+  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
   formly-field-mat-input,
   formly-field-mat-textarea,
   ige-repeat-list {
     flex: 1;
   }
-
-  formly-field-mat-input + .mat-icon-button.menu-button {
+  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
+  formly-field-mat-input + .mat-mdc-icon-button.menu-button {
     margin-top: -3px;
     margin-bottom: -3px;
     margin-left: 0.75em;
   }
 
-  formly-field-mat-textarea + .mat-icon-button.menu-button {
+  formly-field-mat-textarea + .mat-mdc-icon-button.menu-button {
     position: absolute;
     right: 0;
   }
@@ -1222,28 +1231,28 @@ ige-inline-help-wrapper {
   ige-repeat-list {
     margin-top: 0 !important;
 
-    & + .mat-icon-button.menu-button {
+    & + .mat-mdc-icon-button.menu-button {
       position: absolute;
       right: 10px;
       bottom: 28px;
     }
   }
 
-  .mat-icon-button.menu-button {
+  .mat-mdc-icon-button.menu-button {
     width: 24px;
     height: 24px;
     margin-left: 12px;
     background-color: $ige-background;
     margin-top: 0.15em;
-
+    !*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*!
     .mat-button-wrapper {
       * {
         vertical-align: unset;
       }
     }
   }
-
+  !*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*!
   formly-field-mat-radio {
     margin-top: 0.2em;
   }
-}
+}*/

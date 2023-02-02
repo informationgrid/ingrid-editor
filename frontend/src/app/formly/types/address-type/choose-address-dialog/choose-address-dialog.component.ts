@@ -26,8 +26,8 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
-import { MatSelect } from "@angular/material/select";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
+import { MatSelect } from "@angular/material/select";
 
 export interface ChooseAddressDialogData {
   address: AddressRef;
@@ -93,6 +93,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         tap(() => (this.placeholder = "Bitte wählen ..."))
       )
       .subscribe();
+
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
       map((allRecent) => {

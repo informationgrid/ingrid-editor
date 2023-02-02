@@ -64,7 +64,9 @@ describe("CatalogService", () => {
                   },
                 ],
               },
-            ]
+            ],
+            "",
+            ""
           ),
       }),
     ],

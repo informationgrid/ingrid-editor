@@ -28,27 +28,24 @@ export class PersonDoctype extends AddressShared {
             {
               fieldGroupClassName: "display-flex width-50",
               fieldGroup: [
-                this.addAutocomplete("salutation", null, {
-                  wrappers: ["form-field", "inline-help"],
-                  className: "flex-1",
-                  fieldLabel: "Anrede",
+                this.addAutoCompleteInline("salutation", "Anrede", {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                   codelistId: 4300,
-                  hasInlineContextHelp: true,
                 }),
-                this.addAutocomplete("academic-title", null, {
-                  wrappers: ["form-field", "inline-help"],
+                this.addAutoCompleteInline("academic-title", "Titel", {
+                  wrappers: ["inline-help", "form-field"],
                   className: "flex-1 pad-right",
-                  fieldLabel: "Titel",
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4305, "academic-title"),
                   codelistId: 4305,
-                  hasInlineContextHelp: true,
                 }),
               ],
             },
@@ -83,7 +80,7 @@ export class PersonDoctype extends AddressShared {
           fieldLabel:
             "für Anzeige Daten der übergeordneten Organisation verwenden",
           expressions: {
-            hide: "!(formState.mainModel && formState.mainModel?._parent) ||  formState.parentIsFolder",
+            hide: "!model?._parent || formState.parentIsFolder",
           },
         }),
       ]),

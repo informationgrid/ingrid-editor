@@ -13,7 +13,6 @@ export class InlineHelpWrapperComponent
   implements OnInit, AfterViewInit
 {
   private profile: string;
-  private docType: string;
   private fieldId: string;
 
   constructor(
@@ -27,7 +26,6 @@ export class InlineHelpWrapperComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.formState.mainModel?._type ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
@@ -36,12 +34,14 @@ export class InlineHelpWrapperComponent
       return;
     }
 
+    evt.stopImmediatePropagation();
+
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
     const title = this.props.label ?? this.props.externalLabel;
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.docType,
+      this.formState.mainModel?._type,
       this.fieldId,
       title,
       infoElement

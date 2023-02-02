@@ -15,11 +15,12 @@ td {
   padding-bottom: 10px !important;
 }
 
-.mat-row .menu-button {
+.mat-mdc-row .menu-button {
   margin-right: 7px;
   background: $ige-background;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
 mat-button {
   user-select: none;
   margin: 1px;

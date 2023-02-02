@@ -40,7 +40,6 @@ export class DataCollectionDoctype extends IngridShared {
               options: this.getCodelistForSelect(3535, "title"),
               codelistId: 3535,
             }),
-            { key: "_type" },
             this.addDatepickerInline("date", "Datum", {
               className: "flex-1",
               required: true,

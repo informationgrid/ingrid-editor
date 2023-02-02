@@ -1,224 +1,129 @@
-// fix for bottom aligned actions buttons in dialog
-// see: https://github.com/angular/components/issues/4609
-.mat-dialog-override {
-  mat-dialog-container {
-    > :first-child,
-    .cdk-drag:not(mat-row) {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
+@import "src/variables";
 
-    mat-dialog-content,
-    div[mat-dialog-content] {
-      flex-grow: 1;
-      //max-height: unset;
-      line-height: 1.35;
-    }
+.white-bg {
+  &.white-border {
+    .mat-mdc-text-field-wrapper {
+      border: 2px solid #ffffff;
 
-    mat-dialog-content p,
-    div[mat-dialog-content] p {
-      white-space: pre;
+      &:hover {
+        border: 2px solid $ige-comment-color;
+      }
     }
+  }
 
-    ige-context-help mat-dialog-content p,
-    ige-context-help div[mat-dialog-content] p,
-    ige-context-help mat-dialog-content li,
-    ige-context-help div[mat-dialog-content] li {
-      white-space: normal;
-      line-height: 22px;
-    }
+  .mat-mdc-text-field-wrapper {
+    background-color: white;
+    border-radius: 4px;
   }
 }
 
-.mat-dialog-actions {
-  border-top: 1px solid $ige-background-bar;
-  margin-left: -24px;
-  margin-right: -24px;
-  padding: 0 10px !important;
-}
-
-// all buttons shall be uppercase
-// align text in buttons centered with icon
-button:not(.default-button) .mat-button-wrapper {
+button.mdc-button {
   text-transform: uppercase;
-  letter-spacing: 1.25px;
 }
 
-button .mat-button-wrapper {
-  letter-spacing: 0.4px;
-
-  mat-icon + span {
-    display: inline-block;
-  }
+mat-form-field:hover .mdc-notched-outline__leading,
+mat-form-field:hover .mdc-notched-outline__trailing {
+  //border-color: #979797;
+  //border-width: 2px !important;
 }
 
-.mat-button-base.button-square-icon {
-  padding: 0;
-  min-width: 36px;
-  background-color: $ige-background;
-}
-
-.shortcut .mat-button mat-icon + span {
-  padding-left: 5px;
-}
-
-.mat-dialog-container {
-  display: flex !important;
-  flex-direction: column;
-  flex: 1;
-  margin: -10px 0 0 -10px;
-
-  ng-component,
-  ige-new-document {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .dialog-title-wrapper {
-    margin: -24px -24px 0;
+ige-side-menu .mat-mdc-list-item {
+  &.light {
     background-color: $ige-secondary;
-    padding: 10px;
+  }
+
+  &.dark:hover {
+    background-color: lighten($ige-secondary, 8%);
+  }
+
+  &:hover {
+    background: lighten($ige-secondary, 8%) !important;
+  }
+
+  &.active:hover {
+    background: lighten($ige-primary, 8%) !important;
+  }
+}
+
+.mat-mdc-dialog-container {
+  .dialog-title-wrapper {
+    background-color: $ige-secondary;
+    padding: 6px 0;
 
     &.error {
       background-color: #cd0909;
     }
 
-    .mat-dialog-title {
+    .mat-mdc-dialog-title {
+      display: flex;
+      align-items: end;
       margin: 0;
-      color: white;
-
-      span.text {
-        vertical-align: sub;
-        padding-left: 20px;
-        line-height: 40px;
-        font-size: 24px;
-        font-weight: 400;
-        letter-spacing: 0.4px;
-      }
-    }
-  }
-
-  .mat-dialog-content {
-    box-sizing: border-box;
-    padding-top: 24px;
-    padding-bottom: 24px;
-
-    .place-title,
-    .place-title-other {
-      color: $ige-primary;
+      color: #fff;
       font-size: 24px;
-      line-height: 30px;
-      padding-bottom: 24px;
+      font-weight: 400;
 
-      &.small-bottom {
-        padding-bottom: 12px;
+      .mat-mdc-icon-button {
+        margin-left: -12px;
+        margin-right: 24px;
       }
     }
+  }
 
-    .place-title-other {
-      padding-top: 24px;
-    }
+  mat-dialog-actions {
+    border-top: 1px solid $ige-background-bar;
   }
 }
 
-ige-root .mat-card {
-  border-radius: 5px;
+mat-icon svg .coloring {
+  fill: $ige-secondary;
 }
 
-/* TOOLTIPS */
-.mat-tooltip-panel {
-  .mat-tooltip {
-    background-color: #333333;
-    font-size: 12px;
-    border-radius: 24px;
+form-toolbar mat-icon svg .coloring {
+  fill: #000000;
+}
+
+mat-checkbox .mdc-form-field {
+  font-size: 16px;
+}
+
+.mat-mdc-header-row {
+  min-height: 40px;
+}
+
+.mat-mdc-row {
+  min-height: 32px;
+}
+
+mat-table mat-header-cell.mat-mdc-header-cell {
+  color: #0000008a;
+  font-size: 12px;
+}
+
+mat-hint {
+  color: #0009;
+}
+
+.mat-mdc-icon-button[disabled] .mat-icon {
+  opacity: 0.26;
+}
+
+mat-dialog-container.mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    display: flex;
+  }
+  .mat-mdc-tab-body-content {
+    overflow: auto !important;
   }
 }
 
-/* Checkboxes, radio btns */
-.mat-checkbox-indeterminate:not(.mat-checkbox-disabled).mat-accent
-  .mat-checkbox-background,
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
-  .mat-checkbox-background,
-.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
-  .mat-ripple-element,
-.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
-.mat-slide-toggle:not(.mat-disabled).mat-accent .mat-ripple-element,
-.mat-pseudo-checkbox-checked {
-  background-color: $ige-check-color !important;
+.cdk-overlay-container .mat-mdc-dialog-container .mdc-dialog__content {
+  color: $ige-text-color;
 }
 
-.mat-radio-button.mat-accent:not(.mat-radio-disabled) .mat-radio-inner-circle,
-.mat-radio-button.mat-accent
-  .mat-radio-ripple
-  .mat-ripple-element:not(.mat-radio-persistent-ripple),
-.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
-.mat-slide-toggle.mat-accent .mat-ripple-element,
-.mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-thumb,
-.mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
-  background-color: $ige-check-color !important;
+mat-tab-nav-panel {
+  overflow: auto;
 }
 
-.mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
-  background-color: #{$ige-check-color + "8a"} !important;
-}
-
-.mat-radio-button.mat-accent.mat-radio-checked:not(.mat-radio-disabled)
-  .mat-radio-outer-circle {
-  border-color: $ige-check-color !important;
-}
-
-/*
-.mat-checkbox .mat-checkbox-ripple {
-  display: none;
-}
-*/
-
-/* Placeholder */
-::-moz-placeholder {
-  /* Firefox 19+ */
-  opacity: 1;
-}
-
-:-moz-placeholder {
-  /* Firefox 4 - 18 */
-  opacity: 1;
-}
-
-/* Table */
-.mat-table:not(.no-action-column) {
-  .mat-header-cell:last-of-type,
-  .mat-cell:last-of-type {
-    padding-right: 12px;
-    text-align: end;
-  }
-
-  .disabled .mat-cell {
-    &,
-    a {
-      color: $ige-comment-color;
-    }
-  }
-}
-
-/* Progress Bar */
-.wrapper .mat-progress-bar-buffer {
-  background-color: $ige-mark-color;
-}
-
-/* Stepper */
-.wrapper {
-  .mat-step-header .mat-step-icon {
-    background-color: rgba(0, 0, 0, 0.38);
-  }
-
-  .mat-step-header .mat-step-icon-selected,
-  .mat-step-header .mat-step-icon-state-done,
-  .mat-step-header .mat-step-icon-state-edit {
-    background-color: $ige-primary;
-  }
-  .mat-step-header .mat-step-label.mat-step-label-active {
-    color: $ige-primary;
-  }
+.mat-mdc-tab-links > a {
+  min-width: 160px;
 }
