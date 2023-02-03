@@ -19,13 +19,13 @@ class IsoExporter : IgeExporter {
 
     private fun mapMetadata(tree: Document): Metadata {
         val md = Metadata()
-        md.setUuid(tree.data.path("_id").asText())
+//        md.setUuid(tree.data.path("_id").asText())
 // TODO:       md.language = tree.data.path("metadataLanguage").path("value").asText()
         md.setCharacterSet()
         md.setParentIdentifier(tree.data.path("_parent").asText(null))
         md.setHierarchyLevel("dataset")
-        md.setContact("12345", "pointOfContact")
-        md.setDateStamp("1978-10-10")
+//        md.setContact("12345", "pointOfContact")
+//        md.setDateStamp("1978-10-10")
         return md
     }
 

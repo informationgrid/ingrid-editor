@@ -1,9 +1,8 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.*
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
-@XmlAccessorType(XmlAccessType.FIELD)
 data class CharacterString(
-    @field:XmlElement(name = "CharacterString", namespace = "http://www.isotc211.org/2005/gco")
+    @JacksonXmlProperty(localName="CharacterString", namespace="http://www.isotc211.org/2005/gco")
     var text: String? = null
 )

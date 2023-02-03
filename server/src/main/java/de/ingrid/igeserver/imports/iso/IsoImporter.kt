@@ -29,8 +29,8 @@ class IsoImporter : IgeImporter {
     private fun mapToJson(md: Metadata): JsonNode {
         val mapper = ObjectMapper()
         val node = mapper.createObjectNode()
-        node.put("_id", md.fieldIdentifier)
-        node.put("metadataLanguage", md.getLanguage())
+//        node.put("_id", md.fieldIdentifier)
+//        node.put("metadataLanguage", md.getLanguage())
         return node
     }
 

@@ -14,8 +14,8 @@ data class ResponsibleParty(
     @XmlElement(name = "contactInfo") var contactInfo: ContactInfo? = null,
     @XmlElement(name = "role") var role: RoleCode? = null
 ) {
-    fun setRole(codelistAttr: CodelistAttributes?) {
+    /*fun setRole(codelistAttr: CodelistAttributes?) {
         role = RoleCode()
         role!!.codelist = codelistAttr
-    }
+    }*/
 }

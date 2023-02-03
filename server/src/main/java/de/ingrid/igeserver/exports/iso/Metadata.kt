@@ -1,15 +1,18 @@
 package de.ingrid.igeserver.exports.iso
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import javax.xml.bind.annotation.*
 
-@XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(
+//@XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
+//@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(
     namespace = "http://www.isotc211.org/2005/gmd",
-    propOrder = ["fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName", "contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale", "spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo", "contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints", "applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType", "featureAttribute"]
+    //propOrder = ["fileIdentifier", "language", "characterSet", "parentIdentifier", "hierarchyLevel", "hierarchyLevelName", "contact", "dateStamp", "metadataStandardName", "metadataStandardVersion", "dataSetURI", "locale", "spatialRepresentationInfo", "referenceSystemInfo", "metadataExtensionInfo", "identificationInfo", "contentInfo", "distributionInfo", "dataQualityInfo", "portrayalCatalogueInfo", "metadataConstraints", "applicationSchemaInfo", "metadataMaintenance", "series", "describes", "propertyType", "featureType", "featureAttribute"]
 )
 data class Metadata(
-    @field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
+    //@field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
+    @get: JacksonXmlProperty(isAttribute=false, localName="fileIdentifier", namespace="http://www.isotc211.org/2005/gmd")
     var fileIdentifier: CharacterString? = null,
     var characterSet: CharacterSetCode? = null,
     @field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
@@ -40,12 +43,12 @@ data class Metadata(
     val featureType: String? = null,
     val featureAttribute: String? = null) {
 
-    fun setUuid(uuid: String?) {
+    /*fun setUuid(uuid: String?) {
         fileIdentifier = CharacterString(uuid)
-    }
+    }*/
 
-    val fieldIdentifier: String?
-        get() = fileIdentifier!!.text
+/*    val fieldIdentifier: String?
+        get() = fileIdentifier!!.text*/
 
     fun setLanguage(language: String) {
         this.language = LanguageCode().apply {
@@ -83,23 +86,23 @@ data class Metadata(
         hierarchyLevel = scopeCode
     }
 
-    fun setContact(uuid: String?, role: String?) {
+/*    fun setContact(uuid: String?, role: String?) {
         contact = Contact()
         val responsibleParty = ResponsibleParty()
         responsibleParty.uuid = uuid
-        responsibleParty.setRole(
+        *//*responsibleParty.setRole(
             CodelistAttributes(
                 "http://www.tc211.org/ISO19139/resources/codeList.xml#CI_RoleCode",
                 role
             )
-        )
+        )*//*
         val ci = ContactInfo()
         ci.setAddress( "xxx@yyy.zz")
         responsibleParty.contactInfo = ci
         contact!!.responsibleParty = responsibleParty
-    }
+    }*/
 
-    fun setDateStamp(date: String?) {
-        dateStamp = Date(date)
-    }
+//    fun setDateStamp(date: String?) {
+//        dateStamp = Date(date)
+//    }
 }
