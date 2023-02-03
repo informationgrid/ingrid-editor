@@ -264,6 +264,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         untilDestroyed(this),
         // debounceTime(10), // do not handle all events
+        filter((_) => this.formInfoRef !== undefined),
         map((top): boolean => this.determineToggleState(element.scrollTop)),
         tap((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently

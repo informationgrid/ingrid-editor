@@ -33,7 +33,7 @@
   position: fixed;
   top: 104px;
   right: 0;
-  z-index: 2000;
+  z-index: 1000;
 
   background-color: $ige-background;
   box-shadow: 0 2px 2px -2px #666666;
@@ -53,8 +53,9 @@
     opacity: 1;
   }
 
-  mat-slide-toggle {
-    box-shadow: 0 2px 2px -2px #666666;
+  mat-slide-toggle,
+  .cover {
+    box-shadow: 0 1px 0 0 #ddd;
   }
 }
 
@@ -70,12 +71,6 @@
   z-index: 1;
   user-select: none;
   pointer-events: none;
-
-  &.sticky {
-    position: fixed;
-    top: 150px;
-    right: 17px;
-  }
 
   .cover {
     position: absolute;
