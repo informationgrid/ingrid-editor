@@ -1,8 +1,8 @@
 package de.ingrid.igeserver.imports.iso
 
+import de.ingrid.igeserver.profiles.ingrid.import.ISOImport
 import io.kotest.core.spec.style.AnnotationSpec
-import java.io.IOException
-import java.net.URISyntaxException
+import io.kotest.matchers.shouldBe
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -10,21 +10,11 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun testRun() {
-        val isoImporter = IsoImporter()
-        val data = xmlDoc
-        isoImporter.run(data!!)
+        val isoImporter = ISOImport()
+        val result = isoImporter.run(xmlDoc)
+        println(result.toString())
+        result shouldBe ""
     }
 
-    // TODO Auto-generated catch block
-    private val xmlDoc: String?
-        get() = try {
-            String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("csw_test_import_example.xml").toURI())))
-        } catch (e: IOException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
-            null
-        } catch (e: URISyntaxException) {
-            e.printStackTrace()
-            null
-        }
+    private val xmlDoc = String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("csw_test_import_example.xml").toURI())))
 }

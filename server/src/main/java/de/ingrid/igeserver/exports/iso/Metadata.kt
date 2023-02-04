@@ -12,14 +12,12 @@ import javax.xml.bind.annotation.*
 )
 data class Metadata(
     //@field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
-    @get: JacksonXmlProperty(isAttribute=false, localName="fileIdentifier", namespace="http://www.isotc211.org/2005/gmd")
     var fileIdentifier: CharacterString? = null,
     var characterSet: CharacterSetCode? = null,
-    @field:XmlElement(namespace = "http://www.isotc211.org/2005/gmd")
     var language: LanguageCode? = null,
     var parentIdentifier: CharacterString? = null,
     var hierarchyLevel: ScopeCode? = null,
-    val hierarchyLevelName: String? = null,
+    val hierarchyLevelName: CharacterString? = null,
     var contact: Contact? = null,
     var dateStamp: Date? = null,
     val metadataStandardName: CharacterString = CharacterString("ISO19119"),
@@ -27,9 +25,9 @@ data class Metadata(
     val dataSetURI: String? = null,
     val locale: String? = null,
     val spatialRepresentationInfo: String? = null,
-    val referenceSystemInfo: String? = null,
+    val referenceSystemInfo: ReferenceSystem? = null,
     val metadataExtensionInfo: String? = null,
-    val identificationInfo: String? = null,
+    val identificationInfo: IdentificationInfo? = null,
     val contentInfo: String? = null,
     val distributionInfo: String? = null,
     val dataQualityInfo: String? = null,
@@ -50,6 +48,7 @@ data class Metadata(
 /*    val fieldIdentifier: String?
         get() = fileIdentifier!!.text*/
 
+/*
     fun setLanguage(language: String) {
         this.language = LanguageCode().apply {
             codelist = CodelistAttributes(
@@ -59,11 +58,15 @@ data class Metadata(
             )
         }
     }
+*/
 
+/*
     fun getLanguage(): String? {
         return language!!.codelist!!.content
     }
+*/
 
+/*
     fun setCharacterSet() {
         this.characterSet = CharacterSetCode()
         this.characterSet!!.characterSetCode = CodelistAttributes(
@@ -71,11 +74,15 @@ data class Metadata(
             "utf8"
         )
     }
+*/
 
+/*
     fun setParentIdentifier(parentUuid: String?) {
         parentIdentifier = CharacterString(parentUuid)
     }
+*/
 
+/*
     fun setHierarchyLevel(level: String?) {
         val scopeCode = ScopeCode()
         scopeCode.codelist = CodelistAttributes(
@@ -85,6 +92,7 @@ data class Metadata(
         )
         hierarchyLevel = scopeCode
     }
+*/
 
 /*    fun setContact(uuid: String?, role: String?) {
         contact = Contact()

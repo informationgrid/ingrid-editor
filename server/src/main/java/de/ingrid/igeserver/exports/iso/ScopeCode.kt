@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlElement
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
-@XmlAccessorType(XmlAccessType.FIELD)
 data class ScopeCode(
-    @XmlElement(name = "MD_ScopeCode") var codelist: CodelistAttributes? = null
-)
+    @JacksonXmlProperty(localName = "MD_ScopeCode") var scopeCode: CodelistAttributes? = null,
+//    @JacksonXmlProperty(isAttribute = true, localName = "MD_ScopeCode") var codeList: String? = null,
+//    @JacksonXmlProperty(isAttribute = true, localName = "MD_ScopeCode") var codeListValue: String? = null,
+) {
+//    @JacksonXmlText val value2: String? = null
+}

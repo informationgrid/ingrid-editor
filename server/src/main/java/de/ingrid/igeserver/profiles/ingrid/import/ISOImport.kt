@@ -13,8 +13,6 @@ import de.ingrid.igeserver.imports.ImportTypeInfo
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.StringReader
-import javax.xml.bind.JAXBContext
 
 @Service
 @Profile("ingrid")
@@ -25,6 +23,7 @@ class ISOImport : IgeImporter {
 
         val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
             setDefaultUseWrapper(false)
+            setXMLTextElementName("innerText")
         }).registerKotlinModule()
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -49,7 +48,7 @@ class ISOImport : IgeImporter {
         val mapper = ObjectMapper()
         val node = mapper.createObjectNode()
 //        node.put("_id", md.fieldIdentifier)
-        node.put("metadataLanguage", md.getLanguage())
+//        node.put("metadataLanguage", md.getLanguage())
         return node
     }
 
