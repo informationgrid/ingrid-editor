@@ -1,23 +1,31 @@
-package de.ingrid.igeserver.profiles.ingrid.import
+package de.ingrid.igeserver.profiles.ingrid.importer
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import gg.jte.ContentType
+import gg.jte.TemplateEngine
+import gg.jte.TemplateOutput
+import gg.jte.output.StringOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import org.unbescape.json.JsonEscape
 
 @Service
 @Profile("ingrid")
 class ISOImport : IgeImporter {
     private val log = logger()
+
+    val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
+
 
     override fun run(data: Any): JsonNode {
 
@@ -29,7 +37,12 @@ class ISOImport : IgeImporter {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        return mapToJson(finalObject)
+
+        val output: TemplateOutput = JsonStringOutput()
+        val model = MetadataModel(finalObject)
+        templateEngine.render("ingrid/geoservice.jte", model, output)
+
+        return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
 
 
         // input is XML
@@ -44,12 +57,13 @@ class ISOImport : IgeImporter {
         return "text/xml" == contentType
     }
 
-    private fun mapToJson(md: Metadata): JsonNode {
-        val mapper = ObjectMapper()
-        val node = mapper.createObjectNode()
-//        node.put("_id", md.fieldIdentifier)
-//        node.put("metadataLanguage", md.getLanguage())
-        return node
+    private class JsonStringOutput : StringOutput() {
+        override fun writeUserContent(value: String?) {
+            if (value == null) return
+            super.writeUserContent(
+                JsonEscape.escapeJson(value)
+            )
+        }
     }
 
     override val typeInfo: ImportTypeInfo
