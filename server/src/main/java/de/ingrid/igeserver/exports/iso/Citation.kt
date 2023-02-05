@@ -8,6 +8,19 @@ data class Citation(
 
 data class CICitation(
     val title: CharacterString?,
-    val date: Date?,
+    val date: CitationDate?,
     
+)
+
+data class CitationDate(
+    @JacksonXmlProperty(localName = "CI_Date") val date: CIDate?
+)
+
+data class CIDate(
+    val date: Date?,
+    val dateType: DateType?
+)
+
+data class DateType(
+    @JacksonXmlProperty(localName = "CI_DateTypeCode") val code: CodelistAttributes?
 )
