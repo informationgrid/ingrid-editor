@@ -148,34 +148,6 @@ export class BmiDoctype extends BaseDoctype {
       ]),
       this.addSection("Raumbezüge", [this.addSpatial("spatial", "Raumbezüge")]),
       this.addSection("Zeitbezüge", [
-        {
-          key: "events",
-          type: "repeat",
-          wrappers: ["panel"],
-          props: {
-            externalLabel: "Zeitbezug der Ressource",
-          },
-          fieldArray: {
-            fieldGroupClassName: "display-flex",
-            fieldGroup: [
-              this.addDatepicker("date", null, {
-                fieldLabel: "Datum",
-                required: true,
-                wrappers: ["form-field"],
-              }),
-              this.addSelect("text", "Typ", {
-                required: true,
-                className: "flex-1",
-                wrappers: ["form-field"],
-                externalLabel: null,
-                options: this.getCodelistForSelect(502, "text").pipe(
-                  map((items) => items.filter((it) => it.value !== "2"))
-                ),
-                codelistId: 502,
-              }),
-            ],
-          },
-        },
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
             className: "flex-1",
