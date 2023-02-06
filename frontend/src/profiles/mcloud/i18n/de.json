@@ -14,10 +14,5 @@
   "docType": {
     "mCloudDoc": "mCLOUD Dokument",
     "AddressDoc": "Adresse"
-  },
-  "address": {
-    "address-title": {
-      "McloudAddressDoc": "Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung."
-    }
   }
 }

@@ -11,7 +11,12 @@
         *ngIf="!showTitleInput"
         fxFlex
         class="label"
-        [matTooltip]="t('address.address-title.' + _model._type)"
+        [matTooltip]="
+            t(
+                'form.titleTooltip.' +
+                    (_model.firstName ? 'Person' : 'Organisation')
+            )
+        "
         [matTooltipDisabled]="!address || !disableEdit"
         [matTooltipShowDelay]="1000"
         [class.editable]="!disableEdit"

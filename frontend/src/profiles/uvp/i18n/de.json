@@ -49,11 +49,5 @@
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?",
     "reference-error-multiple-files": "Diese Adresse wird von mindestens einem Verfahren referenziert und kann nicht gelöscht werden."
-  },
-  "address": {
-    "address-title": {
-      "UvpOrganisationDoc": "Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.",
-      "UvpAddressDoc": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname."
-    }
   }
 }
