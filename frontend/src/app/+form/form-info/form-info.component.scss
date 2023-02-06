@@ -3,60 +3,17 @@
 :host {
   background-color: $ige-background;
 
-  .sticky {
-    position: fixed;
-    background-color: $ige-background;
-    box-shadow: 0 2px 2px -2px #666666;
-    left: 0;
-    right: 0;
-    top: 104px;
-    z-index: 2000;
-
-    .document-type {
-      opacity: 1;
-    }
-
-    a {
-      color: $ige-secondary;
-      //font-size: 13px;
-      padding: 0 10px;
-      text-transform: none;
-    }
-
-    .menu {
-      opacity: 1;
-    }
-  }
-
   ::ng-deep .anchor-navigation {
     transition: padding 0.2s linear;
   }
 
-  .document-type,
   .menu {
     opacity: 0;
     transition: opacity 0.2s linear;
-  }
-  .menu {
     width: 26px;
     height: 26px;
     line-height: 24px;
     background-color: $ige-background-bar;
-  }
-  .document-type {
-    display: inline-block;
-    background-color: white;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-
-    mat-icon {
-      line-height: 32px;
-      color: $state-working-color;
-      font-size: 16px;
-      padding-left: 2px;
-      padding-top: 2px;
-    }
   }
 }
 
@@ -67,16 +24,6 @@
   .form-info-bar-inner {
     max-width: 1260px;
     margin: 0 auto;
-  }
-}
-
-.navigation-header {
-  padding: 0 24px 0 36px;
-
-  & > div {
-    max-width: 1260px;
-    margin: 0 auto;
-    align-items: center;
   }
 }
 

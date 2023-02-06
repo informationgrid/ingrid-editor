@@ -34,6 +34,8 @@ export class InlineHelpWrapperComponent
       return;
     }
 
+    evt.stopImmediatePropagation();
+
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
     const title = this.props.label ?? this.props.externalLabel;

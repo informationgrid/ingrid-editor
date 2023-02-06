@@ -735,11 +735,14 @@ public class FileSystemStorage implements Storage {
         var existingFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
 
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
+        
+        checkAndLogForMissingFiles(datasetID, referencedFiles, unpublishedFiles, existingFiles);
 
-
+        // move files to trash from published folder which aren't referenced anymore
         existingFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath()))
                 .forEach(file -> moveFileToTrash(catalog, datasetID, copyOptions, file, Scope.PUBLISHED));
 
+        // move files from unpublished folder to published, but removing those files first which would be overwritten
         unpublishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var srcPath = this.getUnpublishedPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
@@ -766,6 +769,7 @@ public class FileSystemStorage implements Storage {
             }
         });
 
+        // remove files from unpublished folder which aren't referenced by the dataset
         unpublishedFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
             try {
                 var unsavedFile = f.getRealPath();
@@ -783,9 +787,21 @@ public class FileSystemStorage implements Storage {
         });
     }
 
+    private void checkAndLogForMissingFiles(String datasetID, List<String> referencedFiles, List<FileSystemItem> ...filesOnStorage) {
+        List<String> missingFiles = referencedFiles.stream()
+                .filter(ref -> Arrays.stream(filesOnStorage)
+                        .allMatch(location -> location.stream().noneMatch(item -> ref.contains(item.getRelativePath()))))
+                .collect(Collectors.toList());
+        
+        if (!missingFiles.isEmpty()) {
+            log.error("Some referenced files could not be found on the file system for the dataset '" + datasetID + "': " + String.join(",", missingFiles));
+        }
+    }
+
     private void moveFileToTrash(String catalog, String datasetID, CopyOption[] copyOptions, FileSystemItem f, Scope scope) {
         try {
             var existingFile = f.getRealPath();
+            log.info("Moving file to trash: " + existingFile + " from " + datasetID);
 
             var trashPath = this.getTrashPath(catalog, datasetID, f.getRelativePath(), this.docsDir, scope);
             Files.createDirectories(trashPath.getParent());
@@ -806,6 +822,8 @@ public class FileSystemStorage implements Storage {
         var publishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
 
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
+
+        checkAndLogForMissingFiles(datasetID, referencedFiles, publishedFiles);
 
         publishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {

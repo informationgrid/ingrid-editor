@@ -34,4 +34,7 @@ interface CatalogProfile {
     fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
         return permissions
     }
+
+    @JsonIgnore
+    fun additionalPublishConditions(catalogId: String): List<String> = emptyList()
 }

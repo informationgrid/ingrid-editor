@@ -35,33 +35,28 @@
 
                 <div [class.hide]="fields.length === 0">
                     <ige-form-info
+                        #formInfo
                         *ngIf="formInfoModel !== null"
                         [form]="form"
                         [model]="formInfoModel"
                         [forAddress]="address"
-                        [sections]="(sections | async) ?? []"
-                        [parentContainer]="scrollForm"
                         [disableTitleEdit]="
-                            formOptions.formState.disabled ||
+                            formOptions.formState.disabled === true ||
                             (address && model._type !== 'FOLDER')
                         "
-                        (showStickyHeader)="updateContentPadding($event)"
                     >
-                        <div
-                            [class.hide]="!hasOptionalFields"
-                            class="optional-fields-toggle"
-                        >
-                            <div class="diagonal"></div>
-                            <mat-slide-toggle
-                                checked
-                                (change)="
-                                    hideOptionalFields = !hideOptionalFields
-                                "
-                                >Alle
-                            </mat-slide-toggle>
-                            <div class="cover"></div>
-                        </div>
                     </ige-form-info>
+                    <!--                                      [scrollHeaderOffsetLeft]="scrollHeaderOffsetLeft" -->
+                    <ige-quick-navbar
+                        #sticky_header
+                        *ngIf="formInfoModel !== null"
+                        [class.sticky-header]="isStickyHeader"
+                        [model]="model"
+                        [sections]="sections | async"
+                        [hasOptionalFields]="hasOptionalFields"
+                        (toggleOptionalFields)="hideOptionalFields = !$event"
+                    ></ige-quick-navbar>
+
                     <div
                         class="form-inner"
                         [class.extra-space-toggle-button]="hasOptionalFields"

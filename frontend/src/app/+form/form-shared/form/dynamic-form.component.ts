@@ -22,10 +22,15 @@ import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { filter, map, tap } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { combineLatest, merge, Observable, Subscription } from "rxjs";
+import {
+  combineLatest,
+  fromEvent,
+  merge,
+  Observable,
+  Subscription,
+} from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
@@ -37,6 +42,8 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { DocumentUtils } from "../../../services/document.utils";
+import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -51,6 +58,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
+  @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
+  @ViewChild("sticky_header", { read: ElementRef }) stickyHeaderRef: ElementRef;
 
   sidebarWidth: number;
 
@@ -111,6 +120,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
+    private profileService: ProfileService,
     private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
@@ -222,6 +232,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // noinspection JSUnusedGlobalSymbols
+  scrollHeaderOffsetLeft: number;
+
   ngAfterViewInit(): any {
     // show blocker div to prevent user from modifying data or calling functions
     // during save
@@ -237,11 +249,52 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
       .subscribe((finished) => (this.showBlocker = !finished));
+
+    this.initScrollBehavior();
   }
 
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
+  }
+
+  private initScrollBehavior() {
+    const element = this.scrollForm.nativeElement;
+    fromEvent(element, "scroll")
+      .pipe(
+        untilDestroyed(this),
+        // debounceTime(10), // do not handle all events
+        filter((_) => this.formInfoRef !== undefined),
+        map((top): boolean => this.determineToggleState(element.scrollTop)),
+        tap((show) => this.toggleStickyHeader(show)),
+        debounceTime(300), // update store less frequently
+        tap((top) =>
+          this.treeService.updateScrollPositionInStore(
+            this.address,
+            element.scrollTop
+          )
+        )
+      )
+      .subscribe();
+  }
+
+  private determineToggleState(top) {
+    // when we scroll more than the non-sticky area then it should become sticky
+    return top > this.formInfoRef.nativeElement.clientHeight;
+  }
+
+  private toggleStickyHeader(show: boolean) {
+    this.isStickyHeader = show;
+
+    if (show) {
+      // update dom with changes before we continue and need new client height
+      this.cdr.detectChanges();
+
+      this.paddingWithHeader =
+        this.stickyHeaderRef.nativeElement.clientHeight + "px";
+    } else {
+      this.paddingWithHeader = "0px";
+    }
   }
 
   /**
@@ -403,13 +456,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   rememberSizebarWidth(info) {
     this.formularService.updateSidebarWidth(info.sizes[0]);
-  }
-
-  updateContentPadding(stickyHeaderInfo: StickyHeaderInfo) {
-    this.paddingWithHeader = stickyHeaderInfo.show
-      ? stickyHeaderInfo.headerHeight + "px"
-      : "0";
-    this.isStickyHeader = stickyHeaderInfo.show;
   }
 
   private prepareForm(writePermission: boolean) {
