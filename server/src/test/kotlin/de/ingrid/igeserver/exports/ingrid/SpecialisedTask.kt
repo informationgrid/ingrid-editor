@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.exports.ingrid
 
-import IntegrationTest
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -31,11 +30,18 @@ class SpecialisedTask : AnnotationSpec() {
     @MockkBean(relaxed = true)
     private lateinit var catalogService: CatalogService
 
+    val GENERATED_UUID_REGEX = Regex("ID_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+
     @Test
     fun minimalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        val result = exportJson(exporter, "/export/ingrid/specialisedTask-Document1.json")
+        var result = exportJson(exporter, "/export/ingrid/specialisedTask-Document1.json")
+        // replace generated UUIDs and windows line endings
+        result = result
+            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+            .replace("\r\n", "\n")
 
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")

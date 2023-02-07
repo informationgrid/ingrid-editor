@@ -24,23 +24,25 @@
                 <gmd:type>
                     <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
                 </gmd:type>
-                <gmd:thesaurusName>
-                    <gmd:CI_Citation>
-                        <gmd:title>
-                            <gco:CharacterString>${thesaurus.getName()}</gco:CharacterString>
-                        </gmd:title>
-                        <gmd:date>
-                            <gmd:CI_Date>
-                                <gmd:date>
-                                    <gco:Date>${thesaurus.getDate()}</gco:Date>
-                                </gmd:date>
-                                <gmd:dateType>
-                                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
-                                </gmd:dateType>
-                            </gmd:CI_Date>
-                        </gmd:date>
-                    </gmd:CI_Citation>
-                </gmd:thesaurusName>
+                    @if(!thesaurus.getName().isEmpty())
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>${thesaurus.getName()}</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>${thesaurus.getDate()}</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                    @endif
                 @endif
             </gmd:MD_Keywords>
         </gmd:descriptiveKeywords>

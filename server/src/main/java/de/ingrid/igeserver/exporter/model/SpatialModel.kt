@@ -37,9 +37,33 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     }
 
+    fun getFreeCoordinatesISO(): String? {
+        if (value == null) {
+            return null
+        }
+        return """                <gmd:EX_GeographicBoundingBox>
+                <gmd:extentTypeCode>
+                    <gco:Boolean>true</gco:Boolean>
+                </gmd:extentTypeCode>
+                <gmd:westBoundLongitude>
+                    <gco:Decimal>${value.lon1}</gco:Decimal>
+                </gmd:westBoundLongitude>
+                <gmd:eastBoundLongitude>
+                    <gco:Decimal>${value.lon2}</gco:Decimal>
+                </gmd:eastBoundLongitude>
+                <gmd:southBoundLatitude>
+                    <gco:Decimal>${value.lat1}</gco:Decimal>
+                </gmd:southBoundLatitude>
+                <gmd:northBoundLatitude>
+                    <gco:Decimal>${value.lat2}</gco:Decimal>
+                </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+"""
+    }
+
     private fun getWktCoordinates(): String? {
         if (this.wkt != null) {
-            try{
+            try {
                 var coordsPos = wkt.indexOf("(")
                 var coords = wkt.substring(coordsPos).trim()
                 coords = coords.replace("\n", " ")
@@ -49,7 +73,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
                 coords = coords.replace("([0-9])\\s+([-0-9])".toRegex(), "$1, $2")
 
                 return coords
-            } catch (ex:Exception){
+            } catch (ex: Exception) {
                 log.error(ex)
             }
         }
@@ -57,14 +81,19 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         return null
     }
 
+    fun getWktCoordinatesISO(): String? {
+        // TODO Adapt for ISO
+        return getWktCoordinates()
+    }
+
     private fun getWktType(): String? {
         if (this.wkt != null) {
-            try{
+            try {
                 var coordsPos = wkt.indexOf("(")
                 var wktType = wkt.substring(0, coordsPos).trim().lowercase()
 
                 return wktType
-            } catch (ex:Exception){
+            } catch (ex: Exception) {
                 log.error(ex)
             }
         }

@@ -75,8 +75,16 @@
         }
       ],
       "verticalExtent": {
-        "unitOfMeasure": null
-      }
+        "minimumValue": 12,
+        "maximumValue": 121212,
+        "unitOfMeasure": {
+          "key": "9002"
+        },
+        "Datum": {
+          "key": "5105"
+        }
+      },
+      "description": "testerl"
     },
     "temporal": {
       "events": [

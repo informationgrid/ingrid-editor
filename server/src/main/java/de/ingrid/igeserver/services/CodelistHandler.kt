@@ -38,15 +38,15 @@ class CodelistHandler @Autowired constructor(
         codelistRepo.flush()
         codelistRepo.save(codelist)
     }
-    
+
     fun removeAndAddCodelists(catalogId: String, codelists: List<Codelist>) {
-        codelists.forEach { 
+        codelists.forEach {
             codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, it.identifier)
         }
         codelistRepo.flush()
         codelistRepo.saveAll(codelists)
     }
-    
+
     fun getCodelists(ids: List<String>): List<CodeList> {
 
         return codeListService.codeLists
@@ -96,21 +96,25 @@ class CodelistHandler @Autowired constructor(
             ?.entries
             ?.find { it.id == key }
             ?.fields?.get("de")
-    }    
-    
+    }
+
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
             ?.entries
             ?.find { it.id == key }
-    } 
-    
+    }
+
     fun getCodelistValue(codelistId: String, key: String): String? {
+        return getCodelistValue(codelistId, key, "de")
+    }
+
+    fun getCodelistValue(codelistId: String, key: String, field: String): String? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
             ?.entries
             ?.find { it.id == key }
-            ?.fields?.get("de")
+            ?.fields?.get(field)
     }
 
     fun updateCodelist(catalogId: String, id: String, codelist: Codelist): Codelist? {

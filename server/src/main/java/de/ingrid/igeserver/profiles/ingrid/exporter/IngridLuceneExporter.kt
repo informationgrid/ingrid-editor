@@ -21,7 +21,7 @@ class IngridLuceneExporter @Autowired constructor(
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        templateEngine.render("ingrid/shared-general.jte", getMapFromObject(doc, catalog), output)
+        templateEngine.render("ingrid/template-lucene.jte", getMapFromObject(doc, catalog), output)
         return output.toString()
     }
 
