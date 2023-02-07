@@ -3,10 +3,10 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
@@ -21,25 +21,25 @@ import org.unbescape.json.JsonEscape
 
 @Service
 @Profile("ingrid")
-class ISOImport : IgeImporter {
+class ISOImport(val codelistService: CodeListService) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-
     override fun run(data: Any): JsonNode {
 
-        val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
-            setDefaultUseWrapper(false)
-            setXMLTextElementName("innerText")
-        }).registerKotlinModule()
+        val xmlDeserializer = XmlMapper.builder()
+            .defaultUseWrapper(false)
+            .nameForTextElement("innerText")
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build()
+            .registerKotlinModule()
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
 
         val output: TemplateOutput = JsonStringOutput()
-        val model = MetadataModel(finalObject)
+        val model = MetadataModel(finalObject, codelistService)
         templateEngine.render("ingrid/geoservice.jte", model, output)
 
         return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)

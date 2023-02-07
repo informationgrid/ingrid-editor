@@ -1,0 +1,99 @@
+{
+  "title": "wemove Test: Downloaddienst 3D-Stadtmodell Hamburg",
+  "_uuid": "E6044602-F59B-4DC0-815D-F25BB34BAEF6",
+  "_parent": "9367616F-AC86-4A3D-A91D-51EA28382EFB",
+  "_type": "InGridGeoService",
+  "_createdBy": "???",
+  "_modifiedBy": "???",
+  "isInspireIdentified": true,
+  "isAdVCompatible": false,
+  "isOpenData": false,
+  "description": "Dieser ATOM-Downloaddienst stellt den Datensatz \"3D-Stadtmodell Hamburg\" bereit.",
+  "alternateTitle": "Mein alternativer Titel",
+  "pointOfContact": [
+    {
+      "ref": "D7D6E243-4DE1-4768-84E0-47E7890B92F0",
+      "type": {
+        "key": "7"
+      }
+    }
+  ],
+  "graphicOverviews": [],
+  "advProductGroups": [
+    {
+      "key": "6"
+    },
+    {
+      "key": "12"
+    }
+  ],
+  "themes": [],
+  "priorityDatasets": [],
+  "spatialScope": null,
+  "keywords": [],
+  "serviceCategories": [],
+  "serviceType": null,
+  "serviceVersion": [],
+  "coupledResources": [
+    {
+      "uuid": "798149c3-5a81-4733-a0ee-4268122147dc",
+      "state": "W",
+      "title": "Geo-Datensatz 1",
+      "isExternalRef": false
+    }
+  ],
+  "couplingType": {
+    "key": "tight"
+  },
+  "hasAccessConstraints": false,
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "",
+        "value": {
+          "lat1": 51.35591763902374,
+          "lat2": 53.39438493056681,
+          "lon1": -0.304543324059996,
+          "lon2": 3.034377051942201
+        }
+      }
+    ],
+    "spatialSystems": [],
+    "verticalExtent": {
+      "unitOfMeasure": null,
+      "Datum": null
+    }
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": null,
+        "referenceDateType": null
+      }
+    ],
+    "resourceDateType": null,
+    "status": null
+  },
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null
+    }
+  },
+  "metadata": {
+    "language": null
+  },
+  "extraInfoPublishArea": null,
+  "extraInfo": {
+    "legalBasicsDescriptions": []
+  },
+  "resource": {
+    "accessConstraints": []
+  },
+  "distribution": {
+    "format": []
+  },
+  "digitalTransferOptions": [],
+  "references": []
+}

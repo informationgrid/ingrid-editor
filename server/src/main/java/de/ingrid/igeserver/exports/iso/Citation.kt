@@ -7,8 +7,9 @@ data class Citation(
 )
 
 data class CICitation(
-    val title: CharacterString?,
-    val date: CitationDate?,
+    val title: CharacterString,
+    val alternateTitle: CharacterString?,
+    val date: CitationDate,
     
 )
 
@@ -17,8 +18,8 @@ data class CitationDate(
 )
 
 data class CIDate(
-    val date: Date?,
-    val dateType: DateType?
+    val date: Date,
+    val dateType: DateType
 )
 
 data class DateType(

@@ -6,8 +6,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 import de.ingrid.igeserver.exports.iso19115.Keyword
 
 data class SVServiceIdentification(
-    val citation: Citation?,
-    val abstract: CharacterString?,
+    val citation: Citation,
+    val abstract: CharacterString,
     val pointOfContact: List<PointOfContact>?,
     val resourceMaintenance: ResourceMaintenance?,
     val descriptiveKeywords: List<DescriptiveKeyword>?,

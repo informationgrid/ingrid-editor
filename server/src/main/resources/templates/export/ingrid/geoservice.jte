@@ -5,16 +5,15 @@
 {
     "title": "${model.getTitle()}",
     "_uuid": "${model.getUuid()}",
-    "_parent": null,
+    "_parent": @if(model.getParentUuid() == null) null @else "${model.getParentUuid()}"@endif,
     "_type": "InGridGeoService",
-    "_created": "",
     "_createdBy": "",
-    "_modified": "",
     "_modifiedBy": "",
     "isInspireIdentified": ${model.isInspireIdentified()},
     "isAdVCompatible": ${model.isAdVCompatible()},
     "isOpenData": ${model.isOpenData()},
     "description": "${model.getDescription()}",
+    "alternateTitle": "${model.getAlternateTitle()}",
     "pointOfContact": [
         @for(var contactUuid : ForSupport.of(model.getPointOfContacts()))
         {

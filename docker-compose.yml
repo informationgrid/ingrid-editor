@@ -37,6 +37,8 @@ services:
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
       - KEYCLOAK_URL=http://keycloak:8080
       - KEYCLOAK_CLIENT_SECRET=600be265-6f32-4cc9-808e-c8a0a1b2ceaf
+      - MAP_TILE_URL=//my-maptile-url
+      - NOMINATIM_URL=https://my-nominatim.de
     ports:
       - 80:80
       #- 8000:8000
