@@ -120,6 +120,15 @@ class CodelistHandler @Autowired constructor(
         return codelistRepo.save(codelist)
     }
 
+    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? {
+        return codeListService.getCodeListEntryId(listId, value, language)
+    }
+    fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? {
+        return codeListService.getCodeList(listId)
+            .entries.find { it.data.contains(dataValue) }
+            ?.id
+    }
+
     val allCodelists: List<CodeList>
         get() = codeListService.codeLists
 

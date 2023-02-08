@@ -12,14 +12,26 @@ data class SVServiceIdentification(
     val resourceMaintenance: ResourceMaintenance?,
     val descriptiveKeywords: List<DescriptiveKeyword>?,
     val resourceConstraints: List<ResourceConstraint>?,
+    val graphicOverview: List<GraphicOverview>?,
     @JacksonXmlProperty(localName = "serviceType", namespace = "http://www.isotc211.org/2005/srv")
     val serviceType: LocalName?,
+    val serviceTypeVersion: List<CharacterString>?,
     @JacksonXmlProperty(namespace = "http://www.isotc211.org/2005/srv")
     val extent: EXExtentOrig?,
     val coupledResource: CoupledResource?,
     val couplingType: CouplingType?,
     val containsOperations: ContainsOperation?,
     val operatesOn: List<OperatesOn>?,
+)
+
+data class GraphicOverview(
+    @JacksonXmlProperty(localName = "MD_BrowseGraphic") val mdBrowseGraphic: MDBrowseGraphic?
+)
+
+data class MDBrowseGraphic(
+    val fileName: CharacterString,
+    val fileDescription: CharacterString?,
+    val fileType: CharacterString?
 )
 
 data class OperatesOn(

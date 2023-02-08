@@ -2,11 +2,14 @@
 
 @param KeyValue item
 
+@if (item == null)null
+@else
 {
-@if (item.getKey() == null)
+    @if (item.getKey() == null)
     "key": null,
     "value": "${item.getValue()}"
-@else 
+    @else 
     "key": "${item.getKey()}"
-@endif
+    @endif
 }
+@endif

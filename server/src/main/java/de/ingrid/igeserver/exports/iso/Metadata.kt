@@ -28,7 +28,7 @@ data class Metadata(
     val metadataExtensionInfo: List<String>? = null,
     val identificationInfo: List<IdentificationInfo>,
     val contentInfo: List<String>? = null,
-    val distributionInfo: String? = null,
+    val distributionInfo: DistributionInfo? = null,
     val dataQualityInfo: List<String>? = null,
     val portrayalCatalogueInfo: List<String>? = null,
     val metadataConstraints: List<String>? = null,
@@ -113,3 +113,28 @@ data class Metadata(
 //        dateStamp = Date(date)
 //    }
 }
+
+data class DistributionInfo(
+    @JacksonXmlProperty(localName = "MD_Distribution") val mdDistribution: MDDistribution?
+)
+
+data class MDDistribution(
+    val distributionFormat: List<String>?,
+    val distributor: List<String>?,
+    val transferOptions: List<TransferOption>?
+)
+
+data class TransferOption(
+    @JacksonXmlProperty(localName = "MD_DigitalTransferOptions") val mdDigitalTransferOptions: MDDigitalTransferOptions?
+)
+
+data class MDDigitalTransferOptions(
+    val unitsOfDistribution: String?,
+    val transferSize: String?,
+    val onLine: List<Online>?,
+    val offLine: String?
+)
+
+data class Online(
+    @JacksonXmlProperty(localName = "CI_OnlineResource") val ciOnlineResource: CIOnlineResource?
+)

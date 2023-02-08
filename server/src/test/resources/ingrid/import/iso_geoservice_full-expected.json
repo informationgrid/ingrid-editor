@@ -1,39 +1,66 @@
 {
-  "title": "wemove Test: Downloaddienst 3D-Stadtmodell Hamburg",
-  "_uuid": "E6044602-F59B-4DC0-815D-F25BB34BAEF6",
-  "_parent": "9367616F-AC86-4A3D-A91D-51EA28382EFB",
+  "title": "Coupling Service",
+  "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
+  "_parent": "my-specified-parent",
   "_type": "InGridGeoService",
   "_createdBy": "???",
   "_modifiedBy": "???",
   "isInspireIdentified": true,
   "isAdVCompatible": false,
-  "isOpenData": false,
-  "description": "Dieser ATOM-Downloaddienst stellt den Datensatz \"3D-Stadtmodell Hamburg\" bereit.",
-  "alternateTitle": "Mein alternativer Titel",
+  "isOpenData": true,
+  "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
+  "alternateTitle": "Short",
   "pointOfContact": [
     {
-      "ref": "D7D6E243-4DE1-4768-84E0-47E7890B92F0",
+      "ref": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
       "type": {
         "key": "7"
       }
     }
   ],
-  "graphicOverviews": [],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "asLink": true,
+        "value": "https://mein-bild.de/xxx.png",
+        "uri": "https://mein-bild.de/xxx.png"
+      },
+      "fileDescription": "Bildbeschreibung"
+    }
+  ],
   "advProductGroups": [
     {
       "key": "6"
-    },
-    {
-      "key": "12"
     }
   ],
-  "themes": [],
-  "priorityDatasets": [],
-  "spatialScope": null,
+  "themes": [
+    {
+      "key": "105"
+    }
+  ],
+  "priorityDatasets": [
+    {
+      "key": "-1023933682"
+    }
+  ],
+  "openDataCategories": [
+    {
+      "key": "6"
+    }
+  ],
+  "spatialScope": {
+    "key": "-673152846"
+  },
   "keywords": [],
   "serviceCategories": [],
-  "serviceType": null,
-  "serviceVersion": [],
+  "serviceType": {
+    "key": "3"
+  },
+  "serviceVersion": [
+    {
+      "key": "1"
+    }
+  ],
   "coupledResources": [
     {
       "uuid": "798149c3-5a81-4733-a0ee-4268122147dc",
@@ -50,20 +77,32 @@
     "references": [
       {
         "type": "free",
-        "title": "",
+        "title": "Hannover",
         "value": {
-          "lat1": 51.35591763902374,
-          "lat2": 53.39438493056681,
-          "lon1": -0.304543324059996,
-          "lon2": 3.034377051942201
+          "lat1": 52.130035,
+          "lon1": 9.235984,
+          "lat2": 52.678265,
+          "lon2": 10.309714
         }
       }
     ],
-    "spatialSystems": [],
+    "regionKey": "Hannover",
+    "spatialSystems": [
+      {
+        "key": "3068"
+      }
+    ],
     "verticalExtent": {
-      "unitOfMeasure": null,
-      "Datum": null
-    }
+      "minimumValue": 1.0,
+      "maximumValue": 5.0,
+      "unitOfMeasure": {
+        "key": "9001"
+      },
+      "Datum": {
+        "key": "900002"
+      }
+    },
+    "description": "Erläuterung Raumbezug"
   },
   "temporal": {
     "events": [

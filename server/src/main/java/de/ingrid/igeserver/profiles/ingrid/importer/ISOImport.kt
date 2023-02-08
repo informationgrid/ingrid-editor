@@ -3,13 +3,14 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.CodelistHandler
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -21,20 +22,28 @@ import org.unbescape.json.JsonEscape
 
 @Service
 @Profile("ingrid")
-class ISOImport(val codelistService: CodeListService) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     override fun run(data: Any): JsonNode {
 
-        val xmlDeserializer = XmlMapper.builder()
+        /*val xmlDeserializer = XmlMapper.builder()
             .defaultUseWrapper(false)
             .nameForTextElement("innerText")
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()
-            .registerKotlinModule()
+            .registerKotlinModule()*/
+
+        val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
+            setDefaultUseWrapper(false)
+            setXMLTextElementName("innerText")
+        }).registerKotlinModule()
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
 

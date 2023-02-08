@@ -6,7 +6,7 @@
     "title": "${model.getTitle()}",
     "_uuid": "${model.getUuid()}",
     "_parent": @if(model.getParentUuid() == null) null @else "${model.getParentUuid()}"@endif,
-    "_type": "InGridGeoService",
+    "_type": "${model.getType()}",
     "_createdBy": "",
     "_modifiedBy": "",
     "isInspireIdentified": ${model.isInspireIdentified()},
@@ -22,38 +22,69 @@
         }@if (!contactUuid.isLast()),@endif
         @endfor
     ],
+    "graphicOverviews": [
+    @for(var image : ForSupport.of(model.getGraphicOverviews()))
+        {
+            "fileName": {
+                "asLink": true,
+                "value": "${image.get().getFileName()}",
+                "uri": "${image.get().getFileName()}"
+            },
+            "fileDescription": "${image.get().getDescription()}"
+        }@if (!image.isLast()),@endif
+    @endfor
+    ],
     "advProductGroups": @template.ingrid.partial.key-values(list = model.getAdvProductGroups()),
     "themes": @template.ingrid.partial.key-values(list = model.getThemes()),
     "priorityDatasets": @template.ingrid.partial.key-values(list = model.getPriorityDatasets()),
-    "spatialScope": null,
+    "openDataCategories": @template.ingrid.partial.key-values(list = model.getOpenDataCategories()),
+    "spatialScope": @template.ingrid.partial.key-value(item = model.getSpatialScope()),
     "keywords": [],
     "serviceCategories": @template.ingrid.partial.key-values(list = model.getServiceCategories()),
     "serviceType": @template.ingrid.partial.key-value(item = model.getServiceType()),
     "serviceVersion": @template.ingrid.partial.key-values(list = model.getServiceVersions()),
-    "coupledResources": [],
+    "coupledResources": [
+    @for(var resource : ForSupport.of(model.getCoupledResources()))
+        {
+            "uuid": "${resource.get().getUuid()}",
+            "state": "${resource.get().getState()}",
+            "title": "${resource.get().getTitle()}",
+            "isExternalRef": ${resource.get().isExternalRef()}
+        }@if (!resource.isLast()),@endif
+    @endfor
+    ],
     "couplingType": @template.ingrid.partial.key-value(item = model.getCouplingType()),
     "hasAccessConstraints": false,
     "spatial": {
         "references": [
+        @for(var ref : ForSupport.of(model.getSpatialReferences()))
             {
-                "type": "free",
-                "title": "Weltwitz, Schmieritz, Triptis, Saale-Orla-Kreis, Thüringen, 07806, Deutschland (village)",
+                "type": "${ref.get().getType()}",
+                "title": "${ref.get().getTitle()}",
                 "value": {
-                    "lat1": 50.7079439,
-                    "lat2": 50.7479439,
-                    "lon1": 11.7667636,
-                    "lon2": 11.8067636
+                    "lat1": ${ref.get().getCoordinates().getLat1()},
+                    "lon1": ${ref.get().getCoordinates().getLon1()},
+                    "lat2": ${ref.get().getCoordinates().getLat2()},
+                    "lon2": ${ref.get().getCoordinates().getLon2()}
                 }
-            }
+            }@if (!ref.isLast()),@endif
+        @endfor
         ],
-        "spatialSystems": [
-            {
-                "key": "9000002"
-            }
-        ],
+        "regionKey": "${model.getRegionKey()}",
+        "spatialSystems": @template.ingrid.partial.key-values(list = model.getSpatialSystems()),
+        @if(model.getVerticalExtent() != null)
         "verticalExtent": {
-            "unitOfMeasure": null
-        }
+            "minimumValue": ${model.getVerticalExtent().getMin()},
+            "maximumValue": ${model.getVerticalExtent().getMax()},
+            "unitOfMeasure": {
+                "key": "${model.getVerticalExtent().getUom()}"
+            },
+            "Datum": {
+                "key": "${model.getVerticalExtent().getDatum()}"
+            }
+        },
+        @endif
+        "description": "${model.getSpatialDescription()}"
     },
     "temporal": {
         "events": [
