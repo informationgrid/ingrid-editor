@@ -4,5 +4,5 @@ data class Thesaurus(
     var name: String? = null,
     var date: String? = null,
     var link: String? = null,
-    var keywords: List<Keyword>? = null
+    var keywords: List<Keyword> = emptyList()
 )

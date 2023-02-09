@@ -1,10 +1,9 @@
-@import de.ingrid.igeserver.profiles.ingrid.exporter.DocInfo
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+@import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var page = ((IngridModel)map.get("model"));}
+!{var page = ((IngridModelTransformer)map.get("model"));}
 
 @template.template-idf(content = @`
     @template.ingrid.shared-general(page = page)

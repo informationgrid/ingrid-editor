@@ -1,12 +1,12 @@
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.COORD_TYPE
+@import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
 @import gg.jte.support.ForSupport
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var page = ((IngridModel)map.get("model"));}
+!{var page = ((IngridModelTransformer)map.get("model"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
 !{var partner = ((String)map.get("partner"));}
 !{var provider = ((String)map.get("provider"));}
@@ -14,15 +14,15 @@
 {
     "iPlugId": "ige-ng_${catalog.identifier}",
     "dataSourceName": "iPlug IGE-NG (${catalog.identifier})",
-    "title": "${page.getTitle()}",
+    "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
     "x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
     "y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
     "y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
     "location":  ${page.getSpatialReferenceLocationNames()},
-    "created": "${page.formatDate(page.getFormatterISO(), page.get_created())}",
-    "modified": "${page.formatDate(page.getFormatterISO(), page.get_modified())}",
+    "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
+    "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_modified())}",
     "areaid": [],
     "partner": [
         "${partner}"
@@ -48,9 +48,9 @@
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_modified())}",
+    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_modified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
-    "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
+    "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getPointOfContact() != null)
         @for(var entry : ForSupport.of(page.getPointOfContact().getContact()))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",

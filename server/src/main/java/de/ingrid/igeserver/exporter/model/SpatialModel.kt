@@ -37,30 +37,6 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     }
 
-    fun getFreeCoordinatesISO(): String? {
-        if (value == null) {
-            return null
-        }
-        return """                <gmd:EX_GeographicBoundingBox>
-                <gmd:extentTypeCode>
-                    <gco:Boolean>true</gco:Boolean>
-                </gmd:extentTypeCode>
-                <gmd:westBoundLongitude>
-                    <gco:Decimal>${value.lon1}</gco:Decimal>
-                </gmd:westBoundLongitude>
-                <gmd:eastBoundLongitude>
-                    <gco:Decimal>${value.lon2}</gco:Decimal>
-                </gmd:eastBoundLongitude>
-                <gmd:southBoundLatitude>
-                    <gco:Decimal>${value.lat1}</gco:Decimal>
-                </gmd:southBoundLatitude>
-                <gmd:northBoundLatitude>
-                    <gco:Decimal>${value.lat2}</gco:Decimal>
-                </gmd:northBoundLatitude>
-            </gmd:EX_GeographicBoundingBox>
-"""
-    }
-
     private fun getWktCoordinates(): String? {
         if (this.wkt != null) {
             try {

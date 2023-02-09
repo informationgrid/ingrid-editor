@@ -5,7 +5,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import java.util.*
 
- class TransformationTools {
+class TransformationTools {
 
     companion object {
         val log = logger()

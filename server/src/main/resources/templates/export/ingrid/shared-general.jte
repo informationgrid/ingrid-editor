@@ -1,10 +1,16 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.KeyValueModel
+@import de.ingrid.igeserver.exporter.model.SpatialModel;
+@import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 
-@param IngridModel page
+@param IngridModelTransformer page
+!{var spatial = page.getData().getSpatial();}
+!{var verticalExtent = spatial.getVerticalExtent();}
+
 <gmd:fileIdentifier>
-    <gco:CharacterString>${page.getUuid()}</gco:CharacterString>
+    <gco:CharacterString>${page.getModel().getUuid()}</gco:CharacterString>
 </gmd:fileIdentifier>
 <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${page.getMetadataLanguage()}" />
@@ -88,7 +94,7 @@
         <gmd:citation>
             <gmd:CI_Citation>
                 <gmd:title>
-                    <gco:CharacterString>${page.getTitle()}</gco:CharacterString>
+                    <gco:CharacterString>${page.getModel().getTitle()}</gco:CharacterString>
                 </gmd:title>
                 @for(String advGroup : page.getAdvProductGroups())
                     <gmd:alternateTitle>
@@ -134,7 +140,135 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
 
-        @template.ingrid.spatial(page = page)
+        <gmd:extent>
+            <gmd:EX_Extent>
+                @if(spatial.getDescription() != null)
+                    <gmd:description>
+                        <gco:CharacterString>${spatial.getDescription()}</gco:CharacterString>
+                    </gmd:description>
+                @endif
+                @for(SpatialModel ref : page.getSpatialReferences())
+                    @if(ref.getType().equals("free"))
+                        @if(ref.getTitle() != null)
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>${ref.getTitle()}</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                        @endif
+                        @if(ref.getValue() != null)
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>${ref.getValue().getLon1()}</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>${ref.getValue().getLon2()}</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>${ref.getValue().getLat1()}</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>${ref.getValue().getLat2()}</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                        @endif
+                    @elseif(ref.getType().equals("wkt"))
+                        <gmd:geographicElement>
+                            <gmd:EX_BoundingPolygon>
+                                <gmd:extentTypeCode>
+                                    <gco:Boolean>true</gco:Boolean>
+                                </gmd:extentTypeCode>
+                                <gmd:polygon>
+                                    ${ref.getWktCoordinatesISO()}
+                                </gmd:polygon>
+                            </gmd:EX_BoundingPolygon>
+                        </gmd:geographicElement>
+                    @endif
+                @endfor
+                @if(verticalExtent != null)
+                    <gmd:verticalElement>
+                        <gmd:EX_VerticalExtent>
+                            <gmd:minimumValue>
+                                <gco:Real>${verticalExtent.getMinimumValue()}</gco:Real>
+                            </gmd:minimumValue>
+                            <gmd:maximumValue>
+                                <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
+                            </gmd:maximumValue>
+                            <gmd:verticalCRS>
+                                <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:scope/>
+                                    <gml:verticalCS>
+                                        <gml:VerticalCS gml:id="verticalCS_ID_${TransformationTools.getRandomUUID()}">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:axis>
+                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_${TransformationTools.getRandomUUID()}" uom="${ page.getCodelistValue("102", verticalExtent.getUnitOfMeasure(), "iso")}">
+                                                    <gml:identifier codeSpace=""/>
+                                                    <gml:axisAbbrev/>
+                                                    <gml:axisDirection codeSpace=""/>
+                                                </gml:CoordinateSystemAxis>
+                                            </gml:axis>
+                                        </gml:VerticalCS>
+                                    </gml:verticalCS>
+                                    <gml:verticalDatum>
+                                        <gml:VerticalDatum gml:id="verticalDatum_ID_${TransformationTools.getRandomUUID()}">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:name>${page.getCodelistValue("101", verticalExtent.getDatum())}</gml:name>
+                                            <gml:scope/>
+                                        </gml:VerticalDatum>
+                                    </gml:verticalDatum>
+                                </gml:VerticalCRS>
+                            </gmd:verticalCRS>
+                        </gmd:EX_VerticalExtent>
+                    </gmd:verticalElement>
+                @endif
+                @if(page.getRegionKey() != null)
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}">${page.getRegionKey().getValue()}</gmx:Anchor>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                @endif
+                @if(page.getResourceDateType() != null)
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                @if("at".equals(page.getResourceDateType()))
+                                    <gml:TimeInstant gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
+                                        <gml:timePosition>${page.getData().getTemporal().getResourceDate()}</gml:timePosition>
+                                    </gml:TimeInstant>
+                                @else
+                                    <gml:TimePeriod gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
+                                            <gml:beginPosition ${page.getResourceBeginIndeterminatePosition()}>${page.getResourceBeginDate()}</gml:beginPosition>
+                                            <gml:endPosition ${page.getResourceEndIndeterminatePosition()}>${page.getResourceEndDate()}</gml:endPosition>
+                                    </gml:TimePeriod>
+                                @endif
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+                @endif
+            </gmd:EX_Extent>
+        </gmd:extent>
 
         @for(String language : page.getDataLanguages())
             <gmd:language>

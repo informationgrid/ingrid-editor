@@ -2,14 +2,10 @@ package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.services.BehaviourService
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,18 +27,7 @@ data class DataModel(
     val isInspireRelevant: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val temporal: Temporal,
-) {
-
-
-    companion object {
-        val codelistHandler: CodelistHandler? by lazy {
-            SpringContext.getBean(CodelistHandler::class.java)
-        }
-        val behaviourService: BehaviourService? by lazy {
-            SpringContext.getBean(BehaviourService::class.java)
-        }
-    }
-}
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Dataset(

@@ -67,11 +67,10 @@ class IngridIDFExporter @Autowired constructor() : IgeExporter {
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
-        val model = mapper.convertValue(json, IngridModel::class.java)
-        model.initialize(catalogId)
+        val modelTransformer = IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalogId)
         return mapOf(
             "map" to mapOf(
-                "model" to model
+                "model" to modelTransformer
             ),
         )
 
