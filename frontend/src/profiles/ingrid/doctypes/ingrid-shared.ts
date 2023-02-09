@@ -421,9 +421,6 @@ export abstract class IngridShared extends BaseDoctype {
             }),
           ],
         }),
-        this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
-          className: "optional flex-1",
-        }),
         this.addGroup(
           null,
           "Durch die Ressource abgedeckte Zeitspanne",
@@ -504,6 +501,9 @@ export abstract class IngridShared extends BaseDoctype {
           ],
           { className: "optional" }
         ),
+        this.addTextArea("description", "Erläuterungen", "dataset", {
+          className: "optional flex-1",
+        }),
       ]),
     ]);
   }
@@ -652,7 +652,7 @@ export abstract class IngridShared extends BaseDoctype {
             "legalBasicsDescriptions",
             "Weitere Rechtliche Grundlagen",
             {
-              asSelect: true,
+              asSelect: false,
               showSearch: true,
               options: this.getCodelistForSelect(
                 1350,
@@ -691,7 +691,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verfügbarkeit", [
       this.addGroupSimple("resource", [
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-          asSelect: true, // TODO: also allow free values
+          asSelect: false,
           required: true,
           options: this.getCodelistForSelect(
             6010,
@@ -704,14 +704,13 @@ export abstract class IngridShared extends BaseDoctype {
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          className: "optional",
+          // className: "optional",
           expressions: {
-            hide: "(formState.mainModel?._type !== 'InGridGeoDataset' || formState.mainModel?._type !== 'InGridGeoService')",
             "props.required":
               "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
           },
           fields: [
-            this.addSelect("title", null, {
+            this.addAutocomplete("title", null, {
               options: this.getCodelistForSelect(6500, "license"),
               fieldLabel: "Lizenz",
               codelistId: 6500,
