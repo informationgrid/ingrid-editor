@@ -152,7 +152,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
           filter((item) => item.forAddress === this.address),
-          map((item) => item.uuid)
+          map((item) => item.uuid),
+          // when we revisit this page, make sure to update the form in our service
+          // so that other plugins access the current one
+          tap(() => this.formStateService.updateForm(this.form))
         )
       ),
     ])
