@@ -30,7 +30,9 @@
     </ng-container>
     <div style="display: flex; justify-content: center">
         <button
-            *ngIf="formControl.enabled"
+            *ngIf="
+                !(formState.disabled || props.disabled || formControl.disabled)
+            "
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn add-button"
@@ -45,7 +47,9 @@
     <ige-section-wrapper>
         <h3>Verfahrenschritte</h3>
         <button
-            *ngIf="formControl.enabled"
+            *ngIf="
+                !(formState.disabled || props.disabled || formControl.disabled)
+            "
             mat-flat-button
             color="primary"
             class="button-square-icon padding-btn"
@@ -56,14 +60,13 @@
         </button>
     </ige-section-wrapper>
 </ng-container>
-
 <mat-menu #menu="matMenu">
     <button
-        *ngFor="let type of field.fieldArray?.fieldGroup"
+        *ngFor="let type of sectionTypes"
         mat-menu-item
         [attr.data-cy]="'add_step_' + type.name"
         (click)="addSection(type.name)"
     >
-        <span>{{ type.templateOptions.label }}</span>
+        <span>{{ type.props.label }}</span>
     </button>
 </mat-menu>

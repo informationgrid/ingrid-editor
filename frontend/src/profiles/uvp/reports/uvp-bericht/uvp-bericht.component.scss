@@ -26,16 +26,17 @@
     margin: 0;
     align-items: center;
 
-    .mat-list-icon {
+    .mat-mdc-list-item-icon {
       align-self: unset;
     }
   }
 
-  &.dense {
+  /*&.dense {
+    !* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. *!
     mat-list-option {
       height: 40px !important;
     }
-  }
+  }*/
 
   .mat-icon {
     display: flex;
@@ -69,8 +70,8 @@
   }
 }
 
-.mat-table td.mat-cell:last-of-type,
-.mat-table .mat-header-cell:last-of-type {
+.mat-mdc-table td.mat-mdc-cell:last-of-type,
+.mat-table .mat-mdc-header-cell:last-of-type {
   text-align: left;
 }
 

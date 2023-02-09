@@ -10,9 +10,11 @@ services:
       - ige-ng-network
 
   elastic:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.23
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
     environment:
       - cluster.name=ingrid
+      - discovery.type=single-node
+      - ingest.geoip.downloader.enabled=false
       - http.host=0.0.0.0
       - transport.host=0.0.0.0
       - http.cors.enabled=true

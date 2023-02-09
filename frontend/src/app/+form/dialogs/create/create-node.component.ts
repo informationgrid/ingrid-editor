@@ -121,7 +121,12 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
-    if (this.formGroup.invalid) return;
+    if (
+      // don't proceed if invalid form or user without writePermission on selected path
+      this.formGroup.invalid ||
+      (!this.isAdmin && !this.pathWithWritePermission)
+    )
+      return;
 
     if (this.isFolder || !this.forAddress) {
       await this.handleDocumentCreate();
@@ -244,7 +249,8 @@ export class CreateNodeComponent implements OnInit {
   private navigateAfterSave(uuid: string) {
     this.dialogRef.close(uuid);
 
-    const page = this.forAddress ? "/address" : "/form";
+    const page =
+      ConfigService.catalogId + (this.forAddress ? "/address" : "/form");
     this.router.navigate([page, { id: uuid }]);
   }
 }

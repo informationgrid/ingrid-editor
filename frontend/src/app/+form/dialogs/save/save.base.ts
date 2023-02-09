@@ -27,12 +27,18 @@ export abstract class SaveBase extends Plugin {
     super();
   }
 
-  handleError(error, data: IgeDocument, address: boolean): Observable<void> {
+  handleError(
+    error,
+    data: IgeDocument,
+    address: boolean,
+    saveType: "PUBLISH" | "SAVE"
+  ): Observable<void> {
     if (error?.error?.errorCode === "POST_SAVE_ERROR") {
       console.error(error?.error?.errorText);
       this.messageService.sendError(
-        "Der Datensatz wurde erfolgreich in der Datenbank veröffentlicht, jedoch trat ein Problem danach auf: " +
-          error?.error?.errorText
+        `Der Datensatz wurde erfolgreich in der Datenbank ${
+          saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
+        }, jedoch trat ein Problem danach auf: ` + error?.error?.errorText
       );
       this.loadDocument(data._id, address);
     } else if (error?.error?.errorCode === "VERSION_CONFLICT") {
@@ -56,7 +62,8 @@ export abstract class SaveBase extends Plugin {
       );
       igeError.detail = error?.error?.data?.error
         ?.map((item) => item.error)
-        ?.filter((item) => item.indexOf("A subschema had errors") === -1);
+        ?.filter((item) => item.indexOf("A subschema had errors") === -1)
+        ?.join("\n");
       throw igeError;
 
       // TODO: update store to show backend validation errors in form
@@ -74,8 +81,9 @@ export abstract class SaveBase extends Plugin {
       */
     } else {
       this.messageService.sendError(
-        "Der Datensatz wurde nicht erfolgreich veröffentlicht: " +
-          error?.error?.errorText
+        `Der Datensatz wurde nicht erfolgreich ${
+          saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
+        }` + (error?.error?.errorText ?? "")
       );
       throw error;
     }

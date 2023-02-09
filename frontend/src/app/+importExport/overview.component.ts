@@ -28,7 +28,8 @@ export class OverviewComponent implements OnInit {
 
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used
-    const currentPath = this.activatedRoute.snapshot.firstChild.url[0].path;
+    const currentPath = this.router.parseUrl(this.router.url).root.children
+      .primary.segments[2].path;
     const activeTabIndex = this.tabs.findIndex(
       (tab) => tab.path === currentPath
     );

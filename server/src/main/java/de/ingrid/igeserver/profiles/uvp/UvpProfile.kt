@@ -5,7 +5,6 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.mcloud.research.quickfilter.Spatial
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
@@ -14,7 +13,9 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
@@ -23,13 +24,14 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
-@Service()
+@Service
 @Profile("uvp")
 class UvpProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,
-    @JsonIgnore val authUtils: AuthUtils
+    @JsonIgnore val authUtils: AuthUtils,
+    @JsonIgnore val behaviourService: BehaviourService
 ) : CatalogProfile {
 
     companion object {
@@ -65,7 +67,7 @@ class UvpProfile @Autowired constructor(
                 viewComponent = ViewComponent.TIMESPAN
             ),
             FacetGroup(
-                "procedureType", "Verfahrenstyp", arrayOf(
+                "docType", "Verfahrenstyp", arrayOf(
                     ProcedureTypes()
                 ),
                 viewComponent = ViewComponent.SELECT
@@ -118,7 +120,7 @@ class UvpProfile @Autowired constructor(
         val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
 
         return if (isAdmin)
-            // catalog and super admins can create uvp report
+        // catalog and super admins can create uvp report
             permissions + "can_create_uvp_report"
         else if (isMdAdmin)
             permissions
@@ -131,4 +133,20 @@ class UvpProfile @Autowired constructor(
 
     }
 
+    override fun additionalPublishConditions(catalogId: String): List<String> {
+        val conditions = mutableListOf<String>()
+
+        var doNotPublishNegativeAssessments = true
+        var publishNegativeAssessmentsOnlyWithSpatialReferences = false
+
+        behaviourService.get(catalogId, "plugin.publish.negative.assessment")?.let {
+            doNotPublishNegativeAssessments = it.active == null || it.active == false
+            publishNegativeAssessmentsOnlyWithSpatialReferences = it.data?.get("onlyWithSpatial") == true
+        }
+
+        if (doNotPublishNegativeAssessments) conditions.add("document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc'")
+        if (publishNegativeAssessmentsOnlyWithSpatialReferences) conditions.add("(document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc' OR (jsonb_path_exists(jsonb_strip_nulls(data), '\$.spatial')))")
+
+        return conditions
+    }
 }

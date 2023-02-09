@@ -1,6 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressType, Doctype } from "../app/services/formular/doctype";
-import { merge, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import {
   CodelistService,
   SelectOption,
@@ -9,12 +9,13 @@ import {
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
+import { clone } from "../app/shared/utils";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fields = <FormlyFieldConfig[]>[
     {
       key: "title",
-      templateOptions: {
+      props: {
         label: "Titel",
       },
     },
@@ -29,7 +30,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
     {
       key: "_type",
-      templateOptions: {
+      props: {
         label: "Typ",
       },
     },
@@ -41,7 +42,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
     {
       key: "_modified",
-      templateOptions: {
+      props: {
         label: "Aktualität",
       },
     },
@@ -65,11 +66,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
-  fieldsForPrint: FormlyFieldConfig[];
+  cleanFields: FormlyFieldConfig[];
 
   constructor(
-    private codelistService: CodelistService,
-    protected codelistQuery: CodelistQuery
+    private codelistService?: CodelistService,
+    protected codelistQuery?: CodelistQuery
   ) {
     super();
   }
@@ -104,10 +105,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       this.fields.push(...this.documentFields());
       this.hasOptionalFields = this.hasOptionals(this.fields);
       this.addCodelistDefaultValues(this.fields);
-      this.addContextHelp(this.fields);
+      if (this.helpIds.length > 0) this.addContextHelp(this.fields);
       this.getFieldMap(this.fields);
-      const copy: FormlyFieldConfig[] = JSON.parse(JSON.stringify(this.fields));
-      this.fieldsForPrint = this.createFieldsForPrint(copy);
+
+      this.cleanFields = JSON.parse(JSON.stringify(this.fields));
       console.debug(`Document type ${this.id} initialized`);
     });
   }
@@ -132,22 +133,24 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldGroup) {
         this.addContextHelp(field.fieldGroup);
       }
-      if (field.fieldArray?.fieldGroup) {
-        this.addContextHelp(field.fieldArray.fieldGroup);
+      if ((<FormlyFieldConfig>field.fieldArray)?.fieldGroup) {
+        this.addContextHelp((<FormlyFieldConfig>field.fieldArray).fieldGroup);
       }
       if (this.helpIds.indexOf(fieldKey) > -1) {
-        if (!field.model?._type) field.templateOptions.docType = this.id;
+        if (!field.model?._type) field.props.docType = this.id;
 
-        if (field.type === "checkbox") {
-          field.templateOptions.hasInlineContextHelp = true;
-        } else if (!field.templateOptions.hasInlineContextHelp) {
-          field.templateOptions.hasContextHelp = true;
+        // automatically add inline help info when special wrapper is used
+        if (field.wrappers && field.wrappers.indexOf("inline-help") !== -1) {
+          field.props.hasInlineContextHelp = true;
+        }
+        if (!field.props.hasInlineContextHelp) {
+          field.props.hasContextHelp = true;
         }
       } else if (
-        field.templateOptions?.contextHelpId &&
-        this.helpIds.indexOf(field.templateOptions.contextHelpId)
+        field.props?.contextHelpId &&
+        this.helpIds.indexOf(field.props.contextHelpId)
       ) {
-        field.templateOptions.hasContextHelp = true;
+        field.props.hasContextHelp = true;
       }
     });
   }
@@ -163,7 +166,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         this.fieldsMap.push(
           new SelectOption(
             fieldKey,
-            field.templateOptions?.externalLabel || field.templateOptions?.label
+            field.props?.externalLabel || field.props?.label
           )
         );
       }
@@ -187,12 +190,15 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
               console.log(
                 `Setting default codelist value for: ${field.key} with: ${codelist.default}`
               );
-              field.defaultValue =
-                field.type === "select"
-                  ? codelist.default
-                  : codelist.entries.find(
-                      (entry) => entry.id === codelist.default
-                    ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
+              if (field.type === "select") {
+                field.defaultValue = codelist.default;
+              } else if (field.type === "repeatList") {
+                field.defaultValue = [{ key: codelist.default }];
+              } else {
+                field.defaultValue = codelist.entries.find(
+                  (entry) => entry.id === codelist.default
+                ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
+              }
             })
           )
           .subscribe();
@@ -202,8 +208,18 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   formatCodelistValue(codelist: string, item: { key; value }) {
     return item?.key
-      ? this.codelistQuery.getCatalogEntryByKey(codelist, item.key, item.value)
+      ? this.codelistQuery.getCodelistEntryValueByKey(
+          codelist,
+          item.key,
+          item.value
+        )
       : item?.value;
+  }
+
+  public getFieldsForPrint(diffObj) {
+    const copy: FormlyFieldConfig[] = clone(this.cleanFields);
+    if (diffObj) this.addDifferenceFlags(copy, diffObj);
+    return this.createFieldsForPrint(copy);
   }
 
   private createFieldsForPrint(
@@ -223,17 +239,18 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         this.createFieldsForPrint(field.fieldGroup);
       }
       if (field.fieldArray) {
-        this.createFieldsForPrint(field.fieldArray.fieldGroup);
+        this.createFieldsForPrint(
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup
+        );
       }
-      if (field.templateOptions?.columns) {
+      if (field.props?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
           this.fields,
           field.key as string
         );
         if (formatter) {
-          field.templateOptions.columns.forEach(
-            (column, index) =>
-              (column.templateOptions.formatter = formatter[index])
+          field.props.columns.forEach(
+            (column, index) => (column.props.formatter = formatter[index])
           );
         }
       }
@@ -245,11 +262,60 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         (wrapper) => wrapper !== "form-field"
       );
 
-      if (field.type && supportedTypes.includes(field.type)) {
+      if (
+        field.type &&
+        supportedTypes.includes((<FormlyFieldConfig>field).type as string)
+      ) {
         field.type += "Print";
       }
     });
     return fields;
+  }
+
+  private calcIsDifferent(field, diffObj): boolean {
+    if (!diffObj) return false;
+    const path = this.getKeyPath(field);
+    if (!path.length) return false;
+    let diff = diffObj;
+    for (const key of path) {
+      if (key in diff) {
+        diff = diff[key];
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
+    fields.forEach((field) => {
+      if (field.fieldGroup) {
+        this.addDifferenceFlags(field.fieldGroup, diffObj);
+      }
+      if (field.fieldArray) {
+        this.addDifferenceFlags(
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup,
+          diffObj
+        );
+      }
+      if (this.calcIsDifferent(field, diffObj)) {
+        field.className = field.className
+          ? field.className + " mark-different"
+          : "mark-different";
+      } else {
+        field.className = field.className?.replace("mark-different", "");
+      }
+    });
+  }
+
+  getKeyPath(field): string[] {
+    if (field.parent) {
+      return field.key
+        ? this.getKeyPath(field.parent).concat([field.key.toString()])
+        : this.getKeyPath(field.parent);
+    } else {
+      return field.key ? [field.key.toString()] : [];
+    }
   }
 
   private getFormatterForColumn(
@@ -263,15 +329,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
       if (field.fieldArray) {
         const result = this.getFormatterForColumn(
-          field.fieldArray.fieldGroup,
+          (<FormlyFieldConfig>field.fieldArray).fieldGroup,
           tableId
         );
         if (result) return result;
       }
       if (field.key === tableId) {
-        return field.templateOptions.columns.map(
-          (column) => column.templateOptions.formatter
-        );
+        return field.props.columns.map((column) => column.props.formatter);
       }
     }
     return null;

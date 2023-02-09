@@ -7,10 +7,33 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import { UntypedFormControl } from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+  UntypedFormControl,
+  ValidationErrors,
+  Validators,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MatSelect } from "@angular/material/select";
+import { ErrorStateMatcher } from "@angular/material/core";
+
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(
+    control: FormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(
+      control &&
+      control.invalid &&
+      (control.dirty || control.touched || isSubmitted)
+    );
+  }
+}
 
 @UntilDestroy()
 @Component({
@@ -33,19 +56,21 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   filterCtrl: UntypedFormControl;
   private manualUpdate = new Subject<string>();
 
+  matcher = new MyErrorStateMatcher();
+
   constructor() {
     super();
   }
 
   ngOnInit(): void {
-    if (this.to.asSelect && this.to.showSearch) {
+    if (this.props.asSelect && this.props.showSearch) {
       this.filterCtrl = new UntypedFormControl();
       this.filterCtrl.valueChanges
         .pipe(untilDestroyed(this))
         .subscribe((value) => this.manualUpdate.next(value));
     }
-    if (this.to.options instanceof Observable) {
-      this.to.options
+    if (this.props.options instanceof Observable) {
+      this.props.options
         .pipe(
           untilDestroyed(this),
           filter((data) => data !== undefined && data.length > 0),
@@ -54,11 +79,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         )
         .subscribe();
     } else {
-      this.initInputListener(this.to.options);
+      this.initInputListener(this.props.options);
     }
 
-    if (this.to.onItemClick) {
-      this.onItemClick = this.to.onItemClick;
+    if (this.props.onItemClick) {
+      this.onItemClick = this.props.onItemClick;
     }
   }
 
@@ -68,6 +93,17 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
+    if (this.props.required) {
+      this.inputControl.addValidators(
+        (control: AbstractControl): ValidationErrors | null => {
+          return !this.showError ||
+            (this.props.required && this.formControl.value.length > 0)
+            ? null
+            : { required: "Pflicht!" };
+        }
+      );
+      // this.inputControl.addValidators(this.formControl.validator);
+    }
 
     this.formControl.statusChanges
       .pipe(untilDestroyed(this))
@@ -94,10 +130,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     // ignore duplicate entries
     const containsCodelistItem =
       option.value &&
-      this.model.map((item) => item.key).indexOf(option.value) !== -1;
+      this.model?.map((item) => item.key)?.indexOf(option.value) !== -1;
     const containsFreeEntry =
       option.label &&
-      this.model.map((item) => item.value).indexOf(option.label) !== -1;
+      this.model?.map((item) => item.value)?.indexOf(option.label) !== -1;
     if (option.value === "" || containsCodelistItem || containsFreeEntry) {
       return;
     }
@@ -107,7 +143,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     this.inputControl.setValue(null);
 
-    if (!this.to.asSelect) {
+    if (!this.props.asSelect) {
       // element successfully added when input was blurred
       this.autoCompleteEl.nativeElement.blur();
       this.autoComplete.closePanel();
@@ -138,7 +174,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      option.disabled = (<{ key; value? }[]>this.model).some(
+      option.disabled = (<{ key; value? }[]>this.model)?.some(
         (modelOption) => modelOption && modelOption.key === option.value
       );
       return option;
@@ -149,7 +185,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.remove(index);
     this.manualUpdate.next("");
 
-    if (this.to.asSelect && this.inputControl.disabled) {
+    if (this.props.asSelect && this.inputControl.disabled) {
       this.inputControl.enable();
     }
   }
@@ -177,7 +213,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
 
     this.addToList(option);
-    if (this.to.multiSelect || $event.ctrlKey) {
+    if (this.props.multiSelect || $event.ctrlKey) {
       // don't close the selection panel for multi select or ctrl key selection
     } else {
       this.selector.close();

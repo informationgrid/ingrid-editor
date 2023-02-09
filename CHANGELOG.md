@@ -1,26 +1,29 @@
 # Changelog
 
-## [Unreleased]
+## [1.2.0] - 2023-01-18
 
 ### Added
 
 - URL Check reporter (#3087)
 - Autosave-Plugin (#2897)
 - Add warning indicator on indexing page (#4128)
+- Add reset option for facets on reserarch page
+- Show catalog-ID in URL
 
 ### Changed
 
 - Increase title column size in database
-
-### Deprecated
-
-### Removed
+- Improved styles and layout
+- Update libraries (Angular 15)
 
 ### Fixed
 
 - Spatial dialog title (#4025)
 - Indexing multiple catalogs at the same time
 - Send correct iPlug/catalog configuration as plugdescription to iBus
+- Allow login names with special characters
+- Fix cancellation of indexing (#4501)
+- Fix UVP report (#4384)
 
 ### Security
 

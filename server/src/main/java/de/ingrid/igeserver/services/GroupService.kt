@@ -125,7 +125,8 @@ class GroupService @Autowired constructor(
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, if (it.get("id").isNull) null else it.get("id").asInt())
+            val objIdentity =
+                ObjectIdentityImpl(DocumentWrapper::class.java, if (it.get("id").isNull) null else it.get("id").asInt())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
             } catch (ex: org.springframework.security.acls.model.NotFoundException) {
@@ -154,7 +155,11 @@ class GroupService @Autowired constructor(
     private fun determinePermission(docPermission: JsonNode): List<Permission> {
         return when (docPermission.get("permission").asText()) {
             "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
-            "writeTreeExceptParent" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, CustomPermission.WRITE_ONLY_SUBTREE)
+            "writeTreeExceptParent" -> listOf(
+                BasePermission.READ,
+                BasePermission.ADMINISTRATION,
+                CustomPermission.WRITE_ONLY_SUBTREE
+            )
             "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }
@@ -176,6 +181,11 @@ class GroupService @Autowired constructor(
         }
     }
 
+    fun getUserIdsOfGroup(id: Int, principal: Principal): List<String> = getUserIdsOfGroup(id, principal, emptyList())
+    fun getUserIdsOfGroup(id: Int, principal: Principal, ignoredRoles: List<String>): List<String> =
+        userRepo.findByGroups_Id(id).filterNot { ignoredRoles.contains(it.role?.name) }.map { it.userId }
+
+
     fun removeDocFromGroups(catalogId: String, docId: Int) {
         var wasUpdated = false
 
@@ -183,8 +193,10 @@ class GroupService @Autowired constructor(
             val countDocsBefore = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 
             group.permissions?.apply {
-                documents = group.permissions?.documents?.filter { it.get("id").asInt() != docId } ?: emptyList()
-                addresses = group.permissions?.addresses?.filter { it.get("id").asInt() != docId } ?: emptyList()
+                documents =
+                    group.permissions?.documents?.filter { it.get("id").asInt() != docId } ?: emptyList()
+                addresses =
+                    group.permissions?.addresses?.filter { it.get("id").asInt() != docId } ?: emptyList()
             }
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 

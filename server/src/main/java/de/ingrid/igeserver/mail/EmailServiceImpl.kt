@@ -16,21 +16,35 @@ class EmailServiceImpl @Autowired constructor(
 ) {
 
     fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
-        val message = SimpleMailMessage().apply {
-            from = mailProps.from
-            setTo(to)
-            subject = mailProps.subject
-            text = MessageFormat.format(mailProps.body, firstName, lastName, appSettings.host)
-        }
-        email.send(message)
+        sendEmail(
+            to,
+            mailProps.subject,
+            MessageFormat.format(mailProps.body, firstName, lastName, appSettings.host)
+        )
     }
 
     fun sendWelcomeEmailWithPassword(to: String, firstName: String, lastName: String, password: String, login: String) {
+        sendEmail(
+            to,
+            mailProps.subject,
+            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appSettings.host, password, login)
+        )
+    }
+
+    fun sendResetPasswordEmail(to: String, firstName: String, lastName: String, password: String, login: String) {
+        sendEmail(
+            to,
+            mailProps.subjectResetPassword,
+            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appSettings.host, password, login)
+        )
+    }
+
+    fun sendEmail(to: String, subject: String, text: String) {
         val message = SimpleMailMessage().apply {
             from = mailProps.from
             setTo(to)
-            subject = mailProps.subject
-            text = MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appSettings.host, password, login)
+            setSubject(subject)
+            setText(text)
         }
         email.send(message)
     }

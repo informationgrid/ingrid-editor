@@ -1,13 +1,13 @@
 <ng-template #label>
     <div
-        [class.hasContextHelp]="to.hasContextHelp"
-        [class.required]="to.required"
+        [class.hasContextHelp]="props.hasContextHelp"
+        [class.required]="props.required"
     >
         <ige-form-label
-            [hasContextHelp]="to?.hasContextHelp"
+            [hasContextHelp]="props?.hasContextHelp"
             (contextHelp)="showContextHelp($event)"
         >
-            {{ to?.externalLabel }}<span *ngIf="to?.required">*</span>
+            {{ props?.externalLabel }}<span *ngIf="props?.required">*</span>
         </ige-form-label>
     </div>
 </ng-template>
@@ -16,7 +16,7 @@
     *ngIf="dataSource?.data?.length > 0"
     class="table-header"
     fxLayout
-    [attr.data-cy]="to?.externalLabel + '-header'"
+    [attr.data-cy]="props?.externalLabel + '-header'"
 >
     <ng-container *ngTemplateOutlet="label"></ng-container>
 
@@ -43,7 +43,7 @@
     </ng-container>
 </div>
 
-<div fxLayout="column">
+<div [class.padding-bottom]="dataSource?.data?.length > 0">
     <div *ngIf="batchMode" class="table-batch-edit-row">
         <mat-checkbox
             (change)="$event ? masterToggle() : null"
@@ -55,7 +55,7 @@
         <button
             type="button"
             mat-button
-            (click)="removeSelectedRows()"
+            (click)="showDeleteEntriesDialog()"
             [disabled]="selection.isEmpty()"
         >
             <mat-icon svgIcon="outline-delete-24px"></mat-icon>
@@ -63,7 +63,7 @@
         </button>
 
         <button
-            *ngIf="to.batchValidUntil"
+            *ngIf="props.batchValidUntil"
             type="button"
             mat-button
             (click)="setValidUntil()"
@@ -75,7 +75,11 @@
     </div>
 
     <ige-form-error
-        *ngIf="formFieldControl.errorState && !formControl.errors?.required"
+        *ngIf="
+            showError &&
+            formControl.invalid &&
+            !formControl.hasError('required')
+        "
         ><formly-validation-message [field]="field"></formly-validation-message
     ></ige-form-error>
 
@@ -84,8 +88,9 @@
         fxLayout="column"
         [dataSource]="dataSource"
         [class.edit-mode]="batchMode"
-        [attr.data-cy]="to.externalLabel + '-table'"
+        [attr.data-cy]="props.externalLabel + '-table'"
         cdkDropList
+        cdkDrag
         [cdkDragDisabled]="dragDisabled"
         (cdkDropListDropped)="dragDisabled = true; drop($event)"
     >
@@ -154,22 +159,21 @@
             <ng-container *ngSwitchDefault>
                 <mat-header-cell
                     *matHeaderCellDef
-                    [class]="to.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
+                    [class]="props.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
                 >
-                    {{ to.columns[batchMode ? i - 1 : i].label }}
+                    {{ props.columns[batchMode ? i - 1 : i].label }}
                     <span
                         *ngIf="
-                            to.columns[batchMode ? i - 1 : i].templateOptions
-                                .required
+                            props.columns[batchMode ? i - 1 : i].props.required
                         "
                         >*</span
                     >
                 </mat-header-cell>
                 <mat-cell
                     *matCellDef="let element; let rowIndex = index"
-                    [class]="to.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="to.columns[batchMode ? i - 1 : i].width"
+                    [class]="props.columns[batchMode ? i - 1 : i].class"
+                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
                 >
                     <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
                     <span
@@ -230,30 +234,39 @@
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div>
+    <div class="container">
         <ige-form-error
-            *ngIf="formControl.invalid && formControl.hasError('required')"
+            *ngIf="
+                showError &&
+                formControl.invalid &&
+                formControl.hasError('required')
+            "
             >Es wird mindestens ein Eintrag erwartet</ige-form-error
         >
 
-        <div class="button-wrapper">
-            <button
-                type="button"
-                mat-stroked-button
-                color="primary"
-                (click)="showUploadFilesDialog()"
-            >
-                Dateien hochladen
-            </button>
-            oder
-            <button
-                type="button"
-                mat-stroked-button
-                color="primary"
-                (click)="showAddLinkDialog()"
-            >
-                Link angeben
-            </button>
-        </div>
+        <ng-container *ngIf="props.supportUpload; else simpleAdd">
+            <div class="button-wrapper">
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showUploadFilesDialog()"
+                >
+                    Dateien hochladen
+                </button>
+                oder
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showAddLinkDialog()"
+                >
+                    Link angeben
+                </button>
+            </div>
+        </ng-container>
+        <ng-template #simpleAdd>
+            <ige-add-button (add)="editRow(null)"></ige-add-button>
+        </ng-template>
     </div>
 </div>

@@ -33,7 +33,8 @@ describe("RepeatListComponent", () => {
           {
             key: "repeatListSimple",
             type: "repeatList",
-            templateOptions: {},
+            defaultValue: [],
+            props: {},
           },
         ] as FormlyFieldConfig[],
       },
@@ -47,7 +48,7 @@ describe("RepeatListComponent", () => {
   it("should add a simple value", fakeAsync(() => {
     spectator.detectChanges();
     let listItemSelector = ".list-item";
-    let input = ".mat-autocomplete-trigger";
+    let input = "input";
 
     let elements = spectator.queryAll(listItemSelector);
     expect(elements.length).toBe(0);

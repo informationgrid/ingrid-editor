@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
 
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
+  recentPublishedDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = new Subject<number[]>();
   messages$: BehaviorSubject<Message[]>;
 
@@ -49,6 +50,9 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
       map((docs) => docs.slice(0, 5))
+    );
+    this.recentPublishedDocs$ = this.recentDocs$.pipe(
+      map((docs) => docs.filter((el) => el._state === "P").slice(0, 5))
     );
     this.fetchStatistic();
     this.fetchData();
@@ -96,15 +100,15 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoImportPage() {
-    this.router.navigate(["/importExport/import"]);
+    this.router.navigate([`${ConfigService.catalogId}/importExport/import`]);
   }
 
   openDocument(uuid: string) {
-    this.router.navigate(["/form", { id: uuid }]);
+    this.router.navigate([`${ConfigService.catalogId}/form`, { id: uuid }]);
   }
 
   openAddress(uuid: string) {
-    this.router.navigate(["/address", { id: uuid }]);
+    this.router.navigate([`${ConfigService.catalogId}/address`, { id: uuid }]);
   }
 
   createNewFolder() {

@@ -27,10 +27,10 @@ class CatalogApiController @Autowired constructor(
     val researchService: ResearchService,
 ) : CatalogApi {
 
-    override fun catalogs(): ResponseEntity<List<Catalog>> {
-        val catalogs = catalogService.getCatalogs()
+    override fun catalogs(principal: Principal): ResponseEntity<List<Catalog>> {
+        val catalogs = catalogService.getCatalogsForPrincipal(principal)
 
-        return ResponseEntity.ok().body(catalogs)
+        return ResponseEntity.ok().body(catalogs.toList())
     }
 
     override fun catalogStatistic(identifier: String): ResponseEntity<CatalogStatistic> {

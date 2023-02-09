@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   ViewChild,
   ViewContainerRef,
 } from "@angular/core";
@@ -22,7 +21,6 @@ export class OneColumnWrapperComponent
   fieldComponent: ViewContainerRef;
 
   private profile: string;
-  private docType: string;
   private fieldId: string;
 
   constructor(
@@ -34,17 +32,15 @@ export class OneColumnWrapperComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    // TODO: this.model is not the whole model!!! How to get the _type?
-    this.docType = this.to.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
   showContextHelp(infoElement: HTMLElement) {
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.docType,
-      this.fieldId || this.field.templateOptions.contextHelpId,
-      this.to.externalLabel,
+      this.formState.mainModel?._type,
+      this.field.props.contextHelpId || this.fieldId,
+      this.props.externalLabel,
       infoElement
     );
   }

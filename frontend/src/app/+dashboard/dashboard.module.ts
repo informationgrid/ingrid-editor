@@ -3,7 +3,6 @@ import { CommonModule } from "@angular/common";
 import { DashboardComponent } from "./dashboard.component";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
-import { ActionButtonComponent } from "./action-button/action-button.component";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -19,6 +18,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatMenuModule } from "@angular/material/menu";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ActionButtonModule } from "../shared/action-button/action-button.module";
 
 const routes: Routes = [
   {
@@ -47,10 +47,10 @@ const routes: Routes = [
     MatMenuModule,
     TranslocoModule,
     MatProgressSpinnerModule,
+    ActionButtonModule,
   ],
   declarations: [
     DashboardComponent,
-    ActionButtonComponent,
     DocumentTileComponent,
     QuickSearchComponent,
   ],

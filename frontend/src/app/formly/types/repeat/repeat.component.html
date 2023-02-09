@@ -1,43 +1,56 @@
 <ige-form-error
     *ngIf="
+        showError &&
         formControl.invalid &&
         formControl.errors &&
         !formControl.hasError('required')
     "
-    >Dieser Fehler bezieht sich auf die gesamten Einträge
-    {{ formControl.errors | json }}</ige-form-error
 >
+    <div *ngFor="let error of formControl.errors | keyvalue">
+        {{ error.value.message }}
+    </div>
+</ige-form-error>
 
-<div
-    cdkDropList
-    cdkDropListOrientation="vertical"
-    (cdkDropListDropped)="drop($event)"
->
+<div>
     <div
-        *ngFor="let field of field.fieldGroup; let i = index"
-        class="display-flex"
-        cdkDrag
-        [cdkDragDisabled]="formControl.disabled || to.noDrag"
+        *ngFor="let key of groupedFieldsKeys"
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        (cdkDropListDropped)="drop($event)"
     >
-        <mat-icon *ngIf="formControl.enabled && !to.noDrag" cdkDragHandle>
-            drag_indicator
-        </mat-icon>
-        <formly-field [field]="field" class="flex-1"></formly-field>
-        <!--        <formly-form [fields]="field.fieldGroup" class="flex-1"></formly-form>-->
-        <button
-            *ngIf="formControl.enabled"
-            [disabled]="to.minLength && i < to.minLength"
-            mat-icon-button
-            class="close"
-            (click)="remove(i)"
+        <h5 *ngIf="menuSections">{{ menuSections[key] }}</h5>
+
+        <div
+            *ngFor="let fieldRef of groupedFields[key]; let i = index"
+            class="display-flex"
+            cdkDrag
+            [cdkDragDisabled]="!canBeDragged"
         >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
+            <mat-icon *ngIf="canBeDragged" cdkDragHandle>
+                drag_indicator
+            </mat-icon>
+            <formly-field
+                [field]="field.fieldGroup[fieldRef]"
+                class="flex-1"
+            ></formly-field>
+            <button
+                *ngIf="formControl.enabled"
+                [disabled]="props.minLength && fieldRef < props.minLength"
+                mat-icon-button
+                class="close"
+                (click)="remove(fieldRef)"
+            >
+                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            </button>
+        </div>
     </div>
 </div>
 
 <ige-add-button
-    *ngIf="formControl.enabled"
-    (add)="add()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    *ngIf="!formState.disabled && formControl.enabled"
+    (add)="addItem($event)"
+    [options]="props.menuOptions"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>

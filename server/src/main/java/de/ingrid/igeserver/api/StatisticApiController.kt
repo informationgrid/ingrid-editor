@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
@@ -22,45 +21,57 @@ class StatisticApiController @Autowired constructor(
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
+        val documentFilter = BoolFilter("AND", listOf("selectDocuments","exceptFolders"), null, null, true)
+        val emptyQuery =  ResearchQuery(null, documentFilter)
+        val result = getStatisticForQuery(principal, emptyQuery)
+        return ResponseEntity.ok(result)
 
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        val userName = authUtils.getUsernameFromPrincipal(principal)
-        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
-        val allDrafts = researchService.query(
-            principal, userGroups, catalogId,
-            ResearchQuery(
-                null, BoolFilter("AND", listOf("selectDocuments", "selectDraft", "exceptFolders"), null, null),
-                pagination = ResearchPaging(pageSize = 1)
-            )
-        )
-        val allPublished = researchService.query(
-            principal, userGroups, catalogId,
-            ResearchQuery(
-                null, BoolFilter("AND", listOf("selectDocuments", "selectPublished", "exceptFolders"), null, null),
-                pagination = ResearchPaging(pageSize = 1)
-            )
-        )
-        val total = researchService.query(
-            principal, userGroups, catalogId,
-            ResearchQuery(
-                null, BoolFilter("AND", listOf("selectDocuments", "exceptFolders"), null, null),
-                pagination = ResearchPaging(pageSize = 10)
-            )
-        )
-        // TODO: fix calculation of total
-
-        return ResponseEntity.ok(
-            StatisticResponse(
-                total.totalHits.toLong(),
-                allPublished.totalHits.toLong(),
-                allDrafts.totalHits.toLong()
-            )
-        )
+        // TODO-DW: check improvement
+//        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+//
+//        val userName = authUtils.getUsernameFromPrincipal(principal)
+//        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
+//        val allDrafts = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "selectDraft", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 1)
+//            )
+//        )
+//        val allPublished = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "selectPublished", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 1)
+//            )
+//        )
+//        val total = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 10)
+//            )
+//        )
+//        // TODO: fix calculation of total
+//
+//        return ResponseEntity.ok(
+//            StatisticResponse(
+//                total.totalHits.toLong(),
+//                allPublished.totalHits.toLong(),
+//                allDrafts.totalHits.toLong()
+//            )
+//        )
     }
 
     override fun searchStatistic(principal: Principal, query: ResearchQuery): ResponseEntity<StatisticResponse> {
+        val result = getStatisticForQuery(principal, query)
+        return ResponseEntity.ok(result)
+    }
 
+    private fun getStatisticForQuery(
+        principal: Principal,
+        query: ResearchQuery
+    ): StatisticResponse {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
         val userName = authUtils.getUsernameFromPrincipal(principal)
         val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
@@ -101,8 +112,6 @@ class StatisticApiController @Autowired constructor(
             numPublished = allDataPublished,
             statsPerType = statsPerType
         );
-
-        return ResponseEntity.ok(result)
-
+        return result
     }
 }

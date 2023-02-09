@@ -74,7 +74,10 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   private showDialog(source: string, showInfo = true): Observable<any> {
     return this.dialog
       .open(ReplaceAddressDialogComponent, {
-        data: <ReplaceAddressDialogData>{ source: source, showInfo: showInfo },
+        data: <ReplaceAddressDialogData>{
+          source: source,
+          showInfo: showInfo,
+        },
       })
       .afterClosed();
   }

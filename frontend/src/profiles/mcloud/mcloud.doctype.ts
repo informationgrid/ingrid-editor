@@ -82,7 +82,7 @@ export class McloudDoctype extends BaseDoctype {
               label: "Titel",
               focus: true,
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Titel",
                 appearance: "outline",
               },
@@ -92,7 +92,7 @@ export class McloudDoctype extends BaseDoctype {
               type: "upload",
               label: "Link",
               class: "flex-2",
-              templateOptions: {
+              props: {
                 label: "Link",
                 appearance: "outline",
                 required: true,
@@ -120,7 +120,7 @@ export class McloudDoctype extends BaseDoctype {
               key: "type",
               type: "select",
               label: "Typ",
-              templateOptions: {
+              props: {
                 label: "Typ",
                 appearance: "outline",
                 required: true,
@@ -135,7 +135,8 @@ export class McloudDoctype extends BaseDoctype {
               type: "autocomplete",
               label: "Datenformat",
               wrappers: ["form-field"],
-              templateOptions: {
+
+              props: {
                 label: "Datenformat",
                 appearance: "outline",
                 options: this.getCodelistForSelect(20003, null),
@@ -163,12 +164,12 @@ export class McloudDoctype extends BaseDoctype {
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
           this.addInput("mfundFKZ", null, {
             fieldLabel: "mFUND Förderkennzeichen",
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
         ]),
       ]),
@@ -178,7 +179,7 @@ export class McloudDoctype extends BaseDoctype {
           key: "events",
           type: "repeat",
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Zeitbezug der Ressource",
           },
           fieldArray: {
@@ -217,12 +218,14 @@ export class McloudDoctype extends BaseDoctype {
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key === "range",
+            expressions: {
+              hide: "model?.rangeType?.key === 'range'",
+            },
           }),
           this.addDateRange("timeSpanRange", null, {
-            hideExpression: (model: any) =>
-              model && model.rangeType?.key !== "range",
+            expressions: {
+              hide: "model?.rangeType?.key !== 'range'",
+            },
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {

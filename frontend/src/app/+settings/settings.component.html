@@ -1,6 +1,12 @@
-<nav mat-tab-nav-bar class="page-tabs-routing">
+<nav
+    mat-tab-nav-bar
+    class="page-tabs-routing"
+    mat-stretch-tabs="false"
+    [tabPanel]="tabPanel"
+>
     <a
         *ngFor="let tab of tabs"
+        [attr.data-cy]="tab.path"
         mat-tab-link
         #rla="routerLinkActive"
         routerLinkActive="active-link"
@@ -11,4 +17,6 @@
     </a>
 </nav>
 
-<router-outlet></router-outlet>
+<mat-tab-nav-panel #tabPanel>
+    <router-outlet></router-outlet>
+</mat-tab-nav-panel>

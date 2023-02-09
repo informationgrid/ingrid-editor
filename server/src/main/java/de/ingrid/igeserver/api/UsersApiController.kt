@@ -1,9 +1,10 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.UserRepository
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
@@ -68,11 +71,11 @@ class UsersApiController : UsersApi {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
-    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<String?> {
+    override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
 
         // user login must be lowercase
         if (user.login != user.login.lowercase()) {
-            return ResponseEntity.badRequest().body("user.login must be lowercase")
+            throw ClientException.withReason("user.login must be lowercase")
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -84,18 +87,19 @@ class UsersApiController : UsersApi {
 
         logger.debug("Create user ${user.login} (exists in keycloak: $userExists)")
 
-        if (userExists) {
+        val createdUser = if (userExists) {
             keycloakService.updateUser(principal, user)
             keycloakService.addRoles(principal, user.login, listOf(user.role))
-            catalogService.createUser(catalogId, user)
+            val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to existing user '${user.login}' (${user.email})")
                 email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
             }
+            createdUser
 
         } else {
             val password = keycloakService.createUser(principal, user)
-            catalogService.createUser(catalogId, user)
+            val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to '${user.login}' (${user.email})")
                 email.sendWelcomeEmailWithPassword(
@@ -106,15 +110,20 @@ class UsersApiController : UsersApi {
                     user.login
                 )
             }
-
+            createdUser
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
-        return ResponseEntity.ok().build()
+        user.id = createdUser.id
+        return ResponseEntity.ok(user)
     }
 
     @Transactional
     override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
+        if (!catalogService.canEditUser(principal, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val deleted = catalogService.deleteUser(catalogId, userId)
         // if user really deleted (only was connected to one catalog)
@@ -126,8 +135,29 @@ class UsersApiController : UsersApi {
 
     }
 
-    override fun getUser(principal: Principal, userId: String): ResponseEntity<User> {
+    override fun getUser(principal: Principal, userId: Int): ResponseEntity<User> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
 
+        if (!catalogService.canEditUser(principal, frontendUser.userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        keycloakService.getClient(principal).use { client ->
+
+            val login = frontendUser.userId
+            val user = keycloakService.getUser(client, login)
+
+            user.latestLogin = this.getMostRecentLoginForUser(login)
+
+            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
+            return ResponseEntity.ok(user)
+        }
+
+    }
+
+    private fun getSingleUser(principal: Principal, userId: String): User {
         keycloakService.getClient(principal).use { client ->
 
             val user = keycloakService.getUser(client, userId)
@@ -139,49 +169,35 @@ class UsersApiController : UsersApi {
 
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
-            return ResponseEntity.ok(user)
+            return user
         }
-
     }
 
     override fun list(principal: Principal): ResponseEntity<List<User>> {
-
-        // return all users except superadmin for superadmins and katadmins
+        // return all users except superadmins for superadmins and katadmins
         if (authUtils.isAdmin(principal)) {
             val allUsers = catalogService.getAllCatalogUsers(principal)
             return ResponseEntity.ok(allUsers.filter { it.role != "ige-super-admin" })
         }
+        val userIds = catalogService.getAllCatalogUserIds(principal)
+            .filter { catalogService.canEditUser(principal, it) }
 
-        // return all users of assigned groups and subgroups for non-katadmins
-        val filteredUsers = mutableSetOf<User>()
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        groupService.getAll(catalogId)
-            .filter { hasRightsForGroup(principal, it) }
-            .forEach { filteredUsers.addAll(groupService.getUsersOfGroup(it.id!!, principal)) }
+        return ResponseEntity.ok(userIds.map { getSingleUser(principal, it) })
 
-        val usersWithNoGroups = catalogService.getAllCatalogUsers(principal)
-            .filter { it.groups.isEmpty() }
-        filteredUsers.addAll(usersWithNoGroups)
-
-        // remove admin users (superadmins and catalog katadmins)
-        return ResponseEntity.ok(filteredUsers.filter { it.role != "ige-super-admin" && it.role != "cat-admin" })
     }
 
-    private fun hasRightsForGroup(
-        principal: Principal,
-        group: Group
-    ) = igeAclService.hasRightsForGroup(
-        principal as Authentication,
-        group
-    )
-
-    override fun listCatAdmins(principal: Principal): ResponseEntity<List<User>> {
-        val filteredUsers = catalogService.getAllCatalogUsers(principal).filter { user -> user.role == "cat-admin" }
+    override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
+        val filteredUsers =
+            catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
 
 
-    override fun updateUser(principal: Principal, id: String, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal, user: User): ResponseEntity<Void> {
+        if (!catalogService.canEditUser(principal, user.login)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         keycloakService.updateUser(principal, user)
@@ -199,9 +215,9 @@ class UsersApiController : UsersApi {
 
             user.apply {
                 login = userId
-                firstName = if (user.firstName == "") kcUser.firstName else user.firstName
-                lastName = if (user.lastName == "") kcUser.lastName else user.lastName
-                email = if (user.email == "") kcUser.email else user.email
+                firstName = user.firstName.ifBlank { kcUser.firstName }
+                lastName = user.lastName.ifBlank { kcUser.lastName }
+                email = user.email.ifBlank { kcUser.email }
             }
             keycloakService.updateUser(principal, user)
         }
@@ -297,25 +313,36 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(null)
     }
 
-    private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
+    override fun assignUserToCatalog(
+        principal: Principal,
+        userId: String,
+        catalogId: String
+    ): ResponseEntity<Void> {
+        val catalog = catalogService.getCatalogById(catalogId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+
+        user.catalogs.add(catalog)
+        userRepo.save(user)
+        return ResponseEntity.ok().build()
+    }
+
+    fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
 
         var user = userRepo.findByUserId(userIdent)
-
-        val isNewEntry = user == null
         val catalog = catalogService.getCatalogById(catalogName)
 
-        if (isNewEntry) {
+        if (user == null) {
+            // new user
             user = UserInfo().apply {
                 userId = userIdent
                 data = UserInfoData()
                 catalogs.add(catalog)
             }
         } else {
-            // make list to hashset
-            user?.catalogs?.add(catalog)
+            user.catalogs.add(catalog)
         }
 
-        userRepo.save(user!!)
+        userRepo.save(user)
     }
 
     override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
@@ -326,18 +353,16 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok(result)
     }
 
-    override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Void> {
+    override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
         val user = userRepo.findByUserId(userId)?.apply {
             curCatalog = catalogService.getCatalogById(catalogId)
-            // if not assigned yet, then do it now
-            if (!catalogs.contains(curCatalog)) catalogs.add(curCatalog!!)
         } ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         userRepo.save(user)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(user.curCatalog)
     }
 
     override fun refreshSession(): ResponseEntity<Void> {
@@ -358,6 +383,11 @@ class UsersApiController : UsersApi {
 
     }
 
+    override fun listInternal(principal: Principal): ResponseEntity<List<String>> {
+        val allIgeUserIds = catalogService.getAllIgeUserIds()
+        return ResponseEntity.ok(allIgeUserIds)
+    }
+
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
 
         keycloakService.requestPasswordChange(principal, id)
@@ -371,7 +401,7 @@ class UsersApiController : UsersApi {
             val user = keycloakService.getUser(client, id)
             val password = keycloakService.resetPassword(principal, id)
             logger.debug("Reset password for user $id to $password")
-            if (!developmentMode) email.sendWelcomeEmailWithPassword(
+            if (!developmentMode) email.sendResetPasswordEmail(
                 user.email,
                 user.firstName,
                 user.lastName,

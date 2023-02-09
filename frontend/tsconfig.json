@@ -10,9 +10,10 @@
     "declaration": false,
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"]
+    "lib": ["es2017", "dom"],
+    "useDefineForClassFields": false
   },
   "exclude": ["server/*", "e2e", "node_modules"]
 }

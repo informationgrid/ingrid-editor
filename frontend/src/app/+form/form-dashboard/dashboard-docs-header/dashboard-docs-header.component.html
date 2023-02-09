@@ -3,35 +3,23 @@
 </h1>
 
 <div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
-    <button
-        mat-button
-        (click)="createNewFolder()"
+    <ige-action-button
+        label="Neuer Ordner"
+        svgIcon="outline-create_new_folder-24px"
         [disabled]="!canCreateDatasets"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="outline-create_new_folder-24px"
-        ></mat-icon>
-        <span>Neuer Ordner</span>
-    </button>
-    <button
-        mat-button
-        (click)="createNewDataset()"
+        (submit)="createNewFolder()"
+    ></ige-action-button>
+    <ige-action-button
+        [label]="t('newDocument')"
+        svgIcon="Neuer-Datensatz"
         [disabled]="!canCreateDatasets"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="Neuer-Datensatz"
-        ></mat-icon>
-        <span>{{ t("newDocument") }}</span>
-    </button>
-    <button
-        mat-button
-        (click)="importDataset()"
-        disabled
+        (submit)="createNewDataset()"
+    ></ige-action-button>
+    <ige-action-button
+        *ngIf="canImport"
+        [label]="t('importDocument')"
+        icon="import_export"
         [disabled]="!canImport"
-    >
-        <mat-icon>import_export</mat-icon>
-        <span>{{ t("importDocument") }}</span>
-    </button>
+        (submit)="importDataset()"
+    ></ige-action-button>
 </div>

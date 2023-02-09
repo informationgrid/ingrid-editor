@@ -1,7 +1,17 @@
-:host {
-  padding-top: 10px;
+.toggle-ref-docs-btn {
+  margin: 3px 0;
 }
 
-.toggle-ref-docs-btn {
-  margin: 7px 0;
+mat-hint {
+  font-size: 12px;
+}
+
+mat-spinner {
+  display: inline-block;
+  margin-left: 12px;
+}
+
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
 }

@@ -1,4 +1,8 @@
-<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+<div
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    *transloco="let t; read: 'replace-address'"
+>
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
         <h2 mat-dialog-title>
             <button mat-icon-button mat-dialog-close>
@@ -10,10 +14,7 @@
     <mat-dialog-content class="hide-tab-header">
         <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
             <mat-tab *ngIf="showInfo">
-                <p>
-                    Das Dokument wird bereits von mindestens einem Dokument
-                    referenziert. Möchten Sie die Adresse ersetzen?
-                </p>
+                <p>{{ t("reference-error") }}</p>
             </mat-tab>
             <mat-tab>
                 <p>

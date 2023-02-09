@@ -8,12 +8,17 @@
     overflow: auto;
   }
 
-  .mat-form-field .mat-icon {
+  .mat-mdc-form-field .mat-icon {
     padding-right: 10px;
   }
 
-  .mat-radio-button {
-    height: 26px !important;
+  .mat-mdc-radio-button {
+    height: auto;
+  }
+
+  ige-search-input {
+    display: block;
+    flex: none;
   }
 }
 
@@ -27,6 +32,6 @@
   }
 }
 
-.mat-form-field {
+.mat-mdc-form-field {
   width: 100%;
 }

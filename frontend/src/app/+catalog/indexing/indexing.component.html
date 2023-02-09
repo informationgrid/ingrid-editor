@@ -36,7 +36,7 @@
 
         <div>
             Beispiele:
-            <mat-chip-list>
+            <mat-chip-listbox>
                 <mat-chip (click)="cronField.setValue('0 */30 * * * *')"
                     >Alle 30 Minuten
                 </mat-chip>
@@ -49,7 +49,7 @@
                 <mat-chip (click)="cronField.setValue('0 0 8,11 * * 1-5')"
                     >Mo-Fr 8 und 11 Uhr
                 </mat-chip>
-            </mat-chip-list>
+            </mat-chip-listbox>
         </div>
 
         <p>
@@ -77,7 +77,7 @@
 
                 <span *ngIf="log.endTime"
                     >Letzte Indizierung erfolgte am
-                    {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
+                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
                 >
                 <ng-container *ngIf="!log.endTime">
                     <span fxLayout>
@@ -96,10 +96,11 @@
                     </span>
                     <span
                         >Laufende Indizierung seit:
-                        {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
+                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
                     >
                 </ng-container>
                 <button
+                    data-cy="btn-show-more"
                     mat-icon-button
                     class="dark menu-button"
                     [class.expanded]="showMore"
@@ -157,7 +158,7 @@
                 />
                 <mat-hint>{{ hint }}</mat-hint>
             </mat-form-field>
-            <div>
+            <div class="button-bar">
                 <button
                     mat-stroked-button
                     (click)="deactivateIndexing()"

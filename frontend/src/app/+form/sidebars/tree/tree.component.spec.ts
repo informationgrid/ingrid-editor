@@ -46,6 +46,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
+import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -87,7 +88,11 @@ describe("TreeComponent", () => {
       MatSnackBarModule,
       TranslocoModule,
     ],
-    declarations: [TreeHeaderComponent, EmptyNavigationComponent],
+    declarations: [
+      TreeHeaderComponent,
+      EmptyNavigationComponent,
+      SearchInputComponent,
+    ],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
@@ -183,6 +188,8 @@ describe("TreeComponent", () => {
     const treeNode = spectator.component.dataSource.data;
     expect(treeNode[0]._id).toBe(1);
     expect(treeNode[1]._id).toBe(3);
+
+    tick(1000);
   }));
 
   it("should add a new child node", fakeAsync(() => {
@@ -311,6 +318,8 @@ describe("TreeComponent", () => {
     nodeImageHasClass(2, "workingWithPublished");
     nodeImageHasNotClass(2, "working");
     nodeImageHasNotClass(2, "published");
+
+    tick(1000);
   }));
 
   it("should initially expand to a deeply nested node", fakeAsync(() => {
@@ -746,9 +755,9 @@ describe("TreeComponent", () => {
 
   function nodesAreMarkedForSelection(...index: number[]) {
     index.forEach((i) =>
-      expect(spectator.queryAll(".mat-tree-node .mat-checkbox")[i]).toHaveClass(
-        "mat-checkbox-checked"
-      )
+      expect(
+        spectator.queryAll(".mat-tree-node .mat-mdc-checkbox")[i]
+      ).toHaveClass("mat-mdc-checkbox-checked")
     );
   }
 
@@ -785,13 +794,14 @@ describe("TreeComponent", () => {
 
   function checkSelectionCount(count: number) {
     expect(
-      spectator.queryAll("mat-tree mat-checkbox.mat-checkbox-checked").length
+      spectator.queryAll("mat-tree mat-checkbox.mat-mdc-checkbox-checked")
+        .length
     ).toBe(count);
   }
 
   function checkNodeIsCheckboxSelected(index: number) {
     expect(spectator.queryAll("mat-tree mat-checkbox")[index]).toHaveClass(
-      "mat-checkbox-checked"
+      "mat-mdc-checkbox-checked"
     );
   }
 });

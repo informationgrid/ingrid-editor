@@ -17,65 +17,85 @@ import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
 import { BehaviourService } from "../services/behavior/behaviour.service";
+import { ConfigService } from "../services/config/config.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
+  private static prefixLength: number;
+
   constructor(
     private dialog: MatDialog,
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private behaviourService: BehaviourService
-  ) {}
+  ) {
+    // additionally to the catalog info in the url we also use additional 6 characters
+    // to include slashes and `form` path
+    FormChangeDeactivateGuard.prefixLength = ConfigService.catalogId.length + 6;
+  }
 
   // TODO: find another way to reset form instead of reloading, which makes a backend request
+  //       we could use formOptions.resetModel()
   canDeactivate(
     target: FormComponent | AddressComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> {
-    if (
-      currentState.url.indexOf("/form") === 0 &&
-      nextState.url.indexOf("/form") !== 0
-    ) {
-      console.log("redirect from form");
-      // unsubscribe from form plugins
-      this.behaviourService.registerState$.next({
-        register: false,
-        address: false,
-      });
-    } else if (
-      currentState.url.indexOf("/address") === 0 &&
-      nextState.url.indexOf("/address") !== 0
-    ) {
-      console.log("redirect from address");
-      // subscribe form plugins
-      this.behaviourService.registerState$.next({
-        register: false,
-        address: true,
-      });
-    }
-
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
-    if (
-      FormChangeDeactivateGuard.pageIsNotLeft(
-        currentState.url,
-        nextState.url
-      ) &&
-      !FormChangeDeactivateGuard.basepageIsNext(currentState.url, nextState.url)
-    ) {
+    const stayOnPage = FormChangeDeactivateGuard.pageIsNotLeft(
+      currentState.url,
+      nextState.url
+    );
+    if (stayOnPage) {
       return of(true);
     }
 
     const formHasChanged = this.formStateService.getForm()?.dirty;
 
     if (!formHasChanged) {
+      this.handleBehaviourRegistration(currentState, nextState);
       return of(true);
     }
-    return this.handleFormHasChanged(target);
+
+    return this.handleFormHasChanged(target).pipe(
+      tap((leavePage) => {
+        if (leavePage)
+          this.handleBehaviourRegistration(currentState, nextState);
+      })
+    );
+  }
+
+  private handleBehaviourRegistration(
+    currentState: RouterStateSnapshot,
+    nextState: RouterStateSnapshot
+  ) {
+    const documentPath = `/${ConfigService.catalogId}/form`;
+    if (
+      currentState.url.indexOf(documentPath) === 0 &&
+      nextState.url.indexOf(documentPath) !== 0
+    ) {
+      // unsubscribe from form plugins
+      this.behaviourService.registerState$.next({
+        register: false,
+        address: false,
+      });
+    } else {
+      const addressPath = `/${ConfigService.catalogId}/address`;
+      if (
+        currentState.url.indexOf(addressPath) === 0 &&
+        nextState.url.indexOf(addressPath) !== 0
+      ) {
+        // subscribe form plugins
+        this.behaviourService.registerState$.next({
+          register: false,
+          address: true,
+        });
+      }
+    }
   }
 
   private handleFormHasChanged(target: any) {
@@ -138,12 +158,7 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
   }
 
   private static pageIsNotLeft(currentUrl: string, nextUrl: string) {
-    let currentPrefix = currentUrl.substring(0, 5);
+    let currentPrefix = currentUrl.substring(0, this.prefixLength);
     return nextUrl.indexOf(currentPrefix) === 0;
-  }
-
-  private static basepageIsNext(currentUrl: string, nextUrl: string) {
-    let currentPrefix = currentUrl.substring(0, 5);
-    return !nextUrl.includes(";id=");
   }
 }

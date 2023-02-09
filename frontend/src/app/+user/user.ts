@@ -2,6 +2,7 @@ import { SelectOption } from "../services/codelist/codelist.service";
 import { Group } from "../models/user-group";
 
 export abstract class User {
+  id: number;
   login: string;
   firstName: string;
   lastName: string;
@@ -23,6 +24,7 @@ export abstract class User {
 export class FrontendUser extends User {
   permissions?: Permissions;
   groups?: { key: string; value?: string }[];
+  readOnly?: boolean;
 
   constructor(user?: BackendUser, igeGroups?: Group[]) {
     super(user);
@@ -51,6 +53,7 @@ export class TreePermission {
   permission: string; // TODO: still used?
   hasWritePermission: boolean;
   hasOnlySubtreeWritePermission: boolean;
+  iconClass?: string; // either "UvpOrganisationDoc" or "UvpAddressDoc"
 }
 
 export enum PermissionType {

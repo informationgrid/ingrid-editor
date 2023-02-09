@@ -2,14 +2,14 @@
     >Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error
 >
 
-<mat-chip-list
+<mat-chip-listbox
     *ngIf="field.fieldGroup.length > 0"
     [disabled]="formControl.disabled"
     cdkDropList
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)"
 >
-    <mat-chip
+    <mat-chip-option
         disableRipple
         cdkDrag
         *ngFor="let field of field.fieldGroup; let i = index"
@@ -19,14 +19,14 @@
         (removed)="remove(i)"
     >
         <mat-icon
-            *ngIf="to.showLanguage"
+            *ngIf="props.showLanguage"
             class="avatar gray"
             svgIcon="language-24px"
         ></mat-icon>
 
-        <ng-container *ngIf="to.codelistId > -1; else simpleLabel">
+        <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
             <div class="label">
-                {{ model[i] | codelist: to.codelistId | async }}
+                {{ model[i] | codelist : props.codelistId | async }}
             </div>
         </ng-container>
 
@@ -35,33 +35,40 @@
         >
 
         <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
-    </mat-chip>
+    </mat-chip-option>
     <ige-add-button
-        *ngIf="to.useDialog && formControl.enabled"
+        *ngIf="props.useDialog && formControl.enabled"
         [showLabel]="false"
         (add)="openDialog()"
         [showRequiredError]="
-            formControl.invalid && formControl.errors?.required
+            showError && formControl.invalid && formControl.errors?.required
         "
     ></ige-add-button>
-</mat-chip-list>
+</mat-chip-listbox>
 
 <ige-add-button
-    *ngIf="to.useDialog && formControl.enabled && field.fieldGroup.length === 0"
+    *ngIf="
+        props.useDialog && formControl.enabled && field.fieldGroup.length === 0
+    "
     class="add-button-initial"
+    [class.error-btn]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
     [showLabel]="field.fieldGroup.length === 0"
     (add)="openDialog()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>
 
-<ng-container *ngIf="!to.useDialog && formControl.enabled">
+<ng-container *ngIf="!props.useDialog && formControl.enabled">
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput
             placeholder="Bitte eingeben..."
             autocomplete="off"
             [formControl]="inputControl"
-            [required]="to.required && formControl.invalid"
+            [required]="showError && props.required && formControl.invalid"
             (keydown.enter)="addValues(inputControl.value)"
         />
         <button
@@ -77,8 +84,6 @@
             >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
             trennen</mat-hint
         >
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
-    <mat-error *ngIf="formControl.errors?.required"
-        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
-    >
 </ng-container>

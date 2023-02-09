@@ -51,7 +51,10 @@ export class CodelistPipe implements PipeTransform {
       (item) => item.id === codelistValue
     );
     if (entries.length === 1) {
-      return entries[0].fields;
+      let fields = entries[0].fields;
+      const hasDE = fields["de"];
+      if (!hasDE) return { ...fields, de: fields["name"] };
+      return fields;
     } else {
       console.log(
         `Codelist entry ${codelistValue} not found for codelist ${id}`

@@ -16,7 +16,7 @@ export class UvpNumberBehaviour extends Plugin {
       key: "uvpCodelist",
       type: "select",
       defaultValue: "9000",
-      templateOptions: {
+      props: {
         showSearch: true,
         appearance: "outline",
         simple: true,

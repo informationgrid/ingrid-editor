@@ -60,7 +60,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
     return {
       key: field.key,
       type: "input",
-      templateOptions: field.templateOptions,
+      props: field.props,
       validators: {
         url: {
           expression: (c) => new RegExp(this.URL_REGEXP).test(c.value),
@@ -73,7 +73,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   private prepareResult(value: any) {
     const uploadKey = this.formData.fields.find(
       (field) => field.type === "upload"
-    ).key as string;
+    )?.key as string;
     const result = {
       ...value,
     };

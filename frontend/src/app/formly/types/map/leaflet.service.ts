@@ -14,6 +14,7 @@ import {
 } from "leaflet";
 import { SpatialLocationWithColor } from "./spatial-list/spatial-list.component";
 import { WktTools } from "./spatial-dialog/wkt-spatial/wkt-tools";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Injectable({
   providedIn: "root",
@@ -49,12 +50,12 @@ export class LeafletService {
   }
 
   private defaultLayer = () =>
-    new TileLayer("//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png", {
+    new TileLayer(this.config.getConfiguration().mapTileUrl, {
       attribution:
-        '&copy; <a href="https://openstreetmap.de">OpenStreetMap</a> contributors',
+        '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
-  constructor() {
+  constructor(private config: ConfigService) {
     this.wktTools = new WktTools();
 
     // fix for marker-icon location
@@ -87,11 +88,13 @@ export class LeafletService {
 
   initMap(mapElement: any, matOptions: MapOptions) {
     const defaults = { ...this.defaultOptions };
-    return new Map(mapElement, {
+    let map = new Map(mapElement, {
       layers: [this.defaultLayer()],
       ...defaults,
       ...matOptions,
     });
+    map.attributionControl.setPrefix(false);
+    return map;
   }
 
   drawSpatialRefs(

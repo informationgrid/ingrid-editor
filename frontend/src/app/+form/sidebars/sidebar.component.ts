@@ -12,6 +12,7 @@ import { FormStateService } from "../form-state.service";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import { filter, take } from "rxjs/operators";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -104,6 +105,7 @@ export class SidebarComponent implements OnInit {
     // reset scroll position when loading a new document
     this.treeStore.update({ scrollPosition: 0 });
 
+    // TODO: should be handled in form-change.guard.ts, where it's also already used
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService.getForm(),
       this.documentService,
@@ -112,7 +114,10 @@ export class SidebarComponent implements OnInit {
     );
 
     if (handled) {
-      this.router.navigate([this.path, { id: selectedDocUuids[0] }]);
+      this.router.navigate([
+        ConfigService.catalogId + this.path,
+        { id: selectedDocUuids[0] },
+      ]);
     } else {
       this.activeTreeNode.next(currentId);
     }

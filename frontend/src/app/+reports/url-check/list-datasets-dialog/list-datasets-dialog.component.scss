@@ -1,10 +1,11 @@
 @import "src/variables";
 
+/* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
 mat-dialog-content button {
   color: $ige-secondary !important;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   padding-bottom: 0 !important;
   display: flex;
   flex-direction: column;
@@ -15,7 +16,7 @@ mat-dialog-content button {
   overflow: auto;
   margin-top: 24px;
 
-  .mat-list-item {
+  .mat-mdc-list-item {
     height: auto;
     padding: 14px 0;
   }

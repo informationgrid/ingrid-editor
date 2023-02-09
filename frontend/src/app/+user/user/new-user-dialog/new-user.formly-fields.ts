@@ -11,7 +11,7 @@ export const getNewUserFormFields = (
       key: "login",
       type: "autocomplete",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Benutzername",
         // placeholder: "Bitte wählen",
         appearance: "outline",
@@ -28,7 +28,7 @@ export const getNewUserFormFields = (
       key: "role",
       type: "select",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "Rolle",
         label: "Rolle",
         appearance: "outline",
@@ -39,7 +39,7 @@ export const getNewUserFormFields = (
     },
     {
       wrappers: ["panel"],
-      templateOptions: {
+      props: {
         externalLabel: "Name",
         required: true,
       },
@@ -51,7 +51,7 @@ export const getNewUserFormFields = (
               key: "firstName",
               className: "flex-1 firstName",
               type: "input",
-              templateOptions: {
+              props: {
                 label: "Vorname",
                 appearance: "outline",
                 required: true,
@@ -61,7 +61,7 @@ export const getNewUserFormFields = (
               key: "lastName",
               className: "flex-1 lastName",
               type: "input",
-              templateOptions: {
+              props: {
                 label: "Nachname",
                 appearance: "outline",
                 required: true,
@@ -75,7 +75,7 @@ export const getNewUserFormFields = (
       key: "email",
       type: "input",
       wrappers: ["panel", "form-field"],
-      templateOptions: {
+      props: {
         externalLabel: "E-Mail",
         appearance: "outline",
         description:

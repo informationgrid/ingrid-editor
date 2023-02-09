@@ -328,6 +328,8 @@ class DocumentService @Autowired constructor(
         val copy = jacksonObjectMapper().createObjectNode().setAll<ObjectNode>(node)
         listOf(
             FIELD_VERSION,
+            FIELD_CREATED_USER_EXISTS,
+            FIELD_MODIFIED_USER_EXISTS,
             FIELD_CREATED,
             FIELD_MODIFIED,
             FIELD_CREATED_BY,
@@ -733,6 +735,10 @@ class DocumentService @Autowired constructor(
 
         return DocumentData(updatedWrapper, updatedDoc)
     }
+
+    // TODO: the same function is also defined in IndexingTask
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
+        catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
 
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
         return if (includeFolders)

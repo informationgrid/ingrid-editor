@@ -10,10 +10,9 @@ import { UvpOrganisationDoctype } from "./uvp/doctypes/uvp-organisation.doctype"
 import { LineDeterminationDoctype } from "./uvp/doctypes/line-determination.doctype";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
-import { filter, map, take } from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
-import { NavigationEnd, Router } from "@angular/router";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 
 @Component({
@@ -31,8 +30,7 @@ class UVPComponent {
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
-    organisation: UvpOrganisationDoctype,
-    router: Router
+    organisation: UvpOrganisationDoctype
   ) {
     this.addBehaviour(behaviourService, negativeAssessmentDoctype);
 
@@ -51,14 +49,14 @@ class UVPComponent {
     // this is for addresses later
     //   profileService.setDefautAddressDoctype(organisation);
 
-    this.modifyFormHeader(profileService);
+    this.modifyFormHeader();
 
     this.addUVPReportTab(reportsService);
 
     this.addUVPUploadCheckReportTab(reportsService);
   }
 
-  private modifyFormHeader(service: ProfileService) {
+  private modifyFormHeader() {
     /*    service.updateUIProfileStore({
       hideFormHeaderInfos: ["type"],
     });*/

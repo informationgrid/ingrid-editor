@@ -1,5 +1,7 @@
 <ige-form-error
-    *ngIf="formControl.invalid && !formControl.hasError('required')"
+    *ngIf="
+        showError && formControl.invalid && !formControl.hasError('required')
+    "
     >{{ getFirstError() }}</ige-form-error
 >
 
@@ -31,7 +33,9 @@
 </div>
 
 <ige-add-button
-    *ngIf="formControl.enabled && (!to.max || to.max > addresses.length)"
+    *ngIf="formControl.enabled && (!props.max || props.max > addresses.length)"
     (add)="addAddress()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>

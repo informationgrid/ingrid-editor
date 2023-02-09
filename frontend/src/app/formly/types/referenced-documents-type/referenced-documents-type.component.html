@@ -1,11 +1,18 @@
-<button
-    mat-stroked-button
-    class="toggle-ref-docs-btn"
-    (click)="toggleList()"
-    color="primary"
->
-    {{ showReferences ? "Ausblenden" : "Anzeigen" }}
-</button>
+<div class="spinner-wrapper">
+    <button
+        *ngIf="showToggleButton && docs.length > 0"
+        mat-stroked-button
+        class="toggle-ref-docs-btn"
+        (click)="toggleList()"
+        color="primary"
+    >
+        {{ totalHits }} {{ showReferences ? "Ausblenden" : "Anzeigen" }}
+    </button>
+
+    <ng-container *ngIf="isLoading">
+        <mat-spinner diameter="24"></mat-spinner>
+    </ng-container>
+</div>
 
 <ng-container *ngIf="showReferences">
     <mat-paginator
@@ -16,14 +23,18 @@
         (page)="switchPage($event)"
     ></mat-paginator>
 
-    <p *ngIf="totalHits === 0">
-        Es existieren keine Referenzen auf diese Adresse
-    </p>
-
     <ige-document-list-item
         #list
         [docs]="docs"
         [removeSelectionAfter]="true"
         (select)="openReference($event)"
     ></ige-document-list-item>
+
+    <mat-hint *ngIf="referencesHint && docs.length > 0">
+        {{ referencesHint }}
+    </mat-hint>
 </ng-container>
+
+<p *ngIf="docs.length === 0 && !isLoading" data-cy="no-ref-docs-hint">
+    {{ messageNoReferences }}
+</p>

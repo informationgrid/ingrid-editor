@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostUploadRemover @Autowired constructor(val storage: Storage) : Filter<PostDeletePayload> {
 
-    override val profiles = arrayOf("mcloud", "uvp")
+    override val profiles = arrayOf("mcloud", "uvp", "test")
 
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
         val docId = payload.document.uuid

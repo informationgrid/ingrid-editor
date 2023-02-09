@@ -2,8 +2,10 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
   OnInit,
+  Output,
   ViewChild,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
@@ -20,7 +22,7 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter, map, take, tap } from "rxjs/operators";
+import { filter, map, take } from "rxjs/operators";
 import {
   CodelistService,
   SelectOptionUi,
@@ -41,7 +43,7 @@ export interface FacetUpdate {
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: FacetsComponent,
+      useExisting: forwardRef(() => FacetsComponent),
     },
   ],
 })
@@ -58,6 +60,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   @Input() refreshView: EventEmitter<void>;
+
+  @Output() resetQuery = new EventEmitter<void>();
 
   @Input()
   set forAddresses(addresses: boolean) {
@@ -86,14 +90,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private allFacets: Facets;
   private boxes: Rectangle[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
-  private timeGroupId: string;
+  timeGroupId: string;
 
   form: UntypedFormGroup = this.fb.group({});
 
   private onChange: (x: any) => {};
   onTouched = () => {};
-
-  touched = false;
 
   disabled = false;
 
@@ -202,9 +204,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           )
           .subscribe(
             (id) =>
-              (this.codelistOptions[group.id] = this.codelistService
-                .observe(id)
-                .pipe(tap((val) => console.log("HEY", val))))
+              (this.codelistOptions[group.id] =
+                this.codelistService.observe(id))
           );
       }
     }
@@ -325,4 +326,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   filterForEndDate = (d: Date | null): boolean => {
     return d >= this.form.get(this.timeGroupId).get("start").value;
   };
+
+  resetDateFields() {
+    this.form.get(this.timeGroupId).get("start").setValue(null);
+    this.form.get(this.timeGroupId).get("end").setValue(null);
+  }
 }

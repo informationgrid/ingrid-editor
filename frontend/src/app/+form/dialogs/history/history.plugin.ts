@@ -16,12 +16,10 @@ import { Router } from "@angular/router";
 import { UpdateType } from "../../../models/update-type.enum";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormUtils } from "../../form.utils";
-import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormStateService } from "../../form-state.service";
-import { ModalService } from "../../../services/modal/modal.service";
-import { FormMessageService } from "../../../services/form-message.service";
 import { MatDialog } from "@angular/material/dialog";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -239,7 +237,10 @@ export class HistoryPlugin extends Plugin {
     this.treeStore.update({
       explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
     });
-    this.router.navigate([this.navigatePath, { id: item._uuid }]);
+    this.router.navigate([
+      ConfigService.catalogId + this.navigatePath,
+      { id: item._uuid },
+    ]);
   }
 
   private handleButtonState() {

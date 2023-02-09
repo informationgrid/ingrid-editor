@@ -84,6 +84,7 @@
             <div class="label">
                 <mat-checkbox
                     *ngIf="selection.multiSelectionModeEnabled"
+                    [class.docNode]="node.level !== 0"
                     [checked]="selection.isSelected(node)"
                     (click)="$event.stopImmediatePropagation()"
                     (change)="selection.nodeSelectionToggle(node, $event)"
@@ -92,7 +93,7 @@
                     [svgIcon]="node.iconClass"
                     [ngClass]="['document-icon', getStateClass(node)]"
                     [matTooltipShowDelay]="1000"
-                    [matTooltip]="t('procedureType.' + node.type)"
+                    [matTooltip]="t('docType.' + node.type)"
                 ></mat-icon>
                 <!-- TODO: replace with matTooltip and matTooltipShowDelay when https://github.com/angular/components/pull/24652 is merged -->
                 <span title="{{ node.title }}">{{ node.title }}</span>

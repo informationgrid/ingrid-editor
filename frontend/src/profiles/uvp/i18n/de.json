@@ -10,6 +10,7 @@
     "newDocument": "Neues Vorhaben",
     "importDocument": "Vorhaben importieren",
     "mostRecent": "Zuletzt bearbeitete Vorhaben",
+    "mostRecentPublished": "Zuletzt veröffentlichte Vorhaben",
     "form": "Vorhaben",
     "formSingular": "Vorhaben"
   },
@@ -30,7 +31,8 @@
   "publish": {
     "formWithPronoun": "Dieses Vorhaben"
   },
-  "procedureType": {
+
+  "docType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",
     "UvpLineDeterminationDoc": "Linienbestimmung",
@@ -43,5 +45,9 @@
     "publicDisclosure": "Öffentliche Auslegung",
     "decisionOfAdmission": "Entscheidung über die Zulassung",
     "publicHearing": "Erörterungstermin"
+  },
+  "replace-address": {
+    "reference-error": "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?",
+    "reference-error-multiple-files": "Diese Adresse wird von mindestens einem Verfahren referenziert und kann nicht gelöscht werden."
   }
 }

@@ -32,7 +32,6 @@ export class HeaderTitleRowComponent implements OnInit {
     this.icon = this.getIcon(value);
   }
 
-  @Input() sections: string[];
   @Input() disableEdit: boolean;
   @Input() address: boolean;
 

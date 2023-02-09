@@ -1,4 +1,4 @@
-<div fxLayout="column" fxFill class="page-wrapper">
+<div class="page-wrapper" fxLayout="column">
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
@@ -11,10 +11,12 @@
             </div>
             <mat-toolbar>
                 <mat-toolbar-row>
-                    <!--            Searchfield-->
-                    <ige-search-field
-                        (queryUpdate)="this.searchQuery = $event"
-                    ></ige-search-field>
+                    <ige-search-input
+                        [query]="query"
+                        [showSearchIcon]="true"
+                        placeholder="Suchen"
+                        [withWhiteBorder]="false"
+                    ></ige-search-input>
                     <div fxFlex></div>
 
                     <span class="save-buttons">
@@ -52,10 +54,10 @@
             class="split-pane-content-primary container"
         >
             <user-table
-                [query]="searchQuery"
+                [query]="query.value"
                 [users]="users"
                 [selectedUser]="userService.selectedUser$"
-                (onUserSelect)="loadUser($event.login)"
+                (onUserSelect)="loadUser($event.id)"
             ></user-table>
         </as-split-area>
         <as-split-area
@@ -63,94 +65,118 @@
             id="formUser"
             class="split-pane-content-secondary container-fluid"
         >
-            <div
-                class="detail-user"
-                *ngIf="selectedUser && !isLoading; else noUserOrLoading"
-            >
-                <div class="user-title">
-                    <div class="document-type">
-                        <mat-icon
-                            [svgIcon]="
-                                userService.roleIcon[
-                                    this.form.get('role')?.value
-                                ]
-                            "
-                        ></mat-icon>
-                    </div>
+            <ng-container *ngIf="!isLoading; else loading">
+                <ng-container *ngIf="selectedUser; else noUserSelected">
+                    <div class="detail-user">
+                        <div class="user-title">
+                            <div class="document-type">
+                                <mat-icon
+                                    [svgIcon]="
+                                        userService.roleIcon[
+                                            this.form.get('role')?.value
+                                        ]
+                                    "
+                                ></mat-icon>
+                            </div>
 
-                    <span fxFlex class="label">
-                        <span>{{
-                            model.firstName + " " + model.lastName ||
-                                "Kein Titel"
-                        }}</span>
-                    </span>
+                            <span fxFlex class="label">
+                                <span>{{
+                                    model.firstName + " " + model.lastName ||
+                                        "Kein Titel"
+                                }}</span>
+                            </span>
 
-                    <button
-                        data-cy="showMoreData"
-                        mat-icon-button
-                        class="menu-button"
-                        [class.expanded]="showMore"
-                        (click)="showMore = !showMore"
-                    >
-                        <mat-icon class="rotating animated"
-                            >keyboard_arrow_down
-                        </mat-icon>
-                    </button>
-                    <button
-                        mat-icon-button
-                        class="menu-button"
-                        [matMenuTriggerFor]="userMoreMenu"
-                    >
-                        <mat-icon svgIcon="Mehr"></mat-icon>
-                    </button>
-                    <mat-menu #userMoreMenu="matMenu">
-                        <button
-                            mat-menu-item
-                            (click)="resetPassword(selectedUser.login)"
+                            <button
+                                data-cy="showMoreData"
+                                mat-icon-button
+                                class="menu-button"
+                                [class.expanded]="showMore"
+                                (click)="showMore = !showMore"
+                            >
+                                <mat-icon class="rotating animated"
+                                    >keyboard_arrow_down
+                                </mat-icon>
+                            </button>
+                            <button
+                                data-cy="more-actions"
+                                mat-icon-button
+                                class="menu-button"
+                                [matMenuTriggerFor]="userMoreMenu"
+                            >
+                                <mat-icon svgIcon="Mehr"></mat-icon>
+                            </button>
+                            <mat-menu #userMoreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    (click)="resetPassword(selectedUser.login)"
+                                >
+                                    Passwort zurücksetzen
+                                </button>
+                                <button
+                                    mat-menu-item
+                                    (click)="deleteUser(selectedUser.login)"
+                                >
+                                    Löschen
+                                </button>
+                            </mat-menu>
+                        </div>
+                        <user-header-more
+                            [showMore]="showMore"
+                            [user]="selectedUser"
+                            [form]="form"
+                        ></user-header-more>
+                        <formly-form
+                            id="form"
+                            [form]="form"
+                            [fields]="formlyFieldConfig"
+                            [model]="model"
                         >
-                            Passwort zurücksetzen
-                        </button>
-                        <button
-                            mat-menu-item
-                            (click)="deleteUser(selectedUser.login)"
-                        >
-                            Löschen
-                        </button>
-                    </mat-menu>
-                </div>
-                <user-header-more
-                    [showMore]="showMore"
-                    [user]="selectedUser"
-                    [form]="form"
-                ></user-header-more>
-                <formly-form
-                    id="form"
-                    [form]="form"
-                    [fields]="formlyFieldConfig"
-                    [model]="model"
-                >
-                </formly-form>
-            </div>
-            <ng-template #noUserOrLoading>
-                <div
-                    *ngIf="!isLoading; else loading"
-                    class="detail-user no-selection-placeholder"
-                    fxFlex
-                    fxLayout="column"
-                    fxLayoutAlign="center center"
-                >
-                    <div>
-                        <img
-                            src="assets/icons/user-management.png"
-                            alt="user-management"
-                        />
+                        </formly-form>
                     </div>
-                    <div class="no-selection-text">
-                        Wählen Sie einen Eintrag aus, um Nutzerdaten anzuzeigen
-                        oder Änderungen durchzuführen.
+                </ng-container>
+
+                <ng-template #noUserSelected>
+                    <div
+                        *ngIf="users?.length > 0"
+                        class="detail-user no-selection-placeholder"
+                        fxFlex
+                        fxLayout="column"
+                        fxLayoutAlign="center center"
+                    >
+                        <div>
+                            <img
+                                src="assets/icons/user-management.png"
+                                alt="user-management"
+                            />
+                        </div>
+                        <div class="no-selection-text">
+                            Wählen Sie einen Eintrag aus, um Nutzerdaten
+                            anzuzeigen oder Änderungen durchzuführen.
+                        </div>
                     </div>
-                </div>
-            </ng-template>
+                    <div
+                        *ngIf="users?.length === 0"
+                        fxFlex
+                        fxLayout="column"
+                        fxLayoutAlign="center center"
+                        class="detail-role no-selection-placeholder"
+                    >
+                        <div>
+                            <img
+                                src="assets/icons/user-management.png"
+                                alt="user-management"
+                            />
+                        </div>
+                        <div class="no-selection-text">
+                            Noch keine Benutzer erstellt!
+                        </div>
+                        <div class="no-selection-text">
+                            Mit der oben stehenden Funktion „Hinzufügen“ können
+                            Sie Benutzer anlegen.
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
             <ng-template #loading>
                 <mat-spinner style="margin: 100px auto"></mat-spinner>
             </ng-template>

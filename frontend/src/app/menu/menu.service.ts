@@ -20,7 +20,7 @@ export class MenuService {
   ) {}
 
   get mainRoutes(): Route[] {
-    return this._mainRoutes.filter(
+    return this._mainRoutes[0].children.filter(
       (item) =>
         item.path !== "" &&
         !item.data?.hideFromMenu &&

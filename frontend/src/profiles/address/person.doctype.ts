@@ -20,7 +20,7 @@ export class PersonDoctype extends AddressShared {
       this.addSection("Persönliche Daten", [
         {
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Anrede",
             required: false,
           },
@@ -28,20 +28,19 @@ export class PersonDoctype extends AddressShared {
             {
               fieldGroupClassName: "display-flex width-50",
               fieldGroup: [
-                this.addAutocomplete("salutation", null, {
-                  wrappers: ["form-field"],
-                  className: "flex-1",
-                  fieldLabel: "Anrede",
+                this.addAutoCompleteInline("salutation", "Anrede", {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",
                   options: this.getCodelistForSelect(4300, "salutation"),
                   codelistId: 4300,
                 }),
-                this.addAutocomplete("academic-title", null, {
-                  wrappers: ["form-field"],
+                this.addAutoCompleteInline("academic-title", "Titel", {
+                  wrappers: ["inline-help", "form-field"],
                   className: "flex-1 pad-right",
-                  fieldLabel: "Titel",
+                  hasInlineContextHelp: true,
                   highlightMatches: true,
                   hideDeleteButton: true,
                   placeholder: "",
@@ -54,7 +53,7 @@ export class PersonDoctype extends AddressShared {
         },
         {
           wrappers: ["panel"],
-          templateOptions: {
+          props: {
             externalLabel: "Name",
             required: true,
             contextHelpId: "name",
@@ -80,8 +79,9 @@ export class PersonDoctype extends AddressShared {
         this.addCheckbox("hideAddress", null, {
           fieldLabel:
             "für Anzeige Daten der übergeordneten Organisation verwenden",
-          hideExpression:
-            "!(formState.mainModel && formState.mainModel._parent) ||  formState.parentIsFolder",
+          expressions: {
+            hide: "!model?._parent || formState.parentIsFolder",
+          },
         }),
       ]),
       this.addSection("Kommunikation", [

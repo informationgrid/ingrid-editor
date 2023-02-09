@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import org.hibernate.jpa.QueryHints
@@ -56,22 +57,22 @@ class ResearchService {
 
     fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
 
-        val isAdmin = authUtils.isAdmin(principal)
-        val groupIds = if (isAdmin) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
         // if a user has no groups then user is not allowed anything
-        if (groupIds.isEmpty() && !isAdmin) {
+        if (groupIds.isEmpty() && !hasAccessToRootDocs) {
             return ResearchResponse(0, emptyList())
         }
 
         val sql = createQuery(catalogId, query, groupIds)
-        val parameters = getParameters(query)
 
-        val result = sendQuery(sql, parameters, query.pagination)
-        val map = filterAndMapResult(result, isAdmin, principal)
+        val termAsParameters = getParameters(query)
+        val result = sendQuery(sql, termAsParameters, query.pagination)
+        val map = filterAndMapResult(result, hasAccessToRootDocs, principal)
 
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
-            getTotalHits(sql, parameters)
+            getTotalHits(sql, termAsParameters)
         } else {
             map.size
         }
@@ -79,9 +80,12 @@ class ResearchService {
         return ResearchResponse(totalHits, map)
     }
 
+    private fun hasRootAccess(groups: Set<Group>) =
+        groups.any { listOf(RootPermissionType.READ, RootPermissionType.WRITE).contains(it.permissions?.rootPermission) }
+
     private fun getParameters(query: ResearchQuery): List<Any> {
 
-        val termParameters: List<Any> = if (query.term.isNullOrEmpty()) {
+        return if (query.term.isNullOrEmpty()) {
             emptyList()
         } else {
             val withWildcard = "%" + query.term + "%"
@@ -90,13 +94,6 @@ class ResearchService {
             else listOf(withWildcard, withWildcard, query.term)
         }
 
-        val clauseParameters = query.clauses?.clauses
-            ?.mapNotNull { it.parameter }
-            ?.map { it.mapNotNull { it?.toFloatOrNull() ?: it } }
-            ?.filter { it.isNotEmpty() }
-            ?.flatten() ?: emptyList()
-
-        return termParameters + clauseParameters
     }
 
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
@@ -146,7 +143,7 @@ class ResearchService {
 
         val searchOnlyInTitle = checkForTitleSearch(query.clauses)
         return if (searchOnlyInTitle) "title ILIKE ?"
-        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ? )"
+        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ?)"
     }
 
     private fun checkForTitleSearch(clauses: BoolFilter?): Boolean {
@@ -201,9 +198,8 @@ class ResearchService {
             return null
         }
 
-        val filterString: List<String?>? = if (boolFilter.clauses != null && boolFilter.clauses.isNotEmpty()) {
-            boolFilter.clauses
-                .mapNotNull { convertQuery(it) }
+        val filterString: List<String?>? = if (!boolFilter.clauses.isNullOrEmpty()) {
+            boolFilter.clauses.mapNotNull { convertQuery(it) }
         } else if (boolFilter.isFacet) {
             boolFilter.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
@@ -223,8 +219,8 @@ class ResearchService {
     private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
-        for ((index, it) in parameter.withIndex()) {
-            nativeQuery.setParameter(index + 1, it)
+        termParameters.forEachIndexed { index, term ->
+            nativeQuery.setParameter(index + 1, term)
         }
 
         return nativeQuery
@@ -247,14 +243,16 @@ class ResearchService {
     }
 
 
-    private fun getTotalHits(sql: String, parameter: List<Any>): Int {
+    private fun getTotalHits(sql: String, termParameters: List<Any>): Int {
         val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
             .substring(sql.indexOf("FROM"))
             .substringBeforeLast("ORDER BY")
         val countQuery = entityManager.createNativeQuery(countSQL)
-        for ((index, it) in parameter.withIndex()) {
-            countQuery.setParameter(index + 1, it)
+
+        termParameters.forEachIndexed { index, term ->
+            countQuery.setParameter(index + 1, term)
         }
+
         return (countQuery.singleResult as Number).toInt()
     }
 
@@ -308,11 +306,12 @@ class ResearchService {
             val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
 
-            val result = sendQuery(finalQuery, emptyList(), paging)
+            val termAsParameters = emptyList<String>()
+            val result = sendQuery(finalQuery, termAsParameters, paging)
             val map = filterAndMapResult(result, isAdmin, principal)
 
             val totalHits = if (paging.pageSize != Int.MAX_VALUE) {
-                getTotalHits(finalQuery, emptyList())
+                getTotalHits(finalQuery, termAsParameters)
             } else {
                 map.size
             }

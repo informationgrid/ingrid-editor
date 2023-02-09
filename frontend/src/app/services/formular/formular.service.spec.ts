@@ -1,5 +1,3 @@
-import { FormularService } from "../../+form/formular.service";
-
 describe("Formular", () => {
   // let myFormularService: FormularService;
 
@@ -98,9 +96,9 @@ describe("Formular", () => {
     xit("should be able to set a min and max date", () => {});
   });
 
-  describe("Detail view", () => {});
+  // describe("Detail view", () => {});
 
-  describe("Compare view", () => {});
+  // describe("Compare view", () => {});
 
   describe("Validators", () => {
     xit("should check if any text was entered", () => {});
@@ -120,9 +118,9 @@ describe("Formular", () => {
     xit("should be able to define a rule which document types are shown depending on the parent", () => {});
   });
 
-  describe("Copy & Paste", () => {});
+  // describe("Copy & Paste", () => {});
 
-  describe("Cut & Paste", () => {});
+  // describe("Cut & Paste", () => {});
 });
 
 describe("User behaviours/fields", () => {

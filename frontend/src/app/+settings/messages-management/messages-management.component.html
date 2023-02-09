@@ -6,8 +6,8 @@
 
     <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
         <ige-add-button
-            data-cy="open-add-notification"
             buttonType="flat"
+            data-cy="open-add-notification"
             (add)="showAddMessageDialog()"
         ></ige-add-button>
     </div>
@@ -49,7 +49,7 @@
             <ng-container matColumnDef="_expires">
                 <th mat-header-cell *matHeaderCellDef>Gültig bis</th>
                 <td mat-cell *matCellDef="let element">
-                    {{ element._expires | date: "dd.MM.yyyy" }}
+                    {{ element._expires | date : "dd.MM.yyyy" }}
                 </td>
             </ng-container>
             <ng-container matColumnDef="_actions_">

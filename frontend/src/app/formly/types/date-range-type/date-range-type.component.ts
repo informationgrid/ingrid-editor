@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -9,7 +10,10 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
   templateUrl: "./date-range-type.component.html",
   styleUrls: ["./date-range-type.component.scss"],
 })
-export class DateRangeTypeComponent extends FieldType implements OnInit {
+export class DateRangeTypeComponent
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
+{
   rangeFormGroup = new UntypedFormGroup({
     start: new UntypedFormControl(null),
     end: new UntypedFormControl(null),

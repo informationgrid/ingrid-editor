@@ -26,7 +26,7 @@ export class RepeatDetailListComponent
   private getTypeDeclaration: FormlyFieldConfig = {
     key: "_type",
     type: "select",
-    templateOptions: {
+    props: {
       appearance: "outline",
       required: true,
       label: "Link-Typ",
@@ -44,8 +44,10 @@ export class RepeatDetailListComponent
   }
 
   ngOnInit(): void {
-    if (!this.to.asImage) {
-      this.field.fieldArray.fieldGroup.unshift(this.getTypeDeclaration);
+    if (!this.props.asImage) {
+      (<FormlyFieldConfig>this.field.fieldArray).fieldGroup.unshift(
+        this.getTypeDeclaration
+      );
     }
   }
 

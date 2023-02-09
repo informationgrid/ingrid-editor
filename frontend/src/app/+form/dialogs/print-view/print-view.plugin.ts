@@ -13,7 +13,10 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { FormStateService } from "../../form-state.service";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { DocumentDataService } from "../../../services/document/document-data.service";
+import { combineLatest, of } from "rxjs";
+import { clone, JsonDiffMerge } from "../../../shared/utils";
+import { catchError } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable()
@@ -28,6 +31,7 @@ export class PrintViewPlugin extends Plugin {
   private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(
+    private documentDataService: DocumentDataService,
     private toolbarService: FormToolbarService,
     private docEvents: DocEventsService,
     private docTreeQuery: TreeQuery,
@@ -69,7 +73,7 @@ export class PrintViewPlugin extends Plugin {
         .subscribe((openedDoc) => {
           this.toolbarService.setButtonState(
             "toolBtnPrint",
-            openedDoc !== null
+            openedDoc !== null && openedDoc._type != "FOLDER"
           );
         })
     );
@@ -80,12 +84,30 @@ export class PrintViewPlugin extends Plugin {
     const type = openedDocument._type;
     const profile = this.profileService.getProfile(type);
 
-    this.dialog.open(PrintViewDialogComponent, {
-      width: "80%",
-      data: {
-        model: this.formService.getForm().value,
-        fields: profile.fieldsForPrint,
-      },
+    combineLatest([
+      this.documentDataService.load(openedDocument._uuid, true),
+      openedDocument._state === "PW"
+        ? this.documentDataService.loadPublished(openedDocument._uuid, true)
+        : of(null),
+    ]).subscribe(([current, published]) => {
+      let fields;
+      let fieldsPublished = null;
+      if (published !== null) {
+        const diff = JsonDiffMerge.jsonDiff(current, published, {});
+        fields = profile.getFieldsForPrint(diff);
+        fieldsPublished = clone(fields);
+      } else {
+        fields = profile.getFieldsForPrint(null);
+      }
+      this.dialog.open(PrintViewDialogComponent, {
+        width: "80%",
+        data: {
+          fields: fields,
+          fieldsPublished: fieldsPublished,
+          model: current,
+          modelPublished: published,
+        },
+      });
     });
   }
 

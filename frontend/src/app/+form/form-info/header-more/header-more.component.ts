@@ -8,6 +8,7 @@ import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { DocumentUtils } from "../../../services/document.utils";
 import { ProfileQuery } from "../../../store/profile/profile.query";
+import { ConfigService } from "../../../services/config/config.service";
 
 @Component({
   selector: "ige-header-more",
@@ -31,8 +32,12 @@ export class HeaderMoreComponent implements OnInit {
   @Input() model: IgeDocument;
   @Input() showMore = false;
   hideFields: any;
+  migrated: boolean;
 
-  constructor(private profileQuery: ProfileQuery) {}
+  constructor(
+    private profileQuery: ProfileQuery,
+    private configService: ConfigService
+  ) {}
 
   ngOnInit() {
     this.hideFields =
@@ -42,6 +47,11 @@ export class HeaderMoreComponent implements OnInit {
           acc[val] = true;
           return acc;
         }, {}) ?? {};
+
+    const catCreateDate =
+      this.configService.$userInfo.getValue().currentCatalog.created;
+    // compare the creation dates of document and catalog
+    this.migrated = new Date(this.model._created) < catCreateDate;
   }
 
   getState(state: DocumentState) {

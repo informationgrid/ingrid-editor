@@ -1,4 +1,5 @@
 <mat-list
+    *ngIf="field.fieldGroup.length > 0"
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
@@ -10,17 +11,17 @@
         class="small-padding-right"
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
-        [class.image]="to.asImage"
+        [class.image]="props.asImage"
     >
         <div
-            *ngIf="to.asImage"
-            mat-list-avatar
+            *ngIf="props.asImage"
+            matListItemAvatar
             class="avatar"
             [style.background-image]="'url(' + model[i].description + ')'"
         ></div>
         <div
-            *ngIf="!to.asImage"
-            mat-list-avatar
+            *ngIf="!props.asImage"
+            matListItemAvatar
             class="avatar"
             [ngSwitch]="model[i]._type"
         >
@@ -38,9 +39,9 @@
             </div>
         </div>
 
-        <div mat-line class="type">{{ model[i].type }}</div>
-        <div mat-line class="title">{{ model[i].title }}</div>
-        <div mat-line class="description">{{ model[i].description }}</div>
+        <div matLine class="type">{{ model[i].type }}</div>
+        <div matLine class="title">{{ model[i].title }}</div>
+        <div matLine class="description">{{ model[i].description }}</div>
 
         <button
             *ngIf="formControl.enabled"
@@ -62,5 +63,7 @@
 <ige-add-button
     *ngIf="formControl.enabled"
     (add)="addItem()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>

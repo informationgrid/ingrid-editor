@@ -25,7 +25,7 @@ class IndexExporterAddress @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
     @Lazy val documentService: DocumentService
 ) : IgeExporter {
-    
+
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,
         "indexUvpIDF",
@@ -48,6 +48,7 @@ class IndexExporterAddress @Autowired constructor(
         val wrapperDoc = docWrapperRepo.getReferenceById(doc.wrapperId!!)
 
         return jacksonObjectMapper().createObjectNode().apply {
+            put("t02_address.adr_id", doc.uuid)
             put("title", doc.title)
             put("iPlugId", "ige-ng_$catalogId")
             put("dataSourceName", "iPlug IGE-NG ($catalogId)")
@@ -55,15 +56,13 @@ class IndexExporterAddress @Autowired constructor(
             set<ArrayNode>("provider", jacksonObjectMapper().createArrayNode().add(provider))
             put("title", doc.title)
             put("t02_address.typ", addressType)
+            put("is_top_level", isTopLevelNode(wrapperDoc.parent))
             set<ArrayNode>("t02_address.parents.title", getParentTitleAsArrayNode(wrapperDoc.parent))
             set<ArrayNode>("t021_communication.commtype_key", commTypeKeys)
             set<ArrayNode>("t021_communication.commtype_value", commTypeValues)
             set<ArrayNode>("t021_communication.comm_value", commValues)
             set<ArrayNode>(
                 "datatype", jacksonObjectMapper().createArrayNode()
-                    .add("default")
-                    .add("dsc_ecs")
-                    .add("metadata")
                     .add("dsc_ecs_address")
                     .add("address")
                     .add("IDF_1.0")
@@ -71,6 +70,11 @@ class IndexExporterAddress @Autowired constructor(
 
         }.toString()
     }
+
+    /**
+     * A top level node is defined by when its parent is null or the parent is a folder.
+     */
+    private fun isTopLevelNode(parent: DocumentWrapper?) = parent == null || parent.type == "FOLDER"
 
     private fun getParentTitleAsArrayNode(parent: DocumentWrapper?): ArrayNode {
         val titles = getParentTitle(parent)

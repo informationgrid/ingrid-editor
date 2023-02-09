@@ -8,14 +8,16 @@
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
-        [cdkDragDisabled]="to.noDrag || formControl.disabled"
+        [cdkDragDisabled]="
+            props.noDrag || formControl.disabled || model.length < 2
+        "
         class="clickable list-item"
         (click)="this.onItemClick(model[i]?.key)"
     >
         <span class="list-display-element">
             <mat-icon
-                *ngIf="this.to.elementIcon"
-                [svgIcon]="this.to.elementIcon"
+                *ngIf="this.props.elementIcon"
+                [svgIcon]="this.props.elementIcon"
             ></mat-icon>
             {{ getParameter(model[i]) }}
         </span>
@@ -26,33 +28,37 @@
             class="close gray"
             (click)="removeItem(i)"
         >
-            <mat-icon svgIcon="Entfernen"></mat-icon>
+            <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 </div>
 <ng-template #noFieldsSelected>
-    <div *ngIf="this.to.selectionEmptyNotice" class="no-fields-selected-notice">
+    <div
+        *ngIf="this.props.selectionEmptyNotice"
+        class="no-fields-selected-notice"
+    >
         <div class="infoIcon">
             <mat-icon
                 class="material-icons-outlined"
                 svgIcon="info-24px"
             ></mat-icon>
         </div>
-        <span>{{ this.to.selectionEmptyNotice }}</span>
+        <span>{{ this.props.selectionEmptyNotice }}</span>
     </div>
 </ng-template>
 
 <mat-form-field
-    *ngIf="to.asSelect; else templateAutocomplete"
+    *ngIf="props.asSelect; else templateAutocomplete"
     appearance="outline"
     class="width-100"
 >
     <mat-select
-        [placeholder]="to.placeholder"
+        [placeholder]="props.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
     >
-        <mat-option *ngIf="to.showSearch">
+        <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
                 [formControl]="filterCtrl"
             ></ngx-mat-select-search>
@@ -67,23 +73,24 @@
             </div>
         </mat-option>
     </mat-select>
+    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 
 <ng-template #templateAutocomplete>
     <mat-form-field appearance="outline" class="width-100">
+        <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
         <mat-icon
             *ngIf="parameterOptions && repeatListInput.value.length === 0"
-            class="gray"
+            class="search-icon gray"
             matPrefix
             >search
         </mat-icon>
         <input
             type="text"
             #repeatListInput
-            [placeholder]="to.placeholder"
+            [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            [required]="to.required && formControl.invalid"
             (keydown.enter)="addFreeEntry(repeatListInput.value)"
             [matAutocomplete]="auto"
         />
@@ -111,9 +118,6 @@
         <mat-hint *ngIf="!parameterOptions"
             >Eingabe mit RETURN bestätigen
         </mat-hint>
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
 </ng-template>
-
-<mat-error *ngIf="formControl.errors?.required"
-    >Bitte erstellen Sie mindestens einen Eintrag
-</mat-error>

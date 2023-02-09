@@ -1,89 +1,82 @@
-<div fxFlex fxLayout="column" *transloco="let t; read: 'dashboard'">
-    <div class="allPageScroll">
-        <div class="welcome">
-            <div>{{ t("welcome") }}</div>
-            <div *ngFor="let message of messages$ | async" class="message">
-                <span>{{ message.text }}</span>
-            </div>
+<div
+    fxFlex
+    fxLayout="column"
+    *transloco="let t; read: 'dashboard'"
+    class="allPageScroll"
+>
+    <div class="welcome" data-cy="welcome-message">
+        <div class="greetings">{{ t("welcome") }}</div>
+        <div *ngFor="let message of messages$ | async" class="message">
+            <span>{{ message.text }}</span>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <ige-quick-search
+            (selectDoc)="openDocument($event)"
+            (selectAddress)="openAddress($event)"
+        ></ige-quick-search>
+
+        <div class="shortcut">
+            <ige-action-button
+                [label]="t('newDocument')"
+                svgIcon="Neuer-Datensatz"
+                [disabled]="!canCreateDataset"
+                (submit)="createNewDocument()"
+            ></ige-action-button>
+            <ige-action-button
+                label="Neuer Ordner"
+                svgIcon="outline-create_new_folder-24px"
+                [disabled]="!canCreateDataset"
+                (submit)="createNewFolder()"
+            ></ige-action-button>
+            <ige-action-button
+                *ngIf="canImport"
+                [label]="t('importDocument')"
+                icon="import_export"
+                [disabled]="!canImport"
+                (submit)="gotoImportPage()"
+            ></ige-action-button>
+            <ige-action-button
+                label="Neue Adresse"
+                svgIcon="outline-person_add-24px"
+                [disabled]="!canCreateAddress"
+                (submit)="createNewAddress()"
+            ></ige-action-button>
         </div>
 
-        <div class="dashboard-content">
-            <ige-quick-search
-                (selectDoc)="openDocument($event)"
-                (selectAddress)="openAddress($event)"
-            ></ige-quick-search>
-
-            <div class="shortcut">
-                <button
-                    mat-button
-                    (click)="createNewDocument()"
-                    [disabled]="!canCreateDataset"
-                >
-                    <mat-icon
-                        class="material-icons-outlined"
-                        svgIcon="Neuer-Datensatz"
-                    ></mat-icon>
-                    <span>{{ t("newDocument") }}</span>
-                </button>
-                <button
-                    mat-button
-                    (click)="createNewFolder()"
-                    [disabled]="!canCreateDataset"
-                >
-                    <mat-icon
-                        class="material-icons-outlined"
-                        svgIcon="outline-create_new_folder-24px"
-                    ></mat-icon>
-                    <span>Neuer Ordner</span>
-                </button>
-                <button
-                    mat-button
-                    *ngIf="canImport"
-                    (click)="gotoImportPage()"
-                    [disabled]="!canImport"
-                >
-                    <mat-icon class="material-icons-outlined"
-                        >import_export
-                    </mat-icon>
-                    <span>{{ t("importDocument") }}</span>
-                </button>
-                <button
-                    mat-button
-                    (click)="createNewAddress()"
-                    [disabled]="!canCreateAddress"
-                >
-                    <mat-icon
-                        class="material-icons-outlined"
-                        svgIcon="outline-person_add-24px"
-                    ></mat-icon>
-                    <span>Neue Adresse</span>
-                </button>
-            </div>
-
-            <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
-                <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-                    <ige-card-box
-                        fxFlex
-                        label="{{ t('application') }} Datensätze"
-                    >
-                        <ige-chart
-                            [data]="chartDataPublished.asObservable()"
-                        ></ige-chart>
-                    </ige-card-box>
-                </div>
-
-                <ige-card-box
-                    fxFlex
-                    label="{{ t('mostRecent') }}"
-                    data-cy="card-latest-docs"
-                >
-                    <ige-document-list-item
-                        [docs]="recentDocs$"
-                        [hideDate]="false"
-                        (select)="openDocument($event._uuid)"
-                    ></ige-document-list-item>
+        <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
+            <div class="info-box" fxLayout="row" fxLayoutGap="36px">
+                <ige-card-box fxFlex label="{{ t('application') }} Datensätze">
+                    <ige-chart
+                        [data]="chartDataPublished.asObservable()"
+                    ></ige-chart>
                 </ige-card-box>
             </div>
+
+            <ige-card-box
+                fxFlex
+                data-cy="recent-docs"
+                label="{{ t('mostRecent') }}"
+                data-cy="card-latest-docs"
+            >
+                <ige-document-list-item
+                    [docs]="recentDocs$"
+                    [hideDate]="false"
+                    (select)="openDocument($event._uuid)"
+                ></ige-document-list-item>
+            </ige-card-box>
+            <ige-card-box
+                fxFlex
+                data-cy="recent-published-docs"
+                label="{{ t('mostRecentPublished') }}"
+            >
+                <ige-document-list-item
+                    [docs]="recentPublishedDocs$"
+                    [hideDate]="false"
+                    (select)="openDocument($event._uuid)"
+                ></ige-document-list-item>
+            </ige-card-box>
         </div>
     </div>
 </div>

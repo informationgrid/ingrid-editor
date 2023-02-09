@@ -1,35 +1,25 @@
 package de.ingrid.igeserver.persistence.postgresql
 
+import IntegrationTest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
-import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.TestPropertySource
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
-@SpringBootTest(classes = [IgeServer::class])
-@TestPropertySource(locations = ["classpath:application-test.properties"])
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-class JpaTest : AnnotationSpec() {
 
-    override fun extensions() = listOf(SpringExtension)
+@Transactional
+class JpaTest : IntegrationTest() {
 
     @Autowired
     private lateinit var em: EntityManager

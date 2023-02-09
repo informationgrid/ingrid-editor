@@ -10,6 +10,7 @@
     "polyfills.ts",
     "profiles/profile-mcloud.ts",
     "profiles/profile-uvp.ts",
-    "profiles/profile-test.ts"
+    "profiles/profile-test.ts",
+    "profiles/profile-ingrid.ts"
   ]
 }

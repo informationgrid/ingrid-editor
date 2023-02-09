@@ -241,7 +241,9 @@ export class PublishPlugin extends SaveBase {
     this.documentService
       .publish(data, this.forAddress, delay)
       .pipe(
-        catchError((error) => this.handleError(error, data, this.forAddress)),
+        catchError((error) =>
+          this.handleError(error, data, this.forAddress, "PUBLISH")
+        ),
         tap((response) => {
           if (delay != null) {
             this.documentService.reload$.next({

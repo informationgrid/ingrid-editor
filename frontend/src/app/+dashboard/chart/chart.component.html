@@ -49,7 +49,7 @@
             </div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq.first / total) * 100 ?? 0 | number: "1.0-0" }}%
+                {{ (dataSeq.first / total) * 100 ?? 0 | number : "1.0-0" }}%
             </div>
         </div>
 
@@ -59,7 +59,7 @@
             </div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq.second / total) * 100 ?? 0 | number: "1.0-0" }}%
+                {{ (dataSeq.second / total) * 100 ?? 0 | number : "1.0-0" }}%
             </div>
         </div>
     </div>

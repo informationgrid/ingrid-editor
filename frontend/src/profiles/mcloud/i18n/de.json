@@ -6,5 +6,9 @@
   "dashboard": {
     "welcome": "Willkommen im mCLOUD Editor",
     "application": "mCLOUD"
+  },
+  "docType": {
+    "mCloudDoc": "mCLOUD Dokument",
+    "AddressDoc": "Adresse"
   }
 }

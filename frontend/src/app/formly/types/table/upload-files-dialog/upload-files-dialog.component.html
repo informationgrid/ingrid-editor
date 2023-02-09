@@ -1,9 +1,9 @@
 <ige-dialog-template
-    title="Datei(en) hochladen"
+    label="Datei(en) hochladen"
     contentColor="#f3f3f3"
     (submit)="submit()"
     (cancel)="cancel()"
-    [disabled]="!uploadComplete"
+    [disabled]="!uploadComplete || extractInProgress"
 >
     <ng-container content>
         <ige-file-upload
@@ -20,5 +20,9 @@
             (change)="extractZipFiles = $event.checked"
             >ZIP-Archive nach dem Übernehmen entpacken
         </mat-slide-toggle>
+        <div *ngIf="extractInProgress" class="no-fields-selected-notice">
+            Die ZIP-Datei wird gerade auf dem Server entpackt. Dies kann einen
+            Moment dauern.
+        </div>
     </ng-container>
 </ige-dialog-template>

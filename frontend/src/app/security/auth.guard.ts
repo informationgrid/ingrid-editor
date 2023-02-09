@@ -24,13 +24,14 @@ export class AuthGuard implements CanActivate {
   ): boolean {
     const user = this.configService.$userInfo.getValue();
     const path = state.url;
+    const catalogId = user.currentCatalog.id;
 
     if (
       user?.assignedCatalogs.length === 0 &&
-      state.url.indexOf("/catalogs/manage") === -1 &&
-      state.url.indexOf("/settings/catalog") === -1
+      state.url.indexOf(`/${catalogId}/catalogs/manage`) === -1 &&
+      state.url.indexOf(`/${catalogId}/settings/catalog`) === -1
     ) {
-      this.router.navigate(["/settings/catalog"]);
+      this.router.navigate([`/${catalogId}/settings/catalog`]);
       return false;
     }
 
@@ -41,7 +42,7 @@ export class AuthGuard implements CanActivate {
     }
 
     console.warn("User is not allowed to access this resource: " + path);
-    this.router.navigate([""]);
+    this.router.navigate([ConfigService.catalogId]);
     return false;
   }
 

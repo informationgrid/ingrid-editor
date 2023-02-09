@@ -1,30 +1,23 @@
 <h1 class="text-center">Adressen</h1>
 
 <div class="text-center shortcut">
-    <button
-        mat-button
-        (click)="createNewFolder()"
+    <ige-action-button
+        label="Neuer Ordner"
+        svgIcon="outline-create_new_folder-24px"
         [disabled]="!canCreateAddress"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="outline-create_new_folder-24px"
-        ></mat-icon>
-        <span>Neuer Ordner</span>
-    </button>
-    <button
-        mat-button
-        (click)="createNewAddress()"
+        (submit)="createNewFolder()"
+    ></ige-action-button>
+    <ige-action-button
+        label="Neue Adresse"
+        svgIcon="outline-person_add-24px"
         [disabled]="!canCreateAddress"
-    >
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="Neuer-Datensatz"
-        ></mat-icon>
-        <span>Neue Adresse</span>
-    </button>
-    <button mat-button [disabled]="!canImport" (click)="importDataset()">
-        <mat-icon>import_export</mat-icon>
-        <span>Adressen Import</span>
-    </button>
+        (submit)="createNewAddress()"
+    ></ige-action-button>
+    <ige-action-button
+        *ngIf="canImport"
+        label="Adressen Import"
+        icon="import_export"
+        [disabled]="!canImport"
+        (submit)="importDataset()"
+    ></ige-action-button>
 </div>

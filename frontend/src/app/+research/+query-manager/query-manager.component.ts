@@ -79,11 +79,8 @@ export class QueryManagerComponent implements OnInit {
       .subscribe((result) => this.researchService.removeQuery(id).subscribe());
   }
 
-  load(id: string, list: MatSelectionList) {
+  load(id: string) {
     this.loadQuery(id);
-
-    // remove selection immediately
-    list.deselectAll();
   }
 
   loadQuery(id: string) {
@@ -92,11 +89,11 @@ export class QueryManagerComponent implements OnInit {
     this.researchService.setActiveQuery(id);
 
     logAction("Load query");
-    if (entity.type === "facet") {
-      this.router.navigate(["research/search"]);
-    } else {
-      this.router.navigate(["research/sql"]);
-    }
+    this.router.navigate([
+      entity.type === "facet"
+        ? `${ConfigService.catalogId}/research/search`
+        : `${ConfigService.catalogId}/research/sql`,
+    ]);
   }
 
   getIdentifier(index, item: Query) {

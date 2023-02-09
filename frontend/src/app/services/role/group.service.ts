@@ -1,10 +1,11 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { FrontendGroup, Group } from "../../models/user-group";
-import { BehaviorSubject, Observable } from "rxjs";
+import { FrontendGroup, Group, UserResponse } from "../../models/user-group";
+import { Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
-import { map, tap } from "rxjs/operators";
-import { User } from "../../+user/user";
+import { filter, map, tap } from "rxjs/operators";
+import { FrontendUser, User } from "../../+user/user";
 import { GroupStore } from "../../store/group/group.store";
+import { ConfigService } from "../config/config.service";
 
 @Injectable({
   providedIn: "root",
@@ -14,6 +15,7 @@ export class GroupService {
   forceReload$ = new EventEmitter<boolean>();
 
   constructor(
+    private configService: ConfigService,
     private dataService: GroupDataService,
     private groupStore: GroupStore
   ) {
@@ -71,8 +73,26 @@ export class GroupService {
       .pipe(tap(this.groupStore.remove(id)));
   }
 
-  getUsersOfGroup(id: number): Observable<User[]> {
-    return this.dataService.getUsersOfGroup(id);
+  getUsersOfGroup(id: number): Observable<FrontendUser[]> {
+    return this.dataService.getUserResponseOfGroup(id).pipe(
+      map((urs) =>
+        urs.map((ur) => {
+          let user = GroupService.convertUserResponse(ur);
+          // disable active user, as he cannot be edited in user view
+          if (user.login === this.configService.$userInfo.getValue().userId) {
+            user.readOnly = true;
+          }
+          return user;
+        })
+      )
+    );
+  }
+
+  private static convertUserResponse(userResponse: UserResponse): FrontendUser {
+    return <FrontendUser>{
+      ...userResponse.user,
+      readOnly: userResponse.readOnly,
+    };
   }
 
   setActive(id: number) {

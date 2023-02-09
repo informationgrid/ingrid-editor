@@ -1,7 +1,7 @@
 import { Observable, of } from "rxjs";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient } from "@angular/common/http";
-import { FrontendGroup, Group } from "../../models/user-group";
+import { FrontendGroup, Group, UserResponse } from "../../models/user-group";
 import { Injectable } from "@angular/core";
 import { User } from "../../+user/user";
 
@@ -65,8 +65,8 @@ export class GroupDataService {
     );
   }
 
-  getUsersOfGroup(id: number): Observable<User[]> {
-    return this.http.get<User[]>(
+  getUserResponseOfGroup(id: number): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(
       this.configuration.backendUrl + "groups/" + id + "/users"
     );
   }

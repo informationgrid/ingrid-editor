@@ -12,7 +12,11 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import {
+  FormControl,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -49,12 +53,12 @@ export class UserComponent
 
   selectedUser: User;
   showMore = false;
-  searchQuery: string;
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
   model: User;
   tableWidth: number;
   selectedUserRole: string;
+  query = new FormControl<string>("");
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -70,7 +74,6 @@ export class UserComponent
     private cdRef: ChangeDetectorRef
   ) {
     this.model = new FrontendUser();
-    this.searchQuery = "";
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,
@@ -86,7 +89,7 @@ export class UserComponent
     const doReload = this.groupQuery.getActiveId() === groupId;
     this.groupService.getGroup(groupId).subscribe((group) => {
       this.groupService.setActive(groupId);
-      this.router.navigate(["/manage/group"]);
+      this.router.navigate([`${ConfigService.catalogId}/manage/group`]);
 
       if (doReload) this.groupService.forceReload$.next();
     });
@@ -127,7 +130,7 @@ export class UserComponent
             const previousId = this.selectedUser?.login;
             this.selectedUser = user;
             if (user && previousId !== user.login) {
-              this.loadUser(user.login);
+              this.loadUser(user.id);
             }
             this.selectedUserRole = user.role;
           }),
@@ -138,7 +141,7 @@ export class UserComponent
 
     // load previously selected user
     if (this.userService.selectedUser$.value) {
-      this.loadUser(this.userService.selectedUser$.value.login);
+      this.loadUser(this.userService.selectedUser$.value.id);
     }
   }
 
@@ -158,12 +161,12 @@ export class UserComponent
     );
   }
 
-  loadUser(login: string) {
+  loadUser(id: number) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.showLoading();
         this.userService
-          .getUser(login)
+          .getUser(id)
           .pipe(finalize(() => this.hideLoading()))
           .subscribe((user) => {
             this.selectedUser = user;
@@ -187,9 +190,9 @@ export class UserComponent
     });
   }
 
-  private updateUsersAndLoad(result) {
+  private updateUsersAndLoad(result: User) {
     if (result) {
-      this.fetchUsers().subscribe(() => this.loadUser(result.login));
+      this.fetchUsers().subscribe(() => this.loadUser(result.id));
     } else {
       this.fetchUsers().subscribe();
     }
@@ -227,7 +230,7 @@ export class UserComponent
         if (loadUser) {
           this.fetchUsers().subscribe();
           this.form.markAsPristine();
-          this.loadUser(user.login);
+          this.loadUser(user.id);
         }
       });
   }
@@ -239,7 +242,7 @@ export class UserComponent
 
     this.fetchUsers().subscribe();
     this.form.markAsPristine();
-    this.loadUser(user.login);
+    this.loadUser(user.id);
   }
 
   // on error:
@@ -315,6 +318,7 @@ export class UserComponent
       // do nothing
     }
   }
+
   private showLoading() {
     this.isLoading = true;
     this.form.disable();

@@ -27,7 +27,7 @@ interface CatalogApi {
             description = "Unexpected error"
         )]
     )
-    fun catalogs(): ResponseEntity<List<Catalog>>
+    fun catalogs(principal: Principal): ResponseEntity<List<Catalog>>
 
     // @PreAuthorize("hasRole('admin')")
     @PostMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE])

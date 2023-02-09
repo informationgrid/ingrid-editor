@@ -5,37 +5,37 @@
             [state]="getSelectAllState(selectOptions)"
         >
         </mat-pseudo-checkbox>
-        {{ to.selectAllOption }}
+        {{ props.selectAllOption }}
     </mat-option>
 </ng-template>
 <mat-select
     [id]="id"
     [formControl]="selectControl"
     [formlyAttributes]="field"
-    [placeholder]="to.placeholder"
-    [tabIndex]="to.tabindex"
-    [required]="to.required"
-    [compareWith]="to.compareWith"
-    [multiple]="to.multiple"
+    [placeholder]="props.placeholder"
+    [tabIndex]="props.tabindex"
+    [required]="props.required"
+    [compareWith]="props.compareWith"
+    [multiple]="props.multiple"
     (selectionChange)="change($event)"
     [errorStateMatcher]="errorStateMatcher"
     [aria-label]="_getAriaLabel()"
     [aria-labelledby]="_getAriaLabelledby()"
-    [disableOptionCentering]="to.disableOptionCentering"
+    [disableOptionCentering]="props.disableOptionCentering"
 >
-    <mat-option *ngIf="to.showSearch">
+    <mat-option *ngIf="props.showSearch">
         <ngx-mat-select-search
             [formControl]="filterCtrl"
         ></ngx-mat-select-search>
     </mat-option>
     <ng-container *ngIf="selectOptions">
         <ng-container
-            *ngIf="to.multiple && to.selectAllOption"
+            *ngIf="props.multiple && props.selectAllOption"
             [ngTemplateOutlet]="selectAll"
             [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
         >
         </ng-container>
-        <mat-option *ngIf="to.allowNoValue">- Keine -</mat-option>
+        <mat-option *ngIf="props.allowNoValue">- Keine -</mat-option>
         <ng-container *ngFor="let item of filteredOptions">
             <mat-option [value]="item.value" [disabled]="item.disabled">{{
                 item.label

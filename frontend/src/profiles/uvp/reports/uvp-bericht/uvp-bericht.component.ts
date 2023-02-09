@@ -118,6 +118,10 @@ export class UvpBerichtComponent implements AfterViewInit {
     );
     this.dataSourceMiscellaneous.data = [
       {
+        type: "Abgeschlossene Vorhaben",
+        value: report.procedureCount,
+      },
+      {
         type: "Positive Vorprüfungen",
         value: report.positivePreliminaryAssessments,
       },
@@ -134,8 +138,8 @@ export class UvpBerichtComponent implements AfterViewInit {
 
   downloadReport() {
     let fileText =
-      "UVP Nummer; UVP-G Kategorie; Anzahl; Positive Vorprüfungen; Negative Vorprüfungen; Durchschnittliche Verfahrensdauer\n";
-    fileText += `;;;${this.report.positivePreliminaryAssessments};${this.report.negativePreliminaryAssessments};${this.averageDuration}\n`;
+      "UVP Nummer; UVP-G Kategorie; Anzahl; Abgeschlossene Vorhaben; Positive Vorprüfungen; Negative Vorprüfungen; Durchschnittliche Verfahrensdauer\n";
+    fileText += `;;;${this.report.procedureCount};${this.report.positivePreliminaryAssessments};${this.report.negativePreliminaryAssessments};${this.averageDuration}\n`;
     this.dataSource.data.forEach((row) => {
       fileText += `${row.eiaNumber};${row.eiaCategory};${row.count}\n`;
     });

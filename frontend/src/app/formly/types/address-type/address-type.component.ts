@@ -7,21 +7,18 @@ import {
   ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
-import { distinctUntilChanged, filter, tap, map } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import {
-  CreateNodeComponent,
-  CreateOptions,
-} from "../../../+form/dialogs/create/create-node.component";
+import { ConfigService } from "../../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -29,7 +26,10 @@ import {
   templateUrl: "./address-type.component.html",
   styleUrls: ["./address-type.component.scss"],
 })
-export class AddressTypeComponent extends FieldType implements OnInit {
+export class AddressTypeComponent
+  extends FieldType<FieldTypeConfig>
+  implements OnInit
+{
   addresses: AddressRef[] = [];
 
   constructor(
@@ -112,7 +112,7 @@ export class AddressTypeComponent extends FieldType implements OnInit {
           minWidth: 500,
           data: <ChooseAddressDialogData>{
             address: address,
-            allowedTypes: this.to.allowedTypes,
+            allowedTypes: this.props.allowedTypes,
           },
           hasBackdrop: true,
         })
@@ -141,7 +141,9 @@ export class AddressTypeComponent extends FieldType implements OnInit {
         .afterClosed()
         .pipe(
           filter((response) => response === "confirm"),
-          tap((_) => this.router.navigate(["/address"])),
+          tap((_) =>
+            this.router.navigate([`${ConfigService.catalogId}/address`])
+          ),
           // no address to return
           map((_) => undefined)
         );
@@ -159,7 +161,10 @@ export class AddressTypeComponent extends FieldType implements OnInit {
   }
 
   gotoAddress(address: AddressRef) {
-    this.router.navigate(["/address", { id: address.ref._uuid }]);
+    this.router.navigate([
+      `${ConfigService.catalogId}/address`,
+      { id: address.ref._uuid },
+    ]);
   }
 
   private getAddressFromBackend(id: string) {

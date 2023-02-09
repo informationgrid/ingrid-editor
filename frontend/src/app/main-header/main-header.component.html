@@ -45,7 +45,7 @@
             </mat-menu>
         </div>
 
-        <span *ngIf="userInfo$ | async as userInfo">
+        <span *ngIf="userInfo$ | async as userInfo" class="display-flex">
             <button
                 type="button"
                 class="user-popup pad-right"
@@ -63,7 +63,7 @@
                     >
                     <p
                         class="last-login"
-                        title="{{ userInfo.lastLogin | date: 'short' }}"
+                        title="{{ userInfo.lastLogin | date : 'short' }}"
                     >
                         Letzte Anmeldung: {{ userInfo.lastLogin | date }}
                     </p>
@@ -99,7 +99,6 @@
                     <button
                         mat-button
                         color="primary"
-                        class="upper-case"
                         (click)="logout()"
                         data-cy="logout-button"
                     >
@@ -135,7 +134,7 @@
                             <button
                                 *ngIf="entry.isRouterLink"
                                 mat-menu-item
-                                [routerLink]="[entry.link]"
+                                [routerLink]="[catalogId + '/' + entry.link]"
                             >
                                 {{ entry.label }}
                             </button>
@@ -162,7 +161,7 @@
                     <div>Version</div>
                     <div>
                         {{ version.version }},
-                        {{ version.date | date: "dd.LL.yyyy, HH:mm" }}
+                        {{ version.date | date : "dd.LL.yyyy, HH:mm" }}
                     </div>
                     <div>GIT Commit ID</div>
                     <div>{{ version.commitId }}</div>

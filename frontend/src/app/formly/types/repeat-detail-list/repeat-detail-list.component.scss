@@ -1,17 +1,23 @@
 @import "src/variables";
 
-.mat-list-base {
+ige-add-button {
+  display: block;
+  margin-top: 3px;
+  padding-bottom: 22px;
+}
+
+.mat-mdc-list-base {
   background-color: $ige-background;
   padding-top: 0;
 
-  .mat-list-item {
+  .mat-mdc-list-item {
     border-bottom: 2px solid #fff;
     height: auto;
 
     &.click-draggable {
       cursor: move;
     }
-
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
     ::ng-deep .mat-list-item-content {
       padding-top: 12px;
       padding-bottom: 12px;

@@ -4,11 +4,10 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  OnInit,
   ViewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { MapOptions, Rectangle } from "leaflet";
+import { Map, MapOptions, Rectangle } from "leaflet";
 import { ModalService } from "../../../services/modal/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
@@ -22,6 +21,7 @@ import { distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { FieldTypeConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -30,8 +30,8 @@ import { ConfigService } from "../../../services/config/config.service";
   styleUrls: ["leaflet-type.component.scss"],
 })
 export class LeafletTypeComponent
-  extends FieldType
-  implements OnInit, AfterViewInit, OnDestroy
+  extends FieldType<FieldTypeConfig>
+  implements AfterViewInit, OnDestroy
 {
   @ViewChild("leaflet") leaflet: ElementRef;
 
@@ -60,7 +60,7 @@ export class LeafletTypeComponent
   }
 
   ngAfterViewInit() {
-    this.leaflet.nativeElement.style.height = this.to.height + "px";
+    this.leaflet.nativeElement.style.height = this.props.height + "px";
     this.leaflet.nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
@@ -72,16 +72,19 @@ export class LeafletTypeComponent
       .subscribe(() => this.updateBoundingBox());
 
     try {
-      const options: MapOptions = this.to.mapOptions;
+      const options: MapOptions = this.props.mapOptions;
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,
         { ...options, scrollWheelZoom: false }
       );
 
-      // (<MyMap>this.leafletReference)._onResize();
+      // when switching from a folder to a document with leaflet map then we need
+      // to call resize event to prevent incorrect map display
+      // @ts-ignore
+      (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => (this.mapHasMoved = true));
 
-      this.locations = this.formFieldControl.value || [];
+      this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
       setTimeout(() => {
         try {
@@ -102,14 +105,15 @@ export class LeafletTypeComponent
 
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     // TODO: this.model is not the whole model!!! How to get the _type?
-    this.docType = this.to.docType ?? this.model?._type;
+    this.docType = this.props.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
   private updateLocations(locations: SpatialLocationWithColor[]) {
     this.hasAnyLocations = locations.length > 0;
-    this.maxLocationsReached = locations.length >= this.to.max;
+    this.maxLocationsReached = locations.length >= this.props.max;
     this.locationsWithColor$.next(locations);
+    this._changeDetectionRef.detectChanges();
   }
 
   private updateBoundingBox() {
@@ -159,6 +163,10 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
+    console.log(
+      "The Location index array size before adding / updating: ",
+      this.locations.length
+    );
     this.dialog
       .open(SpatialDialogComponent, {
         width: "90%",
@@ -167,7 +175,7 @@ export class LeafletTypeComponent
         minWidth: 600,
         data: {
           ...this.locations[locationIndex],
-          limitTypes: this.to.limitTypes,
+          limitTypes: this.props.limitTypes,
         },
       })
       .afterClosed()
@@ -179,6 +187,10 @@ export class LeafletTypeComponent
           } else {
             this.locations.push(result);
           }
+          console.log(
+            "The Location index array size after adding / updating: ",
+            this.locations.length
+          );
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
           this.updateBoundingBox();
@@ -228,7 +240,7 @@ export class LeafletTypeComponent
       this.profile,
       this.docType,
       this.fieldId,
-      this.to.externalLabel,
+      this.props.externalLabel,
       infoElement
     );
   }

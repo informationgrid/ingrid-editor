@@ -35,6 +35,7 @@ export class SideMenuComponent implements OnInit {
 
   currentRoute: string;
   toggleState = "collapsed";
+  catalogId = ConfigService.catalogId;
 
   constructor(
     private router: Router,
@@ -77,12 +78,15 @@ export class SideMenuComponent implements OnInit {
     const tab = this.session.getValue().ui.currentTab[path];
     if (tab) {
       const tabWithParameter = tab.split(";");
-      const newPath = [path, tabWithParameter[0]];
+      const newPath = [
+        ConfigService.catalogId + "/" + path,
+        tabWithParameter[0],
+      ];
       if (tabWithParameter.length > 1)
         newPath.push(JSON.parse(tabWithParameter[1]));
       this.router.navigate(newPath);
     } else {
-      this.router.navigate([path]);
+      this.router.navigate([ConfigService.catalogId + "/" + path]);
     }
   }
 }

@@ -6,7 +6,7 @@
     [class.has-spatial]="hasAnyLocations"
 >
     <div *ngIf="!hasAnyLocations" class="spatialBtnText">
-        Erstellen Sie einen Raumbezug<span *ngIf="to.required">*</span>
+        Erstellen Sie einen Raumbezug<span *ngIf="props.required">*</span>
     </div>
     <button
         *ngIf="!maxLocationsReached"
@@ -17,8 +17,7 @@
         color="primary"
         (click)="openSpatialDialog()"
         [ngClass]="{
-            'has-error':
-                formFieldControl.errorState && formControl.errors?.required
+            'has-error': showError && formControl.errors?.required
         }"
     >
         <mat-icon svgIcon="spatial-rect"></mat-icon>
@@ -31,8 +30,7 @@
     </button>
 </div>
 
-<ige-form-error
-    *ngIf="formFieldControl.errorState && formControl.errors?.required"
+<ige-form-error *ngIf="showError && formControl.errors?.required"
     >Bitte erstellen Sie einen Raumbezug</ige-form-error
 >
 
@@ -49,7 +47,7 @@
 <div *ngIf="!disabled" class="spatialHelpText">
     Erstellen Sie Informationen über die räumliche Zuordnung des beschriebenen
     Datenbestands.
-    <a *ngIf="to.hasContextHelp" (click)="showContextHelp($event)"
+    <a *ngIf="props.hasContextHelp" (click)="showContextHelp($event)"
         >Hilfe zu Raumbezügen</a
     >
     <div *ngIf="maxLocationsReached">

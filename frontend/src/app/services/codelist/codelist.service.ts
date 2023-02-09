@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { CodelistDataService } from "./codelist-data.service";
 import {
+  BackendOption,
   Codelist,
   CodelistBackend,
   CodelistEntry,
@@ -17,12 +18,16 @@ export class SelectOption {
   label: string;
   value: string;
 
+  static fromBackend(option: BackendOption): SelectOption {
+    return option ? new SelectOption(option.key, option.value) : null;
+  }
+
   constructor(value: string, label: string) {
     this.label = label;
     this.value = value;
   }
 
-  forBackend(): { key: string; value?: string } {
+  forBackend(): BackendOption {
     if (this.value === null || this.value === undefined) {
       return {
         key: null,

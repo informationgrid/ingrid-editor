@@ -90,15 +90,20 @@ export class CatalogManagementComponent implements OnInit {
     this.catalogService
       .createCatalog(catalog)
       .pipe(
-        tap((response: Catalog) =>
-          this.catalogService.setCatalogAdmin(response.id, [this.currentUserID])
-        ),
-        tap((response: Catalog) =>
-          this.switchCatalogIfNoCurrentCatalog(response)
-        ),
+        tap((response: Catalog) => {
+          this.initCatalogAdminAndReloadCatalogs(response);
+          this.switchCatalogIfNoCurrentCatalog(response);
+        }),
         finalize(() => (this.showSpinner = false)),
         catchError((err) => this.handleCreateError(err))
       )
+      .subscribe();
+  }
+
+  private initCatalogAdminAndReloadCatalogs(catalog: Catalog) {
+    return this.catalogService
+      .setCatalogAdmin(catalog.id, [this.currentUserID])
+      .pipe(tap(() => this.catalogService.getCatalogs().subscribe()))
       .subscribe();
   }
 
@@ -114,9 +119,7 @@ export class CatalogManagementComponent implements OnInit {
   }
 
   chooseCatalog(id: string) {
-    this.catalogService.switchCatalog(id).subscribe(() => {
-      window.location.reload();
-    });
+    this.catalogService.switchCatalog(id);
   }
 
   showCatalogDetail(catalog: Catalog) {

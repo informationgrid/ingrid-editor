@@ -19,6 +19,7 @@
     "newDocument": "Neuer Datensatz",
     "importDocument": "Datensatz importieren",
     "mostRecent": "Zuletzt bearbeitet im Katalog",
+    "mostRecentPublished": "Zuletzt veröffentlicht im Katalog",
     "form": "Daten",
     "formSingular": "Datensatz"
   },
@@ -38,5 +39,18 @@
   },
   "publish": {
     "formWithPronoun": "Dieser Datensatz"
+  },
+  "docType": {
+    "FOLDER": "Ordner"
+  },
+  "replace-address": {
+    "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",
+    "reference-error-multiple-files": "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden."
+  },
+  "form": {
+    "titleTooltip": {
+      "Organisation": "Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.",
+      "Person": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname."
+    }
   }
 }

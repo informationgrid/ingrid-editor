@@ -45,21 +45,40 @@
     >
         {{ button.text }}
     </button>
-    <div fxFlex></div>
-    <button
-        *ngFor="let button of rightAlignedButtons"
-        mat-button
-        color="primary"
-        [class.mat-flat-button]="button.emphasize"
-        [disabled]="
-            button.disabledWhenNotConfirmed &&
-            data.confirmText &&
-            textConfirmed !== data.confirmText
-        "
-        igeFocus
-        [mat-dialog-close]="button.id || false"
-        [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+    <mat-checkbox *ngIf="data.cookieId" (change)="updateCookie($event)"
+        >nicht erneut anzeigen</mat-checkbox
     >
-        {{ button.text }}
-    </button>
+    <div fxFlex></div>
+    <ng-container *ngFor="let button of rightAlignedButtons">
+        <button
+            *ngIf="!button.emphasize"
+            mat-button
+            color="primary"
+            [disabled]="
+                button.disabledWhenNotConfirmed &&
+                data.confirmText &&
+                textConfirmed !== data.confirmText
+            "
+            igeFocus
+            [mat-dialog-close]="button.id || false"
+            [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+        >
+            {{ button.text }}
+        </button>
+        <button
+            *ngIf="button.emphasize"
+            mat-flat-button
+            color="primary"
+            [disabled]="
+                button.disabledWhenNotConfirmed &&
+                data.confirmText &&
+                textConfirmed !== data.confirmText
+            "
+            igeFocus
+            [mat-dialog-close]="button.id || false"
+            [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+        >
+            {{ button.text }}
+        </button>
+    </ng-container>
 </mat-dialog-actions>

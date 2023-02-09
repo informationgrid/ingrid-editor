@@ -5,7 +5,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
   styleUrls: ["./dialog-template.component.scss"],
 })
 export class DialogTemplateComponent implements OnInit {
-  @Input() title: string;
+  @Input() label: string;
+  @Input() submitLabel = "Übernehmen";
   @Input() disabled = false;
   @Input() contentColor = "#ffffff";
   @Output() submit = new EventEmitter();

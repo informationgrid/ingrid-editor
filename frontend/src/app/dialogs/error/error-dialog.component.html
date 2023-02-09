@@ -58,7 +58,11 @@
             Details
         </button>
         <div>
-            <mat-card *ngIf="error.showDetails" class="hover-elevate">
+            <mat-card
+                appearance="outlined"
+                *ngIf="error.showDetails"
+                class="hover-elevate"
+            >
                 <mat-card-header>
                     <div fxFlex></div>
                     <div>
@@ -69,7 +73,7 @@
                             mat-icon-button=""
                             title="Copy Error"
                         >
-                            <mat-icon class="mat-icon">content_copy </mat-icon>
+                            <mat-icon class="mat-icon">content_copy</mat-icon>
                         </button>
                     </div>
                 </mat-card-header>
@@ -77,9 +81,8 @@
                 <mat-card-content>
                     <ng-container>
                         <pre *ngIf="error.detail">
-                                        {{ error.detail?.trim() }}
-                                    </pre
-                        >
+                            {{ error.detail?.trim() }}
+                        </pre>
 
                         <pre *ngIf="error.stacktrace">{{
                             error.stacktrace

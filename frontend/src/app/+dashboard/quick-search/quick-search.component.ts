@@ -6,6 +6,7 @@ import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { combineLatest, Subscription } from "rxjs";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -56,22 +57,14 @@ export class QuickSearchComponent implements OnInit {
     });
   }
 
-  openResearchPage(event: Event, inAddresses?: boolean) {
-    // TODO: activate after research page is implemented
-    event.preventDefault();
-
+  openResearchPage(inAddresses?: boolean) {
     this.router.navigate([
-      "/research/search",
+      `${ConfigService.catalogId}/research/search`,
       {
         q: this.query.value,
         type: inAddresses ? "selectAddresses" : "selectDocuments",
       },
     ]);
-  }
-
-  resetSearch() {
-    this.query.reset("");
-    this.searchSub?.unsubscribe();
   }
 
   private highlightResult(

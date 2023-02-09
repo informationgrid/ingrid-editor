@@ -12,6 +12,7 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        gitLabConnection('GitLab (wemove)')
     }
 
 
@@ -28,6 +29,7 @@ pipeline {
                 }
             }*/
             steps {
+                updateGitlabCommitStatus name: 'build', state: 'running'
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
                     // so we use here a modified postgres image for the tests
@@ -37,7 +39,7 @@ pipeline {
                         // use another container, where we can link the database to so that we can access it
                         // for volume mapping remember that we cannot use filesystem from Jenkins container, but only from HOST!
                         docker.image('ubuntu:20.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
-                            withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache", "JAVA_HOME=${ tool 'jdk17' }/jdk-17"]) {
+                            withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
                                 nodejs(nodeJSInstallationName: 'nodejs18') {
                                     sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build'
                                 }
@@ -50,17 +52,15 @@ pipeline {
 
         stage ('Frontend-Tests') {
             steps {
-                withEnv(["JAVA_HOME=${ tool 'jdk17' }/jdk-17"]) {
-                    nodejs(nodeJSInstallationName: 'nodejs') {
-                        script {
-                            try {
-                                sh './gradlew :frontend:test'
-                            } catch(error) {}
-                            try {
-                                sh './gradlew :frontend:testFormatting'
-                            } catch(error) {
-                                currentBuild.result = 'UNSTABLE'
-                            }
+                nodejs(nodeJSInstallationName: 'nodejs') {
+                    script {
+                        try {
+                            sh './gradlew :frontend:test'
+                        } catch(error) {}
+                        try {
+                            sh './gradlew :frontend:testFormatting'
+                        } catch(error) {
+                            currentBuild.result = 'UNSTABLE'
                         }
                     }
                 }
@@ -104,6 +104,18 @@ pipeline {
                         subject: '${DEFAULT_SUBJECT}',
                         to: '${DEFAULT_RECIPIENTS}')
             }
+        }
+        failure {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        aborted {
+            updateGitlabCommitStatus name: 'build', state: 'canceled'
         }
     }
 }

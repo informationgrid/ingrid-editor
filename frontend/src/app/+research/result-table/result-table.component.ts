@@ -23,6 +23,8 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
+import { ConfigService } from "../../services/config/config.service";
+import { Options } from "angular2-csv";
 
 @Component({
   selector: "ige-result-table",
@@ -57,6 +59,19 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   totalHits = 0;
   profileIconsMap: {};
+  csvOptions: Options = {
+    filename: "",
+    fieldSeparator: ",",
+    quoteStrings: "",
+    decimalseparator: ".",
+    showLabels: false,
+    headers: ["Typ", "Titel", "Aktualität"],
+    showTitle: false,
+    title: "CSV Export",
+    useBom: false,
+    removeNewLines: true,
+    keys: this.displayedColumns.filter((col) => col !== "settings"),
+  };
 
   constructor(
     private router: Router,
@@ -92,7 +107,9 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   openDataset(element: IgeDocument) {
-    const target = this.isAddress(element) ? "/address" : "/form";
+    const target =
+      ConfigService.catalogId +
+      (this.isAddress(element) ? "/address" : "/form");
     this.router.navigate([target, { id: element._uuid }]);
   }
 

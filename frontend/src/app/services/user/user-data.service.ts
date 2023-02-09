@@ -20,9 +20,9 @@ export class UserDataService {
     );
   }
 
-  getCatAdmins(): Observable<BackendUser[]> {
+  getCatAdmins(catalogId: String): Observable<BackendUser[]> {
     return this.http.get<BackendUser[]>(
-      this.configuration.backendUrl + "users/admins"
+      this.configuration.backendUrl + `users/admins/${catalogId}`
     );
   }
 
@@ -51,7 +51,7 @@ export class UserDataService {
     return this.http.delete(this.configuration.backendUrl + "users/" + login);
   }
 
-  getUser(id: string): Observable<BackendUser> {
+  getUser(id: number): Observable<BackendUser> {
     return this.http.get<BackendUser>(
       this.configuration.backendUrl + "users/" + id
     );
@@ -66,6 +66,19 @@ export class UserDataService {
   getExternalUsers() {
     return this.http.get<BackendUser[]>(
       this.configuration.backendUrl + "externalUsers"
+    );
+  }
+
+  getAllUserIds() {
+    return this.http.get<String[]>(
+      this.configuration.backendUrl + "internalUsers"
+    );
+  }
+
+  assignUserToCatalog(userId: string, catalogId: string) {
+    return this.http.post<void>(
+      this.configuration.backendUrl + `user/${userId}/assignCatalog`,
+      catalogId
     );
   }
 
