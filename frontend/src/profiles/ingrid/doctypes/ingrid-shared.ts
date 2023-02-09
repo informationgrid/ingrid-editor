@@ -600,7 +600,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "result",
+                  key: "pass",
                   type: "select",
                   label: "Grad",
                   width: "100px",
