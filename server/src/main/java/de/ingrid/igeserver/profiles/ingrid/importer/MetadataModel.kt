@@ -4,6 +4,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.exports.iso.RoleCode
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
+import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
+import de.ingrid.utils.udk.iso19108.TM_PeriodDuration
 import org.apache.logging.log4j.kotlin.logger
 
 class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler) {
@@ -100,14 +103,14 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             ?.map { KeyValue(it) }
             ?.getOrNull(0)
     }
-    
+
     fun getGraphicOverviews(): List<PreviewGraphic> {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.graphicOverview
-            ?.map { 
+            ?.map {
                 PreviewGraphic(it.mdBrowseGraphic?.fileName?.value!!, it.mdBrowseGraphic.fileDescription?.value)
             } ?: emptyList()
     }
-    
+
     data class PreviewGraphic(
         val fileName: String,
         val description: String? = null
@@ -153,11 +156,11 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
                     if (isAnchorAndRegionKey) return@forEach
-                    
+
                     references.add(SpatialReference("free", title))
                     return@forEach
                 }
-                
+
                 // handle coordinates
                 val bbox = it.geographicBoundingBox
                 references.last().coordinates = BoundingBox(
@@ -169,8 +172,9 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             }
         return references
     }
-    
-    val spatialDescription = metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.description?.value ?: ""
+
+    val spatialDescription =
+        metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.description?.value ?: ""
 
     fun getRegionKey(): String {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.geographicElement
@@ -181,7 +185,8 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     fun getVerticalExtent(): VerticalExtentModel? {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.verticalElement
             ?.mapNotNull {
-                val uom = it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
+                val uom =
+                    it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
                 val uomId = codeListService.getCodeListEntryId("102", uom, "ISO")
                 val min = it.verticalElement?.minimumValue?.value
                 val max = it.verticalElement?.maximumValue?.value
@@ -191,26 +196,106 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                 else VerticalExtentModel(uomId, min, max, datumId)
             }?.getOrNull(0)
     }
-    
+
     fun getReferenceDateType(): KeyValue {
         return KeyValue()
     }
 
     fun getLanguage(): KeyValue {
-        return KeyValue()
+        val languageKey = mapLanguage(metadata.language?.codelist?.codeListValue!!)
+        return KeyValue(languageKey)
     }
 
     fun getExtraInfoPublishArea(): KeyValue {
-        return KeyValue()
+        // always map to "Internet" by default, since this information is InGrid-specific
+        return KeyValue("1")
     }
+    
+    fun getLegalDescriptions(): List<KeyValue> {
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Further legal basis" }
+            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.map {
+                val entryId = codeListService.getCodeListEntryId("1350", it, "de")
+                if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
+            } ?: emptyList()
+    }
+    
+    fun getPurpose() = metadata.identificationInfo[0].serviceIdentificationInfo?.purpose?.value ?: ""
+    fun getSpecificUsage() = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceSpecificUsage
+        ?.mapNotNull { it.usage?.specificUsage?.value }
+        ?.joinToString(";")
 
     fun getCoupledResources(): List<CoupledResourceModel> {
-        return metadata.distributionInfo?.mdDistribution?.transferOptions
+        val internalLinks = metadata.identificationInfo[0].serviceIdentificationInfo?.operatesOn
+            ?.map { CoupledResourceModel(it.uuidref, null, null, false) } ?: emptyList()
+
+        val externalLinks = metadata.distributionInfo?.mdDistribution?.transferOptions
             ?.filter {
                 it.mdDigitalTransferOptions?.onLine?.any { online -> online.ciOnlineResource?.applicationProfile?.value == "coupled" }
                     ?: false
             }
-            ?.map { CoupledResourceModel("", "?", "", false) } ?: emptyList()
+            ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
+            ?.map { CoupledResourceModel(null, it?.linkage?.url, it?.name?.value, true) } ?: emptyList()
+
+        return internalLinks + externalLinks
+    }
+
+    fun getTemporalEvents(): List<Event> {
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.date
+            ?.map {
+                val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "ISO")
+                Event(KeyValue(typeKey), it?.date?.date?.dateTime ?: "")
+            } ?: emptyList()
+    }
+
+    fun getTimeRelatedInfo(): TimeInfo? {
+        val status = metadata.identificationInfo[0].serviceIdentificationInfo?.status?.code?.codeListValue
+        val statusKey = codeListService.getCodeListEntryId("523", status, "ISO")
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.temporalElement
+            ?.mapNotNull {
+
+                val instant = it.extent?.extent?.timeInstant?.timePosition
+                if (instant != null) {
+                    return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
+                }
+                log.warn("Do not support time info, returning null")
+                return null
+            }
+            ?.getOrNull(0)
+    }
+    
+    fun getAccessConstraints(): List<KeyValue> {
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+            ?.filter { it.legalConstraint?.accessConstraints != null }
+            ?.flatMap {
+                it.legalConstraint?.otherConstraints?.map { constraint ->
+                    if (constraint.isAnchor) {
+                        // TODO: handle values not found in codelist -> create free entry
+                        val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
+                        KeyValue(key)
+                    } else {
+                        KeyValue(null, constraint.value)
+                    }
+                } ?: emptyList()
+            } ?: emptyList()
+    }
+    
+    fun getMaintenanceInterval(): MaintenanceInterval {
+        val maintenanceInformation = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
+        val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
+        val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "ISO")
+        val intervalEncoded = maintenanceInformation?.userDefinedMaintenanceFrequency?.periodDuration
+        
+        val value = TM_PeriodDurationToTimeAlle().parse(intervalEncoded)
+        val intervalUnit = TM_PeriodDurationToTimeInterval().parse(intervalEncoded)
+        val intervalUnitKey = codeListService.getCodeListEntryId("1230", intervalUnit, "de")
+        
+        val description = maintenanceInformation?.maintenanceNote
+            ?.mapNotNull { it.value }
+            ?.joinToString(";")
+        
+        return MaintenanceInterval(value.toInt(), KeyValue(intervalUnitKey), KeyValue(updateFrequencyKey), description)
     }
 
 
@@ -219,7 +304,80 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             it.keywords?.keyword?.value == value
         } ?: false
     }
+
+    // TODO: use mapper from export by refactoring same functionality
+    private fun mapLanguage(languageValue: String): String {
+        return when (languageValue) {
+            "ger" -> "150"
+            "eng" -> "123"
+            "bul" -> "65"
+            "cze" -> "101"
+            "dan" -> "103"
+            "spa" -> "401"
+            "fin" -> "134"
+            "fre" -> "137"
+            "gre" -> "164"
+            "hun" -> "183"
+            "dut" -> "116"
+            "pol" -> "346"
+            "por" -> "348"
+            "rum" -> "360"
+            "slo" -> "385"
+            "slv" -> "386"
+            "ita" -> "202"
+            "est" -> "126"
+            "lav" -> "247"
+            "lit" -> "251"
+            "nno" -> "312"
+            "rus" -> "363"
+            "swe" -> "413"
+            "mlt" -> "284"
+            "wen" -> "467"
+            "hsb" -> "182"
+            "dsb" -> "113"
+            "fry" -> "142"
+            "nds" -> "306"
+            else -> throw ServerException.withReason("Could not map document language key: language.key")
+        }
+    }
+
+    private fun parse(value: String): String? {
+        var result: String
+
+        try {
+            val pd = TM_PeriodDuration.parse(value)
+            result = if (pd.hasInterval(TM_PeriodDuration.Interval.YEARS))
+                TM_PeriodDuration.Interval.YEARS.name
+            else if (pd.hasInterval(TM_PeriodDuration.Interval.MONTHS))
+                TM_PeriodDuration.Interval.MONTHS.name
+            else if (pd.hasInterval(TM_PeriodDuration.Interval.DAYS))
+                TM_PeriodDuration.Interval.DAYS.name
+            else if (pd.hasInterval(TM_PeriodDuration.Interval.HOURS))
+                TM_PeriodDuration.Interval.HOURS.name
+            else if (pd.hasInterval(TM_PeriodDuration.Interval.MINUTES))
+                TM_PeriodDuration.Interval.MINUTES.name
+            else if (pd.hasInterval(TM_PeriodDuration.Interval.SECONDS))
+                TM_PeriodDuration.Interval.SECONDS.name
+            else
+                value
+        } catch (e: Exception) {
+            result = value
+        }
+        return result
+    }
+
 }
+
+data class MaintenanceInterval(
+    val value: Number?,
+    val unit: KeyValue?,
+    val interval: KeyValue?,
+    val description: String?
+)
+
+data class TimeInfo(val date: String, val type: KeyValue, val status: KeyValue)
+
+data class Event(val type: KeyValue, val date: String)
 
 data class VerticalExtentModel(
     val uom: String,
@@ -243,7 +401,7 @@ data class BoundingBox(
 
 data class CoupledResourceModel(
     val uuid: String?,
-    val state: String,
+    val url: String?,
     val title: String?,
     val isExternalRef: Boolean,
 )

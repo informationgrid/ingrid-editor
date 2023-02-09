@@ -9,7 +9,7 @@ data class Citation(
 data class CICitation(
     val title: CharacterString?,
     val alternateTitle: List<CharacterString>?,
-    val date: CitationDate,
+    val date: List<CitationDate>,
     
 )
 

@@ -77,8 +77,11 @@ data class TemportalExtentSub(
 )
 
 data class TemportalExtent(
-    @JacksonXmlProperty(localName = "TimePeriod") val timePeriod: TimePeriod?
+    @JacksonXmlProperty(localName = "TimePeriod") val timePeriod: TimePeriod?,
+    @JacksonXmlProperty(localName = "TimeInstant") val timeInstant: TimeInstant?
 )
+
+data class TimeInstant(val timePosition: String)
 
 data class TimePeriod(
     @JacksonXmlProperty(isAttribute = true) val id: String?,

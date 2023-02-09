@@ -8,9 +8,12 @@ import de.ingrid.igeserver.exports.iso19115.Keyword
 data class SVServiceIdentification(
     val citation: Citation,
     val abstract: CharacterString,
+    val purpose: CharacterString?,
+    val status: Status?,
     val pointOfContact: List<PointOfContact>?,
     val resourceMaintenance: ResourceMaintenance?,
     val descriptiveKeywords: List<DescriptiveKeyword>?,
+    val resourceSpecificUsage: List<SpecificUsage>?,
     val resourceConstraints: List<ResourceConstraint>?,
     val graphicOverview: List<GraphicOverview>?,
     @JacksonXmlProperty(localName = "serviceType", namespace = "http://www.isotc211.org/2005/srv")
@@ -22,6 +25,18 @@ data class SVServiceIdentification(
     val couplingType: CouplingType?,
     val containsOperations: ContainsOperation?,
     val operatesOn: List<OperatesOn>?,
+)
+data class SpecificUsage(
+    @JacksonXmlProperty(localName = "MD_Usage") val usage: MDUsage?
+)
+
+data class MDUsage(
+    val specificUsage: CharacterString,
+    val userContactInfo: PointOfContact,
+)
+
+data class Status(
+    @JacksonXmlProperty(localName = "MD_ProgressCode") val code: CodelistAttributes?
 )
 
 data class GraphicOverview(
@@ -75,9 +90,10 @@ data class ResourceConstraint(
 )
 
 data class MDLegalConstraint(
-    val useLimitation: CharacterString?,
-    val useConstraints: MDRestrictionCode?,
-    val otherConstraints: CharacterString?
+    val useLimitation: List<CharacterString>?,
+    val accessConstraints: List<MDRestrictionCode>?,
+    val useConstraints: List<MDRestrictionCode>?,
+    val otherConstraints: List<CharacterString>?
 )
 
 data class MDRestrictionCode(

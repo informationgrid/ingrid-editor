@@ -63,10 +63,17 @@
   ],
   "coupledResources": [
     {
-      "uuid": "798149c3-5a81-4733-a0ee-4268122147dc",
-      "state": "W",
-      "title": "Geo-Datensatz 1",
+      "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
       "isExternalRef": false
+    },
+    {
+      "uuid": "93BBCF92-BD74-47A2-9865-BE59ABC90C57",
+      "isExternalRef": false
+    },
+    {
+      "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
+      "title": "Extern gekoppelter Datensatz",
+      "isExternalRef": true
     }
   ],
   "couplingType": {
@@ -107,32 +114,91 @@
   "temporal": {
     "events": [
       {
-        "referenceDate": null,
-        "referenceDateType": null
+        "referenceDate": "2015-03-17T00:00:00.000+01:00",
+        "referenceDateType": {
+          "key": "1"
+        }
       }
     ],
-    "resourceDateType": null,
-    "status": null
+    "resourceDateType": {
+      "key": "at"
+    },
+    "status": {
+      "key": "7"
+    },
+    "resourceDate": "2023-02-08T00:00:00.000+01:00"
   },
   "maintenanceInformation": {
-    "maintenanceAndUpdateFrequency": null,
+    "maintenanceAndUpdateFrequency": {
+      "key": "1"
+    },
     "userDefinedMaintenanceFrequency": {
-      "unit": null
-    }
+      "number": 12,
+      "unit": {
+        "key": "3"
+      }
+    },
+    "description": "Erläuterung Zeitbezug"
   },
   "metadata": {
-    "language": null
+    "language": {
+      "key": "150"
+    }
   },
-  "extraInfoPublishArea": null,
+  "extraInfoPublishArea": {
+    "key": "1"
+  },
   "extraInfo": {
-    "legalBasicsDescriptions": []
+    "legalBasicsDescriptions": [
+      {
+        "key": "38"
+      }
+    ]
   },
   "resource": {
-    "accessConstraints": []
+    "purpose": "Herstellung!",
+    "specificUsage": "Eignung!",
+    "accessConstraints": [
+      {
+        "key": "1"
+      },
+      {
+        "key": null,
+        "value": "freie Zugriffsbeschränkung"
+      }
+    ],
+    "useLimitation": "???"
   },
   "distribution": {
-    "format": []
+    "format": [
+      {
+        "name": {
+          "key": "5"
+        },
+        "version": "32",
+        "compression": "zip",
+        "specification": "spec 1"
+      }
+    ]
   },
-  "digitalTransferOptions": [],
-  "references": []
+  "digitalTransferOptions": [
+    {
+      "name": {
+        "key": "900006"
+      },
+      "transferSize": "323",
+      "mediumNote": "Home"
+    }
+  ],
+  "orderInfo": "???",
+  "references": [
+    {
+      "type": {
+        "key": "???"
+      },
+      "title": "???",
+      "url": "???",
+      "explanation": "???"
+    }
+  ]
 }

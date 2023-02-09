@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 data class CIOnlineResource(
     val linkage: Linkage,
     val applicationProfile: CharacterString?,
+    val name: CharacterString?,
 )
 
 data class Linkage(

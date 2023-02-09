@@ -46,9 +46,12 @@
     "coupledResources": [
     @for(var resource : ForSupport.of(model.getCoupledResources()))
         {
+            @if(resource.get().getUuid() != null)
             "uuid": "${resource.get().getUuid()}",
-            "state": "${resource.get().getState()}",
+            @else
+            "url": "${resource.get().getUrl()}",
             "title": "${resource.get().getTitle()}",
+            @endif
             "isExternalRef": ${resource.get().isExternalRef()}
         }@if (!resource.isLast()),@endif
     @endfor
@@ -88,33 +91,44 @@
     },
     "temporal": {
         "events": [
+        @for(var event : ForSupport.of(model.getTemporalEvents()))
             {
-                "referenceDate": "2020-12-17T23:00:00.000Z",
-                "referenceDateType": @template.ingrid.partial.key-value(item = model.getReferenceDateType())
-            }
+                "referenceDate": "${event.get().getDate()}",
+                "referenceDateType": @template.ingrid.partial.key-value(item = event.get().getType())
+            }@if (!event.isLast()),@endif
+        @endfor
         ],
-        "resourceDateType": null,
-        "status": null
+        !{var time = model.getTimeRelatedInfo();}
+        "resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
+        "status": @template.ingrid.partial.key-value(item = time.getStatus()),
+        "resourceDate": "${time.getDate()}"
     },
     "maintenanceInformation": {
-        "maintenanceAndUpdateFrequency": null,
+        !{var interval = model.getMaintenanceInterval();}
+        "maintenanceAndUpdateFrequency": @template.ingrid.partial.key-value(item = interval.getInterval()),
         "userDefinedMaintenanceFrequency": {
-            "unit": null
-        }
+            "number": ${interval.getValue()},
+            "unit": @template.ingrid.partial.key-value(item = interval.getUnit())
+        },
+        "description": "${interval.getDescription()}"
     },
     "metadata": {
         "language": @template.ingrid.partial.key-value(item = model.getLanguage())
     },
     "extraInfoPublishArea": @template.ingrid.partial.key-value(item = model.getExtraInfoPublishArea()),
     "extraInfo": {
-        "legalBasicsDescriptions": []
+        "legalBasicsDescriptions": @template.ingrid.partial.key-values(list = model.getLegalDescriptions())
     },
     "resource": {
-        "accessConstraints": []
+        "purpose": "${model.getPurpose()}",
+        "specificUsage": "${model.getSpecificUsage()}",
+        "accessConstraints": @template.ingrid.partial.key-values(list = model.getAccessConstraints()),
+        "useLimitation": ""
     },
     "distribution": {
         "format": []
     },
     "digitalTransferOptions": [],
+    "orderInfo": "",
     "references": []
 }

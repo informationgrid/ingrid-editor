@@ -142,7 +142,7 @@
                         <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="continual"/>
                     </gmd:maintenanceAndUpdateFrequency>
                     <gmd:userDefinedMaintenanceFrequency>
-                        <gts:TM_PeriodDuration>PT3H</gts:TM_PeriodDuration>
+                        <gts:TM_PeriodDuration>PT12H</gts:TM_PeriodDuration>
                     </gmd:userDefinedMaintenanceFrequency>
                     <gmd:updateScope>
                         <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="service"/>
@@ -383,6 +383,9 @@
                     <gmd:otherConstraints>
                         <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Es gelten keine Zugriffsbeschränkungen</gmx:Anchor>
                     </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>freie Zugriffsbeschränkung</gco:CharacterString>
+                    </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
             <srv:serviceType>
@@ -567,7 +570,7 @@
                                 <gco:CharacterString>coupled</gco:CharacterString>
                             </gmd:applicationProfile>
                             <gmd:name>
-                                <gco:CharacterString>Datensatz mit zwei Download Links</gco:CharacterString>
+                                <gco:CharacterString>Extern gekoppelter Datensatz</gco:CharacterString>
                             </gmd:name>
                             <gmd:function>
                                 <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
