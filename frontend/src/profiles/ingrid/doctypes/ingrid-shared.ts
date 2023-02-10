@@ -742,7 +742,7 @@ export abstract class IngridShared extends BaseDoctype {
               "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
           },
           fields: [
-            this.addSelectInline("name", "Name", {
+            this.addAutoCompleteInline("name", "Name", {
               options: this.getCodelistForSelect(1320, "specification"),
               codelistId: 1320,
             }),
