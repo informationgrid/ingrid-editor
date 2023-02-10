@@ -300,7 +300,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
         ]),
         this.addReferencesForAddress(
-          "coupledResources",
+          "service.coupledResources",
           "uuid",
           "Darstellender Dienst",
           true,
