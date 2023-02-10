@@ -100,14 +100,20 @@ class DatasetsApiController @Autowired constructor(
     private fun addMetadataToDocument(
         documentData: DocumentData
     ) {
-        resultDoc.data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
-        resultDoc.data.put(FIELD_PARENT, wrapper.parent?.id)
-        resultDoc.data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
-        resultDoc.data.put(FIELD_CREATED_USER_EXISTS, resultDoc.createdByUser != null)
-        resultDoc.data.put(FIELD_MODIFIED_USER_EXISTS, resultDoc.modifiedByUser != null)
-        resultDoc.data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-        resultDoc.hasWritePermission = wrapper.hasWritePermission
-        resultDoc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+        val wrapper = documentData.wrapper
+
+        with(documentData.document) {
+            data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
+            data.put(FIELD_PARENT, wrapper.parent?.id)
+            data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
+            // TODO: next two fields not really necessary, since they can be simply evaluated from doc
+            data.put(FIELD_CREATED_USER_EXISTS, createdByUser != null)
+            data.put(FIELD_MODIFIED_USER_EXISTS, modifiedByUser != null)
+            data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
+            hasWritePermission = wrapper.hasWritePermission
+            hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+            wrapperId = wrapper.id
+        }
     }
 
     @Transactional

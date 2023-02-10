@@ -219,7 +219,7 @@ class ResearchService {
     private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
-        termParameters.forEachIndexed { index, term ->
+        parameter.forEachIndexed { index, term ->
             nativeQuery.setParameter(index + 1, term)
         }
 

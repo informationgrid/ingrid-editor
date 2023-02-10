@@ -2,7 +2,6 @@ package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,11 +26,6 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
     private val allWrapper = """SELECT published, draft, pending, id FROM document_wrapper"""
     private val updateDocument = """UPDATE document SET is_latest=?1, state=?2 WHERE id=?3"""
 
-    private val sqlUpdate = """
-        alter table document add is_latest boolean;
-        alter table document add state varchar(30);
-    """.trimIndent()
-
     override fun exec() {
         ClosableTransaction(transactionManager).use {
             val wrappers: MutableList<Any?> = entityManager.createNativeQuery(allWrapper).resultList
@@ -40,10 +34,10 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
 
             wrappers.forEach { wrapper ->
                 try {
-                    val obj = wrapper as Array<Any>
+                    val obj = wrapper as Array<*>
                     migrateWrapper(obj[0] as Int?, obj[1] as Int?, obj[2] as Int?)
                 } catch (ex: Exception) {
-                    log.error("Error migrating document with dbID ${(wrapper as Array<Any>)[3]}", ex)
+                    log.error("Error migrating document with dbID ${(wrapper as Array<*>)[3]}", ex)
                 }
             }
         }
@@ -58,7 +52,7 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
                 .setParameter(3, draftId)
                 .executeUpdate()
         }
-        
+
         if (publishedId != null) {
             entityManager.createNativeQuery(updateDocument)
                 .setParameter(1, draftId == null)
@@ -66,7 +60,7 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
                 .setParameter(3, publishedId)
                 .executeUpdate()
         }
-        
+
         if (pendingId != null) {
             entityManager.createNativeQuery(updateDocument)
                 .setParameter(1, true)
