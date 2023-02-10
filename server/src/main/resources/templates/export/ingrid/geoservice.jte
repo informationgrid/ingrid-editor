@@ -123,10 +123,19 @@
         "purpose": "${model.getPurpose()}",
         "specificUsage": "${model.getSpecificUsage()}",
         "accessConstraints": @template.ingrid.partial.key-values(list = model.getAccessConstraints()),
-        "useLimitation": ""
+        "useLimitation": "${model.getUseLimitation()}"
     },
     "distribution": {
-        "format": []
+        "format": [
+        @for(var format : ForSupport.of(model.getDistributionFormat()))
+            {
+                "name": @template.ingrid.partial.key-value(item = format.get().getName()),
+                "version": "${format.get().getVersion()}",
+                "compression": "${format.get().getCompression()}",
+                "specification": "${format.get().getSpecification()}"
+            }@if (!format.isLast()),@endif
+        @endfor
+        ]
     },
     "digitalTransferOptions": [
     @for(var option : ForSupport.of(model.getDigitalTransferOptions()))

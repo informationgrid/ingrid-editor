@@ -27,6 +27,7 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "ISO") } returns "4"
         every { codelistService.getCodeListEntryId("523", "underDevelopment", "ISO") } returns "7"
         every { codelistService.getCodeListEntryId("1230", "Stunden", "de") } returns "3"
+        every { codelistService.getCodeListEntryId("1320", "PNG", "de") } returns "26"
         every { codelistService.getCodeListEntryId("1350", "Nieders. Abfallgesetz (NAbfG)", "de") } returns "38"
         every { codelistService.getCodeListEntryId("2000", "order", "ISO") } returns "5304"
         

@@ -534,7 +534,7 @@
                         <gco:CharacterString>5</gco:CharacterString>
                     </gmd:version>
                     <gmd:specification>
-                        <gco:CharacterString>0.4</gco:CharacterString>
+                        <gco:CharacterString>spec 1</gco:CharacterString>
                     </gmd:specification>
                     <gmd:fileDecompressionTechnique>
                         <gco:CharacterString>RAR</gco:CharacterString>

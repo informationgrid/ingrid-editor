@@ -167,16 +167,16 @@
         "value": "freie Zugriffsbeschränkung"
       }
     ],
-    "useLimitation": "???"
+    "useLimitation": "Es gelten keine Bedingungen"
   },
   "distribution": {
     "format": [
       {
         "name": {
-          "key": "5"
+          "key": "26"
         },
-        "version": "32",
-        "compression": "zip",
+        "version": "5",
+        "compression": "RAR",
         "specification": "spec 1"
       }
     ]

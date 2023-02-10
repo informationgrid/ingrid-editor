@@ -119,9 +119,22 @@ data class DistributionInfo(
 )
 
 data class MDDistribution(
-    val distributionFormat: List<String>?,
+    val distributionFormat: List<DistributionFormat>?,
     val distributor: List<Distributor>?,
     val transferOptions: List<TransferOption>?
+)
+
+data class DistributionFormat(
+    @JacksonXmlProperty(localName = "MD_Format") val format: MDFormat?
+)
+
+data class MDFormat(
+    val name : CharacterString,
+    val version : CharacterString,
+    val amendmentNumber : CharacterString?,
+    val specification : CharacterString?,
+    val fileDecompressionTechnique : CharacterString?,
+    val formatDistributor : List<CharacterString>?
 )
 
 data class Distributor(

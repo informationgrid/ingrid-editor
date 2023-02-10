@@ -168,6 +168,8 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                     bbox.northBoundLatitude?.value!!,
                     bbox.eastBoundLongitude?.value!!
                 )
+                
+                // TODO: handle bounding polygons
             }
         return references
     }
@@ -280,6 +282,22 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             } ?: emptyList()
     }
 
+    fun getUseLimitation() : String {
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+            ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value } ?: emptyList() }
+            ?.joinToString(";") ?: ""
+    }
+    
+    fun getDistributionFormat(): List<DistributionFormat> {
+        return metadata.distributionInfo?.mdDistribution?.distributionFormat
+            ?.map { it.format }
+            ?.map { 
+                val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
+                val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
+                DistributionFormat(nameKeyValue, it?.version?.value, it?.fileDecompressionTechnique?.value, it?.specification?.value)
+            } ?: emptyList()
+    }
+    
     fun getMaintenanceInterval(): MaintenanceInterval {
         val maintenanceInformation =
             metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
@@ -395,6 +413,13 @@ data class Reference(
     val url: String?,
     val title: String?,
     val explanation: String?
+)
+
+data class DistributionFormat(
+    val name: KeyValue,
+    val version: String?,
+    val compression: String?,
+    val specification: String?
 )
 
 data class MaintenanceInterval(
