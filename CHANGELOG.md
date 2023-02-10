@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.2] - 2023-02-10
+
+### Fixed
+
+- Fix data from one document shown in other document (#4756)
+- Fix publishing of document when address has been opended before (#4748)
+
+## [1.2.1] - 2023-02-02
+
+### Fixed
+
+- Add profile-specific index conditions and fix bug (#4727)
+- Improve uploaded files handling (#4736)
+- Make nominatim URL and leaflet tiles configurable (#4712)
+- Fix corrupt map display (#4708)
+
 ## [1.2.0] - 2023-01-18
 
 ### Added
