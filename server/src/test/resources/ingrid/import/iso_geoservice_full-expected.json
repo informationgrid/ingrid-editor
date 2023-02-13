@@ -184,21 +184,29 @@
   "digitalTransferOptions": [
     {
       "name": {
-        "key": "900006"
+        "key": "4"
       },
-      "transferSize": "323",
+      "transferSize": 1.44,
       "mediumNote": "Home"
     }
   ],
-  "orderInfo": "???",
+  "orderInfo": "Bestell",
   "references": [
     {
       "type": {
-        "key": "???"
+        "key": "9999"
       },
-      "title": "???",
-      "url": "???",
-      "explanation": "???"
+      "title": "Ein Verweis",
+      "url": "http://my-link",
+      "explanation": "Link Erläuterung"
+    },
+    {
+      "type": {
+        "key": "5304"
+      },
+      "title": "Bestell Link",
+      "url": "http://order-me.com",
+      "explanation": "Meine Bestellungen"
     }
   ]
 }

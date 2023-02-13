@@ -6,7 +6,6 @@ import de.ingrid.igeserver.exports.iso.RoleCode
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
-import de.ingrid.utils.udk.iso19108.TM_PeriodDuration
 import org.apache.logging.log4j.kotlin.logger
 
 class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler) {
@@ -210,7 +209,7 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
         // always map to "Internet" by default, since this information is InGrid-specific
         return KeyValue("1")
     }
-    
+
     fun getLegalDescriptions(): List<KeyValue> {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Further legal basis" }
@@ -220,7 +219,7 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                 if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
             } ?: emptyList()
     }
-    
+
     fun getPurpose() = metadata.identificationInfo[0].serviceIdentificationInfo?.purpose?.value ?: ""
     fun getSpecificUsage() = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceSpecificUsage
         ?.mapNotNull { it.usage?.specificUsage?.value }
@@ -264,7 +263,7 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             }
             ?.getOrNull(0)
     }
-    
+
     fun getAccessConstraints(): List<KeyValue> {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
             ?.filter { it.legalConstraint?.accessConstraints != null }
@@ -280,24 +279,66 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                 } ?: emptyList()
             } ?: emptyList()
     }
-    
+
     fun getMaintenanceInterval(): MaintenanceInterval {
-        val maintenanceInformation = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
+        val maintenanceInformation =
+            metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
         val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
         val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "ISO")
         val intervalEncoded = maintenanceInformation?.userDefinedMaintenanceFrequency?.periodDuration
-        
+
         val value = TM_PeriodDurationToTimeAlle().parse(intervalEncoded)
         val intervalUnit = TM_PeriodDurationToTimeInterval().parse(intervalEncoded)
         val intervalUnitKey = codeListService.getCodeListEntryId("1230", intervalUnit, "de")
-        
+
         val description = maintenanceInformation?.maintenanceNote
             ?.mapNotNull { it.value }
             ?.joinToString(";")
-        
+
         return MaintenanceInterval(value.toInt(), KeyValue(intervalUnitKey), KeyValue(updateFrequencyKey), description)
     }
 
+    fun getDigitalTransferOptions(): List<DigitalTransferOption> {
+        return metadata.distributionInfo?.mdDistribution?.transferOptions
+            ?.mapNotNull { it.mdDigitalTransferOptions }
+            ?.filter { it.offLine?.mdMedium != null }
+            ?.map {
+                val value = it.offLine?.mdMedium?.name?.code?.codeListValue
+                val nameKey = codeListService.getCodeListEntryId("520", value, "ISO")
+                DigitalTransferOption(
+                    KeyValue(nameKey),
+                    it.transferSize?.value,
+                    it.offLine?.mdMedium?.mediumNote?.value
+                )
+            } ?: emptyList()
+
+    }
+
+    fun getOrderInfo(): String {
+        return metadata.distributionInfo?.mdDistribution?.distributor
+            ?.flatMap {
+                it.mdDistributor.distributionOrderProcess
+                    ?.mapNotNull { orderProcess -> orderProcess.mdStandardOrderProcess?.orderingInstructions?.value }
+                    ?: emptyList()
+            }
+            ?.joinToString(";") ?: ""
+    }
+
+    fun getReferences(): List<Reference> {
+        return metadata.distributionInfo?.mdDistribution?.transferOptions
+            ?.flatMap {transferOption ->
+                transferOption.mdDigitalTransferOptions?.onLine
+                    ?.filter { it.ciOnlineResource?.applicationProfile?.value != "coupled" }
+                    ?.mapNotNull { it.ciOnlineResource }
+                    ?.map { resource ->
+                        val value = resource.function?.code?.codeListValue
+                        val typeId =
+                            if (value == null) null else codeListService.getCodeListEntryId("2000", value, "ISO")
+                        val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
+                        Reference(keyValue, resource.linkage.url, resource.name?.value, resource.description?.value)
+                    } ?: emptyList()
+            } ?: emptyList()
+    }
 
     private fun containsKeyword(value: String): Boolean {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords?.any {
@@ -341,32 +382,20 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
         }
     }
 
-    private fun parse(value: String): String? {
-        var result: String
-
-        try {
-            val pd = TM_PeriodDuration.parse(value)
-            result = if (pd.hasInterval(TM_PeriodDuration.Interval.YEARS))
-                TM_PeriodDuration.Interval.YEARS.name
-            else if (pd.hasInterval(TM_PeriodDuration.Interval.MONTHS))
-                TM_PeriodDuration.Interval.MONTHS.name
-            else if (pd.hasInterval(TM_PeriodDuration.Interval.DAYS))
-                TM_PeriodDuration.Interval.DAYS.name
-            else if (pd.hasInterval(TM_PeriodDuration.Interval.HOURS))
-                TM_PeriodDuration.Interval.HOURS.name
-            else if (pd.hasInterval(TM_PeriodDuration.Interval.MINUTES))
-                TM_PeriodDuration.Interval.MINUTES.name
-            else if (pd.hasInterval(TM_PeriodDuration.Interval.SECONDS))
-                TM_PeriodDuration.Interval.SECONDS.name
-            else
-                value
-        } catch (e: Exception) {
-            result = value
-        }
-        return result
-    }
-
 }
+
+data class DigitalTransferOption(
+    val name: KeyValue?,
+    val transferSize: Float?,
+    val mediumNote: String?
+)
+
+data class Reference(
+    val type: KeyValue,
+    val url: String?,
+    val title: String?,
+    val explanation: String?
+)
 
 data class MaintenanceInterval(
     val value: Number?,

@@ -24,9 +24,14 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("502", "creation", "ISO") } returns "1"
         every { codelistService.getCodeListEntryId("505", "pointOfContact", "ISO") } returns "7"
         every { codelistService.getCodeListEntryId("518", "continual", "ISO") } returns "1"
+        every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "ISO") } returns "4"
         every { codelistService.getCodeListEntryId("523", "underDevelopment", "ISO") } returns "7"
         every { codelistService.getCodeListEntryId("1230", "Stunden", "de") } returns "3"
         every { codelistService.getCodeListEntryId("1350", "Nieders. Abfallgesetz (NAbfG)", "de") } returns "38"
+        every { codelistService.getCodeListEntryId("2000", "order", "ISO") } returns "5304"
+        
+        every { codelistService.getCodeListEntryId("2000", "information", "ISO") } returns "5302"
+        
         every { codelistService.getCodeListEntryId("5100", "download", "ISO") } returns "3"
         every { codelistService.getCodeListEntryId("5153", "OGC:WFS 1.1.0", "ISO") } returns "1"
         every { codelistService.getCodeListEntryId("6010", "Es gelten keine Zugriffsbeschränkungen", "de") } returns "1"

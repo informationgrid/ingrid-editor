@@ -128,7 +128,24 @@
     "distribution": {
         "format": []
     },
-    "digitalTransferOptions": [],
-    "orderInfo": "",
-    "references": []
+    "digitalTransferOptions": [
+    @for(var option : ForSupport.of(model.getDigitalTransferOptions()))
+        {
+            "name": @template.ingrid.partial.key-value(item = option.get().getName()),
+            "transferSize": ${option.get().getTransferSize()},
+            "mediumNote": "${option.get().getMediumNote()}"
+        }@if (!option.isLast()),@endif
+    @endfor
+    ],
+    "orderInfo": "${model.getOrderInfo()}",
+    "references": [
+    @for(var reference : ForSupport.of(model.getReferences()))
+        {
+            "type": @template.ingrid.partial.key-value(item = reference.get().getType()),
+            "title": "${reference.get().getTitle()}",
+            "url": "${reference.get().getUrl()}",
+            "explanation": "${reference.get().getExplanation()}"
+        }@if (!reference.isLast()),@endif
+    @endfor
+    ]
 }

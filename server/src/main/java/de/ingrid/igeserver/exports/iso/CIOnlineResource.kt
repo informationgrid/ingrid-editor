@@ -6,6 +6,12 @@ data class CIOnlineResource(
     val linkage: Linkage,
     val applicationProfile: CharacterString?,
     val name: CharacterString?,
+    val description: CharacterString?,
+    val function: CIOnlineFunctionCode?
+)
+
+data class CIOnlineFunctionCode(
+    @JacksonXmlProperty(localName = "CI_OnLineFunctionCode") val code: CodelistAttributes?
 )
 
 data class Linkage(

@@ -120,8 +120,30 @@ data class DistributionInfo(
 
 data class MDDistribution(
     val distributionFormat: List<String>?,
-    val distributor: List<String>?,
+    val distributor: List<Distributor>?,
     val transferOptions: List<TransferOption>?
+)
+
+data class Distributor(
+    @JacksonXmlProperty(localName = "MD_Distributor") val mdDistributor: MDDistributor 
+)
+
+data class MDDistributor(
+    val distributorContact: PointOfContact,
+    val distributionOrderProcess: List<DistributionOrderProcess>?,
+    val distributorFormat: List<CharacterString>?,
+    val distributorTransferOptions: List<CharacterString>?,
+)
+
+data class DistributionOrderProcess(
+    @JacksonXmlProperty(localName = "MD_StandardOrderProcess") val mdStandardOrderProcess: MDStandardOrderProcess?
+)
+
+data class MDStandardOrderProcess(
+    val fees: CharacterString?,
+    val plannedAvailableDateTime: CharacterString?,
+    val orderingInstructions: CharacterString?,
+    val turnaround: CharacterString?
 )
 
 data class TransferOption(
@@ -129,12 +151,29 @@ data class TransferOption(
 )
 
 data class MDDigitalTransferOptions(
-    val unitsOfDistribution: String?,
-    val transferSize: String?,
+    val unitsOfDistribution: CharacterString?,
+    val transferSize: Real?,
     val onLine: List<Online>?,
-    val offLine: String?
+    val offLine: Offline?
 )
 
 data class Online(
     @JacksonXmlProperty(localName = "CI_OnlineResource") val ciOnlineResource: CIOnlineResource?
+)
+
+data class Offline(
+    @JacksonXmlProperty(localName = "MD_Medium") val mdMedium: MDMedium?
+)
+
+data class MDMedium(
+    val name: MDMediumNameCode?,
+    val density: List<CharacterString>?,
+    val densityUnits: CharacterString?,
+    val volumes: CharacterString?,
+    val mediumFormat: List<CharacterString>?,
+    val mediumNote: CharacterString?
+)
+
+data class MDMediumNameCode(
+    @JacksonXmlProperty(localName = "MD_MediumNameCode") val code: CodelistAttributes?
 )
