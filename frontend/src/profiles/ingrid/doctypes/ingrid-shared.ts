@@ -759,7 +759,9 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen (MB)"),
+          this.addInputInline("transferSize", "Datenvolumen (MB)", {
+            type: "number",
+          }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
       }),
