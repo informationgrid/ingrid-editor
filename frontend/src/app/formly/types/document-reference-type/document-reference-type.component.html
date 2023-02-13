@@ -23,7 +23,9 @@
 
 <ige-add-button
     [mat-menu-trigger-for]="menu"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">

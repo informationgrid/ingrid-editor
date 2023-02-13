@@ -32,8 +32,8 @@
 :host-context(.sticky-header) {
   position: fixed;
   top: 104px;
-  right: 0;
-  z-index: 1000;
+  right: 17px;
+  z-index: 2000;
 
   background-color: $ige-background;
   box-shadow: 0 2px 2px -2px #666666;
