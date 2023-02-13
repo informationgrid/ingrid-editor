@@ -300,7 +300,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
         ]),
         this.addReferencesForAddress(
-          "coupledResources",
+          "service.coupledResources",
           "uuid",
           "Darstellender Dienst",
           true,
@@ -352,7 +352,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
               },
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addInput("vertical", null, {
               fieldLabel: "Höhengenauigkeit (m)",

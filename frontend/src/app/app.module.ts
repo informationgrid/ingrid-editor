@@ -154,9 +154,9 @@ export function ConfigLoader(
       dialog
         .open(ConfirmDialogComponent, {
           data: {
-            title: "Fehler",
+            title: "Hinweis",
             message: `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`,
-            confirmButtonText: "Zum aktuellen Katalog",
+            buttons: [{ text: "Schließen", alignRight: true, emphasize: true }],
           } as ConfirmDialogData,
         })
         .afterClosed()

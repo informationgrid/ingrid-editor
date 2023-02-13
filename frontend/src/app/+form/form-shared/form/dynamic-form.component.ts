@@ -165,7 +165,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
           filter((item) => item.forAddress === this.address),
-          map((item) => item.uuid)
+          map((item) => item.uuid),
+          // when we revisit this page, make sure to update the form in our service
+          // so that other plugins access the current one
+          tap(() => this.formStateService.updateForm(this.form))
         )
       ),
     ])
@@ -402,6 +405,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
+
+        // make sure to reset the model before detecting changes, so that the old
+        // data is not included in the new form
+        // @ts-ignore
+        this.model = {};
+        this.formInfoModel = null;
+
         // do change detection to update formly component with new fields and form
         this.cdr.detectChanges();
       }
