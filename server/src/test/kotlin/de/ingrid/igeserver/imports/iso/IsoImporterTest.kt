@@ -35,6 +35,16 @@ class IsoImporterTest : AnnotationSpec() {
         
         every { codelistService.getCodeListEntryId("5100", "download", "ISO") } returns "3"
         every { codelistService.getCodeListEntryId("5153", "OGC:WFS 1.1.0", "ISO") } returns "1"
+        every { codelistService.getCodeListEntryId("5200", "infoStandingOrderService", "ISO") } returns "211"
+        every { codelistService.getCodeListEntryId("5200", "Unbekannt", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Wasser", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Adressen", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "inspireidentifiziert", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "opendata", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "National", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "HEAL", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Nieders. Abfallgesetz (NAbfG)", "ISO") } returns null
         every { codelistService.getCodeListEntryId("6010", "Es gelten keine Zugriffsbeschränkungen", "de") } returns "1"
         every { codelistService.getCodeListEntryId("6100", "Adressen", null) } returns "105"
         every { codelistService.getCodeListEntryId("6350", "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)", null) } returns "-1023933682"

@@ -39,25 +39,49 @@
     "priorityDatasets": @template.ingrid.partial.key-values(list = model.getPriorityDatasets()),
     "openDataCategories": @template.ingrid.partial.key-values(list = model.getOpenDataCategories()),
     "spatialScope": @template.ingrid.partial.key-value(item = model.getSpatialScope()),
-    "keywords": [],
-    "serviceCategories": @template.ingrid.partial.key-values(list = model.getServiceCategories()),
-    "serviceType": @template.ingrid.partial.key-value(item = model.getServiceType()),
-    "serviceVersion": @template.ingrid.partial.key-values(list = model.getServiceVersions()),
-    "coupledResources": [
-    @for(var resource : ForSupport.of(model.getCoupledResources()))
-        {
-            @if(resource.get().getUuid() != null)
-            "uuid": "${resource.get().getUuid()}",
-            @else
-            "url": "${resource.get().getUrl()}",
-            "title": "${resource.get().getTitle()}",
-            @endif
-            "isExternalRef": ${resource.get().isExternalRef()}
-        }@if (!resource.isLast()),@endif
-    @endfor
+    "keywords": [
+        @for(var keyword : ForSupport.of(model.getKeywords()))
+        "${keyword.get()}"@if (!keyword.isLast()),@endif
+        @endfor
     ],
-    "couplingType": @template.ingrid.partial.key-value(item = model.getCouplingType()),
-    "hasAccessConstraints": false,
+    "service": {
+        "classification": @template.ingrid.partial.key-values(list = model.getServiceCategories()),
+        "type": @template.ingrid.partial.key-value(item = model.getServiceType()),
+        "version": @template.ingrid.partial.key-values(list = model.getServiceVersions()),
+        "operations": [
+            @for(var operation : ForSupport.of(model.getOperations()))
+            {
+                "name": "${operation.get().getName()}",
+                "description": "${operation.get().getDescription()}",
+                "methodCall": "${operation.get().getMethodCall()}"
+            }@if (!operation.isLast()),@endif
+            @endfor
+        ],
+        "resolution": [
+            @for(var resolution : ForSupport.of(model.getResolutions()))
+            {
+                "denominator": ${resolution.get().getDenominator()},
+                "distanceMeter": ${resolution.get().getDistanceMeter()},
+                "distanceDPI": ${resolution.get().getDistanceDPI()}
+            }@if (!resolution.isLast()),@endif
+            @endfor
+        ],
+        "coupledResources": [
+        @for(var resource : ForSupport.of(model.getCoupledResources()))
+            {
+                @if(resource.get().getUuid() != null)
+                "uuid": "${resource.get().getUuid()}",
+                @else
+                "url": "${resource.get().getUrl()}",
+                "title": "${resource.get().getTitle()}",
+                @endif
+                "isExternalRef": ${resource.get().isExternalRef()}
+            }@if (!resource.isLast()),@endif
+        @endfor
+        ],
+        "couplingType": @template.ingrid.partial.key-value(item = model.getCouplingType()),
+        "hasAccessConstraints": false
+    },
     "spatial": {
         "references": [
         @for(var ref : ForSupport.of(model.getSpatialReferences()))

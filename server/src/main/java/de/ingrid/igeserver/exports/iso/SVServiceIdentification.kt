@@ -23,7 +23,7 @@ data class SVServiceIdentification(
     val extent: EXExtentOrig?,
     val coupledResource: CoupledResource?,
     val couplingType: CouplingType?,
-    val containsOperations: ContainsOperation?,
+    val containsOperations: List<ContainsOperation>?,
     val operatesOn: List<OperatesOn>?,
 )
 data class SpecificUsage(
@@ -59,8 +59,14 @@ data class ContainsOperation(
 
 data class SVOperationMetadata(
     val operationName: CharacterString?,
-    @JacksonXmlProperty(localName = "DCP") val dcp: CharacterString?,
-    val connectPoint: ConnectPoint?,
+    val operationDescription: CharacterString?,
+    @JacksonXmlProperty(localName = "DCP") val dcp: List<DCPList>,
+    val connectPoint: List<ConnectPoint>,
+)
+
+data class DCPList(
+    @JacksonXmlProperty(localName = "DCPList") val code: CodelistAttributes?
+
 )
 
 data class ConnectPoint(

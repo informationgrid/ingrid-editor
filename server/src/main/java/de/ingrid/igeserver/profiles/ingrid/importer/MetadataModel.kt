@@ -22,16 +22,15 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     val parentUuid = metadata.parentIdentifier?.value
 
     fun getDescription(): String {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value
-            ?.split(";")
-            ?.asSequence()
-            ?.filterNot { it.trim().startsWith("Maßstab:") }
-            ?.filterNot { it.trim().startsWith("Bodenauflösung:") }
-            ?.filterNot { it.trim().startsWith("Scanauflösung (DPI):") }
-            ?.filterNot { it.trim().startsWith("Systemumgebung:") }
-            ?.filterNot { it.trim().startsWith("Erläuterung zum Fachbezug:") }
-            ?.toList()
-            ?.joinToString(";") ?: ""
+        val description = metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return ""
+        
+        val beginOfExtra = listOf("Maßstab:", "Bodenauflösung:", "Scanauflösung (DPI):", "Systemumgebung:", "Erläuterung zum Fachbezug:")
+            .map { description.indexOf(it) }
+            .filter { it != -1 }
+            .sortedBy { it }
+            .getOrNull(0) ?: description.length
+        
+        return description.substring(0, beginOfExtra).trim()
     }
 
     fun getPointOfContacts(): List<PointOfContact> {
@@ -114,9 +113,34 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
         val fileName: String,
         val description: String? = null
     )
+    
+    fun getKeywords(): List<String> {
+        val ignoreThesaurus = listOf(
+            "German Environmental Classification - Topic, version 1.0",
+            "GEMET - INSPIRE themes, version 1.0", 
+            "Service Classification, version 1.0", 
+            "INSPIRE priority data set",
+            "Spatial scope",
+            "Further legal basis")
+        val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+            ?.asSequence()
+            ?.filter {
+                val thesaurusName = it.keywords?.thesaurusName?.citation?.title?.value
+                val type = it.keywords?.type?.codelist?.codeListValue
+                (thesaurusName == null && type != "theme") || (thesaurusName != null && !ignoreThesaurus.contains(thesaurusName))
+            }
+            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.filter { !ignoreKeywords.contains(it) }
+            ?.filter { codeListService.getCodeListEntryId("5200", it, "ISO") == null }
+            ?.map { it }
+            ?.toList() ?: emptyList()
+    }
 
     fun getServiceCategories(): List<KeyValue> {
-        return emptyList()
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "ISO") }
+            ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getServiceVersions(): List<KeyValue> {
@@ -124,7 +148,45 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             ?.map { codeListService.getCodeListEntryId("5153", it.value, "ISO") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
+    
+    fun getOperations(): List<Operation> {
+        return metadata.identificationInfo[0].serviceIdentificationInfo?.containsOperations
+            ?.map { Operation(
+                it.svOperationMetadata?.operationName?.value,
+                it.svOperationMetadata?.operationDescription?.value,
+                it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url)
+            } ?: emptyList()
+    }
 
+    fun getResolutions(): List<Resolution> {
+        val description = metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return emptyList()
+        var scale = listOf<String>()
+        var groundResolution = listOf<String>()
+        var scanResolution = listOf<String>()
+        
+        description.split(";").forEach {
+            if (it.indexOf("Maßstab:") != -1) {
+                scale = it.substring( it.indexOf("Maßstab:") + 8).split(",")
+            } else if(it.indexOf("Bodenauflösung:") != -1) {
+                groundResolution = it.substring( it.indexOf("Bodenauflösung:") + 15).split(",")
+            } else if (it.indexOf("Scanauflösung (DPI):") != -1) {
+                scanResolution = it.substring( it.indexOf("Scanauflösung (DPI):") + 20).split(",")
+            }
+        }
+        
+        val biggestListSize = listOf(scale, groundResolution, scanResolution)
+            .map { it.size }
+            .sortedDescending()
+            .getOrNull(0) ?: 0
+        
+        return (0 until biggestListSize).map { Resolution(
+            scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
+            groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()?.toInt(),
+            scanResolution.getOrNull(it)?.trim()?.toInt()
+        ) }
+        
+    }
+    
     fun getServiceType(): KeyValue {
         val value = metadata.identificationInfo[0].serviceIdentificationInfo?.serviceType?.value
         val id = codeListService.getCodeListEntryId("5100", value, "ISO")
@@ -401,6 +463,18 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     }
 
 }
+
+data class Operation(
+    val name: String?,
+    val description: String?,
+    val methodCall: String?,
+)
+
+data class Resolution(
+    val denominator: Number?,
+    val distanceMeter: Number?,
+    val distanceDPI: Number?,
+)
 
 data class DigitalTransferOption(
     val name: KeyValue?,
