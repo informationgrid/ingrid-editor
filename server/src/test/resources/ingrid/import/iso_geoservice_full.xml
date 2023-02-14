@@ -110,7 +110,7 @@
                             <gmd:address>
                                 <gmd:CI_Address>
                                     <gmd:deliveryPoint>
-                                        <gco:CharacterString>Postbox 14 25,D-31564 Nienburg (Weser)</gco:CharacterString>
+                                        <gco:CharacterString>Postbox 12345,D-31564 Nienburg (Weser)</gco:CharacterString>
                                     </gmd:deliveryPoint>
                                     <gmd:deliveryPoint>
                                         <gco:CharacterString>Brückenstraße 8</gco:CharacterString>

@@ -1,10 +1,7 @@
 package de.ingrid.igeserver.imports.iso
 
-import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.services.CodelistHandler
-import io.kotest.assertions.json.FieldComparison
-import io.kotest.assertions.json.compareJsonOptions
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every
@@ -32,9 +29,10 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("1320", "PNG", "de") } returns "26"
         every { codelistService.getCodeListEntryId("1350", "Nieders. Abfallgesetz (NAbfG)", "de") } returns "38"
         every { codelistService.getCodeListEntryId("2000", "order", "ISO") } returns "5304"
-        
+
         every { codelistService.getCodeListEntryId("2000", "information", "ISO") } returns "5302"
-        
+
+        every { codelistService.getCodeListEntryId("4300", "Herr", "de") } returns "2"
         every { codelistService.getCodeListEntryId("5100", "download", "ISO") } returns "3"
         every { codelistService.getCodeListEntryId("5153", "OGC:WFS 1.1.0", "ISO") } returns "1"
         every { codelistService.getCodeListEntryId("5200", "infoStandingOrderService", "ISO") } returns "211"
@@ -43,13 +41,25 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("5200", "Adressen", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "inspireidentifiziert", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "opendata", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)", "ISO") } returns null
+        every {
+            codelistService.getCodeListEntryId(
+                "5200",
+                "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)",
+                "ISO"
+            )
+        } returns null
         every { codelistService.getCodeListEntryId("5200", "National", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "HEAL", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "Nieders. Abfallgesetz (NAbfG)", "ISO") } returns null
         every { codelistService.getCodeListEntryId("6010", "Es gelten keine Zugriffsbeschränkungen", "de") } returns "1"
         every { codelistService.getCodeListEntryId("6100", "Adressen", null) } returns "105"
-        every { codelistService.getCodeListEntryId("6350", "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)", null) } returns "-1023933682"
+        every {
+            codelistService.getCodeListEntryId(
+                "6350",
+                "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)",
+                null
+            )
+        } returns "-1023933682"
         every { codelistService.getCodeListEntryId("6360", "National", null) } returns "-673152846"
         every { codelistService.getCodeListEntryIdMatchingData("6400", "HEAL") } returns "6"
         every { codelistService.getCodeListEntryId("8010", "Luftbilder", "de") } returns "6"
@@ -64,8 +74,8 @@ class IsoImporterTest : AnnotationSpec() {
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_geoservice_full-expected.json"),
-            compareJsonOptions { fieldComparison = FieldComparison.Lenient })
+            getFile("ingrid/import/iso_geoservice_full-expected.json")
+        )
     }
 
     private fun getFile(file: String) =

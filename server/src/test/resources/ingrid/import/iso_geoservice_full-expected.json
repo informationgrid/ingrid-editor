@@ -10,19 +10,80 @@
   "alternateTitle": "Short",
   "pointOfContact": [
     {
-      "ref": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+      "ref": {
+        "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+        "_type": "InGridOrganisationDoc",
+        "organization": "KST PortalU",
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "kst@portalu.de"
+          }
+        ]
+      },
       "type": {
         "key": "7"
       }
     },
     {
-      "ref": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+      "ref": {
+        "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+        "_type": "InGridPersonDoc",
+        "salutation": {
+          "key": "2"
+        },
+        "firstName": "Besitzervorname",
+        "lastName": "Besitzername",
+        "address": {
+          "city": "Nienburg (Weser)",
+          "po-box": "12345",
+          "street": "Brückenstraße 8",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "D-31582",
+          "zip-po-box": "D-31564",
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "besitzer@wemove.com"
+          }
+        ]
+      },
       "type": {
         "key": "1"
       }
     },
     {
-      "ref": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
+      "ref": {
+        "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
+        "_type": "InGridPersonDoc",
+        "salutation": {
+          "key": "2"
+        },
+        "firstName": "user",
+        "lastName": "test1",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ]
+      },
       "type": {
         "key": null,
         "value": "Meister"

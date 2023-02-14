@@ -1,11 +1,14 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exports.iso.Address
+import de.ingrid.igeserver.exports.iso.CIContact
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.exports.iso.RoleCode
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
+import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
 
 class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler) {
@@ -23,13 +26,19 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
 
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return ""
-        
-        val beginOfExtra = listOf("Maßstab:", "Bodenauflösung:", "Scanauflösung (DPI):", "Systemumgebung:", "Erläuterung zum Fachbezug:")
+
+        val beginOfExtra = listOf(
+            "Maßstab:",
+            "Bodenauflösung:",
+            "Scanauflösung (DPI):",
+            "Systemumgebung:",
+            "Erläuterung zum Fachbezug:"
+        )
             .map { description.indexOf(it) }
             .filter { it != -1 }
             .sortedBy { it }
             .getOrNull(0) ?: description.length
-        
+
         return description.substring(0, beginOfExtra).trim()
     }
 
@@ -37,11 +46,80 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].serviceIdentificationInfo?.pointOfContact ?: emptyList()
         return (mainContact + additionalContacts).map {
+            val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
+            val organization = it.responsibleParty?.organisationName?.value
+            val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
+            val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
             PointOfContact(
                 it.responsibleParty?.uuid!!,
-                mapRoleToContactType(it.responsibleParty?.role!!)
+                if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
+                communications,
+                mapRoleToContactType(it.responsibleParty?.role!!),
+                individualName == null,
+                organization,
+                individualName,
+                addressInfo
             )
         }
+    }
+
+    private fun getAddressInfo(address: Address?): AddressInfo? {
+        val city = address?.city?.value
+        val street = address?.deliveryPoint
+            ?.filter { it.value?.startsWith("Postbox ") != true }
+            ?.mapNotNull { it.value }
+            ?.joinToString(";")
+        val postbox = address?.deliveryPoint
+            ?.filter { it.value?.startsWith("Postbox ") == true }
+            ?.mapNotNull { it.value }
+            ?.getOrNull(0)
+            ?.split(",")
+            ?.getOrNull(0)
+            ?.substring(8)
+        val zipPostbox = address?.deliveryPoint
+            ?.filter { it.value?.startsWith("Postbox ") == true }
+            ?.mapNotNull { it.value }
+            ?.getOrNull(0)
+            ?.split(",")
+            ?.getOrNull(1)
+            ?.split(" ")
+            ?.getOrNull(0)
+        val zipCode = address?.postalCode?.value
+        val administrativeArea = address?.administrativeArea?.value
+            ?.let { codeListService.getCodeListEntryId("110", it, "de") }
+            ?.let { KeyValue(it) }
+        val countryCode = address?.country?.value
+            ?.let { UtilsCountryCodelist.getCodeFromShortcut3(it) }
+            ?.let { KeyValue(it.toString()) }
+
+        return if (listOfNotNull(city, postbox, street, countryCode, zipCode, zipPostbox, administrativeArea).isEmpty()) null
+        else {
+            AddressInfo(
+                city,
+                postbox,
+                street,
+                countryCode,
+                zipCode,
+                zipPostbox,
+                administrativeArea
+            )
+        }
+    }
+
+    private fun getCommunications(ciContact: CIContact?): List<Communication> {
+        val list = mutableListOf<Communication>()
+        ciContact?.address?.address?.electronicMailAddress?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("3"), it)) }
+        ciContact?.phone?.value?.let { list.add(Communication(KeyValue("1"), it)) }
+        return list
+    }
+
+    private fun extractPersonInfo(value: String?): PersonInfo? {
+        value?.split(",")?.let { nameSplit ->
+            val salutationKey = nameSplit[2].trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
+            val salutationKeyValue = if (salutationKey == null) null else KeyValue(salutationKey)
+            return PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), salutationKeyValue)
+        }
+        return null
     }
 
     private fun mapRoleToContactType(role: RoleCode): KeyValue {
@@ -114,22 +192,25 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
         val fileName: String,
         val description: String? = null
     )
-    
+
     fun getKeywords(): List<String> {
         val ignoreThesaurus = listOf(
             "German Environmental Classification - Topic, version 1.0",
-            "GEMET - INSPIRE themes, version 1.0", 
-            "Service Classification, version 1.0", 
+            "GEMET - INSPIRE themes, version 1.0",
+            "Service Classification, version 1.0",
             "INSPIRE priority data set",
             "Spatial scope",
-            "Further legal basis")
+            "Further legal basis"
+        )
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
             ?.asSequence()
             ?.filter {
                 val thesaurusName = it.keywords?.thesaurusName?.citation?.title?.value
                 val type = it.keywords?.type?.codelist?.codeListValue
-                (thesaurusName == null && type != "theme") || (thesaurusName != null && !ignoreThesaurus.contains(thesaurusName))
+                (thesaurusName == null && type != "theme") || (thesaurusName != null && !ignoreThesaurus.contains(
+                    thesaurusName
+                ))
             }
             ?.mapNotNull { it.keywords?.keyword?.value }
             ?.filter { !ignoreKeywords.contains(it) }
@@ -149,45 +230,51 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             ?.map { codeListService.getCodeListEntryId("5153", it.value, "ISO") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
-    
+
     fun getOperations(): List<Operation> {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.containsOperations
-            ?.map { Operation(
-                it.svOperationMetadata?.operationName?.value,
-                it.svOperationMetadata?.operationDescription?.value,
-                it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url)
+            ?.map {
+                Operation(
+                    it.svOperationMetadata?.operationName?.value,
+                    it.svOperationMetadata?.operationDescription?.value,
+                    it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url
+                )
             } ?: emptyList()
     }
 
     fun getResolutions(): List<Resolution> {
-        val description = metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return emptyList()
+        val description =
+            metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return emptyList()
         var scale = listOf<String>()
         var groundResolution = listOf<String>()
         var scanResolution = listOf<String>()
-        
+
         description.split(";").forEach {
             if (it.indexOf("Maßstab:") != -1) {
-                scale = it.substring( it.indexOf("Maßstab:") + 8).split(",")
-            } else if(it.indexOf("Bodenauflösung:") != -1) {
-                groundResolution = it.substring( it.indexOf("Bodenauflösung:") + 15).split(",")
+                scale = it.substring(it.indexOf("Maßstab:") + 8).split(",")
+            } else if (it.indexOf("Bodenauflösung:") != -1) {
+                groundResolution = it.substring(it.indexOf("Bodenauflösung:") + 15).split(",")
             } else if (it.indexOf("Scanauflösung (DPI):") != -1) {
-                scanResolution = it.substring( it.indexOf("Scanauflösung (DPI):") + 20).split(",")
+                scanResolution = it.substring(it.indexOf("Scanauflösung (DPI):") + 20).split(",")
             }
         }
-        
+
         val biggestListSize = listOf(scale, groundResolution, scanResolution)
             .map { it.size }
             .sortedDescending()
             .getOrNull(0) ?: 0
-        
-        return (0 until biggestListSize).map { Resolution(
-            scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
-            groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()?.toInt(),
-            scanResolution.getOrNull(it)?.trim()?.toInt()
-        ) }
-        
+
+        return (0 until biggestListSize).map {
+            Resolution(
+                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
+                groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
+                    ?.toInt(),
+                scanResolution.getOrNull(it)?.trim()?.toInt()
+            )
+        }
+
     }
-    
+
     fun getServiceType(): KeyValue {
         val value = metadata.identificationInfo[0].serviceIdentificationInfo?.serviceType?.value
         val id = codeListService.getCodeListEntryId("5100", value, "ISO")
@@ -231,7 +318,7 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                     bbox.northBoundLatitude?.value!!,
                     bbox.eastBoundLongitude?.value!!
                 )
-                
+
                 // TODO: handle bounding polygons
             }
         return references
@@ -345,22 +432,27 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             } ?: emptyList()
     }
 
-    fun getUseLimitation() : String {
+    fun getUseLimitation(): String {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
             ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value } ?: emptyList() }
             ?.joinToString(";") ?: ""
     }
-    
+
     fun getDistributionFormat(): List<DistributionFormat> {
         return metadata.distributionInfo?.mdDistribution?.distributionFormat
             ?.map { it.format }
-            ?.map { 
+            ?.map {
                 val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
                 val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
-                DistributionFormat(nameKeyValue, it?.version?.value, it?.fileDecompressionTechnique?.value, it?.specification?.value)
+                DistributionFormat(
+                    nameKeyValue,
+                    it?.version?.value,
+                    it?.fileDecompressionTechnique?.value,
+                    it?.specification?.value
+                )
             } ?: emptyList()
     }
-    
+
     fun getMaintenanceInterval(): MaintenanceInterval {
         val maintenanceInformation =
             metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
@@ -407,7 +499,7 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
 
     fun getReferences(): List<Reference> {
         return metadata.distributionInfo?.mdDistribution?.transferOptions
-            ?.flatMap {transferOption ->
+            ?.flatMap { transferOption ->
                 transferOption.mdDigitalTransferOptions?.onLine
                     ?.filter { it.ciOnlineResource?.applicationProfile?.value != "coupled" }
                     ?.mapNotNull { it.ciOnlineResource }
@@ -537,10 +629,37 @@ data class CoupledResourceModel(
 
 data class PointOfContact(
     val refUuid: String,
-    val type: KeyValue
+    val addressType: String,
+    val communications: List<Communication>,
+    val type: KeyValue,
+    val isOrganization: Boolean = true,
+    val organization: String? = null,
+    val personInfo: PersonInfo? = null,
+    val address: AddressInfo? = null
+)
+
+data class Communication(
+    val type: KeyValue,
+    val connection: String
 )
 
 data class KeyValue(
     val key: String? = null,
     val value: String? = null,
+)
+
+data class PersonInfo(
+    val firstName: String?,
+    val lastName: String?,
+    val salutation: KeyValue?,
+)
+
+data class AddressInfo(
+    val city: String?,
+    val pOBox: String?,
+    val street: String?,
+    val country: KeyValue?,
+    val zipCode: String?,
+    val zipPOBox: String?,
+    val administrativeArea: KeyValue?
 )
