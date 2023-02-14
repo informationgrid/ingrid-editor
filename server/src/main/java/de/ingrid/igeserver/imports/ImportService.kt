@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.imports
 
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_PARENT
@@ -51,7 +53,7 @@ class ImportService {
 
         val importedDoc = importer.run(fileContent)
 
-        val document = importedDoc[0]
+        val document = if (importedDoc is ArrayNode) importedDoc[0] else importedDoc
         handleOptions(document as ObjectNode, options)
 
         log.debug("Transformed document: $document")
@@ -60,15 +62,7 @@ class ImportService {
         val uuid = document.get(FIELD_UUID)?.asText()
         
         // check if document already exists
-        val wrapper = try {
-            if (uuid == null) {
-                null
-            } else {
-                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-            }
-        } catch (ex: NotFoundException) {
-            null
-        }
+        val wrapper = getWrapperForUuid(uuid, catalogId)
 
         val docObjForAddresses = documentService.convertToDocument(document)
         extractAndSaveReferences(principal, catalogId, docObjForAddresses, options)
@@ -94,6 +88,22 @@ class ImportService {
 
         // TODO: return created document instead of transformed JSON
         return Pair(createDocument, importer.typeInfo.id)
+    }
+
+    private fun getWrapperForUuid(
+        uuid: String?,
+        catalogId: String
+    ): DocumentWrapper? {
+        val wrapper = try {
+            if (uuid == null) {
+                null
+            } else {
+                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+            }
+        } catch (ex: NotFoundException) {
+            null
+        }
+        return wrapper
     }
 
     private fun handleOptions(
