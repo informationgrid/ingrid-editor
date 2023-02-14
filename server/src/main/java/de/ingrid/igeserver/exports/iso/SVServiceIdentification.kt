@@ -2,15 +2,13 @@ package de.ingrid.igeserver.exports.iso
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
-import de.ingrid.igeserver.exports.iso19115.Keyword
 
 data class SVServiceIdentification(
     val citation: Citation,
     val abstract: CharacterString,
     val purpose: CharacterString?,
     val status: Status?,
-    val pointOfContact: List<PointOfContact>?,
+    val pointOfContact: List<Contact>?,
     val resourceMaintenance: ResourceMaintenance?,
     val descriptiveKeywords: List<DescriptiveKeyword>?,
     val resourceSpecificUsage: List<SpecificUsage>?,
@@ -26,13 +24,14 @@ data class SVServiceIdentification(
     val containsOperations: List<ContainsOperation>?,
     val operatesOn: List<OperatesOn>?,
 )
+
 data class SpecificUsage(
     @JacksonXmlProperty(localName = "MD_Usage") val usage: MDUsage?
 )
 
 data class MDUsage(
     val specificUsage: CharacterString,
-    val userContactInfo: PointOfContact,
+    val userContactInfo: Contact,
 )
 
 data class Status(
@@ -53,6 +52,7 @@ data class OperatesOn(
     @JacksonXmlProperty(isAttribute = true) val uuidref: String?,
     @JacksonXmlProperty(isAttribute = true) val href: String?,
 )
+
 data class ContainsOperation(
     @JacksonXmlProperty(localName = "SV_OperationMetadata") val svOperationMetadata: SVOperationMetadata?
 )
@@ -72,6 +72,7 @@ data class DCPList(
 data class ConnectPoint(
     @JacksonXmlProperty(localName = "CI_OnlineResource") val ciOnlineResource: CIOnlineResource?
 )
+
 data class CouplingType(
     @JacksonXmlProperty(localName = "SV_CouplingType") val code: CodelistAttributes?
 )
@@ -84,11 +85,13 @@ data class SVCoupledResource(
     val operationName: String?,
     val identifier: CharacterString?,
 )
+
 @JacksonXmlRootElement(
     namespace = "http://www.isotc211.org/2005/gco",
 )
 class LocalName {
-    @JacksonXmlProperty(localName = "LocalName") val value: String? = null
+    @JacksonXmlProperty(localName = "LocalName")
+    val value: String? = null
 }
 
 data class ResourceConstraint(
@@ -104,8 +107,4 @@ data class MDLegalConstraint(
 
 data class MDRestrictionCode(
     @JacksonXmlProperty(localName = "MD_RestrictionCode") val code: CodelistAttributes?
-)
-
-data class PointOfContact(
-    @JacksonXmlProperty(localName = "CI_ResponsibleParty") val responsibleParty: ResponsibleParty?
 )

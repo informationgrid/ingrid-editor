@@ -34,7 +34,9 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     }
 
     fun getPointOfContacts(): List<PointOfContact> {
-        return metadata.contact.map {
+        val mainContact = metadata.contact
+        val additionalContacts = metadata.identificationInfo[0].serviceIdentificationInfo?.pointOfContact ?: emptyList()
+        return (mainContact + additionalContacts).map {
             PointOfContact(
                 it.responsibleParty?.uuid!!,
                 mapRoleToContactType(it.responsibleParty?.role!!)
@@ -45,9 +47,8 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     private fun mapRoleToContactType(role: RoleCode): KeyValue {
         val value = role.codelist?.codeListValue
         val entryId = codeListService.getCodeListEntryId("505", value, "ISO")
-            ?: throw ServerException.withReason("Could not map role of contact type: $value")
 
-        return KeyValue(entryId)
+        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
 
     fun getAdvProductGroups(): List<KeyValue> {

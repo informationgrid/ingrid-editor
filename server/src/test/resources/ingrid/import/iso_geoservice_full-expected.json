@@ -3,8 +3,6 @@
   "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
   "_parent": "my-specified-parent",
   "_type": "InGridGeoService",
-  "_createdBy": "???",
-  "_modifiedBy": "???",
   "isInspireIdentified": true,
   "isAdVCompatible": false,
   "isOpenData": true,
@@ -15,6 +13,19 @@
       "ref": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
       "type": {
         "key": "7"
+      }
+    },
+    {
+      "ref": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+      "type": {
+        "key": "1"
+      }
+    },
+    {
+      "ref": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
+      "type": {
+        "key": null,
+        "value": "Meister"
       }
     }
   ],
@@ -51,7 +62,7 @@
   "spatialScope": {
     "key": "-673152846"
   },
-  "keywords": ["Wasser"],
+  "keywords": ["Wasser", "Unbekannt"],
   "service": {
     "classification": [
       {
@@ -227,6 +238,14 @@
       "title": "Bestell Link",
       "url": "http://order-me.com",
       "explanation": "Meine Bestellungen"
+    },
+    {
+      "type": {
+        "key": "5302"
+      },
+      "title": "Dienst \"Coupling Service\" (GetCapabilities)",
+      "url": "https://my-getcapabilities",
+      "explanation": ""
     }
   ]
 }

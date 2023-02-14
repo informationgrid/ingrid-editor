@@ -7,8 +7,6 @@
     "_uuid": "${model.getUuid()}",
     "_parent": @if(model.getParentUuid() == null) null @else "${model.getParentUuid()}"@endif,
     "_type": "${model.getType()}",
-    "_createdBy": "",
-    "_modifiedBy": "",
     "isInspireIdentified": ${model.isInspireIdentified()},
     "isAdVCompatible": ${model.isAdVCompatible()},
     "isOpenData": ${model.isOpenData()},

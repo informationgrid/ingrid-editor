@@ -22,7 +22,9 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("101", "DE_AMST / NH", "de") } returns "900002"
         every { codelistService.getCodeListEntryId("102", "Metre", "ISO") } returns "9001"
         every { codelistService.getCodeListEntryId("502", "creation", "ISO") } returns "1"
+        every { codelistService.getCodeListEntryId("505", "resourceProvider", "ISO") } returns "1"
         every { codelistService.getCodeListEntryId("505", "pointOfContact", "ISO") } returns "7"
+        every { codelistService.getCodeListEntryId("505", "Meister", "ISO") } returns null
         every { codelistService.getCodeListEntryId("518", "continual", "ISO") } returns "1"
         every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "ISO") } returns "4"
         every { codelistService.getCodeListEntryId("523", "underDevelopment", "ISO") } returns "7"

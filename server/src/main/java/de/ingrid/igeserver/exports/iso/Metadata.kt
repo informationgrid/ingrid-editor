@@ -142,7 +142,7 @@ data class Distributor(
 )
 
 data class MDDistributor(
-    val distributorContact: PointOfContact,
+    val distributorContact: Contact,
     val distributionOrderProcess: List<DistributionOrderProcess>?,
     val distributorFormat: List<CharacterString>?,
     val distributorTransferOptions: List<CharacterString>?,
