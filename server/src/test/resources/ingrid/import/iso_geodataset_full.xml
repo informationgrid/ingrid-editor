@@ -104,7 +104,7 @@
             <gmd:referenceSystemIdentifier>
                 <gmd:RS_Identifier>
                     <gmd:code>
-                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/25832">EPSG 25832: ETRS89 / UTM Zone 32N</gmx:Anchor>
+                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/3068">EPSG 3068: DHDN / Soldner Berlin</gmx:Anchor>
                     </gmd:code>
                 </gmd:RS_Identifier>
             </gmd:referenceSystemIdentifier>
@@ -124,7 +124,7 @@
                         <gco:CharacterString>Festpunkte</gco:CharacterString>
                     </gmd:alternateTitle>
                     <gmd:alternateTitle>
-                        <gco:CharacterString>BN 18 Ä Textänderungsverfahren</gco:CharacterString>
+                        <gco:CharacterString>Short</gco:CharacterString>
                     </gmd:alternateTitle>
                     <gmd:date>
                         <gmd:CI_Date>
@@ -132,7 +132,7 @@
                                 <gco:DateTime>2016-03-01T00:00:00.000+01:00</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
-                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
@@ -172,7 +172,7 @@
                 <gco:CharacterString>Herstellung</gco:CharacterString>
             </gmd:purpose>
             <gmd:status>
-                <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="required"/>
+                <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="underDevelopment"/>
             </gmd:status>
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty uuid="DA64401A-2AFC-458D-A8AF-58D0A3C35AA9">
@@ -216,7 +216,7 @@
                         <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="continual"/>
                     </gmd:maintenanceAndUpdateFrequency>
                     <gmd:userDefinedMaintenanceFrequency>
-                        <gts:TM_PeriodDuration>P4M</gts:TM_PeriodDuration>
+                        <gts:TM_PeriodDuration>PT6H</gts:TM_PeriodDuration>
                     </gmd:userDefinedMaintenanceFrequency>
                     <gmd:updateScope>
                         <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
@@ -239,7 +239,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>Bodennutzung</gco:CharacterString>
+                        <gco:CharacterString>Adressen</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:type>
                         <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
@@ -266,13 +266,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>Geoinformation</gco:CharacterString>
-                    </gmd:keyword>
-                    <gmd:keyword>
-                        <gco:CharacterString>Bebauungsplan</gco:CharacterString>
-                    </gmd:keyword>
-                    <gmd:keyword>
-                        <gco:CharacterString>Bauleitplanung</gco:CharacterString>
+                        <gco:CharacterString>Wasser</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:type>
                         <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
@@ -299,7 +293,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>Raumbezogene Information</gco:CharacterString>
+                        <gco:CharacterString>Unbekannt</gco:CharacterString>
                     </gmd:keyword>
                 </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
@@ -327,7 +321,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset/Emissions-dir-2010-75">Emissionen (Industrieemissionsrichtlinie)</gmx:Anchor>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset/FacilitiesForManagingExtractiveWaste-dir-2006-21">Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)</gmx:Anchor>
                     </gmd:keyword>
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
@@ -351,7 +345,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope/regional">Regional</gmx:Anchor>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope/regional">National</gmx:Anchor>
                     </gmd:keyword>
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
@@ -375,7 +369,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>INTR</gco:CharacterString>
+                        <gco:CharacterString>HEAL</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:type>
                         <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
@@ -385,7 +379,7 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>Baugesetzbuch (BauGB)</gco:CharacterString>
+                        <gco:CharacterString>Nieders. Abfallgesetz (NAbfG)</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
@@ -427,13 +421,13 @@
                         <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
                     </gmd:useConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>GNU General Public License version 3.0 (GPLv3)</gco:CharacterString>
+                        <gco:CharacterString>BSD Lizenz</gco:CharacterString>
                     </gmd:otherConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>Quellenvermerk: Meine Quelle</gco:CharacterString>
+                        <gco:CharacterString>Quellenvermerk: Quelle 2</gco:CharacterString>
                     </gmd:otherConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>{"id":"gpl/3.0","name":"GNU General Public License version 3.0 (GPLv3)","url":"https://www.opensource.org/licenses/gpl-3.0.html","quelle":"Meine Quelle"}</gco:CharacterString>
+                        <gco:CharacterString>{"id":"bsdlicense","name":"BSD Lizenz","url":"http://www.opensource.org/licenses/bsd-license.php","quelle":"Quelle 2"}</gco:CharacterString>
                     </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
@@ -595,7 +589,7 @@
                                         <gml:VerticalCS gml:id="verticalCS_ID_c074f920-947d-4a8f-9ad5-04e31b4fe177">
                                             <gml:identifier codeSpace=""/>
                                             <gml:axis>
-                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_a41e9776-03cc-4966-9df6-ff70efe31b12" uom="Foot">
+                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_a41e9776-03cc-4966-9df6-ff70efe31b12" uom="Metre">
                                                     <gml:identifier codeSpace=""/>
                                                     <gml:axisAbbrev/>
                                                     <gml:axisDirection codeSpace=""/>
@@ -606,7 +600,7 @@
                                     <gml:verticalDatum>
                                         <gml:VerticalDatum gml:id="verticalDatum_ID_e7ff3b38-9697-431e-bc1b-cf95072d61e2">
                                             <gml:identifier codeSpace=""/>
-                                            <gml:name>Höhe über GRS80 Ellipsoid</gml:name>
+                                            <gml:name>DE_AMST / NH</gml:name>
                                             <gml:scope/>
                                         </gml:VerticalDatum>
                                     </gml:verticalDatum>
@@ -656,7 +650,7 @@
             <gmd:distributionFormat>
                 <gmd:MD_Format>
                     <gmd:name>
-                        <gco:CharacterString>Geographic Markup Language (GML)</gco:CharacterString>
+                        <gco:CharacterString>PNG</gco:CharacterString>
                     </gmd:name>
                     <gmd:version gco:nilReason="unknown"/>
                 </gmd:MD_Format>
@@ -664,7 +658,7 @@
             <gmd:distributionFormat>
                 <gmd:MD_Format>
                     <gmd:name>
-                        <gco:CharacterString>XPlanGML</gco:CharacterString>
+                        <gco:CharacterString>PNG</gco:CharacterString>
                     </gmd:name>
                     <gmd:version>
                         <gco:CharacterString>4.1</gco:CharacterString>
@@ -680,7 +674,7 @@
             <gmd:distributionFormat>
                 <gmd:MD_Format>
                     <gmd:name>
-                        <gco:CharacterString>XPlanGML</gco:CharacterString>
+                        <gco:CharacterString>PNG</gco:CharacterString>
                     </gmd:name>
                     <gmd:version>
                         <gco:CharacterString>3.0</gco:CharacterString>
@@ -769,7 +763,7 @@
                     <gmd:offLine>
                         <gmd:MD_Medium>
                             <gmd:name>
-                                <gmd:MD_MediumNameCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MediumNameCode" codeListValue="cdRom"/>
+                                <gmd:MD_MediumNameCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MediumNameCode" codeListValue="3halfInchFloppy"/>
                             </gmd:name>
                             <gmd:mediumNote>
                                 <gco:CharacterString>Bunker</gco:CharacterString>
@@ -921,7 +915,7 @@
                             <gmd:specification>
                                 <gmd:CI_Citation>
                                     <gmd:title>
-                                        <gco:CharacterString>INSPIRE Richtlinie</gco:CharacterString>
+                                        <gco:CharacterString>Technical Guidance for the implementation of INSPIRE Download Services</gco:CharacterString>
                                     </gmd:title>
                                     <gmd:date>
                                         <gmd:CI_Date>
@@ -952,7 +946,7 @@
                             <gmd:specification>
                                 <gmd:CI_Citation>
                                     <gmd:title>
-                                        <gco:CharacterString>VERORDNUNG (EG) Nr. 1089/2010 DER KOMMISSION vom 23. November 2010 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Interoperabilität von Geodatensätzen und -diensten</gco:CharacterString>
+                                        <gco:CharacterString>VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste</gco:CharacterString>
                                     </gmd:title>
                                     <gmd:date>
                                         <gmd:CI_Date>

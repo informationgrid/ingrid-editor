@@ -2,6 +2,7 @@ package de.ingrid.igeserver.exports.iso
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
 data class EXExtentOrig(
     @JacksonXmlProperty(localName = "EX_Extent") val extend: EXExtent?
@@ -85,9 +86,18 @@ data class TimeInstant(val timePosition: String)
 
 data class TimePeriod(
     @JacksonXmlProperty(isAttribute = true) val id: String?,
-    val beginPosition: String?,
-    val endPosition: String?,
+//    val beginPosition: String?,
+    val beginPosition: TemporalPosition?,
+//    val endPosition: String?,
+    val endPosition: TemporalPosition?,
 )
+
+class TemporalPosition {
+    @JacksonXmlProperty(isAttribute = true) val indeterminatePosition: String? = null
+//    val value: String? = null
+
+    @JacksonXmlText val value: String? = null
+}
 
 
 @JacksonXmlRootElement(
@@ -107,14 +117,14 @@ class GeographicBoundingBox(
 
 data class GeographicDescription(
     val extentTypeCode: BoolType?,
-    val geographicIdentifier: GeographicIdentifier?,
+    val geographicIdentifier: Identifier?,
 )
 
 data class BoolType(
     @JacksonXmlProperty(localName = "Boolean") val value: String?
 )
 
-data class GeographicIdentifier(
+data class Identifier(
     @JacksonXmlProperty(localName = "MD_Identifier") val mdIdentifier: MDIdentifier?
 )
 

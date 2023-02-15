@@ -73,13 +73,24 @@ class IsoImporterTest : AnnotationSpec() {
     }
 
     @Test
-    fun testRun() {
+    fun importGeoservice() {
         val isoImporter = ISOImport(codelistService)
         val result = isoImporter.run(getFile("ingrid/import/iso_geoservice_full.xml"))
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geoservice_full-expected.json")
+        )
+    }
+
+    @Test
+    fun importGeodataset() {
+        val isoImporter = ISOImport(codelistService)
+        val result = isoImporter.run(getFile("ingrid/import/iso_geodataset_full.xml"))
+        println(result.toString())
+
+        result.toPrettyString().shouldEqualJson(
+            getFile("ingrid/import/iso_geodataset_full-expected.json")
         )
     }
 

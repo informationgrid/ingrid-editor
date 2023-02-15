@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
@@ -46,12 +47,9 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
+        val output = createISO(finalObject)
 
-        val output: TemplateOutput = JsonStringOutput()
-        val model = GeoserviceMapper(finalObject, codelistService)
-        templateEngine.render("ingrid/geoservice.jte", model, output)
-
-        return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
+        return jacksonObjectMapper().readValue(output, JsonNode::class.java)
 
 
         // input is XML
@@ -60,6 +58,25 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 //        val reader = StringReader(data as String)
 //        val md = unmarshaller.unmarshal(reader) as Metadata
 //        return mapToJson(md)
+    }
+    
+    fun createISO(data: Metadata): String {
+        val output: TemplateOutput = JsonStringOutput()
+
+        when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+            "service" -> {
+                val model = GeoserviceMapper(data, codelistService)
+                templateEngine.render("ingrid/geoservice.jte", model, output)
+            }
+
+            "dataset" -> {
+                val model = GeodatasetMapper(data, codelistService)
+                templateEngine.render("ingrid/geodataset.jte", model, output)
+            }
+
+            else -> throw ServerException.withReason("Not supported hierarchy level for import: $hierarchyLevel")
+        }
+        return output.toString()
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

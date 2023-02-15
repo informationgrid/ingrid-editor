@@ -3,7 +3,7 @@ package de.ingrid.igeserver.exports.iso
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
-data class SVServiceIdentification(
+open class SVServiceIdentification(
     val citation: Citation,
     val abstract: CharacterString,
     val purpose: CharacterString?,

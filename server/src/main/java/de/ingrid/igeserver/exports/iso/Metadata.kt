@@ -3,8 +3,6 @@ package de.ingrid.igeserver.exports.iso
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
-import de.ingrid.igeserver.profiles.ingrid.importer.ConformanceResult
-import javax.xml.bind.annotation.*
 
 //@XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
 //@XmlAccessorType(XmlAccessType.FIELD)
@@ -204,10 +202,24 @@ data class DQDataQuality(
 )
 
 data class DQReport(
-    @JacksonXmlProperty(localName = "DQ_DomainConsistency") val dqDomainConsistency: DQDomainConsistency
+    @JacksonXmlProperty(localName = "DQ_TemporalValidity") val dqTemporalValidity: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_TemporalConsistency") val dqTemporalConsistency: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_AccuracyOfATimeMeasurement") val dqAccuracyOfATimeMeasurement: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_QuantitativeAttributeAccuracy") val dqQuantitativeAttributeAccuracy: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_NonQuantitativeAttributeAccuracy") val dqNonQuantitativeAttributeAccuracy: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_ThematicClassificationCorrectness") val dqThematicClassificationCorrectness: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_RelativeInternalPositionalAccuracy") val dqRelativeInternalPositionalAccuracy: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_GriddedDataPositionalAccuracy") val dqGriddedDataPositionalAccuracy: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_AbsoluteExternalPositionalAccuracy") val dqAbsoluteExternalPositionalAccuracy: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_TopologicalConsistency") val dqTopologicalConsistency: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_FormatConsistency") val dqFormatConsistency: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_DomainConsistency") val dqDomainConsistency: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_ConceptualConsistency") val dqConceptualConsistency: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_CompletenessOmission") val dqCompletenessOmission: DQReportElement?,
+    @JacksonXmlProperty(localName = "DQ_CompletenessCommission") val dqCompletenessCommission: DQReportElement?,
 )
 
-data class DQDomainConsistency(
+data class DQReportElement(
     val nameOfMeasure: List<CharacterString>?,
     val measureIdentification: CharacterString?,
     val measureDescription: CharacterString?,
@@ -215,11 +227,23 @@ data class DQDomainConsistency(
     val evaluationMethodDescription: CharacterString?,
     val evaluationProcedure: CharacterString?,
     val dateTime: List<CharacterString>?,
-    val result: DQResult // [1..2]
+    val result: DQResult? // [1..2]
 )
 
 data class DQResult(
-    @JacksonXmlProperty(localName = "DQ_ConformanceResult") val dqConformanceResult: DQConformanceResult
+    @JacksonXmlProperty(localName = "DQ_ConformanceResult") val dqConformanceResult: DQConformanceResult?,
+    @JacksonXmlProperty(localName = "DQ_QuantitativeResult") val dqQuantitativeResult: DQQuantitativeResult?
+)
+
+data class DQQuantitativeResult(
+    val valueType: ValueType?,
+    val valueUnit: CharacterString,
+    val errorStatistic: CharacterString?,
+    val value: List<CharacterString>
+)
+
+data class ValueType(
+    @JacksonXmlProperty(localName = "RecordType") val recordType: String?
 )
 
 data class DQConformanceResult(

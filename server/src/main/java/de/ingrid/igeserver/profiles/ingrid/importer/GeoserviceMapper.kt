@@ -6,19 +6,19 @@ import de.ingrid.igeserver.services.CodelistHandler
 class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : GeneralMapper(metadata, codeListService) {
 
     fun getServiceCategories(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "ISO") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getServiceVersions(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.serviceTypeVersion
+        return metadata.identificationInfo[0].identificationInfo?.serviceTypeVersion
             ?.map { codeListService.getCodeListEntryId("5153", it.value, "ISO") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getOperations(): List<Operation> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.containsOperations
+        return metadata.identificationInfo[0].identificationInfo?.containsOperations
             ?.map {
                 Operation(
                     it.svOperationMetadata?.operationName?.value,
@@ -30,7 +30,7 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
 
     fun getResolutions(): List<Resolution> {
         val description =
-            metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return emptyList()
+            metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return emptyList()
         var scale = listOf<String>()
         var groundResolution = listOf<String>()
         var scanResolution = listOf<String>()
@@ -62,18 +62,18 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
     }
 
     fun getServiceType(): KeyValue {
-        val value = metadata.identificationInfo[0].serviceIdentificationInfo?.serviceType?.value
+        val value = metadata.identificationInfo[0].identificationInfo?.serviceType?.value
         val id = codeListService.getCodeListEntryId("5100", value, "ISO")
         return KeyValue(id)
     }
 
     fun getCouplingType(): KeyValue {
-        val id = metadata.identificationInfo[0].serviceIdentificationInfo?.couplingType?.code?.codeListValue
+        val id = metadata.identificationInfo[0].identificationInfo?.couplingType?.code?.codeListValue
         return KeyValue(id)
     }
 
     fun getCoupledResources(): List<CoupledResourceModel> {
-        val internalLinks = metadata.identificationInfo[0].serviceIdentificationInfo?.operatesOn
+        val internalLinks = metadata.identificationInfo[0].identificationInfo?.operatesOn
             ?.map { CoupledResourceModel(it.uuidref, null, null, false) } ?: emptyList()
 
         val externalLinks = metadata.distributionInfo?.mdDistribution?.transferOptions

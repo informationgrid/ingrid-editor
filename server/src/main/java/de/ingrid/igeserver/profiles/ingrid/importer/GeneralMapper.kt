@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.Address
-import de.ingrid.igeserver.exports.iso.CIContact
-import de.ingrid.igeserver.exports.iso.Metadata
-import de.ingrid.igeserver.exports.iso.RoleCode
+import de.ingrid.igeserver.exports.iso.*
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
@@ -21,14 +18,14 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     val uuid = metadata.fileIdentifier?.value
     val type =
         if (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue == "service") "InGridGeoService" else "InGridGeoDataset"
-    val title = metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.title?.value
+    val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
     fun getDescription(): String {
-        val description = metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return ""
+        val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
 
         val beginOfExtra = listOf(
             "Maßstab:",
@@ -47,7 +44,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
-        val additionalContacts = metadata.identificationInfo[0].serviceIdentificationInfo?.pointOfContact ?: emptyList()
+        val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
         return (mainContact + additionalContacts).map {
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
             val organization = it.responsibleParty?.organisationName?.value
@@ -133,7 +130,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getAdvProductGroups(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.alternateTitle
+        return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
             ?.map { it.value }
             ?.joinToString(";")
             ?.split(";")
@@ -142,7 +139,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getAlternateTitle(): String {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.alternateTitle
+        return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
             ?.map { it.value }
             ?.joinToString(";")
             ?.split(";")
@@ -151,21 +148,21 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getThemes(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
             ?.map { codeListService.getCodeListEntryId("6100", it.keywords?.keyword?.value, null) }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getPriorityDatasets(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "INSPIRE priority data set" }
             ?.map { codeListService.getCodeListEntryId("6350", it.keywords?.keyword?.value, null) }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getOpenDataCategories(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
             ?.filter { it.keywords?.thesaurusName == null }
             ?.filter { it.keywords?.type?.codelist?.codeListValue == "theme" }
@@ -176,7 +173,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getSpatialScope(): KeyValue? {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
             ?.mapNotNull { it.keywords?.keyword?.value }
             ?.map { codeListService.getCodeListEntryId("6360", it, null) }
@@ -185,7 +182,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getGraphicOverviews(): List<PreviewGraphic> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.graphicOverview
+        return metadata.identificationInfo[0].identificationInfo?.graphicOverview
             ?.map {
                 PreviewGraphic(it.mdBrowseGraphic?.fileName?.value!!, it.mdBrowseGraphic.fileDescription?.value)
             } ?: emptyList()
@@ -206,7 +203,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             "Further legal basis"
         )
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
             ?.filter {
                 val thesaurusName = it.keywords?.thesaurusName?.citation?.title?.value
@@ -232,7 +229,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getSpatialReferences(): List<SpatialReference> {
         val references = mutableListOf<SpatialReference>()
 
-        metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.geographicElement
+        metadata.identificationInfo[0].identificationInfo?.extent?.extend?.geographicElement
             ?.forEach {
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
@@ -261,16 +258,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     val spatialDescription =
-        metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.description?.value ?: ""
+        metadata.identificationInfo[0].identificationInfo?.extent?.extend?.description?.value ?: ""
 
     fun getRegionKey(): String {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.geographicElement
+        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.geographicElement
             ?.mapNotNull { it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code?.value }
             ?.getOrNull(0) ?: ""
     }
 
     fun getVerticalExtent(): VerticalExtentModel? {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.verticalElement
+        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.verticalElement
             ?.mapNotNull {
                 val uom =
                     it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
@@ -299,7 +296,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getLegalDescriptions(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Further legal basis" }
             ?.mapNotNull { it.keywords?.keyword?.value }
             ?.map {
@@ -308,13 +305,13 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             } ?: emptyList()
     }
 
-    fun getPurpose() = metadata.identificationInfo[0].serviceIdentificationInfo?.purpose?.value ?: ""
-    fun getSpecificUsage() = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceSpecificUsage
+    fun getPurpose() = metadata.identificationInfo[0].identificationInfo?.purpose?.value ?: ""
+    fun getSpecificUsage() = metadata.identificationInfo[0].identificationInfo?.resourceSpecificUsage
         ?.mapNotNull { it.usage?.specificUsage?.value }
         ?.joinToString(";")
 
     fun getTemporalEvents(): List<Event> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.date
+        return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
                 val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "ISO")
                 Event(KeyValue(typeKey), it?.date?.date?.dateTime ?: "")
@@ -322,23 +319,55 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getTimeRelatedInfo(): TimeInfo? {
-        val status = metadata.identificationInfo[0].serviceIdentificationInfo?.status?.code?.codeListValue
+        val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
         val statusKey = codeListService.getCodeListEntryId("523", status, "ISO")
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.extent?.extend?.temporalElement
+        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.temporalElement
             ?.mapNotNull {
 
                 val instant = it.extent?.extent?.timeInstant?.timePosition
                 if (instant != null) {
                     return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
                 }
+                
+                val period = it.extent?.extent?.timePeriod
+                if (period != null) {
+                    val type = determineTemporalType(period) 
+                    val typeSince = determineTemporalTypeSince(period) 
+                    return TimeInfo(
+                        period.beginPosition?.value!!, 
+                        type, 
+                        KeyValue(statusKey),
+                        period.endPosition?.value,
+                        typeSince)
+                }
+                
                 log.warn("Do not support time info, returning null")
                 return null
             }
             ?.getOrNull(0)
     }
 
+    private fun determineTemporalType(period: TimePeriod): KeyValue {
+        if (period.beginPosition?.value != null && period.endPosition?.value != null) {
+            return KeyValue("1") // von
+        }
+        
+//        if (period.endPosition?.indeterminatePosition == "now")
+        
+        return KeyValue("?")
+    }
+    
+    private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
+        if (period.endPosition?.value != null) return KeyValue("exactDate")
+        if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime")
+        if (period.endPosition?.indeterminatePosition != "now") return KeyValue("unknown")
+        
+        // bis: Zeitpunkt des Abrufs -> now
+        return null
+    }
+
     fun getAccessConstraints(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+        return metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.filter { it.legalConstraint?.accessConstraints != null }
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
@@ -354,7 +383,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getUseLimitation(): String {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+        return metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value } ?: emptyList() }
             ?.joinToString(";") ?: ""
     }
@@ -376,7 +405,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     fun getMaintenanceInterval(): MaintenanceInterval {
         val maintenanceInformation =
-            metadata.identificationInfo[0].serviceIdentificationInfo?.resourceMaintenance?.maintenanceInformation
+            metadata.identificationInfo[0].identificationInfo?.resourceMaintenance?.maintenanceInformation
         val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
         val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "ISO")
         val intervalEncoded = maintenanceInformation?.userDefinedMaintenanceFrequency?.periodDuration
@@ -437,17 +466,18 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getConformanceResult(): List<ConformanceResult> {
         return metadata.dataQualityInfo
             ?.filter { it.dqDataQuality?.report != null }
-            ?.flatMap { it.dqDataQuality?.report?.map { report -> report.dqDomainConsistency.result.dqConformanceResult } ?: emptyList() }
-            ?.map {
-                val pass = determineConformanceResultPass(it.pass.boolean?.value)
-                val specification = it.specification.citation?.title?.value
+            ?.flatMap { it.dqDataQuality?.report?.map { report -> report.dqDomainConsistency?.result?.dqConformanceResult } ?: emptyList() }
+            ?.mapNotNull {
+                val pass = determineConformanceResultPass(it?.pass?.boolean?.value)
+                val specification = it?.specification?.citation?.title?.value ?: return@mapNotNull null
+
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "ISO")
                 val specificationKeyValue = if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
-                val publicationDate = it.specification.citation?.date?.getOrNull(0)?.date?.date?.date
+                val publicationDate = it?.specification?.citation?.date?.getOrNull(0)?.date?.date?.date
                 ConformanceResult(
                     pass,
                     specificationEntryId != null, 
-                    it.explanation.value,
+                    it?.explanation?.value,
                     specificationKeyValue,
                     publicationDate
                 )
@@ -463,7 +493,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getUseConstraints(): List<UseConstraint> {
-        val otherConstraints = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+        val otherConstraints = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.map { it.legalConstraint }
             ?.filter { it?.useConstraints != null }
             ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() } ?: emptyList()
@@ -524,12 +554,12 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     private fun isJsonString(useConstraint: String?): Boolean {
         if (useConstraint == null) return false
-        return useConstraint.startsWith("{") && useConstraint.endsWith("}");
+        return useConstraint.startsWith("{") && useConstraint.endsWith("}")
     }
 
 
     private fun containsKeyword(value: String): Boolean {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords?.any {
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords?.any {
             it.keywords?.keyword?.value == value
         } ?: false
     }
@@ -624,7 +654,7 @@ data class MaintenanceInterval(
     val description: String?
 )
 
-data class TimeInfo(val date: String, val type: KeyValue, val status: KeyValue)
+data class TimeInfo(val date: String, val type: KeyValue, val status: KeyValue, val untilDate: String? = null, val dateTypeSince: KeyValue? = null)
 
 data class Event(val type: KeyValue, val date: String)
 
