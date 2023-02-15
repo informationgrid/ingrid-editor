@@ -16,7 +16,7 @@ class IngridIndexExporter @Autowired constructor(val idfExporter: IngridIDFExpor
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexIngridIDF",
+        "indexInGridIDF",
         "Ingrid IDF (Elasticsearch)",
         "Export von Ingrid Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",

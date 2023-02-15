@@ -36,7 +36,6 @@ class IngridLuceneExporter @Autowired constructor(
         val mapper = ObjectMapper().registerKotlinModule()
         val modelTransformer =
             IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalog.identifier, codelistHandler, config, catalogService)
-        modelTransformer.initialize()
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer,

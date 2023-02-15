@@ -10,7 +10,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -25,19 +24,6 @@ class IngridModelTransformer constructor(
     val config: Config,
     val catalogService: CatalogService,
 ) {
-
-
-    companion object {
-        val codelistHandler: CodelistHandler? by lazy {
-            SpringContext.getBean(CodelistHandler::class.java)
-        }
-        val config: Config? by lazy {
-            SpringContext.getBean(Config::class.java)
-        }
-        val catalogService: CatalogService? by lazy {
-            SpringContext.getBean(CatalogService::class.java)
-        }
-    }
 
 
     val data = model.data
@@ -87,11 +73,12 @@ class IngridModelTransformer constructor(
         return spatialReferences.filter {
             it.value != null
         }.map {
+            // must be escaped first, because we don't want to escape the whole array-string
             JsonEscape.escapeJson(it.title)
         }.joinToString("\",\"", "[\"", "\"]")
     }
 
-    lateinit var catalog: Catalog
+    var catalog: Catalog
 
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
@@ -110,7 +97,7 @@ class IngridModelTransformer constructor(
 
     // Always use UTF-8 (see INGRID-2340)
     val characterSetCode = getCodelistValue("510", data.metadata.characterSet) ?: "utf8"
-    val spatialSystems = data.spatial?.spatialSystems?.map {
+    val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem = getCodelistValue("100", it)
         val epsgCode =
             if (referenceSystem?.startsWith("EPSG") == true)
@@ -119,7 +106,7 @@ class IngridModelTransformer constructor(
         KeyValueModel(epsgCode, referenceSystem)
     }
     val description = data.description
-    lateinit var datasetURL: String
+    var datasetURL: String
     val advProductGroups = data.advProductGroups?.map { getCodelistValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
     val dateEvents = data.temporal.events ?: emptyList()
@@ -215,7 +202,7 @@ class IngridModelTransformer constructor(
     }
 
     fun getCodelistValue(codelistId: String, entry: KeyValueModel?, field: String): String? =
-        if (entry?.key != null) codelistHandler?.getCodelistValue(codelistId, entry.key, field) else entry?.value
+        if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) else entry?.value
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -245,10 +232,7 @@ class IngridModelTransformer constructor(
 
     init {
         pointOfContact = determinePointOfContact()
-    }
-
-    fun initialize() {
-        this.catalog = catalogService!!.getCatalogById(catalogIdentifier)
+        this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.datasetURL =
             (catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/${catalogIdentifier}")
                 .suffixIfNot("/") + model.uuid

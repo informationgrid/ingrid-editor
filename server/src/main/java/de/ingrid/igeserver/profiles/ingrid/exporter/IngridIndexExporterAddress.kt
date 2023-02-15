@@ -25,7 +25,7 @@ class IngridIndexExporterAddress @Autowired constructor(
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,
-        "indexIngridIDF",
+        "indexInGridIDF",
         "Ingrid IDF Address (Elasticsearch)",
         "Export von Ingrid Adressen ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
