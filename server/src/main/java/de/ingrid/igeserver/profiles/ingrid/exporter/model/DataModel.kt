@@ -27,11 +27,19 @@ data class DataModel(
     val isInspireRelevant: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val temporal: Temporal,
+    val resource: Resource?,
+    val maintenanceInformation: MaintenanceInformation?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Dataset(
     val languages: List<String>?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Resource(
+    val purpose: String?,
+    val specificUsage: String?,
 )
 
 
@@ -53,12 +61,28 @@ data class IngridSpatial(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Temporal(
     val events: List<DateEvent>?,
-    val status: Any?,
+    val status: KeyValueModel?,
     val resourceDateType: KeyValueModel?,
     val resourceDateTypeSince: KeyValueModel?,
-    val resourceDate: String?,
-    val resourceRange: TimeRange?
+    @JsonDeserialize(using = DateDeserializer::class)
+    val resourceDate: OffsetDateTime?,
+    val resourceRange: TimeRange?,
+    val timeRefStatus: KeyValueModel?,
+    val maintenanceNote: String?,
 )
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class MaintenanceInformation(
+    val maintenanceAndUpdateFrequency: KeyValueModel?,
+    val userDefinedMaintenanceFrequency: UserDefinedMaintenanceFrequency?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class UserDefinedMaintenanceFrequency(
+    val number: Int?,
+    val unit: KeyValueModel?
+)
+
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
@@ -68,8 +92,10 @@ data class DateEvent(
 
 
 data class TimeRange(
-    val start: String,
-    val end: String
+    @JsonDeserialize(using = DateDeserializer::class)
+    val start: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val end: OffsetDateTime
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

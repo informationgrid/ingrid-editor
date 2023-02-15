@@ -13,6 +13,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
+import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -20,23 +21,37 @@ import java.util.*
 class IngridModelTransformer constructor(
     val model: IngridModel,
     val catalogIdentifier: String,
+    val codelistHandler: CodelistHandler,
+    val config: Config,
+    val catalogService: CatalogService,
 ) {
+
+
+    companion object {
+        val codelistHandler: CodelistHandler? by lazy {
+            SpringContext.getBean(CodelistHandler::class.java)
+        }
+        val config: Config? by lazy {
+            SpringContext.getBean(Config::class.java)
+        }
+        val catalogService: CatalogService? by lazy {
+            SpringContext.getBean(CatalogService::class.java)
+        }
+    }
+
+
     val data = model.data
-    val catalog = catalogService!!.getCatalogById(catalogIdentifier)
-    val datasetURL =
-    (catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/${catalogIdentifier}")
-    .suffixIfNot("/") + model.uuid
+    val purpose = data.resource?.purpose
+    val status = getCodelistValue("523", data.temporal.status, "iso")
 
     val resourceDateType = data.temporal.resourceDateType?.key
     val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
     val resourceBeginDate =
         (if (resourceDateType.equals("since")) data.temporal.resourceDate ?: data.temporal.resourceRange?.start
         else data.temporal.resourceRange?.start)
-            ?: ""
     val resourceEndDate =
         (if (resourceDateType.equals("till")) data.temporal.resourceDate
         else data.temporal.resourceRange?.end)
-            ?: ""
     val resourceBeginIndeterminatePosition =
         if (resourceDateType.equals("till")) "indeterminatePosition=\"unknown\"" else ""
     val resourceEndIndeterminatePosition =
@@ -63,29 +78,28 @@ class IngridModelTransformer constructor(
                     COORD_TYPE.Lat2 -> it.value!!.lat2
                     COORD_TYPE.Lon1 -> it.value!!.lon1
                     COORD_TYPE.Lon2 -> it.value!!.lon2
-                }
+                }.toFloat()
             }
             .joinToString(",", "[", "]")
     }
 
     fun getSpatialReferenceLocationNames(): String {
         return spatialReferences.filter {
-            // TODO check if filter is necessary
             it.value != null
         }.map {
-            it.title
-        }.joinToString(",", "[", "]")
+            JsonEscape.escapeJson(it.title)
+        }.joinToString("\",\"", "[\"", "\"]")
     }
 
-//    lateinit var catalog: Catalog
+    lateinit var catalog: Catalog
 
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
     var documentType = mapDocumentType()
 
-    val hierarchyLevel = "job"
-    val hierarchyLevelName = "nonGeographicDataset"
+    val hierarchyLevel = "nonGeographicDataset"
+    val hierarchyLevelName = "job"
     val mdStandardName = "ISO19115"
     val mdStandardVersion = "2003/Cor.1:2006"
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
@@ -98,14 +112,14 @@ class IngridModelTransformer constructor(
     val characterSetCode = getCodelistValue("510", data.metadata.characterSet) ?: "utf8"
     val spatialSystems = data.spatial?.spatialSystems?.map {
         val referenceSystem = getCodelistValue("100", it)
-        val epsgCode = if (referenceSystem?.startsWith("EPSG") == true) referenceSystem.substring(
-            5,
-            referenceSystem.indexOf(":")
-        ) else null
+        val epsgCode =
+            if (referenceSystem?.startsWith("EPSG") == true)
+                referenceSystem.substring(5, referenceSystem.indexOf(":"))
+            else null
         KeyValueModel(epsgCode, referenceSystem)
     }
     val description = data.description
-//    lateinit var datasetURL: String
+    lateinit var datasetURL: String
     val advProductGroups = data.advProductGroups?.map { getCodelistValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
     val dateEvents = data.temporal.events ?: emptyList()
@@ -195,17 +209,6 @@ class IngridModelTransformer constructor(
 
     }
 
-    companion object {
-        val codelistHandler: CodelistHandler? by lazy {
-            SpringContext.getBean(CodelistHandler::class.java)
-        }
-        val config: Config? by lazy {
-            SpringContext.getBean(Config::class.java)
-        }
-        val catalogService: CatalogService? by lazy {
-            SpringContext.getBean(CatalogService::class.java)
-        }
-    }
 
     fun getCodelistValue(codelistId: String, entry: KeyValueModel?): String? {
         return getCodelistValue(codelistId, entry, "de")
@@ -242,6 +245,13 @@ class IngridModelTransformer constructor(
 
     init {
         pointOfContact = determinePointOfContact()
+    }
+
+    fun initialize() {
+        this.catalog = catalogService!!.getCatalogById(catalogIdentifier)
+        this.datasetURL =
+            (catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/${catalogIdentifier}")
+                .suffixIfNot("/") + model.uuid
     }
 
     fun handleContent(value: String?): String? {

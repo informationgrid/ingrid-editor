@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.exporter.TransformationTools
 import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -57,10 +58,11 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         return null
     }
 
-    fun getWktCoordinatesISO(): String? {
-        // TODO Adapt for ISO
-        return getWktCoordinates()
-    }
+    fun getWktCoordinatesISO(): String? =
+        if (this.wkt != null)
+            TransformationTools.wktToGml(this.wkt)
+        else null
+
 
     private fun getWktType(): String? {
         if (this.wkt != null) {

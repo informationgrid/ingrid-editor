@@ -2,12 +2,16 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -21,9 +25,14 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ingrid")
-class IngridIDFExporter @Autowired constructor() : IgeExporter {
+class IngridIDFExporter @Autowired constructor(
+    val codelistHandler: CodelistHandler,
+    val config: Config,
+    val catalogService: CatalogService,
+) : IgeExporter {
 
     val log = logger()
+
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -67,7 +76,8 @@ class IngridIDFExporter @Autowired constructor() : IgeExporter {
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
-        val modelTransformer = IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalogId)
+        val modelTransformer = IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalogId, codelistHandler, config, catalogService)
+        modelTransformer.initialize()
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer

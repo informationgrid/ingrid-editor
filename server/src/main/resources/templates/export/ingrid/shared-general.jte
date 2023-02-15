@@ -81,7 +81,9 @@
                                     xlink:href="http://www.opengis.net/def/crs/EPSG/0/${spatialSystem.getKey()}">${spatialSystem.getValue()}</gmx:Anchor>
                         </gmd:code>
                     @else
-                        <gmd:code>${spatialSystem.getValue()}</gmd:code>
+                        <gmd:code>
+                            <gco:CharacterString>${spatialSystem.getValue()}</gco:CharacterString>
+                        </gmd:code>
                     @endif
                 </gmd:RS_Identifier>
             </gmd:referenceSystemIdentifier>
@@ -129,6 +131,16 @@
         <gmd:abstract>
             <gco:CharacterString>${page.getDescription()}</gco:CharacterString>
         </gmd:abstract>
+        @if( page.getPurpose() != null )
+        <gmd:purpose>
+            <gco:CharacterString>${page.getPurpose()}</gco:CharacterString>
+        </gmd:purpose>
+        @endif
+        @if( page.getStatus() != null )
+        <gmd:status>
+            <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="${page.getStatus()}"/>
+        </gmd:status>
+        @endif
         <gmd:pointOfContact>
             <%--                TODO                             --%>
         </gmd:pointOfContact>
@@ -196,9 +208,32 @@
                                     ${ref.getWktCoordinatesISO()}
                                 </gmd:polygon>
                             </gmd:EX_BoundingPolygon>
+                            <gmd:polygon>
+                                <gml:Point gml:id="Point_ID_00000000-0000-0000-0000-000000000000" srsDimension="2">
+                                    <gml:pos>10 10</gml:pos>
+                                </gml:Point>
+                            </gmd:polygon>
                         </gmd:geographicElement>
                     @endif
                 @endfor
+                @if(page.getResourceDateType() != null)
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                @if("at".equals(page.getResourceDateType()))
+                                    <gml:TimeInstant gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
+                                        <gml:timePosition>${page.formatDate(page.getFormatterISO(), page.getData().getTemporal().getResourceDate())}</gml:timePosition>
+                                    </gml:TimeInstant>
+                                @else
+                                    <gml:TimePeriod gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
+                                        <gml:beginPosition $unsafe{page.getResourceBeginIndeterminatePosition()}>${page.getResourceBeginDate() != null ? page.formatDate(page.getFormatterISO(), page.getResourceBeginDate()) : ""}</gml:beginPosition>
+                                        <gml:endPosition $unsafe{page.getResourceEndIndeterminatePosition()}>${page.getResourceEndDate() != null ? page.formatDate(page.getFormatterISO(), page.getResourceEndDate()) : ""}</gml:endPosition>
+                                    </gml:TimePeriod>
+                                @endif
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+                @endif
                 @if(verticalExtent != null)
                     <gmd:verticalElement>
                         <gmd:EX_VerticalExtent>
@@ -227,7 +262,7 @@
                                     <gml:verticalDatum>
                                         <gml:VerticalDatum gml:id="verticalDatum_ID_${TransformationTools.getRandomUUID()}">
                                             <gml:identifier codeSpace=""/>
-                                            <gml:name>${page.getCodelistValue("101", verticalExtent.getDatum())}</gml:name>
+                                            <gml:name>${page.getCodelistValue("101", verticalExtent.getDatum(), "en")}</gml:name>
                                             <gml:scope/>
                                         </gml:VerticalDatum>
                                     </gml:verticalDatum>
@@ -248,24 +283,6 @@
                             </gmd:geographicIdentifier>
                         </gmd:EX_GeographicDescription>
                     </gmd:geographicElement>
-                @endif
-                @if(page.getResourceDateType() != null)
-                    <gmd:temporalElement>
-                        <gmd:EX_TemporalExtent>
-                            <gmd:extent>
-                                @if("at".equals(page.getResourceDateType()))
-                                    <gml:TimeInstant gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
-                                        <gml:timePosition>${page.getData().getTemporal().getResourceDate()}</gml:timePosition>
-                                    </gml:TimeInstant>
-                                @else
-                                    <gml:TimePeriod gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
-                                            <gml:beginPosition ${page.getResourceBeginIndeterminatePosition()}>${page.getResourceBeginDate()}</gml:beginPosition>
-                                            <gml:endPosition ${page.getResourceEndIndeterminatePosition()}>${page.getResourceEndDate()}</gml:endPosition>
-                                    </gml:TimePeriod>
-                                @endif
-                            </gmd:extent>
-                        </gmd:EX_TemporalExtent>
-                    </gmd:temporalElement>
                 @endif
             </gmd:EX_Extent>
         </gmd:extent>

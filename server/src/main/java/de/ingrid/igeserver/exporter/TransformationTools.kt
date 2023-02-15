@@ -1,8 +1,10 @@
 package de.ingrid.igeserver.exporter
 
-import org.apache.logging.log4j.kotlin.logger
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.model.KeyValueModel
+import org.apache.logging.log4j.kotlin.logger
+import org.locationtech.jts.io.WKTReader
+import org.locationtech.jts.io.gml2.GMLWriter
 import java.util.*
 
 class TransformationTools {
@@ -30,6 +32,25 @@ class TransformationTools {
         @kotlin.jvm.JvmStatic
         fun getRandomUUID(): String {
             return UUID.randomUUID().toString()
+        }
+
+
+        @kotlin.jvm.JvmStatic
+        fun wktToGml(wktGeometry: String): String {
+            val wktR = WKTReader()
+            val geom = wktR.read(wktGeometry)
+
+            // write JTS to string
+            val gmlW = GMLWriter(false)
+            var gml = gmlW.write(geom)
+
+            // add gml:id attributes
+            arrayOf("Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon", "MultiGeometry").forEach {
+                gml = gml.replace("<gml:$it", "<gml:$it gml:id=\"${it}_ID_${getRandomUUID()}\"")
+            }
+
+
+            return gml
         }
 
 

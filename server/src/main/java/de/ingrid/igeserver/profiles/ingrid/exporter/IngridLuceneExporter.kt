@@ -8,6 +8,9 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.mdek.upload.Config
 import gg.jte.TemplateOutput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -15,8 +18,11 @@ import org.springframework.stereotype.Service
 @Service
 class IngridLuceneExporter @Autowired constructor(
     catalogRepo: CatalogRepository,
-    codelistService: CodeListService
-) : LuceneExporter(catalogRepo, codelistService) {
+    codelistService: CodeListService,
+    val codelistHandler: CodelistHandler,
+    val config: Config,
+    val catalogService: CatalogService,
+    ) : LuceneExporter(catalogRepo, codelistService) {
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
@@ -29,7 +35,8 @@ class IngridLuceneExporter @Autowired constructor(
 
         val mapper = ObjectMapper().registerKotlinModule()
         val modelTransformer =
-            IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalog.identifier)
+            IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalog.identifier, codelistHandler, config, catalogService)
+        modelTransformer.initialize()
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer,

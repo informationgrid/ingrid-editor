@@ -20,7 +20,7 @@
     "x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
     "y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
     "y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
-    "location":  ${page.getSpatialReferenceLocationNames()},
+    "location":  $unsafe{page.getSpatialReferenceLocationNames()},
     "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
     "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_modified())}",
     "areaid": [],
