@@ -1,5 +1,8 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Address
 import de.ingrid.igeserver.exports.iso.CIContact
@@ -11,7 +14,7 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
 
-class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler) {
+open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler) {
 
     private val log = logger()
 
@@ -219,73 +222,6 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
             ?.toList() ?: emptyList()
     }
 
-    fun getServiceCategories(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords
-            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "ISO") }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
-
-    fun getServiceVersions(): List<KeyValue> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.serviceTypeVersion
-            ?.map { codeListService.getCodeListEntryId("5153", it.value, "ISO") }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
-
-    fun getOperations(): List<Operation> {
-        return metadata.identificationInfo[0].serviceIdentificationInfo?.containsOperations
-            ?.map {
-                Operation(
-                    it.svOperationMetadata?.operationName?.value,
-                    it.svOperationMetadata?.operationDescription?.value,
-                    it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url
-                )
-            } ?: emptyList()
-    }
-
-    fun getResolutions(): List<Resolution> {
-        val description =
-            metadata.identificationInfo[0].serviceIdentificationInfo?.abstract?.value ?: return emptyList()
-        var scale = listOf<String>()
-        var groundResolution = listOf<String>()
-        var scanResolution = listOf<String>()
-
-        description.split(";").forEach {
-            if (it.indexOf("Maßstab:") != -1) {
-                scale = it.substring(it.indexOf("Maßstab:") + 8).split(",")
-            } else if (it.indexOf("Bodenauflösung:") != -1) {
-                groundResolution = it.substring(it.indexOf("Bodenauflösung:") + 15).split(",")
-            } else if (it.indexOf("Scanauflösung (DPI):") != -1) {
-                scanResolution = it.substring(it.indexOf("Scanauflösung (DPI):") + 20).split(",")
-            }
-        }
-
-        val biggestListSize = listOf(scale, groundResolution, scanResolution)
-            .map { it.size }
-            .sortedDescending()
-            .getOrNull(0) ?: 0
-
-        return (0 until biggestListSize).map {
-            Resolution(
-                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
-                groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
-                    ?.toInt(),
-                scanResolution.getOrNull(it)?.trim()?.toInt()
-            )
-        }
-
-    }
-
-    fun getServiceType(): KeyValue {
-        val value = metadata.identificationInfo[0].serviceIdentificationInfo?.serviceType?.value
-        val id = codeListService.getCodeListEntryId("5100", value, "ISO")
-        return KeyValue(id)
-    }
-
-    fun getCouplingType(): KeyValue {
-        val id = metadata.identificationInfo[0].serviceIdentificationInfo?.couplingType?.code?.codeListValue
-        return KeyValue(id)
-    }
-
     fun getSpatialSystems(): List<KeyValue> {
         return metadata.referenceSystemInfo
             ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
@@ -376,21 +312,6 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     fun getSpecificUsage() = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceSpecificUsage
         ?.mapNotNull { it.usage?.specificUsage?.value }
         ?.joinToString(";")
-
-    fun getCoupledResources(): List<CoupledResourceModel> {
-        val internalLinks = metadata.identificationInfo[0].serviceIdentificationInfo?.operatesOn
-            ?.map { CoupledResourceModel(it.uuidref, null, null, false) } ?: emptyList()
-
-        val externalLinks = metadata.distributionInfo?.mdDistribution?.transferOptions
-            ?.filter {
-                it.mdDigitalTransferOptions?.onLine?.any { online -> online.ciOnlineResource?.applicationProfile?.value == "coupled" }
-                    ?: false
-            }
-            ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
-            ?.map { CoupledResourceModel(null, it?.linkage?.url, it?.name?.value, true) } ?: emptyList()
-
-        return internalLinks + externalLinks
-    }
 
     fun getTemporalEvents(): List<Event> {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.citation?.citation?.date
@@ -512,6 +433,100 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
                     } ?: emptyList()
             } ?: emptyList()
     }
+    
+    fun getConformanceResult(): List<ConformanceResult> {
+        return metadata.dataQualityInfo
+            ?.filter { it.dqDataQuality?.report != null }
+            ?.flatMap { it.dqDataQuality?.report?.map { report -> report.dqDomainConsistency.result.dqConformanceResult } ?: emptyList() }
+            ?.map {
+                val pass = determineConformanceResultPass(it.pass.boolean?.value)
+                val specification = it.specification.citation?.title?.value
+                val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "ISO")
+                val specificationKeyValue = if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
+                val publicationDate = it.specification.citation?.date?.getOrNull(0)?.date?.date?.date
+                ConformanceResult(
+                    pass,
+                    specificationEntryId != null, 
+                    it.explanation.value,
+                    specificationKeyValue,
+                    publicationDate
+                )
+            } ?: emptyList()
+    }
+
+    private fun determineConformanceResultPass(value: Boolean?): KeyValue {
+        return when (value) {
+            true -> KeyValue("1")
+            false -> KeyValue("2")
+            null -> KeyValue("3")
+        }
+    }
+
+    fun getUseConstraints(): List<UseConstraint> {
+        val otherConstraints = metadata.identificationInfo[0].serviceIdentificationInfo?.resourceConstraints
+            ?.map { it.legalConstraint }
+            ?.filter { it?.useConstraints != null }
+            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() } ?: emptyList()
+        
+        val result = mutableListOf<UseConstraint>()
+        
+        // otherConstraints for use-constraints can have the following order/groups
+        // LicenseText
+        // LicenseText, Source
+        // LicenseText, Source, JSON
+        otherConstraints.forEachIndexed { index, value -> 
+            if (isJsonString(value)) {
+                val node = jacksonObjectMapper().readValue<JsonNode>(value)
+                val text = node.get("name").asText()
+                val keyValue = convertUserConstraintToKeyValue(text)
+                result.add(UseConstraint(keyValue, node.get("quelle").asText()))
+                return@forEachIndexed
+            }
+
+            if (isSourceNote(value)) {
+                // already handled
+                return@forEachIndexed
+            }
+
+            val nextValue = otherConstraints.getOrNull(index + 1)
+            val secondNextValue = otherConstraints.getOrNull(index + 2)
+            
+            if (isJsonString(nextValue) || isJsonString(secondNextValue)) {
+                // skip item since JSON will be used
+                return@forEachIndexed
+            }
+            
+            if (isSourceNote(nextValue)) {
+                result.add(UseConstraint(
+                    convertUserConstraintToKeyValue(value), 
+                    nextValue?.replace("Quellenvermerk: ", ""))
+                )
+                return@forEachIndexed
+            }
+
+            // is last constraint or next one is another one/group
+            result.add(UseConstraint(convertUserConstraintToKeyValue(value), null))
+            
+        }
+        
+        return result
+    }
+    
+    private fun isSourceNote(value: String?): Boolean {
+        return value?.startsWith("Quellenvermerk: ") ?: false
+    }
+    
+    private fun convertUserConstraintToKeyValue(text: String?): KeyValue? {
+        if (text == null) return null
+        val id = codeListService.getCodeListEntryId("6500", text, "de")
+        return if (id == null) KeyValue(null, text) else KeyValue(id)
+    }
+
+    private fun isJsonString(useConstraint: String?): Boolean {
+        if (useConstraint == null) return false
+        return useConstraint.startsWith("{") && useConstraint.endsWith("}");
+    }
+
 
     private fun containsKeyword(value: String): Boolean {
         return metadata.identificationInfo[0].serviceIdentificationInfo?.descriptiveKeywords?.any {
@@ -556,6 +571,19 @@ class MetadataModel(val metadata: Metadata, val codeListService: CodelistHandler
     }
 
 }
+
+data class UseConstraint(
+    val title: KeyValue?,
+    val source: String?
+)
+
+data class ConformanceResult(
+    val pass: KeyValue,
+    val isInspire: Boolean,
+    val explanation: String?,
+    val specification: KeyValue?,
+    val publicationDate: String?
+)
 
 data class Operation(
     val name: String?,

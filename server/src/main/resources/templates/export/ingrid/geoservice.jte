@@ -1,6 +1,7 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.MetadataModel
+@import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
 @import gg.jte.support.ForSupport
-@param MetadataModel model 
+@param GeoserviceMapper model 
 
 {
     "title": "${model.getTitle()}",
@@ -168,6 +169,17 @@
         "language": @template.ingrid.partial.key-value(item = model.getLanguage())
     },
     "extraInfoPublishArea": @template.ingrid.partial.key-value(item = model.getExtraInfoPublishArea()),
+    "conformanceResult": [
+        @for(var item : ForSupport.of(model.getConformanceResult()))
+        {
+            "pass": @template.ingrid.partial.key-value(item = item.get().getPass()),
+            "isInspire": ${item.get().isInspire()},
+            "explanation": "${item.get().getExplanation()}",
+            "specification": @template.ingrid.partial.key-value(item = item.get().getSpecification()),
+            "publicationDate": "${item.get().getPublicationDate()}"
+        }@if (!item.isLast()),@endif
+        @endfor
+    ],
     "extraInfo": {
         "legalBasicsDescriptions": @template.ingrid.partial.key-values(list = model.getLegalDescriptions())
     },
@@ -175,6 +187,14 @@
         "purpose": "${model.getPurpose()}",
         "specificUsage": "${model.getSpecificUsage()}",
         "accessConstraints": @template.ingrid.partial.key-values(list = model.getAccessConstraints()),
+        "useConstraints": [
+            @for(var item : ForSupport.of(model.getUseConstraints()))
+            {
+                "title": @template.ingrid.partial.key-value(item = item.get().getTitle()),
+                "source": "${item.get().getSource()}"
+            }@if (!item.isLast()),@endif
+            @endfor
+        ],
         "useLimitation": "${model.getUseLimitation()}"
     },
     "distribution": {

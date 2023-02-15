@@ -2,6 +2,8 @@ package de.ingrid.igeserver.exports.iso
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import de.ingrid.igeserver.profiles.ingrid.importer.ConformanceResult
 import javax.xml.bind.annotation.*
 
 //@XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
@@ -29,7 +31,7 @@ data class Metadata(
     val identificationInfo: List<IdentificationInfo>,
     val contentInfo: List<String>? = null,
     val distributionInfo: DistributionInfo? = null,
-    val dataQualityInfo: List<String>? = null,
+    val dataQualityInfo: List<DataQualityInfo>? = null,
     val portrayalCatalogueInfo: List<String>? = null,
     val metadataConstraints: List<String>? = null,
     val applicationSchemaInfo: List<String>? = null,
@@ -189,4 +191,73 @@ data class MDMedium(
 
 data class MDMediumNameCode(
     @JacksonXmlProperty(localName = "MD_MediumNameCode") val code: CodelistAttributes?
+)
+
+data class DataQualityInfo(
+    @JacksonXmlProperty(localName = "DQ_DataQuality") val dqDataQuality: DQDataQuality?
+)
+
+data class DQDataQuality(
+    val scope: Scope,
+    val report: List<DQReport>?,
+    val lineage: CharacterString?
+)
+
+data class DQReport(
+    @JacksonXmlProperty(localName = "DQ_DomainConsistency") val dqDomainConsistency: DQDomainConsistency
+)
+
+data class DQDomainConsistency(
+    val nameOfMeasure: List<CharacterString>?,
+    val measureIdentification: CharacterString?,
+    val measureDescription: CharacterString?,
+    val evaluationMethodType: CharacterString?,
+    val evaluationMethodDescription: CharacterString?,
+    val evaluationProcedure: CharacterString?,
+    val dateTime: List<CharacterString>?,
+    val result: DQResult // [1..2]
+)
+
+data class DQResult(
+    @JacksonXmlProperty(localName = "DQ_ConformanceResult") val dqConformanceResult: DQConformanceResult
+)
+
+data class DQConformanceResult(
+    val specification: Citation,
+    val explanation: CharacterString,
+    val pass: MDBoolean
+)
+
+data class MDBoolean(
+    @JacksonXmlProperty(localName = "Boolean") val boolean: BooleanValue?
+)
+
+data class BooleanValue(
+    @JacksonXmlProperty(isAttribute = true) var nilReason: String? = null,
+) {
+    @JacksonXmlText
+    val value: Boolean? = null
+}
+
+data class Scope(
+    @JacksonXmlProperty(localName = "DQ_Scope") val dqScope: DQScope?
+)
+
+data class DQScope(
+    val level: ScopeCode,
+    val extent: EXExtentOrig?,
+    val levelDescription: List<ScopeDescription>?,
+)
+
+data class ScopeDescription(
+    @JacksonXmlProperty(localName = "MD_ScopeDescription") val mdScopeDescription: MDScopeDescription?
+)
+
+data class MDScopeDescription(
+    val attributes: List<CharacterString>?,
+    val features: List<CharacterString>?,
+    val featureInstances: List<CharacterString>?,
+    val attributeInstances: List<CharacterString>?,
+    val dataset: CharacterString?,
+    val other: CharacterString?
 )

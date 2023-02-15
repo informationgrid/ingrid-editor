@@ -398,10 +398,22 @@
                         <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
                     </gmd:useConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>Creative Commons CC Zero License (cc-zero)</gco:CharacterString>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply">Es gelten keine Bedingungen</gmx:Anchor>
                     </gmd:otherConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>{"id":"cc-zero","name":"Creative Commons CC Zero License (cc-zero)","url":"https://www.opendefinition.org/licenses/cc-zero","quelle":""}</gco:CharacterString>
+                        <gco:CharacterString>Quellenvermerk: Quelle 1</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>BSD Lizenz</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>Quellenvermerk: Quelle 2</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>{"id":"bsdlicense","name":"BSD Lizenz","url":"http://www.opensource.org/licenses/bsd-license.php","quelle":"Quelle 2"}</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>meine Lizenz</gco:CharacterString>
                     </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
@@ -726,7 +738,7 @@
                                 <gco:CharacterString>see the referenced specification</gco:CharacterString>
                             </gmd:explanation>
                             <gmd:pass>
-                                <gco:Boolean>true</gco:Boolean>
+                                <gco:Boolean>false</gco:Boolean>
                             </gmd:pass>
                         </gmd:DQ_ConformanceResult>
                     </gmd:result>

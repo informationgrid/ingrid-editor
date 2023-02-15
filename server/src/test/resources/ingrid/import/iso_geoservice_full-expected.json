@@ -240,6 +240,31 @@
   "extraInfoPublishArea": {
     "key": "1"
   },
+  "conformanceResult": [
+    {
+      "pass": {
+        "key": "2"
+      },
+      "isInspire": false,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": null,
+        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+      },
+      "publicationDate": "2013-08-09"
+    },
+    {
+      "pass": {
+        "key": "1"
+      },
+      "isInspire": true,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": "10"
+      },
+      "publicationDate": "2009-10-20"
+    }
+  ],
   "extraInfo": {
     "legalBasicsDescriptions": [
       {
@@ -257,6 +282,27 @@
       {
         "key": null,
         "value": "freie Zugriffsbeschränkung"
+      }
+    ],
+    "useConstraints": [
+      {
+        "title": {
+          "key": "26"
+        },
+        "source": "Quelle 1"
+      },
+      {
+        "title": {
+          "key": "20"
+        },
+        "source": "Quelle 2"
+      },
+      {
+        "title": {
+          "key": null,
+          "value": "meine Lizenz"
+        },
+        "source": ""
       }
     ],
     "useLimitation": "Es gelten keine Bedingungen"

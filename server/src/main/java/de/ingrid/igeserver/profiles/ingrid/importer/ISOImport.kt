@@ -48,7 +48,7 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
 
         val output: TemplateOutput = JsonStringOutput()
-        val model = MetadataModel(finalObject, codelistService)
+        val model = GeoserviceMapper(finalObject, codelistService)
         templateEngine.render("ingrid/geoservice.jte", model, output)
 
         return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)

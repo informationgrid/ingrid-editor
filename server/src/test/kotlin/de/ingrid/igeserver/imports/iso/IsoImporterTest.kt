@@ -51,6 +51,8 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("5200", "National", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "HEAL", "ISO") } returns null
         every { codelistService.getCodeListEntryId("5200", "Nieders. Abfallgesetz (NAbfG)", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("6005", "Technical Guidance for the implementation of INSPIRE Download Services", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("6005", "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste", "ISO") } returns "10"
         every { codelistService.getCodeListEntryId("6010", "Es gelten keine Zugriffsbeschränkungen", "de") } returns "1"
         every { codelistService.getCodeListEntryId("6100", "Adressen", null) } returns "105"
         every {
@@ -61,6 +63,9 @@ class IsoImporterTest : AnnotationSpec() {
             )
         } returns "-1023933682"
         every { codelistService.getCodeListEntryId("6360", "National", null) } returns "-673152846"
+        every { codelistService.getCodeListEntryId("6500", "Es gelten keine Bedingungen", "de") } returns "26"
+        every { codelistService.getCodeListEntryId("6500", "BSD Lizenz", "de") } returns "20"
+        every { codelistService.getCodeListEntryId("6500", "meine Lizenz", "de") } returns null
         every { codelistService.getCodeListEntryIdMatchingData("6400", "HEAL") } returns "6"
         every { codelistService.getCodeListEntryId("8010", "Luftbilder", "de") } returns "6"
         every { codelistService.getCodeListEntryId("8010", "Festpunkte", "de") } returns "12"
