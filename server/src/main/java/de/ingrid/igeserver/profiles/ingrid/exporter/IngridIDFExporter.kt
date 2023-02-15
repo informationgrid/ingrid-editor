@@ -62,11 +62,11 @@ class IngridIDFExporter @Autowired constructor(
         return when (type) {
             "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
             "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
-            "InGridLiterature" -> "ingrid/shared-general.jte"
-            "InGridGeoService" -> "ingrid/shared-general.jte"
-            "InGridProject" -> "ingrid/shared-general.jte"
-            "InGridDataCollection" -> "ingrid/shared-general.jte"
-            "InGridInformationSystem" -> "ingrid/shared-general.jte"
+            "InGridLiterature" -> "ingrid/idf-literature.jte"
+            "InGridGeoService" -> "ingrid/idf-geoservice.jte"
+            "InGridProject" -> "ingrid/idf-project.jte"
+            "InGridDataCollection" -> "ingrid/idf-dataCollection.jte"
+            "InGridInformationSystem" -> "ingrid/idf-informationSystem.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }
