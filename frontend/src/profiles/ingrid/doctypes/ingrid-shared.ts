@@ -169,9 +169,8 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleOpenDataClick(field) {
-    // since value will be set AFTER click, we need to use the future value
-    const willBeChecked = !field.formControl.value;
-    if (!willBeChecked) return;
+    const isChecked = field.formControl.value;
+    if (!isChecked) return;
 
     const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
@@ -422,9 +421,6 @@ export abstract class IngridShared extends BaseDoctype {
             }),
           ],
         }),
-        this.addTextArea("maintenanceNote", "Erläuterungen", "dataset", {
-          className: "optional flex-1",
-        }),
         this.addGroup(
           null,
           "Durch die Ressource abgedeckte Zeitspanne",
@@ -505,6 +501,9 @@ export abstract class IngridShared extends BaseDoctype {
           ],
           { className: "optional" }
         ),
+        this.addTextArea("description", "Erläuterungen", "dataset", {
+          className: "optional flex-1",
+        }),
       ]),
     ]);
   }
@@ -601,7 +600,7 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
                 {
-                  key: "result",
+                  key: "pass",
                   type: "select",
                   label: "Grad",
                   width: "100px",
@@ -653,7 +652,7 @@ export abstract class IngridShared extends BaseDoctype {
             "legalBasicsDescriptions",
             "Weitere Rechtliche Grundlagen",
             {
-              asSelect: true,
+              asSelect: false,
               showSearch: true,
               options: this.getCodelistForSelect(
                 1350,
@@ -692,7 +691,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verfügbarkeit", [
       this.addGroupSimple("resource", [
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-          asSelect: true, // TODO: also allow free values
+          asSelect: false,
           required: true,
           options: this.getCodelistForSelect(
             6010,
@@ -705,14 +704,13 @@ export abstract class IngridShared extends BaseDoctype {
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          className: "optional",
+          // className: "optional",
           expressions: {
-            hide: "(formState.mainModel?._type !== 'InGridGeoDataset' || formState.mainModel?._type !== 'InGridGeoService')",
             "props.required":
               "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
           },
           fields: [
-            this.addSelect("title", null, {
+            this.addAutocomplete("title", null, {
               options: this.getCodelistForSelect(6500, "license"),
               fieldLabel: "Lizenz",
               codelistId: 6500,
@@ -744,7 +742,7 @@ export abstract class IngridShared extends BaseDoctype {
               "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
           },
           fields: [
-            this.addSelectInline("name", "Name", {
+            this.addAutoCompleteInline("name", "Name", {
               options: this.getCodelistForSelect(1320, "specification"),
               codelistId: 1320,
             }),
@@ -761,7 +759,9 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen (MB)"),
+          this.addInputInline("transferSize", "Datenvolumen (MB)", {
+            type: "number",
+          }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
       }),
@@ -848,38 +848,35 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleInspireIdentifiedClick(field) {
-    // since value will be set AFTER click, we need to use the future value
-    const willBeChecked = !field.formControl.value;
-    if (!willBeChecked) return;
+    const checked = field.formControl.value;
+    if (!checked) return;
 
     const cookieId = "HIDE_INSPIRE_INFO";
 
-    if (willBeChecked) {
-      const executeAction = () => {
-        field.model.isInspireConform = true;
+    const executeAction = () => {
+      field.model.isInspireConform = true;
 
-        const isGeodataset = field.model._type === "InGridGeoDataset";
-        if (isGeodataset) {
-          field.model.spatialScope = { key: "885989663" }; // Regional
-          field.options.formState.updateModel();
-        }
-      };
+      const isGeodataset = field.model._type === "InGridGeoDataset";
+      if (isGeodataset) {
+        field.model.spatialScope = { key: "885989663" }; // Regional
+        field.options.formState.updateModel();
+      }
+    };
 
-      const message =
-        "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
-      this.dialog
-        .open(ConfirmDialogComponent, {
-          data: <ConfirmDialogData>{
-            title: "Hinweis",
-            message: message,
-            cookieId: cookieId,
-          },
-        })
-        .afterClosed()
-        .subscribe((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue(false);
-        });
-    }
+    const message =
+      "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "ok") executeAction();
+        else field.formControl.setValue(false);
+      });
   }
 }

@@ -20,6 +20,7 @@ import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
@@ -106,6 +107,7 @@ class IndexingTask @Autowired constructor(
         val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident")
         val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident")
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
+        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
         run indexingLoop@{
             categories.forEach categoryLoop@{ category ->
@@ -127,7 +129,7 @@ class IndexingTask @Autowired constructor(
 
                 // pre phase
                 val info = try {
-                    indexPrePhase(categoryAlias, catalog.type, format, elasticsearchAlias)
+                    indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias)
                 } catch (ex: Exception) {
                     notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
                     return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
@@ -145,7 +147,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     do {
                         page++
-                        val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, format, page)
+                        val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, catalogProfile, page)
                         // isLast function sometimes delivers the next to last page without a total count, so we write our own
                         val isLast =
                             (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
@@ -288,23 +290,24 @@ class IndexingTask @Autowired constructor(
         val exporter = indexService.getExporter(category, format)
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
+        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
         try {
-            val doc = indexService.getSinglePublishedDocument(catalogId, category, format, docId)
+            val doc = indexService.getSinglePublishedDocument(catalogId, category.value, catalogProfile, docId)
 
             val export = exporter.run(doc, catalogId)
 
             log.debug("Exported document: $export")
-            val indexInfo = getOrPrepareIndex(catalog.type, category, format, elasticsearchAlias)
+            val indexInfo = getOrPrepareIndex(catalogProfile, category, format, elasticsearchAlias)
             indexManager.update(indexInfo, convertToElasticDocument(export), false)
             log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")
         } catch (ex: NoSuchElementException) {
-            throw NotFoundException.withMissingPublishedVersion(docId, ex)
+            log.info("Document not indexed, probably because of profile specific condition: $catalogId -> $docId")
         }
     }
 
     private fun getOrPrepareIndex(
-        catalogType: String,
+        catalogProfile: CatalogProfile,
         category: DocumentCategory,
         format: String,
         elasticsearchAlias: String
@@ -312,7 +315,7 @@ class IndexingTask @Autowired constructor(
         val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         if (oldIndex == null) {
-            val (_, newIndex) = indexPrePhase(categoryAlias, catalogType, format, elasticsearchAlias)
+            val (_, newIndex) = indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias)
             oldIndex = newIndex
             indexManager.switchAlias(elasticsearchAlias, null, newIndex)
         }
@@ -341,12 +344,10 @@ class IndexingTask @Autowired constructor(
 
     private fun indexPrePhase(
         categoryAlias: String,
-        catalogType: String,
+        catalogProfile: CatalogProfile,
         format: String,
         elasticsearchAlias: String
     ): Pair<String, String> {
-        val catalogProfile = catalogService.getCatalogProfile(catalogType)
-
         val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         val newIndex = IndexManager.getNextIndexName(categoryAlias, generalProperties.uuid, elasticsearchAlias)
         indexManager.createIndex(
