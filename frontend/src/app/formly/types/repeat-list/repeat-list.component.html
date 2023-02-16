@@ -14,13 +14,15 @@
         class="clickable list-item"
         (click)="this.onItemClick(model[i]?.key)"
     >
-        <span class="list-display-element">
-            <mat-icon
-                *ngIf="this.props.elementIcon"
-                [svgIcon]="this.props.elementIcon"
-            ></mat-icon>
-            {{ getParameter(model[i]) }}
-        </span>
+        <div class="text-wrapper">
+            <span class="list-display-element">
+                <mat-icon
+                    *ngIf="this.props.elementIcon"
+                    [svgIcon]="this.props.elementIcon"
+                ></mat-icon>
+                {{ getParameter(model[i]) }}
+            </span>
+        </div>
         <button
             *ngIf="formControl.enabled"
             type="button"
