@@ -44,6 +44,7 @@ class SpecialisedTask : AnnotationSpec() {
         every { codelistService.getCodelistValue("6100", "313", "de") } returns "Atmosphärische Bedingungen"
         every { codelistService.getCodelistValue("8010", "1", "de") } returns "Digitale Landschaftsmodelle"
         every { codelistService.getCodelistValue("8010", "2", "de") } returns "Digitale Geländemodelle"
+        every { codelistService.getCodelistValue("1350", "45", "de") } returns "Gesetz über eine Holzstatistik"
     }
 
     private lateinit var exporter: IngridIDFExporter

@@ -75,16 +75,9 @@
         <gmd:MD_ReferenceSystem>
             <gmd:referenceSystemIdentifier>
                 <gmd:RS_Identifier>
-                    @if(spatialSystem.getKey() != null)
                         <gmd:code>
-                            <gmx:Anchor
-                                    xlink:href="http://www.opengis.net/def/crs/EPSG/0/${spatialSystem.getKey()}">${spatialSystem.getValue()}</gmx:Anchor>
+                            @template.ingrid.anchorOrCharacterString(model = spatialSystem)
                         </gmd:code>
-                    @else
-                        <gmd:code>
-                            <gco:CharacterString>${spatialSystem.getValue()}</gco:CharacterString>
-                        </gmd:code>
-                    @endif
                 </gmd:RS_Identifier>
             </gmd:referenceSystemIdentifier>
         </gmd:MD_ReferenceSystem>
@@ -151,7 +144,24 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
 
+        @if(page.getSpecificUsage() != null)
+        <gmd:resourceSpecificUsage>
+            <gmd:MD_Usage>
+                <gmd:specificUsage>
+                    <gco:CharacterString>${page.getSpecificUsage()}</gco:CharacterString>
+                </gmd:specificUsage>
+                <gmd:userContactInfo gco:nilReason="unknown"/>
+            </gmd:MD_Usage>
+        </gmd:resourceSpecificUsage>
+        @endif
+
+        @for(String language : page.getDataLanguages())
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
+            </gmd:language>
+        @endfor
         <gmd:extent>
             <gmd:EX_Extent>
                 @if(spatial.getDescription() != null)
@@ -286,12 +296,6 @@
                 @endif
             </gmd:EX_Extent>
         </gmd:extent>
-
-        @for(String language : page.getDataLanguages())
-            <gmd:language>
-                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
-            </gmd:language>
-        @endfor
     </gmd:MD_DataIdentification>
 </gmd:identificationInfo>
 

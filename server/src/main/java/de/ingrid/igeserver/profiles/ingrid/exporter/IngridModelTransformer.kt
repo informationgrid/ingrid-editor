@@ -99,11 +99,11 @@ class IngridModelTransformer constructor(
     val characterSetCode = getCodelistValue("510", data.metadata.characterSet) ?: "utf8"
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem = getCodelistValue("100", it)
-        val epsgCode =
+        val epsgLink =
             if (referenceSystem?.startsWith("EPSG") == true)
-                referenceSystem.substring(5, referenceSystem.indexOf(":"))
+                "http://www.opengis.net/def/crs/EPSG/0/" + referenceSystem.substring(5, referenceSystem.indexOf(":"))
             else null
-        KeyValueModel(epsgCode, referenceSystem)
+        KeyValueModel(referenceSystem, epsgLink)
     }
     val description = data.description
     var datasetURL: String
@@ -120,6 +120,12 @@ class IngridModelTransformer constructor(
         keywords = data.keywords?.map { Keyword(name = it, link = null) } ?: emptyList(),
         date = null,
         name = null,
+    )
+    val furtherLegalBasisKeywords = Thesaurus(
+        keywords = data.extraInfo?.legalBasicsDescriptions?.map { Keyword(name = getCodelistValue("1350", it), link = null) } ?: emptyList(),
+        date = "2020-05-05",
+        name = "Further legal basis",
+        showType = false
     )
 
     // TODO after thesauri are added
@@ -162,6 +168,8 @@ class IngridModelTransformer constructor(
     ) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.isInspireRelevant == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
+
+    val specificUsage = data.resource?.specificUsage
 
     val contentField: MutableList<String> = mutableListOf()
 
@@ -234,7 +242,7 @@ class IngridModelTransformer constructor(
         pointOfContact = determinePointOfContact()
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.datasetURL =
-            (catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/${catalogIdentifier}")
+            (if (catalog.settings?.config?.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/${catalogIdentifier}" else catalog.settings?.config?.namespace!!)
                 .suffixIfNot("/") + model.uuid
     }
 

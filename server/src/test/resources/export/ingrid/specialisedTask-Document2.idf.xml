@@ -498,8 +498,6 @@
             <idf:abstract>
                 <gco:CharacterString>Komplett Gefüllte Fachaufgabe Beschreibung</gco:CharacterString>
             </idf:abstract>
-            <idf:exportCriteria>testKriterium</idf:exportCriteria>
-            <idf:exportCriteria>CDS</idf:exportCriteria>
         </idf:idfMdMetadata>
     </idf:body>
 </idf:html>

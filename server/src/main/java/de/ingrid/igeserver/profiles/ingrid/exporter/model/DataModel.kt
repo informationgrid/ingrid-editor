@@ -28,6 +28,7 @@ data class DataModel(
     val openDataCategories: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,
+    val extraInfo: ExtraInfo?,
     val maintenanceInformation: MaintenanceInformation?,
 )
 
@@ -40,6 +41,11 @@ data class Dataset(
 data class Resource(
     val purpose: String?,
     val specificUsage: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ExtraInfo(
+    val legalBasicsDescriptions: List<KeyValueModel>?,
 )
 
 
