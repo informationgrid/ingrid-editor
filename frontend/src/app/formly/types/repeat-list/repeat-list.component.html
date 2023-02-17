@@ -59,6 +59,8 @@
         [placeholder]="props.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
+        (keydown)="handleKeydown($event)"
+        (blur)="inputControl.setValue('')"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
