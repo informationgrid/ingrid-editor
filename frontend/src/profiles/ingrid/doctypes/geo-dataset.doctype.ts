@@ -31,6 +31,7 @@ export class GeoDatasetDoctype extends IngridShared {
         openData: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: true,
+          showSearch: true,
           options: this.getCodelistForSelect(525, "subType"),
           codelistId: 525,
         }),
@@ -57,6 +58,7 @@ export class GeoDatasetDoctype extends IngridShared {
           "Digitale Repräsentation",
           {
             asSelect: true,
+            showSearch: true,
             options: this.getCodelistForSelect(526, "priorityDataset"),
             codelistId: 526,
             className: "optional",
@@ -70,10 +72,12 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addSelectInline("topologyLevel", "Topologieinformation", {
               options: this.getCodelistForSelect(528, "topologyLevel"),
               codelistId: 528,
+              showSearch: true,
             }),
             this.addSelectInline("geometricObjectType", "Geometrietyp", {
               options: this.getCodelistForSelect(515, "geometricObjectType"),
               codelistId: 515,
+              showSearch: true,
               expressions: {
                 "props.required": (field) =>
                   field.model?.geometricObjectCount != null,
@@ -93,6 +97,7 @@ export class GeoDatasetDoctype extends IngridShared {
           [
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
+              showSearch: true,
               options: <SelectOptionUi[]>[
                 {
                   value: "basis",
@@ -114,6 +119,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   options: this.getCodelistForSelect(514, "name"),
                   codelistId: 514,
                   required: true,
+                  showSearch: true,
                 }),
                 this.addInputInline("size", "Elementanzahl", {
                   type: "number",
@@ -150,6 +156,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
                   options: this.getCodelistForSelect(509, "cellGeometry"),
                   codelistId: 509,
+                  showSearch: true,
                   allowNoValue: true,
                   expressions: {
                     "props.required": (field) =>
@@ -202,6 +209,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addSelectInline("pointInPixel", "Punkt im Pixel", {
                       options: this.getCodelistForSelect(2100, "pointInPixel"),
                       codelistId: 2100,
+                      showSearch: true,
                       className: "flex-3",
                       allowNoValue: true,
                       hasInlineContextHelp: true,
@@ -455,6 +463,7 @@ export class GeoDatasetDoctype extends IngridShared {
         { key: "_type" },
         this.addSelectInline("measureType", "Art der Messung", {
           required: true,
+          showSearch: true,
           options: this.getCodelistForSelect(codelistId, "measureType"),
           codelistId: codelistId,
           className: "flex-2",

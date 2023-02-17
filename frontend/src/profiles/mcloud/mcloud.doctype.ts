@@ -191,6 +191,7 @@ export class McloudDoctype extends BaseDoctype {
                 wrappers: ["form-field"],
               }),
               this.addSelect("text", "Typ", {
+                showSearch: true,
                 required: true,
                 className: "flex-1",
                 wrappers: ["form-field"],
@@ -205,6 +206,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
+            showSearch: true,
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
@@ -229,6 +231,7 @@ export class McloudDoctype extends BaseDoctype {
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
+          showSearch: true,
           options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
           codelistId: 518,
         }),
