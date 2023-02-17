@@ -27,40 +27,7 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
                 )
             } ?: emptyList()
     }
-
-    fun getResolutions(): List<Resolution> {
-        val description =
-            metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return emptyList()
-        var scale = listOf<String>()
-        var groundResolution = listOf<String>()
-        var scanResolution = listOf<String>()
-
-        description.split(";").forEach {
-            if (it.indexOf("Maßstab:") != -1) {
-                scale = it.substring(it.indexOf("Maßstab:") + 8).split(",")
-            } else if (it.indexOf("Bodenauflösung:") != -1) {
-                groundResolution = it.substring(it.indexOf("Bodenauflösung:") + 15).split(",")
-            } else if (it.indexOf("Scanauflösung (DPI):") != -1) {
-                scanResolution = it.substring(it.indexOf("Scanauflösung (DPI):") + 20).split(",")
-            }
-        }
-
-        val biggestListSize = listOf(scale, groundResolution, scanResolution)
-            .map { it.size }
-            .sortedDescending()
-            .getOrNull(0) ?: 0
-
-        return (0 until biggestListSize).map {
-            Resolution(
-                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
-                groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
-                    ?.toInt(),
-                scanResolution.getOrNull(it)?.trim()?.toInt()
-            )
-        }
-
-    }
-
+    
     fun getServiceType(): KeyValue {
         val value = metadata.identificationInfo[0].identificationInfo?.serviceType?.value
         val id = codeListService.getCodeListEntryId("5100", value, "ISO")

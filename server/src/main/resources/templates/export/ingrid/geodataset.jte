@@ -74,32 +74,27 @@
         @endfor
     ],
     "lineage": {
-        "statement": "fachliche Grundlage"
+        "statement": "${model.getLineageStatement()}"
     },
-    "identifier": "Identifikator",
-    "spatialRepresentationType": [
-        {
-            "key": "2"
-        },
-        {
-            "key": "1"
-        }
-    ],
+    "identifier": "${model.getMDIdentifier()}",
+    "spatialRepresentationType":  @template.ingrid.partial.key-values(list = model.getSpatialRepresentationTypes()),
     "resolution": [
+        @for(var resolution : ForSupport.of(model.getResolutions()))
         {
-            "denominator": 1000,
-            "distanceMeter": 100,
-            "distanceDPI": 300
-        }
+            "denominator": ${resolution.get().getDenominator()},
+            "distanceMeter": ${resolution.get().getDistanceMeter()},
+            "distanceDPI": ${resolution.get().getDistanceDPI()}
+        }@if (!resolution.isLast()),@endif
+        @endfor
     ],
     "portrayalCatalogueInfo": {
         "citation": [
             {
                 "title": {
-                    "key": "1"
+                    "key": "-1"
                 },
-                "date": "2023-02-06T23:00:00.000Z",
-                "edition": "1.0"
+                "date": "",
+                "edition": ""
             }
         ]
     },
@@ -107,61 +102,45 @@
         "citation": [
             {
                 "title": {
-                    "key": "1"
+                    "key": ""
                 },
-                "date": "2023-02-04T23:00:00.000Z",
-                "edition": "2.0"
+                "date": "",
+                "edition": ""
             }
         ],
-        "featureTypes": [
-            {
-                "key": null,
-                "value": "Sachdaten 1"
-            }
-        ]
+        "featureTypes": @template.ingrid.partial.key-values(list = model.getFeatureTypes())
     },
     "dataQualityInfo": {
         "lineage": {
             "source": {
-                "descriptions": [
-                    {
-                        "key": null,
-                        "value": "Grundlage 1"
-                    }
-                ],
+                "descriptions": @template.ingrid.partial.key-values(list = model.getSourceDescriptions()),
                 "processStep": {
-                    "description": "Herstellung"
+                    "description": "${model.getProcessStep()}"
                 }
             }
         }
     },
     "dataQuality": {
         "completenessOmission": {
-            "measResult": 5
+            "measResult": ${model.getCompletenessOmissionValue()}
         }
     },
     "absoluteExternalPositionalAccuracy": {
-        "vertical": 30,
-        "horizontal": 20,
-        "griddedDataPositionalAccuracy": 80
+        "vertical": -1,
+        "horizontal": -1,
+        "griddedDataPositionalAccuracy": -1
     },
     "qualities": [
+        @for(var quality : ForSupport.of(model.getQualities()))
         {
             "_type": "completenessComission",
             "measureType": {
-                "key": "2"
+                "key": "-1"
             },
-            "value": 11,
-            "parameter": "3"
-        },
-        {
-            "_type": "relativeInternalPositionalAccuracy",
-            "measureType": {
-                "key": "2"
-            },
-            "value": 90,
-            "parameter": "8"
-        }
+            "value": -1,
+            "parameter": "-1"
+        }@if (!quality.isLast()),@endif
+        @endfor
     ],
     "spatial": {
         "references": [
@@ -242,7 +221,11 @@
         @endfor
     ],
     "dataset": {
-        "languages": @template.ingrid.partial.key-values(list = model.getLanguages())
+        "languages": [
+        @for(var item : ForSupport.of(model.getLanguages()))
+            "${item.get()}"@if (!item.isLast()),@endif
+        @endfor
+        ]
     },
     "extraInfo": {
         "legalBasicsDescriptions": @template.ingrid.partial.key-values(list = model.getLegalDescriptions())

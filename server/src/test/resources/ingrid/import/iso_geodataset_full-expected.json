@@ -1,25 +1,25 @@
 {
-  "title": "Coupling Service",
-  "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
-  "_parent": "my-specified-parent",
-  "_type": "InGridGeoService",
+  "title": "Bebauungsplan Barmbek-Nord 18",
+  "_uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
+  "_parent": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
+  "_type": "InGridGeoDataset",
   "isInspireIdentified": true,
-  "isAdVCompatible": false,
+  "isAdVCompatible": true,
   "isOpenData": true,
-  "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
+  "description": "siehe Originalplan",
   "alternateTitle": "Short",
   "pointOfContact": [
     {
       "ref": {
-        "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+        "_uuid": "110C6012-1713-44C0-9A33-4E2C24D06966",
         "_type": "InGridOrganisationDoc",
-        "organization": "KST PortalU",
+        "organization": "",
         "contact": [
           {
             "type": {
               "key": "3"
             },
-            "connection": "kst@portalu.de"
+            "connection": "you@wemove.com"
           }
         ]
       },
@@ -29,64 +29,33 @@
     },
     {
       "ref": {
-        "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
-        "_type": "InGridPersonDoc",
-        "salutation": {
-          "key": "2"
-        },
-        "firstName": "Besitzervorname",
-        "lastName": "Besitzername",
+        "_uuid": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Wemove Test",
         "address": {
-          "city": "Nienburg (Weser)",
-          "po-box": "12345",
-          "street": "Brückenstraße 8",
+          "city": "Frankfurt",
+          "po-box": "123",
+          "street": "Hanauer Landstr. 52",
           "country": {
             "key": "276"
           },
-          "zip-code": "D-31582",
-          "zip-po-box": "D-31564",
-          "administrativeArea": null
+          "zip-code": "60314",
+          "zip-po-box": "P123",
+          "administrativeArea": {
+            "key": "8"
+          }
         },
         "contact": [
           {
             "type": {
               "key": "3"
             },
-            "connection": "besitzer@wemove.com"
+            "connection": "test@wemove.com"
           }
         ]
       },
       "type": {
-        "key": "1"
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
-        "_type": "InGridPersonDoc",
-        "salutation": {
-          "key": "2"
-        },
-        "firstName": "user",
-        "lastName": "test1",
-        "address": {
-          "country": {
-            "key": "276"
-          },
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "martin.muster@mu.niedersachsen.de"
-          }
-        ]
-      },
-      "type": {
-        "key": null,
-        "value": "Meister"
+        "key": "7"
       }
     }
   ],
@@ -103,6 +72,9 @@
   "advProductGroups": [
     {
       "key": "6"
+    },
+    {
+      "key": "12"
     }
   ],
   "themes": [
@@ -123,21 +95,55 @@
   "spatialScope": {
     "key": "-673152846"
   },
+  "topicCategories": [
+    {
+      "key": "4"
+    }
+  ],
   "keywords": ["Wasser", "Unbekannt"],
+  "lineage": {
+    "statement": "vergl. eGovernment Vorhaben \"PLIS\""
+  },
+  "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
+  "spatialRepresentationType": [
+    {
+      "key": "2"
+    },
+    {
+      "key": "1"
+    }
+  ],
+  "resolution": [
+    {
+      "denominator": 1213,
+      "distanceMeter": 5435,
+      "distanceDPI": 545
+    }
+  ],
   "spatial": {
     "references": [
       {
         "type": "free",
-        "title": "Hannover",
+        "title": "Hamburg",
         "value": {
-          "lat1": 52.130035,
-          "lon1": 9.235984,
-          "lat2": 52.678265,
-          "lon2": 10.309714
+          "lat1": 53.394985,
+          "lon1": 8.420551,
+          "lat2": 53.964153,
+          "lon2": 10.326304
+        }
+      },
+      {
+        "type": "free",
+        "title": "Frankfurt am Main",
+        "value": {
+          "lat1": 50.015156,
+          "lon1": 8.473561,
+          "lat2": 50.226444,
+          "lon2": 8.801178
         }
       }
     ],
-    "regionKey": "Hannover",
+    "regionKey": "Hamburg",
     "spatialSystems": [
       {
         "key": "3068"
@@ -145,7 +151,7 @@
     ],
     "verticalExtent": {
       "minimumValue": 1.0,
-      "maximumValue": 5.0,
+      "maximumValue": 6.0,
       "unitOfMeasure": {
         "key": "9001"
       },
@@ -153,12 +159,12 @@
         "key": "900002"
       }
     },
-    "description": "Erläuterung Raumbezug"
+    "description": "Erläuterungen Raumbezug"
   },
   "temporal": {
     "events": [
       {
-        "referenceDate": "2015-03-17T00:00:00.000+01:00",
+        "referenceDate": "2016-03-01T00:00:00.000+01:00",
         "referenceDateType": {
           "key": "1"
         }
@@ -182,11 +188,14 @@
         "key": "3"
       }
     },
-    "description": "Erläuterung Zeitbezug"
+    "description": "Erläuterungen Zeitbezug"
   },
   "metadata": {
     "language": {
       "key": "150"
+    },
+    "characterSet": {
+      "key": "19"
     }
   },
   "extraInfoPublishArea": {
@@ -203,7 +212,7 @@
         "key": null,
         "value": "Technical Guidance for the implementation of INSPIRE Download Services"
       },
-      "publicationDate": "2013-08-09"
+      "publicationDate": "2007-03-14"
     },
     {
       "pass": {
@@ -214,9 +223,19 @@
       "specification": {
         "key": "10"
       },
-      "publicationDate": "2009-10-20"
+      "publicationDate": "2010-12-08"
     }
   ],
+  "dataset": {
+    "languages": [
+      {
+        "key": "276"
+      },
+      {
+        "key": "246"
+      }
+    ]
+  },
   "extraInfo": {
     "legalBasicsDescriptions": [
       {
@@ -225,8 +244,8 @@
     ]
   },
   "resource": {
-    "purpose": "Herstellung!",
-    "specificUsage": "Eignung!",
+    "purpose": "Herstellung",
+    "specificUsage": "Eignung",
     "accessConstraints": [
       {
         "key": "1"
@@ -257,7 +276,7 @@
         "source": ""
       }
     ],
-    "useLimitation": "Es gelten keine Bedingungen"
+    "useLimitation": "Datenlizenz Deutschland - Namensnennung - Version 2.0; <a href=\\\"https://www.govdata.de/dl-de/by-2-0\\\">https://www.govdata.de/dl-de/by-2-0</a>; dl-de-by-2.0; Namensnennung: \\\"Freie und Hansestadt Hamburg, Bezirksamt Nord, Fachamt Stadt- und Landschaftsplanung\\\""
   },
   "distribution": {
     "format": [
@@ -276,8 +295,8 @@
       "name": {
         "key": "4"
       },
-      "transferSize": 1.44,
-      "mediumNote": "Home"
+      "transferSize": 700.0,
+      "mediumNote": "Bunker"
     }
   ],
   "orderInfo": "Bestell",

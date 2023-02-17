@@ -4,25 +4,25 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 open class SVServiceIdentification(
-    val citation: Citation,
-    val abstract: CharacterString,
-    val purpose: CharacterString?,
-    val status: Status?,
-    val pointOfContact: List<Contact>?,
-    val resourceMaintenance: ResourceMaintenance?,
-    val descriptiveKeywords: List<DescriptiveKeyword>?,
-    val resourceSpecificUsage: List<SpecificUsage>?,
-    val resourceConstraints: List<ResourceConstraint>?,
-    val graphicOverview: List<GraphicOverview>?,
+    open val citation: Citation,
+    open val abstract: CharacterString,
+    open val purpose: CharacterString?,
+    open val status: Status?,
+    open val pointOfContact: List<Contact>?,
+    open val resourceMaintenance: ResourceMaintenance?,
+    open val descriptiveKeywords: List<DescriptiveKeyword>?,
+    open val resourceSpecificUsage: List<SpecificUsage>?,
+    open val resourceConstraints: List<ResourceConstraint>?,
+    open val graphicOverview: List<GraphicOverview>?,
     @JacksonXmlProperty(localName = "serviceType", namespace = "http://www.isotc211.org/2005/srv")
-    val serviceType: LocalName?,
-    val serviceTypeVersion: List<CharacterString>?,
+    open val serviceType: LocalName?,
+    open val serviceTypeVersion: List<CharacterString>?,
     @JacksonXmlProperty(namespace = "http://www.isotc211.org/2005/srv")
-    val extent: EXExtentOrig?,
-    val coupledResource: CoupledResource?,
-    val couplingType: CouplingType?,
-    val containsOperations: List<ContainsOperation>?,
-    val operatesOn: List<OperatesOn>?,
+    open val extent: EXExtentOrig?,
+    open val coupledResource: CoupledResource?,
+    open val couplingType: CouplingType?,
+    open val containsOperations: List<ContainsOperation>?,
+    open val operatesOn: List<OperatesOn>?,
 )
 
 data class SpecificUsage(

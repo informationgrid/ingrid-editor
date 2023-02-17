@@ -198,7 +198,33 @@ data class DataQualityInfo(
 data class DQDataQuality(
     val scope: Scope,
     val report: List<DQReport>?,
-    val lineage: CharacterString?
+    val lineage: Lineage?
+)
+
+data class Lineage(
+    @JacksonXmlProperty(localName = "LI_Lineage") val liLinage: LILinage?
+)
+
+data class LILinage(
+    val statement: CharacterString?,
+    val processStep: List<ProcessStep>?,
+    val source: List<Source>?
+)
+
+data class ProcessStep(
+    @JacksonXmlProperty(localName = "LI_ProcessStep") val liProcessStep: LIProcessStep
+)
+
+data class LIProcessStep(
+    val description: CharacterString
+)
+
+data class Source(
+    @JacksonXmlProperty(localName = "LI_Source") val liSource: LISource?
+)
+
+data class LISource(
+    val description: CharacterString?
 )
 
 data class DQReport(
@@ -239,7 +265,11 @@ data class DQQuantitativeResult(
     val valueType: ValueType?,
     val valueUnit: CharacterString,
     val errorStatistic: CharacterString?,
-    val value: List<CharacterString>
+    val value: List<Record>
+)
+
+data class Record(
+    @JacksonXmlProperty(localName = "Record") val value: String?
 )
 
 data class ValueType(
