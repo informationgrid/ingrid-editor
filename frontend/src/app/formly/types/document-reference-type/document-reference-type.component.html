@@ -13,7 +13,7 @@
         </ng-template>
         <span>{{ item.title }}</span>
     </div>
-    <button mat-icon-button (click)="removeItem(i, $event)">
+    <button mat-icon-button type="button" (click)="removeItem(i, $event)">
         <mat-icon>clear</mat-icon>
     </button>
 </div>
@@ -23,7 +23,9 @@
 
 <ige-add-button
     [mat-menu-trigger-for]="menu"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">

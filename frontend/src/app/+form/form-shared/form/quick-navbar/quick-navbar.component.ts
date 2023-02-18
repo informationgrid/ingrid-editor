@@ -59,7 +59,11 @@ export class QuickNavbarComponent implements AfterViewInit {
     ])
       .pipe(untilDestroyed(this))
       .subscribe((result) => {
-        const offsetLeft = this.elRef.nativeElement.parentElement.offsetLeft;
+        // TODO: parentElement seems to be undefined in addresses during initialization
+        //       according to test "should replace address contains referenced documents with another address (#3811)"
+        const offsetLeft = this.elRef.nativeElement.parentElement?.offsetLeft;
+        if (offsetLeft === undefined) return;
+
         const menuWidth = result[0] ? 300 : 56;
         const newValue = offsetLeft + menuWidth + "px";
         if (this.leftOffset !== newValue) {

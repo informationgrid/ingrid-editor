@@ -55,7 +55,7 @@ export class ReferencedDocumentsTypeComponent
                      ELSE document_wrapper.draft = document1.id
                      END
                  WHERE document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceField>')
+                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceFieldRaw>')
                    AND EXISTS(SELECT
                               FROM jsonb_array_elements(data -> '<referenceField>') as s
                               WHERE (s -> '<uuidField>') = '"<uuid>"')`;
@@ -154,7 +154,11 @@ export class ReferencedDocumentsTypeComponent
     return this.sql
       .replace("<uuid>", uuid)
       .replace("<uuidField>", this.props.uuidField)
-      .replace(/<referenceField>/g, this.props.referenceField);
+      .replace(/<referenceFieldRaw>/g, this.props.referenceField)
+      .replace(
+        /<referenceField>/g,
+        this.props.referenceField.replaceAll(".", "' -> '")
+      );
   }
 
   switchPage(pageEvent: PageEvent) {

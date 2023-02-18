@@ -668,8 +668,6 @@ svg {
 }
 
 .green {
-  //background: $ige-check-color !important;
-
   .coloring {
     fill: $ige-check-color;
   }
@@ -700,37 +698,32 @@ ige-form-label + * {
   padding-bottom: 8px;
 }
 
-ige-inline-help-wrapper > formly-field-mat-checkbox + button.infoIcon {
-  position: relative;
-  right: 0;
-  top: 6px;
-  margin-left: 10px;
-}
-/*ige-inline-help-wrapper > formly-wrapper-mat-form-field {
-  flex: 1;
-}*/
-
-/*
-#form {
-  ige-form-label + formly-wrapper-mat-form-field {
-    display: block;
-    margin-top: 11px;
+ige-inline-help-wrapper {
+  & > formly-field-mat-checkbox + button.infoIcon {
+    position: relative;
+    right: 0;
+    top: 6px;
+    margin-left: 10px;
   }
 
-  ige-form-label + formly-group {
-    margin-top: 11px;
+  & > ige-select-type + button.infoIcon {
+    margin-right: 12px;
+  }
+
+  & > ige-repeat-list + button.infoIcon {
+    top: unset;
+    bottom: -4px;
+  }
+
+  &
+    > formly-wrapper-mat-form-field:has(input[type="number"]:hover)
+    + button.infoIcon,
+  &
+    > formly-wrapper-mat-form-field:has(input[type="number"]:focus)
+    + button.infoIcon {
+    margin-right: 32px;
   }
 }
-*/
-
-/*.mat-mdc-form-field {
-  line-height: 1.25 !important;
-}*/
-
-/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-/*.mat-form-field-appearance-outline .mat-form-field-outline {
-  color: $ige-comment-color !important;
-}*/
 
 // Context Buttons
 .mat-mdc-icon-button {

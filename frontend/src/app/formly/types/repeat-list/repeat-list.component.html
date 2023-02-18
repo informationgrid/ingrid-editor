@@ -14,13 +14,15 @@
         class="clickable list-item"
         (click)="this.onItemClick(model[i]?.key)"
     >
-        <span class="list-display-element">
-            <mat-icon
-                *ngIf="this.props.elementIcon"
-                [svgIcon]="this.props.elementIcon"
-            ></mat-icon>
-            {{ getParameter(model[i]) }}
-        </span>
+        <div class="text-wrapper">
+            <span class="list-display-element">
+                <mat-icon
+                    *ngIf="this.props.elementIcon"
+                    [svgIcon]="this.props.elementIcon"
+                ></mat-icon>
+                {{ getParameter(model[i]) }}
+            </span>
+        </div>
         <button
             *ngIf="formControl.enabled"
             type="button"
@@ -57,6 +59,8 @@
         [placeholder]="props.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
+        (keydown)="handleKeydown($event)"
+        (blur)="inputControl.setValue('')"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
@@ -110,6 +114,7 @@
             *ngIf="repeatListInput.value.length > 0"
             mat-icon-button
             matSuffix
+            type="button"
             class="field-close"
             (click)="repeatListInput.value = ''"
         >
