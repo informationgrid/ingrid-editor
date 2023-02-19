@@ -134,12 +134,10 @@
     "qualities": [
         @for(var quality : ForSupport.of(model.getQualities()))
         {
-            "_type": "completenessComission",
-            "measureType": {
-                "key": "-1"
-            },
-            "value": -1,
-            "parameter": "-1"
+            "_type": "${quality.get().getType()}",
+            "measureType": @template.ingrid.partial.key-value(item = quality.get().getMeasureType()),
+            "value": ${quality.get().getValue()},
+            "parameter": "${quality.get().getParameter()}"
         }@if (!quality.isLast()),@endif
         @endfor
     ],

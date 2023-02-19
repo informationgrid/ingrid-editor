@@ -173,7 +173,88 @@
     "horizontal": 654,
     "griddedDataPositionalAccuracy": 43
   },
-  "qualities": [],
+  "qualities": [
+    {
+      "_type": "completenessComission",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 43,
+      "parameter": "343"
+    },
+    {
+      "_type": "conceptualConsistency",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 343,
+      "parameter": "545"
+    },
+    {
+      "_type": "domainConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 45,
+      "parameter": "533"
+    },
+    {
+      "_type": "formatConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 54,
+      "parameter": "577"
+    },
+    {
+      "_type": "topologicalConsistency",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 64,
+      "parameter": "31"
+    },
+    {
+      "_type": "temporalConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 5,
+      "parameter": "6"
+    },
+    {
+      "_type": "thematicClassificationCorrectness",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 7,
+      "parameter": "87"
+    },
+    {
+      "_type": "nonQuantitativeAttributeAccuracy",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 64,
+      "parameter": "87"
+    },
+    {
+      "_type": "quantitativeAttributeAccuracy",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 44,
+      "parameter": "77"
+    },
+    {
+      "_type": "relativeInternalPositionalAccuracy",
+      "measureType": {
+        "key": "3"
+      },
+      "value": 64,
+      "parameter": "Param 1"
+    }
+  ],
   "spatial": {
     "references": [
       {
@@ -351,25 +432,64 @@
       "type": {
         "key": "9999"
       },
-      "title": "Ein Verweis",
-      "url": "http://my-link",
-      "explanation": "Link Erläuterung"
+      "title": "Bekanntmachung im HmbGVBl als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
     },
     {
       "type": {
-        "key": "5304"
+        "key": "9999"
       },
-      "title": "Bestell Link",
-      "url": "http://order-me.com",
-      "explanation": "Meine Bestellungen"
+      "title": "URL zu weiteren Informationen über den Datensatz",
+      "url": "http://www.hamburg.de/bebauungsplaene-online.de",
+      "explanation": ""
     },
     {
       "type": {
-        "key": "5302"
+        "key": "9999"
       },
-      "title": "Dienst \"Coupling Service\" (GetCapabilities)",
-      "url": "https://my-getcapabilities",
+      "title": "Begründung des Bebauungsplans als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
       "explanation": ""
     }
-  ]
+  ],
+  "isInspireConform": true,
+  "vectorSpatialRepresentation": [
+    {
+      "topologyLevel": {
+        "key": "4"
+      },
+      "geometricObjectType": {
+        "key": "5"
+      },
+      "geometricObjectCount": 8
+    }
+  ],
+  "gridSpatialRepresentation": {
+    "type": {
+      "key": "rectified"
+    },
+    "axisDimensionsProperties": [],
+    "transformationParameterAvailability": true,
+    "numberOfDimenstions": 3,
+    "cellGeometry": {
+      "key": "2"
+    },
+    "georectified": {
+      "checkPointAvailability": true,
+      "checkPointDescription": "KT Beschreibung",
+      "cornerPoints": "4",
+      "pointInPixel": {
+        "key": "2"
+      }
+    }
+  }
 }

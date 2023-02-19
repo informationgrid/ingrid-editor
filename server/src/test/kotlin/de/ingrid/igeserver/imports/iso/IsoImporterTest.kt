@@ -74,6 +74,18 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("6500", "BSD Lizenz", "de") } returns "20"
         every { codelistService.getCodeListEntryId("6500", "meine Lizenz", "de") } returns null
         every { codelistService.getCodeListEntryIdMatchingData("6400", "HEAL") } returns "6"
+        
+        every { codelistService.getCodeListEntryId("7109", "Number of duplicate feature instances", "de") } returns "2"
+        every { codelistService.getCodeListEntryId("7112", "Conceptual Schema compliance", "de") } returns "2"
+        every { codelistService.getCodeListEntryId("7113", "Value domain non conformance rate", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("7114", "Physical structure conflict rate", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("7115", "Number of missing connections due to undershoots", "de") } returns "2"
+        every { codelistService.getCodeListEntryId("7120", "Percentage of items that are correctly events ordered", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("7125", "Misclassification rate", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("7126", "Rate of incorrect classification for national identifier", "de") } returns "2"
+        every { codelistService.getCodeListEntryId("7127", "Attribute value uncertainty at 95 % significance level", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("7128", "mean value of positional uncertainties (3D)", "de") } returns "3"
+        
         every { codelistService.getCodeListEntryId("8010", "Luftbilder", "de") } returns "6"
         every { codelistService.getCodeListEntryId("8010", "Festpunkte", "de") } returns "12"
         every { codelistService.getCodeListEntryId("8010", "Short", "de") } returns null

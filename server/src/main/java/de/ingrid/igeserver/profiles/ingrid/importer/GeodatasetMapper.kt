@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
 import de.ingrid.igeserver.exports.iso.DQReport
+import de.ingrid.igeserver.exports.iso.DQReportElement
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
@@ -81,33 +82,34 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler) :
     }
 
     private fun mapQuality(report: DQReport): Quality? {
-        val type =
-            if (report.dqTemporalValidity != null) ""
-            else if (report.dqTemporalConsistency != null) "temporalConsistency"
-//            else if (report.dqAccuracyOfATimeMeasurement != null) ""
-            else if (report.dqQuantitativeAttributeAccuracy != null) "quantitativeAttributeAccuracy"
-            else if (report.dqNonQuantitativeAttributeAccuracy != null) "nonQuantitativeAttributeAccuracy"
-            else if (report.dqThematicClassificationCorrectness != null) "thematicClassificationCorrectness"
-            else if (report.dqRelativeInternalPositionalAccuracy != null) "relativeInternalPositionalAccuracy"
-//            else if (report.dqGriddedDataPositionalAccuracy != null) ""
-//            else if (report.dqAbsoluteExternalPositionalAccuracy != null) ""
-            else if (report.dqTopologicalConsistency != null) "topologicalConsistency"
-            else if (report.dqFormatConsistency != null) "formatConsistency"
-            else if (report.dqDomainConsistency != null) "domainConsistency"
-            else if (report.dqConceptualConsistency != null) "conceptualConsistency"
-//            else if (report.dqCompletenessOmission != null) "" 
-            else if (report.dqCompletenessCommission != null) "completenessComission"
+        val info =
+            // if (report.dqTemporalValidity != null) QualityInfo("temporalValidity", "", report.dqTemporalValidity)
+            if (report.dqTemporalConsistency != null) QualityInfo("temporalConsistency", "7120", report.dqTemporalConsistency)
+//            else if (report.dqAccuracyOfATimeMeasurement != null) QualityInfo("", ", (report.)
+            else if (report.dqQuantitativeAttributeAccuracy != null) QualityInfo("quantitativeAttributeAccuracy", "7127", report.dqQuantitativeAttributeAccuracy)
+            else if (report.dqNonQuantitativeAttributeAccuracy != null) QualityInfo("nonQuantitativeAttributeAccuracy", "7126", report.dqNonQuantitativeAttributeAccuracy)
+            else if (report.dqThematicClassificationCorrectness != null) QualityInfo("thematicClassificationCorrectness", "7125", report.dqThematicClassificationCorrectness)
+            else if (report.dqRelativeInternalPositionalAccuracy != null) QualityInfo("relativeInternalPositionalAccuracy", "7128", report.dqRelativeInternalPositionalAccuracy)
+//            else if (report.dqGriddedDataPositionalAccuracy != null) QualityInfo("", ", (report.)
+//            else if (report.dqAbsoluteExternalPositionalAccuracy != null) QualityInfo("", ", (report.)
+            else if (report.dqTopologicalConsistency != null) QualityInfo("topologicalConsistency", "7115", report.dqTopologicalConsistency)
+            else if (report.dqFormatConsistency != null) QualityInfo("formatConsistency", "7114", report.dqFormatConsistency)
+            else if (report.dqDomainConsistency != null) QualityInfo("domainConsistency", "7113", report.dqDomainConsistency)
+            else if (report.dqConceptualConsistency != null) QualityInfo("conceptualConsistency", "7112", report.dqConceptualConsistency)
+//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.) 
+            else if (report.dqCompletenessCommission != null) QualityInfo("completenessComission", "7109", report.dqCompletenessCommission)
             else return null
 
-        val name = report.dqAccuracyOfATimeMeasurement?.nameOfMeasure?.map { it.value }?.joinToString(";")
-        val nameId = null //codeListService.getCodeListEntryId("", name, "ISO")
+        if (info.element.nameOfMeasure == null) return null
+        
+        val name = info.element.nameOfMeasure.map { it.value }.joinToString(";")
+        val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = if (nameId == null) KeyValue(null, name) else KeyValue(nameId)
-        val parameter = report.dqAccuracyOfATimeMeasurement?.measureDescription?.value
-        val value =
-            report.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toInt()
-        return Quality(type, nameKeyValue, value, parameter)
+        val parameter = info.element.measureDescription?.value
+        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toInt()
+        return Quality(info.type, nameKeyValue, value, parameter)
     }
-
+    
     fun getLineageStatement(): String {
         return metadata.dataQualityInfo
             ?.map { it.dqDataQuality?.lineage?.liLinage?.statement?.value }
@@ -219,6 +221,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler) :
             ?.toInt()
     }
 }
+
+data class QualityInfo(
+    val type: String,
+    val codelist: String,
+    val element: DQReportElement
+)
 
 data class CatalogInfo(
     val title: KeyValue?,

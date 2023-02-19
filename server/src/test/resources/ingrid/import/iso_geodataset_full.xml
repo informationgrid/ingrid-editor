@@ -1239,7 +1239,7 @@
                         </gmd:MD_Identifier>
                     </gmd:measureIdentification>
                     <gmd:measureDescription>
-                        <gco:CharacterString>64</gco:CharacterString>
+                        <gco:CharacterString>Param 1</gco:CharacterString>
                     </gmd:measureDescription>
                     <gmd:result>
                         <gmd:DQ_QuantitativeResult>
