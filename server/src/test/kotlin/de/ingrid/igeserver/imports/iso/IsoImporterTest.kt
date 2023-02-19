@@ -36,6 +36,8 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("2000", "order", "ISO") } returns "5304"
 
         every { codelistService.getCodeListEntryId("2000", "information", "ISO") } returns "5302"
+        every { codelistService.getCodeListEntryId("3535", "von Drachenfels 94", "de") } returns "1"
+        every { codelistService.getCodeListEntryId("3555", "Ganzflächige Biotopkartierung 94", "de") } returns "1"
 
         every { codelistService.getCodeListEntryId("4300", "Herr", "de") } returns "2"
         every { codelistService.getCodeListEntryId("5100", "download", "ISO") } returns "3"

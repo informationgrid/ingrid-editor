@@ -27,10 +27,10 @@ data class Metadata(
     val referenceSystemInfo: List<ReferenceSystem>? = null,
     val metadataExtensionInfo: List<String>? = null,
     val identificationInfo: List<IdentificationInfo>,
-    val contentInfo: List<String>? = null,
+    val contentInfo: List<ContentInfo>? = null,
     val distributionInfo: DistributionInfo? = null,
     val dataQualityInfo: List<DataQualityInfo>? = null,
-    val portrayalCatalogueInfo: List<String>? = null,
+    val portrayalCatalogueInfo: List<PortrayalCatalogueInfo>? = null,
     val metadataConstraints: List<String>? = null,
     val applicationSchemaInfo: List<String>? = null,
     val metadataMaintenance: String? = null,
@@ -263,9 +263,19 @@ data class DQResult(
 
 data class DQQuantitativeResult(
     val valueType: ValueType?,
-    val valueUnit: CharacterString,
+    val valueUnit: ValueUnit,
     val errorStatistic: CharacterString?,
     val value: List<Record>
+)
+
+data class ValueUnit(
+    @JacksonXmlProperty(localName = "UnitDefinition") val unitDefinition: UnitDefinition?
+)
+
+data class UnitDefinition(
+    val name: String?,
+    val quantityType: String?,
+    val catalogSymbol: String?
 )
 
 data class Record(
@@ -314,4 +324,23 @@ data class MDScopeDescription(
     val attributeInstances: List<CharacterString>?,
     val dataset: CharacterString?,
     val other: CharacterString?
+)
+
+data class PortrayalCatalogueInfo(
+    @JacksonXmlProperty(localName = "MD_PortrayalCatalogueReference") val mdPortrayalCatalogueInfo: MDPortrayalCatalogueInfo?
+)
+
+data class MDPortrayalCatalogueInfo(
+    val portrayalCatalogueCitation: List<Citation>
+)
+data class ContentInfo(
+    @JacksonXmlProperty(localName = "MD_FeatureCatalogueDescription") val mdFeatureCatalogueDescription: MDFeatureCatalogueDescription?
+)
+
+data class MDFeatureCatalogueDescription(
+    val complianceCode: CharacterString?,
+    val language: List<CharacterString>?,
+    val includedWithDataset: CharacterString,
+    val featureTypes: List<LocalName>?,
+    val featureCatalogueCitation: List<Citation>
 )

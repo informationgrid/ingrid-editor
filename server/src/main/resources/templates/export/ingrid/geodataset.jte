@@ -89,24 +89,24 @@
     ],
     "portrayalCatalogueInfo": {
         "citation": [
+            @for(var info : ForSupport.of(model.getPortrayalCatalogueInfo()))
             {
-                "title": {
-                    "key": "-1"
-                },
-                "date": "",
-                "edition": ""
-            }
+                "title": @template.ingrid.partial.key-value(item = info.get().getTitle()),
+                "date": "${info.get().getDate()}",
+                "edition": "${info.get().getEdition()}"
+            }@if (!info.isLast()),@endif
+            @endfor
         ]
     },
     "featureCatalogueDescription": {
         "citation": [
+            @for(var info : ForSupport.of(model.getFeatureCatalogueDescription()))
             {
-                "title": {
-                    "key": ""
-                },
-                "date": "",
-                "edition": ""
-            }
+                "title": @template.ingrid.partial.key-value(item = info.get().getTitle()),
+                "date": "${info.get().getDate()}",
+                "edition": "${info.get().getEdition()}"
+            }@if (!info.isLast()),@endif
+            @endfor
         ],
         "featureTypes": @template.ingrid.partial.key-values(list = model.getFeatureTypes())
     },
@@ -125,10 +125,11 @@
             "measResult": ${model.getCompletenessOmissionValue()}
         }
     },
+    !{var positionalAccuracy = model.getPositionalAccuracy();}
     "absoluteExternalPositionalAccuracy": {
-        "vertical": -1,
-        "horizontal": -1,
-        "griddedDataPositionalAccuracy": -1
+        "vertical": @if(positionalAccuracy.getVertical() != null)${positionalAccuracy.getVertical()}@else null@endif,
+        "horizontal": @if(positionalAccuracy.getHorizontal() != null)${positionalAccuracy.getHorizontal()}@else null@endif,
+        "griddedDataPositionalAccuracy": @if(positionalAccuracy.getGriddedDataPositionalAccuracy() != null)${positionalAccuracy.getGriddedDataPositionalAccuracy()}@else null@endif
     },
     "qualities": [
         @for(var quality : ForSupport.of(model.getQualities()))

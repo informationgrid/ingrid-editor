@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exports.iso
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
 data class IdentificationInfo(
     @JacksonXmlProperty(localName = "SV_ServiceIdentification") private val serviceIdentificationInfo: SVServiceIdentification?,
@@ -29,7 +30,7 @@ class MDDataIdentification(
     override val operatesOn: List<OperatesOn>?,
     // ---- only dataset
     val spatialRepresentationType: List<SpatialRepresentationType>?,
-    val spatialResolution: List<CharacterString>?,
+    val spatialResolution: List<SpatialResolution>?,
     val language: List<Language>,
     val characterSet: List<CharacterSet>?,
     val topicCategory: List<TopicCategory>?,
@@ -41,6 +42,37 @@ class MDDataIdentification(
     abstract, purpose, status, pointOfContact, resourceMaintenance, descriptiveKeywords, resourceSpecificUsage,
     resourceConstraints, graphicOverview, serviceType, serviceTypeVersion, extent, coupledResource, couplingType,
     containsOperations, operatesOn
+)
+
+data class SpatialResolution(
+    @JacksonXmlProperty(localName = "MD_Resolution") val mdResolution: MDResolution?
+)
+
+data class MDResolution(
+    val equivalentScale: EquivalentScale?,
+    val distance: Distance?
+)
+
+data class Distance(
+    @JacksonXmlProperty(localName = "Distance") val mdDistance: MDDistance
+)
+
+data class MDDistance(
+    @JacksonXmlProperty(isAttribute = true) val uom: String?
+) {
+    @JacksonXmlText val value: Int? = null
+}
+
+data class EquivalentScale(
+    @JacksonXmlProperty(localName = "MD_RepresentativeFraction") val mdRepresentativeFraction: MDRepresentativeFraction?
+)
+
+data class MDRepresentativeFraction(
+    val denominator: MDInteger
+)
+
+data class MDInteger(
+    @JacksonXmlProperty(localName = "Integer") val value: Int?
 )
 
 data class TopicCategory(
