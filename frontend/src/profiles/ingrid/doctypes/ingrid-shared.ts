@@ -546,24 +546,15 @@ export abstract class IngridShared extends BaseDoctype {
                 required: true,
               }),
               options.extraInfoCharSetData
-                ? this.addGroupSimple(
-                    "metadata",
-                    [
-                      this.addSelectInline(
-                        "characterSet",
-                        "Zeichensatz des Datensatzes",
-                        {
-                          showSearch: true,
-                          options: this.getCodelistForSelect(
-                            510,
-                            "characterSet"
-                          ),
-                          codelistId: 510,
-                          className: "optional",
-                        }
-                      ),
-                    ],
-                    { className: "flex-1" }
+                ? this.addSelectInline(
+                    "characterSet",
+                    "Zeichensatz des Datensatzes",
+                    {
+                      showSearch: true,
+                      options: this.getCodelistForSelect(510, "characterSet"),
+                      codelistId: 510,
+                      className: "optional",
+                    }
                   )
                 : null,
             ].filter(Boolean),
