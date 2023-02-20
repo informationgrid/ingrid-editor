@@ -405,6 +405,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
+
+        // make sure to reset the model before detecting changes, so that the old
+        // data is not included in the new form
+        // @ts-ignore
+        this.model = {};
+        this.formInfoModel = null;
+
         // do change detection to update formly component with new fields and form
         this.cdr.detectChanges();
       }

@@ -33,6 +33,7 @@ export class GeoServiceDoctype extends IngridShared {
         this.addGroupSimple("service", [
           this.addRepeatList("classification", "Klassifikation des Dienstes", {
             asSelect: true,
+            showSearch: true,
             required: true,
             options: this.getCodelistForSelect(5200, "classification"),
             codelistId: 5200,
@@ -43,6 +44,7 @@ export class GeoServiceDoctype extends IngridShared {
               [
                 this.addSelectInline("type", "Art des Dienstes", {
                   required: true,
+                  showSearch: true,
                   options: this.getCodelistForSelect(5100, "type"),
                   codelistId: 5100,
                   hasInlineContextHelp: true,
@@ -65,6 +67,7 @@ export class GeoServiceDoctype extends IngridShared {
             this.addRepeatListInline("version", "Version des Dienstes", {
               options: this.getCodelistForSelect(5152, "version"),
               codelistId: 5152,
+              showSearch: true,
               fieldGroupClassName: "flex-1",
               hasInlineContextHelp: true,
               wrappers: ["inline-help"],
@@ -150,6 +153,7 @@ export class GeoServiceDoctype extends IngridShared {
                 },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {
+                showSearch: true,
                 options: <SelectOptionUi[]>[
                   { label: "loose", value: "loose" },
                   { label: "mixed", value: "mixed" },

@@ -28,6 +28,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addGroup(null, "Beschreibung", [
           this.addSelectInline("serviceType", "Art des Dienstes", {
+            showSearch: true,
             options: this.getCodelistForSelect(5300, "serviceType"),
             codelistId: 5300,
             hasInlineContextHelp: true,
