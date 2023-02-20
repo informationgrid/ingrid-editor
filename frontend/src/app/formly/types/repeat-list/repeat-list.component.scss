@@ -39,14 +39,19 @@
     }
   }
 
-  .mat-mdc-icon-button {
+  .close {
     visibility: hidden;
   }
 
   &:hover {
-    .mat-mdc-icon-button {
+    .close {
       visibility: visible;
     }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0px 0px 1px 0px #000;
   }
 }
 
