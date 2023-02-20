@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 
 export interface Options {
+  id?: string;
   wrappers?: string[];
   className?: string;
   required?: boolean;
@@ -93,7 +94,7 @@ export class FormFieldHelper {
   addGroup(id: string, label: string, fields: any[], options?) {
     return <FormlyFieldConfig>{
       key: id,
-      id: id,
+      id: options?.id,
       className: options?.className,
       fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
       wrappers: options?.wrappers ?? ["panel"],
@@ -183,7 +184,7 @@ export class FormFieldHelper {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      id: id,
+      id: options?.id,
       type: "repeatChip",
       wrappers: ["panel"],
       defaultValue: [],
@@ -293,7 +294,7 @@ export class FormFieldHelper {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      id: id,
+      id: options?.id,
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
