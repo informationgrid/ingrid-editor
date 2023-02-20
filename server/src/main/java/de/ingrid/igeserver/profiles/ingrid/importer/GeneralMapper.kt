@@ -278,11 +278,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val datumId = codeListService.getCodeListEntryId("101", datum, "de")
                 return if (uomId == null || min == null || max == null || datumId == null) null
                 else VerticalExtentModel(uomId, min, max, datumId)
-            }?.getOrNull(0)
-    }
-
-    fun getReferenceDateType(): KeyValue {
-        return KeyValue()
+            }?.getOrNull<VerticalExtentModel>(0)
     }
 
     fun getLanguage(): KeyValue {
@@ -314,7 +310,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
                 val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "ISO")
-                Event(KeyValue(typeKey), it?.date?.date?.dateTime ?: "")
+                Event(KeyValue(typeKey), it.date?.date?.dateTime ?: "")
             } ?: emptyList()
     }
 
@@ -334,7 +330,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     val type = determineTemporalType(period) 
                     val typeSince = determineTemporalTypeSince(period) 
                     return TimeInfo(
-                        period.beginPosition?.value!!, 
+                        period.beginPosition?.value, 
                         type, 
                         KeyValue(statusKey),
                         period.endPosition?.value,
@@ -344,25 +340,28 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull(0)
+            ?.getOrNull<TimeInfo>(0)
     }
 
-    private fun determineTemporalType(period: TimePeriod): KeyValue {
+    private fun determineTemporalType(period: TimePeriod): KeyValue? {
         if (period.beginPosition?.value != null && period.endPosition?.value != null) {
-            return KeyValue("1") // von
+            return KeyValue("since") // von
+        } else if (period.beginPosition?.indeterminatePosition == "unknown"){
+            return KeyValue("until")
+        } else if (period.endPosition?.indeterminatePosition == "unknown"){
+            return KeyValue("since")
+        } else if (period.endPosition?.indeterminatePosition == "now"){
+            return KeyValue("since")
         }
         
-//        if (period.endPosition?.indeterminatePosition == "now")
-        
-        return KeyValue("?")
+        return null
     }
     
     private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
-        if (period.endPosition?.value != null) return KeyValue("exactDate")
+        if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate")
         if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime")
-        if (period.endPosition?.indeterminatePosition != "now") return KeyValue("unknown")
+        if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown")
         
-        // bis: Zeitpunkt des Abrufs -> now
         return null
     }
 
@@ -473,11 +472,11 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "ISO")
                 val specificationKeyValue = if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
-                val publicationDate = it?.specification?.citation?.date?.getOrNull(0)?.date?.date?.date
+                val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
                 ConformanceResult(
                     pass,
-                    specificationEntryId != null, 
-                    it?.explanation?.value,
+                    specificationEntryId != null,
+                    it.explanation.value,
                     specificationKeyValue,
                     publicationDate
                 )
@@ -654,7 +653,7 @@ data class MaintenanceInterval(
     val description: String?
 )
 
-data class TimeInfo(val date: String, val type: KeyValue, val status: KeyValue, val untilDate: String? = null, val dateTypeSince: KeyValue? = null)
+data class TimeInfo(val date: String?, val type: KeyValue?, val status: KeyValue, val untilDate: String? = null, val dateTypeSince: KeyValue? = null)
 
 data class Event(val type: KeyValue, val date: String)
 

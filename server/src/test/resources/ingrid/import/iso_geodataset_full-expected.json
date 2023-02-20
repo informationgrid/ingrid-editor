@@ -306,12 +306,15 @@
       }
     ],
     "resourceDateType": {
-      "key": "at"
+      "key": "since"
     },
     "status": {
       "key": "7"
     },
-    "resourceDate": "2023-02-08T00:00:00.000+01:00"
+    "resourceDate": "2016-03-01T00:00:00.000+01:00",
+    "resourceDateTypeSince": {
+      "key": "requestTime"
+    }
   },
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": {
