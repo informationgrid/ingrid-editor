@@ -15,7 +15,7 @@
         tabindex="0"
         (keydown.delete)="removeItem(i, $event)"
         (keydown.backspace)="removeItem(i, $event)"
-        (click)="this.onItemClick(model[i]?.key)"
+        (click)="$event.target.focus() && this.onItemClick(model[i]?.key)"
     >
         <div class="text-wrapper">
             <span class="list-display-element">

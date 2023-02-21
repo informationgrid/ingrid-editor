@@ -40,18 +40,24 @@
   }
 
   .close {
-    visibility: hidden;
+    opacity: 0;
   }
 
-  &:hover {
+  &:hover,
+  &:focus {
     .close {
-      visibility: visible;
+      opacity: 1;
     }
   }
 
+  .close:focus {
+    opacity: 1;
+  }
+
+  &:focus,
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0px 0px 1px 0px #000;
+    box-shadow: inset 0 0 1px 0 #000;
   }
 }
 
