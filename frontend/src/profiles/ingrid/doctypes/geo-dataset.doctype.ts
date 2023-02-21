@@ -141,7 +141,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   { className: "flex-2" }
                 ),
                 this.addInputInline(
-                  "numberOfDimenstions",
+                  "numberOfDimensions",
                   "Anzahl der Dimensionen",
                   {
                     type: "number",
