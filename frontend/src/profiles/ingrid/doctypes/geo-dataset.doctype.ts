@@ -113,7 +113,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 },
               ],
             }),
-            this.addRepeat("axisDimensionsProperties", null, {
+            this.addRepeat("axesDimensionProperties", null, {
               fields: [
                 this.addSelectInline("name", "Achsenbezeichnung", {
                   options: this.getCodelistForSelect(514, "name"),
