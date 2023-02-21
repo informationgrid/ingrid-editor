@@ -11,6 +11,7 @@ import {
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
+import { FormControl } from "@angular/forms";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -151,7 +152,9 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
           }),
           this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-            expressions: { hide: "!model.isInspireIdentified" },
+            expressions: {
+              hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
+            },
             options: [
               {
                 value: "Ja",
@@ -183,6 +186,7 @@ export abstract class IngridShared extends BaseDoctype {
       }
       field.options.formState.updateModel();
     }
+
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
       return;
@@ -662,6 +666,46 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
               ],
+              validators: {
+                inspireConformGeoservice: {
+                  expression: (ctrl, field) => {
+                    const model = field.options.formState.mainModel;
+                    return (
+                      !model ||
+                      model._type !== "InGridGeoService" ||
+                      this.conformityExists(ctrl, "10", "1")
+                    );
+                  },
+                  message:
+                    "Die Konformität 'VERORDNUNG (EG) Nr. 976/2009...' muss vorhanden sein und den Wert 'konform' haben",
+                },
+                inspireConformGeodataset: {
+                  expression: (ctrl, field) => {
+                    const model = field.options.formState.mainModel;
+                    return (
+                      !model ||
+                      model._type !== "InGridGeoDataset" ||
+                      !model.isInspireConform ||
+                      this.conformityExists(ctrl, "12", "1")
+                    );
+                  },
+                  message:
+                    "Die Konformität 'VERORDNUNG (EG) Nr. 1089/2010...' muss vorhanden sein und den Wert 'konform' haben",
+                },
+                inspireNotConformGeodataset: {
+                  expression: (ctrl, field) => {
+                    const model = field.options.formState.mainModel;
+                    return (
+                      !model ||
+                      model._type !== "InGridGeoDataset" ||
+                      model.isInspireConform ||
+                      !this.conformityExists(ctrl, "12", "1")
+                    );
+                  },
+                  message:
+                    "Die Konformität 'VERORDNUNG (EG) Nr. 1089/2010...' muss vorhanden sein und der Wert darf nicht 'konform' sein",
+                },
+              },
             })
           : null,
         this.addGroupSimple("extraInfo", [
@@ -869,22 +913,66 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleInspireIdentifiedClick(field) {
     const checked = field.formControl.value;
-    if (!checked) return;
+    if (checked) {
+      this.handleActivateInspireIdentified(field);
+    } else {
+      this.handleDeactivateInspireIdentified(field);
+    }
+  }
 
+  private handleActivateInspireIdentified(field) {
     const cookieId = "HIDE_INSPIRE_INFO";
+    const isOpenData = field.model.isOpenData === true;
 
     const executeAction = () => {
+      const isGeoService = field.model._type === "InGridGeoService";
+      const isGeoDataset = field.model._type === "InGridGeoDataset";
+
       field.model.isInspireConform = true;
 
-      const isGeodataset = field.model._type === "InGridGeoDataset";
-      if (isGeodataset) {
+      if (isGeoService) {
+        if (isOpenData) {
+          field.model.resource.accessConstraints = [{ key: "1" }];
+        }
+
+        const publicationDate = this.codelistQuery.getCodelistEntryByKey(
+          "6005",
+          "10"
+        )?.data;
+
+        const conformanceValues = (field.model.conformanceResult ?? []).filter(
+          (item) => item.specification?.key !== "10"
+        );
+        conformanceValues.push({
+          specification: {
+            key: "10",
+          },
+          pass: {
+            key: "1",
+          },
+          publicationDate:
+            publicationDate?.length > 0 ? new Date(publicationDate) : null,
+          isInspire: true,
+        });
+        field.model.conformanceResult = conformanceValues;
+      } else if (isGeoDataset) {
         field.model.spatialScope = { key: "885989663" }; // Regional
-        field.options.formState.updateModel();
       }
+
+      field.options.formState.updateModel();
     };
 
-    const message =
-      "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction();
+      return;
+    }
+
+    const inspireMessage =
+      "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
+    const openDataMessage =
+      "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'keine' ersetzt. Möchten Sie fortfahren?";
+    const message = inspireMessage + (isOpenData ? openDataMessage : "");
+
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -898,5 +986,54 @@ export abstract class IngridShared extends BaseDoctype {
         if (decision === "ok") executeAction();
         else field.formControl.setValue(false);
       });
+  }
+
+  private handleDeactivateInspireIdentified(field) {
+    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
+    const isOpenData = field.model.isOpenData === true;
+
+    const executeAction = () => {
+      if (isOpenData) field.model.resource.accessConstraints = [];
+
+      field.model.conformanceResult = (
+        field.model.conformanceResult ?? []
+      ).filter((item) => item.specification?.key !== "10");
+      field.options.formState.updateModel();
+    };
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction();
+      return;
+    }
+
+    const inspireMessage =
+      "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
+    const openDataMessage =
+      "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    const message = inspireMessage + (isOpenData ? openDataMessage : "");
+
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "ok") executeAction();
+        else field.formControl.setValue(false);
+      });
+  }
+
+  private conformityExists(
+    ctrl: FormControl,
+    specKey: string,
+    passKey: string
+  ) {
+    return ctrl.value?.some(
+      (row) => row.specification?.key === specKey && row.pass?.key === passKey
+    );
   }
 }
