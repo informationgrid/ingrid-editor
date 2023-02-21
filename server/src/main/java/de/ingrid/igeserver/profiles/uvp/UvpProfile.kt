@@ -5,6 +5,7 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
@@ -42,6 +43,7 @@ class UvpProfile @Autowired constructor(
     override val title = "UVP Katalog"
     override val description = null
     override val indexExportFormatID = "indexUvpIDF"
+    override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(

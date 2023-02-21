@@ -127,6 +127,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   addToList(option: SelectOptionUi) {
+    if (this.selector && !this.selector.panelOpen) {
+      // this.inputControl.setValue("");
+      setTimeout(() => this.selector.open());
+      return;
+    }
+
     // ignore duplicate entries
     const containsCodelistItem =
       option.value &&
@@ -163,11 +169,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     if (typeof option === "string") {
       return this.parameterOptions?.filter(
-        (originOption) => originOption.label.indexOf(option) !== -1
+        (originOption) =>
+          originOption.label.toLowerCase().indexOf(option.toLowerCase()) !== -1
       );
     } else {
       return this.parameterOptions?.filter(
-        (originOption) => originOption.value !== option.value
+        (originOption) =>
+          originOption.value.toLowerCase() !== option.value?.toLowerCase()
       );
     }
   }
@@ -181,12 +189,19 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     });
   }
 
-  removeItem(index: number) {
+  removeItem(index: number, $event?: KeyboardEvent) {
     this.remove(index);
     this.manualUpdate.next("");
 
     if (this.props.asSelect && this.inputControl.disabled) {
       this.inputControl.enable();
+    }
+
+    // focus next element when removed by keyboard
+    if ($event) {
+      const nextElement = ($event.currentTarget as HTMLElement)
+        ?.nextElementSibling as HTMLElement;
+      nextElement?.focus();
     }
   }
 
@@ -206,6 +221,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     );
   }
 
+  handleKeydown($event: KeyboardEvent) {
+    if ($event.key !== "Escape") {
+      $event.stopImmediatePropagation();
+    }
+  }
+
   onOptionClick($event: MouseEvent, option: SelectOptionUi) {
     if (option.disabled) {
       // do nothing
@@ -221,6 +242,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   addFreeEntry(value: string) {
+    if (value.trim() === "") return;
+
     // check if really free entry
     const option = this.parameterOptions?.find(
       (param) => param.label === value

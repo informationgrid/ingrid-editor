@@ -140,7 +140,7 @@ class IndexingTask @Autowired constructor(
                     realIndexName = info.second
                     toType = "base"
                     toAlias = categoryAlias
-                    docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
+                    docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
                 }
 
                 var page = -1
@@ -324,7 +324,7 @@ class IndexingTask @Autowired constructor(
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
-            docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
+            docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
         }
     }
 
