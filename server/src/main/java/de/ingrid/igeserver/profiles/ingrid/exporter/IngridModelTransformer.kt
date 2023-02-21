@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
@@ -9,7 +11,6 @@ import de.ingrid.igeserver.exports.iso19115.Thesaurus
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -17,18 +18,17 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 
-class IngridModelTransformer constructor(
+open class IngridModelTransformer constructor(
     val model: IngridModel,
     val catalogIdentifier: String,
-    val codelistHandler: CodelistHandler,
+    val codelists: CodelistTransformer,
     val config: Config,
     val catalogService: CatalogService,
 ) {
 
-
     val data = model.data
     val purpose = data.resource?.purpose
-    val status = getCodelistValue("523", data.temporal.status, "iso")
+    val status = codelists.getValue("523", data.temporal.status, "iso")
 
     val resourceDateType = data.temporal.resourceDateType?.key
     val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
@@ -96,9 +96,9 @@ class IngridModelTransformer constructor(
 
 
     // Always use UTF-8 (see INGRID-2340)
-    val characterSetCode = getCodelistValue("510", data.metadata.characterSet) ?: "utf8"
+    val characterSetCode = codelists.getValue("510", data.metadata.characterSet) ?: "utf8"
     val spatialSystems = data.spatial.spatialSystems?.map {
-        val referenceSystem = getCodelistValue("100", it)
+        val referenceSystem = codelists.getValue("100", it)
         val epsgLink =
             if (referenceSystem?.startsWith("EPSG") == true)
                 "http://www.opengis.net/def/crs/EPSG/0/" + referenceSystem.substring(5, referenceSystem.indexOf(":"))
@@ -107,12 +107,12 @@ class IngridModelTransformer constructor(
     }
     val description = data.description
     var datasetURL: String
-    val advProductGroups = data.advProductGroups?.map { getCodelistValue("8010", it) } ?: emptyList()
+    val advProductGroups = data.advProductGroups?.map { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
     val dateEvents = data.temporal.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
-        keywords = data.themes?.map { Keyword(name = getCodelistValue("6100", it), link = null) } ?: emptyList(),
+        keywords = data.themes?.map { Keyword(name = codelists.getValue("6100", it), link = null) } ?: emptyList(),
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
@@ -122,7 +122,7 @@ class IngridModelTransformer constructor(
         name = null,
     )
     val furtherLegalBasisKeywords = Thesaurus(
-        keywords = data.extraInfo?.legalBasicsDescriptions?.map { Keyword(name = getCodelistValue("1350", it), link = null) } ?: emptyList(),
+        keywords = data.extraInfo?.legalBasicsDescriptions?.map { Keyword(name = codelists.getValue("1350", it), link = null) } ?: emptyList(),
         date = "2020-05-05",
         name = "Further legal basis",
         showType = false
@@ -159,7 +159,7 @@ class IngridModelTransformer constructor(
         name = "",
         keywords = this.data.openDataCategories?.map {
             Keyword(
-                this.getCodelistValue(
+                codelists.getValue(
                     "6400",
                     it
                 )
@@ -188,48 +188,23 @@ class IngridModelTransformer constructor(
 
     val parentIdentifier: String? = data.parentIdentifier
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._modified)
-    var pointOfContact: AddressModel? = null
+    var pointOfContact = data.pointOfContact?.map{ AddressModelTransformer(it.ref!!, codelists, it.type)} ?: emptyList()
 
-    private fun determinePointOfContact(): AddressModel? {
+    var contact = data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContact") }?.ref
 
-        val ref = data.pointOfContact
-            ?.firstOrNull()
-            ?.ref ?: return null
-
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id)
-
-        return if (nonHiddenAddress.size > 0) {
-            nonHiddenAddress.last()
-        } else null
-
-    }
-
-
-    fun getCodelistValue(codelistId: String, entry: KeyValueModel?): String? {
-        return getCodelistValue(codelistId, entry, "de")
-    }
-
-    fun getCodelistValue(codelistId: String, entry: KeyValueModel?, field: String): String? =
-        if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) else entry?.value
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
         formatter.format(Date.from(date.toInstant()))
 
-    fun getPostBoxString(): String {
-        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${pointOfContact?.address?.city}"
-    }
-
-    fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
-
 
     private fun getPersonStringFromJson(address: AddressModel): String {
         return listOfNotNull(
-            getCodelistValue(
+            codelists.getValue(
                 "4300",
                 address.salutation
             ),
-            getCodelistValue(
+            codelists.getValue(
                 "4305",
                 address.academicTitle
             ),
@@ -239,7 +214,6 @@ class IngridModelTransformer constructor(
     }
 
     init {
-        pointOfContact = determinePointOfContact()
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.datasetURL =
             (if (catalog.settings?.config?.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/${catalogIdentifier}" else catalog.settings?.config?.namespace!!)

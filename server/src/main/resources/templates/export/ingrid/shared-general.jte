@@ -12,6 +12,16 @@
 <gmd:fileIdentifier>
     <gco:CharacterString>${page.getModel().getUuid()}</gco:CharacterString>
 </gmd:fileIdentifier>
+
+@if(page.getRegionKey() != null)
+<idf:regionKey>
+    <key>${page.getRegionKey().getValue()}</key>
+    <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}</url>
+</idf:regionKey>
+@endif
+
+
+
 <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${page.getMetadataLanguage()}" />
 </gmd:language>
@@ -37,7 +47,7 @@
     @endif
 @endif
 <gmd:contact>
-    !{var address = page.getPointOfContact();}
+    !{var address = page.getContact();}
     @if(address != null)
         <idf:idfResponsibleParty type="100" uuid="${address.getUuid()}">
             <gmd:organisationName>
@@ -113,7 +123,7 @@
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode
                                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode"
-                                        codeListValue="${page.getCodelistValue("502", event.getReferenceDateType(), "iso")}" />
+                                        codeListValue="${page.getCodelists().getValue("502", event.getReferenceDateType(), "iso")}" />
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
@@ -134,9 +144,8 @@
             <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="${page.getStatus()}"/>
         </gmd:status>
         @endif
-        <gmd:pointOfContact>
-            <%--                TODO                             --%>
-        </gmd:pointOfContact>
+        @template.ingrid.pointOfContact(addresses = page.getPointOfContact())
+
 
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
@@ -261,7 +270,7 @@
                                         <gml:VerticalCS gml:id="verticalCS_ID_${TransformationTools.getRandomUUID()}">
                                             <gml:identifier codeSpace=""/>
                                             <gml:axis>
-                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_${TransformationTools.getRandomUUID()}" uom="${ page.getCodelistValue("102", verticalExtent.getUnitOfMeasure(), "iso")}">
+                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_${TransformationTools.getRandomUUID()}" uom="${ page.getCodelists().getValue("102", verticalExtent.getUnitOfMeasure(), "iso")}">
                                                     <gml:identifier codeSpace=""/>
                                                     <gml:axisAbbrev/>
                                                     <gml:axisDirection codeSpace=""/>
@@ -272,7 +281,7 @@
                                     <gml:verticalDatum>
                                         <gml:VerticalDatum gml:id="verticalDatum_ID_${TransformationTools.getRandomUUID()}">
                                             <gml:identifier codeSpace=""/>
-                                            <gml:name>${page.getCodelistValue("101", verticalExtent.getDatum(), "en")}</gml:name>
+                                            <gml:name>${page.getCodelists().getValue("101", verticalExtent.getDatum(), "en")}</gml:name>
                                             <gml:scope/>
                                         </gml:VerticalDatum>
                                     </gml:verticalDatum>

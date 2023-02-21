@@ -2,8 +2,8 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -32,6 +32,8 @@ class IngridIDFExporter @Autowired constructor(
 ) : IgeExporter {
 
     val log = logger()
+
+    val codelistTransformer = CodelistTransformer(codelistHandler)
 
 
     override val typeInfo = ExportTypeInfo(
@@ -73,10 +75,26 @@ class IngridIDFExporter @Autowired constructor(
         }
     }
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
+    private val mapper = ObjectMapper().registerKotlinModule()
 
-        val mapper = ObjectMapper().registerKotlinModule()
-        val modelTransformer = IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalogId, codelistHandler, config, catalogService)
+    private fun getModelTransformer(json: Document, catalogId: String): IngridModelTransformer {
+        val ingridModel = mapper.convertValue(json, IngridModel::class.java)
+
+        val transformers = mapOf(
+            "InGridSpecialisedTask" to IngridModelTransformer::class,
+            "InGridGeoDataset" to GeodatasetModelTransformer::class,
+            "InGridLiterature" to IngridModelTransformer::class,
+            "InGridGeoService" to IngridModelTransformer::class,
+            "InGridProject" to IngridModelTransformer::class,
+            "InGridDataCollection" to IngridModelTransformer::class,
+            "InGridInformationSystem" to IngridModelTransformer::class
+        )
+        val transformerClass = transformers[ingridModel.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel.type}")
+        return transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService)
+    }
+
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
+        val modelTransformer = getModelTransformer(json, catalogId)
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer

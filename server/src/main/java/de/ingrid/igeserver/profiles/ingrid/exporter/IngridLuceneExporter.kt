@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.LuceneExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -22,7 +23,9 @@ class IngridLuceneExporter @Autowired constructor(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
-    ) : LuceneExporter(catalogRepo, codelistService) {
+) : LuceneExporter(catalogRepo, codelistService) {
+
+    val codelistTransformer = CodelistTransformer(codelistHandler)
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
@@ -35,7 +38,13 @@ class IngridLuceneExporter @Autowired constructor(
 
         val mapper = ObjectMapper().registerKotlinModule()
         val modelTransformer =
-            IngridModelTransformer(mapper.convertValue(json, IngridModel::class.java), catalog.identifier, codelistHandler, config, catalogService)
+            IngridModelTransformer(
+                mapper.convertValue(json, IngridModel::class.java),
+                catalog.identifier,
+                codelistTransformer,
+                config,
+                catalogService
+            )
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer,

@@ -23,14 +23,14 @@
             <gmd:contact>
                 <idf:idfResponsibleParty type="100" uuid="FE8EDBF8-AC98-48AD-849F-8DC35D177481">
                     <gmd:organisationName>
-                        <gco:CharacterString>Nds. Umweltministerium</gco:CharacterString>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>
                                 <gmd:CI_Address>
                                     <gmd:electronicMailAddress>
-                                        <gco:CharacterString>martin.klenke@mu.niedersachsen.de</gco:CharacterString>
+                                        <gco:CharacterString>wemovetest@wemove.com</gco:CharacterString>
                                     </gmd:electronicMailAddress>
                                 </gmd:CI_Address>
                             </gmd:address>
