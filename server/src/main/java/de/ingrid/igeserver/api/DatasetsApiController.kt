@@ -135,7 +135,7 @@ class DatasetsApiController @Autowired constructor(
     ): ResponseEntity<List<JsonNode>> {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
             .let { it.canWrite || it.canOnlyWriteSubtree }
-        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it.toInt()).canRead }.all { it }
+        val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
         if (!(destCanWrite && sourceCanRead)) throw ForbiddenException.withAccessRights("No access to referenced datasets")
 
 
@@ -351,12 +351,19 @@ class DatasetsApiController @Autowired constructor(
 
     override fun getByUUID(
         principal: Principal,
-        uuid: String
+        uuid: String,
+        publish: Boolean?
     ): ResponseEntity<JsonNode> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
 
-        return getByID(principal, wrapper.id!!)
+        return if (publish == true) {
+            val document = documentService.getLastPublishedDocument(catalogId, uuid)
+            addMetadataToDocument(DocumentData(wrapper, document))
+            documentService.convertToJsonNode(document).let { ResponseEntity.ok(it) }
+        } else {
+            getByID(principal, wrapper.id!!)
+        }
     }
 
     override fun getByID(

@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
-import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -49,7 +48,7 @@ interface DatasetsApi {
         principal: Principal,
         @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
-        @Parameter(description = "If we want to delay the publification set this date.") @RequestParam(
+        @Parameter(description = "If we want to delay the publication set this date.") @RequestParam(
             value = "publishDate",
             required = false
         ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
@@ -156,10 +155,10 @@ interface DatasetsApi {
     fun getByUUID(
         principal: Principal,
         @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
-        /*@Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
+        @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
             required = false
-        ) publish: Boolean?*/
+        ) publish: Boolean?
     ): ResponseEntity<JsonNode>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
