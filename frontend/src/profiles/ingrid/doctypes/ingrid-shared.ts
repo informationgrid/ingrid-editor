@@ -308,7 +308,6 @@ export abstract class IngridShared extends BaseDoctype {
           options.regionKey
             ? this.addInput("regionKey", "Regionalschlüssel", {
                 wrappers: ["panel", "form-field"],
-                type: "number",
               })
             : null,
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
