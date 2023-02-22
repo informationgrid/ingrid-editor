@@ -663,6 +663,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       model._type !== "InGridGeoService" ||
+                      !model.isInspireConform ||
                       this.conformityExists(ctrl, "10", "1")
                     );
                   },
@@ -925,28 +926,11 @@ export abstract class IngridShared extends BaseDoctype {
           field.model.resource.accessConstraints = [{ key: "1" }];
         }
 
-        const publicationDate = this.codelistQuery.getCodelistEntryByKey(
-          "6005",
-          "10"
-        )?.data;
-
-        const conformanceValues = (field.model.conformanceResult ?? []).filter(
-          (item) => item.specification?.key !== "10"
-        );
-        conformanceValues.push({
-          specification: {
-            key: "10",
-          },
-          pass: {
-            key: "1",
-          },
-          publicationDate:
-            publicationDate?.length > 0 ? new Date(publicationDate) : null,
-          isInspire: true,
-        });
-        field.model.conformanceResult = conformanceValues;
+        this.addConformanceEntry(field, "10", "1");
       } else if (isGeoDataset) {
         field.model.spatialScope = { key: "885989663" }; // Regional
+
+        this.addConformanceEntry(field, "12", "1");
       }
 
       field.options.formState.updateModel();
@@ -1025,5 +1009,31 @@ export abstract class IngridShared extends BaseDoctype {
     return ctrl.value?.some(
       (row) => row.specification?.key === specKey && row.pass?.key === passKey
     );
+  }
+
+  private addConformanceEntry(
+    field,
+    specificationKey: string,
+    passKey: string
+  ) {
+    const publicationDate = this.codelistQuery.getCodelistEntryByKey(
+      "6005",
+      specificationKey
+    )?.data;
+    const conformanceValues = (field.model.conformanceResult ?? []).filter(
+      (item) => item.specification?.key !== specificationKey
+    );
+    conformanceValues.push({
+      specification: {
+        key: specificationKey,
+      },
+      pass: {
+        key: passKey,
+      },
+      publicationDate:
+        publicationDate?.length > 0 ? new Date(publicationDate) : null,
+      isInspire: true,
+    });
+    field.model.conformanceResult = conformanceValues;
   }
 }
