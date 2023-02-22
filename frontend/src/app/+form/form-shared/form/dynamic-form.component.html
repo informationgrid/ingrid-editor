@@ -55,6 +55,11 @@
                         (toggleOptionalFields)="hideOptionalFields = !$event"
                     ></ige-quick-navbar>
 
+                    <ige-error-panel
+                        *ngIf="showValidationErrors && numberOfErrors > 0"
+                        [numErrors]="numberOfErrors"
+                    ></ige-error-panel>
+
                     <div
                         class="form-inner"
                         [class.extra-space-toggle-button]="hasOptionalFields"

@@ -109,6 +109,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
   isStickyHeader = false;
+  numberOfErrors = 0;
+  private errorCounterSubscription: Subscription;
 
   constructor(
     private formularService: FormularService,
@@ -184,6 +186,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((doPublish) => {
         if (doPublish) {
+          this.numberOfErrors = 0;
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
           // @ts-ignore
@@ -483,12 +486,47 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private createNewForm() {
+    this.errorCounterSubscription?.unsubscribe();
+
     // create new form group since it can become corrupted, probably because of page caching
     // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
     this.form = new UntypedFormGroup({});
 
+    this.errorCounterSubscription = this.form.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        filter(() => this.showValidationErrors),
+        debounceTime(500)
+      )
+      .subscribe(() => {
+        const invalidFields = this.getInvalidControlNames(this.form);
+        console.warn("INVALID FIELDS: ", invalidFields);
+        this.numberOfErrors = invalidFields.length;
+      });
+
     // update form here instead of onInit, because of caching problem, where no onInit method is called
     // after revisiting the page
     this.formStateService.updateForm(this.form);
+  }
+
+  private getInvalidControlNames(input: FormGroup | FormArray): string[] {
+    let invalidControlNames: string[] = [];
+    Object.keys(input.controls).forEach((controlName) => {
+      const control = input.get(controlName)!;
+      if (control.invalid && control instanceof FormControl) {
+        invalidControlNames.push(controlName);
+      } else if (
+        control.invalid &&
+        (control instanceof FormGroup || control instanceof FormArray)
+      ) {
+        const invalidControls = this.getInvalidControlNames(control);
+        if (invalidControls.length === 0) {
+          invalidControlNames.push(controlName);
+        } else {
+          invalidControlNames.push(...this.getInvalidControlNames(control));
+        }
+      }
+    });
+    return [...new Set(invalidControlNames)];
   }
 }
