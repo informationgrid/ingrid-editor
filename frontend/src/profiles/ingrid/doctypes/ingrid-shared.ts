@@ -38,6 +38,13 @@ interface AdditionalInformationSectionOptions {
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
+  private inspireChangeMessage =
+    "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
+  private inspireDeleteMessage =
+    "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
+  private openDataMessage =
+    "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+
   protected constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
@@ -165,6 +172,8 @@ export abstract class IngridShared extends BaseDoctype {
                 id: false,
               },
             ],
+            click: (field) =>
+              setTimeout(() => this.handleIsInspireConformClick(field)),
           }),
         ]),
       ].filter(Boolean)
@@ -926,11 +935,11 @@ export abstract class IngridShared extends BaseDoctype {
           field.model.resource.accessConstraints = [{ key: "1" }];
         }
 
-        this.addConformanceEntry(field, "10", "1");
+        this.addConformanceEntry(field.model, "10", "1");
       } else if (isGeoDataset) {
         field.model.spatialScope = { key: "885989663" }; // Regional
 
-        this.addConformanceEntry(field, "12", "1");
+        this.addConformanceEntry(field.model, "12", "1");
       }
 
       field.options.formState.updateModel();
@@ -941,11 +950,10 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const inspireMessage =
-      "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
     const openDataMessage =
       "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'keine' ersetzt. Möchten Sie fortfahren?";
-    const message = inspireMessage + (isOpenData ? openDataMessage : "");
+    const message =
+      this.inspireChangeMessage + (isOpenData ? openDataMessage : "");
 
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -965,13 +973,15 @@ export abstract class IngridShared extends BaseDoctype {
   private handleDeactivateInspireIdentified(field) {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
     const isOpenData = field.model.isOpenData === true;
+    const isGeoService = field.model._type === "InGridGeoService";
+    const specificationToRemove = isGeoService ? "10" : "12";
 
     const executeAction = () => {
       if (isOpenData) field.model.resource.accessConstraints = [];
 
       field.model.conformanceResult = (
         field.model.conformanceResult ?? []
-      ).filter((item) => item.specification?.key !== "10");
+      ).filter((item) => item.specification?.key !== specificationToRemove);
       field.options.formState.updateModel();
     };
 
@@ -980,11 +990,8 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const inspireMessage =
-      "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
-    const openDataMessage =
-      "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
-    const message = inspireMessage + (isOpenData ? openDataMessage : "");
+    const message =
+      this.inspireDeleteMessage + (isOpenData ? this.openDataMessage : "");
 
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -1012,7 +1019,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private addConformanceEntry(
-    field,
+    model,
     specificationKey: string,
     passKey: string
   ) {
@@ -1020,7 +1027,7 @@ export abstract class IngridShared extends BaseDoctype {
       "6005",
       specificationKey
     )?.data;
-    const conformanceValues = (field.model.conformanceResult ?? []).filter(
+    const conformanceValues = (model.conformanceResult ?? []).filter(
       (item) => item.specification?.key !== specificationKey
     );
     conformanceValues.push({
@@ -1034,6 +1041,39 @@ export abstract class IngridShared extends BaseDoctype {
         publicationDate?.length > 0 ? new Date(publicationDate) : null,
       isInspire: true,
     });
-    field.model.conformanceResult = conformanceValues;
+    model.conformanceResult = conformanceValues;
+  }
+
+  private handleIsInspireConformClick(field) {
+    const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
+    const isConform = field.formControl.value;
+
+    const executeAction = () => {
+      if (isConform) {
+        this.addConformanceEntry(field.model, "12", "1");
+      } else {
+        this.addConformanceEntry(field.model, "12", "2");
+      }
+      field.options.formState.updateModel();
+    };
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction();
+      return;
+    }
+
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: this.inspireChangeMessage,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "ok") executeAction();
+        else field.formControl.setValue(!isConform);
+      });
   }
 }

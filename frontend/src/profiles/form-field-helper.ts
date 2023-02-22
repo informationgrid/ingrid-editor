@@ -490,7 +490,7 @@ export class FormFieldHelper {
     });
   }
 
-  addRadioboxes(id, label, options?) {
+  addRadioboxes(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -504,6 +504,7 @@ export class FormFieldHelper {
         valueProp: "id",
         options: options?.options,
         required: options?.required,
+        click: options?.click,
       },
       expressions: expressions,
     };
