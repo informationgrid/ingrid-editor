@@ -182,7 +182,6 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-1",
                         hasInlineContextHelp: true,
-                        wrappers: ["form-field", "inline-help"],
                       }
                     ),
                     this.addInputInline(
@@ -245,7 +244,6 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-3",
                         hasInlineContextHelp: true,
-                        wrappers: ["form-field", "inline-help"],
                       }
                     ),
                   ],
