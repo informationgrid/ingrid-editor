@@ -3,6 +3,11 @@
 :host {
   display: block;
 
+  .navigation-bar-wrapper {
+    background-color: $ige-background;
+    box-shadow: 0 2px 2px -2px #666666;
+  }
+
   .navigation-bar {
     max-width: 1260px;
     margin: 0 auto;
@@ -33,9 +38,6 @@
   position: sticky;
   top: 0;
   z-index: 2000;
-
-  background-color: $ige-background;
-  box-shadow: 0 2px 2px -2px #666666;
 
   .document-type {
     opacity: 1;

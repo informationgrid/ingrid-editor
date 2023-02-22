@@ -185,8 +185,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
       .subscribe((doPublish) => {
+        this.numberOfErrors = 0;
         if (doPublish) {
-          this.numberOfErrors = 0;
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
           // @ts-ignore
