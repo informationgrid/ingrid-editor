@@ -9,7 +9,12 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -42,7 +47,6 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { DocumentUtils } from "../../../services/document.utils";
 import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
@@ -59,7 +63,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
-  @ViewChild("sticky_header", { read: ElementRef }) stickyHeaderRef: ElementRef;
 
   sidebarWidth: number;
 
@@ -268,10 +271,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         untilDestroyed(this),
         // debounceTime(10), // do not handle all events
         filter((_) => this.formInfoRef !== undefined),
-        map((top): boolean => this.determineToggleState(element.scrollTop)),
+        map((): boolean => this.determineToggleState(element.scrollTop)),
         tap((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently
-        tap((top) =>
+        tap(() =>
           this.treeService.updateScrollPositionInStore(
             this.address,
             element.scrollTop
@@ -288,16 +291,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private toggleStickyHeader(show: boolean) {
     this.isStickyHeader = show;
-
-    if (show) {
-      // update dom with changes before we continue and need new client height
-      this.cdr.detectChanges();
-
-      this.paddingWithHeader =
-        this.stickyHeaderRef.nativeElement.clientHeight + "px";
-    } else {
-      this.paddingWithHeader = "0px";
-    }
   }
 
   /**
@@ -456,12 +449,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.currentProfile = profile;
 
     return this.formularService.getFields(profile);
-  }
-
-  private markFavorite($event: Event) {
-    // TODO: mark favorite
-    $event.stopImmediatePropagation();
-    console.log("TODO: Mark document as favorite");
   }
 
   rememberSizebarWidth(info) {
