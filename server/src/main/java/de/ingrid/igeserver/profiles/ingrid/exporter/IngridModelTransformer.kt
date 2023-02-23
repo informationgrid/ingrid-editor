@@ -5,6 +5,7 @@ import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exports.iso19115.Keyword
 import de.ingrid.igeserver.exports.iso19115.Thesaurus
@@ -26,6 +27,7 @@ open class IngridModelTransformer constructor(
     val catalogService: CatalogService,
 ) {
 
+    var citationURL: String? = null
     val data = model.data
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
@@ -47,11 +49,53 @@ open class IngridModelTransformer constructor(
             "requestTime" -> "indeterminatePosition=\"now\""
             else -> ""
         }
+    val maintenanceAndUpdateFrequency =
+        codelists.getValue("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency, "iso")
+
+    fun getUserDefinedMaintenanceFrequency(): String? {
+        val number = data.maintenanceInformation?.userDefinedMaintenanceFrequency?.number
+        val unit = codelists.getValue("1230", data.maintenanceInformation?.userDefinedMaintenanceFrequency?.unit, "de")
+        return if (number != null && unit != null) getISORepresentation(unit, number) else null
+    }
+
+    private fun getISORepresentation(unit: String, number: Int): String {
+        return when (unit) {
+            "Tage" -> "P${number}D"
+            "Jahre" -> "P${number}Y"
+            "Monate" -> "P${number}M"
+            "Stunden" -> "PT${number}H"
+            "Minuten" -> "PT${number}M"
+            "Sekunden" -> "PT${number}S"
+            else -> throw ServerException.withReason("Unknown unit: $unit")
+        }
+    }
+
+    val maintenanceNote = data.maintenanceInformation?.description
+
+    val graphicOverviews = data.graphicOverviews ?: emptyList()
+
+    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String? )
+
+    val useConstraints = data.resource?.useConstraints?.map {
+        // special case for "Es gelten keine Bedingungen"
+        val link =
+            if (it.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
+
+        UseConstraintTemplate(
+            CharacterStringModel(codelists.getValue("6500", it.title)!!, link),
+            it.source,
+            codelists.getData("6500", it.title?.key)?.replace("quelle\":\"\"", "quelle\":\"${it.source.orEmpty()}\"")
+        )
+
+    }
+
 
     val regionKey = if (data.spatial.regionKey != null) KeyValueModel(
         data.spatial.regionKey,
         data.spatial.regionKey.padEnd(12, '0')
     ) else null
+    val gridSpatialRepresentation = data.gridSpatialRepresentation
+    val cellGeometry = codelists.getValue("509", gridSpatialRepresentation?.cellGeometry, "iso")
     val spatialReferences = data.spatial.references ?: emptyList()
 
     fun getSpatialReferenceComponents(type: COORD_TYPE): String {
@@ -85,8 +129,9 @@ open class IngridModelTransformer constructor(
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
     var documentType = mapDocumentType()
 
-    val hierarchyLevel = "nonGeographicDataset"
-    val hierarchyLevelName = "job"
+
+    open val hierarchyLevel = "nonGeographicDataset"
+    open val hierarchyLevelName: String? = "job"
     val mdStandardName = "ISO19115"
     val mdStandardVersion = "2003/Cor.1:2006"
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
@@ -98,12 +143,13 @@ open class IngridModelTransformer constructor(
     // Always use UTF-8 (see INGRID-2340)
     val characterSetCode = codelists.getValue("510", data.metadata.characterSet) ?: "utf8"
     val spatialSystems = data.spatial.spatialSystems?.map {
-        val referenceSystem = codelists.getValue("100", it)
+        val referenceSystem =
+            codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
         val epsgLink =
             if (referenceSystem?.startsWith("EPSG") == true)
                 "http://www.opengis.net/def/crs/EPSG/0/" + referenceSystem.substring(5, referenceSystem.indexOf(":"))
             else null
-        KeyValueModel(referenceSystem, epsgLink)
+        CharacterStringModel(referenceSystem, epsgLink)
     }
     val description = data.description
     var datasetURL: String
@@ -122,7 +168,12 @@ open class IngridModelTransformer constructor(
         name = null,
     )
     val furtherLegalBasisKeywords = Thesaurus(
-        keywords = data.extraInfo?.legalBasicsDescriptions?.map { Keyword(name = codelists.getValue("1350", it), link = null) } ?: emptyList(),
+        keywords = data.extraInfo?.legalBasicsDescriptions?.map {
+            Keyword(
+                name = codelists.getValue("1350", it),
+                link = null
+            )
+        } ?: emptyList(),
         date = "2020-05-05",
         name = "Further legal basis",
         showType = false
@@ -170,6 +221,8 @@ open class IngridModelTransformer constructor(
         if (data.isInspireRelevant == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
 
     val specificUsage = data.resource?.specificUsage
+    val useLimitation = data.resource?.useLimitation
+
 
     val contentField: MutableList<String> = mutableListOf()
 
@@ -188,10 +241,11 @@ open class IngridModelTransformer constructor(
 
     val parentIdentifier: String? = data.parentIdentifier
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._modified)
-    var pointOfContact = data.pointOfContact?.map{ AddressModelTransformer(it.ref!!, codelists, it.type)} ?: emptyList()
+    var pointOfContact =
+        data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
 
-    var contact = data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContact") }?.ref
-
+    var contact =
+        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContact") }?.ref
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =

@@ -5,7 +5,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 
 open class CodelistTransformer constructor(
     val codelistHandler: CodelistHandler,
-    ) {
+) {
 
 
     fun getValue(codelistId: String, entry: KeyValueModel?): String? {
@@ -14,5 +14,8 @@ open class CodelistTransformer constructor(
 
     fun getValue(codelistId: String, entry: KeyValueModel?, field: String): String? =
         if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) else entry?.value
+
+
+    fun getData(codelistId: String, key: String?): String? = key?.let { codelistHandler.getCodelistEntryDataField(codelistId, it) }
 }
 

@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exports.iso19115.Keyword
 @import de.ingrid.igeserver.exports.iso19115.Thesaurus
@@ -29,7 +30,7 @@
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                @template.ingrid.anchorOrCharacterString(model = new KeyValueModel(thesaurus.getName(), thesaurus.getLink()))
+                                @template.ingrid.anchorOrCharacterString(model = new CharacterStringModel(thesaurus.getName(), thesaurus.getLink()))
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>

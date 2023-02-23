@@ -278,10 +278,10 @@
       "references": [
         {
           "value": {
-            "lat1": 3,
-            "lon1": 5,
-            "lat2": 4,
-            "lon2": 6
+            "lat1": 4,
+            "lon1": 3,
+            "lat2": 6,
+            "lon2": 5
           },
           "title": "Auenland",
           "type": "free"
@@ -396,7 +396,7 @@
     },
     "resource": {
       "purpose": "Herstellungszweck test",
-      "specificUsage": "Eignung/Nutzung\n test",
+      "specificUsage": "Eignung/Nutzung test",
       "accessConstraints": [
         {
           "key": "1"
@@ -458,24 +458,24 @@
       "type": {
         "key": "basis"
       },
-      "axisDimensionsProperties": [
-        {
-          "name": {
-            "key": "5"
-          },
-          "size": 3,
-          "resolution": 5
-        },
+      "axesDimensionProperties": [
         {
           "name": {
             "key": "2"
           },
           "size": 1,
           "resolution": 3
+        },
+        {
+          "name": {
+            "key": "5"
+          },
+          "size": 3,
+          "resolution": 5
         }
       ],
       "transformationParameterAvailability": true,
-      "numberOfDimenstions": 2,
+      "numberOfDimensions": 2,
       "cellGeometry": {
         "key": "2"
       }

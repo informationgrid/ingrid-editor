@@ -20,6 +20,9 @@
                 <gmd:organisationName>
                     <gco:CharacterString>${address.getModel().getOrganization()}</gco:CharacterString>
                 </gmd:organisationName>
+                <gmd:positionName>
+                    <gco:CharacterString>Notizen MMMM</gco:CharacterString>
+                </gmd:positionName>
             @endif
             <gmd:contactInfo>
                 <gmd:CI_Contact>

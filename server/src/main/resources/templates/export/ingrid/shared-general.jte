@@ -1,9 +1,13 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
+@import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel;
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.UseConstraint
 
 @param IngridModelTransformer page
 !{var spatial = page.getData().getSpatial();}
@@ -19,8 +23,6 @@
     <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}</url>
 </idf:regionKey>
 @endif
-
-
 
 <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${page.getMetadataLanguage()}" />
@@ -80,7 +82,45 @@
 <gmd:metadataStandardVersion>
     <gco:CharacterString>${page.getMdStandardVersion()}</gco:CharacterString>
 </gmd:metadataStandardVersion>
-@for(KeyValueModel spatialSystem : page.getSpatialSystems())
+
+
+@if(page.getGridSpatialRepresentation() != null)
+<gmd:spatialRepresentationInfo>
+    <gmd:MD_GridSpatialRepresentation>
+        <gmd:numberOfDimensions>
+            <gco:Integer>${page.getGridSpatialRepresentation().getNumberOfDimensions()}</gco:Integer>
+        </gmd:numberOfDimensions>
+        @for(AxisDimensionProperties axisDimensionProperties : page.getGridSpatialRepresentation().getAxesDimensionProperties())
+            <gmd:axisDimensionProperties>
+                <gmd:MD_Dimension>
+                    <gmd:dimensionName>
+                        <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="${page.getCodelists().getValue("514", axisDimensionProperties.getName(), "iso")}"/>
+                    </gmd:dimensionName>
+                    <gmd:dimensionSize>
+                        <gco:Integer>${axisDimensionProperties.getSize()}</gco:Integer>
+                    </gmd:dimensionSize>
+                    @if(axisDimensionProperties.getResolution() != null)
+                    <gmd:resolution>
+                        <gco:Scale uom="meter">${axisDimensionProperties.getResolution()}</gco:Scale>
+                    </gmd:resolution>
+                    @endif
+                </gmd:MD_Dimension>
+            </gmd:axisDimensionProperties>
+        @endfor
+        <gmd:cellGeometry>
+            <gmd:MD_CellGeometryCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="${page.getCellGeometry()}"/>
+        </gmd:cellGeometry>
+        <gmd:transformationParameterAvailability>
+            <gco:Boolean>true</gco:Boolean>
+        </gmd:transformationParameterAvailability>
+    </gmd:MD_GridSpatialRepresentation>
+</gmd:spatialRepresentationInfo>
+@endif
+
+
+
+
+@for(CharacterStringModel spatialSystem : page.getSpatialSystems())
     <gmd:referenceSystemInfo>
         <gmd:MD_ReferenceSystem>
             <gmd:referenceSystemIdentifier>
@@ -129,6 +169,15 @@
                     </gmd:date>
                     @endfor
                 @endif
+                @if( page.getCitationURL() != null )
+                <gmd:identifier>
+                    <gmd:MD_Identifier>
+                        <gmd:code>
+                            <gco:CharacterString>${page.getCitationURL()}</gco:CharacterString>
+                        </gmd:code>
+                    </gmd:MD_Identifier>
+                </gmd:identifier>
+                @endif
             </gmd:CI_Citation>
         </gmd:citation>
         <gmd:abstract>
@@ -145,6 +194,44 @@
         </gmd:status>
         @endif
         @template.ingrid.pointOfContact(addresses = page.getPointOfContact())
+
+        @if( page.getMaintenanceAndUpdateFrequency() != null)
+        <gmd:resourceMaintenance>
+            <gmd:MD_MaintenanceInformation>
+                <gmd:maintenanceAndUpdateFrequency>
+                    <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${page.getMaintenanceAndUpdateFrequency()}"/>
+                </gmd:maintenanceAndUpdateFrequency>
+                @if( page.getUserDefinedMaintenanceFrequency() != null)
+                <gmd:userDefinedMaintenanceFrequency>
+                    <gts:TM_PeriodDuration>${page.getUserDefinedMaintenanceFrequency()}</gts:TM_PeriodDuration>
+                </gmd:userDefinedMaintenanceFrequency>
+                @endif
+                <gmd:updateScope>
+                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="${page.getHierarchyLevel()}"/>
+                </gmd:updateScope>
+                @if( page.getMaintenanceNote() != null)
+                <gmd:maintenanceNote>
+                    <gco:CharacterString>${page.getMaintenanceNote()}</gco:CharacterString>
+                </gmd:maintenanceNote>
+                @endif
+            </gmd:MD_MaintenanceInformation>
+        </gmd:resourceMaintenance>
+        @endif
+        @for( GraphicOverview graphicOverview : page.getGraphicOverviews())
+        <gmd:graphicOverview>
+            <gmd:MD_BrowseGraphic>
+                <gmd:fileName>
+                    <gco:CharacterString>${graphicOverview.getFileName().getValue()}</gco:CharacterString>
+                </gmd:fileName>
+                @if( graphicOverview.getFileDescription() != null)
+                <gmd:fileDescription>
+                    <gco:CharacterString>${graphicOverview.getFileDescription()}</gco:CharacterString>
+                </gmd:fileDescription>
+                @endif
+            </gmd:MD_BrowseGraphic>
+        </gmd:graphicOverview>
+        @endfor
+
 
 
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
@@ -165,6 +252,50 @@
             </gmd:MD_Usage>
         </gmd:resourceSpecificUsage>
         @endif
+        @if( page.getUseLimitation() != null)
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:useLimitation>
+                        <gco:CharacterString>${page.getUseLimitation()}</gco:CharacterString>
+                    </gmd:useLimitation>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+        @endif
+        @if(page.getUseConstraints() != null)
+        <gmd:resourceConstraints>
+            <gmd:MD_LegalConstraints>
+                <gmd:useConstraints>
+                    <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                </gmd:useConstraints>
+                @for(UseConstraintTemplate useconstraint : page.getUseConstraints() )
+                    <gmd:otherConstraints>
+                        @template.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
+                    </gmd:otherConstraints>
+                    @if(useconstraint.getSource() != null)
+                        <gmd:otherConstraints>
+                            <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
+                        </gmd:otherConstraints>
+                    @endif
+                    @if(useconstraint.getJson() != null)
+                        <gmd:otherConstraints>
+                            <gco:CharacterString>${useconstraint.getJson()}</gco:CharacterString>
+                        </gmd:otherConstraints>
+                    @endif
+                @endfor
+            </gmd:MD_LegalConstraints>
+        </gmd:resourceConstraints>
+        @endif
+        <gmd:resourceConstraints>
+            <gmd:MD_LegalConstraints>
+                <gmd:accessConstraints>
+                    <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                </gmd:accessConstraints>
+                <gmd:otherConstraints>
+                    <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Es gelten keine Zugriffsbeschränkungen</gmx:Anchor>
+                </gmd:otherConstraints>
+            </gmd:MD_LegalConstraints>
+        </gmd:resourceConstraints>
+
 
         @for(String language : page.getDataLanguages())
             <gmd:language>
@@ -235,6 +366,19 @@
                         </gmd:geographicElement>
                     @endif
                 @endfor
+                @if(page.getRegionKey() != null)
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}">${page.getRegionKey().getValue()}</gmx:Anchor>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                @endif
                 @if(page.getResourceDateType() != null)
                     <gmd:temporalElement>
                         <gmd:EX_TemporalExtent>
@@ -289,19 +433,6 @@
                             </gmd:verticalCRS>
                         </gmd:EX_VerticalExtent>
                     </gmd:verticalElement>
-                @endif
-                @if(page.getRegionKey() != null)
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicDescription>
-                            <gmd:geographicIdentifier>
-                                <gmd:MD_Identifier>
-                                    <gmd:code>
-                                        <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}">${page.getRegionKey().getValue()}</gmx:Anchor>
-                                    </gmd:code>
-                                </gmd:MD_Identifier>
-                            </gmd:geographicIdentifier>
-                        </gmd:EX_GeographicDescription>
-                    </gmd:geographicElement>
                 @endif
             </gmd:EX_Extent>
         </gmd:extent>

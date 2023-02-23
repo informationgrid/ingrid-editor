@@ -1,12 +1,10 @@
-@import de.ingrid.igeserver.exporter.model.KeyValueModel
-@import de.ingrid.igeserver.exports.iso19115.Keyword
-@import de.ingrid.igeserver.exports.iso19115.Thesaurus
+@import de.ingrid.igeserver.exporter.model.CharacterStringModel
 
-@param KeyValueModel model
+@param CharacterStringModel model
 
-@if(model.getValue() != null )
-    <gmx:Anchor xlink:href="${model.getValue()}">${model.getKey()}</gmx:Anchor>
+@if(model.getLink() != null )
+    <gmx:Anchor xlink:href="${model.getLink()}">${model.getText()}</gmx:Anchor>
 @else
-    <gco:CharacterString>${model.getKey()}</gco:CharacterString>
+    <gco:CharacterString>${model.getText()}</gco:CharacterString>
 @endif
 

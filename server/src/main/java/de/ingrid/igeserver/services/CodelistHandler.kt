@@ -109,6 +109,14 @@ class CodelistHandler @Autowired constructor(
         return getCodelistValue(codelistId, key, "de")
     }
 
+    fun getCodelistEntryDataField(codelistId: String, key: String): String? {
+        return getCodelists(listOf(codelistId))
+            .find { it.id == codelistId }
+            ?.entries
+            ?.find { it.id == key }
+            ?.data
+    }
+
     fun getCodelistValue(codelistId: String, key: String, field: String): String? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }

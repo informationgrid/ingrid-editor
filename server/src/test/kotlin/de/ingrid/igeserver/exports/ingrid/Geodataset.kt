@@ -18,7 +18,7 @@ import io.mockk.mockk
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
-@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+//@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles(profiles = ["ingrid"])
 class Geodataset : AnnotationSpec() {
 
@@ -30,41 +30,52 @@ class Geodataset : AnnotationSpec() {
     @BeforeAll
     fun beforeAll() {
         this.exporter = IngridIDFExporter(codelistService, config, catalogService)
-        every { codelistService.getCodelistValue("100", "84", "de") } returns "CRS 84: CRS 84 / mathematisch"
-        every { codelistService.getCodelistValue("100", "4230", "de") } returns "EPSG 4230: ED50 / geographisch"
-        every {
-            codelistService.getCodelistValue(
-                "100",
-                "5676",
-                "de"
-            )
-        } returns "EPSG 5676: DHDN / Gauss-Krüger Zone 2 (E-N)"
-        every { codelistService.getCodelistValue("100", "9000011", "de") } returns "DE_DHDN / GK_3_HE100"
-        every { codelistService.getCodelistValue("100", "9000009", "de") } returns "DE_DHDN / GK_3_RP180"
-        every { codelistService.getCodelistValue("101", "5105", "en") } returns "Baltic Sea"
-        every { codelistService.getCodelistValue("101", "900007", "en") } returns "DE_DHHN85_NOH"
-        every { codelistService.getCodelistValue("101", "900011", "en") } returns "Mean Sea Level"
-        every { codelistService.getCodelistValue("102", "9002", "iso") } returns "Foot"
-        every { codelistService.getCodelistValue("102", "9036", "iso") } returns "Kilometre"
-        every { codelistService.getCodelistValue("502", "1", "iso") } returns "creation"
-        every { codelistService.getCodelistValue("502", "3", "iso") } returns "revision"
-        every { codelistService.getCodelistValue("505", "0", "iso") } returns "NOT_PRESENT"
-        every { codelistService.getCodelistValue("505", "7", "iso") } returns "pointOfContact"
-        every { codelistService.getCodelistValue("523", "4", "iso") } returns "onGoing"
-        every { codelistService.getCodelistValue("523", "6", "iso") } returns "required"
-        every { codelistService.getCodelistValue("6100", "105", "de") } returns "Adressen"
-        every { codelistService.getCodelistValue("6100", "313", "de") } returns "Atmosphärische Bedingungen"
-        every { codelistService.getCodelistValue("6100", "314", "de") } returns "Meteorologisch-geografische Kennwerte"
-        every { codelistService.getCodelistValue("6250", "8", "de") } returns "Hessen"
-        every { codelistService.getCodelistValue("6400", "3", "de") } returns "EDUC"
-        every { codelistService.getCodelistValue("6400", "9", "de") } returns "SOCI"
-        every { codelistService.getCodelistValue("8010", "1", "de") } returns "Digitale Landschaftsmodelle"
-        every { codelistService.getCodelistValue("8010", "2", "de") } returns "Digitale Geländemodelle"
-        every { codelistService.getCodelistValue("8010", "4", "de") } returns "3D-Gebäudemodelle"
-        every { codelistService.getCodelistValue("8010", "8", "de") } returns "ALKIS"
-        every { codelistService.getCodelistValue("1350", "45", "de") } returns "Gesetz über eine Holzstatistik"
-        // every { codelistService.getCodelistValue(any<String>(), any<String>(), any<String>()) } answers { "getCodelistValue " + firstArg<String>() + "_" + secondArg<String>() + "_" + thirdArg<String>() }
+
+        every { codelistService.getCodelistValue(any<String>(), any<String>(), any<String>()) } answers {
+            when (firstArg<String>() + "_" + secondArg<String>() + "_" + thirdArg<String>()) {
+                "100_84_de" -> "CRS 84: CRS 84 / mathematisch"
+                "100_4230_de" -> "EPSG 4230: ED50 / geographisch"
+                "100_5676_de" -> "EPSG 5676: DHDN / Gauss-Krüger Zone 2 (E-N)"
+                "100_9000011_de" -> "DE_DHDN / GK_3_HE100"
+                "100_9000009_de" -> "DE_DHDN / GK_3_RP180"
+                "101_5105_en" -> "Baltic Sea"
+                "101_900007_en" -> "DE_DHHN85_NOH"
+                "101_900011_en" -> "Mean Sea Level"
+                "102_9002_iso" -> "Foot"
+                "102_9036_iso" -> "Kilometre"
+                "502_1_iso" -> "creation"
+                "502_3_iso" -> "revision"
+                "505_0_iso" -> "NOT_PRESENT"
+                "505_7_iso" -> "pointOfContact"
+                "509_2_iso" -> "area"
+                "514_2_iso" -> "column"
+                "514_5_iso" -> "crossTrack"
+                "518_1_iso" -> "continual"
+                "523_4_iso" -> "onGoing"
+                "523_6_iso" -> "required"
+                "1230_5_de" -> "Monate"
+                "6100_105_de" -> "Adressen"
+                "6100_313_de" -> "Atmosphärische Bedingungen"
+                "6100_314_de" -> "Meteorologisch-geografische Kennwerte"
+                "6250_8_de" -> "Hessen"
+                "6400_3_de" -> "EDUC"
+                "6400_9_de" -> "SOCI"
+                "6500_25_de" -> "Datenlizenz Deutschland – Zero – Version 2.0"
+                "6500_26_de" -> "Es gelten keine Bedingungen"
+                "8010_1_de" -> "Digitale Landschaftsmodelle"
+                "8010_2_de" -> "Digitale Geländemodelle"
+                "8010_4_de" -> "3D-Gebäudemodelle"
+                "8010_8_de" -> "ALKIS"
+                "1350_45_de" -> "Gesetz über eine Holzstatistik"
+                else -> "getCodelistValue " + firstArg<String>() + "_" + secondArg<String>() + "_" + thirdArg<String>()
+            }
+        }
+
+        every { codelistService.getCodelistEntryDataField("6500", "25") } returns "{\"id\":\"dl-zero-de/2.0\",\"name\":\"Datenlizenz Deutschland – Zero – Version 2.0\",\"url\":\"https://www.govdata.de/dl-de/zero-2-0\",\"quelle\":\"\"}"
+        every { codelistService.getCodelistEntryDataField("6500", "26") } returns null
+
     }
+
 
     private lateinit var exporter: IngridIDFExporter
 

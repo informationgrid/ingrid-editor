@@ -30,7 +30,38 @@ data class DataModel(
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
     val maintenanceInformation: MaintenanceInformation?,
+    val gridSpatialRepresentation: GridSpatialRepresentation?,
+    val identifier: String?,
+    val graphicOverviews: List<GraphicOverview>?,
 )
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class GraphicOverview(
+    val fileName: FileName,
+    val fileDescription: String?,
+)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class FileName(
+    val asLink: Boolean,
+    val value: String,
+    val uri: String,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class GridSpatialRepresentation(
+    val type: KeyValueModel,
+    val axesDimensionProperties: List<AxisDimensionProperties>,
+    val transformationParameterAvailability: Boolean,
+    val numberOfDimensions: Int?,
+    val cellGeometry: KeyValueModel?,
+    )
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AxisDimensionProperties(
+    val name: KeyValueModel,
+    val size: Int?,
+    val resolution: Double?,
+    )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Dataset(
@@ -41,6 +72,15 @@ data class Dataset(
 data class Resource(
     val purpose: String?,
     val specificUsage: String?,
+    val useLimitation: String?,
+    val useConstraints: List<UseConstraint>,
+    val accessConstraints: List<KeyValueModel>,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class UseConstraint(
+    var title: KeyValueModel?,
+    val source: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -81,6 +121,7 @@ data class Temporal(
 data class MaintenanceInformation(
     val maintenanceAndUpdateFrequency: KeyValueModel?,
     val userDefinedMaintenanceFrequency: UserDefinedMaintenanceFrequency?,
+    val description: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -88,7 +129,6 @@ data class UserDefinedMaintenanceFrequency(
     val number: Int?,
     val unit: KeyValueModel?
 )
-
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)

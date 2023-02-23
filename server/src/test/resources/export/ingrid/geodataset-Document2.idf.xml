@@ -6,10 +6,6 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>B02B301C-FDE9-4064-97DB-AD7BA7B15947</gco:CharacterString>
             </gmd:fileIdentifier>
-            <idf:doi>
-                <id>10.1234/abcde</id>
-                <type id="4">Dataset</type>
-            </idf:doi>
             <idf:regionKey>
                 <key>120000000000</key>
                 <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/12</url>
@@ -147,26 +143,6 @@
                                 <gmd:MD_Identifier>
                                     <gmd:code>
                                         <gco:CharacterString>http://portalu.de/igc_testNS#/test-identifikator</gco:CharacterString>
-                                    </gmd:code>
-                                </gmd:MD_Identifier>
-                            </gmd:identifier>
-                            <gmd:identifier>
-                                <gmd:MD_Identifier>
-                                    <gmd:authority>
-                                        <gmd:CI_Citation>
-                                            <gmd:title gco:nilReason="missing"/>
-                                            <gmd:date gco:nilReason="missing"/>
-                                            <gmd:identifier>
-                                                <gmd:MD_Identifier>
-                                                    <gmd:code>
-                                                        <gco:CharacterString>Dataset</gco:CharacterString>
-                                                    </gmd:code>
-                                                </gmd:MD_Identifier>
-                                            </gmd:identifier>
-                                        </gmd:CI_Citation>
-                                    </gmd:authority>
-                                    <gmd:code>
-                                        <gco:CharacterString>https://doi.org/10.1234/abcde</gco:CharacterString>
                                     </gmd:code>
                                 </gmd:MD_Identifier>
                             </gmd:identifier>
@@ -411,8 +387,7 @@
                     <gmd:resourceSpecificUsage>
                         <gmd:MD_Usage>
                             <gmd:specificUsage>
-                                <gco:CharacterString>Eignung/Nutzung
-                                    test</gco:CharacterString>
+                                <gco:CharacterString>Eignung/Nutzung test</gco:CharacterString>
                             </gmd:specificUsage>
                             <gmd:userContactInfo gco:nilReason="unknown"/>
                         </gmd:MD_Usage>
