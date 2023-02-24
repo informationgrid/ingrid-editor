@@ -7,7 +7,7 @@ import {
 import { ImportExportService, ImportTypeInfo } from "../import-export-service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
@@ -16,7 +16,12 @@ import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { merge, Observable } from "rxjs";
+import { LogResult } from "../../+catalog/indexing/index.service";
+import { RxStompService } from "../../rx-stomp.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-import",
   templateUrl: "./import.component.html",
@@ -49,13 +54,25 @@ export class ImportComponent implements OnInit {
   pathToDocument: ShortTreeNode[];
   hasImportError = false;
 
+  private liveImportMessage: Observable<LogResult> = merge(
+    // this.indexService.lastLog$,
+    this.rxStompService
+      .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
+      .pipe(
+        map((msg) => JSON.parse(msg.body))
+        // tap((data) => (this.indexingIsRunning = !data.endTime))
+      )
+  );
+  message: any = {};
+
   constructor(
     private importExportService: ImportExportService,
     config: ConfigService,
     private router: Router,
     private documentService: DocumentService,
     private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
+    private rxStompService: RxStompService
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
@@ -64,6 +81,13 @@ export class ImportComponent implements OnInit {
     this.importExportService
       .getImportTypes()
       .pipe(tap((response) => (this.importers = response)))
+      .subscribe();
+
+    this.liveImportMessage
+      .pipe(
+        untilDestroyed(this),
+        tap((info) => (this.message = info))
+      )
       .subscribe();
   }
 
@@ -76,17 +100,19 @@ export class ImportComponent implements OnInit {
       },
       (error) => (this.importFileErrorMessage = error)
     );
+    // TODO: remove after testing
+    this.step1Complete = true;
   }
 
-  onAnalyzeComplete(info: any) {
-    this.compatibleImporters = info.importer;
+  onUploadComplete(info: any) {
+    /*this.compatibleImporters = info.importer;
     const importerControl = this.optionsFormGroup.get("importer");
     if (this.compatibleImporters.length === 1) {
       importerControl.setValue(this.compatibleImporters[0]);
       importerControl.disable();
     } else {
       importerControl.enable();
-    }
+    }*/
     this.step1Complete = true;
   }
 

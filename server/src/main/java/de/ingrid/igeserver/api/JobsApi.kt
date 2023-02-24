@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
+import javax.validation.Valid
 
 data class UrlReplaceData(val source: UrlReport, val replaceUrl: String)
 
@@ -57,6 +59,18 @@ interface JobsApi {
     )
     fun urlCheckTask(
         principal: Principal,
+        @Parameter(description = "command for the job", required = true) @RequestParam(
+            value = "command",
+            required = true
+        ) command: JobCommand
+    ): ResponseEntity<Unit>
+    @PostMapping(
+        value = ["/jobs/import"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun importTask(
+        principal: Principal,
+        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
             required = true

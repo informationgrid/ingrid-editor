@@ -14,23 +14,36 @@
             <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
 
-                <div *ngIf="!step1Complete; else analyzeFinished">
+                <div *ngIf="!step1Complete; else uploadFinished">
                     <ige-file-upload
-                        target="/api/import/analyze"
-                        (complete)="onAnalyzeComplete($event)"
+                        target="/api/jobs/import?command=start"
+                        (complete)="onUploadComplete($event)"
                         (chosenFiles)="chosenFiles = $event"
                     ></ige-file-upload>
                 </div>
 
-                <ng-template #analyzeFinished>
-                    <div class="content text-center">
-                        <div class="section-title">Datei hochgeladen:</div>
-                        <div *ngFor="let file of droppedFiles">
-                            {{ file.data.name }}
+                <ng-template #uploadFinished>
+                    <div class="content">
+                        <div *ngIf="message.endTime == null">
+                            <div class="section-title">
+                                Analyse der hochgeladenen Datei
+                            </div>
+                            <mat-progress-spinner
+                                diameter="50"
+                                [value]="message?.progress"
+                            ></mat-progress-spinner>
                         </div>
-                        <mat-icon class="big-icon success-color"
+
+                        <div *ngIf="message.endTime != null">
+                            <div class="section-title">
+                                Analyse abgeschlossen
+                            </div>
+                            <ige-import-report [report]="message.analysis">
+                            </ige-import-report>
+                        </div>
+                        <!--<mat-icon class="big-icon success-color"
                             >check_circle_outline
-                        </mat-icon>
+                        </mat-icon>-->
                     </div>
                 </ng-template>
 
@@ -213,7 +226,7 @@
     <ige-file-upload
         #uploadComponent
         target="/api/import/analyze"
-        (complete)="onAnalyzeComplete($event)"
+        (complete)="onUploadComplete($event)"
         (chosenFiles)="chosenFiles = $event"
     ></ige-file-upload>
 </ng-template>

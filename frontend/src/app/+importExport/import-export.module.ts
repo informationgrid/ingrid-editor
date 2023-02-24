@@ -24,6 +24,7 @@ import { UploadModule } from "../shared/upload/upload.module";
 import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ImportReportComponent } from "./import/import-report/import-report.component";
 
 @NgModule({
   imports: [
@@ -50,7 +51,12 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     TranslocoModule,
     MatProgressSpinnerModule,
   ],
-  declarations: [OverviewComponent, ImportComponent, ExportComponent],
+  declarations: [
+    OverviewComponent,
+    ImportComponent,
+    ExportComponent,
+    ImportReportComponent,
+  ],
   providers: [ImportExportService],
 })
 export class ImportExportModule {}

@@ -45,9 +45,10 @@ class ImportApiController @Autowired constructor(
         return ResponseEntity.ok(info)
     }
 
-    override fun analyzeFile(principal: Principal, file: MultipartFile): ResponseEntity<ImportAnalyzeResponse> {
-        val response = importService.analyzeFile(file)
-        return ResponseEntity.ok(response)
+    override fun analyzeFile(principal: Principal, file: MultipartFile): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+//        val response = importService.analyzeFile(catalogId, file)
+        return ResponseEntity.ok().build()
     }
 
     private fun createInfo(importerName: String, result: Document): ImportAnalyzeInfo {

@@ -1,8 +1,10 @@
 package de.ingrid.igeserver.api
 
+import ImportTask
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.URLCheckerReport
+import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
@@ -11,6 +13,7 @@ import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
+import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +21,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.security.Principal
 
 @RestController
@@ -28,6 +35,8 @@ class JobsApiController @Autowired constructor(
     val referenceHandlerFactory: ReferenceHandlerFactory,
     val urlRequestService: UrlRequestService
 ) : JobsApi {
+    
+    val log = logger()
 
     override fun getJobs(principal: Principal): ResponseEntity<Job> {
         TODO("Not yet implemented")
@@ -65,6 +74,26 @@ class JobsApiController @Autowired constructor(
             put("catalogId", catalogId)
         }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
+        return ResponseEntity.ok().build()
+    }
+
+    override fun importTask(principal: Principal, file: MultipartFile, command: JobCommand): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val profile = catalogService.getCatalogById(catalogId).type
+        val jobKey = JobKey.jobKey(ImportService.jobKey.name, catalogId)
+
+        val fileLocation = "/tmp/ige-ng/importFiles/${file.originalFilename}"
+        log.info("Save uploaded file to '${fileLocation}'")
+        Files.createDirectories(Path.of("/tmp/ige-ng/importFiles"))
+        file.transferTo(File(fileLocation))
+        
+        val jobDataMap = JobDataMap().apply {
+            put("profile", profile)
+            put("catalogId", catalogId)
+            put("importFile", fileLocation)
+        }
+        scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
+
         return ResponseEntity.ok().build()
     }
 

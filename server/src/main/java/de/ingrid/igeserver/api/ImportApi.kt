@@ -67,5 +67,5 @@ interface ImportApi {
     fun analyzeFile(
         principal: Principal,
         @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile
-    ): ResponseEntity<ImportAnalyzeResponse>
+    ): ResponseEntity<Unit>
 }

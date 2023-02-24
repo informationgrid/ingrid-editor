@@ -27,12 +27,15 @@ class URLChecker @Autowired constructor(
     val log = logger()
 
     var currentThread: Thread? = null
+    
+    // FIXME: add real catalog-id
+    val notificationType = MessageTarget(NotificationType.URL_CHECK)
 
     override fun execute(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
 
         val message = UrlMessage()
-        notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
+        notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
 
         val info = prepareJob(context, message)
 
@@ -40,7 +43,7 @@ class URLChecker @Autowired constructor(
 
         val urls = with(convertToUrlList(docs)) {
             forEachIndexed { index, urlReport ->
-                notifier.sendMessage(message.apply { this.progress = calcProgress(index, size) })
+                notifier.sendMessage(notificationType, message.apply { this.progress = calcProgress(index, size) })
                 checkAndReportUrl(urlReport)
             }
             this
@@ -56,7 +59,7 @@ class URLChecker @Autowired constructor(
         context: JobExecutionContext,
         errors: MutableList<String> = mutableListOf()
     ) {
-        notifier.endMessage(message.apply {
+        notifier.endMessage(notificationType, message.apply {
             this.message = "Finished URLChecker"
             this.report = URLCheckerReport(urls.size, urls.filter { it.success.not() })
             this.errors = errors

@@ -32,8 +32,6 @@ class InternalImporter : IgeImporter {
     }
 
     private fun migrateDocumentsFrom(documents: ArrayNode): ArrayNode {
-
-
         documents.forEach { document ->
             document as ObjectNode
             document.put(FIELD_UUID, document.get(FIELD_ID).asText())
@@ -45,7 +43,6 @@ class InternalImporter : IgeImporter {
         }
 
         return documents
-
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

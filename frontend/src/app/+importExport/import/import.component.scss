@@ -39,6 +39,10 @@
 .content {
   background-color: $ige-background;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .options {
