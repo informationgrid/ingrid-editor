@@ -4,7 +4,7 @@ import {
   UntypedFormGroup,
   Validators,
 } from "@angular/forms";
-import { ImportExportService, ImportTypeInfo } from "../import-export-service";
+import { ExchangeService, ImportTypeInfo } from "../exchange.service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
 import { map, tap } from "rxjs/operators";
@@ -54,19 +54,30 @@ export class ImportComponent implements OnInit {
   pathToDocument: ShortTreeNode[];
   hasImportError = false;
 
-  private liveImportMessage: Observable<LogResult> = merge(
-    // this.indexService.lastLog$,
+  importIsRunning: boolean;
+
+  showMore = false;
+
+  private liveImportMessage: Observable<any> = merge(
+    this.exchangeService.lastLog$.pipe(
+      tap((data) => (data?.isRunning ? (this.step1Complete = true) : null)),
+      map((data) => data?.info)
+    ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
       .pipe(
-        map((msg) => JSON.parse(msg.body))
-        // tap((data) => (this.indexingIsRunning = !data.endTime))
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => (this.importIsRunning = !data.endTime)),
+        tap((data) => {
+          if (data.endTime) this.exchangeService.fetchLastLog();
+        })
       )
   );
+
   message: any = {};
 
   constructor(
-    private importExportService: ImportExportService,
+    private exchangeService: ExchangeService,
     config: ConfigService,
     private router: Router,
     private documentService: DocumentService,
@@ -78,7 +89,7 @@ export class ImportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.importExportService
+    this.exchangeService
       .getImportTypes()
       .pipe(tap((response) => (this.importers = response)))
       .subscribe();
@@ -89,12 +100,15 @@ export class ImportComponent implements OnInit {
         tap((info) => (this.message = info))
       )
       .subscribe();
+
+    this.exchangeService.fetchLastLog();
   }
 
+  /*
   import(files: File[]) {
     const file = files[0];
     console.log(file);
-    this.importExportService.import(file).subscribe(
+    this.exchangeService.analyze(file).subscribe(
       (data) => {
         console.log("Import result:", data);
       },
@@ -103,6 +117,7 @@ export class ImportComponent implements OnInit {
     // TODO: remove after testing
     this.step1Complete = true;
   }
+*/
 
   onUploadComplete(info: any) {
     /*this.compatibleImporters = info.importer;
@@ -150,16 +165,16 @@ export class ImportComponent implements OnInit {
 
   startImport() {
     // get path for destination for final page
-    this.documentService
+    /*this.documentService
       .getPath(this.locationDoc[0].toString())
-      .subscribe((path) => (this.pathToDocument = path));
+      .subscribe((path) => (this.pathToDocument = path));*/
 
     this.hasImportError = false;
 
     // upload each file
     const importer = this.optionsFormGroup.get("importer").value;
     const option = this.optionsFormGroup.get("option").value;
-    this.uploadComponent.setAdditionalUploadParameter({
+    /*this.uploadComponent.setAdditionalUploadParameter({
       importerId: importer,
       parentDoc: this.locationDoc[0],
       parentAddress: this.locationAddress[0],
@@ -168,7 +183,8 @@ export class ImportComponent implements OnInit {
     this.chosenFiles.forEach((file) => {
       this.uploadComponent.flow.flowJs.addFile(file.transfer.flowFile.file);
     });
-    this.uploadComponent.flow.upload();
+    this.uploadComponent.flow.upload();*/
+    this.exchangeService.import().subscribe();
   }
 
   openImportedDocument() {
@@ -176,5 +192,10 @@ export class ImportComponent implements OnInit {
       `${ConfigService.catalogId}/form`,
       { id: this.importedDocUuid },
     ]);
+  }
+
+  abortImportJob() {
+    this.exchangeService.stopJob();
+    this.cancel();
   }
 }

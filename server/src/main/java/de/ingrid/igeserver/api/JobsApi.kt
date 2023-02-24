@@ -64,13 +64,26 @@ interface JobsApi {
             required = true
         ) command: JobCommand
     ): ResponseEntity<Unit>
+    
+    @PostMapping(
+        value = ["/jobs/import/analyze"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun importAnalyzeTask(
+        principal: Principal,
+        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
+        @Parameter(description = "command for the job", required = true) @RequestParam(
+            value = "command",
+            required = true
+        ) command: JobCommand
+    ): ResponseEntity<Unit>
+    
     @PostMapping(
         value = ["/jobs/import"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun importTask(
         principal: Principal,
-        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
             required = true

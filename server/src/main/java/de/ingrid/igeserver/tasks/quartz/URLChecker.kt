@@ -21,7 +21,7 @@ class URLChecker @Autowired constructor(
     InterruptableJob {
 
     companion object {
-        val jobKey: JobKey = JobKey.jobKey("url-check", "system")
+        const val jobKey: String = "url-check"
     }
 
     val log = logger()

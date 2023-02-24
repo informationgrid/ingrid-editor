@@ -4,7 +4,9 @@ import {
 } from "../services/config/config.service";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+import { LogResult } from "../+catalog/indexing/index.service";
 
 export interface ExportOptions {
   id: string;
@@ -34,9 +36,11 @@ export interface ImportTypeInfo {
 @Injectable({
   providedIn: "root",
 })
-export class ImportExportService {
+export class ExchangeService {
   private configuration: Configuration;
   private catalogType: string;
+
+  lastLog$ = new BehaviorSubject<any>(null);
 
   public static prepareExportInfo(
     docId: string,
@@ -54,7 +58,7 @@ export class ImportExportService {
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
   }
 
-  import(file: File): Observable<any> {
+  analyze(file: File): Observable<any> {
     return this.http.post(this.configuration.backendUrl + "import", file);
   }
 
@@ -73,7 +77,27 @@ export class ImportExportService {
 
   getImportTypes(): Observable<ImportTypeInfo[]> {
     return this.http.get<ImportTypeInfo[]>(
-      this.configuration.backendUrl + "import?profile=mcloud" + this.catalogType
+      this.configuration.backendUrl + "import?profile=" + this.catalogType
     );
+  }
+
+  import() {
+    return this.http.post(
+      this.configuration.backendUrl + "jobs/import?command=start",
+      {}
+    );
+  }
+
+  fetchLastLog() {
+    return this.http
+      .get<any>(this.configuration.backendUrl + "jobs/import/info")
+      .pipe(tap((response) => this.lastLog$.next(response)))
+      .subscribe();
+  }
+
+  stopJob() {
+    return this.http
+      .post(this.configuration.backendUrl + "jobs/import?command=stop", {})
+      .subscribe();
   }
 }

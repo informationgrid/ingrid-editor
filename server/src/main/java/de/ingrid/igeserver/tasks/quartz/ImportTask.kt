@@ -1,13 +1,16 @@
+package de.ingrid.igeserver.tasks.quartz
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
-import de.ingrid.igeserver.imports.ImportAnalysis
 import de.ingrid.igeserver.imports.ImportMessage
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
@@ -20,9 +23,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
+enum class ImportState {
+    BEFORE_ANALYZE, AFTER_ANALYZE
+}
+
 @Component
 @PersistJobDataAfterExecution
-class ImportTask @Autowired constructor(
+class ImportAnalyzeTask @Autowired constructor(
     val notifier: JobsNotifier,
     val importService: ImportService
 ) : InterruptableJob {
@@ -31,83 +38,98 @@ class ImportTask @Autowired constructor(
 
     var currentThread: Thread? = null
 
-    val notificationType = MessageTarget(NotificationType.IMPORT, "uvp_catalog")
+    val notificationType = MessageTarget(NotificationType.IMPORT)
 
     override fun execute(context: JobExecutionContext) {
         log.info("Starting Task: Import")
+        val info = prepareJob(context)
 
         val message = ImportMessage()
-        notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
+        notificationType.catalogId = info.catalogId
+        notifier.sendMessage(notificationType, message.apply { this.message = "Started Import Analyzer" })
 
-        val info = prepareJob(context, message)
+        val principal = runAsUser()
 
-        runAsUser()
-        val analysis = importService.analyzeFile(info.catalogId, info.importFile)
+        if (info.importFile != null) {
+            val analysis = importService.analyzeFile(info.catalogId, info.importFile)
+            finishJobAnalysis(message, context, analysis)
+        } else if (info.analysis != null) {
+            importService.importAnalyzedDatasets(principal, info.catalogId, info.analysis)
+            finishJobImport(message, context)
+        }
 
-        finishJob(message, context, analysis)
-        log.debug("Task finished: URLChecker for '$info.catalogId'")
+        log.debug("Task finished: Import for '$info.catalogId'")
     }
 
-    private fun finishJob(
-        message: ImportMessage,
-        context: JobExecutionContext,
-        analysis: List<ImportAnalysis>,
-        errors: MutableList<String> = mutableListOf()
-    ) {
+    private fun finishJobImport(message: ImportMessage, context: JobExecutionContext) {
         notifier.endMessage(notificationType, message.apply {
             this.message = "Finished Import"
-            this.analysis = createReport(analysis)
             this.errors = errors
         })
 
         val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
         persistData["startTime"] = message.startTime
         persistData["endTime"] = message.endTime
-        persistData["analysis"] = jacksonObjectMapper().convertValue<JsonNode>(analysis).toString()
         persistData["errors"] = jacksonObjectMapper().writeValueAsString(message.errors)
 
         currentThread = null
     }
 
-    private fun createReport(analysis: List<ImportAnalysis>): ImportReport {
-        return ImportReport(
-            "",
-            analysis.size,
-            analysis.flatMap { it.references.map { it.document.uuid } }.distinct().size,
-            analysis.filter { it.exists }
-                .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
-            analysis.flatMap {
-                it.references
-                    .filter { it.exists }
-                    .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
-            }.distinctBy { it.uuid }
-        )
-    }
+    private fun finishJobAnalysis(
+        message: ImportMessage,
+        context: JobExecutionContext,
+        analysis: Any,
+        errors: MutableList<String> = mutableListOf()
+    ) {
+        notifier.endMessage(notificationType, message.apply {
+            this.message = "Finished Import"
+//            this.report = analysis
+//            this.errors = errors
+        })
 
+        val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
+        persistData["startTime"] = message.startTime
+        persistData["endTime"] = message.endTime
+        persistData["report"] = jacksonObjectMapper().writeValueAsString(analysis)
+        persistData["errors"] = jacksonObjectMapper().writeValueAsString(message.errors)
+
+        currentThread = null
+    }
+    
     override fun interrupt() {
         log.info("Task interrupted")
         currentThread?.interrupt()
     }
 
-    private fun prepareJob(context: JobExecutionContext, message: ImportMessage): JobInfo {
+    private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
         val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
-        val importFile: String = dataMap.getString("importFile")
 
+        val importFile: String? = dataMap.getString("importFile")
+        val report = dataMap.getString("report")
+        val analysis: OptimizedImportAnalysis? = if (report != null) jacksonObjectMapper().readValue(report) else null
+
+        notificationType.catalogId = catalogId
         currentThread = Thread.currentThread()
 
-        return JobInfo(profile, catalogId, importFile)
+        return JobInfo(profile, catalogId, importFile, analysis)
     }
 
-    private fun runAsUser() {
+    private fun runAsUser(): Authentication {
         val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+            UsernamePasswordAuthenticationToken("Importer", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
         SecurityContextHolder.getContext().authentication = auth
+        return auth
     }
 
-    data class JobInfo(val profile: String, val catalogId: String, val importFile: String)
+    data class JobInfo(
+        val profile: String,
+        val catalogId: String,
+        val importFile: String?,
+        val analysis: OptimizedImportAnalysis?
+    )
 
     data class ImportReport(
         val importer: String,

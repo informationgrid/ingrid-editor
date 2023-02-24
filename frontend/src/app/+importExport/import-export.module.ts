@@ -2,7 +2,7 @@ import { routing } from "./import-export.routing";
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { ImportComponent } from "./import/import.component";
-import { ImportExportService } from "./import-export-service";
+import { ExchangeService } from "./exchange.service";
 import { ExportComponent } from "./export/export.component";
 import { MatButtonModule } from "@angular/material/button";
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -57,6 +57,6 @@ import { ImportReportComponent } from "./import/import-report/import-report.comp
     ExportComponent,
     ImportReportComponent,
   ],
-  providers: [ImportExportService],
+  providers: [ExchangeService],
 })
 export class ImportExportModule {}

@@ -21,7 +21,7 @@ enum class NotificationType(val uri: String) {
     IMPORT("/import")
 }
 
-class MessageTarget(val type: NotificationType, val catalogId : String? = null) {
+class MessageTarget(val type: NotificationType, var catalogId : String? = null) {
     override fun toString(): String {
         return if (catalogId == null)
             type.uri

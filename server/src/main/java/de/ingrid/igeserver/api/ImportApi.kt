@@ -5,7 +5,10 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.api.messaging.IndexMessage
+import de.ingrid.igeserver.imports.ImportMessage
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.ImportAnalyzeInfo
 import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -30,6 +33,7 @@ interface ImportApi {
     ): ResponseEntity<List<ImportTypeInfo>>
 
 
+/*
     @Operation
     @ApiResponses(
         value = [ApiResponse(
@@ -55,6 +59,7 @@ interface ImportApi {
         ) @RequestParam parentAddress: String,
         @Parameter(description = "Import-Options", required = true) @RequestParam options: String,
     ): ResponseEntity<ImportAnalyzeInfo>
+*/
 
     @Operation
     @ApiResponses(
@@ -68,4 +73,10 @@ interface ImportApi {
         principal: Principal,
         @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile
     ): ResponseEntity<Unit>
+
+    /*@Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @GetMapping(value = ["/import/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getLog(principal: Principal): ResponseEntity<OptimizedImportAnalysis>
+*/
 }

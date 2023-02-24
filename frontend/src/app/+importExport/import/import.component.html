@@ -9,6 +9,62 @@
         </p>
     </div>
 
+    <div main-header>
+        <!--        TODO: extract to component since it's used several times -->
+        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
+            <ng-container *ngIf="message as log">
+                <mat-icon
+                    *ngIf="log.errors?.length > 0"
+                    class="error-color"
+                    matTooltip="Bei der letzten Prüfung trat ein Fehler auf"
+                    >error_outline</mat-icon
+                >
+
+                <span *ngIf="!importIsRunning; else running"
+                    >Letzte Prüfung erfolgte am
+                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
+                >
+                <ng-template #running>
+                    <span fxLayout>
+                        <mat-progress-spinner
+                            [value]="log.progress"
+                            diameter="16"
+                            [matTooltip]="log.progress + '% analysiert'"
+                        ></mat-progress-spinner>
+                    </span>
+                    <span>
+                        Laufende Prüfung seit:
+                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
+                    >
+                </ng-template>
+                <button
+                    mat-icon-button
+                    class="dark menu-button"
+                    [class.expanded]="showMore"
+                    (click)="showMore = !showMore"
+                >
+                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                </button>
+            </ng-container>
+        </div>
+    </div>
+
+    <div status class="status" [class.hide]="!showMore">
+        <div *ngIf="message as log">
+            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Status: Phase ... abgeschlossen</div>
+            <br />
+            <div *ngIf="log.errors?.length > 0">
+                Fehler:
+                <span data-cy="count-errors">{{ log.errors.length }}</span>
+                <ul>
+                    <li *ngFor="let error of log.errors">{{ error }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <section main-content fxFlex>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="step1Complete">
@@ -16,7 +72,7 @@
 
                 <div *ngIf="!step1Complete; else uploadFinished">
                     <ige-file-upload
-                        target="/api/jobs/import?command=start"
+                        target="/api/jobs/import/analyze?command=start"
                         (complete)="onUploadComplete($event)"
                         (chosenFiles)="chosenFiles = $event"
                     ></ige-file-upload>
@@ -26,19 +82,29 @@
                     <div class="content">
                         <div *ngIf="message.endTime == null">
                             <div class="section-title">
-                                Analyse der hochgeladenen Datei
+                                Analyse der hochgeladenen Datei(en)
+                                <!--                                {{ message.progress }} von {{}}-->
                             </div>
                             <mat-progress-spinner
                                 diameter="50"
-                                [value]="message?.progress"
+                                [value]="message.progress"
                             ></mat-progress-spinner>
+
+                            <button mat-flat-button (click)="abortImportJob()">
+                                Abbrechen
+                            </button>
                         </div>
 
-                        <div *ngIf="message.endTime != null">
+                        <div
+                            *ngIf="
+                                message.endTime != null &&
+                                message.report != null
+                            "
+                        >
                             <div class="section-title">
                                 Analyse abgeschlossen
                             </div>
-                            <ige-import-report [report]="message.analysis">
+                            <ige-import-report [report]="message.report">
                             </ige-import-report>
                         </div>
                         <!--<mat-icon class="big-icon success-color"
@@ -76,19 +142,6 @@
                 <form class="content" [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
                     <div class="options">
-                        <div class="section-title">Import</div>
-                        <mat-radio-group
-                            class="radio-vertical"
-                            formControlName="option"
-                        >
-                            <mat-radio-button value="overwrite_identical">
-                                Identische Metadaten überschreiben
-                            </mat-radio-button>
-                            <mat-radio-button value="create_under_target">
-                                Anlage nur unter gewähltem Importknoten
-                            </mat-radio-button>
-                        </mat-radio-group>
-
                         <div class="section-title space-top">Typ</div>
                         <mat-form-field
                             appearance="outline"
@@ -105,6 +158,22 @@
                                 >
                             </mat-select>
                         </mat-form-field>
+
+                        <div class="section-title">Import</div>
+                        <mat-radio-group
+                            class="radio-vertical"
+                            formControlName="option"
+                        >
+                            <mat-radio-button value="overwrite_identical">
+                                Identische Metadaten überschreiben
+                            </mat-radio-button>
+                            <mat-radio-button value="create_under_target">
+                                Anlage nur unter gewähltem Importknoten
+                            </mat-radio-button>
+                        </mat-radio-group>
+
+                        <div>Datensätze anlegen unter: ...</div>
+                        <div>Adressen anlegen unter: ...</div>
                     </div>
                 </form>
 
@@ -116,18 +185,28 @@
                     <button mat-button color="primary" matStepperPrevious>
                         Zurück
                     </button>
-                    <button
+                    <!--<button
                         mat-button
                         mat-flat-button
                         matStepperNext
                         color="primary"
                         [disabled]="optionsFormGroup.invalid"
-                    >
                         Weiter
+                    >
+                    </button>-->
+                    <button
+                        mat-button
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="optionsFormGroup.invalid"
+                        matStepperNext
+                        (click)="startImport()"
+                    >
+                        Importieren
                     </button>
                 </div>
             </mat-step>
-            <mat-step [completed]="readyForImport">
+            <!--<mat-step [completed]="readyForImport">
                 <ng-template matStepLabel>Ort wählen</ng-template>
                 <div class="content">
                     <div class="section-title">Dokument:</div>
@@ -137,7 +216,7 @@
                         [showHeaderOptions]="false"
                         (activate)="setLocation($event, false)"
                     ></ige-tree>
-                    <!-- FIXME: [hideReadOnly]="true" after completion of #4261 -->
+                    &lt;!&ndash; FIXME: [hideReadOnly]="true" after completion of #4261 &ndash;&gt;
 
                     <div class="section-title space-top">Adresse:</div>
                     <ige-tree
@@ -168,7 +247,7 @@
                         Importieren
                     </button>
                 </div>
-            </mat-step>
+            </mat-step>-->
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">

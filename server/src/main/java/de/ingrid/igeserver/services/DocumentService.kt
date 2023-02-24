@@ -232,13 +232,28 @@ class DocumentService @Autowired constructor(
         address: Boolean = false,
         publish: Boolean = false
     ): JsonNode {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
-        val docType = getDocumentType(docTypeName)
-
+        
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
+        return createDocument(principal, catalogId, document, parentId, address, publish)
 
+    }
+
+
+    @Transactional
+    fun createDocument(
+        principal: Principal,
+        catalogId: String,
+        document: Document,
+        parentId: Int?,
+        address: Boolean = false,
+        publish: Boolean = false
+    ): JsonNode {
+
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val docTypeName = document.type
+        val docType = getDocumentType(docTypeName)
+        
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
