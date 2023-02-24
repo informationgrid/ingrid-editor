@@ -554,7 +554,7 @@ ige-one-column-wrapper formly-group {
   flex: 6;
 }
 
-.hide-optionals .optional:not(:has(.required)) {
+.hide-optionals .optional > :not(.required) {
   display: none;
 }
 
