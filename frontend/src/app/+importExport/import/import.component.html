@@ -21,7 +21,7 @@
         <div *ngIf="message as log">
             <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Status: Phase ... abgeschlossen</div>
+            <div>Status: {{ log.stage }}</div>
             <br />
             <div *ngIf="log.errors?.length > 0">
                 Fehler:
@@ -68,12 +68,7 @@
                             </button>
                         </div>
 
-                        <div
-                            *ngIf="
-                                message.endTime != null &&
-                                message.report != null
-                            "
-                        >
+                        <div *ngIf="message.stage === 'ANALYZE'">
                             <div class="section-title">
                                 Analyse abgeschlossen
                             </div>

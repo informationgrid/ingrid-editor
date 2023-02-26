@@ -30,6 +30,7 @@ class ImportAnalyzeTask @Autowired constructor(
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: Import")
         val info = prepareJob(context)
+        var stage = "ANALYZE"
 
         // use start time from analysis phase if it already happened
         val message = if (info.importFile != null) ImportMessage() else ImportMessage(info.startTime)
@@ -43,12 +44,13 @@ class ImportAnalyzeTask @Autowired constructor(
             importService.analyzeFile(info.catalogId, info.importFile)
         } else if (info.analysis != null) {
             importService.importAnalyzedDatasets(principal, info.catalogId, info.analysis)
+            stage = "IMPORT"
             info.analysis
         } else null
 
         with(message) {
             notifier.endMessage(notificationType, this)
-            finishJob(context, this.startTime, this.endTime, report)
+            finishJob(context, IgeJobInfo(this.startTime, this.endTime, report, stage = stage))
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")

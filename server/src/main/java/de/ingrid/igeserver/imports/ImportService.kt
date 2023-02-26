@@ -62,7 +62,7 @@ class ImportService constructor(
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
                     // TODO: remove artificial wait
-                    Thread.sleep(1000)
+                    Thread.sleep(300)
                     analyzeDoc(catalogId, fileContent[0])
                 }
                 .toList().let { prepareForImport(it) }

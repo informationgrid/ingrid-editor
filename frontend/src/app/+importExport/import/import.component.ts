@@ -60,7 +60,11 @@ export class ImportComponent implements OnInit {
 
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
-      tap((data) => (data?.isRunning ? (this.step1Complete = true) : null)),
+      tap((data) =>
+        data?.isRunning || data?.info?.stage === "ANALYZE"
+          ? (this.step1Complete = true)
+          : null
+      ),
       map((data) => data?.info)
     ),
     this.rxStompService

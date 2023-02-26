@@ -1,9 +1,7 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.imports.ImportMessage
 import org.apache.logging.log4j.kotlin.KotlinLogger
-import org.apache.logging.log4j.kotlin.logger
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
@@ -11,35 +9,40 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import java.util.Date
+import java.util.*
 
-abstract class IgeJob: InterruptableJob {
-    
-    abstract val log : KotlinLogger
+abstract class IgeJob : InterruptableJob {
+
+    abstract val log: KotlinLogger
 
     var currentThread: Thread? = null
 
     abstract fun run(context: JobExecutionContext)
-    
+
     override fun execute(context: JobExecutionContext) {
         currentThread = Thread.currentThread()
         run(context)
     }
-    
+
     override fun interrupt() {
         log.info("Task interrupted")
         currentThread?.interrupt()
     }
 
-    protected fun finishJob(context: JobExecutionContext, startTime: Date, endTime: Date?, report: Any? = null, errors: List<Any> = emptyList()) {
-
-        val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
-        persistData["startTime"] = startTime
-        persistData["endTime"] = endTime
-        persistData["report"] = jacksonObjectMapper().writeValueAsString(report)
-        persistData["errors"] = jacksonObjectMapper().writeValueAsString(errors)
-
+    protected fun finishJob(
+        context: JobExecutionContext,
+        jobInfo: IgeJobInfo
+    ): JobDataMap {
         currentThread = null
+
+        return context.jobDetail?.jobDataMap!!.apply {
+            put("startTime", jobInfo.startTime)
+            put("endTime", jobInfo.endTime)
+            put("report", jacksonObjectMapper().writeValueAsString(jobInfo.report))
+            put("errors", jacksonObjectMapper().writeValueAsString(jobInfo.errors))
+            put("stage", jobInfo.stage)
+        }
+
     }
 
 
@@ -49,6 +52,12 @@ abstract class IgeJob: InterruptableJob {
         SecurityContextHolder.getContext().authentication = auth
         return auth
     }
-
-
 }
+
+data class IgeJobInfo(
+    val startTime: Date,
+    val endTime: Date?,
+    val report: Any?,
+    val errors: List<Any> = emptyList(),
+    val stage: String? = null // used when job has multiple phases like import
+) : JobDataMap()
