@@ -32,6 +32,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { FormlyModule } from "@ngx-formly/core";
+import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 
 @NgModule({
   imports: [
@@ -61,6 +62,7 @@ import { FormlyModule } from "@ngx-formly/core";
     MatProgressBarModule,
     DragDropModule,
     FormlyModule,
+    JobHandlerHeaderModule,
   ],
   providers: [CatalogService],
   declarations: [

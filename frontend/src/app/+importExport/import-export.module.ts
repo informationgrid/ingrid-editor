@@ -25,6 +25,7 @@ import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.modul
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ImportReportComponent } from "./import/import-report/import-report.component";
+import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 
 @NgModule({
   imports: [
@@ -50,6 +51,7 @@ import { ImportReportComponent } from "./import/import-report/import-report.comp
     BreadcrumbModule,
     TranslocoModule,
     MatProgressSpinnerModule,
+    JobHandlerHeaderModule,
   ],
   declarations: [
     OverviewComponent,

@@ -24,6 +24,7 @@ import {
   MatPaginatorModule,
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
+import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { IgePagingIntl } from "../shared/IgePagingIntl";
     MatProgressSpinnerModule,
     MatDialogModule,
     MatPaginatorModule,
+    JobHandlerHeaderModule,
   ],
   providers: [
     {

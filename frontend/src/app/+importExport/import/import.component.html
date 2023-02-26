@@ -10,43 +10,11 @@
     </div>
 
     <div main-header>
-        <!--        TODO: extract to component since it's used several times -->
-        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
-            <ng-container *ngIf="message as log">
-                <mat-icon
-                    *ngIf="log.errors?.length > 0"
-                    class="error-color"
-                    matTooltip="Bei der letzten Prüfung trat ein Fehler auf"
-                    >error_outline
-                </mat-icon>
-
-                <span *ngIf="!importIsRunning; else running"
-                    >Letzte Prüfung erfolgte am
-                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
-                >
-                <ng-template #running>
-                    <span fxLayout>
-                        <mat-progress-spinner
-                            [value]="log.progress"
-                            diameter="16"
-                            [matTooltip]="log.progress + '% analysiert'"
-                        ></mat-progress-spinner>
-                    </span>
-                    <span>
-                        Laufende Prüfung seit:
-                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
-                    >
-                </ng-template>
-                <button
-                    mat-icon-button
-                    class="dark menu-button"
-                    [class.expanded]="showMore"
-                    (click)="showMore = !showMore"
-                >
-                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
-                </button>
-            </ng-container>
-        </div>
+        <ige-job-handler-header
+            [message]="message"
+            [isRunning]="importIsRunning"
+            (showMore)="showMore = $event"
+        ></ige-job-handler-header>
     </div>
 
     <div status class="status" [class.hide]="!showMore">
