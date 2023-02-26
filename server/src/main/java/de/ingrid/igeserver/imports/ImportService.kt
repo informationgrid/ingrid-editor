@@ -26,7 +26,7 @@ import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class ImportMessage : Message() {
+class ImportMessage(override val startTime: Date = Date()) : Message() {
     var report: OptimizedImportAnalysis? = null
 }
 

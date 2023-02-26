@@ -12,7 +12,7 @@ data class UrlReport(val url: String, var success: Boolean, var status: Int, val
 
 data class DatasetInfo(val title: String, val type: String, val uuid: String, val field: String? = null)
 
-data class UrlMessage(var numUrls: Int = 0, override var progress: Int = 0) : Message(progress) {
+data class UrlMessage(var numUrls: Int = 0, override var progress: Int = 0) : Message(progress = progress) {
     var report: URLCheckerReport? = null
 }
 
