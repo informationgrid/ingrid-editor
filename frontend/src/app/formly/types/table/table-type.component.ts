@@ -116,7 +116,7 @@ export class TableTypeComponent
     this.dialog
       .open(this.props.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
-        minWidth: 550,
+        minWidth: 600,
         data: {
           fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry

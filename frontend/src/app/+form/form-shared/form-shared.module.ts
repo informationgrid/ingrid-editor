@@ -52,6 +52,7 @@ import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
 import { TranslocoModule } from "@ngneat/transloco";
 import { ActionButtonModule } from "../../shared/action-button/action-button.module";
 import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
+import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component
     DelayedPublishDialogComponent,
     PublishPendingComponent,
     QuickNavbarComponent,
+    ErrorPanelComponent,
   ],
   imports: [
     CommonModule,

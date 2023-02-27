@@ -7,6 +7,7 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +28,8 @@ class InGridProfile @Autowired constructor(
     override val title = "InGrid Katalog"
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"
-
+    override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
+    
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf()
     }

@@ -113,7 +113,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 },
               ],
             }),
-            this.addRepeat("axisDimensionsProperties", null, {
+            this.addRepeat("axesDimensionProperties", null, {
               fields: [
                 this.addSelectInline("name", "Achsenbezeichnung", {
                   options: this.getCodelistForSelect(514, "name"),
@@ -141,7 +141,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   { className: "flex-2" }
                 ),
                 this.addInputInline(
-                  "numberOfDimenstions",
+                  "numberOfDimensions",
                   "Anzahl der Dimensionen",
                   {
                     type: "number",
@@ -182,7 +182,6 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-1",
                         hasInlineContextHelp: true,
-                        wrappers: ["form-field", "inline-help"],
                       }
                     ),
                     this.addInputInline(
@@ -245,7 +244,6 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-3",
                         hasInlineContextHelp: true,
-                        wrappers: ["form-field", "inline-help"],
                       }
                     ),
                   ],

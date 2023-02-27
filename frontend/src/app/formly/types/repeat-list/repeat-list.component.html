@@ -12,7 +12,10 @@
             props.noDrag || formControl.disabled || model.length < 2
         "
         class="clickable list-item"
-        (click)="this.onItemClick(model[i]?.key)"
+        tabindex="0"
+        (keydown.delete)="removeItem(i, $event)"
+        (keydown.backspace)="removeItem(i, $event)"
+        (click)="$event.target.focus() && this.onItemClick(model[i]?.key)"
     >
         <div class="text-wrapper">
             <span class="list-display-element">

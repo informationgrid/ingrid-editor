@@ -163,11 +163,13 @@ export class McloudDoctype extends BaseDoctype {
         this.addGroup(null, "mFUND", [
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",
+            id: "mfundProject", // used for autocomplete by browser
             hasInlineContextHelp: true,
             wrappers: ["inline-help", "form-field"],
           }),
           this.addInput("mfundFKZ", null, {
             fieldLabel: "mFUND Förderkennzeichen",
+            id: "mfundFKZ", // used for autocomplete by browser
             hasInlineContextHelp: true,
             wrappers: ["inline-help", "form-field"],
           }),

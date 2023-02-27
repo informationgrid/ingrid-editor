@@ -189,12 +189,19 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     });
   }
 
-  removeItem(index: number) {
+  removeItem(index: number, $event?: KeyboardEvent) {
     this.remove(index);
     this.manualUpdate.next("");
 
     if (this.props.asSelect && this.inputControl.disabled) {
       this.inputControl.enable();
+    }
+
+    // focus next element when removed by keyboard
+    if ($event) {
+      const nextElement = ($event.currentTarget as HTMLElement)
+        ?.nextElementSibling as HTMLElement;
+      nextElement?.focus();
     }
   }
 
