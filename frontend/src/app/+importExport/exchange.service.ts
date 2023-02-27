@@ -6,7 +6,45 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs/operators";
-import { LogResult } from "../+catalog/indexing/index.service";
+
+export interface ImportLog<Type> {
+  isRunning: boolean;
+  info: Type;
+}
+
+export interface LogInfo<Type> {
+  startTime: string;
+  endTime: string;
+  errors: string[];
+  report: Type;
+}
+
+export interface ImportLogInfo extends LogInfo<ImportLogReport> {
+  stage: "ANALYZE" | "IMPORT";
+}
+
+export interface ImportLogReport {
+  importers: string[];
+  references: DocumentAnalysis[];
+  numDatasets: number;
+  numAddresses: number;
+  existingDatasets: DatasetInfo[];
+  existingAddresses: DatasetInfo[];
+}
+
+export interface DocumentAnalysis {
+  document: any;
+  wrapperId: number;
+  isAddress: boolean;
+  exists: boolean;
+  references: DocumentAnalysis[];
+}
+
+export interface DatasetInfo {
+  title: string;
+  type: string;
+  uuid: string;
+}
 
 export interface ExportOptions {
   id: string;
@@ -40,7 +78,7 @@ export class ExchangeService {
   private configuration: Configuration;
   private catalogType: string;
 
-  lastLog$ = new BehaviorSubject<any>(null);
+  lastLog$ = new BehaviorSubject<ImportLog<ImportLogInfo>>(null);
 
   public static prepareExportInfo(
     docId: string,
@@ -81,10 +119,10 @@ export class ExchangeService {
     );
   }
 
-  import() {
+  import(options: any) {
     return this.http.post(
       this.configuration.backendUrl + "jobs/import?command=start",
-      {}
+      options
     );
   }
 

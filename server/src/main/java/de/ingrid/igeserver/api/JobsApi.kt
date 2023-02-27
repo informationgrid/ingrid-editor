@@ -87,7 +87,10 @@ interface JobsApi {
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
             required = true
-        ) command: JobCommand
+        ) command: JobCommand,
+        @Parameter(required = true) @RequestBody(
+            required = true
+        ) options: ImportOptions
     ): ResponseEntity<Unit>
 
     @PostMapping(

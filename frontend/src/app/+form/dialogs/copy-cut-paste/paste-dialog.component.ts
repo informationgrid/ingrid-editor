@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
-import { DialogRef } from "@angular/cdk/dialog";
 
 export interface PasteDialogOptions {
   buttonText: string;

@@ -1,84 +1,84 @@
 package de.ingrid.igeserver.imports
 
-import de.ingrid.igeserver.tasks.quartz.ImportAnalyzeTask
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.readValues
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.JobKey
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.nio.charset.Charset
-import java.util.*
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-
-class ImportMessage(override val startTime: Date = Date()) : Message() {
-    var report: OptimizedImportAnalysis? = null
-}
 
 @Service
 class ImportService constructor(
     val notifier: JobsNotifier,
     val factory: ImporterFactory,
     val documentService: DocumentService,
-    val schedulerService: SchedulerService
-    
-) {
-    private val log = logger()
 
-    val notificationType = MessageTarget(NotificationType.IMPORT, "uvp_catalog")
+    ) {
+    private val log = logger()
 
     companion object {
         const val jobKey: String = "import"
     }
 
-    fun analyzeFile(catalogId: String, fileLocation: String, forceImporter: String? = null): OptimizedImportAnalysis {
+    fun analyzeFile(
+        catalogId: String,
+        fileLocation: String,
+        message: Message,
+        forceImporter: String? = null
+    ): OptimizedImportAnalysis {
+        val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
         val file = File(fileLocation)
         val contentType = file.toURI().toURL().openConnection().contentType
         val type = contentType ?: ContentType.TEXT_PLAIN.mimeType
 
-        val message = ImportMessage()
         notifier.sendMessage(notificationType, message.apply { this.message = "Start analysis" })
 
         if (type == "application/zip") {
             val totalFiles: Int
+            val importers: List<String>
             return handleZipImport(file)
-                .also { totalFiles = it.size }
+                .also { totalFiles = it.documents.size }
+                .also { importers = it.importers }
+                .documents
                 .mapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
                     // TODO: remove artificial wait
-                    Thread.sleep(300)
+//                    Thread.sleep(300)
                     analyzeDoc(catalogId, fileContent[0])
                 }
-                .toList().let { prepareForImport(it) }
+                .toList().let { prepareForImport(importers, it) }
         }
 
         val fileContent = String(file.readBytes(), Charset.defaultCharset())
         val importer = factory.getImporter(type, fileContent)
 
         val result = importer[0].run(fileContent)
-        return prepareForImport(listOf(analyzeDoc(catalogId, result[0])))
+        return prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
     }
 
-    private fun prepareForImport(analysis: List<DocumentAnalysis>) : OptimizedImportAnalysis {
-        
+    private fun prepareForImport(importers: List<String>, analysis: List<DocumentAnalysis>): OptimizedImportAnalysis {
+
+        val sortedListOfAllReferences = prepareDocuments(analysis)
+
         return OptimizedImportAnalysis(
-            emptyList(),
+            importers,
+            sortedListOfAllReferences,
             analysis.size,
             analysis.flatMap { it.references.map { it.document.uuid } }.distinct().size,
             analysis.filter { it.exists }
@@ -89,11 +89,36 @@ class ImportService constructor(
                     .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
             }.distinctBy { it.uuid }
         )
-        
+
     }
 
-    private fun handleZipImport(file: File): List<JsonNode> {
+    private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> {
+
+        return analysis
+            .flatMap { it.references + it }
+            .distinctBy { it.document.uuid }
+            .sortedWith(ReferenceComparator)
+
+    }
+
+    private class ReferenceComparator {
+
+        companion object : Comparator<DocumentAnalysis> {
+
+            override fun compare(a: DocumentAnalysis, b: DocumentAnalysis): Int {
+                return when {
+                    // if other document is in reference list of first document, then it must be listed before
+                    a.references.any { it.document.uuid == b.document.uuid } -> 1
+                    b.references.any { it.document.uuid == a.document.uuid } -> -1
+                    else -> 0
+                }
+            }
+        }
+    }
+
+    private fun handleZipImport(file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
+        val importers = mutableSetOf<String>()
 
         extractZip(file.inputStream()) { entry, os ->
             run {
@@ -105,28 +130,30 @@ class ImportService constructor(
                 val importer = factory.getImporter(type.toString(), os.toString())
                 val result = importer[0].run(os.toString())
                 docs.add(result)
+                importers.addAll(importer.map { it.typeInfo.id })
             }
         }
         log.info("Converted ${docs.size} documents ...")
 
-        return docs
+        return ExtractedZip(importers.toList(), docs)
     }
 
     private fun analyzeDoc(catalogId: String, doc: JsonNode): DocumentAnalysis {
         val document = documentService.convertToDocument(doc)
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
-         
+
         val refType = documentService.getDocumentType(document.type)
 
         val references = refType.pullReferences(document)
             .map {
                 val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
-                DocumentAnalysis(it, wrapper?.id, isAddress(document.type), wrapper != null) }
+                DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null)
+            }
 
         return DocumentAnalysis(
-            document, 
+            document,
             documentWrapper?.id,
-            isAddress(document.type), 
+            isAddress(document.type),
             documentWrapper != null,
             references
         )
@@ -135,112 +162,20 @@ class ImportService constructor(
     private fun isAddress(documentType: String) =
         documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
 
+
     /*
-        @Transactional
-        fun importFile(
-            principal: Principal,
-            catalogId: String,
-            importerId: String,
-            file: MultipartFile,
+        private fun handleOptions(
+            document: ObjectNode,
             options: ImportOptions
-        ): Pair<Document, String> {
-            val fileContent = String(file.bytes, Charset.defaultCharset())
-            val importer = factory.getImporterById(importerId)
-    
-            val importedDoc = importer.run(fileContent)
-    
-            val document = importedDoc[0]
-            handleOptions(document as ObjectNode, options)
-    
-            log.debug("Transformed document: $document")
-    
-            // TODO: should we fail if there's no UUID? Imported document might not have a unique ID!?
-            val uuid = document.get(FIELD_UUID)?.asText()
-    
-            // check if document already exists
-            val wrapper = try {
-                if (uuid == null) {
-                    null
-                } else {
-                    documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-                }
-            } catch (ex: NotFoundException) {
-                null
+        ) {
+            if (options.options == "create_under_target") {
+                document.put(FIELD_PARENT, options.parentDocument)
+                // if import under a special folder then create new UUIDs for docs
+                document.put(FIELD_ID, UUID.randomUUID().toString())
             }
-    
-            val docObjForAddresses = documentService.convertToDocument(document)
-            extractAndSaveReferences(principal, catalogId, docObjForAddresses, options)
-    
-            val docObj = documentService.convertToDocument(document)
-    
-            val createDocument = if (wrapper == null || options.options == "create_under_target") {
-                val doc = documentService.createDocument(
-                    principal,
-                    catalogId,
-                    document,
-                    options.parentDocument.toInt(),
-                    false,
-                    false
-                )
-                documentService.convertToDocument(doc)
-            } else {
-                // only when version matches in updated document, it'll be overwritten
-                // otherwise a new document is created and wrapper links to original instead the updated one
-                docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-                documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj, false)
-            }
-    
-            // TODO: return created document instead of transformed JSON
-            return Pair(createDocument, importer.typeInfo.id)
         }
     */
 
-    private fun handleOptions(
-        document: ObjectNode,
-        options: ImportOptions
-    ) {
-        if (options.options == "create_under_target") {
-            document.put(FIELD_PARENT, options.parentDocument)
-            // if import under a special folder then create new UUIDs for docs
-            document.put(FIELD_ID, UUID.randomUUID().toString())
-        }
-    }
-
-    /*private fun extractAndSaveReferences(
-        principal: Principal,
-        catalogId: String,
-        doc: Document,
-        options: ImportOptions
-    ) {
-
-        val refType = documentService.getDocumentType(doc.type)
-
-        val references = refType.pullReferences(doc)
-
-        // save references
-        // TODO: use option if we want to publish it
-        // TODO: prevent conversion to Document and JsonNode
-        references
-            .filter { !documentAlreadyExists(catalogId, it) }
-            .map {
-                // create address under given folder
-                it.data.put(FIELD_PARENT, options.parentAddress)
-                val json = documentService.convertToJsonNode(it)
-                documentService.removeInternalFieldsForImport(json as ObjectNode)
-                json
-            }
-            .forEach {
-                documentService.createDocument(
-                    principal,
-                    catalogId,
-                    it,
-                    parentId = options.parentAddress.toInt(),
-                    publish = false
-                )
-            }
-
-    }*/
-    
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
     }
@@ -280,18 +215,51 @@ class ImportService constructor(
         }
     }
 
-    fun importAnalyzedDatasets(principal: Authentication, catalogId: String, analysis: OptimizedImportAnalysis) {
+    @Transactional
+    fun importAnalyzedDatasets(
+        principal: Authentication,
+        catalogId: String,
+        analysis: OptimizedImportAnalysis,
+        options: ImportOptions,
+        message: Message
+    ) {
 
-        analysis.references.forEach { 
-            if (!it.exists) {
-                documentService.createDocument(principal, catalogId, it.document, null, it.isAddress)
-            }/* else if (option.overwrite) {
-                documentService.updateDocument(null, catalogId, it.wrapperId, it.document)
-            }*/
+        val counter = ImportCounter()
+        val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
+        
+        analysis.references.forEachIndexed { index, ref ->
+            val progress = ((index + 1f) / analysis.references.size) * 100
+            notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
+            handleParent(ref, options)
+            if (!ref.exists) {
+                val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
+                documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress)
+                if (ref.isAddress) counter.addresses++ else counter.documents++
+            } else if (ref.isAddress && options.overwriteAddresses) {
+                setVersionInfo(ref.wrapperId!!, ref.document)
+                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
+                counter.overwritten++
+            } else {
+                counter.skipped++
+            }
         }
+        
+        log.info("Import result: $counter")
 
     }
-    
+
+    private fun setVersionInfo(wrapperId: Int, document: Document) {
+        val wrapper = documentService.getWrapperByDocumentId(wrapperId)
+        document.version = documentService.getLatestDocument(wrapper).version
+    }
+
+    private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions) {
+        when (documentInfo.isAddress) {
+            true -> documentInfo.document.data.put(FIELD_PARENT, options.parentAddress)
+            false -> documentInfo.document.data.put(FIELD_PARENT, options.parentDocument)
+        }
+    }
+
 }
 
 data class DocumentAnalysis(
@@ -303,9 +271,22 @@ data class DocumentAnalysis(
 )
 
 data class OptimizedImportAnalysis(
+    val importers: List<String>,
     val references: List<DocumentAnalysis>,
     val numDatasets: Int,
     val numAddresses: Int,
     val existingDatasets: List<DatasetInfo>,
     val existingAddresses: List<DatasetInfo>,
+)
+
+data class ExtractedZip(
+    val importers: List<String>,
+    val documents: List<JsonNode>
+)
+
+data class ImportCounter(
+    var documents: Int = 0,
+    var addresses: Int = 0,
+    var overwritten: Int = 0,
+    var skipped: Int = 0
 )

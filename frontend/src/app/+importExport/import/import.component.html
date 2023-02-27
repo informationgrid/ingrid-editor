@@ -46,14 +46,14 @@
                 <div *ngIf="!step1Complete; else uploadFinished">
                     <ige-file-upload
                         target="/api/jobs/import/analyze?command=start"
-                        (complete)="onUploadComplete($event)"
+                        (complete)="onUploadComplete()"
                         (chosenFiles)="chosenFiles = $event"
                     ></ige-file-upload>
                 </div>
 
                 <ng-template #uploadFinished>
-                    <div class="content">
-                        <div *ngIf="message.endTime == null">
+                    <div *ngIf="message" class="content">
+                        <ng-container *ngIf="message.endTime == null">
                             <div class="section-title">
                                 Analyse der hochgeladenen Datei(en)
                                 <!--                                {{ message.progress }} von {{}}-->
@@ -66,15 +66,15 @@
                             <button mat-flat-button (click)="abortImportJob()">
                                 Abbrechen
                             </button>
-                        </div>
+                        </ng-container>
 
-                        <div *ngIf="message.stage === 'ANALYZE'">
+                        <ng-container *ngIf="message.stage === 'ANALYZE'">
                             <div class="section-title">
                                 Analyse abgeschlossen
                             </div>
                             <ige-import-report [report]="message.report">
                             </ige-import-report>
-                        </div>
+                        </ng-container>
                         <!--<mat-icon class="big-icon success-color"
                             >check_circle_outline
                         </mat-icon>-->
@@ -96,7 +96,6 @@
                     </button>
                     <div fxFlex></div>
                     <button
-                        mat-button
                         mat-flat-button
                         color="primary"
                         matStepperNext
@@ -106,6 +105,7 @@
                     </button>
                 </div>
             </mat-step>
+
             <mat-step [stepControl]="optionsFormGroup">
                 <form class="content" [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
@@ -127,21 +127,35 @@
                             </mat-select>
                         </mat-form-field>
 
-                        <div class="section-title">Import</div>
-                        <mat-radio-group
-                            class="radio-vertical"
-                            formControlName="option"
-                        >
-                            <mat-radio-button value="overwrite_identical">
-                                Identische Metadaten überschreiben
-                            </mat-radio-button>
-                            <mat-radio-button value="create_under_target">
-                                Anlage nur unter gewähltem Importknoten
-                            </mat-radio-button>
-                        </mat-radio-group>
+                        <div class="section-title">Optionen</div>
+                        <div class="space-bottom display-flex flex-column">
+                            <mat-checkbox formControlName="overwriteAddresses"
+                                >Vorhandene Adressen überschreiben</mat-checkbox
+                            >
+                            <mat-checkbox formControlName="publish"
+                                >Datensätze veröffentlichen</mat-checkbox
+                            >
+                        </div>
 
-                        <div>Datensätze anlegen unter: ...</div>
-                        <div>Adressen anlegen unter: ...</div>
+                        <div class="section-title">Anlageort</div>
+                        <div class="space-bottom padding">
+                            <div>
+                                Datensätze: {{ parent.document }}
+                                <span class="link-text">
+                                    <a (click)="chooseLocationForDatasets()">
+                                        Ändern
+                                    </a>
+                                </span>
+                            </div>
+                            <div>
+                                Adressen: {{ parent.address }}
+                                <span class="link-text">
+                                    <a (click)="chooseLocationForAddresses()">
+                                        Ändern
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </form>
 
@@ -153,17 +167,7 @@
                     <button mat-button color="primary" matStepperPrevious>
                         Zurück
                     </button>
-                    <!--<button
-                        mat-button
-                        mat-flat-button
-                        matStepperNext
-                        color="primary"
-                        [disabled]="optionsFormGroup.invalid"
-                        Weiter
-                    >
-                    </button>-->
                     <button
-                        mat-button
                         mat-flat-button
                         color="primary"
                         [disabled]="optionsFormGroup.invalid"
@@ -219,48 +223,54 @@
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">
-                    <div class="section-title">Datei importiert:</div>
+                    <div *ngIf="message && message.endTime === null">
+                        <div class="section-title">
+                            Datensätze werden importiert
+                        </div>
+                        <mat-spinner diameter="50"></mat-spinner>
+                    </div>
 
-                    <ige-file-upload
-                        #uploadComponent
-                        showOnlyProgress="true"
-                        autoupload="false"
-                        target="/api/import"
-                        (complete)="onFileComplete($event)"
-                    ></ige-file-upload>
+                    <div
+                        *ngIf="message?.endTime !== null"
+                        class="display-flex flex-column"
+                    >
+                        <div class="section-title">Import abgeschlossen</div>
 
-                    <mat-icon
-                        *ngIf="hasImportError; else success"
-                        class="big-icon error-color"
-                        >error_outline
-                    </mat-icon>
-                    <ng-template #success>
-                        <mat-icon class="big-icon success-color"
-                            >check_circle_outline
+                        <!--<ige-file-upload
+                            #uploadComponent
+                            showOnlyProgress="true"
+                            autoupload="false"
+                            target="/api/import"
+                            (complete)="onFileComplete($event)"
+                        ></ige-file-upload>-->
+
+                        <mat-icon
+                            *ngIf="message?.errors?.length > 0; else success"
+                            class="big-icon error-color"
+                            >error_outline
                         </mat-icon>
+                        <ng-template #success>
+                            <mat-icon class="big-icon success-color"
+                                >check_circle_outline
+                            </mat-icon>
 
-                        <div class="section-title">Ort:</div>
-                        <ige-breadcrumb
-                            [path]="pathToDocument"
-                        ></ige-breadcrumb>
-                        <button
-                            mat-button
-                            mat-stroked-button
-                            color="primary"
-                            (click)="openImportedDocument()"
-                        >
-                            Öffnen
-                        </button>
-                    </ng-template>
+                            <!--<div class="section-title">Ort:</div>
+                            <ige-breadcrumb
+                                [path]="pathToDocument"
+                            ></ige-breadcrumb>-->
+                            <button
+                                mat-stroked-button
+                                color="primary"
+                                (click)="openImportedDocument()"
+                            >
+                                Öffnen
+                            </button>
+                        </ng-template>
+                    </div>
                 </div>
 
                 <div class="action-bar" fxLayoutAlign="end">
-                    <button
-                        mat-button
-                        mat-flat-button
-                        color="primary"
-                        (click)="cancel()"
-                    >
+                    <button mat-flat-button color="primary" (click)="cancel()">
                         Neuer Import
                     </button>
                 </div>
@@ -268,12 +278,3 @@
         </mat-horizontal-stepper>
     </section>
 </page-template>
-
-<ng-template #uploader>
-    <ige-file-upload
-        #uploadComponent
-        target="/api/import/analyze"
-        (complete)="onUploadComplete($event)"
-        (chosenFiles)="chosenFiles = $event"
-    ></ige-file-upload>
-</ng-template>

@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 
 interface ImportReport {
-  importer: string;
+  importers: string[];
   numDatasets: string;
   numAddresses: string;
   existingDatasets: string;

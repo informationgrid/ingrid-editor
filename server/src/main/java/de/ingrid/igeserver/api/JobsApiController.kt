@@ -1,16 +1,14 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.messaging.URLCheckerReport
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
-import de.ingrid.igeserver.tasks.quartz.ImportAnalyzeTask
+import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
@@ -98,12 +96,12 @@ class JobsApiController @Autowired constructor(
             put("importFile", fileLocation)
             put("report", null)
         }
-        scheduler.handleJobWithCommand(command, ImportAnalyzeTask::class.java, jobKey, jobDataMap)
+        scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok().build()
     }
 
-    override fun importTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
+    override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getCatalogById(catalogId).type
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
@@ -111,8 +109,9 @@ class JobsApiController @Autowired constructor(
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
+            put("options", jacksonObjectMapper().writeValueAsString(options))
         }
-        scheduler.handleJobWithCommand(command, ImportAnalyzeTask::class.java, jobKey, jobDataMap)
+        scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok().build()
     }
