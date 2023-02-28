@@ -31,6 +31,8 @@ open class IngridModelTransformer constructor(
     val data = model.data
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
+    val distributionFormats = data.distribution?.format ?: emptyList()
+    val digitalTransferOptions = data.digitalTransferOptions ?: emptyList()
 
     val resourceDateType = data.temporal.resourceDateType?.key
     val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
@@ -139,9 +141,16 @@ open class IngridModelTransformer constructor(
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValueModel(it, null)) }
             ?: emptyList()
 
+    val datasetCharacterSet = codelists.getValue("510", data.metadata.characterSet, "iso")
+    val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
+
+
+    val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso")} ?: emptyList()
+    val spatialResolution = data.resolution ?: emptyList()
+
 
     // Always use UTF-8 (see INGRID-2340)
-    val characterSetCode = codelists.getValue("510", data.metadata.characterSet) ?: "utf8"
+    val metadataCharacterSet = "utf8"
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")

@@ -33,6 +33,91 @@ data class DataModel(
     val gridSpatialRepresentation: GridSpatialRepresentation?,
     val identifier: String?,
     val graphicOverviews: List<GraphicOverview>?,
+    val spatialRepresentationType: List<KeyValueModel>?,
+    val resolution: List<Resolution>?,
+    val topicCategories: List<KeyValueModel>?,
+    val featureCatalogueDescription: FeatureCatalogueDescription?,
+    val digitalTransferOptions: List<DigitalTransferOption>?,
+    val distribution: Distribution?,
+    val orderInfo: String?,
+    val dataQuality: DataQuality?,
+    val qualities: List<Quality>?,
+    val absoluteExternalPositionalAccuracy: AbsoluteExternalPositionalAccuracy?,
+    val conformanceResult: List<ConformanceResult>?,
+    val lineage: Lineage?,
+)
+
+data class Lineage(
+    val statement: String?,
+)
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ConformanceResult(
+    val pass: KeyValueModel,
+    val isInspire: Boolean?,
+    val explanation: String?,
+    val specification: KeyValueModel?,
+    val publicationDate: String,
+)
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AbsoluteExternalPositionalAccuracy (
+    val vertical: Number?,
+    val horizontal: Number?,
+    val griddedDataPositionalAccuracy: Number?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DataQuality(
+    val completenessOmission: CompletenessOmission?,
+)
+
+data class CompletenessOmission(
+    val measResult: Number?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Quality(
+    val _type: String,
+    val measureType: KeyValueModel?,
+    val value: Number,
+    val parameter: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Distribution(
+    val format: List<DistributionFormat>?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DistributionFormat(
+    val name: KeyValueModel?,
+    val version: String?,
+    val compression: String?,
+    val specification: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DigitalTransferOption(
+    val name: KeyValueModel?,
+    val transferSize: Number?,
+    val mediumNote: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class FeatureCatalogueDescription(
+    val citation: List<Citation>?,
+    val featureTypes: List<KeyValueModel>?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Citation(
+    val title: KeyValueModel?,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val date: OffsetDateTime?,
+    val edition: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -40,11 +125,19 @@ data class GraphicOverview(
     val fileName: FileName,
     val fileDescription: String?,
 )
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class FileName(
     val asLink: Boolean,
     val value: String,
     val uri: String,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Resolution(
+    val denominator: Int?,
+    val distanceMeter: Number?,
+    val distanceDPI: Number?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -54,14 +147,14 @@ data class GridSpatialRepresentation(
     val transformationParameterAvailability: Boolean,
     val numberOfDimensions: Int?,
     val cellGeometry: KeyValueModel?,
-    )
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(
     val name: KeyValueModel,
     val size: Int?,
     val resolution: Double?,
-    )
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Dataset(

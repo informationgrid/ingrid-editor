@@ -3,13 +3,17 @@
 @import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel;
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.UseConstraint
+@import gg.jte.Content
 
 @param IngridModelTransformer page
+@param Content contentInfo = null
+
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
 
@@ -30,7 +34,7 @@
 <gmd:characterSet>
     <gmd:MD_CharacterSetCode
             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode"
-            codeListValue="${page.getCharacterSetCode()}" />
+            codeListValue="${page.getMetadataCharacterSet()}" />
 </gmd:characterSet>
 @if(page.getParentIdentifier() != null)
     <gmd:parentIdentifier>
@@ -296,11 +300,59 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
 
+        @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType}"/>
+            </gmd:spatialRepresentationType>
+        @endfor
 
+        @for(Resolution resolution : page.getSpatialResolution())
+            @if(resolution.getDenominator() != null)
+                <gmd:spatialResolution>
+                    <gmd:MD_Resolution>
+                        <gmd:equivalentScale>
+                            <gmd:MD_RepresentativeFraction>
+                                <gmd:denominator>
+                                    <gco:Integer>${resolution.getDenominator()}</gco:Integer>
+                                </gmd:denominator>
+                            </gmd:MD_RepresentativeFraction>
+                        </gmd:equivalentScale>
+                    </gmd:MD_Resolution>
+                </gmd:spatialResolution>
+            @endif
+            @if(resolution.getDistanceMeter() != null)
+                <gmd:spatialResolution>
+                    <gmd:MD_Resolution>
+                        <gmd:distance>
+                            <gco:Distance uom="meter">${resolution.getDistanceMeter()}</gco:Distance>
+                        </gmd:distance>
+                    </gmd:MD_Resolution>
+                </gmd:spatialResolution>
+            @endif
+            @if(resolution.getDistanceDPI() != null)
+                <gmd:spatialResolution>
+                    <gmd:MD_Resolution>
+                        <gmd:distance>
+                            <gco:Distance uom="dpi">${resolution.getDistanceDPI()}</gco:Distance>
+                        </gmd:distance>
+                    </gmd:MD_Resolution>
+                </gmd:spatialResolution>
+            @endif
+        @endfor
         @for(String language : page.getDataLanguages())
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
             </gmd:language>
+        @endfor
+        @if(page.getDatasetCharacterSet() != null)
+            <gmd:characterSet>
+                <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="${page.getDatasetCharacterSet()}"/>
+            </gmd:characterSet>
+        @endif
+        @for(String category : page.getTopicCategories())
+            <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
         @endfor
         <gmd:extent>
             <gmd:EX_Extent>
@@ -438,4 +490,99 @@
         </gmd:extent>
     </gmd:MD_DataIdentification>
 </gmd:identificationInfo>
+
+<%--  @template.ingrid.contentInfo(page = new GeodatasetModelTransformer(page))--%>
+${contentInfo}
+
+
+
+
+
+
+
+<gmd:distributionInfo>
+    <gmd:MD_Distribution>
+        @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
+                <gmd:distributionFormat>
+                    <gmd:MD_Format>
+                        <gmd:name>
+                            <gco:CharacterString>${page.getCodelists().getValue("1320",distributionFormat.getName())}</gco:CharacterString>
+                        </gmd:name>
+                        <gmd:version>
+                            <gco:CharacterString>${distributionFormat.getVersion()}</gco:CharacterString>
+                        </gmd:version>
+                        <gmd:specification>
+                            <gco:CharacterString>${distributionFormat.getSpecification()}</gco:CharacterString>
+                        </gmd:specification>
+                        <gmd:fileDecompressionTechnique>
+                            <gco:CharacterString>${distributionFormat.getCompression()}</gco:CharacterString>
+                        </gmd:fileDecompressionTechnique>
+                    </gmd:MD_Format>
+                </gmd:distributionFormat>
+        @endfor
+        @if(page.getData().getOrderInfo() != null)
+        <gmd:distributor>
+            <gmd:MD_Distributor>
+                <gmd:distributorContact>
+                    <gmd:CI_ResponsibleParty>
+                        <gmd:role>
+                            <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor"/>
+                        </gmd:role>
+                    </gmd:CI_ResponsibleParty>
+                </gmd:distributorContact>
+                <gmd:distributionOrderProcess>
+                    <gmd:MD_StandardOrderProcess>
+                        <gmd:orderingInstructions>
+                            <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
+                        </gmd:orderingInstructions>
+                    </gmd:MD_StandardOrderProcess>
+                </gmd:distributionOrderProcess>
+            </gmd:MD_Distributor>
+        </gmd:distributor>
+        @endif
+        <gmd:transferOptions>
+            <gmd:MD_DigitalTransferOptions>
+                <gmd:onLine>
+                    <idf:idfOnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>http://wemove.com</gmd:URL>
+                        </gmd:linkage>
+                        <gmd:applicationProfile>
+                            <gco:CharacterString>PDF</gco:CharacterString>
+                        </gmd:applicationProfile>
+                        <gmd:name>
+                            <gco:CharacterString>Testverweis</gco:CharacterString>
+                        </gmd:name>
+                        <gmd:description>
+                            <gco:CharacterString>ErläuterungenVerweis</gco:CharacterString>
+                        </gmd:description>
+                        <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+                        </gmd:function>
+                        <idf:attachedToField entry-id="9990" list-id="2000">Datendownload</idf:attachedToField>
+                    </idf:idfOnlineResource>
+                </gmd:onLine>
+            </gmd:MD_DigitalTransferOptions>
+        </gmd:transferOptions>
+        @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:transferSize>
+                        <gco:Real>${digitalTransferOption.getTransferSize()}</gco:Real>
+                    </gmd:transferSize>
+                    <gmd:offLine>
+                        <gmd:MD_Medium>
+                            <gmd:name>
+                                <gmd:MD_MediumNameCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MediumNameCode" codeListValue="${page.getCodelists().getValue("520",digitalTransferOption.getName(),"iso")}"/>
+                            </gmd:name>
+                            <gmd:mediumNote>
+                                <gco:CharacterString>${digitalTransferOption.getMediumNote()}</gco:CharacterString>
+                            </gmd:mediumNote>
+                        </gmd:MD_Medium>
+                    </gmd:offLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        @endfor
+    </gmd:MD_Distribution>
+</gmd:distributionInfo>
 

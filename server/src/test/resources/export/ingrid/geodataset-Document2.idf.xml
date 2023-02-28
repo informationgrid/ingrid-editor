@@ -450,6 +450,20 @@
                     </gmd:spatialResolution>
                     <gmd:spatialResolution>
                         <gmd:MD_Resolution>
+                            <gmd:distance>
+                                <gco:Distance uom="meter">30</gco:Distance>
+                            </gmd:distance>
+                        </gmd:MD_Resolution>
+                    </gmd:spatialResolution>
+                    <gmd:spatialResolution>
+                        <gmd:MD_Resolution>
+                            <gmd:distance>
+                                <gco:Distance uom="dpi">400</gco:Distance>
+                            </gmd:distance>
+                        </gmd:MD_Resolution>
+                    </gmd:spatialResolution>
+                    <gmd:spatialResolution>
+                        <gmd:MD_Resolution>
                             <gmd:equivalentScale>
                                 <gmd:MD_RepresentativeFraction>
                                     <gmd:denominator>
@@ -462,21 +476,7 @@
                     <gmd:spatialResolution>
                         <gmd:MD_Resolution>
                             <gmd:distance>
-                                <gco:Distance uom="meter">30</gco:Distance>
-                            </gmd:distance>
-                        </gmd:MD_Resolution>
-                    </gmd:spatialResolution>
-                    <gmd:spatialResolution>
-                        <gmd:MD_Resolution>
-                            <gmd:distance>
                                 <gco:Distance uom="meter">5</gco:Distance>
-                            </gmd:distance>
-                        </gmd:MD_Resolution>
-                    </gmd:spatialResolution>
-                    <gmd:spatialResolution>
-                        <gmd:MD_Resolution>
-                            <gmd:distance>
-                                <gco:Distance uom="dpi">400</gco:Distance>
                             </gmd:distance>
                         </gmd:MD_Resolution>
                     </gmd:spatialResolution>
@@ -641,9 +641,6 @@
                     <gmd:language>
                         <gco:CharacterString>deutsch</gco:CharacterString>
                     </gmd:language>
-                    <gmd:includedWithDataset>
-                        <gco:Boolean>false</gco:Boolean>
-                    </gmd:includedWithDataset>
                     <gmd:featureTypes>
                         <gco:LocalName>Attributinformation test</gco:LocalName>
                     </gmd:featureTypes>
@@ -912,7 +909,7 @@
                                         </gml:UnitDefinition>
                                     </gmd:valueUnit>
                                     <gmd:value>
-                                        <gco:Record>12</gco:Record>
+                                        <gco:Record>13</gco:Record>
                                     </gmd:value>
                                 </gmd:DQ_QuantitativeResult>
                             </gmd:result>

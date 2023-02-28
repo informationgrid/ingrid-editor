@@ -148,11 +148,11 @@
       "featureTypes": [
         {
           "key": null,
-          "value": "Sachdaten test"
+          "value": "Attributinformation test"
         },
         {
           "key": null,
-          "value": "Attributinformation test"
+          "value": "Sachdaten test"
         }
       ]
     },
@@ -178,20 +178,20 @@
     },
     "qualities": [
       {
-        "_type": "completenessComission",
+        "_type": "conceptualConsistency",
         "measureType": {
           "key": "2"
         },
-        "value": 11,
-        "parameter": "param1"
+        "value": 88,
+        "parameter": "66"
       },
       {
-        "_type": "completenessComission",
+        "_type": "temporalConsistency",
         "measureType": {
           "key": "1"
         },
-        "value": 55,
-        "parameter": "param2"
+        "value": 3,
+        "parameter": "h"
       },
       {
         "_type": "conceptualConsistency",
@@ -202,44 +202,12 @@
         "parameter": "3"
       },
       {
-        "_type": "conceptualConsistency",
-        "measureType": {
-          "key": "2"
-        },
-        "value": 88,
-        "parameter": "66"
-      },
-      {
         "_type": "domainConsistency",
         "measureType": {
           "key": "1"
         },
         "value": 34,
         "parameter": "mm"
-      },
-      {
-        "_type": "formatConsistency",
-        "measureType": {
-          "key": "1"
-        },
-        "value": 7,
-        "parameter": "kk"
-      },
-      {
-        "_type": "topologicalConsistency",
-        "measureType": {
-          "key": "1"
-        },
-        "value": 23,
-        "parameter": "hl"
-      },
-      {
-        "_type": "temporalConsistency",
-        "measureType": {
-          "key": "1"
-        },
-        "value": 3,
-        "parameter": "h"
       },
       {
         "_type": "thematicClassificationCorrectness",
@@ -258,6 +226,30 @@
         "parameter": "rat"
       },
       {
+        "_type": "relativeInternalPositionalAccuracy",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 6,
+        "parameter": "tol"
+      },
+      {
+        "_type": "completenessComission",
+        "measureType": {
+          "key": "2"
+        },
+        "value": 11,
+        "parameter": "param1"
+      },
+      {
+        "_type": "topologicalConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 23,
+        "parameter": "hl"
+      },
+      {
         "_type": "quantitativeAttributeAccuracy",
         "measureType": {
           "key": "1"
@@ -266,12 +258,20 @@
         "parameter": "ter"
       },
       {
-        "_type": "relativeInternalPositionalAccuracy",
+        "_type": "completenessComission",
         "measureType": {
           "key": "1"
         },
-        "value": 6,
-        "parameter": "tol"
+        "value": 55,
+        "parameter": "param2"
+      },
+      {
+        "_type": "formatConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 7,
+        "parameter": "kk"
       }
     ],
     "spatial": {
@@ -354,10 +354,8 @@
       "language": {
         "key": "150"
       },
-      "metadata": {
-        "characterSet": {
-          "key": "3"
-        }
+      "characterSet": {
+        "key": "3"
       }
     },
     "extraInfoPublishArea": {
@@ -378,7 +376,7 @@
           "key": "1"
         },
         "publicationDate": "2010-12-08",
-        "explanation": null,
+        "explanation": "see the referenced specification",
         "isInspire": true
       }
     ],
@@ -418,20 +416,40 @@
       ],
       "useLimitation": "Anwendungseinschränkungen test"
     },
-    "digitalTransferOptions": [
-      {
-        "name": {
-          "key": "14"
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "23"
+          },
+          "version": "4",
+          "compression": "5",
+          "specification": "6"
         },
-        "transferSize": 1,
-        "mediumNote": "2"
-      },
+        {
+          "name": {
+            "key": "24"
+          },
+          "version": "1",
+          "compression": "2",
+          "specification": "3"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
       {
         "name": {
           "key": "4"
         },
         "transferSize": 3,
         "mediumNote": "4"
+      },
+      {
+        "name": {
+          "key": "14"
+        },
+        "transferSize": 1,
+        "mediumNote": "2"
       }
     ],
     "orderInfo": "Bestellinformation test",
