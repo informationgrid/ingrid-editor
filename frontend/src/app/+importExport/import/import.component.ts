@@ -23,6 +23,7 @@ import {
   PasteDialogComponent,
   PasteDialogOptions,
 } from "../../+form/dialogs/copy-cut-paste/paste-dialog.component";
+import { TreeNode } from "../../store/tree/tree-node.model";
 
 @UntilDestroy()
 @Component({
@@ -188,6 +189,7 @@ export class ImportComponent implements OnInit {
         data: <PasteDialogOptions>{
           forAddress: isAddress,
           titleText: "Ordner auswählen",
+          typeToInsert: "FOLDER",
         },
       })
       .afterClosed()
