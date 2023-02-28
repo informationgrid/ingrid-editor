@@ -26,34 +26,43 @@ class ImportTask @Autowired constructor(
 
     override val log = logger()
 
+    enum class Stage { ANALYZE, IMPORT, UNKNOWN }
+
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: Import")
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.IMPORT, info.catalogId)
-        val stage = if (info.importFile != null) "ANALYZE" else if (info.analysis != null) "IMPORT" else "UNKNOWN"
+        val stage = if (info.importFile != null) Stage.ANALYZE else if (info.analysis != null) Stage.IMPORT else Stage.UNKNOWN
 
         // use start time from analysis phase if it already happened
-        val message = if (stage == "ANALYZE") Message() else Message(info.startTime ?: Date())
+        val message = if (stage == Stage.ANALYZE) Message() else Message(info.startTime ?: Date())
         notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
 
         val principal = runAsUser()
 
         val report = when (stage) {
-            "ANALYZE" -> {
+            Stage.ANALYZE -> {
                 clearPreviousAnalysis(context)
                 importService.analyzeFile(info.catalogId, info.importFile!!, message)
             }
-            "IMPORT" -> {
-                importService.importAnalyzedDatasets(principal, info.catalogId, info.analysis!!, info.options!!, message)
+
+            Stage.IMPORT -> {
+                importService.importAnalyzedDatasets(
+                    principal,
+                    info.catalogId,
+                    info.analysis!!,
+                    info.options!!,
+                    message
+                )
                 info.analysis
             }
+
             else -> null
         }
-
-        with(message) {
-            val jobInfo = IgeJobInfo(this.startTime, Date(), report, stage = stage)
-            finishJob(context, jobInfo)
-            notifier.endMessage(notificationType, jobInfo)
+        
+        message.apply { this.report = report; this.endTime = Date(); this.stage = stage.name }.also {
+            finishJob(context, it)
+            notifier.sendMessage(notificationType, it)
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")

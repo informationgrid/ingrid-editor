@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.messaging.Message
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
@@ -31,7 +32,7 @@ abstract class IgeJob : InterruptableJob {
 
     protected fun finishJob(
         context: JobExecutionContext,
-        jobInfo: IgeJobInfo
+        jobInfo: Message
     ): JobDataMap {
         currentThread = null
 
@@ -53,11 +54,3 @@ abstract class IgeJob : InterruptableJob {
         return auth
     }
 }
-
-data class IgeJobInfo(
-    val startTime: Date,
-    val endTime: Date?,
-    val report: Any?,
-    val errors: List<Any> = emptyList(),
-    val stage: String? = null // used when job has multiple phases like import
-)

@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.api.messaging
 
-import de.ingrid.igeserver.tasks.quartz.IgeJobInfo
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -14,7 +13,8 @@ data class UrlReport(val url: String, var success: Boolean, var status: Int, val
 data class DatasetInfo(val title: String, val type: String, val uuid: String, val field: String? = null)
 
 data class UrlMessage(var numUrls: Int = 0, override var progress: Int = 0) : Message(progress = progress) {
-    var report: URLCheckerReport? = null
+    // TODO: migrate to new notifier
+    var report2: URLCheckerReport? = null
 }
 
 enum class NotificationType(val uri: String) {
@@ -46,8 +46,4 @@ class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate
         })
     }
     
-    fun endMessage(type: MessageTarget, jobInfo: IgeJobInfo) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION + type, jobInfo)
-    }
-
 }
