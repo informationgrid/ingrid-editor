@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api.messaging
 
+import de.ingrid.igeserver.tasks.quartz.IgeJobInfo
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -43,6 +44,10 @@ class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate
             this.endTime = Date()
             this.progress = 100
         })
+    }
+    
+    fun endMessage(type: MessageTarget, jobInfo: IgeJobInfo) {
+        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION + type, jobInfo)
     }
 
 }

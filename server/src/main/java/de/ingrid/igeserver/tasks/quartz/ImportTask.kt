@@ -51,8 +51,9 @@ class ImportTask @Autowired constructor(
         }
 
         with(message) {
-            notifier.endMessage(notificationType, this)
-            finishJob(context, IgeJobInfo(this.startTime, this.endTime, report, stage = stage))
+            val jobInfo = IgeJobInfo(this.startTime, Date(), report, stage = stage)
+            finishJob(context, jobInfo)
+            notifier.endMessage(notificationType, jobInfo)
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")
@@ -60,6 +61,8 @@ class ImportTask @Autowired constructor(
 
     private fun clearPreviousAnalysis(context: JobExecutionContext) {
         context.mergedJobDataMap!!.run {
+            put("startTime", Date())
+            put("endTime", null)
             put("report", null)
             put("errors", null)
         }

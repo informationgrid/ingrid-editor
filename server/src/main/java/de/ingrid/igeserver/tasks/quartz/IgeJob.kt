@@ -60,4 +60,4 @@ data class IgeJobInfo(
     val report: Any?,
     val errors: List<Any> = emptyList(),
     val stage: String? = null // used when job has multiple phases like import
-) : JobDataMap()
+)

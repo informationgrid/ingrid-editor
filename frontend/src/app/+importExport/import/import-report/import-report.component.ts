@@ -1,12 +1,5 @@
 import { Component, Input } from "@angular/core";
-
-interface ImportReport {
-  importers: string[];
-  numDatasets: string;
-  numAddresses: string;
-  existingDatasets: string;
-  existingAddresses: string;
-}
+import { ImportLogReport } from "../../exchange.service";
 
 @Component({
   selector: "ige-import-report",
@@ -14,5 +7,5 @@ interface ImportReport {
   styleUrls: ["./import-report.component.scss"],
 })
 export class ImportReportComponent {
-  @Input() report: ImportReport;
+  @Input() report: ImportLogReport;
 }

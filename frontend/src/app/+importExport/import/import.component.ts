@@ -9,7 +9,6 @@ import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
 import { map, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
-import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
 import { UploadComponent } from "../../shared/upload/upload.component";
@@ -55,8 +54,6 @@ export class ImportComponent implements OnInit {
 
   importers: ImportTypeInfo[];
   chosenFiles: TransfersWithErrorInfo[];
-  private importedDocUuid: string = null;
-  pathToDocument: ShortTreeNode[];
 
   importIsRunning: boolean;
 
@@ -84,7 +81,7 @@ export class ImportComponent implements OnInit {
       )
   );
 
-  message: any = {};
+  message: ImportLogInfo;
 
   parent = {
     document: "Daten",
@@ -175,11 +172,6 @@ export class ImportComponent implements OnInit {
 
   private handleRunningInfo(data: any) {
     this.importIsRunning = !data.endTime;
-    // give some time to write log in backend
-    // TODO: improve behaviour!
-    if (data.endTime) {
-      setTimeout(() => this.exchangeService.fetchLastLog(), 500);
-    }
   }
 
   chooseLocationForDatasets() {
