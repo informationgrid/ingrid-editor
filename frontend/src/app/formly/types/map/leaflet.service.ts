@@ -86,12 +86,12 @@ export class LeafletService {
     return box ? map.fitBounds(box, { maxZoom: 13 }) : map;
   }
 
-  initMap(mapElement: any, matOptions: MapOptions) {
+  initMap(mapElement: any, mapOptions: MapOptions) {
     const defaults = { ...this.defaultOptions };
     let map = new Map(mapElement, {
       layers: [this.defaultLayer()],
       ...defaults,
-      ...matOptions,
+      ...mapOptions,
     });
     map.attributionControl.setPrefix(false);
     return map;
@@ -211,5 +211,15 @@ export class LeafletService {
       }
     });
     return bounds;
+  }
+
+  addMapControls(map: Map) {
+    // @ts-ignore
+    map._controlContainer.style.display = "block";
+  }
+
+  removeMapControls(map: Map) {
+    // @ts-ignore
+    map._controlContainer.style.display = "none";
   }
 }

@@ -95,7 +95,12 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   updateView(viewType: SpatialLocationType) {
     this.view = viewType;
     this.result.type = viewType;
-    if (viewType != "free") this.result.value = null;
+    if (viewType == "free") {
+      this.leafletService.addMapControls(this.leafletReference);
+    } else {
+      this.result.value = null;
+      this.leafletService.removeMapControls(this.leafletReference);
+    }
 
     // @ts-ignore
     setTimeout(() => (<Map>this.leafletReference)._onResize());
