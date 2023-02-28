@@ -1,5 +1,5 @@
-<ng-container *ngIf="message as log">
-    <div class="info-wrapper">
+<ng-container>
+    <div *ngIf="message as log" class="info-wrapper">
         <mat-icon
             *ngIf="log.errors?.length > 0"
             class="error-color"
