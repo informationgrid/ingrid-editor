@@ -633,9 +633,6 @@
                     </gmd:extent>
                 </gmd:MD_DataIdentification>
             </gmd:identificationInfo>
-            <idf:abstract>
-                <gco:CharacterString>Beschreibung von Kompletter Geodatensatz</gco:CharacterString>
-            </idf:abstract>
             <gmd:contentInfo>
                 <gmd:MD_FeatureCatalogueDescription>
                     <gmd:language>
@@ -1336,6 +1333,9 @@
                     </gmd:portrayalCatalogueCitation>
                 </gmd:MD_PortrayalCatalogueReference>
             </gmd:portrayalCatalogueInfo>
+            <idf:abstract>
+                <gco:CharacterString>Beschreibung von Kompletter Geodatensatz</gco:CharacterString>
+            </idf:abstract>
         </idf:idfMdMetadata>
     </idf:body>
 </idf:html>

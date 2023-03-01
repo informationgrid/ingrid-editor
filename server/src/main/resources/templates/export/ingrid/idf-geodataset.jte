@@ -51,4 +51,33 @@
     `
     )
     @template.ingrid.dataQuality(page = page)
+    @for(Citation citation : page.getPortrayalCatalogueCitations())
+    <gmd:portrayalCatalogueInfo>
+        <gmd:MD_PortrayalCatalogueReference>
+            <gmd:portrayalCatalogueCitation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>${page.getCodelists().getValue("3555",citation.getTitle())}</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:DateTime>${page.formatDate(page.getFormatterISO(), citation.getDate())}</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    @if (citation.getEdition() != null)
+                    <gmd:edition>
+                        <gco:CharacterString>${citation.getEdition()}</gco:CharacterString>
+                    </gmd:edition>
+                    @endif
+                </gmd:CI_Citation>
+            </gmd:portrayalCatalogueCitation>
+        </gmd:MD_PortrayalCatalogueReference>
+    </gmd:portrayalCatalogueInfo>
+    @endfor
+
 `, abstract_text = page.getDescription())

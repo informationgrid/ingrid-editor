@@ -24,7 +24,7 @@ data class DataModel(
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
-    val isInspireRelevant: Boolean?,
+    val isInspireIdentified: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,
@@ -36,11 +36,13 @@ data class DataModel(
     val spatialRepresentationType: List<KeyValueModel>?,
     val resolution: List<Resolution>?,
     val topicCategories: List<KeyValueModel>?,
+    val portrayalCatalogueInfo: PortrayalCatalogueInfo?,
     val featureCatalogueDescription: FeatureCatalogueDescription?,
     val digitalTransferOptions: List<DigitalTransferOption>?,
     val distribution: Distribution?,
     val orderInfo: String?,
     val dataQuality: DataQuality?,
+    val dataQualityInfo: DataQualityInfo?,
     val qualities: List<Quality>?,
     val absoluteExternalPositionalAccuracy: AbsoluteExternalPositionalAccuracy?,
     val conformanceResult: List<ConformanceResult>?,
@@ -51,6 +53,32 @@ data class Lineage(
     val statement: String?,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class PortrayalCatalogueInfo(
+    val citation: List<Citation>?,
+)
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DataQualityInfo(
+    val lineage: DataQualityLineage?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DataQualityLineage(
+    val source: DataQualityLineageSource?,
+    )
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DataQualityLineageSource(
+    val descriptions: List<KeyValueModel>?,
+    val processStep: ProcessStep?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ProcessStep(
+    val description: String?,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConformanceResult(
@@ -63,7 +91,7 @@ data class ConformanceResult(
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class AbsoluteExternalPositionalAccuracy (
+data class AbsoluteExternalPositionalAccuracy(
     val vertical: Number?,
     val horizontal: Number?,
     val griddedDataPositionalAccuracy: Number?

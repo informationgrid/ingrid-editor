@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -64,6 +65,7 @@ class Geodataset : AnnotationSpec() {
                 "1320_23_de" -> "AI"
                 "1320_24_de" -> "3D-Shape"
                 "3535_1_de" -> "von Drachenfels 94"
+                "3555_1_de" -> "Ganzflächige Biotopkartierung 94"
                 "6005_12_iso" -> "VERORDNUNG (EG) Nr. 1089/2010 DER KOMMISSION vom 23. November 2010 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Interoperabilität von Geodatensätzen und -diensten"
                 "6100_105_de" -> "Adressen"
                 "6100_313_de" -> "Atmosphärische Bedingungen"
@@ -101,6 +103,7 @@ class Geodataset : AnnotationSpec() {
 
 
     private lateinit var exporter: IngridIDFExporter
+    private lateinit var luceneExporter: IngridLuceneExporter
 
 
     @MockkBean(relaxed = true)
@@ -139,6 +142,21 @@ class Geodataset : AnnotationSpec() {
 
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.idf.xml")
+    }
+
+
+    @Test
+    fun completeLuceneExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+
+        var result = exportJson(luceneExporter, "/export/ingrid/geodataset-Document2.json")
+        // replace generated UUIDs and windows line endings
+        result = result
+            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+            .replace("\r\n", "\n")
+
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.xml")
     }
 
 }

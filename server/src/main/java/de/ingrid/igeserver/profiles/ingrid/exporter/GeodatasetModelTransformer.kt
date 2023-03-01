@@ -241,5 +241,12 @@ class GeodatasetModelTransformer constructor(
 
 
     val lineageStatement = model.data.lineage?.statement
+    val lineageProcessStepDescription = data.dataQualityInfo?.lineage?.source?.processStep?.description
+    val lineageSourceDescriptions =
+        data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
+    val hasLineageInformation = lineageStatement != null || lineageProcessStepDescription != null || lineageSourceDescriptions.isNotEmpty()
+
+    val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
+
 }
 

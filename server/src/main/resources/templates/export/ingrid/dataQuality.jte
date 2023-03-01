@@ -225,12 +225,32 @@
         @endfor
 
 
-        @if( page.getLineageStatement() != null)
+        @if( page.getHasLineageInformation())
         <gmd:lineage>
             <gmd:LI_Lineage>
+                @if( page.getLineageStatement() != null)
                 <gmd:statement>
                     <gco:CharacterString>${page.getLineageStatement()}</gco:CharacterString>
                 </gmd:statement>
+                @endif
+                @if( page.getLineageProcessStepDescription() != null)
+                <gmd:processStep>
+                    <gmd:LI_ProcessStep>
+                        <gmd:description>
+                            <gco:CharacterString>${page.getLineageProcessStepDescription()}</gco:CharacterString>
+                        </gmd:description>
+                    </gmd:LI_ProcessStep>
+                </gmd:processStep>
+                @endif
+                @for( String description : page.getLineageSourceDescriptions())
+                <gmd:source>
+                    <gmd:LI_Source>
+                        <gmd:description>
+                            <gco:CharacterString>${description}</gco:CharacterString>
+                        </gmd:description>
+                    </gmd:LI_Source>
+                </gmd:source>
+                @endfor
             </gmd:LI_Lineage>
         </gmd:lineage>
         @endif

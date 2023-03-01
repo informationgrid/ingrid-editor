@@ -159,7 +159,12 @@
     "dataQualityInfo": {
       "lineage": {
         "source": {
-          "descriptions": [],
+          "descriptions": [
+            {
+              "key": null,
+              "value": "Datengrundlage text"
+            }
+          ],
           "processStep": {
             "description": "Herstellungsprozess text"
           }
