@@ -47,7 +47,7 @@ export class Permissions {
 }
 
 export class TreePermission {
-  id: string;
+  id: number;
   title: string;
   isFolder: boolean;
   permission: string; // TODO: still used?

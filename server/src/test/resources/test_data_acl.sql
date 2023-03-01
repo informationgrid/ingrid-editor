@@ -27,7 +27,7 @@ INSERT INTO document VALUES (1000, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', '', null, null, null, true, 'DRAFT'
 );
 -- published version
 INSERT INTO document VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document Published', '{
@@ -35,25 +35,25 @@ INSERT INTO document VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 -- archived version 1
 INSERT INTO document VALUES (1002, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document', '{
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 -- folder
 INSERT INTO document VALUES (1003, 100, 'bc365545-e4b5-4359-bfb5-84367513752e', 'FOLDER', 'Test Folder', null,
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 -- archived folder
 INSERT INTO document VALUES (1004, 100, '5545bc36-b5e4-3549-b5bf-7513752e8436', 'FOLDER', 'Test Folder Old', null,
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 'FOLDER', 'Test Folder Older', null,
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 
 INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data',

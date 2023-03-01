@@ -3,16 +3,13 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import de.ingrid.igeserver.services.DocumentService
 import org.hibernate.annotations.*
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
-import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.Table
 
@@ -42,7 +39,7 @@ class DocumentWrapper {
 
     @Column(nullable = false)
     @JsonProperty("_type")
-    var type: String? = null
+    lateinit var type: String
 
     @Column(nullable = false)
     @JsonProperty("_category")
@@ -64,8 +61,8 @@ class DocumentWrapper {
     @JsonSetter("_parent")
     private var parentUuid: String? = null
 
-/*    @JsonIgnore
-    private var parentId: Int? = null*/
+    /*    @JsonIgnore
+        private var parentId: Int? = null*/
 
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
@@ -73,79 +70,6 @@ class DocumentWrapper {
             this.parentUuid = parent?.uuid
         }
         return this.parentUuid
-    }
-
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "draft", nullable = true)
-    @JsonAlias("draft") // hint for model registry
-    @JsonIgnore
-    var draft: Document? = null
-
-    @Transient
-    @JsonSetter("draft")
-    private var draftId: String? = null
-
-    @JsonGetter("draft")
-    fun getDraftId(): String? {
-        if (this.draftId == null) {
-            this.draftId = draft?.id?.toString()
-        }
-        return this.draftId
-    }
-
-    /**
-     * Published document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('published') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "published", nullable = true)
-    @JsonAlias("published") // hint for model registry
-    @JsonIgnore
-    var published: Document? = null
-
-    @Transient
-    @JsonSetter("published")
-    private var publishedId: String? = null
-
-    @JsonGetter("published")
-    fun getPublishedId(): String? {
-        if (this.publishedId == null) {
-            this.publishedId = published?.id?.toString()
-        }
-        return this.publishedId
-    }
-
-    /**
-     * Archive document relation (many-to-many)
-     * NOTE Since the JSON representation contains document ids ('archive') only, we need
-     * to map them manually to document instances for persistence
-     */
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "document_archive",
-        joinColumns = [JoinColumn(name = "wrapper_id")],
-        inverseJoinColumns = [JoinColumn(name = "document_id")]
-    )
-    @JsonAlias("archive") // hint for model registry
-    @JsonIgnore
-    var archive: MutableSet<Document> = LinkedHashSet<Document>()
-
-    @Transient
-    @JsonSetter("archive")
-    private var archiveIds: Array<String>? = null
-
-    @JsonGetter("archive")
-    fun getArchiveIds(): Array<String> {
-        if (this.archiveIds == null) {
-            this.archiveIds = archive.map { it.id.toString() }.toTypedArray()
-        }
-        return this.archiveIds!!
     }
 
     @Type(type = "list-array")
@@ -173,6 +97,7 @@ class DocumentWrapper {
     @JoinColumn(name = "pending", nullable = true)
     @JsonAlias("pending") // hint for model registry
     @JsonIgnore
+    @Deprecated("Use state in document")
     var pending: Document? = null
 
     @Column
@@ -180,19 +105,6 @@ class DocumentWrapper {
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
-
-    @Transient
-    fun getState(): String {
-        val hasDraft = draft != null
-        val hasPublished = published != null
-        return if (hasPublished && hasDraft) {
-            DocumentService.DocumentState.PUBLISHED.value + DocumentService.DocumentState.DRAFT.value
-        } else if (hasPublished) {
-            DocumentService.DocumentState.PUBLISHED.value
-        } else {
-            DocumentService.DocumentState.DRAFT.value
-        }
-    }
 
     @Transient
     var hasWritePermission: Boolean = true

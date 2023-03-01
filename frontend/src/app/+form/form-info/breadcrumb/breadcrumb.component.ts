@@ -27,14 +27,14 @@ export class BreadcrumbComponent implements OnInit {
   @Input() selectable = false;
   @Input() disableRoot = false;
 
-  @Output() select = new EventEmitter<string>();
+  @Output() select = new EventEmitter<number>();
 
   fullPath: ShortTreeNode[];
   shortPath: ShortTreeNode[];
   collapsed = true;
 
   static readonly COLLAPSED_SYMBOL_NODE = new ShortTreeNode(
-    "COLLAPSED",
+    -1,
     "...",
     undefined,
     true
@@ -44,7 +44,7 @@ export class BreadcrumbComponent implements OnInit {
 
   ngOnInit() {}
 
-  onSelect(id: string) {
+  onSelect(id: number) {
     if (this.selectable) {
       this.select.next(id);
     }

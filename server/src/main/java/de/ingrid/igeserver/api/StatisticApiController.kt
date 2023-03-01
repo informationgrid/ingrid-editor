@@ -4,7 +4,6 @@ import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,20 +16,51 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class StatisticApiController @Autowired constructor(
     val researchService: ResearchService,
-    val authUtils: AuthUtils
+    val authUtils: AuthUtils,
+    val catalogService: CatalogService
 ) : StatisticApi {
-
-    @Autowired
-    private lateinit var dbService: DocumentService
-
-    @Autowired
-    private lateinit var catalogService: CatalogService
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
         val documentFilter = BoolFilter("AND", listOf("selectDocuments","exceptFolders"), null, null, true)
         val emptyQuery =  ResearchQuery(null, documentFilter)
         val result = getStatisticForQuery(principal, emptyQuery)
         return ResponseEntity.ok(result)
+
+        // TODO-DW: check improvement
+//        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+//
+//        val userName = authUtils.getUsernameFromPrincipal(principal)
+//        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
+//        val allDrafts = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "selectDraft", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 1)
+//            )
+//        )
+//        val allPublished = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "selectPublished", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 1)
+//            )
+//        )
+//        val total = researchService.query(
+//            principal, userGroups, catalogId,
+//            ResearchQuery(
+//                null, BoolFilter("AND", listOf("selectDocuments", "exceptFolders"), null, null),
+//                pagination = ResearchPaging(pageSize = 10)
+//            )
+//        )
+//        // TODO: fix calculation of total
+//
+//        return ResponseEntity.ok(
+//            StatisticResponse(
+//                total.totalHits.toLong(),
+//                allPublished.totalHits.toLong(),
+//                allDrafts.totalHits.toLong()
+//            )
+//        )
     }
 
     override fun searchStatistic(principal: Principal, query: ResearchQuery): ResponseEntity<StatisticResponse> {
@@ -49,9 +79,9 @@ class StatisticApiController @Autowired constructor(
         val queryResult = researchService.query(principal, userGroups, dbId, query)
 
 
-        val allData = queryResult.totalHits
-        var allDataDrafts = 0
-        var allDataPublished = 0
+        val allData = queryResult.totalHits.toLong()
+        var allDataDrafts: Long = 0
+        var allDataPublished: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
             if (hit._type != null) {

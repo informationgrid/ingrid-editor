@@ -235,10 +235,10 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getSelectedDatasets() {
-    return this.query.getActiveId().map((id) => id.toString());
+    return this.query.getActiveId().map((id) => <number>id);
   }
 
-  private getSelectedDatasetsWithoutChildren() {
+  private getSelectedDatasetsWithoutChildren(): number[] {
     const selection = this.getSelectedDatasets();
 
     const filtered = selection.filter(
@@ -263,10 +263,10 @@ export class CopyCutPastePlugin extends Plugin {
     this.toolbarService.removeButton("toolBtnCopyCutSeparator");
   }
 
-  private isChildOfSelectedParent(id: string, selection: string[]): boolean {
+  private isChildOfSelectedParent(id: number, selection: number[]): boolean {
     const parents = this.query.getParents(id);
     return parents.some(
-      (parent) => selection.indexOf(parent.id.toString()) !== -1
+      (parent) => selection.indexOf(<number>parent.id) !== -1
     );
   }
 }

@@ -76,8 +76,7 @@ export class FormInfoComponent implements OnInit {
       )
       .subscribe();
   }
-
-  async scrollToTreeNode(nodeId: string) {
+  async scrollToTreeNode(nodeId: number) {
     let handled = await FormUtils.handleDirtyForm(
       this.form,
       this.documentService,

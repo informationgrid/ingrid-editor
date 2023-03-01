@@ -38,7 +38,7 @@ export interface CreateOptions {
 export class CreateNodeComponent implements OnInit {
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
-  parent: string = null;
+  parent: number = null;
   forAddress: boolean;
   selectedPage = 0;
   rootTreeName: string;
@@ -46,7 +46,7 @@ export class CreateNodeComponent implements OnInit {
   formGroup: UntypedFormGroup;
   jumpedTreeNodeId: string = null;
   isAdmin = this.config.hasWriteRootPermission();
-  selectedLocation: string = null;
+  selectedLocation: number = null;
   pathWithWritePermission = false;
   private query: TreeQuery | AddressTreeQuery;
   docTypeChoice: string;
@@ -135,7 +135,7 @@ export class CreateNodeComponent implements OnInit {
     }
   }
 
-  updateParent(parentId: string) {
+  updateParent(parentId: number) {
     this.selectedLocation = parentId;
   }
 
@@ -161,7 +161,7 @@ export class CreateNodeComponent implements OnInit {
     }
   }
 
-  quickBreadcrumbChange(id: string) {
+  quickBreadcrumbChange(id: number) {
     this.parent = id;
     const index = this.path.findIndex((item) => item.id === id);
     this.path = this.path.splice(0, index + 1);

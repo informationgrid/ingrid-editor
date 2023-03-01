@@ -3,34 +3,27 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
-import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.QueryType
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
@@ -40,7 +33,6 @@ import java.security.Principal
 import java.time.ZoneOffset
 import java.util.*
 import javax.persistence.EntityManager
-import javax.persistence.criteria.*
 
 @Service
 class DocumentService @Autowired constructor(
@@ -50,7 +42,9 @@ class DocumentService @Autowired constructor(
     var aclService: IgeAclService,
     var groupService: GroupService,
     var dateService: DateService,
-    var generalProperties: GeneralProperties
+    var generalProperties: GeneralProperties,
+    val authUtils: AuthUtils,
+    val catalogService: CatalogService
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -99,12 +93,6 @@ class DocumentService @Autowired constructor(
     @Autowired
     private lateinit var entityManager: EntityManager
 
-    enum class DocumentState(val value: String) {
-        PUBLISHED("P"),
-        DRAFT("W"),
-        DRAFT_AND_PUBLISHED("PW")
-    }
-
     private var log = logger()
 
     /**
@@ -126,29 +114,90 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: String): DocumentWrapper {
+    /**
+     * This function gets the latest document version with its wrapper element. This function implicitly checks
+     * permission when getting the wrapper.
+     */
+    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
         try {
-//            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
-            return docWrapperRepo.findById(id.toInt()).get()
+            val wrapper = docWrapperRepo.findById(id).get()
+            val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
+            entityManager.detach(doc)
+
+            return if (expandReferences) DocumentData(
+                wrapper,
+                expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogIdentifier))
+            )
+            else DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
-            throw NotFoundException.withMissingResource(id, null)
-        } catch (ex: NoSuchElementException) {
-            throw NotFoundException.withMissingResource(id, null)
+            throw NotFoundException.withMissingResource(id.toString(), null)
         }
     }
 
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
-        return if (includeFolders)
-            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        else
-            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: Int): DocumentWrapper {
+        try {
+//            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
+            return docWrapperRepo.findById(id).get()
+        } catch (ex: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(id.toString(), null)
+        } catch (ex: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(id.toString(), null)
+        }
     }
 
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentWrapper> {
+    fun getDocumentByWrapperId(catalogId: String, id: Int): Document {
+        try {
+            val wrapper = docWrapperRepo.findById(id).get()
+            val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
+
+            // add metadata
+            doc.hasWritePermission = wrapper.hasWritePermission
+            doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
+            doc.wrapperId = wrapper.id
+            doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
+            // TODO: only call when requested!?
+            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+        } catch (ex: EmptyResultDataAccessException) {
+            throw NotFoundException.withMissingResource(id.toString(), null)
+        } catch (ex: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(id.toString(), null)
+        }
+    }
+
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }
 
     fun findChildren(
+        catalogId: String,
+        parentId: Int?,
+        docCat: DocumentCategory = DocumentCategory.DATA
+    ): FindAllResults<DocumentData> {
+
+        val wrappers = if (parentId == null) {
+            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+        } else {
+            docWrapperRepo.findByParent_id(parentId.toInt())
+        }
+
+        return getDocumentsFromWrappers(wrappers)
+    }
+
+    fun getDocumentsFromWrappers(wrappers: List<DocumentWrapper>): FindAllResults<DocumentData> {
+        if (wrappers.isEmpty()) return FindAllResults(0, emptyList())
+
+        val accessibleUuids = wrappers.map { it.uuid }
+        val docs = docRepo.findAllByCatalogAndIsLatestIsTrueAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+
+        val docsData = docs.map { DocumentData(wrappers[accessibleUuids.indexOf(it.uuid)], it) }
+
+        return FindAllResults(
+            docsData.size.toLong(),
+            docsData
+        )
+    }
+
+    fun findChildrenWrapper(
         catalogId: String,
         parentId: Int?,
         docCat: DocumentCategory = DocumentCategory.DATA
@@ -159,11 +208,7 @@ class DocumentService @Autowired constructor(
         } else {
             docWrapperRepo.findByParent_id(parentId.toInt())
         }
-        /*val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(
-            catalogId,
-            parentId,
-            docCat.value
-        )*/
+
         return FindAllResults(
             docs.size.toLong(),
             docs
@@ -181,41 +226,12 @@ class DocumentService @Autowired constructor(
         } else {
             docs.hits
                 .flatMap { doc ->
-                    if (doc.countChildren > 0) getAllDescendantIds(
+                    if (doc.wrapper.countChildren > 0) getAllDescendantIds(
                         catalogId,
-                        doc.id!!
-                    ) + doc.id!! else listOf(doc.id!!)
+                        doc.wrapper.id!!
+                    ) + doc.wrapper.id!! else listOf(doc.wrapper.id!!)
                 }
         }
-    }
-
-    /**
-     * Get the latest version of the document associated with the given wrapper
-     * If onlyPublished is true, the method will return the published version and will throw an exception,
-     * if it does not exist. If onlyPublished is false, it will prefer the draft version, if it exists.
-     */
-    fun getLatestDocument(
-        wrapper: DocumentWrapper,
-        onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true,
-        catalogId: String? = null
-    ): Document {
-
-        val doc = getLatestDocumentVersion(wrapper, onlyPublished, catalogId)
-
-        return prepareDocument(doc, wrapper.type!!, onlyPublished, resolveLinks)
-    }
-
-    // TODO: consolidate function with above
-    fun getLatestDocument(
-        wrapper: DocumentWrapper,
-        options: UpdateReferenceOptions,
-        catalogId: String? = null
-    ): Document {
-
-        val doc = getLatestDocumentVersion(wrapper, options.onlyPublished, catalogId)
-
-        return prepareDocument(doc, wrapper.type!!, options.onlyPublished, options.forExport, options)
     }
 
     fun getDocumentType(docType: String): EntityType {
@@ -231,7 +247,7 @@ class DocumentService @Autowired constructor(
         parentId: Int?,
         address: Boolean = false,
         publish: Boolean = false
-    ): JsonNode {
+    ): DocumentData {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
         val docType = getDocumentType(docTypeName)
@@ -253,15 +269,12 @@ class DocumentService @Autowired constructor(
             }
         }
 
+        if (publish) {
+            preCreatePayload.document.state = DOCUMENT_STATE.PUBLISHED
+        }
+        
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
-
-        // set wrapper to document association
-        if (publish) {
-            preCreatePayload.wrapper.published = newDocument
-        } else {
-            preCreatePayload.wrapper.draft = newDocument
-        }
 
         // save wrapper
         val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
@@ -276,9 +289,8 @@ class DocumentService @Autowired constructor(
 
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
-        val latestDocument = getLatestDocumentVersion(postWrapper, false)
 
-        return convertToJsonNode(latestDocument)
+        return DocumentData(postWrapper, newDocument)
     }
 
     /**
@@ -292,7 +304,7 @@ class DocumentService @Autowired constructor(
             node.replace(entry.key, entry.value)
         }
         // convert FIELD_ID to String, since frontend needs it as string
-        node.put(FIELD_ID, node.get(FIELD_ID).asText())
+//        node.put(FIELD_ID, node.get(FIELD_ID).asText())
         return node
 
     }
@@ -354,14 +366,17 @@ class DocumentService @Autowired constructor(
 
         docWrapperRepo.findAllPending(catalogId)
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
-            .forEach {
+            .forEach { wrapper ->
                 try {
-                    updateWrapper(it, true, null, it.pending!!)
-                    docWrapperRepo.saveAndFlush(it)
-                    val docType = getDocumentType(it.type!!)
-                    runPostUpdatePipes(docType, it.published!!, it, filterContext, true, null)
+                    val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
+                    latestDoc.document.state = DOCUMENT_STATE.PUBLISHED
+                    val updatedPublishedDoc = docRepo.save(latestDoc.document)
+                    wrapper.pending_date = null
+                    val updatedWrapper = docWrapperRepo.save(wrapper)
+                    val docType = getDocumentType(updatedWrapper.type)
+                    runPostUpdatePipes(docType, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
-                    log.error("Error during publishing pending document: ${it.id}", e)
+                    log.error("Error during publishing pending document: ${wrapper.id}", e)
                 }
             }
 
@@ -372,44 +387,140 @@ class DocumentService @Autowired constructor(
         catalogId: String,
         id: Int,
         data: Document,
-        publish: Boolean = false,
-        publishDate: Date? = null,
-    ): Document {
+    ): DocumentData {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
 
         // run pre-update pipe(s)
-        val wrapper = getWrapperByDocumentId(id)
-        val docType = getDocumentType(wrapper.type!!)
-        val preUpdatePayload = PreUpdatePayload(docType, data, wrapper)
+        val docData = getDocumentFromCatalog(catalogId, id)
+        val docType = getDocumentType(docData.wrapper.type)
+        val dbVersion = docData.document.version
+
+        // if we update a published document then create a new document with the correct latest flag
+        handleUpdateOnPublishedOnlyDocument(docData)
+
+        val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
+
+        val preUpdatePayload = PreUpdatePayload(docType, finalUpdatedDoc, docData.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
-        if (publish) {
-            // run pre-publish pipe(s)
-            val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
-            prePublishPipe.runFilters(prePublishPayload, filterContext)
-        }
 
         try {
-            preUpdatePayload.document.wrapperId = wrapper.id
+            // the wrapperId needs to be set for correct permission when saving document
+            preUpdatePayload.document.wrapperId = docData.wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
-            // update wrapper to document association
-            updateWrapper(preUpdatePayload.wrapper, publish, publishDate, updatedDoc)
-
-            // save wrapper
-            val updatedWrapper = docWrapperRepo.saveAndFlush(preUpdatePayload.wrapper)
             val postWrapper =
-                runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publish, publishDate)
-            return getLatestDocument(postWrapper, catalogId = catalogId)
+                runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
+            return DocumentData(
+                postWrapper,
+                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+            )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
-                preUpdatePayload.wrapper.draft?.version ?: preUpdatePayload.wrapper.published?.version!!,
-                preUpdatePayload.document.version!!
+                dbVersion!!,
+                data.version!!
             )
         }
     }
 
-    private fun updateWrapper(
+    private fun handleUpdateOnPublishedOnlyDocument(docData: DocumentData, nextStateIsDraft: Boolean = true) {
+
+        if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
+            docData.document.isLatest = false
+            if (!nextStateIsDraft) docData.document.state = DOCUMENT_STATE.ARCHIVED
+            docRepo.save(docData.document)
+
+            // prepare new document
+            entityManager.detach(docData.document)
+            docData.document.id = null
+            docData.document.isLatest = true
+            docData.document.version = docData.document.version?.inc()
+
+            docData.document.state = if (nextStateIsDraft)
+                DOCUMENT_STATE.DRAFT_AND_PUBLISHED
+            else DOCUMENT_STATE.PUBLISHED
+        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft) {
+
+            val lastPublishedDoc =
+                getLastPublishedDocument(docData.document.catalog!!.identifier, docData.document.uuid)
+            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            docRepo.save(lastPublishedDoc)
+        }
+        docData.document.modified = dateService.now()
+    }
+
+    fun publishDocument(
+        principal: Principal?,
+        catalogId: String,
+        id: Int,
+        data: Document,
+        publishDate: Date? = null,
+    ): DocumentData {
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+
+        // run pre-update pipe(s)
+        val docData = getDocumentFromCatalog(catalogId, id)
+        val docType = getDocumentType(docData.wrapper.type)
+        val dbVersion = docData.document.version
+
+        handleUpdateOnPublishedOnlyDocument(docData, false)
+
+        docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
+
+        val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
+
+        val preUpdatePayload = PreUpdatePayload(docType, finalUpdatedDoc, docData.wrapper)
+        preUpdatePipe.runFilters(preUpdatePayload, filterContext)
+
+
+        // run pre-publish pipe(s)
+        val prePublishPayload =
+            PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
+        prePublishPipe.runFilters(prePublishPayload, filterContext)
+
+        try {
+
+            val updatedDoc = docRepo.save(preUpdatePayload.document)
+            val updatedWrapper = if (publishDate != null) {
+                preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
+                docWrapperRepo.save(preUpdatePayload.wrapper)
+            } else {
+                preUpdatePayload.wrapper
+            }
+
+            val postWrapper =
+                runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
+
+            return DocumentData(
+                postWrapper,
+                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+            )
+        } catch (ex: ObjectOptimisticLockingFailureException) {
+            throw ConcurrentModificationException.withConflictingResource(
+                preUpdatePayload.document.id.toString(),
+                dbVersion!!,
+                data.version!!
+            )
+        }
+    }
+
+    private fun prepareDocBeforeUpdate(newDocument: Document, dbDocument: Document, principal: Principal): Document {
+        with(dbDocument) {
+            title = newDocument.title
+            data = newDocument.data
+            version = newDocument.version // discover concurrent editing conflict
+
+            // remove parent from document (only store parent in wrapper)
+            data.remove(FIELD_PARENT)
+
+            // set name of user who modifies document
+            modifiedby = authUtils.getFullNameFromPrincipal(principal)
+            modifiedByUser = catalogService.getDbUserFromPrincipal(principal)
+        }
+        return dbDocument
+    }
+
+    /*    private fun updateWrapper(
         documentWrapper: DocumentWrapper,
         publish: Boolean,
         publishDate: Date? = null,
@@ -446,24 +557,29 @@ class DocumentService @Autowired constructor(
                     draft = updatedDoc
                 }
             }
-        }
-    }
+        }*/
 
     private fun runPostUpdatePipes(
         docType: EntityType,
         updatedDocument: Document,
         updatedWrapper: DocumentWrapper,
         filterContext: Context,
-        publish: Boolean,
-        publishDate: Date? = null,
+        publish: Boolean
     ): DocumentWrapper {
         try {
+            // make sure database has current state
+            docRepo.flush()
+            
             val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
             postUpdatePipe.runFilters(postUpdatePayload, filterContext)
-            return if (publish && publishDate == null) {
+            return if (publish) {
                 // run post-publish pipe(s)
                 val postPublishPayload =
-                    PostPublishPayload(docType, postUpdatePayload.document, postUpdatePayload.wrapper)
+                    PostPublishPayload(
+                        docType,
+                        postUpdatePayload.document,
+                        postUpdatePayload.wrapper
+                    )
                 postPublishPipe.runFilters(postPublishPayload, filterContext)
                 postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
                 postPublishPayload.wrapper
@@ -476,37 +592,38 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: String) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         deleteRecursively(catalogId, id, filterContext)
     }
 
-    private fun deleteRecursively(catalogId: String, id: String, filterContext: Context) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context) {
         // run pre-delete pipe(s)
-        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val docData = getDocumentFromCatalog(catalogId, id)
+//        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
 
-        val data = getLatestDocumentVersion(wrapper, false)
-        val docTypeName = data.type
+//        val data = getLatestDocumentVersion(wrapper, false)
+        val docTypeName = docData.document.type
         val docType = getDocumentType(docTypeName)
 
-        val preDeletePayload = PreDeletePayload(docType, data, wrapper)
+        val preDeletePayload = PreDeletePayload(docType, docData.document, docData.wrapper)
         preDeletePipe.runFilters(preDeletePayload, filterContext)
 
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
-        findChildrenDocs(catalogId, id.toInt(), isAddress(wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.id.toString(), filterContext)
+        findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext)
         }
 
         if (generalProperties.markInsteadOfDelete) {
             markDocumentAsDeleted(catalogId, id)
         } else {
             // remove all document versions which have the same ID
-            docRepo.deleteAllByUuid(id)
+            docRepo.deleteAllByUuid(docData.document.uuid)
 
             // remove the wrapper
-            docWrapperRepo.deleteById(id.toInt())
+            docWrapperRepo.deleteById(id)
 
             // remove ACL from document, which works now since reference is by database ID instead of UUID
             // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique
@@ -517,114 +634,126 @@ class DocumentService @Autowired constructor(
         groupService.removeDocFromGroups(catalogId, id)
 
         // run post-delete pipe(s)
-        val postDeletePayload = PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
+        val postDeletePayload =
+            PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
         postDeletePipe.runFilters(postDeletePayload, filterContext)
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
 
-    private fun markDocumentAsDeleted(catalogId: String, id: String) {
+    private fun markDocumentAsDeleted(catalogId: String, id: Int) {
         val markedDoc = getWrapperByDocumentIdAndCatalog(catalogId, id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
 
-    fun revertDocument(principal: Principal, catalogId: String, id: Int): Document {
+    fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
 
-        // remove draft version
-        val wrapper = getWrapperByDocumentId(id)
+        val docData = getDocumentFromCatalog(catalogId, id)
 
         // check if draft and published field are filled
-        assert(wrapper.draft != null && wrapper.published != null)
+        assert(docData.document.state == DOCUMENT_STATE.DRAFT)
 
         // run pre-revert pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docType = getDocumentType(wrapper.type!!)
-        val preRevertPayload = PreRevertPayload(docType, wrapper.draft!!, wrapper)
+        val docType = getDocumentType(docData.wrapper.type)
+        val preRevertPayload = PreRevertPayload(docType, docData.document, docData.wrapper)
         preRevertPipe.runFilters(preRevertPayload, filterContext)
 
         // delete draft document
-        docRepo.delete(wrapper.draft!!)
+        docRepo.delete(docData.document)
 
-        // update wrapper
-        wrapper.draft = null
-        val updatedWrapper = docWrapperRepo.save(wrapper)
-
-        val doc = this.getLatestDocument(updatedWrapper, true, catalogId = catalogId)
+        val latestPublishedDoc = getLastPublishedDocument(catalogId, docData.wrapper.uuid)
+        latestPublishedDoc.isLatest = true
+        docRepo.save(latestPublishedDoc)
 
         // run post-revert pipe(s)
-        val postRevertPayload = PostRevertPayload(docType, doc, updatedWrapper)
+        val postRevertPayload = PostRevertPayload(docType, latestPublishedDoc, docData.wrapper)
         postRevertPipe.runFilters(postRevertPayload, filterContext)
 
-        return postRevertPayload.document
+        return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
-    fun unpublishDocument(principal: Principal, catalogId: String, id: Int): Document {
+    fun getLastPublishedDocument(catalogId: String, uuid: String): Document {
+        val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+    }
+
+    fun getPendingDocument(catalogId: String, uuid: String): Document {
+        return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
+    }
+
+    fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
-        val wrapper = getWrapperByDocumentId(id)
-        assert(wrapper.published != null)
+        val currentDoc = getDocumentFromCatalog(catalogId, id)
+        val lastPublished = getLastPublishedDocument(catalogId, currentDoc.document.uuid)
 
         // run pre-unpublish pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docType = getDocumentType(wrapper.type!!)
-        val preUnpublishPayload = PreUnpublishPayload(docType, wrapper.published!!, wrapper)
+        val docType = getDocumentType(currentDoc.document.type)
+        val preUnpublishPayload = PreUnpublishPayload(docType, lastPublished, currentDoc.wrapper)
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
         // if no draft version exists, move published version to draft
-        if (wrapper.draft == null) {
-            wrapper.draft = wrapper.published
+        val updatedDoc = if (lastPublished.isLatest) {
+            lastPublished.state = DOCUMENT_STATE.DRAFT
+            docRepo.save(lastPublished)
         } else {
             // else delete published version which automatically sets published version in wrapper to null
-            docRepo.delete(wrapper.published!!)
+            docRepo.delete(lastPublished)
+            currentDoc.document.state = DOCUMENT_STATE.DRAFT
+            docRepo.save(currentDoc.document)
         }
-
-        // explicitly set published to null (to also determine state correctly)
-        wrapper.published = null
-
-        docWrapperRepo.save(wrapper)
-
-        val doc = this.getLatestDocument(wrapper, catalogId = catalogId)
 
         // run post-unpublish pipe(s)
-        val postUnpublishPayload = PostUnpublishPayload(docType, doc, wrapper)
+        val postUnpublishPayload = PostUnpublishPayload(docType, updatedDoc, currentDoc.wrapper)
         postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
 
-        return postUnpublishPayload.document
+        return DocumentData(currentDoc.wrapper, postUnpublishPayload.document)
     }
 
-    fun cancelPendingPublishing(principal: Principal, catalogId: String, id: Int): Document {
+    fun cancelPendingPublishing(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove pending
-        val wrapper = getWrapperByDocumentId(id)
-        assert(wrapper.pending != null)
+        val docData = getDocumentFromCatalog(catalogId, id)
+        val wasPublishedBefore = try {
+            getLastPublishedDocument(catalogId, docData.document.uuid)
+            true
+        } catch (ex: Exception) {
+            false
+        }
+        val pendingDoc = getPendingDocument(catalogId, docData.document.uuid)
 
         // if no draft version exists, move pending version to draft
-        if (wrapper.draft == null) {
-            wrapper.draft = wrapper.pending
+        val updatedDoc = if (pendingDoc.isLatest) {
+            pendingDoc.state = if (wasPublishedBefore) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+            docRepo.save(pendingDoc)
+        } else {
+            docData.document
         }
 
-        wrapper.pending = null
-        wrapper.pending_date = null
-        docWrapperRepo.save(wrapper)
+        // TODO: where to set pending date? better on Document instead of wrapper to allow multiple pending versions
+        //       this however makes it more complicated in the frontend
+        docData.wrapper.pending_date = null
+        val updatedWrapper = docWrapperRepo.save(docData.wrapper)
 
-        return getLatestDocument(wrapper, catalogId = catalogId)
-    }
-
-    fun removePendingVersion(id: Int): DocumentWrapper {
-        val wrapper = getWrapperByDocumentId(id)
-        wrapper.pending = null
-        wrapper.pending_date = null
-        docWrapperRepo.save(wrapper)
-        return wrapper
+        return DocumentData(updatedWrapper, updatedDoc)
     }
 
     // TODO: the same function is also defined in IndexingTask
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
         catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
 
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
+        return if (includeFolders)
+            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+        else
+            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    }
+
     fun isAddress(wrapper: DocumentWrapper): Boolean {
         return wrapper.category == DocumentCategory.ADDRESS.value
     }
 
     /**
-     * Every document type belongs to a category (data or address). However a folder can belong to multiple categories
+     * Every document type belongs to a category (data or address). However, a folder can belong to multiple categories
      */
     private fun getCategoryFromType(docType: String, defaultIsAddress: Boolean): String {
         if (docType == DocumentCategory.FOLDER.value) {
@@ -636,45 +765,8 @@ class DocumentService @Autowired constructor(
             .category
     }
 
-    private fun getLatestDocumentVersion(
-        wrapper: DocumentWrapper,
-        onlyPublished: Boolean,
-        catalogId: String? = null
-    ): Document {
-
-        if (onlyPublished && wrapper.published == null) {
-            throw NotFoundException.withMissingPublishedVersion(wrapper.uuid)
-        }
-
-        val objectNode = if (onlyPublished) {
-            wrapper.published
-        } else  {
-            wrapper.draft ?: wrapper.pending ?: wrapper.published
-        }
-
-
-        if (objectNode == null) {
-            throw ServerException.withReason("Document has no draft or published version: " + wrapper.id)
-        }
-
-        // we need to detach entity, otherwise unwanted updated operations can happen when we change this
-        // this happened by modifying the data-field and doing a flush, which lead to an update of the document
-        // and increase of the version
-        entityManager.detach(objectNode)
-
-        objectNode.state = if (onlyPublished) DocumentState.PUBLISHED.value else wrapper.getState()
-        objectNode.hasWritePermission = wrapper.hasWritePermission
-        objectNode.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-        objectNode.wrapperId = wrapper.id
-        objectNode.data.put(FIELD_PARENT, wrapper.parent?.id?.toString()) // make parent available in frontend
-        objectNode.catalogIdentifier = catalogId
-
-        return objectNode
-    }
-
-    private fun prepareDocument(
+    private fun expandInternalReferences(
         docData: Document,
-        docType: String,
         onlyPublished: Boolean = false,
         resolveLinks: Boolean = true,
         options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
@@ -687,7 +779,7 @@ class DocumentService @Autowired constructor(
 
         // get latest references from links
         if (resolveLinks) {
-            val refType = getDocumentType(docType)
+            val refType = getDocumentType(docData.type)
 
             try {
                 refType.updateReferences(docData, options)
@@ -699,143 +791,6 @@ class DocumentService @Autowired constructor(
         return docData
     }
 
-    @Deprecated("Search is really slow with lot of data", ReplaceWith("ResearchService"))
-    fun find(
-        catalogId: String,
-        category: String = "data",
-        query: List<QueryField> = emptyList(),
-        pageRequest: PageRequest = PageRequest.of(0, 10),
-        userGroups: Set<Group> = emptySet()
-    ): Page<DocumentWrapper> {
-
-        val specification = getSearchSpecification(catalogId, category, query, userGroups)
-        return docWrapperRepo.findAll(specification, pageRequest)
-
-    }
-
-    fun getSearchSpecification(
-        catalog: String,
-        category: String,
-        queryFields: List<QueryField>,
-        userGroups: Set<Group> = emptySet()
-    ): Specification<DocumentWrapper> {
-        return Specification<DocumentWrapper> { wrapper, cq, cb ->
-            val catalogWrapper = wrapper.join<DocumentWrapper, Catalog>("catalog")
-
-            val draft = wrapper.join<DocumentWrapper, Document>("draft", JoinType.LEFT)
-            val published = wrapper.join<DocumentWrapper, Document?>("published", JoinType.LEFT)
-
-            cq.orderBy(
-                listOf(
-                    cb.desc(draft.get<String>("modified")),
-                    cb.desc(published.get<String>("modified"))
-                )
-            )
-
-            val preds = queryFields
-                .map { queryField -> createPredicateForField(cb, draft, published, queryField) }
-
-            val combindPreds = if (queryFields.isNotEmpty() && queryFields[0].operator == "OR") {
-                cb.or(*preds.toTypedArray())
-            } else {
-                cb.and(*preds.toTypedArray())
-            }
-
-            var result = cb.and(
-                cb.equal(catalogWrapper.get<String>("identifier"), catalog),
-                cb.equal(wrapper.get<String>("category"), category),
-                combindPreds
-            )
-
-            // TODO probably performance bottle neck. Analyze and Adapt.
-            // necessary for rights management
-            val datasetUuids = docWrapperRepo.getAll().map { it?.id }
-            val exp: Expression<String> = wrapper.get("id")
-            val predicate: Predicate = exp.`in`(datasetUuids)
-            result = cb.and(predicate, result)
-
-            result
-
-        }
-    }
-
-    private fun createPredicateForField(
-        cb: CriteriaBuilder,
-        draft: Join<DocumentWrapper, Document>,
-        published: Join<DocumentWrapper, Document>,
-        queryField: QueryField
-    ): Predicate? {
-
-        if (queryField.field == "title" || queryField.field == "type" || queryField.field == "uuid") {
-            return cb.or(
-                handleNot(
-                    cb, queryField, handleComparisonType(cb, queryField, draft)
-                ),
-                handleNot(
-                    cb, queryField, handleComparisonType(cb, queryField, published)
-                )
-            )
-        } else if (queryField.field == "published" && queryField.value == null) {
-            return if (queryField.invert) {
-                cb.isNotNull(published)
-            } else {
-                cb.isNull(published)
-            }
-        } else {
-            return cb.or(
-                handleNot(
-                    cb, queryField, handleComparisonTypeJson(cb, queryField, draft)
-                ),
-                handleNot(
-                    cb, queryField, handleComparisonTypeJson(cb, queryField, published)
-                )
-            )
-        }
-    }
-
-    private fun handleNot(cb: CriteriaBuilder, queryField: QueryField, predicate: Predicate?): Predicate? {
-        return if (queryField.invert) cb.not(predicate) else predicate
-    }
-
-    private fun handleComparisonType(
-        cb: CriteriaBuilder,
-        queryField: QueryField,
-        docJoin: Join<DocumentWrapper, Document>
-    ): Predicate? {
-        val value = queryField.value?.lowercase()
-        return when (queryField.queryType) {
-            QueryType.EXACT -> cb.equal(cb.lower(docJoin.get(queryField.field)), value)
-            else -> cb.like(cb.lower(docJoin.get(queryField.field)), "%$value%")
-        }
-    }
-
-    private fun handleComparisonTypeJson(
-        cb: CriteriaBuilder,
-        queryField: QueryField,
-        docJoin: Join<DocumentWrapper, Document>
-    ): Predicate? {
-        val value = queryField.value?.lowercase()
-        return when (queryField.queryType) {
-            QueryType.EXACT -> cb.equal(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), value)
-            else -> cb.like(cb.lower(createJsonExtract(cb, docJoin, queryField.field)), "%$value%")
-        }
-    }
-
-    private fun createJsonExtract(
-        cb: CriteriaBuilder,
-        docJoin: Join<DocumentWrapper, Document>,
-        field: String
-    ): Expression<String>? {
-        val literals = field.split(".").map { cb.literal(it) }
-
-        return cb.function(
-            "jsonb_extract_path_text",
-            String::class.java,
-            docJoin.get<String>("data"),
-            *literals.toTypedArray()
-        )
-    }
-
     @Transactional
     fun replaceAddress(catalogId: String, source: String, target: String) {
         val refIds = docRepo.getDocIdsWithReferenceTo(catalogId, """\: \"$source\"""")
@@ -843,3 +798,5 @@ class DocumentService @Autowired constructor(
         docRepo.replaceReference(source, target, refIds)
     }
 }
+
+class DocumentData(val wrapper: DocumentWrapper, val document: Document)

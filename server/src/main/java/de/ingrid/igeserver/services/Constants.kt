@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 const val FIELD_STATE = "_state"
 const val FIELD_DOCUMENT_TYPE = "_type"
 const val FIELD_ID = "_id"
@@ -20,6 +22,20 @@ const val FIELD_DRAFT = "draft"
 const val FIELD_PUBLISHED = "published"
 const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
+
+enum class DOCUMENT_STATE {
+    DRAFT, PUBLISHED, PENDING, DRAFT_AND_PUBLISHED, ARCHIVED;
+
+    @JsonValue
+    fun getState(): String = when (name) {
+        "PUBLISHED" -> "P"
+        "DRAFT_AND_PUBLISHED" -> "PW"
+        "PENDING" -> "PENDING"
+        "ARCHIVED" -> "A"
+        else -> "W"
+    }
+
+}
 
 enum class DocumentCategory(val value: String) {
     // used in FIELD_CATEGORY

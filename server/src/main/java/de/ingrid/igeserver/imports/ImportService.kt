@@ -5,10 +5,7 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.ImportAnalyzeResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_ID
-import de.ingrid.igeserver.services.FIELD_PARENT
-import de.ingrid.igeserver.services.FIELD_UUID
+import de.ingrid.igeserver.services.*
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -76,24 +73,23 @@ class ImportService {
         val docObj = documentService.convertToDocument(document)
 
         val createDocument = if (wrapper == null || options.options == "create_under_target") {
-            val doc = documentService.createDocument(
+            documentService.createDocument(
                 principal,
                 catalogId,
                 document,
-                options.parentDocument.toInt(),
+                options.parentDocument,
                 false,
                 false
             )
-            documentService.convertToDocument(doc)
         } else {
             // only when version matches in updated document, it'll be overwritten
             // otherwise a new document is created and wrapper links to original instead the updated one
-            docObj.version = wrapper.draft?.version ?: wrapper.published?.version
-            documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj, false)
+            val docData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!)
+            docObj.version = docData.document.version
+            documentService.updateDocument(principal, catalogId, wrapper.id!!, docObj)
         }
 
-        // TODO: return created document instead of transformed JSON
-        return Pair(createDocument, importer.typeInfo.id)
+        return Pair(createDocument.document, importer.typeInfo.id)
     }
 
     private fun handleOptions(
@@ -126,6 +122,7 @@ class ImportService {
             .map {
                 // create address under given folder
                 it.data.put(FIELD_PARENT, options.parentAddress)
+                it.state = DOCUMENT_STATE.DRAFT
                 val json = documentService.convertToJsonNode(it)
                 documentService.removeInternalFieldsForImport(json as ObjectNode)
                 json
@@ -135,7 +132,7 @@ class ImportService {
                     principal,
                     catalogId,
                     it,
-                    parentId = options.parentAddress.toInt(),
+                    parentId = options.parentAddress,
                     publish = false
                 )
             }

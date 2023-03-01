@@ -17,13 +17,13 @@ export class DocumentDataService {
     );
   }
 
-  getChildren(parentId: string, isAddress = false): Observable<any[]> {
+  getChildren(parentId: number, isAddress = false): Observable<any[]> {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
     return this.http.get<any[]>(url);
   }
 
-  load(id: string, useUuid = false): Observable<IgeDocument> {
+  load(id: string | number, useUuid = false): Observable<IgeDocument> {
     if (useUuid) {
       return this.http.get<IgeDocument>(
         this.configuration.backendUrl + "datasetsByUuid/" + id
@@ -79,14 +79,14 @@ export class DocumentDataService {
     }
   }
 
-  unpublish(id: string): Observable<any> {
+  unpublish(id: number): Observable<any> {
     return this.http.put(
       this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
       {}
     );
   }
 
-  cancelPendingPublishing(id: string): Observable<any> {
+  cancelPendingPublishing(id: number): Observable<any> {
     return this.http.put(
       this.configuration.backendUrl +
         "datasets/" +
@@ -96,7 +96,7 @@ export class DocumentDataService {
     );
   }
 
-  delete(ids: string[]): Observable<any> {
+  delete(ids: number[]): Observable<any> {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }
 
@@ -107,15 +107,15 @@ export class DocumentDataService {
     );
   }
 
-  getPath(id: string): Observable<PathResponse[]> {
+  getPath(id: number): Observable<PathResponse[]> {
     return this.http.get<PathResponse[]>(
       this.configuration.backendUrl + "datasets/" + id + "/path"
     );
   }
 
   copy(
-    srcIDs: string[],
-    dest: string,
+    srcIDs: number[],
+    dest: number,
     includeTree: boolean
   ): Observable<IgeDocument[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
@@ -125,7 +125,7 @@ export class DocumentDataService {
     );
   }
 
-  move(srcIDs: string[], dest: string) {
+  move(srcIDs: number[], dest: number) {
     const body = this.prepareCopyCutBody(dest, true);
     return this.http.post(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/move",
@@ -133,17 +133,16 @@ export class DocumentDataService {
     );
   }
 
-  private prepareCopyCutBody(dest: string, includeTree: boolean): any {
-    const body = {
+  private prepareCopyCutBody(dest: number, includeTree: boolean): any {
+    return {
       // srcIds: src,
       destId: dest,
       includeTree: includeTree,
     };
-    return body;
   }
 
   private createGetChildrenParams(
-    parentId: string,
+    parentId: number,
     isAddress: boolean
   ): string {
     let params = "";

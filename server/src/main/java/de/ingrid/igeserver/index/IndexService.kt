@@ -81,8 +81,9 @@ class IndexService @Autowired constructor(
             ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )
         val docsToIndex = response.hits
-            .map { docWrapperRepo.findById(it._id.toInt()).get() }
-            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
+//            .map { docWrapperRepo.findById(it._id.toInt()).get() }
+//            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
+            .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!).apply { wrapperId = it._id } }
         return Pair(response.totalHits.toLong(), docsToIndex)
     }
 

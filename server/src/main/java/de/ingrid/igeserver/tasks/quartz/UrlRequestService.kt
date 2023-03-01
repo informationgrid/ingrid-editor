@@ -59,6 +59,7 @@ class UrlRequestService {
         return HttpRequest.newBuilder()
             .method(method, HttpRequest.BodyPublishers.noBody())
             .uri(URI.create(url))
+            .timeout(Duration.ofSeconds(5))
             .build()
     }
 

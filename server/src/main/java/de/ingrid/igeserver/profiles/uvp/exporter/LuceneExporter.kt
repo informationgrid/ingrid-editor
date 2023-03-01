@@ -35,7 +35,7 @@ class LuceneExporter @Autowired constructor(
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
-                "model" to mapper.convertValue(json, UVPModel::class.java),
+                "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },
                 "catalog" to catalog,
                 "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
                 "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
