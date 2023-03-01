@@ -773,6 +773,7 @@ export abstract class IngridShared extends BaseDoctype {
           },
           fields: [
             this.addAutocomplete("title", null, {
+              required: true,
               options: this.getCodelistForSelect(6500, "license"),
               fieldLabel: "Lizenz",
               codelistId: 6500,
