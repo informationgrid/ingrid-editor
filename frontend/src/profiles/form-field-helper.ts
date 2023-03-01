@@ -201,6 +201,8 @@ export class FormFieldHelper {
 
   addRepeatList(id, label, options?: RepeatListOptions) {
     const expressions = this.initExpressions(options?.expressions);
+    let placeholder = this.determinePlaceholder(options);
+
     return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
@@ -210,7 +212,7 @@ export class FormFieldHelper {
       fieldGroupClassName: options?.fieldGroupClassName,
       props: {
         externalLabel: label,
-        placeholder: options?.placeholder ?? "Bitte wählen...",
+        placeholder: placeholder,
         fieldLabel: options?.fieldLabel,
         options: options?.options,
         codelistId: options?.codelistId,
@@ -221,6 +223,15 @@ export class FormFieldHelper {
       },
       expressions: expressions,
     };
+  }
+
+  private determinePlaceholder(options: RepeatListOptions) {
+    let placeholder = options?.placeholder;
+    if (!placeholder && options?.asSelect) placeholder = "Bitte wählen...";
+    if (!placeholder && options?.codelistId)
+      placeholder = "Bitte wählen oder eingeben";
+    if (!placeholder) placeholder = "Bitte eingeben";
+    return placeholder;
   }
 
   addRepeatListInline(id, label, options: RepeatListOptions = {}) {
@@ -268,7 +279,7 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
-        placeholder: options?.placeholder ?? "Bitte wählen",
+        placeholder: options?.placeholder ?? "Bitte wählen oder eingeben",
         appearance: "outline",
         required: options?.required,
         highlightMatches: options?.highlightMatches,
