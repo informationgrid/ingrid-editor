@@ -18,7 +18,6 @@ import { Subscription } from "rxjs";
 export class FreeSpatialComponent implements OnInit {
   @Input() map: Map;
   @Input() initial: SpatialBoundingBox;
-  @Input() hideTitle: boolean;
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
 

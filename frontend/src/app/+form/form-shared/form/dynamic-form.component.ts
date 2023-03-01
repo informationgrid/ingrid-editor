@@ -527,6 +527,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
-    return [...new Set(invalidControlNames)];
+    return invalidControlNames;
   }
 }
