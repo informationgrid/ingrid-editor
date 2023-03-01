@@ -314,6 +314,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateScrollPosition();
 
     this.showValidationErrors = false;
+    this.numberOfErrors = 0;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
