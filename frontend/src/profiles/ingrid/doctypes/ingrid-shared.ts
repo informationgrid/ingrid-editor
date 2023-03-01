@@ -12,6 +12,7 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
 import { FormControl } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -45,12 +46,13 @@ export abstract class IngridShared extends BaseDoctype {
   private openDataMessage =
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
-  protected constructor(
+  constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
     private dialog: MatDialog,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private snack: MatSnackBar
   ) {
     super(codelistService, codelistQuery);
   }
@@ -75,6 +77,7 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
             this.addCheckboxInline("isAdVCompatible", "AdV kompatibel", {
               className: "flex-1",
+              click: (field) => this.handleAdvClick(field),
             }),
             options.openData
               ? this.addCheckboxInline("isOpenData", "Open Data", {
@@ -1076,5 +1079,18 @@ export abstract class IngridShared extends BaseDoctype {
         if (decision === "ok") executeAction();
         else field.formControl.setValue(!isConform);
       });
+  }
+
+  /**
+   * Empty adv-product list when adv checkbox was deselected
+   */
+  private handleAdvClick(field) {
+    const isChecked = field.formControl.value;
+    const advProductGroups = field.model.advProductGroups;
+    if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
+
+    field.model.advProductGroups = [];
+    field.options.formState.updateModel();
+    this.snack.open("Die AdV-Produktgruppe wurde automatisch geleert");
   }
 }
