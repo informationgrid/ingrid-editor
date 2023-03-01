@@ -11,6 +11,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { isEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -449,9 +450,17 @@ export class GeoDatasetDoctype extends IngridShared {
     codelistQuery: CodelistQuery,
     uploadService: UploadService,
     dialog: MatDialog,
-    cookieService: CookieService
+    cookieService: CookieService,
+    snack: MatSnackBar
   ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
+    super(
+      codelistService,
+      codelistQuery,
+      uploadService,
+      dialog,
+      cookieService,
+      snack
+    );
   }
 
   private getQualityFields(codelistId: number) {
