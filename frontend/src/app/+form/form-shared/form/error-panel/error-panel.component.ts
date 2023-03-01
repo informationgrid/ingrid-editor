@@ -47,6 +47,11 @@ export class ErrorPanelComponent implements OnInit {
     const specialDomElement = element?.parentElement?.parentElement;
     if (this.specialElements.indexOf(specialDomElement?.localName) !== -1) {
       element = specialDomElement;
+    } else {
+      const tableElement = element?.parentElement?.parentElement?.parentElement;
+      if (tableElement?.localName === "ige-table-type") {
+        element = tableElement;
+      }
     }
 
     (<HTMLElement>(
