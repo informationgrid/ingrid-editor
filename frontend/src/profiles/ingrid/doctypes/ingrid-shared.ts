@@ -363,7 +363,7 @@ export abstract class IngridShared extends BaseDoctype {
                     codelistId: 102,
                     showSearch: true,
                     allowNoValue: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>
@@ -402,7 +402,7 @@ export abstract class IngridShared extends BaseDoctype {
                         isEmptyObject(field.form.value),
                     },
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                 ],
                 { wrappers: [], hasInlineContextHelp: true }
@@ -842,7 +842,6 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
-        className: "optional",
         fields: [this.urlRefFields()],
         validators: {
           downloadLinkWhenOpenData: {
@@ -868,27 +867,26 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             options: this.getCodelistForSelect(2000, "type"),
             codelistId: 2000,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
           }),
           this.addInputInline("title", "Titel", {
             required: true,
             className: "flex-2",
-            wrappers: ["form-field", "inline-help"],
-            hasInlineContextHelp: true,
-          }),
-          this.addInputInline("url", "URL", {
-            required: true,
-            className: "flex-2",
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
           }),
         ],
         { fieldGroupClassName: "display-flex" }
       ),
+      this.addInputInline("url", "URL", {
+        required: true,
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+      }),
       this.addGroupSimple(null, [
-        this.addInputInline("explanation", "Erläuterungen", {
-          wrappers: ["form-field", "inline-help"],
+        this.addTextAreaInline("explanation", "Erläuterungen", {
+          wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
         }),
       ]),

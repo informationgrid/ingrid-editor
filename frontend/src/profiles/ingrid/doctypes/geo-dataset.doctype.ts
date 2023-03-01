@@ -151,7 +151,7 @@ export class GeoDatasetDoctype extends IngridShared {
                         isEmptyObject(field.form.value, ["type"]),
                     },
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
@@ -164,7 +164,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       isEmptyObject(field.form.value, ["type"]),
                   },
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
               ],
               { wrappers: [] }
@@ -191,7 +191,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-1",
                         hasInlineContextHelp: true,
-                        wrappers: ["form-field", "inline-help"],
+                        wrappers: ["inline-help", "form-field"],
                       }
                     ),
                   ],
@@ -204,7 +204,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addInputInline("cornerPoints", "Eckpunkte", {
                       className: "flex-3",
                       hasInlineContextHelp: true,
-                      wrappers: ["form-field", "inline-help"],
+                      wrappers: ["inline-help", "form-field"],
                     }),
                     this.addSelectInline("pointInPixel", "Punkt im Pixel", {
                       options: this.getCodelistForSelect(2100, "pointInPixel"),
@@ -213,7 +213,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       className: "flex-3",
                       allowNoValue: true,
                       hasInlineContextHelp: true,
-                      wrappers: ["form-field", "inline-help"],
+                      wrappers: ["inline-help", "form-field"],
                     }),
                   ],
                   { wrappers: [] }
@@ -256,7 +256,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   {
                     className: "",
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }
                 ),
               ],
