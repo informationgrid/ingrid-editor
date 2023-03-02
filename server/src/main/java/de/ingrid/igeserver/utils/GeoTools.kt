@@ -3,8 +3,8 @@ package de.ingrid.igeserver.utils
 import org.geotools.geometry.jts.WKTReader2
 import org.geotools.gml3.v3_2.GML
 import org.geotools.gml3.v3_2.GMLConfiguration
-import org.geotools.xml.Encoder
-import org.geotools.xml.Parser
+import org.geotools.xsd.Encoder
+import org.geotools.xsd.Parser
 import org.locationtech.jts.geom.*
 import java.nio.charset.StandardCharsets
 import java.util.*
