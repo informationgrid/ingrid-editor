@@ -81,7 +81,12 @@ class ResearchService {
     }
 
     private fun hasRootAccess(groups: Set<Group>) =
-        groups.any { listOf(RootPermissionType.READ, RootPermissionType.WRITE).contains(it.permissions?.rootPermission) }
+        groups.any {
+            listOf(
+                RootPermissionType.READ,
+                RootPermissionType.WRITE
+            ).contains(it.permissions?.rootPermission)
+        }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
@@ -167,13 +172,12 @@ class ResearchService {
             return false
         }
 
-        val filterString: List<Boolean> = if (clauses.clauses != null && clauses.clauses.isNotEmpty()) {
+        val filterString: List<Boolean> = if (!clauses.clauses.isNullOrEmpty()) {
             clauses.clauses.map { checkForPublishedSearch(it) }
-        } else if (clauses.isFacet) {
+        } else {
             clauses.value
-                ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                ?.map { it?.id == "selectPublished" } ?: listOf()
-        } else listOf(false)
+                ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
+        }
 
         return filterString.any { it }
     }
