@@ -87,6 +87,23 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
           ].filter(Boolean)
         ),
+        this.addRadioboxes("isInspireConform", "INSPIRE konform", {
+          expressions: {
+            hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
+          },
+          options: [
+            {
+              value: "Ja",
+              id: true,
+            },
+            {
+              value: "Nein",
+              id: false,
+            },
+          ],
+          click: (field) =>
+            setTimeout(() => this.handleIsInspireConformClick(field)),
+        }),
         options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addGroup(
@@ -160,23 +177,6 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
-          }),
-          this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-            expressions: {
-              hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
-            },
-            options: [
-              {
-                value: "Ja",
-                id: true,
-              },
-              {
-                value: "Nein",
-                id: false,
-              },
-            ],
-            click: (field) =>
-              setTimeout(() => this.handleIsInspireConformClick(field)),
           }),
         ]),
       ].filter(Boolean)
@@ -1006,7 +1006,7 @@ export abstract class IngridShared extends BaseDoctype {
       .afterClosed()
       .subscribe((decision) => {
         if (decision === "ok") executeAction();
-        else field.formControl.setValue(false);
+        else field.formControl.setValue(true);
       });
   }
 
