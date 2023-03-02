@@ -3,8 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.Message
 import de.ingrid.igeserver.model.MessageCreationRequest
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.GroupService
-import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.MessageService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.time.OffsetDateTime
-import java.util.Comparator
 
 @RestController
 @RequestMapping(path = ["/api"])

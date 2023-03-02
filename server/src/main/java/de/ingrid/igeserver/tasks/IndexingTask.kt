@@ -6,7 +6,6 @@ import de.ingrid.elasticsearch.IBusIndexManager
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException

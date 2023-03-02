@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.Message
 import de.ingrid.igeserver.model.MessageCreationRequest
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

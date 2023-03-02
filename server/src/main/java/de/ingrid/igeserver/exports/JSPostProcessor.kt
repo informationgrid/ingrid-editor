@@ -1,14 +1,14 @@
 package de.ingrid.igeserver.exports
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.services.ExportPostProcessors
-import javax.script.ScriptEngineManager
-import javax.script.SimpleScriptContext
 import de.ingrid.igeserver.exports.JSPostProcessor
+import de.ingrid.igeserver.services.ExportPostProcessors
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import javax.script.ScriptContext
+import javax.script.ScriptEngineManager
 import javax.script.ScriptException
+import javax.script.SimpleScriptContext
 
 @Service
 class JSPostProcessor : ExportPostProcessors {

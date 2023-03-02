@@ -14,7 +14,6 @@ import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @Entity
 @Table(name = "catalog")

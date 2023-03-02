@@ -11,7 +11,6 @@ import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import javax.management.ObjectName
 
 @Service
 class InternalImporter : IgeImporter {
