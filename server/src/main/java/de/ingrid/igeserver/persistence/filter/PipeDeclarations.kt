@@ -5,6 +5,7 @@ import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.utils.ElasticDocument
 import org.springframework.stereotype.Component
 
 /**
@@ -24,7 +25,8 @@ open class PersistencePayload(var action: Action, var type: EntityType, var docu
         PUBLISH,
         UNPUBLISH,
         REVERT,
-        DELETE
+        DELETE,
+        INDEX
     }
 }
 
@@ -115,6 +117,11 @@ open class PostDeletePayload(type: EntityType, document: Document, wrapper: Docu
         PostPersistencePayload(Action.DELETE, type, document, wrapper)
 
 /**
+ * Payload holding index data after indexing the document
+ */
+open class PostIndexPayload(var indexDoc: ElasticDocument): Payload
+
+/**
  * Declarations of pipes for different payloads
  *
  * NOTE An explicit @Component declaration for each payload type is necessary when using spring's autowired annotation
@@ -142,3 +149,5 @@ open class PostDeletePayload(type: EntityType, document: Document, wrapper: Docu
 
 @Component class PreDeletePipe : Pipe<PreDeletePayload>("PreDeletePipe")
 @Component class PostDeletePipe : Pipe<PostDeletePayload>("PostDeletePipe")
+
+@Component class PostIndexPipe : Pipe<PostIndexPayload>("PostIndexPipe")
