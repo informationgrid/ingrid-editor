@@ -103,7 +103,7 @@ interface UsersApi {
     ): ResponseEntity<List<User>>
 
     @PutMapping(
-        value = ["/users/{id}"],
+        value = ["/users"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")
