@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Map, Rectangle } from "leaflet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -12,7 +19,7 @@ import { SpatialBoundingBox } from "../spatial-result.model";
   templateUrl: "./coordinates-spatial.component.html",
   styleUrls: ["./coordinates-spatial.component.scss"],
 })
-export class CoordinatesSpatialComponent implements OnInit {
+export class CoordinatesSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
   @Input() coordinates: SpatialBoundingBox;
   @Output() result = new EventEmitter<any>();
@@ -59,6 +66,10 @@ export class CoordinatesSpatialComponent implements OnInit {
         tap((value) => this.drawCoordinates(value))
       )
       .subscribe();
+  }
+
+  ngOnDestroy() {
+    this.removeBoundingBoxes();
   }
 
   private removeBoundingBoxes() {
