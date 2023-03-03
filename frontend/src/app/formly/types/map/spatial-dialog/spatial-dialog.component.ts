@@ -13,7 +13,7 @@ import {
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 
@@ -49,7 +49,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   types: LocationType[] = [
     { id: "free", label: "Freier Raumbezug" },
     { id: "wkt", label: "Raumbezug (WKT)" },
-    // {id: 'draw', label: 'Auf Karte zeichnen'},
+    { id: "coordinates", label: "Koordinaten" },
     { id: "geo-name", label: "Nur Titel" },
   ];
   view: SpatialLocationType;
@@ -69,14 +69,14 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (this.data) {
       this._bbox = this.data.value;
-      this.titleInput = new UntypedFormControl(this.data.title);
+      this.titleInput = new FormControl(this.data.title);
       this.result = {
         value: this.data?.value,
         title: this.data?.title,
         type: this.data?.type ?? "free",
       };
     } else {
-      this.titleInput = new UntypedFormControl("Neuer Raumbezug");
+      this.titleInput = new FormControl("Neuer Raumbezug");
     }
   }
 

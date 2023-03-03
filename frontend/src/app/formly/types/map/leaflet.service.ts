@@ -12,7 +12,10 @@ import {
   Rectangle,
   TileLayer,
 } from "leaflet";
-import { SpatialLocationWithColor } from "./spatial-list/spatial-list.component";
+import {
+  SpatialLocation,
+  SpatialLocationWithColor,
+} from "./spatial-list/spatial-list.component";
 import { WktTools } from "./spatial-dialog/wkt-spatial/wkt-tools";
 import { ConfigService } from "../../../services/config/config.service";
 
@@ -107,7 +110,7 @@ export class LeafletService {
       (location) => location.type === "wkt" && location.wkt
     );
     const boxLocations = locations.filter(
-      (location) => location.type === "free"
+      (location) => location.type === "free" || location.type === "coordinates"
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -149,6 +152,7 @@ export class LeafletService {
   }
 
   removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
+    if (!boxes) return;
     boxes.forEach((box) => setTimeout(() => map.removeLayer(box), 100));
   }
 
@@ -221,5 +225,15 @@ export class LeafletService {
   removeMapControls(map: Map) {
     // @ts-ignore
     map._controlContainer.style.display = "none";
+  }
+
+  extendLocationsWithColor(
+    locations: SpatialLocation[]
+  ): SpatialLocationWithColor[] {
+    return locations.map((location, index) => ({
+      ...location,
+      indexNumber: index,
+      color: this.getColor(index),
+    }));
   }
 }

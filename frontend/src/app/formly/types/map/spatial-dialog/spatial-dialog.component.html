@@ -47,8 +47,12 @@
                 [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
-            <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
-            <!--            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>-->
+            <ige-coordinates-spatial
+                *ngSwitchCase="'coordinates'"
+                [map]="leafletReference"
+                [coordinates]="data?.value"
+                (result)="updateBoundingBox($event)"
+            ></ige-coordinates-spatial>
         </div>
 
         <div fxLayout="column" fxFlex>
@@ -94,6 +98,7 @@
         [disabled]="
             (view === 'free' && !result.value) ||
             (view === 'wkt' && !result.wkt) ||
+            (view === 'coordinates' && !result.value) ||
             (view === 'geo-name' && !titleInput.value)
         "
         (click)="returnResult()"
