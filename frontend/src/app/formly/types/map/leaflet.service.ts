@@ -23,14 +23,6 @@ import { ConfigService } from "../../../services/config/config.service";
   providedIn: "root",
 })
 export class LeafletService {
-  static optionsNonInteractive: MapOptions = {
-    zoomControl: false,
-    dragging: false,
-    boxZoom: false,
-    scrollWheelZoom: false,
-    keyboard: false,
-  };
-
   private defaultOptions: MapOptions = {};
 
   private colors = [
@@ -65,7 +57,7 @@ export class LeafletService {
     const iconRetinaUrl = "assets/marker-icon-2x.png";
     const iconUrl = "assets/marker-icon.png";
     const shadowUrl = "assets/marker-shadow.png";
-    const iconDefault = icon({
+    Marker.prototype.options.icon = icon({
       iconRetinaUrl,
       iconUrl,
       shadowUrl,
@@ -75,7 +67,6 @@ export class LeafletService {
       tooltipAnchor: [16, -28],
       shadowSize: [41, 41],
     });
-    Marker.prototype.options.icon = iconDefault;
   }
 
   zoomToInitialBox(map: Map): Map {
@@ -215,16 +206,6 @@ export class LeafletService {
       }
     });
     return bounds;
-  }
-
-  addMapControls(map: Map) {
-    // @ts-ignore
-    map._controlContainer.style.display = "block";
-  }
-
-  removeMapControls(map: Map) {
-    // @ts-ignore
-    map._controlContainer.style.display = "none";
   }
 
   extendLocationsWithColor(

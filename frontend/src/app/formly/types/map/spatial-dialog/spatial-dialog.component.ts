@@ -13,7 +13,7 @@ import {
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 
@@ -41,9 +41,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     type: "free",
   };
 
-  titleInput: UntypedFormControl;
+  titleInput: FormControl<string>;
 
-  leafletReference: L.Map;
+  leafletReference: Map;
 
   _bbox: any = null;
   types: LocationType[] = [
@@ -96,10 +96,14 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.view = viewType;
     this.result.type = viewType;
     if (viewType == "free") {
-      this.leafletService.addMapControls(this.leafletReference);
+      if (!this.leafletReference.pm.controlsVisible()) {
+        this.leafletReference.pm.toggleControls();
+      }
     } else {
       this.result.value = null;
-      this.leafletService.removeMapControls(this.leafletReference);
+      if (this.leafletReference.pm.controlsVisible()) {
+        this.leafletReference.pm.toggleControls();
+      }
     }
 
     // @ts-ignore
