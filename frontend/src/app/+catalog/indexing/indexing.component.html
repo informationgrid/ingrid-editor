@@ -65,74 +65,35 @@
         </p>
     </ng-container>
 
-    <div main-header *ngIf="isActivated; else noElasticsearch">
-        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
-            <ng-container *ngIf="liveImportMessage | async as log">
-                <mat-icon
-                    *ngIf="log.errors.length > 0"
-                    class="error-color"
-                    matTooltip="Bei der letzten Indizierung trat ein Fehler auf"
-                    >error_outline</mat-icon
-                >
-
-                <span *ngIf="log.endTime"
-                    >Letzte Indizierung erfolgte am
-                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
-                >
-                <ng-container *ngIf="!log.endTime">
-                    <span fxLayout>
-                        <mat-progress-spinner
-                            [value]="
-                                (log.progressDocuments / log.numDocuments) * 100
-                            "
-                            diameter="16"
-                            [matTooltip]="
-                                (
-                                    (log.progressDocuments / log.numDocuments) *
-                                    100
-                                ).toFixed(0) + '% analysiert'
-                            "
-                        ></mat-progress-spinner>
-                    </span>
-                    <span
-                        >Laufende Indizierung seit:
-                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
-                    >
-                </ng-container>
+    <ng-container main-header *ngIf="isActivated; else noElasticsearch">
+        <ige-job-handler-header
+            [message]="liveImportMessage | async"
+            [isRunning]="indexingIsRunning"
+            (showMore)="showMore = $event"
+        >
+            <div class="index-btn">
                 <button
-                    data-cy="btn-show-more"
-                    mat-icon-button
-                    class="dark menu-button"
-                    [class.expanded]="showMore"
-                    (click)="showMore = !showMore"
-                >
-                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
-                </button>
-            </ng-container>
-        </div>
-
-        <div class="index-btn">
-            <button
-                *ngIf="!indexingIsRunning; else indexing"
-                mat-flat-button
-                color="primary"
-                class="start-index"
-                [disabled]="!initialized"
-                (click)="index()"
-            >
-                Indizieren
-            </button>
-            <ng-template #indexing>
-                <button
+                    *ngIf="!indexingIsRunning; else indexing"
                     mat-flat-button
-                    (click)="cancelIndexing()"
-                    class="cancel-index"
+                    color="primary"
+                    class="start-index"
+                    [disabled]="!initialized"
+                    (click)="index()"
                 >
-                    Indizierung abbrechen
+                    Indizieren
                 </button>
-            </ng-template>
-        </div>
-    </div>
+                <ng-template #indexing>
+                    <button
+                        mat-flat-button
+                        (click)="cancelIndexing()"
+                        class="cancel-index"
+                    >
+                        Indizierung abbrechen
+                    </button>
+                </ng-template>
+            </div>
+        </ige-job-handler-header>
+    </ng-container>
 
     <div status class="status" [class.hide]="!showMore">
         <div class="copy-button-area">

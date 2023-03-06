@@ -39,6 +39,10 @@
 .content {
   background-color: $ige-background;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .options {
@@ -48,4 +52,14 @@
 
 .space-top {
   padding-top: 24px;
+}
+
+.link-text {
+  margin-left: 12px;
+}
+
+.wrapper-target {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

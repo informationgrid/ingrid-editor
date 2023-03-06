@@ -5,37 +5,49 @@
 <mat-chip-listbox
     *ngIf="field.fieldGroup.length > 0"
     [disabled]="formControl.disabled"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="drop($event)"
+    cdkDropListGroup
+    mixedCdkDragDrop
+    orientation="horizontal"
+    (dropped)="drop($event)"
 >
-    <mat-chip-option
-        disableRipple
-        cdkDrag
+    <span
         *ngFor="let field of field.fieldGroup; let i = index"
-        [cdkDragDisabled]="formControl.disabled"
-        [removable]="true"
-        [selectable]="false"
-        (removed)="remove(i)"
+        cdkDropList
+        mixedCdkDropList
     >
-        <mat-icon
-            *ngIf="props.showLanguage"
-            class="avatar gray"
-            svgIcon="language-24px"
-        ></mat-icon>
-
-        <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
-            <div class="label">
-                {{ model[i] | codelist : props.codelistId | async }}
-            </div>
-        </ng-container>
-
-        <ng-template #simpleLabel
-            ><div class="label">{{ model[i] }}</div></ng-template
+        <mat-chip-option
+            disableRipple
+            cdkDrag
+            [cdkDragDisabled]="formControl.disabled"
+            [removable]="true"
+            [selectable]="false"
+            (removed)="remove(i)"
         >
+            <mat-icon
+                *ngIf="props.showLanguage"
+                class="avatar gray"
+                svgIcon="language-24px"
+            ></mat-icon>
 
-        <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
-    </mat-chip-option>
+            <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
+                <div class="label">
+                    {{ model[i] | codelist : props.codelistId | async }}
+                </div>
+            </ng-container>
+
+            <ng-template #simpleLabel>
+                <div class="label">{{ model[i] }}</div>
+            </ng-template>
+
+            <button
+                *ngIf="formControl.enabled"
+                matChipRemove
+                aria-label="Remove chip"
+            >
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </mat-chip-option>
+    </span>
     <ige-add-button
         *ngIf="props.useDialog && formControl.enabled"
         [showLabel]="false"
