@@ -342,8 +342,11 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQuality", [
           this.addGroupSimple("completenessOmission", [
             this.addInput("measResult", "Datendefizit", {
-              wrappers: ["panel", "form-field"],
+              wrappers: ["panel", "form-field", "addons"],
               type: "number",
+              rightSymbol: {
+                text: "%",
+              },
             }),
           ]),
         ]),

@@ -69,6 +69,7 @@ export interface InputOptions extends Options {
   disabled?: boolean;
   contextHelpId?: string;
   validators?: any;
+  rightSymbol?: any;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -318,6 +319,7 @@ export class FormFieldHelper {
         appearance: "outline",
         disabled: options?.disabled,
         contextHelpId: options?.contextHelpId,
+        addonRight: options?.rightSymbol,
       },
       modelOptions: {
         updateOn: "blur",

@@ -86,6 +86,7 @@ import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { Catalog } from "./+catalog/services/catalog.model";
 import { rxStompServiceFactory } from "./rx-stomp-service-factory";
 import { RxStompService } from "./rx-stomp.service";
+import { AddonsWrapperComponent } from "./formly/wrapper/addons/addons-wrapper.component";
 
 registerLocaleData(de);
 
@@ -212,6 +213,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     MainHeaderComponent,
     SessionTimeoutInfoComponent,
     InitCatalogComponent,
+    AddonsWrapperComponent,
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
@@ -242,6 +244,7 @@ export function animationExtension(field: FormlyFieldConfig) {
       ],
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
+        { name: "addons", component: AddonsWrapperComponent },
         { name: "panel", component: OneColumnWrapperComponent },
         { name: "full-panel", component: FullWidthWrapperComponent },
         { name: "section", component: SectionWrapper },
