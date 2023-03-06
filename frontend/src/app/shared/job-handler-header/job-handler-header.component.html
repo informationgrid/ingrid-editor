@@ -1,0 +1,37 @@
+<ng-container>
+    <div *ngIf="message as log" class="info-wrapper">
+        <mat-icon
+            *ngIf="log.errors?.length > 0"
+            class="error-color"
+            matTooltip="Bei der letzten Ausführung trat ein Fehler auf"
+            >error_outline
+        </mat-icon>
+
+        <span *ngIf="!isRunning; else running"
+            >Letzte Ausführung erfolgte am
+            {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
+        >
+        <ng-template #running>
+            <span>
+                <mat-progress-spinner
+                    [value]="log.progress"
+                    diameter="16"
+                    [matTooltip]="log.progress + '% analysiert'"
+                ></mat-progress-spinner>
+            </span>
+            <span>
+                Laufende Ausführung seit:
+                {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
+            >
+        </ng-template>
+        <button
+            mat-icon-button
+            class="dark menu-button"
+            [class.expanded]="showMoreInternal"
+            (click)="toggleShow()"
+        >
+            <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
+        </button>
+    </div>
+    <ng-content></ng-content>
+</ng-container>

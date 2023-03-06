@@ -4,7 +4,56 @@ import {
 } from "../services/config/config.service";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+
+export interface ImportLog<Type> {
+  isRunning: boolean;
+  info: Type;
+}
+
+export interface LogInfo<Type> {
+  startTime: string;
+  endTime: string;
+  errors: string[];
+  report: Type;
+  progress?: number;
+}
+
+export interface ImportLogInfo extends LogInfo<ImportLogReport> {
+  stage: "ANALYZE" | "IMPORT";
+}
+
+export interface ImportLogReport {
+  importers: string[];
+  references: DocumentAnalysis[];
+  numDatasets: number;
+  numAddresses: number;
+  existingDatasets: DatasetInfo[];
+  existingAddresses: DatasetInfo[];
+  importResult: Counter;
+}
+
+interface Counter {
+  documents: number;
+  addresses: number;
+  overwritten: number;
+  skipped: number;
+}
+
+export interface DocumentAnalysis {
+  document: any;
+  wrapperId: number;
+  isAddress: boolean;
+  exists: boolean;
+  references: DocumentAnalysis[];
+}
+
+export interface DatasetInfo {
+  title: string;
+  type: string;
+  uuid: string;
+}
 
 export interface ExportOptions {
   id: number;
@@ -34,9 +83,11 @@ export interface ImportTypeInfo {
 @Injectable({
   providedIn: "root",
 })
-export class ImportExportService {
+export class ExchangeService {
   private configuration: Configuration;
   private catalogType: string;
+
+  lastLog$ = new BehaviorSubject<ImportLog<ImportLogInfo>>(null);
 
   public static prepareExportInfo(
     docId: number,
@@ -54,7 +105,7 @@ export class ImportExportService {
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
   }
 
-  import(file: File): Observable<any> {
+  analyze(file: File): Observable<any> {
     return this.http.post(this.configuration.backendUrl + "import", file);
   }
 
@@ -73,7 +124,27 @@ export class ImportExportService {
 
   getImportTypes(): Observable<ImportTypeInfo[]> {
     return this.http.get<ImportTypeInfo[]>(
-      this.configuration.backendUrl + "import?profile=mcloud" + this.catalogType
+      this.configuration.backendUrl + "import?profile=" + this.catalogType
     );
+  }
+
+  import(options: any) {
+    return this.http.post(
+      this.configuration.backendUrl + "jobs/import?command=start",
+      options
+    );
+  }
+
+  fetchLastLog() {
+    return this.http
+      .get<any>(this.configuration.backendUrl + "jobs/import/info")
+      .pipe(tap((response) => this.lastLog$.next(response)))
+      .subscribe();
+  }
+
+  stopJob() {
+    return this.http
+      .post(this.configuration.backendUrl + "jobs/import?command=stop", {})
+      .subscribe();
   }
 }

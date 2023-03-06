@@ -1,22 +1,30 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from "@angular/forms";
-import { ImportExportService, ImportTypeInfo } from "../import-export-service";
+  ExchangeService,
+  ImportLogInfo,
+  ImportTypeInfo,
+} from "../exchange.service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
-import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
 import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { merge, Observable } from "rxjs";
+import { RxStompService } from "../../rx-stomp.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  PasteDialogComponent,
+  PasteDialogOptions,
+} from "../../+form/dialogs/copy-cut-paste/paste-dialog.component";
 
+@UntilDestroy()
 @Component({
   selector: "ige-import",
   templateUrl: "./import.component.html",
@@ -32,70 +40,85 @@ export class ImportComponent implements OnInit {
   uploadUrl: string;
 
   step1Complete: any;
-  optionsFormGroup = new UntypedFormGroup({
-    importer: new UntypedFormControl("", Validators.required),
-    option: new UntypedFormControl("overwrite_identical", Validators.required),
+  optionsFormGroup = new FormGroup({
+    importer: new FormControl<string>(
+      { value: "", disabled: true },
+      Validators.required
+    ),
+    overwriteAddresses: new FormControl<boolean>(false),
+    overwriteDatasets: new FormControl<boolean>(false),
+    publish: new FormControl<boolean>(false),
+    parentDocument: new FormControl<number>(null),
+    parentAddress: new FormControl<number>(null),
   });
-  analyzedData: any;
-  importFileErrorMessage: any;
 
   importers: ImportTypeInfo[];
-  compatibleImporters: string[] = [];
-  locationDoc: number[] = [];
-  locationAddress: number[] = [];
-  readyForImport = false;
   chosenFiles: TransfersWithErrorInfo[];
-  private importedDocUuid: string = null;
-  pathToDocument: ShortTreeNode[];
-  hasImportError = false;
+
+  importIsRunning: boolean;
+
+  showMore = false;
+
+  private liveImportMessage: Observable<any> = merge(
+    this.exchangeService.lastLog$.pipe(
+      tap((data) =>
+        data?.isRunning || data?.info?.stage === "ANALYZE"
+          ? (this.step1Complete = true)
+          : null
+      ),
+      map((data) => data?.info),
+      tap((info: ImportLogInfo) =>
+        this.optionsFormGroup
+          .get("importer")
+          .setValue(info?.report?.importers ? info?.report?.importers[0] : null)
+      )
+    ),
+    this.rxStompService
+      .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
+      .pipe(
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => this.handleRunningInfo(data))
+      )
+  );
+
+  message: ImportLogInfo;
+
+  parent = {
+    document: "Daten",
+    address: "Addressen",
+  };
 
   constructor(
-    private importExportService: ImportExportService,
+    private exchangeService: ExchangeService,
     config: ConfigService,
     private router: Router,
     private documentService: DocumentService,
     private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
+    private rxStompService: RxStompService,
+    private dialog: MatDialog
   ) {
     this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
   }
 
   ngOnInit(): void {
-    this.importExportService
+    this.exchangeService
       .getImportTypes()
       .pipe(tap((response) => (this.importers = response)))
       .subscribe();
+
+    this.liveImportMessage
+      .pipe(
+        untilDestroyed(this),
+        tap((info) => (this.message = info))
+      )
+      .subscribe();
+
+    this.exchangeService.fetchLastLog();
   }
 
-  import(files: File[]) {
-    const file = files[0];
-    console.log(file);
-    this.importExportService.import(file).subscribe(
-      (data) => {
-        console.log("Import result:", data);
-      },
-      (error) => (this.importFileErrorMessage = error)
-    );
-  }
-
-  onAnalyzeComplete(info: any) {
-    this.compatibleImporters = info.importer;
-    const importerControl = this.optionsFormGroup.get("importer");
-    if (this.compatibleImporters.length === 1) {
-      importerControl.setValue(this.compatibleImporters[0]);
-      importerControl.disable();
-    } else {
-      importerControl.enable();
-    }
+  onUploadComplete() {
     this.step1Complete = true;
-  }
-
-  onFileComplete(data: any) {
-    console.log(data); // We just print out data bubbled up from event emitter.
-    this.analyzedData = data;
-    this.step1Complete = true;
-    this.importedDocUuid = data.result._uuid;
-    setTimeout(() => this.stepper.next());
   }
 
   cancel() {
@@ -104,51 +127,67 @@ export class ImportComponent implements OnInit {
     this.step1Complete = false;
   }
 
-  setLocation(location: string[], isAddress: boolean) {
-    if (isAddress) {
-      const locationId = this.addressTreeQuery
-        .getAll()
-        .filter((entity) => entity._uuid === location[0])
-        .map((entity) => <number>entity.id);
-      this.locationAddress = locationId;
-    } else {
-      const locationId = this.treeQuery
-        .getAll()
-        .filter((entity) => entity._uuid === location[0])
-        .map((entity) => <number>entity.id);
-      this.locationDoc = locationId;
-    }
-    this.readyForImport =
-      this.locationDoc.length === 1 && this.locationAddress.length === 1;
-  }
-
   startImport() {
     // get path for destination for final page
-    this.documentService
-      .getPath(this.locationDoc[0])
-      .subscribe((path) => (this.pathToDocument = path));
-
-    this.hasImportError = false;
+    /*this.documentService
+      .getPath(this.locationDoc[0].toString())
+      .subscribe((path) => (this.pathToDocument = path));*/
 
     // upload each file
-    const importer = this.optionsFormGroup.get("importer").value;
-    const option = this.optionsFormGroup.get("option").value;
-    this.uploadComponent.setAdditionalUploadParameter({
-      importerId: importer,
-      parentDoc: this.locationDoc[0],
-      parentAddress: this.locationAddress[0],
-      options: option,
-    });
-    this.chosenFiles.forEach((file) => {
-      this.uploadComponent.flow.flowJs.addFile(file.transfer.flowFile.file);
-    });
-    this.uploadComponent.flow.upload();
+    // const importer = this.optionsFormGroup.get("importer").value;
+    const options = this.optionsFormGroup.value;
+
+    this.exchangeService.import(options).subscribe();
   }
 
   openImportedDocument() {
     this.router.navigate([
       `${ConfigService.catalogId}/form`,
-      { id: this.importedDocUuid },
+      {
+        id: this.message.report.references.filter((ref) => !ref.isAddress)[0]
+          .document._uuid,
+      },
     ]);
+  }
+
+  abortImportJob() {
+    this.exchangeService.stopJob();
+    this.cancel();
+  }
+
+  private handleRunningInfo(data: any) {
+    this.importIsRunning = !data.endTime;
+  }
+
+  chooseLocationForDatasets() {
+    this.chooseLocation(false, this.optionsFormGroup.controls.parentDocument);
+  }
+
+  chooseLocationForAddresses() {
+    this.chooseLocation(true, this.optionsFormGroup.controls.parentAddress);
+  }
+
+  chooseLocation(isAddress: boolean, formControlForParent: FormControl) {
+    this.dialog
+      .open(PasteDialogComponent, {
+        data: <PasteDialogOptions>{
+          forAddress: isAddress,
+          titleText: "Ordner auswählen",
+          typeToInsert: "FOLDER",
+        },
+      })
+      .afterClosed()
+      .subscribe((target: any) => {
+        formControlForParent.setValue(target.selection);
+        if (isAddress) {
+          const title = this.addressTreeQuery.getEntity(
+            target.selection
+          )?.title;
+          this.parent.address = title ?? "Daten";
+        } else {
+          const title = this.treeQuery.getEntity(target.selection)?.title;
+          this.parent.document = title ?? "Adressen";
+        }
+      });
   }
 }

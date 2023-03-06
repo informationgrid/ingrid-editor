@@ -105,7 +105,7 @@ class ResearchService {
 
         return """
                 SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid
-                FROM catalog, document_wrapper Left Outer Join document document1 on document_wrapper.uuid = document1.uuid
+                FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
             """ + if (query.orderByField != null) """
@@ -184,7 +184,7 @@ class ResearchService {
 
     private fun createCatalogFilter(catalogId: String): String {
 
-        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
+        return "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 

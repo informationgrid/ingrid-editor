@@ -4,7 +4,7 @@ import {
   UntypedFormControl,
   UntypedFormGroup,
 } from "@angular/forms";
-import { ImportExportService } from "../import-export-service";
+import { ExchangeService } from "../exchange.service";
 import { catchError, tap } from "rxjs/operators";
 import { MatStepper } from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
@@ -43,7 +43,7 @@ export class ExportComponent implements OnInit {
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
-    private exportService: ImportExportService,
+    private exportService: ExchangeService,
     private docService: DocumentService,
     private dialog: MatDialog
   ) {}
@@ -70,7 +70,7 @@ export class ExportComponent implements OnInit {
 
   runExport() {
     let model = this.optionsFormGroup.value;
-    const options = ImportExportService.prepareExportInfo(
+    const options = ExchangeService.prepareExportInfo(
       this.selectedIds[0],
       model
     );
