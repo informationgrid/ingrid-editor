@@ -4247,6 +4247,13 @@ akita-schematics@^2.0.1:
     pluralize "^7.0.0"
     typescript "3.1.6"
 
+angular-mixed-cdk-drag-drop@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/angular-mixed-cdk-drag-drop/-/angular-mixed-cdk-drag-drop-2.0.0.tgz#9885dd0ec741d26c67f1520595cad9bb27742125"
+  integrity sha512-YgJvlZCPVrRZT4CNcL0J7P3NoZaQb/sE1srdrqoEUAhmWHTdtshhfYE5bPiPakLHciMmXtWyogd1zzV2ICYUpw==
+  dependencies:
+    tslib "^2.3.0"
+
 angular-split@^14.1.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-14.1.0.tgz#3ae0dde2a88c8a512c2b296efa1a0a4dea5197bc"

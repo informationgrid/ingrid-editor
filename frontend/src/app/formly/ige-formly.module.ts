@@ -84,6 +84,7 @@ import { SelectCswRecordDialog } from "./types/document-reference-type/select-cs
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
+import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -248,6 +249,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     DocumentIconModule,
+    MixedCdkDragDropModule,
   ],
   providers: [
     {
