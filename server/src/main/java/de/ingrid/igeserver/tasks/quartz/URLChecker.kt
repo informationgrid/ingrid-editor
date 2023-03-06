@@ -6,7 +6,9 @@ import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.*
+import org.quartz.JobDataMap
+import org.quartz.JobExecutionContext
+import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
@@ -29,57 +31,55 @@ class URLChecker @Autowired constructor(
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
         val message = Message()
-
-        try {
-            
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.URL_CHECK, info.catalogId)
-        
-        if (info.referenceHandler == null) {
-            val msg = "No class defined to get URLs from catalog with profile ${info.profile}"
-            log.warn(msg)
+
+        try {
+            if (info.referenceHandler == null) {
+                val msg = "No class defined to get URLs from catalog with profile ${info.profile}"
+                log.warn(msg)
+                message.apply {
+                    this.message = "Finished URLChecker"
+                    this.report = URLCheckerReport(0, emptyList())
+                    this.endTime = Date()
+                    this.errors = mutableListOf(msg)
+                }.also {
+                    finishJob(context, it)
+                    notifier.sendMessage(notificationType, it)
+
+                }
+                throw ClientException.withReason(msg)
+            }
+
+            notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
+
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+
+            val urls = with(convertToUrlList(docs)) {
+                forEachIndexed { index, urlReport ->
+                    notifier.sendMessage(notificationType, message.apply { this.progress = calcProgress(index, size) })
+                    checkAndReportUrl(urlReport)
+                }
+                this
+            }
+
+            val invalidUrlReport = URLCheckerReport(urls.size, urls.filter { it.success.not() })
             message.apply {
                 this.message = "Finished URLChecker"
-                this.report = URLCheckerReport(0, emptyList())
+                this.report = invalidUrlReport
                 this.endTime = Date()
-                this.errors = mutableListOf(msg)
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
 
             }
-            throw ClientException.withReason(msg)
-        }
-        
-        notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
-
-        val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
-
-        val urls = with(convertToUrlList(docs)) {
-            forEachIndexed { index, urlReport ->
-                notifier.sendMessage(notificationType, message.apply { this.progress = calcProgress(index, size) })
-                checkAndReportUrl(urlReport)
-            }
-            this
-        }
-
-        val invalidUrlReport = URLCheckerReport(urls.size, urls.filter { it.success.not() })
-        message.apply {
-            this.message = "Finished URLChecker" 
-            this.report = invalidUrlReport 
-            this.endTime = Date()
-        }.also {
-            finishJob(context, it)
-            notifier.sendMessage(notificationType, it)
-
-        }
-        log.debug("Task finished: URLChecker for '$info.catalogId'")
+            log.debug("Task finished: URLChecker for '$info.catalogId'")
         } catch (ex: Exception) {
-            notifier.endMessage(message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+            notifier.endMessage(notificationType, message.apply { this.errors.add("Exception occurred: ${ex.message}") })
             throw ex
         }
     }
-    
+
     override fun interrupt() {
         log.info("Task interrupted")
         currentThread?.interrupt()
